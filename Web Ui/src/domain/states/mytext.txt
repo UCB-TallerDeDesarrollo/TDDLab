@@ -1,0 +1,1 @@
+aqui vanlos estados que se usan en toda la app
