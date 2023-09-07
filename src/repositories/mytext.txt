@@ -1,0 +1,1 @@
+aqui va el adapter a la base datos

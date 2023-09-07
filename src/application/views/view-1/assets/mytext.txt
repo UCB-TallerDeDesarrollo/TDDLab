@@ -1,0 +1,1 @@
+aqui van assets que se usan  solo en la vista actual

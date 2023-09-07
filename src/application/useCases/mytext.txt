@@ -1,0 +1,1 @@
+aqui van los casos de uso / ports que se usn en varias vistas de la app

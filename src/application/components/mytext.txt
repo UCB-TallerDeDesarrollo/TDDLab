@@ -1,0 +1,1 @@
+aqui van componentes que se usan en mas de una vista
