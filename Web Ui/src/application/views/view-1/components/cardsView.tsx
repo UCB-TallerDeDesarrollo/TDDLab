@@ -1,10 +1,9 @@
 // src/App.tsx
-import React from 'react';
 import Card from './card';
 
 function CardsView() {
   return (
-    <React.Fragment >
+    <>
       <h1>User Cards</h1>
       <div className="user-cards">
         <Card>
@@ -16,7 +15,7 @@ function CardsView() {
           <p>jane@example.com</p>
         </Card>
       </div>
-    </React.Fragment>
+    </>
   );
 }
 
