@@ -2,6 +2,7 @@
 export default {
     preset: 'ts-jest',
     testEnvironment: 'jest-environment-jsdom',
+    testPathIgnorePatterns: ["<rootDir>/test/cypress/"],
     transform: {
         "^.+\\.tsx?$": "ts-jest" 
     // process `*.tsx` files with `ts-jest`
