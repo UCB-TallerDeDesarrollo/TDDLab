@@ -16,5 +16,6 @@ jobs:
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}'
+          project_path: ./web-ui
           channelId: live
           projectId: tddlab-hosting-firebase
