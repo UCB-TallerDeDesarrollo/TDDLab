@@ -76,6 +76,10 @@ jobs:
         working-directory: Web Ui
         run: npm install
 
+        name: initializing cypress
+        working-directory: Web Ui
+        run: npm run dev
+
       - name: Start the application (assuming you need it for Cypress)
         working-directory: Web Ui
         run: npm run cy:run
