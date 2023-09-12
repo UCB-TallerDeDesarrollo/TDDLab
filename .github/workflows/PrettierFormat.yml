@@ -36,7 +36,7 @@ jobs:
             echo "Changes detected in TypeScript files."
           else
             echo "No changes to commit in TypeScript files."
-            exit 78  # Exit with a neutral status code (78) when no changes are found
+            exit 0  # Exit with a neutral status code (78) when no changes are found
           fi
 
           
