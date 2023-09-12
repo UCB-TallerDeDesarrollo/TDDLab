@@ -61,36 +61,36 @@ jobs:
         run: npm test
 
   # Add a job for running Cypress tests
-cypress-tests:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+  cypress-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       
-    - name: Set up Node.js for Cypress
-      uses: actions/setup-node@v3
-      with:
-        node-version: '14' # You can adjust the Node.js version as needed for Cypress
+      - name: Set up Node.js for Cypress
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14' # You can adjust the Node.js version as needed for Cypress
 
-    - name: Install dependencies for Cypress
-      working-directory: Web Ui
-      run: npm install
+      - name: Install dependencies for Cypress
+        working-directory: Web Ui
+        run: npm install
 
-    - name: Initializing Cypress
-      working-directory: Web Ui
-      run: npm run dev
+      - name: initializing cypress
+        working-directory: Web Ui
+        run: npm run dev
 
-    - name: Wait for the Application to Start
-      working-directory: Web Ui
-      run: sleep 10 # Adjust the time to allow your app to start
+      - name: Wait for the Application to Start
+        working-directory: Web Ui
+        run: sleep 10 # Adjust the time to allow your app to start
 
-    - name: Start Cypress Tests
-      working-directory: Web Ui
-      run: npm run cy:run
+      - name: Start the application (assuming you need it for Cypress)
+        working-directory: Web Ui
+        run: npm run cy:run
 
-    - name: Stop Your Application
-      working-directory: Web Ui
-      run: pkill -f "vite" # Use pkill to stop the development server
+      - name: Stop Your Application
+        working-directory: Web Ui
+        run: pkill -f "vite" # Use pkill to stop the development server
 
   Analysis:
     runs-on: ubuntu-latest
