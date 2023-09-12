@@ -76,10 +76,10 @@ jobs:
         working-directory: Web Ui
         run: npm install
 
-      - name: Start the application (assuming you need it for Cypress)
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         working-directory: Web Ui
-        run: npm run cy:run
-        with: 
+        with:
           start: npm run dev
 
       - name: Stop Your Application
