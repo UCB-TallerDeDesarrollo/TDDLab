@@ -1,6 +1,5 @@
 import CardsView from "./application/views/view-1/components/cardsView";
 function App() {
-
   return (
     <div>
       <div></div>
