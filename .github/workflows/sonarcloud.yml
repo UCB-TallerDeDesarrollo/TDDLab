@@ -76,17 +76,11 @@ jobs:
         working-directory: Web Ui
         run: npm install
 
-      - name: initializing cypress
-        working-directory: Web Ui
-        run: npm run build
-
-      - name: Wait for the Application to Start
-        working-directory: Web Ui
-        run: sleep 10 # Adjust the time to allow your app to start
-
       - name: Start the application (assuming you need it for Cypress)
         working-directory: Web Ui
         run: npm run cy:run
+        with: 
+          start: npm run dev
 
       - name: Stop Your Application
         working-directory: Web Ui
