@@ -26,11 +26,24 @@ jobs:
         working-directory: Web Ui
         run: npx prettier --write "src/**/*.{js,ts,tsx}" 
 
-      - name: Commit and Push Changes
+      - name: Check for Changes in TypeScript files
+        id: check-changes
         working-directory: Web Ui
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          if [[ -n $(git status --porcelain "src/**/*.{ts,tsx}") ]]; then
+            echo "Changes detected in TypeScript files."
+          else
+            echo "No changes to commit in TypeScript files."
+            exit 78  # Exit with a neutral status code (78) when no changes are found
+          fi
+
+          
+      - name: Commit and Push Changes
+        if: steps.check-changes.outcome != 'neutral'  # Run this step only if changes are detected
+        working-directory: Web Ui
+        run: |
           git add .
           git commit -m "Auto-format code with Prettier"
           git push
