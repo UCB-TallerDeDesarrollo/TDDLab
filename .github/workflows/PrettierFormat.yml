@@ -34,16 +34,10 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           if [[ -n $(git status --porcelain "src/**/*.{ts,tsx}") ]]; then
             echo "Changes detected in TypeScript files."
+            git add .
+            git commit -m "Auto-format code with Prettier"
+            git push
           else
             echo "No changes to commit in TypeScript files."
-            exit 78
+            exit 0
           fi
-
-          
-      - name: Commit and Push Changes
-        if: steps.check-changes.outcome != 'neutral'  # Run this step only if changes are detected
-        working-directory: Web Ui
-        run: |
-          git add .
-          git commit -m "Auto-format code with Prettier"
-          git push
