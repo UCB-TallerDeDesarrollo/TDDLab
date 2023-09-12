@@ -11,9 +11,14 @@ jobs:
         working-directory: Web Ui
     steps:
       - uses: actions/checkout@v3
+      
+      - name: Install Dependencies
+        run: npm install
+
       - uses: actions/setup-node@v1
       - run: npm ci
       - run: npm run build
+
       - name: GitHub Action for Firebase
         uses: w9jds/firebase-action@master
         with:
