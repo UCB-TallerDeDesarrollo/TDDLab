@@ -9,12 +9,17 @@ name: Deploy to Firebase Hosting on merge
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Web-Ui
     steps:
       - uses: actions/checkout@v3
-      - run: npm ci && npm run build && cd "./Web Ui"
+      - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}'
           channelId: live
           projectId: tddlab-hosting-firebase
+      - env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
