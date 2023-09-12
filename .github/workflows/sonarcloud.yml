@@ -88,6 +88,10 @@ jobs:
         working-directory: Web Ui
         run: npm run cypress:run # Adjust this script to match your Cypress test command
 
+      - name: Stop Your Application
+        working-directory: Web Ui
+        run: pkill -f "vite" # Use pkill to stop the development server
+
   Analysis:
     runs-on: ubuntu-latest
     steps:
