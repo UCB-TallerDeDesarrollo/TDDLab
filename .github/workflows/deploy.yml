@@ -6,19 +6,34 @@ on:
     - main
 
 jobs:
-  build:
+  deploy-staging:
+    name: Deploy Main
+    environment:
+      name: Main
     runs-on: ubuntu-latest
+    needs: ci
     defaults:
       run:
         working-directory: Web Ui
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v1
-      - run: npm ci
-      - run: npm run build
-      - name: GitHub Action for Firebase
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Creating .env file
+        run: |
+          echo REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }} >> ./.env
+
+      - name: Preparing Build Directory
+        run: npm run build
+        env:
+          CI: false
+
+      - name: Deployment on Firebase
         uses: w9jds/firebase-action@master
         with:
-            args: deploy --only hosting
+          args: deploy --only hosting:dev
         env:
-            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: Web Ui
