@@ -27,7 +27,7 @@ jobs:
         run: npx prettier --write "src/**/*.{js,ts,tsx}" 
 
       - name: Commit and Push Changes
-        working-directory: Web UI  # Set the working directory to the "Web UI" subdirectory
+        working-directory: Web Ui
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
