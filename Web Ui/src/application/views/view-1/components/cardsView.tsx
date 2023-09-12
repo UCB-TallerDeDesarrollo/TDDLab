@@ -1,5 +1,5 @@
 // src/App.tsx
-import Card from './card';
+import Card from "./card";
 
 function CardsView() {
   return (
