@@ -72,21 +72,17 @@ jobs:
         with:
           node-version: '14' # You can adjust the Node.js version as needed for Cypress
 
-      - name: Install dependencies for Cypress
+      - name: Install dependencies for Cypress and your application
         working-directory: Web Ui
-        run: npm install
+        run: |
+          npm install
+          npm install --save-dev concurrently
 
-      - name: initializing cypress
+      - name: Start Your Application and Cypress Tests
         working-directory: Web Ui
-        run: npm run dev
-
-      - name: Wait for the Application to Start
-        working-directory: Web Ui
-        run: sleep 10 # Adjust the time to allow your app to start
-
-      - name: Start the application (assuming you need it for Cypress)
-        working-directory: Web Ui
-        run: npm run cy:run
+        run: |
+          # Use concurrently to run the Vite development server and Cypress in parallel
+          npx concurrently "npm run dev" "npm run cy:run"
 
       - name: Stop Your Application
         working-directory: Web Ui
