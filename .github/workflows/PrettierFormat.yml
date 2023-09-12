@@ -19,11 +19,11 @@ jobs:
           node-version: 14 
 
       - name: Install Dependencies
-        working-directory: ./Web Ui
+        working-directory: Web Ui
         run: npm install 
 
       - name: Run Prettier
-        working-directory: ./Web Ui
+        working-directory: Web Ui
         run: npx prettier --write "src/**/*.{js,ts,tsx}" 
 
       - name: Commit and Push Changes
