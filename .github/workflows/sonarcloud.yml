@@ -80,13 +80,13 @@ jobs:
         working-directory: Web Ui
         run: npm run dev
 
+        - name: Wait for the Application to Start
+        working-directory: Web Ui
+        run: sleep 10 # Adjust the time to allow your app to start
+
       - name: Start the application (assuming you need it for Cypress)
         working-directory: Web Ui
         run: npm run cy:run
-
-      - name: Run Cypress tests
-        working-directory: Web Ui
-        run: npm run cypress:run # Adjust this script to match your Cypress test command
 
       - name: Stop Your Application
         working-directory: Web Ui
