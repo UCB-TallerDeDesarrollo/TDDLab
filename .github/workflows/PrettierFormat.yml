@@ -1,0 +1,36 @@
+name: Prettier Code Formatting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14 
+
+      - name: Install Dependencies
+        working-directory: ./Web Ui
+        run: npm install 
+
+      - name: Run Prettier
+        working-directory: ./Web Ui
+        run: npx prettier --write "src/**/*.{js,ts,tsx}" 
+
+      - name: Commit and Push Changes
+        working-directory: ./Web UI  # Set the working directory to the "Web UI" subdirectory
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git add .
+          git commit -m "Auto-format code with Prettier"
+          git push
