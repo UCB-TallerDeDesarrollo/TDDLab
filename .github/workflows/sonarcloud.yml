@@ -78,9 +78,10 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
-        working-directory: Web Ui
         with:
+          working-directory: Web Ui
           start: npm run dev
+         
 
       - name: Stop Your Application
         working-directory: Web Ui
