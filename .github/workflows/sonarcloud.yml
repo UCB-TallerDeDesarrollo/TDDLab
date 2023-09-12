@@ -78,7 +78,7 @@ jobs:
 
       - name: initializing cypress
         working-directory: Web Ui
-        run: build
+        run: npm run build
 
       - name: Wait for the Application to Start
         working-directory: Web Ui
