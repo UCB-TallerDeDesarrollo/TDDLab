@@ -1,5 +1,5 @@
 import { GithubAdapter } from "../../../../repositories/github.API";
-
+import { CommitDataObject } from "../../../../domain/models/githubInterfaces";
 
 export class TDDCyclesPort {
   adapter:GithubAdapter
@@ -8,8 +8,7 @@ export class TDDCyclesPort {
 
   }
 
-  async obtainCommitsOfRepo(owner:string,repoName:string) {
-    return await this.adapter.obtainCommitsOfRepo(owner,repoName)
-
+  async obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]> {
+    return await this.adapter.obtainCommitsOfRepo(owner, repoName);
   }
 }
