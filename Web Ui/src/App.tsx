@@ -1,4 +1,5 @@
 import CycleReportView from "./application/views/CycleReportView/components/CycleReportView";
+import { TDDCyclesPort } from "./application/views/CycleReportView/useCases/tddCycles.port";
 function App() {
   return (
     <div>
@@ -6,7 +7,7 @@ function App() {
       <h1>TDDLAB</h1>
       <div>cards Example</div>
 
-      <CycleReportView></CycleReportView>
+      <CycleReportView port={new TDDCyclesPort()}></CycleReportView>
     </div>
   );
 }

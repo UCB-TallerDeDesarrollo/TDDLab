@@ -3,8 +3,10 @@ import {useEffect,useState} from "react"
 import { TDDCyclesPort } from "../useCases/tddCycles.port";
 import { CommitDataObject } from "../../../../domain/models/githubInterfaces";
 import CycleCard from "./CycleCard";
-function CycleReportView() {
-  const port=new TDDCyclesPort()
+interface CycleReportViewProps {
+  port: TDDCyclesPort|any;
+}
+function CycleReportView({port}:CycleReportViewProps) {
   const [commits,setCommits]=useState<CommitDataObject[]|null>(null)
   const repoOwner="DwijanX";
   const repoName="Bulls-and-Cows"
