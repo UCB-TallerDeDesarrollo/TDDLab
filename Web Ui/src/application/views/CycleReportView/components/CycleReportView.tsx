@@ -2,16 +2,18 @@
 import {useEffect,useState} from "react"
 import { TDDCyclesPort } from "../useCases/tddCycles.port";
 import { CommitDataObject } from "../../../../domain/models/githubInterfaces";
+import CycleCard from "./CycleCard";
 function CycleReportView() {
   const port=new TDDCyclesPort()
   const [commits,setCommits]=useState<CommitDataObject[]|null>(null)
+  const repoOwner="DwijanX";
+  const repoName="Bulls-and-Cows"
   useEffect(() => {
     const APICalls = async () => {
       try {
-        const data = await port.obtainCommitsOfRepo('DaddyLipi', 'Cactus-Topia');
+        const data = await port.obtainCommitsOfRepo(repoOwner, repoName);
         setCommits(data);
       } catch (error) {
-        // Handle API call errors here
         console.error('Error obtaining commits:', error);
       }
     };
@@ -21,8 +23,10 @@ function CycleReportView() {
   
   return (
     <>
-      Grafica TDD
-      {commits && JSON.stringify(commits[0])}
+      <h1>Repository:{repoName} </h1>
+      {commits && commits.map((commit) => (
+          <CycleCard key={commit.sha} commit={commit}></CycleCard>
+        ))}
     </>
   );
 }
