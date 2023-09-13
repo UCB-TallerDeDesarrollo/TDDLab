@@ -1,4 +1,4 @@
-import CardsView from "./application/views/view-1/components/cardsView";
+import CycleReportView from "./application/views/CycleReportView/components/CycleReportView";
 function App() {
   return (
     <div>
@@ -6,7 +6,7 @@ function App() {
       <h1>TDDLAB</h1>
       <div>cards Example</div>
 
-      <CardsView></CardsView>
+      <CycleReportView></CycleReportView>
     </div>
   );
 }
