@@ -13,26 +13,31 @@ function CycleReportView({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
   const repoName = "Bulls-and-Cows";
 
+  const obtainJobsData=async()=>{
+    const jobsData:Record<string, JobDataObject> = await port.obtainJobsData(repoOwner, repoName);
+    setJobsByCommit(jobsData);
+
+  }
+  const obtainCommitsData=async()=>{
+    const commitsData = await port.obtainCommitsOfRepo(repoOwner, repoName);
+    setCommits(commitsData);
+  }
+
   useEffect(() => {
-    const APICalls = async () => {
+    const fetchData=async ()=>{
       try {
-        const jobsData:Record<string, JobDataObject> = await port.obtainJobsData(repoOwner, repoName);
-        const commitsData = await port.obtainCommitsOfRepo(repoOwner, repoName);
-        console.log(commitsData);
-        
-        setJobsByCommit(jobsData);
-        setCommits(commitsData);
+        await obtainJobsData()
+        await obtainCommitsData()
       } catch (error) {
         console.error('Error obtaining commits:', error);
       }
-    };
-
-    APICalls();
+    }
+    fetchData()
   }, []);
   return (
     <>
       <h1>Repository:{repoName} </h1>
-      {jobsByCommit != null && commits && commits.map((commit) => (
+      {jobsByCommit != null && commits!=null && commits.map((commit) => (
         <CycleCard key={commit.sha} commit={commit} jobs={jobsByCommit[commit.sha]}></CycleCard>
       ))}
     </>
