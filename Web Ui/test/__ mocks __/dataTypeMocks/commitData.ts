@@ -1,4 +1,4 @@
-import { CommitDataObject } from "../../../src/domain/models/githubInterfaces";
+import { CommitDataObject } from "../../../src/domain/models/githubCommitInterfaces";
 
 
 export const mockCommitData: CommitDataObject = {

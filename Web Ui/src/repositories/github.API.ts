@@ -1,5 +1,6 @@
 import { Octokit } from "octokit";
-import { CommitDataObject } from "../domain/models/githubInterfaces";
+import { CommitDataObject } from "../domain/models/githubCommitInterfaces";
+import { JobDataObject } from "../domain/models/jobInterfaces";
 
 export class GithubAdapter{
     octokit:Octokit
@@ -8,7 +9,7 @@ export class GithubAdapter{
       }
       async obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]> {
         try {
-          const response = await this.octokit.request(`GET /repos/${owner}/${repoName}/commits`);
+          const response = await this.octokit.request(`GET /repos/${owner}/${repoName}/commits?per_page=100`);
           console.log(response.data[0].author.login);
           
           const commits: CommitDataObject[] = response.data.map((githubCommit: any) => {
@@ -97,6 +98,35 @@ export class GithubAdapter{
         } catch (error) {
           // Handle any errors here
           console.error('Error obtaining commits:', error);
+          throw error;
+        }
+      }
+      async obtainRunsOfGithubActions(owner: string, repoName: string)
+      {
+        try {
+          const response = await this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`);
+          
+          return response;
+        } catch (error) {
+          // Handle any errors here
+          console.error('Error obtaining runs:', error);
+          throw error;
+        }
+      }
+      async obtainJobsOfACommit(owner: string, repoName: string,jobId:number,attempt:number)
+      {
+        try {
+          const response = await this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs/${jobId}/attempts/${attempt}/jobs`);
+          const { total_count, jobs } = response.data;
+
+          const jobData: JobDataObject = {
+            total_count,
+            jobs,
+          };
+          return jobData;
+        } catch (error) {
+          // Handle any errors here
+          console.error('Error obtaining job:', error);
           throw error;
         }
       }
