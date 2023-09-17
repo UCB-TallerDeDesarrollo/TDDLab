@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import CycleCard from '../../../../../src/application/views/CycleReportView/components/CycleCard';
 import { mockCommitData } from '../../../../__ mocks __/dataTypeMocks/commitData';
 import { mockSuccessJobData,mockFailedJobData } from '../../../../__ mocks __/dataTypeMocks/jobData';
@@ -28,5 +28,13 @@ describe('CycleCard component', () => {
     const { getByText } = render(<CycleCard commit={mockCommitData} jobs={null}/>);
     const commitMessageElement = getByText('Actions werent Found');
     expect(commitMessageElement).toBeInTheDocument();
+  });
+  it('redirects to the GitHub commit page when the "Ver commit" button is clicked', () => {
+    const { getByText } = render(<CycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
+    const verCommitButton = getByText('Ver commit');
+    expect(verCommitButton).toBeInTheDocument();
+    fireEvent.click(verCommitButton);
+    const open = jest.fn()
+    Object.defineProperty(window, 'open', open);
   });
 });
