@@ -13,11 +13,19 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
     } else {
       return { backgroundColor: 'red',width:"150px" };
     }
+   
   };
-  
+
+  function getCommitLink() {
+    console.log(commit.url)
+    const htmlUrl = commit.html_url;
+    console.log(htmlUrl);
+    return (
+      <div></div>
+    );
+  }
 
   return (
-
     <div className="cycleCardContainer">
       <span>Commit {commit.commit.message}</span>
       {jobs!=null && 
@@ -30,7 +38,7 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
           Actions werent Found
         </div>
        }
-       
+       {getCommitLink()} 
       <br />    
     </div>
 
