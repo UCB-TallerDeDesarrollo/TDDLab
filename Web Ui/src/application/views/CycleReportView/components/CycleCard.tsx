@@ -17,6 +17,7 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
   };
 
   function getCommitLink() {
+    console.log(commit)
     const htmlUrl = commit.html_url;
     return (
       <a href={htmlUrl} target="_blank" rel="noopener noreferrer" className="commit-link">
