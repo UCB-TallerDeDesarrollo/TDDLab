@@ -16,3 +16,19 @@
 .noActionsBox{
     background-color: black;
 }
+
+.commit-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .commit-link:hover {
+    background-color: #0056b3;
+  }
