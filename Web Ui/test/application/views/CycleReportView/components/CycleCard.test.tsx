@@ -33,8 +33,18 @@ describe('CycleCard component', () => {
     const { getByText } = render(<CycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
     const verCommitButton = getByText('Ver commit');
     expect(verCommitButton).toBeInTheDocument();
+    
+    const mockWindowOpen = jest.fn();
+    Object.defineProperty(window, 'open', {
+      value: mockWindowOpen,
+      writable: true,
+    });
+  
     fireEvent.click(verCommitButton);
-    const open = jest.fn()
-    Object.defineProperty(window, 'open', open);
+
+    setTimeout(() => {
+      expect(setTimeout).toHaveBeenCalledWith(expect.any(expect(mockWindowOpen).toHaveBeenCalledWith(mockCommitData.html_url, 'mockHtmlUrl')), 3000);
+      expect(mockWindowOpen).toHaveBeenCalled();
+    }, 3000);
   });
 });
