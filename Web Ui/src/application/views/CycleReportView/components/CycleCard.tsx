@@ -17,11 +17,11 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
   };
 
   function getCommitLink() {
-    console.log(commit.url)
     const htmlUrl = commit.html_url;
-    console.log(htmlUrl);
     return (
-      <div></div>
+      <a href={htmlUrl} target="_blank" rel="noopener noreferrer">
+        Ver commit
+      </a>
     );
   }
 
