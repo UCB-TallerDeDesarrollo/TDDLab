@@ -1,0 +1,38 @@
+.conclusionBox{
+    width: 150px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cycleCardContainer{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: right;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+.cycleCardContainer span{
+    margin-right: 24px;
+}
+.noActionsBox{
+    background-color: black;
+}
+
+.commit-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    margin-left: 5px;
+  }
+  
+  .commit-link:hover {
+    background-color: #0056b3;
+  }
