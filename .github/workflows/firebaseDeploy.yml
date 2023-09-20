@@ -1,29 +1,34 @@
-name: Firebase Deploy
-on:
+name: Deploy to Firebase Hosting on merge
+'on':
   push:
-    branches: 
-    - main
+    branches:
+      - main
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Web Ui
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v1
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Running npm ci
+      - name: Setup Node
+        uses: actions/setup-node@v3
+
+      - name: Install Dependencies
+        working-directory: Web Ui
+        run: npm install 
+      
+      - name: Npm ci
+        working-directory: Web Ui
         run: npm ci
 
-      - name: Running npm run build
+      - name: Npm run build
+        working-directory: Web Ui
         run: npm run build
-        env:
-          CI: false
 
-      - name: GitHub Action for Firebase
-        uses: w9jds/firebase-action@master
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          entryPoint: Web Ui
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDD_LAB_HOSTING_FIREBASE }}'
+          channelId: live
+          projectId: tddlab-hosting-firebase
