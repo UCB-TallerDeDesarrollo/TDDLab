@@ -1,6 +1,6 @@
 // routes/userRoutes.js
 import express from 'express';
-import { registerUser, loginUser } from '../controllers/userController';
+import { registerUser, loginUser, updateUser } from '../controllers/userController';
 
 const router = express.Router();
 
@@ -8,5 +8,7 @@ const router = express.Router();
 router.post('/register', registerUser);
 // Ruta de inicio de sesión
 router.post('/login', loginUser);
+//Ruta para actualizar contraseñas de un usuario
+router.put('/update', updateUser);
 
 export default router;

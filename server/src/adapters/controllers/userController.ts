@@ -31,3 +31,18 @@ export const loginUser = (req: Request, res: Response): void => {
 
   res.json({ message: 'Inicio de sesión exitoso.' });
 };
+
+export const updateUser = (req: Request, res: Response):void =>{
+  const { username, password, newPassword } = req.body;
+
+  const user = users.find((user) => user.username === username && user.password === password);
+
+  if (!user) {
+    res.status(404).json({ error: 'Credenciales incorrectas' });
+    return;
+  }
+
+  user.password = newPassword;
+
+  res.status(200).json({ message: 'Contraseña actualizada con éxito.' });
+}
