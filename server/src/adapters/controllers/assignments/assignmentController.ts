@@ -30,7 +30,10 @@ export const getAssignments = async (_req: Request, res: Response) => {
 
 export const createAssignment = async (_req: Request, _res: Response) => {
   try{
-    const {title, description, start_date, end_date, state} = _req.body; 
+    const {title, description, state} = _req.body; 
+    // use date format "2023-09-23T12:00:00.000Z" on postman, thunderclient or others.
+    const  start_date = new Date(_req.body.start_date)
+    const  end_date = new Date(_req.body.end_date)
      // Use a pool client to connect to the database
     const client = await pool.connect();
 
