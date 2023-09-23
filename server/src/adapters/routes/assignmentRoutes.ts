@@ -5,8 +5,8 @@ import { getAssignments, createAssignment } from '../controllers/assignments/ass
 const assignmentsRouter = express.Router();
 
 // Define assignment-related routes here
-assignmentsRouter.get('/api/assignment', getAssignments);
-assignmentsRouter.post('/api/assignment', createAssignment);
+assignmentsRouter.get('/get', getAssignments);
+assignmentsRouter.post('/create', createAssignment);
 
 
 export default assignmentsRouter;

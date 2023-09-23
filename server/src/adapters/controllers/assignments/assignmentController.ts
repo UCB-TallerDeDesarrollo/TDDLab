@@ -28,9 +28,26 @@ export const getAssignments = async (_req: Request, res: Response) => {
   }
 };
 
+export const createAssignment = async (_req: Request, _res: Response) => {
+  try{
+    const {title, description, start_date, end_date, state} = _req.body; 
+     // Use a pool client to connect to the database
+    const client = await pool.connect();
 
-export const createAssignment = (_req: Request, _res: Response) => {
+     // Query to retrieve all assignments from the 'assignments' table
+     const query = 'INSERT INTO assignments (title, description, start_date, end_date, state) VALUES ($1, $2, $3, $4, $5)';
+     const values = [title, description, start_date, end_date, state]
 
-  // Create assignment logic (use your repository or ORM here)
-  // Respond with the created assignment as JSON
+    // Execute the query
+    const result = await client.query(query, values);
+
+    // Release the client back to the pool
+    client.release();
+
+    // Respond with the fetched assignments as JSON
+    _res.status(201).json(result.rows);
+  } catch (error) {
+    console.error('Error adding assignments:', error);
+    _res.status(500).json({ error: 'Server error' });
+  }
 };
