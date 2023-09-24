@@ -2,6 +2,7 @@ import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/models/githubCommitInterfaces";
 import { JobDataObject } from "../domain/models/jobInterfaces";
 
+
 export class GithubAdapter{
     octokit:Octokit
     constructor() {
