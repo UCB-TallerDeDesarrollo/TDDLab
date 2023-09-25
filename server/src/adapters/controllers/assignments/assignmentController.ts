@@ -6,6 +6,8 @@ import config from '../../../config/db'; // Import your database configuration
 
 const pool = new Pool(config);
 
+
+
 export const getAssignments = async (_req: Request, res: Response) => {
   try {
     // Use a pool client to connect to the database
