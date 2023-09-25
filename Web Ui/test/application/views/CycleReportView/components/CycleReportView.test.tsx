@@ -1,5 +1,5 @@
 import { render, waitFor } from "@testing-library/react";
-import CycleReportView from "../../../../../src/TDD-Visualization/application/views/CycleReportView/components/CycleReportView";
+import CycleReportView from "../../../../../src/sections/TDD-Visualization/CycleReportView";
 import { mockCommitData } from "../../../../__ mocks __/dataTypeMocks/commitData";
 
 class MockTDDCyclesPort {

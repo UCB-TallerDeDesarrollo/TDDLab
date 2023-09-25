@@ -1,5 +1,5 @@
 import { render, fireEvent } from "@testing-library/react";
-import CycleCard from "../../../../../src/TDD-Visualization/application/views/CycleReportView/components/CycleCard";
+import CycleCard from "../../../../../src/sections/TDD-Visualization/CycleCard";
 import { mockCommitData } from "../../../../__ mocks __/dataTypeMocks/commitData";
 import {
   mockSuccessJobData,

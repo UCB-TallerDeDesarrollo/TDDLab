@@ -1,1 +1,0 @@
-aqui van componentes que se usan  solo en la vista actual
