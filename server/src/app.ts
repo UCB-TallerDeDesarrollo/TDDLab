@@ -6,7 +6,6 @@ import assignmentsRouter from './adapters/routes/assignmentRoutes'
 
 
 
-
 const app = express();
 const port = 3000;
 
