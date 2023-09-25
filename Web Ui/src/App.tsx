@@ -1,8 +1,7 @@
 import CycleReportView from "./application/views/CycleReportView/components/CycleReportView";
 import { TDDCyclesPort } from "./application/views/CycleReportView/useCases/tddCycles.port";
 import LinesChart from "./application/views/ChartsView/components/LineChart";
-import BarsChart
- from "./application/views/ChartsView/components/BarChart";
+import CycleBarView from "./application/views/ChartsView/components/BarChartView";
 function App() {
   return (
     <div>
@@ -16,7 +15,7 @@ function App() {
       <LinesChart />
 
       <div>Bar Chart</div>
-      <BarsChart />
+      <CycleBarView port={new TDDCyclesPort()}/>
 
     </div>
   );

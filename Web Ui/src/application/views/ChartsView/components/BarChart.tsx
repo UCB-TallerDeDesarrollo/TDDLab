@@ -1,4 +1,7 @@
-import { Bar } from 'react-chartjs-2';
+import { CommitDataObject } from '../../../../domain/models/githubCommitInterfaces';
+import { JobDataObject } from '../../../../domain/models/jobInterfaces';
+import { Bar} from 'react-chartjs-2';
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -11,6 +14,7 @@ import {
     Filler,
 } from 'chart.js';
 
+
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -22,40 +26,51 @@ ChartJS.register(
     Filler
 );
 
-var beneficios = [72, 56, 20, 36, 80, 40, 30, -20, 25, 30, 12, 60];
-var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-var misoptions = {
-    indexAxis: 'y' as const,
-    responsive : true,
-    animation : false,
-    plugins : {
-        legend : {
-            display : false
-        }
-    },
-    scales : {
-        y : {
-            min : -25,
-            max : 100
-        },
-        x: {
-            ticks: { color: 'rgba(0, 220, 195)'}
+function BarsChart(commits: CommitDataObject[] | undefined,  jobs: Record<string, JobDataObject> | undefined) {
+    function getDataLabels(){
+        if (commits!=null){
+            return commits.map((commit) => commit.commit.message);
+        }else{
+            return ["Empty"];
         }
     }
-};
 
-var midata = {
-    labels: meses,
-    datasets: [
-        {
-            label: 'Beneficios',
-            data: beneficios,
-            backgroundColor: 'rgba(0, 220, 195, 0.5)'
+    const getBarStyle = (conclusion: string) => {
+        if (conclusion === 'success') {
+          return 'green';
+        } else {
+          return 'red';
         }
-    ]
-};
+    };
+    
+    function getColorConclusion(){
+        if (commits!=null && jobs != null){
+            const conclusions = commits.map((commit) => getBarStyle(jobs[commit.sha].jobs[0].conclusion));
+            return conclusions
+        }else{
+            return "white";
+        }
+    }
 
-export default function BarsChart() {
-    return <Bar data={midata} options={misoptions} />
+    const data = {
+        labels: getDataLabels(),
+        datasets: [
+            {
+                label: 'Beneficios',
+                data: [1,2,3,4,5,6,7,8,9,1,0,2,2,0,5,5,0,5,5,0],
+                backgroundColor: getColorConclusion(),
+                //links: linkCommits
+            }
+        ]
+    };
+
+    const options = {
+        indexAxis: 'y' as const,
+        responsive : true,
+    };
+
+    return <Bar data={data} options={options}/>
 }
+
+export default BarsChart;
