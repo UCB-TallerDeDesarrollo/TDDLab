@@ -26,6 +26,7 @@ var beneficios = [72, 56, 20, 36, 80, 40, 30, -20, 25, 30, 12, 60];
 var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 var misoptions = {
+    indexAxis: 'y' as const,
     responsive : true,
     animation : false,
     plugins : {
