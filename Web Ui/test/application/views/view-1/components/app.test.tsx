@@ -1,8 +1,6 @@
-import Card from '../../../../../src/application/views/view-1/components/card';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-
-
+import Card from "../../../../../src/TDD-Visualization/application/views/view-1/components/card";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 test("displays the card correctly", () => {
   render(

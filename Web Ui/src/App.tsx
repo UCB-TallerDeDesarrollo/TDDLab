@@ -1,5 +1,5 @@
-import CycleReportView from "./application/views/CycleReportView/components/CycleReportView";
-import { TDDCyclesPort } from "./application/views/CycleReportView/useCases/tddCycles.port";
+import CycleReportView from "./TDD-Visualization/application/views/CycleReportView/components/CycleReportView";
+import { TDDCyclesPort } from "./TDD-Visualization/application/views/CycleReportView/useCases/tddCycles.port";
 function App() {
   return (
     <div>
