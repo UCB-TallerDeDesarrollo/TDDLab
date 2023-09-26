@@ -13,7 +13,7 @@ export class TDDCyclesPort {
     return await this.adapter.obtainCommitsOfRepo(owner, repoName);
   }
 
-  async obtainCommitInformation(owner: string, repoName: string, sha: string): Promise<CommitInformationDataObject[]> {
+  async obtainCommitInformation(owner: string, repoName: string, sha: string): Promise<CommitInformationDataObject> {
     return await this.adapter.obtainCommitsFromSha(owner, repoName, sha);
   }
   async obtainJobsData(owner: string, repoName: string):Promise<Record<string, JobDataObject>> {
