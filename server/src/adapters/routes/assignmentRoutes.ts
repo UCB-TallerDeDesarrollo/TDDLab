@@ -1,12 +1,27 @@
-// src/adapters/controllers/assignments/index.ts
 import express from 'express';
-import { getAssignments, createAssignment } from '../controllers/assignments/assignmentController';
+import {
+  getAssignments,
+  getAssignmentById,
+  createAssignment,
+  //updateAssignment, falta implementar
+  //deleteAssignment, falta implementar
+} from '../controllers/assignments/assignmentController';
 
 const assignmentsRouter = express.Router();
 
-// Define assignment-related routes here
-assignmentsRouter.get('/get', getAssignments);
-assignmentsRouter.post('/create', createAssignment);
+// Create a new assignment
+assignmentsRouter.post('/', createAssignment);
 
+// Retrieve all assignments
+assignmentsRouter.get('/', getAssignments);
+
+// Retrieve a specific assignment by ID
+assignmentsRouter.get('/:id', getAssignmentById);
+
+// Update an assignment by ID
+//assignmentsRouter.put('/:id', updateAssignment);
+
+// Delete an assignment by ID
+//assignmentsRouter.delete('/:id', deleteAssignment);
 
 export default assignmentsRouter;

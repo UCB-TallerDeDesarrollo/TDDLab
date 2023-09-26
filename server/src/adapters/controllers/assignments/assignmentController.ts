@@ -30,6 +30,29 @@ export const getAssignments = async (_req: Request, res: Response) => {
   }
 };
 
+export const getAssignmentById = async (_req: Request, res: Response) => {
+  try {
+    // Use a pool client to connect to the database
+    const client = await pool.connect();
+
+    // Query to retrieve all assignments from the 'assignments' table
+    const query = 'SELECT * FROM assignments WHERE id = $1';
+    const values = [_req.params.id];
+
+    // Execute the query
+    const result = await client.query(query, values);
+
+    // Release the client back to the pool
+    client.release();
+
+    // Respond with the fetched assignments as JSON
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching assignments:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
 export const createAssignment = async (_req: Request, _res: Response) => {
   try{
     const {title, description, state} = _req.body; 

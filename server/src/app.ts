@@ -14,7 +14,7 @@ app.use(cors());
 
 app.use(bodyParser.json());
 app.use('/api/user', router);
-app.use('/api/assignment', assignmentsRouter);
+app.use('/api/assignments', assignmentsRouter);
 
 
 
