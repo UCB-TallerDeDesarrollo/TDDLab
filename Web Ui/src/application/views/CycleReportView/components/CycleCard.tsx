@@ -28,7 +28,7 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
 
   function getCommitStats() {
     return (
-      <div style={{ backgroundColor: 'orange', width: '150px' }} className="commit-stats">
+      <div className="commit-stats">
         Lineas
       </div>
     );    
