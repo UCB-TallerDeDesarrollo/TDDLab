@@ -1,4 +1,4 @@
-import Formulario2 from "./assignmentForm";
+import Formulario2 from "../../assignmentsViews/createAssignmentView/assignmentForm";
 import Tareas from "./assignmentTable";
 import { styled } from '@mui/system'; 
 
