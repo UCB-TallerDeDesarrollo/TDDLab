@@ -1,9 +1,13 @@
-// Function to format a Date object as MM/DD/YYYY
-export const formatDate = (date: Date | undefined | null) => {
-  if (!date) {
-    return ''; // Return an empty string if the date is undefined or null
-  }
+// dateUtils.ts
 
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  return date.toLocaleDateString(undefined, options);
-};
+// Function to format a date string as "MM/DD/YYYY"
+export function formatDate(dateString: string): string {
+
+  
+    const date = new Date(dateString).toLocaleDateString();
+    return date;
+    //new Date(date).toLocaleDateString();
+
+  }
+  
+  
