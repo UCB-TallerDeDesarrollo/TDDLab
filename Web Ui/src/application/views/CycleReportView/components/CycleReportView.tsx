@@ -16,18 +16,20 @@ function CycleReportView({ port }: CycleReportViewProps) {
   const obtainJobsData=async()=>{
     const jobsData:Record<string, JobDataObject> = await port.obtainJobsData(repoOwner, repoName);
     setJobsByCommit(jobsData);
-
   }
+
   const obtainCommitsData=async()=>{
     const commitsData = await port.obtainCommitsOfRepo(repoOwner, repoName);
-    setCommits(commitsData);
+    setCommits(commitsData); 
   }
 
   useEffect(() => {
     const fetchData=async ()=>{
       try {
         await obtainJobsData()
+        console.log("TDD: "+jobsByCommit)
         await obtainCommitsData()
+        console.log("TDD: "+commits)
       } catch (error) {
         console.error('Error obtaining commits:', error);
       }

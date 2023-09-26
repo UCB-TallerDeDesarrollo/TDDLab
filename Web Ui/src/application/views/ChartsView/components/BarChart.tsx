@@ -1,6 +1,6 @@
 import { CommitDataObject } from '../../../../domain/models/githubCommitInterfaces';
 import { JobDataObject } from '../../../../domain/models/jobInterfaces';
-import { Bar} from 'react-chartjs-2';
+import { Bar, Line} from 'react-chartjs-2';
 
 import {
     Chart as ChartJS,
@@ -26,8 +26,12 @@ ChartJS.register(
     Filler
 );
 
+interface CycleChartViewProps {
+    commit: CommitDataObject;
+    jobs: JobDataObject | null;
+}
 
-function BarsChart(commits: CommitDataObject[] | undefined,  jobs: Record<string, JobDataObject> | undefined) {
+function BarsChart(commits: CommitDataObject[] | undefined,  jobsByCommit: Record<string, JobDataObject> | undefined) {
     function getDataLabels(){
         if (commits!=null){
             return commits.map((commit) => commit.commit.message);
@@ -36,17 +40,22 @@ function BarsChart(commits: CommitDataObject[] | undefined,  jobs: Record<string
         }
     }
 
-    const getBarStyle = (conclusion: string) => {
-        if (conclusion === 'success') {
-          return 'green';
+    const getBarStyle = (commit:CommitDataObject) => {
+        if (jobsByCommit != undefined && jobsByCommit[commit.sha] != null) {
+            if (jobsByCommit[commit.sha].jobs[0].conclusion === 'success') {
+                return "green";
+            } else {
+                return "red";
+            }
         } else {
-          return 'red';
+          return 'black';
         }
     };
     
     function getColorConclusion(){
-        if (commits!=null && jobs != null){
-            const conclusions = commits.map((commit) => getBarStyle(jobs[commit.sha].jobs[0].conclusion));
+        if (commits!=null && jobsByCommit != null){
+
+            const conclusions = commits.map((commit) => getBarStyle(commit));
             return conclusions
         }else{
             return "white";
@@ -58,19 +67,32 @@ function BarsChart(commits: CommitDataObject[] | undefined,  jobs: Record<string
         datasets: [
             {
                 label: 'Beneficios',
-                data: [1,2,3,4,5,6,7,8,9,1,0,2,2,0,5,5,0,5,5,0],
+                data: [10,50,60,40,68,98,70,75,80,81,81,82,41,78,89,78,80,75,60,90,87,41,45,59,58,56,78,41,78,41,50,60,70,80,89,84,85,81,86,87,65,94,36,47,85,78,10,15,89,98,45,78,22,74,52],
                 backgroundColor: getColorConclusion(),
+                
                 //links: linkCommits
             }
         ]
     };
 
-    const options = {
+    const optionsBarChart = {
         indexAxis: 'y' as const,
         responsive : true,
+        barThickness: 20,
     };
 
-    return <Bar data={data} options={options}/>
+    const optionsLineChart = {
+        responsive : true,
+        pointRadius: 10,
+        pointHoverRadius: 10
+    };
+
+    return (
+        <>
+          <Bar height="300" data={data} options={optionsBarChart}/>
+          <Line data={data} options={optionsLineChart}/>
+        </>
+      );
 }
 
 export default BarsChart;

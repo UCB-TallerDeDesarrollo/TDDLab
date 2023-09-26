@@ -4,11 +4,11 @@ import { CommitDataObject } from "../../../../domain/models/githubCommitInterfac
 import { JobDataObject } from "../../../../domain/models/jobInterfaces";
 import BarsChart from "./BarChart";
 
-interface CycleReportViewProps {
+interface CycleChartViewProps {
   port: TDDCyclesPort|any;
 }
 
-function CycleBarView({ port }: CycleReportViewProps) {
+function CycleBarView({ port }: CycleChartViewProps) {
   const [commits, setCommits] = useState<CommitDataObject[] >();
   const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> >();
 
@@ -17,9 +17,9 @@ function CycleBarView({ port }: CycleReportViewProps) {
 
   const obtainJobsData=async()=>{
     const jobsData:Record<string, JobDataObject> = await port.obtainJobsData(repoOwner, repoName);
-    setJobsByCommit(jobsData);
-
+    setJobsByCommit(jobsData);  
   }
+
   const obtainCommitsData=async()=>{
     const commitsData = await port.obtainCommitsOfRepo(repoOwner, repoName);
     setCommits(commitsData);
