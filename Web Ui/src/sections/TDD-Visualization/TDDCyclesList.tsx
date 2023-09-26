@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { GetTDDCycles } from "../../TDD-Visualization/application/GetTDDCycles";
 import { GithubAPIAdapter } from "../../TDD-Visualization/repositories/GithubAPIAdapter";
 import { CommitDataObject } from "../../TDD-Visualization/domain/models/githubCommitInterfaces";
-import CycleCard from "./CycleCard";
+import TDDCycleCard from "./TDDCycleCard";
 import { JobDataObject } from "../../TDD-Visualization/domain/models/jobInterfaces";
 interface CycleReportViewProps {
   port: GithubAPIAdapter | any;
 }
-function CycleReportView({ port }: CycleReportViewProps) {
+function TDDCyclesList({ port }: CycleReportViewProps) {
   const [commits, setCommits] = useState<CommitDataObject[]>();
   const [jobsByCommit, setJobsByCommit] =
     useState<Record<string, JobDataObject>>();
@@ -47,14 +47,14 @@ function CycleReportView({ port }: CycleReportViewProps) {
       {jobsByCommit != null &&
         commits != null &&
         commits.map((commit) => (
-          <CycleCard
+          <TDDCycleCard
             key={commit.sha}
             commit={commit}
             jobs={jobsByCommit[commit.sha]}
-          ></CycleCard>
+          ></TDDCycleCard>
         ))}
     </>
   );
 }
 
-export default CycleReportView;
+export default TDDCyclesList;
