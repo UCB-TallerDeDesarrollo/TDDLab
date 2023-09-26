@@ -13,10 +13,19 @@
     "cy:run": "cypress run"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.9",
+    "@mui/material": "^5.14.10",
+    "@mui/x-date-pickers": "^5.0.20",
+    "axios": "^1.5.0",
+    "dayjs": "^1.11.10",
+    "express": "^4.18.2",
     "jest-environment-jsdom": "^29.6.4",
     "octokit": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.16.0",
     "tddlab": "file:"
   },
   "devDependencies": {
@@ -26,6 +35,7 @@
     "@types/jest": "^29.5.4",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@types/uuid": "^9.0.4",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",
