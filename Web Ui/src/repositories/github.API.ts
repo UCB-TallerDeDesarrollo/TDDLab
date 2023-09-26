@@ -5,7 +5,9 @@ import { JobDataObject } from "../domain/models/jobInterfaces";
 export class GithubAdapter{
     octokit:Octokit
     constructor() {
-        this.octokit = new Octokit();
+        this.octokit = new Octokit({
+          //auth: '',
+        });
       }
       async obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]> {
         try {

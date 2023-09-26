@@ -1,8 +1,8 @@
-import { CommitDataObject } from "../../../../domain/models/githubCommitInterfaces";
+import {  CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
 import { JobDataObject } from "../../../../domain/models/jobInterfaces";
 import "../styles/cycleCard.css"
 interface CycleReportViewProps {
-    commit: CommitDataObject;
+    commit: CommitInformationDataObject;
     jobs: JobDataObject | null;
   }
   
@@ -29,7 +29,9 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
   function getCommitStats() {
     return (
       <div className="commit-stats">
-        Lineas
+        Total: {commit.stats.total} <br/>
+        Adiciones: {commit.stats.additions} <br/>
+        Sustraccion: {commit.stats.deletions} <br/>
       </div>
     );    
   }
