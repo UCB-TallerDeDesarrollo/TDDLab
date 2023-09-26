@@ -1,11 +1,11 @@
-import { GithubAdapter } from "../repositories/github.API";
+import { GithubAPIRepository } from "../domain/GithubAPIRepository";
 import { CommitDataObject } from "../domain/models/githubCommitInterfaces";
 import { JobDataObject } from "../domain/models/jobInterfaces";
 
 export class GetTDDCycles {
-  adapter: GithubAdapter;
-  constructor() {
-    this.adapter = new GithubAdapter();
+  adapter: GithubAPIRepository;
+  constructor(githubRepository: GithubAPIRepository) {
+    this.adapter = githubRepository;
   }
 
   async obtainCommitsOfRepo(
@@ -18,7 +18,7 @@ export class GetTDDCycles {
     owner: string,
     repoName: string
   ): Promise<Record<string, JobDataObject>> {
-    let githubruns = await this.adapter.obtainRunsOfGithubActions(
+    const githubruns = await this.adapter.obtainRunsOfGithubActions(
       owner,
       repoName
     );
@@ -26,9 +26,9 @@ export class GetTDDCycles {
       githubruns.data.workflow_runs.map((workFlowRun: any) => {
         return [workFlowRun.id, workFlowRun.head_commit.id];
       });
-    let jobs: Record<string, JobDataObject> = {};
+    const jobs: Record<string, JobDataObject> = {};
     commitsWithActions.map(async (workflowInfo) => {
-      let jobInfo = await this.adapter.obtainJobsOfACommit(
+      const jobInfo = await this.adapter.obtainJobsOfACommit(
         owner,
         repoName,
         workflowInfo[0],

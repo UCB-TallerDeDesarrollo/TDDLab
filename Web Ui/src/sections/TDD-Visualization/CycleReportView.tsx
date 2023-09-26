@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { GetTDDCycles } from "../../TDD-Visualization/application/GetTDDCycles";
+import { GithubAPIAdapter } from "../../TDD-Visualization/repositories/GithubAPIAdapter";
 import { CommitDataObject } from "../../TDD-Visualization/domain/models/githubCommitInterfaces";
 import CycleCard from "./CycleCard";
 import { JobDataObject } from "../../TDD-Visualization/domain/models/jobInterfaces";
 interface CycleReportViewProps {
-  port: GetTDDCycles | any;
+  port: GithubAPIAdapter | any;
 }
 function CycleReportView({ port }: CycleReportViewProps) {
   const [commits, setCommits] = useState<CommitDataObject[]>();
@@ -14,15 +15,18 @@ function CycleReportView({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
   const repoName = "Bulls-and-Cows";
 
+  const getTDDCycles = new GetTDDCycles(port);
+
   const obtainJobsData = async () => {
-    const jobsData: Record<string, JobDataObject> = await port.obtainJobsData(
-      repoOwner,
-      repoName
-    );
+    const jobsData: Record<string, JobDataObject> =
+      await getTDDCycles.obtainJobsData(repoOwner, repoName);
     setJobsByCommit(jobsData);
   };
   const obtainCommitsData = async () => {
-    const commitsData = await port.obtainCommitsOfRepo(repoOwner, repoName);
+    const commitsData = await getTDDCycles.obtainCommitsOfRepo(
+      repoOwner,
+      repoName
+    );
     setCommits(commitsData);
   };
 

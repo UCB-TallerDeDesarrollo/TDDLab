@@ -1,5 +1,5 @@
 import CycleReportView from "./sections/TDD-Visualization/CycleReportView";
-import { GetTDDCycles } from "./TDD-Visualization/application/GetTDDCycles";
+import { GithubAPIAdapter } from "./TDD-Visualization/repositories/GithubAPIAdapter";
 function App() {
   return (
     <div>
@@ -7,7 +7,7 @@ function App() {
       <h1>TDDLAB</h1>
       <div>cards Example</div>
 
-      <CycleReportView port={new GetTDDCycles()}></CycleReportView>
+      <CycleReportView port={new GithubAPIAdapter()}></CycleReportView>
     </div>
   );
 }
