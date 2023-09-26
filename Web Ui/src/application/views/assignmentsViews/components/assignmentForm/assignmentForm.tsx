@@ -9,7 +9,7 @@ import Filter from "./datePicker";
 
 
 
-function Formulario2() {
+function Formulario() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleGuardarClick = () => {
@@ -78,4 +78,4 @@ function Formulario2() {
   );
 }
 
-export default Formulario2;
+export default Formulario;
