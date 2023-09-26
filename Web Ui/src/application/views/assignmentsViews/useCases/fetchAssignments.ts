@@ -1,8 +1,7 @@
 // Import any necessary dependencies
 import axios from 'axios'; // If you're using Axios
-
 // Define the URL of your backend API
-const API_URL = '/api/assignment'; // Adjust this URL according to your backend's URL structure
+const API_URL = 'http://localhost:3000/api/assignment/get';
 
 // Define a function to fetch assignments
 export const fetchAssignments = async () => {
