@@ -24,6 +24,34 @@ export const fetchAssignments = async () => {
   }
 };
 
+
+
+
+// Define a function to fetch an assignment by its ID
+export const fetchAssignmentById = async (assignmentId: number): Promise<AssignmentDataObject | null> => {
+  try {
+    // Send a GET request to fetch a specific assignment by ID
+    const response = await axios.get(`${API_URL}/${assignmentId}`);
+
+    // Check if the response status is successful (e.g., 200 OK)
+    if (response.status === 200) {
+      // Return the assignment data from the response
+      return response.data;
+    } else if (response.status === 404) {
+      // Return null if the assignment was not found
+      return null;
+    } else {
+      // Handle other response status codes or errors here if needed
+      throw new Error('Failed to fetch assignment by ID');
+    }
+  } catch (error) {
+    // Handle any network errors or exceptions that may occur
+    console.error('Error fetching assignment by ID:', error);
+    throw error;
+  }
+};
+
+
 export const createAssignment = async (assignmentData: AssignmentDataObject): Promise<void> => {
   // Send a POST request to create a new assignment
   await axios.post(API_URL, assignmentData);
