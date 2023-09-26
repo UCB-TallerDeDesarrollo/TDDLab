@@ -6,7 +6,6 @@ export class TDDCyclesPort {
   adapter:GithubAdapter
   constructor(){
     this.adapter=new GithubAdapter()
-
   }
 
   async obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]> {
