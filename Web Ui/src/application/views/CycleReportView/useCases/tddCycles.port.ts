@@ -1,5 +1,5 @@
 import { GithubAdapter } from "../../../../repositories/github.API";
-import { CommitDataObject } from "../../../../domain/models/githubCommitInterfaces";
+import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
 import { JobDataObject } from "../../../../domain/models/jobInterfaces";
 
 export class TDDCyclesPort {
@@ -14,7 +14,7 @@ export class TDDCyclesPort {
   }
 
   async obtainCommitInformation(owner: string, repoName: string, sha: string): Promise<CommitInformationDataObject[]> {
-    // return await this.adapter.obtainCommitsOfRepo(owner, repoName);
+    return await this.adapter.obtainCommitsFromSha(owner, repoName, sha);
   }
   async obtainJobsData(owner: string, repoName: string):Promise<Record<string, JobDataObject>> {
     let githubruns=await this.adapter.obtainRunsOfGithubActions(owner,repoName)

@@ -1,6 +1,6 @@
 import {useEffect,useState} from "react"
 import { TDDCyclesPort } from "../useCases/tddCycles.port";
-import { CommitDataObject } from "../../../../domain/models/githubCommitInterfaces";
+import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
 import CycleCard from "./CycleCard";
 import { JobDataObject } from "../../../../domain/models/jobInterfaces";
 interface CycleReportViewProps {
@@ -8,6 +8,7 @@ interface CycleReportViewProps {
 }
 function CycleReportView({ port }: CycleReportViewProps) {
   const [commits, setCommits] = useState<CommitDataObject[] >();
+  const [commitsInfo, setCommitsInfo] = useState<CommitInformationDataObject[] >();
   const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> >();
 
   const repoOwner = "DwijanX";
@@ -22,12 +23,17 @@ function CycleReportView({ port }: CycleReportViewProps) {
     const commitsData = await port.obtainCommitsOfRepo(repoOwner, repoName);
     setCommits(commitsData);
   }
+  const obtainCommitsInfoData=async(commits: any)=>{
+    const commitsInfoData = commits.map((commit: any) => await port.obtainCommitsFromSha(repoOwner, repoName, commit.sha)) // Verificar type any
+    setCommitsInfo(commitsInfoData);
+  }
 
   useEffect(() => {
     const fetchData=async ()=>{
       try {
         await obtainJobsData()
         await obtainCommitsData()
+        await obtainCommitsInfoData(commits)
       } catch (error) {
         console.error('Error obtaining commits:', error);
       }
