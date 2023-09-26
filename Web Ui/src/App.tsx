@@ -1,5 +1,5 @@
 import CycleReportView from "./sections/TDD-Visualization/CycleReportView";
-import { TDDCyclesPort } from "./TDD-Visualization/application/tddCycles.port";
+import { GetTDDCycles } from "./TDD-Visualization/application/GetTDDCycles";
 function App() {
   return (
     <div>
@@ -7,7 +7,7 @@ function App() {
       <h1>TDDLAB</h1>
       <div>cards Example</div>
 
-      <CycleReportView port={new TDDCyclesPort()}></CycleReportView>
+      <CycleReportView port={new GetTDDCycles()}></CycleReportView>
     </div>
   );
 }

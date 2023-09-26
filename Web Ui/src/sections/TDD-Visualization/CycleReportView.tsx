@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { TDDCyclesPort } from "../../TDD-Visualization/application/tddCycles.port";
+import { GetTDDCycles } from "../../TDD-Visualization/application/GetTDDCycles";
 import { CommitDataObject } from "../../TDD-Visualization/domain/models/githubCommitInterfaces";
 import CycleCard from "./CycleCard";
 import { JobDataObject } from "../../TDD-Visualization/domain/models/jobInterfaces";
 interface CycleReportViewProps {
-  port: TDDCyclesPort | any;
+  port: GetTDDCycles | any;
 }
 function CycleReportView({ port }: CycleReportViewProps) {
   const [commits, setCommits] = useState<CommitDataObject[]>();

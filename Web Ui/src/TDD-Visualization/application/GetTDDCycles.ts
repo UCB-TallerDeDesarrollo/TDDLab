@@ -2,7 +2,7 @@ import { GithubAdapter } from "../repositories/github.API";
 import { CommitDataObject } from "../domain/models/githubCommitInterfaces";
 import { JobDataObject } from "../domain/models/jobInterfaces";
 
-export class TDDCyclesPort {
+export class GetTDDCycles {
   adapter: GithubAdapter;
   constructor() {
     this.adapter = new GithubAdapter();
