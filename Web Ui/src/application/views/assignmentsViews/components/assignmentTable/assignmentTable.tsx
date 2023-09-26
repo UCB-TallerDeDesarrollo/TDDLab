@@ -8,7 +8,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Container, Button } f
 import { styled } from '@mui/system';
 import { AssignmentDataObject } from '../../../../../domain/models/assignmentInterfaces'; // Import your assignment model
 
-import { fetchAssignments } from '../../useCases/fetchAssignments'; // Import your fetchAssignments function
+import { fetchAssignmentsUseCase } from '../../useCases/fetchAssignments'; // Import your fetchAssignments function
 
 const ButtonContainer = styled('div')({
   display: 'flex',
@@ -36,7 +36,7 @@ function Tareas({ mostrarFormulario  }: TareasProps) {
 
   useEffect(() => {
     // Use the fetchAssignments function to fetch assignments
-    fetchAssignments()
+    fetchAssignmentsUseCase()
       .then((data) => {
         setAssignments(data); // Set the fetched assignments in state
       })
