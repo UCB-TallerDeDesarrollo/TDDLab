@@ -26,9 +26,18 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
     );
   }
 
+  function getCommitStats() {
+    return (
+      <div style={{ backgroundColor: 'orange', width: '150px' }} className="commit-stats">
+        Lineas
+      </div>
+    );    
+  }
+
   return (
     <div className="cycleCardContainer">
       <span>Commit {commit.commit.message}</span>
+      {getCommitStats()}
       {jobs!=null && 
         <div className={"conclusionBox"} style={getBoxStyle(jobs.jobs[0].conclusion)}>
           Actions:{jobs.jobs[0].conclusion}
@@ -39,7 +48,8 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
           Actions werent Found
         </div>
        }
-       {getCommitLink()} 
+       {getCommitLink()}
+        
       <br />    
     </div>
 
