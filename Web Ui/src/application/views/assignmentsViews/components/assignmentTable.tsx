@@ -20,8 +20,10 @@ const CustomTableCell1 = styled(TableCell)({
 const CustomTableCell2 = styled(TableCell)({
   width: '10%',
 });
-
-function Tareas() {
+interface TareasProps {
+  mostrarFormulario: () => void;
+}
+function Tareas({ mostrarFormulario }: TareasProps) {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
@@ -46,7 +48,7 @@ function Tareas() {
               <CustomTableCell1>Tarea </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button variant="outlined">Crear</Button>
+                  <Button variant="outlined" onClick={mostrarFormulario}>Crear</Button>
                 </ButtonContainer>
               </CustomTableCell2>
             </TableRow>
