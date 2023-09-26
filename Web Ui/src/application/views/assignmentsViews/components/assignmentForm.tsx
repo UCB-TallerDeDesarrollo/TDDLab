@@ -7,6 +7,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Filter from "./datePicker";
 
+
+
 function Formulario2() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -18,19 +20,19 @@ function Formulario2() {
     <>
       <Container maxWidth="sm">
         <Box
-          sx={{ display: "grid", gap: 2 }}
+          sx={{ display: 'grid', gap: 2 }}
           component="form"
           autoComplete="off"
         >
           <TextField
-            id="city"
+            id="titulo"
             label="Titulo"
             variant="outlined"
             size="small"
             required
           />
           <TextField
-            id="city"
+            id="descripcion"
             label="Descripcion"
             variant="outlined"
             size="small"
@@ -47,10 +49,10 @@ function Formulario2() {
             }}
           />
           <section>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Filter />
-                </LocalizationProvider>
-            </section>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Filter />
+            </LocalizationProvider>
+          </section>
           <Stack direction="row" spacing={2}>
             <Button
               variant="contained"
@@ -59,7 +61,7 @@ function Formulario2() {
                 backgroundColor: '#001F3F',
                 textTransform: 'uppercase',
               }}
-              onClick={handleGuardarClick}  // Agregamos un manejador para el clic
+              onClick={handleGuardarClick}
             >
               Guardar cambios
             </Button>
@@ -71,7 +73,6 @@ function Formulario2() {
             </Typography>
           )}
         </Box>
-            
       </Container>
     </>
   );
