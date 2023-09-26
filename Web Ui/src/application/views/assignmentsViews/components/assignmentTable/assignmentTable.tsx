@@ -8,6 +8,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Container, Button } f
 import { styled } from '@mui/system';
 import { AssignmentDataObject } from '../../../../../domain/models/assignmentInterfaces'; // Import your assignment model
 
+import { fetchAssignments } from '../../useCases/fetchAssignments'; // Import your fetchAssignments function
 
 const ButtonContainer = styled('div')({
   display: 'flex',
@@ -34,11 +35,8 @@ function Tareas({ mostrarFormulario  }: TareasProps) {
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]); // Specify the type as Assignment[]
 
   useEffect(() => {
-    // Fetch assignments from the database (You need to implement this)
-    // For example, you can use the Fetch API or a library like axios
-    // Replace the placeholder URL with your actual API endpoint
-    fetch('http://localhost:3000/api/assignment/get')
-      .then((response) => response.json())
+    // Use the fetchAssignments function to fetch assignments
+    fetchAssignments()
       .then((data) => {
         setAssignments(data); // Set the fetched assignments in state
       })
@@ -64,7 +62,7 @@ function Tareas({ mostrarFormulario  }: TareasProps) {
         <Table>
           <TableHead>
             <TableRow>
-              <CustomTableCell1>Tarea </CustomTableCell1>
+              <CustomTableCell1>Tareas </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
                   <Button variant="outlined" onClick={mostrarFormulario}>Crear</Button>
