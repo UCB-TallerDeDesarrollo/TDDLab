@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -26,9 +27,8 @@ const CustomTableCell2 = styled(TableCell)({
 interface TareasProps {
   mostrarFormulario: () => void,
 }
-function Tareas({ mostrarFormulario  }: TareasProps) {
-
-
+function Tareas({ mostrarFormulario }: TareasProps) {
+  const navigate = useNavigate();
 
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
@@ -47,6 +47,9 @@ function Tareas({ mostrarFormulario  }: TareasProps) {
 
   const handleRowClick = (index: number) => {
     setSelectedRow(index);
+
+    // Navigate to the assignment detail view with the assignment's ID as a parameter
+    navigate(`/assignment/${assignments[index].id}`);
   };
 
   const handleRowHover = (index: number | null) => {
@@ -65,7 +68,9 @@ function Tareas({ mostrarFormulario  }: TareasProps) {
               <CustomTableCell1>Tareas </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button variant="outlined" onClick={mostrarFormulario}>Crear</Button>
+                  <Button variant="outlined" onClick={mostrarFormulario}>
+                    Crear
+                  </Button>
                 </ButtonContainer>
               </CustomTableCell2>
             </TableRow>
@@ -82,10 +87,18 @@ function Tareas({ mostrarFormulario  }: TareasProps) {
                 <TableCell>{assignment.title}</TableCell>
                 <TableCell>
                   <ButtonContainer>
-                    <IconButton aria-label="see"> <VisibilityIcon />  </IconButton>
-                    <IconButton aria-label="edit"> <EditIcon />  </IconButton>
-                    <IconButton aria-label="delete"> <DeleteIcon />  </IconButton>
-                    <IconButton aria-label="send"> <SendIcon />  </IconButton>
+                    <IconButton aria-label="see">
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton aria-label="edit">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton aria-label="send">
+                      <SendIcon />
+                    </IconButton>
                   </ButtonContainer>
                 </TableCell>
               </TableRow>
