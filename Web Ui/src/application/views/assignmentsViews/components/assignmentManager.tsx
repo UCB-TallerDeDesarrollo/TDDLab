@@ -1,7 +1,7 @@
 import Formulario2 from "../../assignmentsViews/createAssignmentView/assignmentForm";
 import Tareas from "./assignmentTable";
 import { styled } from '@mui/system'; 
-
+import { useState } from "react";
 const GestionTareasContainer = styled('section')({
   display: 'flex',
   width: '100%',
