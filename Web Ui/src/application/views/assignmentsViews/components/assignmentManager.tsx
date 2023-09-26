@@ -1,7 +1,11 @@
-import Formulario2 from "../../assignmentsViews/createAssignmentView/assignmentForm";
-import Tareas from "./assignmentTable";
+import Formulario from "./assignmentForm/assignmentForm";
+import Tareas from "./assignmentTable/assignmentTable";
 import { styled } from '@mui/system'; 
 import { useState } from "react";
+
+
+
+
 const GestionTareasContainer = styled('section')({
   display: 'flex',
   width: '100%',
@@ -28,10 +32,10 @@ function GestionTareas() {
   return (
     <GestionTareasContainer>
       <TareasContainer>
-        <Tareas mostrarFormulario={handleMostrarFormulario} />
+        <Tareas mostrarFormulario={handleMostrarFormulario}  />
       </TareasContainer>
       <FormularioContainer>
-        {mostrarFormulario && <Formulario2 />}
+        {mostrarFormulario && <Formulario />}
       </FormularioContainer>
     </GestionTareasContainer>
   );
