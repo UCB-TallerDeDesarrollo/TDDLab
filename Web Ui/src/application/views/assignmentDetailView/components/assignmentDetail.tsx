@@ -15,7 +15,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ id }) => {
     // Fetch the assignment by its ID when the component mounts
     fetchAssignmentUseCase(id)
       .then((fetchedAssignment) => {
-        setAssignment(fetchedAssignment);
+        setAssignment(fetchedAssignment );
       })
       .catch((error) => {
         console.error('Error fetching assignment:', error);
@@ -23,15 +23,16 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ id }) => {
   }, [id]); // The effect will re-run whenever the "id" prop changes
 
 
-
+  const startDate = formatDate(assignment.start_date);
+  const endDate = formatDate(assignment.end_date);
   return (
     <div>
       {assignment ? (
         <div>
           <h2>{assignment.title}</h2>
-          <p>Description: {assignment.description}</p>
-          <p>Start Date: {formatDate(assignment.start_date)}</p>
-          <p>End Date: {formatDate(assignment.end_date)}</p>
+          <p>Descripcion: {assignment.description}</p>
+          <p>Fecha Inicio: {startDate}</p>
+          <p>End Date: {endDate}</p>
           <p>State: {assignment.state}</p>
         </div>
       ) : (
