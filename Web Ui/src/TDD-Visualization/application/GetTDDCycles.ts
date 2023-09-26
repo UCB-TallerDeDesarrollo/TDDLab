@@ -1,6 +1,6 @@
 import { GithubAPIRepository } from "../domain/GithubAPIRepository";
-import { CommitDataObject } from "../domain/models/githubCommitInterfaces";
-import { JobDataObject } from "../domain/models/jobInterfaces";
+import { CommitDataObject } from "../domain/githubCommitInterfaces";
+import { JobDataObject } from "../domain/jobInterfaces";
 
 export class GetTDDCycles {
   adapter: GithubAPIRepository;

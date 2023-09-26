@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { GetTDDCycles } from "../../TDD-Visualization/application/GetTDDCycles";
 import { GithubAPIAdapter } from "../../TDD-Visualization/repositories/GithubAPIAdapter";
-import { CommitDataObject } from "../../TDD-Visualization/domain/models/githubCommitInterfaces";
+import { CommitDataObject } from "../../TDD-Visualization/domain/githubCommitInterfaces";
 import TDDCycleCard from "./TDDCycleCard";
-import { JobDataObject } from "../../TDD-Visualization/domain/models/jobInterfaces";
+import { JobDataObject } from "../../TDD-Visualization/domain/jobInterfaces";
 interface CycleReportViewProps {
   port: GithubAPIAdapter | any;
 }

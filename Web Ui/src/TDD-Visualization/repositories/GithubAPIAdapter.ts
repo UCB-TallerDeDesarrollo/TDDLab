@@ -1,6 +1,6 @@
 import { Octokit } from "octokit";
-import { CommitDataObject } from "../domain/models/githubCommitInterfaces";
-import { JobDataObject } from "../domain/models/jobInterfaces";
+import { CommitDataObject } from "../domain/githubCommitInterfaces";
+import { JobDataObject } from "../domain/jobInterfaces";
 import { GithubAPIRepository } from "../domain/GithubAPIRepository";
 
 export class GithubAPIAdapter implements GithubAPIRepository {

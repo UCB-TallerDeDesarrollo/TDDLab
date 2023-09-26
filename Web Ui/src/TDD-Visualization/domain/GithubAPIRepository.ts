@@ -1,4 +1,4 @@
-import { CommitDataObject } from "./models/githubCommitInterfaces";
+import { CommitDataObject } from "./githubCommitInterfaces";
 //import { JobDataObject } from "../domain/models/jobInterfaces";
 
 export interface GithubAPIRepository {

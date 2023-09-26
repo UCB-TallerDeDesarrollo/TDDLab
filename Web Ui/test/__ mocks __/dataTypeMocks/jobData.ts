@@ -1,4 +1,4 @@
-import { JobDataObject } from "../../../src/TDD-Visualization/domain/models/jobInterfaces";
+import { JobDataObject } from "../../../src/TDD-Visualization/domain/jobInterfaces";
 
 export const mockSuccessJobData: JobDataObject = {
   total_count: 1,

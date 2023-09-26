@@ -1,5 +1,5 @@
-import { CommitDataObject } from "../../TDD-Visualization/domain/models/githubCommitInterfaces";
-import { JobDataObject } from "../../TDD-Visualization/domain/models/jobInterfaces";
+import { CommitDataObject } from "../../TDD-Visualization/domain/githubCommitInterfaces";
+import { JobDataObject } from "../../TDD-Visualization/domain/jobInterfaces";
 import "../../assets/styles/cycleCard.css";
 interface CycleReportViewProps {
   commit: CommitDataObject;
