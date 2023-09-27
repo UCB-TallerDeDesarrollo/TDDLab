@@ -13,22 +13,33 @@ describe('CycleCard component', () => {
     
     expect(commitMessageElement).toBeInTheDocument();
   });
+
+  it('renders the commit stats', () => {
+    const { getByText } = render(<CycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
+    const statsMessageElement = getByText('Total: 5 Adiciones: 4 Sustraccion: 1');
+    expect(statsMessageElement).toBeInTheDocument();
+});
+
+
   it('renders the card as success', () => {
     const { getByText } = render(<CycleCard commit={mockCommitData} jobs={mockSuccessJobData}/>);
     const commitMessageElement = getByText('Actions:success');
     
     expect(commitMessageElement).toBeInTheDocument();
   });
+
   it('renders the card as failed', () => {
     const { getByText } = render(<CycleCard commit={mockCommitData} jobs={mockFailedJobData}/>);
     const commitMessageElement = getByText('Actions:failure');
     expect(commitMessageElement).toBeInTheDocument();
   });
+
   it('renders the card with no actions', () => {
     const { getByText } = render(<CycleCard commit={mockCommitData} jobs={null}/>);
     const commitMessageElement = getByText('Actions werent Found');
     expect(commitMessageElement).toBeInTheDocument();
   });
+
   it('redirects to the GitHub commit page when the "Ver commit" button is clicked', () => {
     const { getByText } = render(<CycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
     const verCommitButton = getByText('Ver commit');
