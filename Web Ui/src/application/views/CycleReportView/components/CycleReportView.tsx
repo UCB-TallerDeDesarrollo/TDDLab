@@ -31,7 +31,7 @@ function CycleReportView({ port }: CycleReportViewProps) {
       const commits: CommitDataObject[] = await port.obtainCommitsOfRepo(repoOwner, repoName);
       if (commits) {
         console.log("Fetching commit information...");
-        const commitsInfoData = await Promise.all(
+        const commitsInfoData: CommitInformationDataObject[] = await Promise.all(
           commits.map((commit) => port.obtainCommitInformation(repoOwner, repoName, commit.sha))
         );
         setCommitsInfo(commitsInfoData);
