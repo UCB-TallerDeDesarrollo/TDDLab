@@ -30,14 +30,14 @@ export const getAssignments = async (_req: Request, res: Response) => {
   }
 };
 
-export const getAssignmentById = async (_req: Request, res: Response) => {
+export const getAssignmentById = async (req: Request, res: Response) => {
   try {
     // Use a pool client to connect to the database
     const client = await pool.connect();
 
     // Query to retrieve all assignments from the 'assignments' table
-    const query = 'SELECT * FROM assignments WHERE id = $1';
-    const values = [_req.params.id];
+    const query = 'SELECT * FROM assignments WHERE id = $1 limit 1';
+    const values = [req.params.id];
 
     // Execute the query
     const result = await client.query(query, values);
@@ -47,18 +47,20 @@ export const getAssignmentById = async (_req: Request, res: Response) => {
 
     // Respond with the fetched assignments as JSON
     res.status(200).json(result.rows[0]);
+    console.log('Fetched Assignment:', result.rows);
+
   } catch (error) {
-    console.error('Error fetching assignments:', error);
+    console.error('Error fetching assignment:', error);
     res.status(500).json({ error: 'Server error' });
   }
 }
 
-export const createAssignment = async (_req: Request, _res: Response) => {
+export const createAssignment = async (req: Request, _res: Response) => {
   try{
-    const {title, description, state} = _req.body; 
+    const {title, description, state} = req.body; 
     // use date format "2023-09-23T12:00:00.000Z" on postman, thunderclient or others.
-    const  start_date = new Date(_req.body.start_date)
-    const  end_date = new Date(_req.body.end_date)
+    const  start_date = new Date(req.body.start_date)
+    const  end_date = new Date(req.body.end_date)
      // Use a pool client to connect to the database
     const client = await pool.connect();
 
