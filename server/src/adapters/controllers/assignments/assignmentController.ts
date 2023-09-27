@@ -79,3 +79,26 @@ export const createAssignment = async (_req: Request, _res: Response) => {
     _res.status(500).json({ error: 'Server error' });
   }
 };
+
+export const deleteAssignment = async (_req: Request, _res: Response) => {
+  try{
+    
+    const client = await pool.connect();
+
+     // Query to retrieve all assignments from the 'assignments' table
+    const query = 'DELETE FROM assignments WHERE id = $1';
+    const values = [_req.params.id];
+
+    // Execute the query
+    const result = await client.query(query, values);
+
+    // Release the client back to the pool
+    client.release();
+
+    // Respond with the fetched assignments as JSON
+    _res.status(201).json(result.rows);
+  } catch (error) {
+    console.error('Error adding assignments:', error);
+    _res.status(500).json({ error: 'Server error' });
+  }
+};
