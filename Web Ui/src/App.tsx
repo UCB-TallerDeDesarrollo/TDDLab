@@ -1,13 +1,21 @@
-import CardsView from "./application/views/view-1/components/cardsView";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import GestionTareas from "./application/views/assignmentsViews/components/assignmentManager";
+import AssignmentDetail from "./application/views/assignmentDetailView/components/assignmentDetail";
+import CycleReportView from "./application/views/CycleReportView/components/CycleReportView";
+import { TDDCyclesPort } from "./application/views/CycleReportView/useCases/tddCycles.port";
+
 function App() {
   return (
-    <div>
-      <div></div>
-      <h1>TDDLAB</h1>
-      <div>cards Example</div>
-
-      <CardsView></CardsView>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<GestionTareas />} />
+        <Route path="/assignment/:id" element={<AssignmentDetail />} />
+        <Route
+          path="/graph"
+          element={<CycleReportView port={new TDDCyclesPort()} />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
