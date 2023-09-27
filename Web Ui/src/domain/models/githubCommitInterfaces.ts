@@ -10,6 +10,40 @@ export interface CommitDataObject {
     parents:      Parent[];
 }
 
+export interface CommitInformationDataObject {
+    sha:          string;
+    node_id:      string;
+    commit:       Commit;
+    url:          string;
+    html_url:     string;
+    comments_url: string;
+    author:       GithubAuthor|null;
+    committer:    GithubAuthor|null;
+    parents:      Parent[];
+    stats:        Stats;
+    files:        File[];
+}
+
+
+export interface File {
+    sha: string;
+    filename: string;
+    status: string;
+    additions: number;
+    deletions: number;
+    changes: number;
+    blob_url: string;
+    raw_url: string;
+    contents_url: string;
+    patch: string;
+}
+
+export interface Stats {
+    total:     number;
+    additions: number;
+    deletions: number; 
+}
+
 export interface GithubAuthor {
     login:               string;
     id:                  number;

@@ -1,8 +1,8 @@
-import { CommitDataObject } from "../../../../domain/models/githubCommitInterfaces";
+import {  CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
 import { JobDataObject } from "../../../../domain/models/jobInterfaces";
 import "../styles/cycleCard.css"
 interface CycleReportViewProps {
-    commit: CommitDataObject;
+    commit: CommitInformationDataObject;
     jobs: JobDataObject | null;
   }
   
@@ -26,9 +26,20 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
     );
   }
 
+  function getCommitStats() {
+    return (
+      <div className="commit-stats">
+        Total: {commit.stats.total} <br/>
+        Adiciones: {commit.stats.additions} <br/>
+        Sustraccion: {commit.stats.deletions} <br/>
+      </div>
+    );    
+  }
+
   return (
     <div className="cycleCardContainer">
       <span>Commit {commit.commit.message}</span>
+      {getCommitStats()}
       {jobs!=null && 
         <div className={"conclusionBox"} style={getBoxStyle(jobs.jobs[0].conclusion)}>
           Actions:{jobs.jobs[0].conclusion}
@@ -39,7 +50,8 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
           Actions werent Found
         </div>
        }
-       {getCommitLink()} 
+       {getCommitLink()}
+        
       <br />    
     </div>
 
