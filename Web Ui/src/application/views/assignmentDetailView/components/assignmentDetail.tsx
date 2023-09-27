@@ -4,26 +4,25 @@ import { formatDate } from "../../../../application/utils/dateUtils";
 // Import the AssignmentDataObject type
 import { AssignmentDataObject } from "../../../../domain/models/assignmentInterfaces";
 
-interface AssignmentDetailProps {
-  id: number;
-}
+import { useParams } from "react-router-dom";
 
-const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ id }) => {
+const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  console.log(assignment);
+  const { id } = useParams();
+  const assignmentId = Number(id);
 
   useEffect(() => {
     // Fetch the assignment by its ID when the component mounts
-    fetchAssignmentUseCase(id)
+    fetchAssignmentUseCase(assignmentId)
       .then((fetchedAssignment) => {
         setAssignment(fetchedAssignment);
       })
       .catch((error) => {
         console.error("Error fetching assignment:", error);
       });
-  }, [id]); // The effect will re-run whenever the "id" prop changes
+  }, [assignmentId]); // The effect will re-run whenever the "id" prop changes
 
   return (
     <div>
