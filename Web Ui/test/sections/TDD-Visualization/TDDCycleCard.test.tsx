@@ -1,10 +1,10 @@
 import { render, fireEvent } from "@testing-library/react";
-import TDDCycleCard from "../../../../../src/sections/TDD-Visualization/TDDCycleCard";
-import { mockCommitData } from "../../../../__ mocks __/dataTypeMocks/commitData";
+import TDDCycleCard from "../../../src/sections/TDD-Visualization/TDDCycleCard";
+import { mockCommitData } from "./__ mocks __/dataTypeMocks/commitData";
 import {
   mockSuccessJobData,
   mockFailedJobData,
-} from "../../../../__ mocks __/dataTypeMocks/jobData";
+} from "./__ mocks __/dataTypeMocks/jobData";
 import "@testing-library/jest-dom";
 
 describe("CycleCard component", () => {

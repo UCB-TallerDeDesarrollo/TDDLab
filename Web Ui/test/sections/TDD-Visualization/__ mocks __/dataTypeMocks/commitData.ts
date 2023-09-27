@@ -1,4 +1,4 @@
-import { CommitDataObject } from "../../../src/TDD-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../../../../src/TDD-Visualization/domain/githubCommitInterfaces";
 
 export const mockCommitData: CommitDataObject = {
   sha: "mockSha",

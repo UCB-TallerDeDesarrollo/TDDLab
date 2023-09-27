@@ -4,8 +4,8 @@ import { JobDataObject } from "../domain/jobInterfaces";
 
 export class GetTDDCycles {
   adapter: GithubAPIRepository;
-  constructor(githubRepository: GithubAPIRepository) {
-    this.adapter = githubRepository;
+  constructor(githubAPIRepository: GithubAPIRepository) {
+    this.adapter = githubAPIRepository;
   }
 
   async obtainCommitsOfRepo(
@@ -36,7 +36,6 @@ export class GetTDDCycles {
       );
       jobs[workflowInfo[1]] = jobInfo;
     });
-    console.log(jobs);
 
     return jobs;
   }
