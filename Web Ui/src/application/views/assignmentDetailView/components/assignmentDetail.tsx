@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { fetchAssignmentUseCase } from '../useCases/fetchAssignmentAdapter';
-import { formatDate } from '../../../../application/utils/dateUtils';
+import React, { useEffect, useState } from "react";
+import { fetchAssignmentUseCase } from "../useCases/fetchAssignmentAdapter";
+import { formatDate } from "../../../../application/utils/dateUtils";
 // Import the AssignmentDataObject type
-import { AssignmentDataObject } from '../../../../domain/models/assignmentInterfaces';
+import { AssignmentDataObject } from "../../../../domain/models/assignmentInterfaces";
 
 interface AssignmentDetailProps {
   id: number;
 }
 
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ id }) => {
-  const [assignment, setAssignment] = useState<AssignmentDataObject | null>(null);
+  const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
+    null
+  );
+  console.log(assignment);
 
   useEffect(() => {
     // Fetch the assignment by its ID when the component mounts
     fetchAssignmentUseCase(id)
       .then((fetchedAssignment) => {
-        setAssignment(fetchedAssignment );
+        setAssignment(fetchedAssignment);
       })
       .catch((error) => {
-        console.error('Error fetching assignment:', error);
+        console.error("Error fetching assignment:", error);
       });
   }, [id]); // The effect will re-run whenever the "id" prop changes
-
 
   return (
     <div>
