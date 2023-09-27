@@ -35,7 +35,7 @@ function GestionTareas() {
         <Tareas mostrarFormulario={handleMostrarFormulario}  />
       </TareasContainer>
       <FormularioContainer>
-        {mostrarFormulario && <Formulario />}
+        {mostrarFormulario && <Formulario/>}
       </FormularioContainer>
     </GestionTareasContainer>
   );
