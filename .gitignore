@@ -66,3 +66,4 @@ node_modules/
 .env
 
 # dotenv db variables file
+./server/.env

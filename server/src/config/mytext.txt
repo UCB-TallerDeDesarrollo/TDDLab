@@ -1,0 +1,1 @@
+aqui van los archivos de configuración, como la configuración de la base de datos y la configuración del servidor.
