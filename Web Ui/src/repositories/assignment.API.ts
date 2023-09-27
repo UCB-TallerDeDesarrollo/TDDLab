@@ -30,12 +30,9 @@ export const fetchAssignments = async () => {
 // Define a function to fetch an assignment by its ID
 export const fetchAssignmentById = async (assignmentId: number): Promise<AssignmentDataObject | null> => {
   try {
-    console.log(assignmentId)
     // Send a GET request to fetch a specific assignment by ID
     const response = await axios.get(`${API_URL}/${assignmentId}`);
     
-    console.log('API Response:', response.status, response.data);
-
     // Check if the response status is successful (e.g., 200 OK)
     if (response.status === 200) {
       // Return the assignment data from the response

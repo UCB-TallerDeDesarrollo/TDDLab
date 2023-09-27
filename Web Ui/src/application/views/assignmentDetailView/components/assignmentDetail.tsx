@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchAssignmentUseCase } from "../useCases/fetchAssignmentAdapter";
 import { formatDate } from "../../../../application/utils/dateUtils";
-// Import the AssignmentDataObject type
 import { AssignmentDataObject } from "../../../../domain/models/assignmentInterfaces";
-
 import { useParams } from "react-router-dom";
 
 const AssignmentDetail: React.FC = () => {
@@ -22,7 +20,7 @@ const AssignmentDetail: React.FC = () => {
       .catch((error) => {
         console.error("Error fetching assignment:", error);
       });
-  }, [assignmentId]); // The effect will re-run whenever the "id" prop changes
+  }, [assignmentId]);
 
   return (
     <div>
@@ -30,8 +28,9 @@ const AssignmentDetail: React.FC = () => {
         <div>
           <h2>{assignment.title}</h2>
           <p>Descripcion: {assignment.description}</p>
-          <p>Fecha Inicio: {formatDate(assignment.start_date)}</p>
-          <p>End Date: {formatDate(assignment.end_date)}</p>
+          {/* Convert Date objects to strings using toISOString */}
+          <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
+          <p>End Date: {formatDate(assignment.end_date.toString())}</p>
           <p>State: {assignment.state}</p>
         </div>
       ) : (
