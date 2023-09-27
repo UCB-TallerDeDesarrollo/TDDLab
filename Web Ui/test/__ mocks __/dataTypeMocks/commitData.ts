@@ -1,7 +1,7 @@
-import { CommitDataObject } from "../../../src/domain/models/githubCommitInterfaces";
+import {  CommitInformationDataObject } from "../../../src/domain/models/githubCommitInterfaces";
 
 
-export const mockCommitData: CommitDataObject = {
+export const mockCommitData: CommitInformationDataObject = {
     sha: 'mockSha',
     node_id: 'mockNodeId',
     commit: {
@@ -35,4 +35,10 @@ export const mockCommitData: CommitDataObject = {
     author: null, 
     committer: null,
     parents: [],
+    stats: {
+      total: 5,
+      additions: 4,
+      deletions: 1
+    },
+    files: [],
   };
