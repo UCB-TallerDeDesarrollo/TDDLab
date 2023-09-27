@@ -6,15 +6,44 @@ import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Filter from "./datePicker";
+import { createAssignmentsUseCase } from '../../useCases/createAssingmentsAdapter';
 
 
 
 function Formulario() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [assignmentData, setAssignmentData] = useState({
+    id: 0, 
+    title: '',
+    description: '',
+    start_date: new Date(),
+    end_date: new Date(),
+    state: '',
 
-  const handleGuardarClick = () => {
-    setSuccessMessage('Cambios guardados con éxito');
+  });
+
+  const handleGuardarClick  = async () => {
+    try {
+      await createAssignmentsUseCase(assignmentData);
+
+      setSuccessMessage('Cambios guardados con éxito');
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = event.target;
+  
+    // If the input element's id matches a field in assignmentData, update it
+    if (id in assignmentData) {
+      setAssignmentData((prevData) => ({
+        ...prevData,
+        [id]: value,
+      }));
+    }
+  };
+
 
   return (
     <>
@@ -30,6 +59,8 @@ function Formulario() {
             variant="outlined"
             size="small"
             required
+            onChange={handleInputChange}
+
           />
           <TextField
             id="descripcion"
@@ -47,6 +78,7 @@ function Formulario() {
                 },
               },
             }}
+            onChange={handleInputChange}
           />
           <section>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -77,5 +109,6 @@ function Formulario() {
     </>
   );
 }
+
 
 export default Formulario;
