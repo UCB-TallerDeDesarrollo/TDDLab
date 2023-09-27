@@ -35,7 +35,6 @@ function Formulario() {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = event.target;
   
-    // If the input element's id matches a field in assignmentData, update it
     if (id in assignmentData) {
       setAssignmentData((prevData) => ({
         ...prevData,
@@ -58,8 +57,10 @@ function Formulario() {
             label="Titulo"
             variant="outlined"
             size="small"
+            
             required
             onChange={handleInputChange}
+            defaultValue={assignmentData.title}
 
           />
           <TextField
@@ -78,7 +79,9 @@ function Formulario() {
                 },
               },
             }}
+            
             onChange={handleInputChange}
+            defaultValue={assignmentData.description}
           />
           <section>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
