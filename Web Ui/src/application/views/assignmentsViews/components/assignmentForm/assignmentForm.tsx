@@ -18,7 +18,7 @@ function Formulario() {
     description: '',
     start_date: new Date(),
     end_date: new Date(),
-    state: '',
+    state: 'pending',
 
   });
 
