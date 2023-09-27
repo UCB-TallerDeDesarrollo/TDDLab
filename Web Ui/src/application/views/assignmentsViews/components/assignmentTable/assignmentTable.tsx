@@ -19,6 +19,7 @@ import { AssignmentDataObject } from "../../../../../domain/models/assignmentInt
 
 import { fetchAssignmentsUseCase } from "../../useCases/fetchAssignmentsApater"; // Import your fetchAssignments function\
 import { deleteAssignmentUseCase } from "../../useCases/deleteAssignmentAdapter";
+import { sendAssignemtUseCase } from "../../useCases/sendAssignmentsAdapter";
 
 const ButtonContainer = styled("div")({
   display: "flex",
@@ -66,6 +67,12 @@ function Tareas({ mostrarFormulario }: TareasProps) {
     deleteAssignmentUseCase(assignments[index].id);
     window.location.reload();
   };
+
+  const handleClickUpdate =(index:number) => {
+    setSelectedRow(index);
+    sendAssignemtUseCase(assignments[index].id);
+  };
+
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
@@ -111,7 +118,9 @@ function Tareas({ mostrarFormulario }: TareasProps) {
                     >
                       <DeleteIcon />
                     </IconButton>
-                    <IconButton aria-label="send">
+                    <IconButton aria-label="send"
+                      onClick={()=> handleClickUpdate(index)}
+                    >
                       <SendIcon />
                     </IconButton>
                   </ButtonContainer>
