@@ -32,15 +32,16 @@ function Formulario() {
     }
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = event.target;
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>,
+    field: string // 'title' or 'description'
+  ) => {
+    const { value } = event.target;
   
-    if (id in assignmentData) {
-      setAssignmentData((prevData) => ({
-        ...prevData,
-        [id]: value,
-      }));
-    }
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
   };
 
 
@@ -59,8 +60,8 @@ function Formulario() {
             size="small"
             
             required
-            onChange={handleInputChange}
-            defaultValue={assignmentData.title}
+            value={assignmentData.title}
+            onChange={(e) => handleInputChange(e, 'title')}
 
           />
           <TextField
@@ -80,7 +81,7 @@ function Formulario() {
               },
             }}
             
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e, 'description')}
             defaultValue={assignmentData.description}
           />
           <section>
