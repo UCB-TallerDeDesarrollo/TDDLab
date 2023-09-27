@@ -7,7 +7,9 @@
     "dev": "ts-node-dev src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "start": "node build/app.js"
+    "start": "node build/app.js",
+    "vercel-build": "echo hello"
+
   },
   "keywords": [],
   "author": "",

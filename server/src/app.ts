@@ -19,3 +19,4 @@ app.use('/api/assignments', assignmentsRouter);
 
 
 server(app, port);
+export default app;
