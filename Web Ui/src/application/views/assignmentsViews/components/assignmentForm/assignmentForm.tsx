@@ -6,15 +6,44 @@ import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Filter from "./datePicker";
+import { createAssignmentsUseCase } from '../../useCases/createAssingmentsAdapter';
 
 
 
-function Formulario2() {
+function Formulario() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [assignmentData, setAssignmentData] = useState({
+    id: 0, 
+    title: '',
+    description: '',
+    start_date: new Date(),
+    end_date: new Date(),
+    state: 'pending',
 
-  const handleGuardarClick = () => {
-    setSuccessMessage('Cambios guardados con éxito');
+  });
+
+  const handleGuardarClick  = async () => {
+    try {
+      await createAssignmentsUseCase(assignmentData);
+
+      setSuccessMessage('Cambios guardados con éxito');
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>,
+    field: string // 'title' or 'description'
+  ) => {
+    const { value } = event.target;
+  
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
 
   return (
     <>
@@ -29,7 +58,11 @@ function Formulario2() {
             label="Titulo"
             variant="outlined"
             size="small"
+            
             required
+            value={assignmentData.title}
+            onChange={(e) => handleInputChange(e, 'title')}
+
           />
           <TextField
             id="descripcion"
@@ -47,6 +80,9 @@ function Formulario2() {
                 },
               },
             }}
+            
+            onChange={(e) => handleInputChange(e, 'description')}
+            defaultValue={assignmentData.description}
           />
           <section>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -78,4 +114,5 @@ function Formulario2() {
   );
 }
 
-export default Formulario2;
+
+export default Formulario;
