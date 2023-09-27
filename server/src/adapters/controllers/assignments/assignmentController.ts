@@ -36,7 +36,7 @@ export const getAssignmentById = async (_req: Request, res: Response) => {
     const client = await pool.connect();
 
     // Query to retrieve all assignments from the 'assignments' table
-    const query = 'SELECT * FROM assignments WHERE id = $1 limit 1';
+    const query = 'SELECT * FROM assignments WHERE id = $1';
     const values = [_req.params.id];
 
     // Execute the query
