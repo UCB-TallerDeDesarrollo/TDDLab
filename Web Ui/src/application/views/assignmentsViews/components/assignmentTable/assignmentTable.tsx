@@ -120,6 +120,8 @@ function Tareas({ mostrarFormulario }: TareasProps) {
                     </IconButton>
                     <IconButton aria-label="send"
                       onClick={()=> handleClickUpdate(index)}
+                      onMouseEnter={() => handleRowHover(index)}
+                      onMouseLeave={() => handleRowHover(null)}
                     >
                       <SendIcon />
                     </IconButton>
