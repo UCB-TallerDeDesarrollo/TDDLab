@@ -1,12 +1,14 @@
 import { Octokit } from "octokit";
-import { CommitDataObject } from "../domain/models/githubCommitInterfaces";
+import { CommitDataObject, CommitInformationDataObject } from "../domain/models/githubCommitInterfaces";
 import { JobDataObject } from "../domain/models/jobInterfaces";
 
 
 export class GithubAdapter{
     octokit:Octokit
     constructor() {
-        this.octokit = new Octokit();
+        this.octokit = new Octokit({
+          //auth: '',
+        });
       }
       async obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]> {
         try {
@@ -102,6 +104,19 @@ export class GithubAdapter{
           throw error;
         }
       }
+
+      async obtainCommitsFromSha(owner: string, repoName: string, sha: string): Promise<CommitInformationDataObject> {
+        try {
+          const response = await this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`);
+
+          const commits: CommitInformationDataObject = response.data
+          return commits;
+        } catch (error) {
+          console.error('Error obtaining commits:', error);
+          throw error;
+        }
+      }
+
       async obtainRunsOfGithubActions(owner: string, repoName: string)
       {
         try {
