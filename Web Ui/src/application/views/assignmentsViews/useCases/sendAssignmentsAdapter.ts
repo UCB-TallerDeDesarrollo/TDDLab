@@ -7,7 +7,7 @@ export const sendAssignemtUseCase = async (assignmentId: number) => {
 
     if (foundAssignment !== null){
         foundAssignment.state = 'delivered'
-        return await updateAssignment(foundAssignment);
+        return await updateAssignment(assignmentId, foundAssignment);
     }
     else{
         throw new Error("No se encontro la tarea")

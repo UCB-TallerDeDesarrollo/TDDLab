@@ -57,13 +57,13 @@ export const createAssignment = async (assignmentData: AssignmentDataObject): Pr
   await axios.post(API_URL, assignmentData);
 };
 
-export const updateAssignment = async (assignmentData: AssignmentDataObject): Promise<void> => {
+export const updateAssignment = async (assignmentId:number, assignmentData: AssignmentDataObject): Promise<void> => {
   // Send a PUT request to update an assignment
   console.log(API_URL)
   console.log(assignmentData.id);
-  console.log(`${API_URL}/${assignmentData.id}`);
+  console.log(`${API_URL}/${assignmentId}`);
   
-  await axios.put(`${API_URL}/${assignmentData.id}`, assignmentData);
+  await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
 };
 
 export const deleteAssignment = async (assignmentId: number): Promise<void> => {
