@@ -12,13 +12,12 @@ function CycleReportView({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
   const repoName = "Bulls-and-Cows";
 
-  // const [commits, setCommits] = useState<CommitDataObject[] | null>(null);
   const [commitsInfo, setCommitsInfo] = useState<CommitInformationDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> | null>(null);
 
   const obtainJobsData = async () => {
     try {
-      console.log("Fetching commits dataAAAA...");
+      console.log("Fetching commits data...");
       const jobsData: Record<string, JobDataObject> = await port.obtainJobsData(repoOwner, repoName);
       setJobsByCommit(jobsData);
     } catch (error) {
@@ -26,25 +25,14 @@ function CycleReportView({ port }: CycleReportViewProps) {
     }
   };
 
-  // const obtainCommitsData = async () => {
-  //   try {
-  //     console.log("Fetching commits data...");
-  //     const commitsData = await port.obtainCommitsOfRepo(repoOwner, repoName);
-  //     setCommits(commitsData);
-  //   } catch (error) {
-  //     console.error('Error obtaining commits:', error);
-  //   }
-  // };
-
-  const obtainCommitsInfoData = async () => {
+  const obtainCommitsData = async () => {
     console.log("Fetching commit information...");
     try {
       const commits: CommitDataObject[] = await port.obtainCommitsOfRepo(repoOwner, repoName);
       if (commits) {
-        const sha = commits.map((commit) => commit.sha);
         console.log("Fetching commit information...");
         const commitsInfoData = await Promise.all(
-          sha.map((sha) => port.obtainCommitInformation(repoOwner, repoName, sha))
+          commits.map((commit) => port.obtainCommitInformation(repoOwner, repoName, commit.sha))
         );
         setCommitsInfo(commitsInfoData);
       }
@@ -56,8 +44,7 @@ function CycleReportView({ port }: CycleReportViewProps) {
   useEffect(() => {
     const fetchData = async () => {
       await obtainJobsData();
-      // await obtainCommitsData();
-      await obtainCommitsInfoData();
+      await obtainCommitsData();
     };
     fetchData();
   }, []);
