@@ -1,6 +1,6 @@
 import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
 import { JobDataObject } from '../../../../domain/models/jobInterfaces';
-import { Bar, Line, getElementsAtEvent, getElementAtEvent} from 'react-chartjs-2';
+import { Bar, Line, getElementAtEvent} from 'react-chartjs-2';
 import { useRef } from "react";
 
 import {
@@ -39,7 +39,7 @@ function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Re
             const commitsArray = commits.map((commit) => commits.indexOf(commit));
             return commitsArray;
         }else{
-            return ["Empty"];
+            return [];
         }
     }
 
@@ -209,7 +209,7 @@ function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Re
     };
 
     
-    const chartRef = useRef();
+    const chartRef = useRef<any>();
     const onClick = (event:any) =>{
         if (getElementAtEvent(chartRef.current,event).length > 0){
             const dataSetIndexNum = getElementAtEvent(chartRef.current,event)[0].datasetIndex;
