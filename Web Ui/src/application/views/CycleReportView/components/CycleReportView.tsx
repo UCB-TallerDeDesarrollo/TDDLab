@@ -3,7 +3,6 @@ import { TDDCyclesPort } from "../useCases/tddCycles.port";
 import CycleCard from "./CycleCard";
 import { JobDataObject } from "../../../../domain/models/jobInterfaces";
 import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
-import Charts from "./Charts";
 
 interface CycleReportViewProps {
   port: TDDCyclesPort | any;
