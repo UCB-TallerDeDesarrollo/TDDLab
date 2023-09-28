@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { TDDCyclesPort } from "../useCases/tddCycles.port";
-import CycleCard from "./CycleCard";
 import { JobDataObject } from "../../../../domain/models/jobInterfaces";
 import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
 import Charts from "./Charts";
@@ -9,7 +8,7 @@ interface CycleReportViewProps {
   port: TDDCyclesPort | any;
 }
 
-function CycleReportView({ port }: CycleReportViewProps) {
+function ChartsView({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
   const repoName = "Bulls-and-Cows";
 
@@ -51,15 +50,7 @@ function CycleReportView({ port }: CycleReportViewProps) {
   }, []);
 
   console.log("Commits Info:", commitsInfo);
-
-  return (
-    <>
-      <h1>Repository: {repoName}</h1>
-      {jobsByCommit != null && commitsInfo != null && commitsInfo.map((commit) => (
-        <CycleCard key={commit.sha} commit={commit} jobs={jobsByCommit[commit.sha]} />
-      ))}
-    </>
-  );
+  return Charts(commitsInfo,jobsByCommit);
 }
 
-export default CycleReportView;
+export default ChartsView;
