@@ -7,7 +7,6 @@ export class GithubAdapter{
     octokit:Octokit
     constructor() {
         this.octokit = new Octokit({
-          auth: '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',
         });
       }
       async obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]> {
