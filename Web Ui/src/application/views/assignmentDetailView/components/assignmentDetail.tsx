@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { fetchAssignmentUseCase } from '../useCases/fetchAssignmentAdapter';
-import { formatDate } from '../../../../application/utils/dateUtils';
-// Import the AssignmentDataObject type
-import { AssignmentDataObject } from '../../../../domain/models/assignmentInterfaces';
+import React, { useEffect, useState } from "react";
+import { fetchAssignmentUseCase } from "../useCases/fetchAssignmentAdapter";
+import { formatDate } from "../../../../application/utils/dateUtils";
+import { AssignmentDataObject } from "../../../../domain/models/assignmentInterfaces";
+import { useParams } from "react-router-dom";
 
-interface AssignmentDetailProps {
-  id: number;
-}
-
-const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ id }) => {
-  const [assignment, setAssignment] = useState<AssignmentDataObject | null>(null);
+const AssignmentDetail: React.FC = () => {
+  const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
+    null
+  );
+  const { id } = useParams();
+  const assignmentId = Number(id);
 
   useEffect(() => {
     // Fetch the assignment by its ID when the component mounts
-    fetchAssignmentUseCase(id)
+    fetchAssignmentUseCase(assignmentId)
       .then((fetchedAssignment) => {
-        setAssignment(fetchedAssignment );
+        setAssignment(fetchedAssignment);
       })
       .catch((error) => {
-        console.error('Error fetching assignment:', error);
+        console.error("Error fetching assignment:", error);
       });
-  }, [id]); // The effect will re-run whenever the "id" prop changes
-
+  }, [assignmentId]);
 
   return (
     <div>
@@ -29,8 +28,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ id }) => {
         <div>
           <h2>{assignment.title}</h2>
           <p>Descripcion: {assignment.description}</p>
-          <p>Fecha Inicio: {formatDate(assignment.start_date)}</p>
-          <p>End Date: {formatDate(assignment.end_date)}</p>
+          {/* Convert Date objects to strings using toISOString */}
+          <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
+          <p>End Date: {formatDate(assignment.end_date.toString())}</p>
           <p>State: {assignment.state}</p>
         </div>
       ) : (

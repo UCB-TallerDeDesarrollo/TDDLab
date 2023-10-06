@@ -36,3 +36,15 @@
   .commit-link:hover {
     background-color: #0056b3;
   }
+
+  .commit-stats {
+    width: 150px;
+    color: white;
+    background-color: orange;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px;
+    background-clip: content-box;
+  }
+  
