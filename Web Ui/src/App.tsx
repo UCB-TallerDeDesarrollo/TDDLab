@@ -9,10 +9,11 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<GestionTareas />} />
-        <Route path="/assignment/:id" element={<AssignmentDetail id={1} />} />
-        <Route path="/graph" element={<CycleReportView port={new TDDCyclesPort()} />} />
-
-
+        <Route path="/assignment/:id" element={<AssignmentDetail />} />
+        <Route
+          path="/graph"
+          element={<CycleReportView port={new TDDCyclesPort()} />}
+        />
       </Routes>
     </Router>
   );
