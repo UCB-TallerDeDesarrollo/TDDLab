@@ -1,7 +1,7 @@
 import axios from 'axios'; // Import Axios or your preferred HTTP library
 import { AssignmentDataObject } from '../domain/models/assignmentInterfaces'; // Import your assignment model
 
-const API_URL = 'https://tdd-lab-bvs2voy73-tddlabs-projects.vercel.app/api/assignments';
+const API_URL = 'https://tdd-lab-l5qeq6v9r-tddlabs-projects.vercel.app/api/assignments';
 
 // Define a function to fetch assignments
 export const fetchAssignments = async () => {
@@ -57,9 +57,13 @@ export const createAssignment = async (assignmentData: AssignmentDataObject): Pr
   await axios.post(API_URL, assignmentData);
 };
 
-export const updateAssignment = async (assignmentData: AssignmentDataObject): Promise<void> => {
+export const updateAssignment = async (assignmentId:number, assignmentData: AssignmentDataObject): Promise<void> => {
   // Send a PUT request to update an assignment
-  await axios.put(`${API_URL}/${assignmentData.id}`, assignmentData);
+  console.log(API_URL)
+  console.log(assignmentData.id);
+  console.log(`${API_URL}/${assignmentId}`);
+  
+  await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
 };
 
 export const deleteAssignment = async (assignmentId: number): Promise<void> => {

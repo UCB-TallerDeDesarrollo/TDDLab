@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "check-node-version": "^4.2.1"
+  }
+}

@@ -3,14 +3,25 @@ import { DatePicker } from '@mui/x-date-pickers';
 import React from 'react';
 import dayjs from 'dayjs';
 
-export const Filter = () => {
-  const [dataForm, setDataForm] = React.useState<{
-    dateFrom: Date | null;
-    dateTo: Date | null;
-  }>({
+interface FilterProps {
+  onUpdateDates: (newStartDate: Date, newEndDate: Date ) => void;
+}
+
+const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
+  const [dataForm, setDataForm] = React.useState({
     dateFrom: new Date(),
     dateTo: new Date(),
   });
+
+  const handleDateFromChange = (newValue: any) => {
+    setDataForm({ ...dataForm, dateFrom: newValue });
+    onUpdateDates(newValue, dataForm.dateTo);
+  };
+
+  const handleDateToChange = (newValue: any) => {
+    setDataForm({ ...dataForm, dateTo: newValue });
+    onUpdateDates(dataForm.dateFrom, newValue);
+  };
 
   return (
     <div style={{ marginBottom: '1px' }}>
@@ -19,9 +30,7 @@ export const Filter = () => {
           <DatePicker
             label='Fecha de asignacion:'
             value={dataForm.dateFrom}
-            onChange={(newValue) => {
-              setDataForm({ ...dataForm, dateFrom: newValue });
-            }}
+            onChange={handleDateFromChange}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -37,9 +46,7 @@ export const Filter = () => {
             label='Fecha de entrega'
             minDate={dataForm.dateFrom}
             value={dataForm.dateTo}
-            onChange={(newValue) => {
-              setDataForm({ ...dataForm, dateTo: newValue });
-            }}
+            onChange={handleDateToChange}
             renderInput={(params) => (
               <TextField
                 {...params}
