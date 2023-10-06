@@ -19,4 +19,15 @@ export class commitRepository{
         client.release();
         return result.rows
     }
+    async getCommitsOfRepo(owner:String, repoName:String) {
+        const client = await this.pool.connect();
+        
+        const query = 'SELECT * FROM commitsTable WHERE owner = $1 AND reponame = $2';
+        const values = [owner, repoName];
+      
+        const result = await client.query(query, values);
+        
+        client.release();
+        return result.rows;
+      }
 }
