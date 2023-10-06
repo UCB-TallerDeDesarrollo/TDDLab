@@ -1,0 +1,1 @@
+aqui van las clases de errores personalizados que pueden ser utilizadas en toda la aplicación.
