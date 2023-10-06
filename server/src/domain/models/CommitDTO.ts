@@ -10,6 +10,7 @@ export interface Stats {
     deletions: number; 
 }
 export interface Commit {
+    date:  Date;
     message:       string;
     url:           string;
     comment_count: number;
