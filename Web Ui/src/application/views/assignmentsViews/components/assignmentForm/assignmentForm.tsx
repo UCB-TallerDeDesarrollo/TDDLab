@@ -12,12 +12,14 @@ import { createAssignmentsUseCase } from '../../useCases/createAssingmentsAdapte
 
 function Formulario() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+
   const [assignmentData, setAssignmentData] = useState({
     id: 0, 
     title: '',
     description: '',
     start_date: new Date(),
-    end_date: new Date(),
+    end_date: new Date(), 
     state: 'pending',
 
   });
@@ -32,6 +34,13 @@ function Formulario() {
     }
   };
 
+  const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      start_date: newStartDate,
+      end_date: newEndDate,
+    }));
+  };
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>,
     field: string // 'title' or 'description'
@@ -86,7 +95,7 @@ function Formulario() {
           />
           <section>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Filter />
+            <Filter onUpdateDates={handleUpdateDates} />
             </LocalizationProvider>
           </section>
           <Stack direction="row" spacing={2}>
