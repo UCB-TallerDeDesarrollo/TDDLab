@@ -6,7 +6,8 @@ import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-V
 import TDDCharts from "./TDDChart";
 
 interface CycleReportViewProps {
-    port: GithubAPIAdapter | any;
+    commitsInfo: CommitInformationDataObject[] | null;
+    jobsByCommit: Record<string, JobDataObject> | null;
 }
   
 

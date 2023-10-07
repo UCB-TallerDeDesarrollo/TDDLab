@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { GetTDDCycles } from "../../TDDCycles-Visualization/application/GetTDDCycles";
 import { GithubAPIAdapter } from "../../TDDCycles-Visualization/repository/GithubAPIAdapter";
-import TDDCycleCard from "./TDDCycleCard";
+import TDDChartsView from "./TDDChartsView";
+import TDDCycleList from "./TDDCycleList";
 import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 
 interface CycleReportViewProps {
-  commitsInfo: CommitInformationDataObject[] | null;
-  jobsByCommit: Record<string, JobDataObject> | null;
+  port: GithubAPIAdapter | any;
 }
 
-function TDDCycleList({ commitsInfo,jobsByCommit }: CycleReportViewProps) {
+function TDDChartPage({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
   const repoName = "Bulls-and-Cows";
 
+  const [commitsInfo, setCommitsInfo] = useState<CommitInformationDataObject[] | null>(null);
+  const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> | null>(null);
 
   const getTDDCycles = new GetTDDCycles(port);
 
@@ -51,16 +53,13 @@ function TDDCycleList({ commitsInfo,jobsByCommit }: CycleReportViewProps) {
     fetchData();
   }, []);
 
-  console.log("Commits Info:", commitsInfo);
-
   return (
-    <>
+    <div>
       <h1>Repository: {repoName}</h1>
-      {jobsByCommit != null && commitsInfo != null && commitsInfo.map((commit) => (
-        <TDDCycleCard key={commit.sha} commit={commit} jobs={jobsByCommit[commit.sha]} />
-      ))}
-    </>
+      <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+      <TDDChartsView commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+    </div>
   );
 }
 
-export default TDDCycleList;
+export default TDDChartPage;
