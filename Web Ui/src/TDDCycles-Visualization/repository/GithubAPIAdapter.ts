@@ -6,7 +6,7 @@ import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
   constructor() {
-    this.octokit = new Octokit();
+    this.octokit = new Octokit({auth: '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'});
   }
   async obtainCommitsOfRepo(
     owner: string,
