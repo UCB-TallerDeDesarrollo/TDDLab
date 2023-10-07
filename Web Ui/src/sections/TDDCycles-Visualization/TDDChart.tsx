@@ -1,6 +1,6 @@
 import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from '../../TDDCycles-Visualization/domain/jobInterfaces';
-import { Bar, Line, getElementAtEvent} from 'react-chartjs-2';
+import { Line, getElementAtEvent} from 'react-chartjs-2';
 import { useRef } from "react";
 
 import {
@@ -84,25 +84,6 @@ function TDDCharts(commits: CommitInformationDataObject[] | null,  jobsByCommit:
         }
     }
 
-    const dataBarChart = {
-        labels: getDataLabels(),
-        datasets: [{
-                        label: 'Lineas de Código Añadidas',
-                        backgroundColor: "green",
-                        data: getCommitStats()[0],
-                        links:getCommitLink(),
-                        fill:false
-                    },
-                    {
-                        label: 'Lineas de Código Eliminadas',
-                        backgroundColor: "red",
-                        data: getCommitStats()[1],
-                        links:getCommitLink(),
-                        fill:false
-                    }
-                ]
-    };
-
     const dataLineChart = {
         labels: getDataLabels(),
         datasets: [{
@@ -111,70 +92,6 @@ function TDDCharts(commits: CommitInformationDataObject[] | null,  jobsByCommit:
                         data: getCommitStats()[2],
                         links:getCommitLink()
                 }]
-    };
-
-
-    const optionsBarChartVertical = {
-        responsive : true,
-        barThickness: 20,
-        scales:{
-            x:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Commits realizados",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            },
-            y:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Líneas de Código Modificadas",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            }
-        },
-    };
-
-    const optionsBarChartHorizontal = {
-        indexAxis: 'y' as const,
-        responsive : true,
-        barThickness: 15,
-        scales:{
-            x:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Líneas de Código Modificadas",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            },
-            y:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Commits realizados",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            }
-        },
     };
 
     const optionsLineChart = {
@@ -222,10 +139,6 @@ function TDDCharts(commits: CommitInformationDataObject[] | null,  jobsByCommit:
 
     return (
         <>
-            <h1>Gráfico de Barras Vertical</h1>
-            <Bar height="100" data={dataBarChart} options={optionsBarChartVertical} onClick={onClick} ref={chartRef}/>
-            <h1>Gráfico de Barras Horizontak</h1>
-            <Bar height="200" data={dataBarChart} options={optionsBarChartHorizontal} onClick={onClick} ref={chartRef}/>
             <h1>Gráfico de Lineas y puntos</h1>
             <Line height="100" data={dataLineChart} options={optionsLineChart} onClick={onClick} ref={chartRef}/>
         </>
