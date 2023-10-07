@@ -3,7 +3,7 @@ import GestionTareas from "./application/views/assignmentsViews/components/assig
 import AssignmentDetail from "./application/views/assignmentDetailView/components/assignmentDetail";
 import TDDCycleList from "./sections/TDDCycles-Visualization/TDDCycleList";
 import {GithubAPIAdapter} from "./TDDCycles-Visualization/repository/GithubAPIAdapter";//Revisar el cambio por puerto
-import ChartsView from "./application/views/CycleReportView/components/ChartsView";
+import TDDChartsView from "./sections/TDDCycles-Visualization/TDDChartsView";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         />
         <Route
           path="/bar"
-          element={<ChartsView port={new GithubAPIAdapter()} />}
+          element={<TDDChartsView port={new GithubAPIAdapter()} />}
         />
       </Routes>
     </Router>
