@@ -1,5 +1,5 @@
-import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
-import { JobDataObject } from '../../../../domain/models/jobInterfaces';
+import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { JobDataObject } from '../../TDDCycles-Visualization/domain/jobInterfaces';
 import { Bar, Line, getElementAtEvent} from 'react-chartjs-2';
 import { useRef } from "react";
 
@@ -32,7 +32,7 @@ ChartJS.register(
 );
 
 
-function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Record<string, JobDataObject> | null) {
+function TDDCharts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Record<string, JobDataObject> | null) {
     
     function getDataLabels(){
         if (commits!=null){
@@ -232,4 +232,4 @@ function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Re
       );
 }
 
-export default Charts;
+export default TDDCharts;

@@ -1,24 +1,27 @@
 import { useEffect, useState } from "react";
-import { TDDCyclesPort } from "../useCases/tddCycles.port";
-import CycleCard from "./CycleCard";
-import { JobDataObject } from "../../../../domain/models/jobInterfaces";
-import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
+import { GetTDDCycles } from "../../TDDCycles-Visualization/application/GetTDDCycles";
+import { GithubAPIAdapter } from "../../TDDCycles-Visualization/repository/GithubAPIAdapter";
+import TDDCycleCard from "./TDDCycleCard";
+import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
+import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 
 interface CycleReportViewProps {
-  port: TDDCyclesPort | any;
+  port: GithubAPIAdapter | any;
 }
 
-function CycleReportView({ port }: CycleReportViewProps) {
+function TDDCycleList({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
   const repoName = "Bulls-and-Cows";
 
   const [commitsInfo, setCommitsInfo] = useState<CommitInformationDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> | null>(null);
 
+  const getTDDCycles = new GetTDDCycles(port);
+
   const obtainJobsData = async () => {
     try {
       console.log("Fetching commits data...");
-      const jobsData: Record<string, JobDataObject> = await port.obtainJobsData(repoOwner, repoName);
+      const jobsData: Record<string, JobDataObject> = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       setJobsByCommit(jobsData);
     } catch (error) {
       console.error('Error obtaining jobs:', error);
@@ -28,11 +31,11 @@ function CycleReportView({ port }: CycleReportViewProps) {
   const obtainCommitsData = async () => {
     console.log("Fetching commit information...");
     try {
-      const commits: CommitDataObject[] = await port.obtainCommitsOfRepo(repoOwner, repoName);
+      const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       if (commits) {
         console.log("Fetching commit information...");
         const commitsInfoData: CommitInformationDataObject[] = await Promise.all(
-          commits.map((commit) => port.obtainCommitInformation(repoOwner, repoName, commit.sha))
+          commits.map((commit) => getTDDCycles.obtainCommitInformation(repoOwner, repoName, commit.sha))
         );
         setCommitsInfo(commitsInfoData);
       }
@@ -55,10 +58,10 @@ function CycleReportView({ port }: CycleReportViewProps) {
     <>
       <h1>Repository: {repoName}</h1>
       {jobsByCommit != null && commitsInfo != null && commitsInfo.map((commit) => (
-        <CycleCard key={commit.sha} commit={commit} jobs={jobsByCommit[commit.sha]} />
+        <TDDCycleCard key={commit.sha} commit={commit} jobs={jobsByCommit[commit.sha]} />
       ))}
     </>
   );
 }
 
-export default CycleReportView;
+export default TDDCycleList;
