@@ -1,7 +1,7 @@
 import { Octokit } from "octokit";
 import { CommitDataObject, CommitInformationDataObject } from "../domain/githubCommitInterfaces";
 import { JobDataObject } from "../domain/jobInterfaces";
-import { GithubAPIRepository } from "../domain/GithubAPIRepository";
+import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
@@ -140,7 +140,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       throw error;
     }
   }
-  
+
   async obtainJobsOfACommit(
     owner: string,
     repoName: string,

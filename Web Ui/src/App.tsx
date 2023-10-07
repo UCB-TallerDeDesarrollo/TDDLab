@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import GestionTareas from "./application/views/assignmentsViews/components/assignmentManager";
 import AssignmentDetail from "./application/views/assignmentDetailView/components/assignmentDetail";
 import CycleReportView from "./application/views/CycleReportView/components/CycleReportView";
-import {GithubAPIAdapter} from "./TDDCycles-Visualization/repository/GithubAPIAdapter";
+import {GithubAPIAdapter} from "./TDDCycles-Visualization/repository/GithubAPIAdapter";//Revisar el cambio por puerto
 import ChartsView from "./application/views/CycleReportView/components/ChartsView";
 
 function App() {
