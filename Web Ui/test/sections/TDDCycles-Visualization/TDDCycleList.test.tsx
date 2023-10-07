@@ -10,7 +10,7 @@ describe('CycleReport View tests', () => {
     render(<TDDCycleList port={mockPort} />);
 
     await waitFor(() => {
-      expect(mockPort.obtainJobsOfACommit).toHaveBeenCalled();
+      expect(mockPort.obtainRunsOfGithubActions).toHaveBeenCalled();
       expect(mockPort.obtainCommitsOfRepo).toHaveBeenCalled();
       expect(mockPort.obtainCommitsFromSha).toHaveBeenCalled();
     });
