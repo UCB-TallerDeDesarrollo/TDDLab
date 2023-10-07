@@ -10,7 +10,7 @@ interface CycleReportViewProps {
 }
   
 
-function ChartsView({ port }: CycleReportViewProps) {
+function TDDChartsView({ port }: CycleReportViewProps) {
     const repoOwner = "DwijanX";
     const repoName = "Bulls-and-Cows";
 
@@ -57,4 +57,4 @@ function ChartsView({ port }: CycleReportViewProps) {
     return TDDCharts(commitsInfo,jobsByCommit);
 }
 
-export default ChartsView;
+export default TDDChartsView;
