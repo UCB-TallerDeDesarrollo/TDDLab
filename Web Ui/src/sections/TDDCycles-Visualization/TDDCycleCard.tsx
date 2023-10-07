@@ -1,6 +1,6 @@
 import { CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
-import "../styles/cycleCard.css"
+import "../../assets/styles/TDDCycleCard.css"
 
 interface CycleReportViewProps {
     commit: CommitInformationDataObject;
