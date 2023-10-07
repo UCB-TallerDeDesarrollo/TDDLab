@@ -7,7 +7,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
   constructor() {
     this.octokit = new Octokit({
-        //auth: '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'
+        auth: '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'
     });
   }
   async obtainCommitsOfRepo(
