@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+
 import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
-import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 import TDDCharts from "./TDDChart";
 
 interface CycleReportViewProps {
