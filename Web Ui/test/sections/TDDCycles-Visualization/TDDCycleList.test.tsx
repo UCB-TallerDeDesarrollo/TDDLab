@@ -1,20 +1,25 @@
-/*import {  render,waitFor } from '@testing-library/react';
+import {  render} from '@testing-library/react';
 import TDDCycleList from '../../../src/sections/TDDCycles-Visualization/TDDCycleList';
-import { MockGithubAPI } from './__mocks__/MocksGithubAPI';*/
+import { mockCommitInfoData } from './__mocks__/dataTypeMocks/commitData';
+import { mockSuccessJobData} from './__mocks__/dataTypeMocks/jobData';
 import '@testing-library/jest-dom';
 
-describe('CycleReport View tests', () => {
+describe('TDDCycleList Component', () => {
+  test('renders a list of cycle cards when provided with commits and jobs data', () => {
+    const commitsInfo = [mockCommitInfoData];
+    const jobsByCommit = {
+      [mockCommitInfoData.sha]: mockSuccessJobData,
+    };
 
-  test('checks if Port is being used', async () => {
+    render(<TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />);
+    const cycleCards = document.getElementsByClassName('cycleCardContainer');
+    expect(cycleCards.length).toBeGreaterThanOrEqual(1);
 
-    
-    /*render(<TDDCycleList port={mockPort} />);
+  });
 
-    await waitFor(() => {
-      expect(mockPort.obtainRunsOfGithubActions).toHaveBeenCalled();
-      expect(mockPort.obtainCommitsOfRepo).toHaveBeenCalled();
-      expect(mockPort.obtainCommitsFromSha).toHaveBeenCalled();
-    });*/
-    expect(true).toBe(true);
+  test('renders nothing when provided with no commits and jobs data', () => {
+    render(<TDDCycleList commitsInfo={null} jobsByCommit={null} />);
+    const cycleCards = document.getElementsByClassName('cycleCardContainer');
+    expect(cycleCards.length).toBe(0);
   });
 });
