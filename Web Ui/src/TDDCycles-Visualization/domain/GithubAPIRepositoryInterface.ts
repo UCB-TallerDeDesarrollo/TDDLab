@@ -13,7 +13,9 @@ export interface GithubAPIRepository {
     sha: string
   ): Promise<CommitInformationDataObject>;
 
-  obtainRunsOfGithubActions(owner: string, repoName: string): any;
+  obtainRunsOfGithubActions(
+    owner: string, 
+    repoName: string): any;
 
   obtainJobsOfACommit(
     owner: string,

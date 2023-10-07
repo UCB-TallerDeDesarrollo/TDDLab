@@ -1,4 +1,4 @@
-import { GithubAPIRepository } from "../domain/GithubAPIRepository";
+import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { CommitDataObject, CommitInformationDataObject } from "../domain/githubCommitInterfaces";
 import { JobDataObject } from "../domain/jobInterfaces";
 
