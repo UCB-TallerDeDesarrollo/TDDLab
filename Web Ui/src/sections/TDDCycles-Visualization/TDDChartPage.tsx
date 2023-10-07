@@ -5,6 +5,8 @@ import TDDChartsView from "./TDDChartsView";
 import TDDCycleList from "./TDDCycleList";
 import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import "./styles/TDDChartPageStyles.css"
+
 
 interface CycleReportViewProps {
   port: GithubAPIAdapter | any;
@@ -16,6 +18,12 @@ function TDDChartPage({ port }: CycleReportViewProps) {
 
   const [commitsInfo, setCommitsInfo] = useState<CommitInformationDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> | null>(null);
+
+  const [showCycleList, setShowCycleList] = useState(true);
+
+  const handleSwitchButtonClick = () => {
+    setShowCycleList(!showCycleList);
+  };
 
   const getTDDCycles = new GetTDDCycles(port);
 
@@ -54,10 +62,23 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   }, []);
 
   return (
-    <div>
-      <h1>Repository: {repoName}</h1>
-      <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
-      <TDDChartsView commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+    <div className="container">
+      <div className="center-content">
+        <button className="myButton" onClick={handleSwitchButtonClick}>
+          Switch Chart View
+        </button>
+      </div>
+      {showCycleList ? (
+        <div className="tdd-cycle-list">
+          <h1>Repository: {repoName}</h1>
+          <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+        </div>
+      ) : (
+        <div className="tdd-charts-view">
+          <h1>Repository: {repoName}</h1>
+          <TDDChartsView commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+        </div>
+      )}
     </div>
   );
 }
