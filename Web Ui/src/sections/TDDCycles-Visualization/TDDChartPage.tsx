@@ -51,8 +51,9 @@ function TDDChartPage({ port }: CycleReportViewProps) {
 
   useEffect(() => {
     const fetchData = async () => {
-      //uncomment method when port is updated
-      //await obtainJobsData();
+      await obtainJobsData();
+      
+      //delete next line when port is updated
       setJobsByCommit({});
       await obtainCommitsData();
     };
