@@ -1,14 +1,14 @@
 import {  render} from '@testing-library/react';
 import TDDCycleList from '../../../src/sections/TDDCycles-Visualization/TDDCycleList';
-import { mockCommitInfoData } from './__mocks__/dataTypeMocks/commitData';
+import { mockCommitData } from './__mocks__/dataTypeMocks/commitData';
 import { mockSuccessJobData} from './__mocks__/dataTypeMocks/jobData';
 import '@testing-library/jest-dom';
 
 describe('TDDCycleList Component', () => {
   test('renders a list of cycle cards when provided with commits and jobs data', () => {
-    const commitsInfo = [mockCommitInfoData];
+    const commitsInfo = [mockCommitData];
     const jobsByCommit = {
-      [mockCommitInfoData.sha]: mockSuccessJobData,
+      [mockCommitData.sha]: mockSuccessJobData,
     };
 
     render(<TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />);

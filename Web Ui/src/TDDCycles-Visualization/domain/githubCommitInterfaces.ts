@@ -71,15 +71,7 @@ export interface GithubAuthor {
     site_admin:          boolean;
 }
 
-export interface Commit {
-    author:        CommitAuthor;
-    committer:     CommitAuthor;
-    message:       string;
-    tree:          Tree;
-    url:           string;
-    comment_count: number;
-    verification:  Verification;
-}
+
 
 export interface CommitAuthor {
     name:  string;

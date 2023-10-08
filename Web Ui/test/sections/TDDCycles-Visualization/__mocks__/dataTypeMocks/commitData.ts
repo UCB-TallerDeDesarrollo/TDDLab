@@ -1,47 +1,13 @@
-import { CommitDataObject, CommitInformationDataObject } from "../../../../../src/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../../../../src/TDDCycles-Visualization/domain/githubCommitInterfaces";
 
 export const mockCommitData: CommitDataObject = {
-  sha: 'mockSha',
-  node_id: 'mockNodeId',
+  html_url: "https://github.com/user2/repo2/commit/1234",
+  sha: "98765abcdef",
+  stats: { total: 5, additions: 4, deletions: 1 },
   commit: {
-    author: {
-      name: 'Mock Author',
-      email: 'author@example.com',
-      date: new Date('2023-09-13T12:00:00Z'),
-    },
-    committer: {
-      name: 'Mock Committer',
-      email: 'committer@example.com',
-      date: new Date('2023-09-13T12:00:00Z'),
-    },
-    message: 'Mock commit message',
-    tree: {
-      sha: 'mockTreeSha',
-      url: 'mockTreeUrl',
-    },
-    url: 'mockCommitUrl',
-    comment_count: 0,
-    verification: {
-      verified: false,
-      reason: 'unsigned',
-      signature: null,
-      payload: null,
-    },
+    date: new Date("2023-10-07T09:45:00.000Z"),
+    message: "Commit Mock commit message",
+    url: "https://github.com/user2/repo2/commit/98765",
+    comment_count: 2,
   },
-  url: 'mockUrl',
-  html_url: 'mockHtmlUrl',
-  comments_url: 'mockCommentsUrl',
-  author: null,
-  committer: null,
-  parents: [],
-};
-
-export const mockCommitInfoData: CommitInformationDataObject = {
-  ...mockCommitData,
-  stats: {
-    total: 5,
-    additions: 4,
-    deletions: 1,
-  },
-  files: [],
 };
