@@ -13,7 +13,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       auth: 'coloca tu token github para mas requests'
   }*/
   );
-  this.backAPI="https:/tdd-lab-api-gold.vercel.app/api"
+  this.backAPI="http://localhost:3000/api"
   }
   
   async obtainCommitsOfRepo(
@@ -67,26 +67,25 @@ export class GithubAPIAdapter implements GithubAPIRepository {
     }
   }
 
-  async obtainJobsOfACommit(
-    owner: string,
-    repoName: string,
-    jobId: number,
-    attempt: number
-  ) {
-    try {
-      const response = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/actions/runs/${jobId}/attempts/${attempt}/jobs`
-      );
-      const { total_count, jobs } = response.data;
 
-      const jobData: JobDataObject = {
-        total_count,
-        jobs,
-      };
-      return jobData;
+  async obtainJobsOfRepo(owner: string, repoName: string): Promise<JobDataObject[]> {
+    try {
+      const response = await axios.get(`${this.backAPI}/jobs`, {
+        params: { owner, repoName }
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const jobs: JobDataObject[] = response.data.map((jobData: any) => ({
+        sha: jobData.sha,
+        conclusion: jobData.conclusion
+      }));
+
+      return jobs;
     } catch (error) {
-      // Handle any errors here
-      console.error("Error obtaining job:", error);
+      console.error("Error obtaining jobs:", error);
       throw error;
     }
   }
