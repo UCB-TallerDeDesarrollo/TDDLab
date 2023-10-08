@@ -12,10 +12,8 @@ export interface GithubAPIRepository {
     owner: string, 
     repoName: string): any;
 
-  obtainJobsOfACommit(
+  obtainJobsOfRepo(
     owner: string,
     repoName: string,
-    jobId: number,
-    attempt: number
-  ): any;
+  ): any;
 }

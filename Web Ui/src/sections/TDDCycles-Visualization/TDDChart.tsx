@@ -32,7 +32,7 @@ ChartJS.register(
 );
 
 
-function TDDCharts(commits: CommitDataObject[] | null,  jobsByCommit: Record<string, JobDataObject> | null) {
+function TDDCharts(commits: CommitDataObject[] | null,  jobsByCommit: JobDataObject[] | null) {
     
     function getDataLabels(){
         if (commits!=null){
@@ -44,8 +44,11 @@ function TDDCharts(commits: CommitDataObject[] | null,  jobsByCommit: Record<str
     }
 
     const getBarStyle = (commit:CommitDataObject) => {
-        if (jobsByCommit != null && jobsByCommit[commit.sha] != null) {
-            if (jobsByCommit[commit.sha].jobs[0].conclusion === 'success') {
+        
+        if (jobsByCommit != null) {
+            const job  = jobsByCommit.find(job => job.sha === commit.sha)
+            console.log("TEST",job )
+            if (job != null && job.conclusion === 'success') {
                 return "green";
             } else {
                 return "red";

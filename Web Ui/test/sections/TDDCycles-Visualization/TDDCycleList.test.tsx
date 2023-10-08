@@ -7,9 +7,7 @@ import '@testing-library/jest-dom';
 describe('TDDCycleList Component', () => {
   test('renders a list of cycle cards when provided with commits and jobs data', () => {
     const commitsInfo = [mockCommitData];
-    const jobsByCommit = {
-      [mockCommitData.sha]: mockSuccessJobData,
-    };
+    const jobsByCommit = [mockSuccessJobData]
 
     render(<TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />);
     const cycleCards = document.getElementsByClassName('cycleCardContainer');

@@ -17,7 +17,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const repoName = "test";
 
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
-  const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> | null>(null);
+  const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
 
   const [showCycleList, setShowCycleList] = useState(true);
 
@@ -30,7 +30,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const obtainJobsData = async () => {
     try {
       console.log("Fetching commits data...");
-      const jobsData: Record<string, JobDataObject> = await getTDDCycles.obtainJobsData(repoOwner, repoName);
+      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       setJobsByCommit(jobsData);
     } catch (error) {
       console.error('Error obtaining jobs:', error);
@@ -52,9 +52,6 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   useEffect(() => {
     const fetchData = async () => {
       await obtainJobsData();
-      
-      //delete next line when port is updated
-      setJobsByCommit({});
       await obtainCommitsData();
     };
     fetchData();
@@ -70,7 +67,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
       {showCycleList ? (
         <div className="tdd-cycle-list">
           <h1>Repository: {repoName}</h1>
-          <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={{}} />
+          <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
         </div>
       ) : (
         <div className="tdd-charts-view">
