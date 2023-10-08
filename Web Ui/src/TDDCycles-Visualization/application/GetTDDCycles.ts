@@ -1,8 +1,8 @@
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
-import { CommitDataObject, CommitInformationDataObject } from "../domain/githubCommitInterfaces";
+import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { JobDataObject } from "../domain/jobInterfaces";
 
-export class GetTDDCycles {
+export class PortGetTDDCycles {
   adapter: GithubAPIRepository;
   constructor(githubAPIRepository: GithubAPIRepository) {
     this.adapter = githubAPIRepository;
@@ -13,14 +13,6 @@ export class GetTDDCycles {
     repoName: string
   ): Promise<CommitDataObject[]> {
     return await this.adapter.obtainCommitsOfRepo(owner, repoName);
-  }
-
-  async obtainCommitInformation(
-    owner: string, 
-    repoName: string, 
-    sha: string
-    ): Promise<CommitInformationDataObject> {
-    return await this.adapter.obtainCommitsFromSha(owner, repoName, sha);
   }
 
   async obtainJobsData(

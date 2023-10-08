@@ -1,4 +1,4 @@
-import { CommitDataObject, CommitInformationDataObject } from "./githubCommitInterfaces";
+import { CommitDataObject } from "./githubCommitInterfaces";
 //import { JobDataObject } from "../domain/models/jobInterfaces";
 
 export interface GithubAPIRepository {
@@ -7,12 +7,7 @@ export interface GithubAPIRepository {
     repoName: string
   ): Promise<CommitDataObject[]>;
 
-  obtainCommitsFromSha(
-    owner: string,
-    repoName: string,
-    sha: string
-  ): Promise<CommitInformationDataObject>;
-
+  
   obtainRunsOfGithubActions(
     owner: string, 
     repoName: string): any;
