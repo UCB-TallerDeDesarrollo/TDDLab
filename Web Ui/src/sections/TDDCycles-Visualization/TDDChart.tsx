@@ -1,4 +1,4 @@
-import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from '../../TDDCycles-Visualization/domain/jobInterfaces';
 import { Line, getElementAtEvent} from 'react-chartjs-2';
 import { useRef } from "react";
@@ -32,7 +32,7 @@ ChartJS.register(
 );
 
 
-function TDDCharts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Record<string, JobDataObject> | null) {
+function TDDCharts(commits: CommitDataObject[] | null,  jobsByCommit: Record<string, JobDataObject> | null) {
     
     function getDataLabels(){
         if (commits!=null){

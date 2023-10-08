@@ -1,13 +1,15 @@
-import { CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
 import "../../assets/styles/TDDCycleCard.css"
 
 interface CycleReportViewProps {
-    commit: CommitInformationDataObject;
+    commit: CommitDataObject;
     jobs: JobDataObject | null;
   }
   
 function TDDCycleCard({commit,jobs}:CycleReportViewProps) {
+  console.log("render");
+  
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === 'success') {
       return { backgroundColor: 'green',width:"150px" };
@@ -36,7 +38,8 @@ function TDDCycleCard({commit,jobs}:CycleReportViewProps) {
       </div>
     );    
   }
-
+  console.log(commit);
+  
   return (
     <div className="cycleCardContainer">
       <span>Commit {commit.commit.message}</span>

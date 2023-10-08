@@ -1,10 +1,10 @@
 
 import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
-import { CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 import TDDCharts from "./TDDChart";
 
 interface CycleReportViewProps {
-    commitsInfo: CommitInformationDataObject[] | null;
+    commitsInfo: CommitDataObject[] | null;
     jobsByCommit: Record<string, JobDataObject> | null;
   }
   

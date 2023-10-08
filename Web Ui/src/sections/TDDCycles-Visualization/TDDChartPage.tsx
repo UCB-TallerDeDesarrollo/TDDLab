@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { GetTDDCycles } from "../../TDDCycles-Visualization/application/GetTDDCycles";
+import { PortGetTDDCycles } from "../../TDDCycles-Visualization/application/GetTDDCycles";
 import { GithubAPIAdapter } from "../../TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TDDChartsView from "./TDDChartsView";
 import TDDCycleList from "./TDDCycleList";
 import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
-import { CommitDataObject, CommitInformationDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css"
 
 
@@ -14,9 +14,9 @@ interface CycleReportViewProps {
 
 function TDDChartPage({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
-  const repoName = "Bulls-and-Cows";
+  const repoName = "test";
 
-  const [commitsInfo, setCommitsInfo] = useState<CommitInformationDataObject[] | null>(null);
+  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<Record<string, JobDataObject> | null>(null);
 
   const [showCycleList, setShowCycleList] = useState(true);
@@ -25,7 +25,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
     setShowCycleList(!showCycleList);
   };
 
-  const getTDDCycles = new GetTDDCycles(port);
+  const getTDDCycles = new PortGetTDDCycles(port);
 
   const obtainJobsData = async () => {
     try {
@@ -41,13 +41,9 @@ function TDDChartPage({ port }: CycleReportViewProps) {
     console.log("Fetching commit information...");
     try {
       const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
-      if (commits) {
-        console.log("Fetching commit information...");
-        const commitsInfoData: CommitInformationDataObject[] = await Promise.all(
-          commits.map((commit) => getTDDCycles.obtainCommitInformation(repoOwner, repoName, commit.sha))
-        );
-        setCommitsInfo(commitsInfoData);
-      }
+      
+      setCommitsInfo(commits);
+      
     } catch (error) {
       console.error('Error obtaining commit information:', error);
     }
@@ -55,7 +51,9 @@ function TDDChartPage({ port }: CycleReportViewProps) {
 
   useEffect(() => {
     const fetchData = async () => {
-      await obtainJobsData();
+      //uncomment method when port is updated
+      //await obtainJobsData();
+      setJobsByCommit({});
       await obtainCommitsData();
     };
     fetchData();
@@ -71,7 +69,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
       {showCycleList ? (
         <div className="tdd-cycle-list">
           <h1>Repository: {repoName}</h1>
-          <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+          <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={{}} />
         </div>
       ) : (
         <div className="tdd-charts-view">
