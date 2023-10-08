@@ -11,7 +11,7 @@ export class MockGithubAPI implements GithubAPIRepository {
   obtainRunsOfGithubActions = jest.fn(async () => {
     return {};
   });
-  obtainJobsOfACommit = jest.fn(async () => {
-    return {};
-  });
+  obtainJobsOfRepo = jest.fn(async () => {
+    return {};
+  });
 }
