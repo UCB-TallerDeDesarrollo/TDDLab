@@ -8,7 +8,6 @@ interface CycleReportViewProps {
   }
   
 function TDDCycleCard({commit,jobs}:CycleReportViewProps) {
-  console.log("render");
   
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === 'success') {
@@ -20,7 +19,6 @@ function TDDCycleCard({commit,jobs}:CycleReportViewProps) {
   };
 
   function getCommitLink() {
-    console.log(commit)
     const htmlUrl = commit.html_url;
     return (
       <a href={htmlUrl} target="_blank" rel="noopener noreferrer" className="commit-link">
@@ -38,7 +36,6 @@ function TDDCycleCard({commit,jobs}:CycleReportViewProps) {
       </div>
     );    
   }
-  console.log(commit);
   
   return (
     <div className="cycleCardContainer">
