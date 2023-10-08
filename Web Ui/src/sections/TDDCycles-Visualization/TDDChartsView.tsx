@@ -5,7 +5,7 @@ import TDDCharts from "./TDDChart";
 
 interface CycleReportViewProps {
     commitsInfo: CommitDataObject[] | null;
-    jobsByCommit: Record<string, JobDataObject> | null;
+    jobsByCommit: JobDataObject[] | null;
   }
   
 

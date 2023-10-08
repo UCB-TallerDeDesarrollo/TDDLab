@@ -5,15 +5,30 @@ import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCom
 
 interface CycleReportViewProps {
   commitsInfo: CommitDataObject[] | null;
-  jobsByCommit: Record<string, JobDataObject> | null;
+  jobsByCommit: JobDataObject [] | null;
 }
 
 function TDDCycleList({ commitsInfo,jobsByCommit}: CycleReportViewProps) {
   
+  if (commitsInfo === null || jobsByCommit === null) {
+    return null;
+  }
+  const combinedList: [CommitDataObject, JobDataObject][] = [];
+
+
+  if (commitsInfo.length === jobsByCommit.length) {
+    for (let i = 0; i < commitsInfo.length; i++) {
+      const commit = commitsInfo[i];
+      const job = jobsByCommit[i];
+      combinedList.push([commit, job]);
+    }
+  } else {
+    console.error('Las listas no tienen la misma longitud');
+  }
   return (
     <>
-      {jobsByCommit != null && commitsInfo != null && commitsInfo.map((commit) => (
-        <TDDCycleCard key={commit.sha} commit={commit} jobs={null} />
+      {combinedList.map((commit) => (
+        <TDDCycleCard key={commit[0].sha} commit={commit[0]} jobs={commit[1]} />
       ))}
     </>
   );

@@ -42,8 +42,8 @@ function TDDCycleCard({commit,jobs}:CycleReportViewProps) {
       <span>Commit {commit.commit.message}</span>
       {getCommitStats()}
       {jobs!=null && 
-        <div className={"conclusionBox"} style={getBoxStyle(jobs.jobs[0].conclusion)}>
-          Actions:{jobs.jobs[0].conclusion}
+        <div className={"conclusionBox"} style={getBoxStyle(jobs.conclusion)}>
+          Actions:{jobs.conclusion}
         </div>
        }
       {jobs==null && 

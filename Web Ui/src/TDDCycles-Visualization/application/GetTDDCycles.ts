@@ -18,26 +18,9 @@ export class PortGetTDDCycles {
   async obtainJobsData(
     owner: string,
     repoName: string
-  ): Promise<Record<string, JobDataObject>> {
-    const githubruns = await this.adapter.obtainRunsOfGithubActions(
-      owner,
-      repoName
-    );
-    const commitsWithActions: [number, string][] =
-      githubruns.data.workflow_runs.map((workFlowRun: any) => {
-        return [workFlowRun.id, workFlowRun.head_commit.id];
-      });
-    const jobs: Record<string, JobDataObject> = {};
-    commitsWithActions.map(async (workflowInfo) => {
-      const jobInfo = await this.adapter.obtainJobsOfACommit(
-        owner,
-        repoName,
-        workflowInfo[0],
-        1
-      );
-      jobs[workflowInfo[1]] = jobInfo;
-    });
+  ): Promise<JobDataObject[]> {
+    return await this.adapter.obtainJobsOfRepo(owner, repoName);
+  }
 
-    return jobs;
-  }
+
 }
