@@ -13,7 +13,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       auth: 'coloca tu token github para mas requests'
   }*/
   );
-  this.backAPI="http://localhost:3000/api"
+  this.backAPI="https:/tdd-lab-api-gold.vercel.app/api"
   }
   
   async obtainCommitsOfRepo(
