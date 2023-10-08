@@ -25,7 +25,6 @@ function TDDCycleList({ commitsInfo,jobsByCommit}: CycleReportViewProps) {
   } else {
     console.error('Las listas no tienen la misma longitud');
   }
-  console.log("TEST", combinedList[1])
   return (
     <>
       {combinedList.map((commit) => (
