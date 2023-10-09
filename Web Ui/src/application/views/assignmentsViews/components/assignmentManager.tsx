@@ -1,26 +1,23 @@
 import Formulario from "./assignmentForm/assignmentForm";
-import Tareas from "./assignmentTable/assignmentTable";
-import { styled } from '@mui/system'; 
+import Tareas from "../../../../sections/Assigments/GetAssignments/assignmentsList";
+import { styled } from "@mui/system";
 import { useState } from "react";
 
-
-
-
-const GestionTareasContainer = styled('section')({
-  display: 'flex',
-  width: '100%',
+const GestionTareasContainer = styled("section")({
+  display: "flex",
+  width: "100%",
 });
 
-const TareasContainer = styled('div')({
-  flex: '1',
-  marginLeft: '16px',  
-  marginRight: '20px',  
+const TareasContainer = styled("div")({
+  flex: "1",
+  marginLeft: "16px",
+  marginRight: "20px",
 });
 
-const FormularioContainer = styled('div')({
-  flex: '1',
-  marginLeft: '8px',  
-  marginRight: '2px', 
+const FormularioContainer = styled("div")({
+  flex: "1",
+  marginLeft: "8px",
+  marginRight: "2px",
 });
 function GestionTareas() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -32,10 +29,10 @@ function GestionTareas() {
   return (
     <GestionTareasContainer>
       <TareasContainer>
-        <Tareas mostrarFormulario={handleMostrarFormulario}  />
+        <Tareas mostrarFormulario={handleMostrarFormulario} />
       </TareasContainer>
       <FormularioContainer>
-        {mostrarFormulario && <Formulario/>}
+        {mostrarFormulario && <Formulario />}
       </FormularioContainer>
     </GestionTareasContainer>
   );

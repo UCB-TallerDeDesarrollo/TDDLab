@@ -1,7 +1,9 @@
-import { fetchAssignmentById } from "../../../../repositories/assignment.API";
+import { fetchAssignmentById } from "../../../../modules/Assigments/repositories/assignment.API";
 import { AssignmentDataObject } from "../../../../domain/models/assignmentInterfaces"; // Import your assignment model
 
-export const fetchAssignmentUseCase = async (assignmentId: number): Promise<AssignmentDataObject | null> => {
+export const fetchAssignmentUseCase = async (
+  assignmentId: number
+): Promise<AssignmentDataObject | null> => {
   try {
     // Call the fetchAssignmentById function to get the assignment
     const assignment = await fetchAssignmentById(assignmentId);
@@ -16,7 +18,7 @@ export const fetchAssignmentUseCase = async (assignmentId: number): Promise<Assi
     return assignment;
   } catch (error) {
     // Handle any errors that may occur during the fetch
-    console.error('Error fetching assignment by ID:', error);
+    console.error("Error fetching assignment by ID:", error);
     throw error;
   }
 };

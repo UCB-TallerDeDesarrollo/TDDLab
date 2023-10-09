@@ -15,11 +15,11 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../../../domain/models/assignmentInterfaces"; // Import your assignment model
+import { AssignmentDataObject } from "../../../domain/models/assignmentInterfaces"; // Import your assignment model
 
-import { fetchAssignmentsUseCase } from "../../useCases/fetchAssignmentsApater"; // Import your fetchAssignments function\
-import { deleteAssignmentUseCase } from "../../useCases/deleteAssignmentAdapter";
-import { sendAssignemtUseCase } from "../../useCases/sendAssignmentsAdapter";
+import { fetchAssignmentsUseCase } from "../../../modules/Assigments/application/GetAssignments/GetAssignments"; // Import your fetchAssignments function\
+import { deleteAssignmentUseCase } from "../../../application/views/assignmentsViews/useCases/deleteAssignmentAdapter";
+import { sendAssignemtUseCase } from "../../../application/views/assignmentsViews/useCases/sendAssignmentsAdapter";
 
 const ButtonContainer = styled("div")({
   display: "flex",
@@ -46,7 +46,7 @@ function Tareas({ mostrarFormulario }: TareasProps) {
 
   useEffect(() => {
     // Use the fetchAssignments function to fetch assignments
-    fetchAssignmentsUseCase()
+    fetchAssignmentsUseCase(assignmentsRepository)
       .then((data) => {
         setAssignments(data); // Set the fetched assignments in state
       })
@@ -68,7 +68,7 @@ function Tareas({ mostrarFormulario }: TareasProps) {
     window.location.reload();
   };
 
-  const handleClickUpdate =(index:number) => {
+  const handleClickUpdate = (index: number) => {
     setSelectedRow(index);
     sendAssignemtUseCase(assignments[index].id);
   };
@@ -118,8 +118,9 @@ function Tareas({ mostrarFormulario }: TareasProps) {
                     >
                       <DeleteIcon />
                     </IconButton>
-                    <IconButton aria-label="send"
-                      onClick={()=> handleClickUpdate(index)}
+                    <IconButton
+                      aria-label="send"
+                      onClick={() => handleClickUpdate(index)}
                       onMouseEnter={() => handleRowHover(index)}
                       onMouseLeave={() => handleRowHover(null)}
                     >

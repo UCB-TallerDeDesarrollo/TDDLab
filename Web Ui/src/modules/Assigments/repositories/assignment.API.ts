@@ -1,9 +1,11 @@
 import axios from 'axios'; // Import Axios or your preferred HTTP library
-import { AssignmentDataObject } from '../domain/models/assignmentInterfaces'; // Import your assignment model
+import { AssignmentDataObject } from '../../../domain/models/assignmentInterfaces'; // Import your assignment model
 
 const API_URL = 'https://tdd-lab-l5qeq6v9r-tddlabs-projects.vercel.app/api/assignments';
 
 // Define a function to fetch assignments
+
+class fetchAssignments implements AssignmentsRepositorty
 export const fetchAssignments = async () => {
   try {
     // Send a GET request to fetch assignments from the backend

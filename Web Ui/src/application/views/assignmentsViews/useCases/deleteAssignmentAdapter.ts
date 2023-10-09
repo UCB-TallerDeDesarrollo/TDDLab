@@ -1,6 +1,6 @@
-import { deleteAssignment } from "../../../../repositories/assignment.API"; // Import your assignment model
+import { deleteAssignment } from "../../../../modules/Assigments/repositories/assignment.API"; // Import your assignment model
 
-export const deleteAssignmentUseCase = async (assignmentId: number)  => {
+export const deleteAssignmentUseCase = async (assignmentId: number) => {
   try {
     // Call the fetchAssignmentById function to get the assignment
     const assignment = await deleteAssignment(assignmentId);
@@ -10,10 +10,10 @@ export const deleteAssignmentUseCase = async (assignmentId: number)  => {
     }
 
     // You can perform any additional logic or data transformation here if needed
-    return 'Succesful deletion';
+    return "Succesful deletion";
   } catch (error) {
     // Handle any errors that may occur during the fetch
-    console.error('Error fetching assignment by ID:', error);
+    console.error("Error fetching assignment by ID:", error);
     throw error;
   }
 };
