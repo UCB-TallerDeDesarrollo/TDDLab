@@ -20,6 +20,8 @@ import { AssignmentDataObject } from "../../../../../domain/models/assignmentInt
 import { fetchAssignmentsUseCase } from "../../useCases/fetchAssignmentsApater"; // Import your fetchAssignments function\
 import { deleteAssignmentUseCase } from "../../useCases/deleteAssignmentAdapter";
 import { sendAssignemtUseCase } from "../../useCases/sendAssignmentsAdapter";
+import { ConfirmationDialog } from "../dialogBox/ConfirmationDialog";
+import { GitLinkDialog } from "../dialogBox/gitLinkDialog";
 
 const ButtonContainer = styled("div")({
   display: "flex",
@@ -38,6 +40,12 @@ interface TareasProps {
   mostrarFormulario: () => void;
 }
 function Tareas({ mostrarFormulario }: TareasProps) {
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
+  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
+    number | null
+  >(null);
+  const [githubLink, setGithubLink] = useState("");
   const navigate = useNavigate();
 
   const [, setSelectedRow] = useState<number | null>(null);
@@ -61,18 +69,34 @@ function Tareas({ mostrarFormulario }: TareasProps) {
     navigate(`/assignment/${assignments[index].id}`);
   };
   const handleClickDelete = (index: number) => {
-    setSelectedRow(index);
-
-    // Navigate to the assignment detail view with the assignment's ID as a parameter
-    deleteAssignmentUseCase(assignments[index].id);
-    window.location.reload();
+    setSelectedAssignmentIndex(index);
+    setConfirmationOpen(true);
   };
 
-  const handleClickUpdate =(index:number) => {
-    setSelectedRow(index);
-    sendAssignemtUseCase(assignments[index].id);
+  const handleConfirmDelete = () => {
+    if (
+      selectedAssignmentIndex !== null &&
+      assignments[selectedAssignmentIndex]
+    ) {
+      console.log(
+        "ID de la tarea a eliminar:",
+        assignments[selectedAssignmentIndex].id
+      );
+      deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
+      window.location.reload();
+    }
+    setConfirmationOpen(false);
   };
 
+  const handleClickUpdate = (index: number) => {
+    setSelectedRow(index);
+    setGithubLinkDialogOpen(true);
+    sendAssignemtUseCase(assignments[index].id); //Verificar
+  };
+  const handleSendGithubLink = (link: string) => {
+    // Lógica para manejar el envío del enlace de Github
+    console.log("Sending Github link:", link);
+  };
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
@@ -86,7 +110,10 @@ function Tareas({ mostrarFormulario }: TareasProps) {
               <CustomTableCell1>Tareas </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button variant="outlined" onClick={mostrarFormulario}>
+                  <Button
+                    variant="outlined"
+                    onClick={mostrarFormulario}
+                  >
                     Crear
                   </Button>
                 </ButtonContainer>
@@ -107,6 +134,7 @@ function Tareas({ mostrarFormulario }: TareasProps) {
                     >
                       <VisibilityIcon />
                     </IconButton>
+
                     <IconButton aria-label="edit">
                       <EditIcon />
                     </IconButton>
@@ -118,8 +146,10 @@ function Tareas({ mostrarFormulario }: TareasProps) {
                     >
                       <DeleteIcon />
                     </IconButton>
-                    <IconButton aria-label="send"
-                      onClick={()=> handleClickUpdate(index)}
+
+                    <IconButton
+                      aria-label="send"
+                      onClick={() => handleClickUpdate(index)}
                       onMouseEnter={() => handleRowHover(index)}
                       onMouseLeave={() => handleRowHover(null)}
                     >
@@ -131,6 +161,24 @@ function Tareas({ mostrarFormulario }: TareasProps) {
             ))}
           </TableBody>
         </Table>
+        {githubLinkDialogOpen && (
+          <GitLinkDialog
+            open={githubLinkDialogOpen}
+            onClose={() => setGithubLinkDialogOpen(false)}
+            onSend={handleSendGithubLink}
+          />
+        )}
+        {confirmationOpen && (
+          <ConfirmationDialog
+            open={confirmationOpen}
+            title="Eliminar tarea"
+            content="¿Estás seguro de que deseas eliminar esta tarea?"
+            cancelText="Cancelar"
+            deleteText="Eliminar"
+            onCancel={() => setConfirmationOpen(false)}
+            onDelete={handleConfirmDelete}
+          />
+        )}
       </section>
     </Container>
   );
