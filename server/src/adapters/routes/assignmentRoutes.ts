@@ -3,8 +3,8 @@ import {
   getAssignments,
   getAssignmentById,
   createAssignment,
-  deleteAssignment
-  //updateAssignment, falta implementar
+  deleteAssignment,
+  updateAssignment
 } from '../controllers/assignments/assignmentController';
 
 const assignmentsRouter = express.Router();
@@ -19,7 +19,7 @@ assignmentsRouter.get('/', getAssignments);
 assignmentsRouter.get('/:id', getAssignmentById);
 
 // Update an assignment by ID
-//assignmentsRouter.put('/:id', updateAssignment);
+assignmentsRouter.put('/:id', updateAssignment);
 
 // Delete an assignment by ID
 assignmentsRouter.delete('/:id', deleteAssignment);

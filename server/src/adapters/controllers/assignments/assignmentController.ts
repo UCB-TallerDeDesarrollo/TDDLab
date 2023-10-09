@@ -101,3 +101,27 @@ export const deleteAssignment = async (_req: Request, _res: Response) => {
     _res.status(500).json({ error: 'Server error' });
   }
 };
+
+export const updateAssignment =async (req:Request, res:Response) => {
+  try{
+    const client = await pool.connect();
+    console.log(req.body);
+    
+    res.setHeader('Content-Type', 'application/json');
+
+    const assignmentId = req.params.id;
+    const assignmentState = req.body.state;
+
+    const query = 'UPDATE assignments SET state = $1 WHERE id = $2';
+
+    const result = await client.query(query, [assignmentState, assignmentId]);
+
+    client.release();
+
+    res.status(201).json(result.rows);
+
+  } catch (error) {
+    console.error('Error adding assignments:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}

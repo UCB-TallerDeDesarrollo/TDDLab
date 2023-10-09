@@ -57,13 +57,33 @@ export const createAssignment = async (assignmentData: AssignmentDataObject): Pr
   await axios.post(API_URL, assignmentData);
 };
 
-export const updateAssignment = async (assignmentId:number, assignmentData: AssignmentDataObject): Promise<void> => {
+export const updateAssignment = async (assignmentId:number, assignmentData: AssignmentDataObject):  Promise<AssignmentDataObject | null> => {
   // Send a PUT request to update an assignment
-  console.log(API_URL)
-  console.log(assignmentData.id);
+
   console.log(`${API_URL}/${assignmentId}`);
-  
-  await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
+  console.log(assignmentData);
+  console.log(assignmentId);
+ 
+  try {
+    // Send a PUT request to update an assignment by ID
+    const response = await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
+    
+    // Check if the response status is successful (e.g., 200 OK)
+    if (response.status === 200) {
+      // Return the updated assignment data from the response
+      return response.data;
+    } else if (response.status === 404) {
+      // Return null if the assignment was not found
+      return null;
+    } else {
+      // Handle other response status codes or errors here if needed
+      throw new Error('Failed to update assignment by ID');
+    }
+  } catch (error) {
+    // Handle any network errors or exceptions that may occur
+    console.error('Error updating assignment by ID:', error);
+    throw error;
+  }
 };
 
 export const deleteAssignment = async (assignmentId: number): Promise<void> => {
