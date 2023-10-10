@@ -72,19 +72,24 @@ function Tareas({ mostrarFormulario }: TareasProps) {
     setConfirmationOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (
-      selectedAssignmentIndex !== null &&
-      assignments[selectedAssignmentIndex]
-    ) {
-      console.log(
-        "ID de la tarea a eliminar:",
-        assignments[selectedAssignmentIndex].id
-      );
-      deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
-      window.location.reload();
+  const handleConfirmDelete = async () => {
+    try{
+      if (
+        selectedAssignmentIndex !== null &&
+        assignments[selectedAssignmentIndex]
+      ) {
+        console.log(
+          "ID de la tarea a eliminar:",
+          assignments[selectedAssignmentIndex].id
+        );
+        await deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
+      }
+      setConfirmationOpen(false);
     }
-    setConfirmationOpen(false);
+  catch (error) {
+    console.error(error);
+  }
+  window.location.reload();
   };
 
   const handleClickUpdate = (index: number) => {
