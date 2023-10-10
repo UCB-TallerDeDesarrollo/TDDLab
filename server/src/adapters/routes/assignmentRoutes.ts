@@ -5,7 +5,7 @@ import {
   createAssignment,
   deleteAssignment
   //updateAssignment, falta implementar
-} from '../controllers/assignments/assignmentController';
+} from '../../controllers/assignments/assignmentController';
 
 const assignmentsRouter = express.Router();
 
