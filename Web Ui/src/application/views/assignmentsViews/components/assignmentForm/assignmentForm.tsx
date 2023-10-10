@@ -28,6 +28,7 @@ function Formulario() {
     } catch (error) {
       console.error(error);
     }
+    window.location.reload();
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
