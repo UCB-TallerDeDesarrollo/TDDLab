@@ -1,1 +1,0 @@
-aqui van los modelos de dominio que representan las entidades principales de la aplicación, como productos, usuarios, etc.

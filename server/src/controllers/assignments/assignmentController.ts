@@ -2,7 +2,7 @@
 
 import { Request, Response } from 'express';
 import { Pool } from 'pg'; // Import the Pool from 'pg'
-import config from '../../../config/db'; // Import your database configuration
+import config from '../../config/db'; // Import your database configuration
 
 const pool = new Pool(config);
 

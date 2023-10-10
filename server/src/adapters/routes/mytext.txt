@@ -1,1 +1,0 @@
-aqui van los archivos de enrutamiento para diferentes entidades o recursos de tu aplicación
