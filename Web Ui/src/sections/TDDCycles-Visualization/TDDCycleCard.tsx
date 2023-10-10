@@ -1,12 +1,14 @@
-import {  CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
-import { JobDataObject } from "../../../../domain/models/jobInterfaces";
-import "../styles/cycleCard.css"
+import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
+import "../../assets/styles/TDDCycleCard.css"
+
 interface CycleReportViewProps {
-    commit: CommitInformationDataObject;
+    commit: CommitDataObject;
     jobs: JobDataObject | null;
   }
   
-function CycleCard({commit,jobs}:CycleReportViewProps) {
+function TDDCycleCard({commit,jobs}:CycleReportViewProps) {
+  
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === 'success') {
       return { backgroundColor: 'green',width:"150px" };
@@ -17,7 +19,6 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
   };
 
   function getCommitLink() {
-    console.log(commit)
     const htmlUrl = commit.html_url;
     return (
       <a href={htmlUrl} target="_blank" rel="noopener noreferrer" className="commit-link">
@@ -35,14 +36,14 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
       </div>
     );    
   }
-
+  
   return (
     <div className="cycleCardContainer">
       <span>Commit {commit.commit.message}</span>
       {getCommitStats()}
       {jobs!=null && 
-        <div className={"conclusionBox"} style={getBoxStyle(jobs.jobs[0].conclusion)}>
-          Actions:{jobs.jobs[0].conclusion}
+        <div className={"conclusionBox"} style={getBoxStyle(jobs.conclusion)}>
+          Actions:{jobs.conclusion}
         </div>
        }
       {jobs==null && 
@@ -59,4 +60,4 @@ function CycleCard({commit,jobs}:CycleReportViewProps) {
 }
 
 
-export default CycleCard;
+export default TDDCycleCard;
