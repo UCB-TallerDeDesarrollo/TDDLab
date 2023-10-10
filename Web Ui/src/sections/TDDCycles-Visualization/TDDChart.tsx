@@ -1,6 +1,6 @@
-import { CommitDataObject, CommitInformationDataObject } from "../../../../domain/models/githubCommitInterfaces";
-import { JobDataObject } from '../../../../domain/models/jobInterfaces';
-import { Bar, Line, getElementAtEvent} from 'react-chartjs-2';
+import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { JobDataObject } from '../../TDDCycles-Visualization/domain/jobInterfaces';
+import { Line, getElementAtEvent} from 'react-chartjs-2';
 import { useRef } from "react";
 
 import {
@@ -32,7 +32,7 @@ ChartJS.register(
 );
 
 
-function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Record<string, JobDataObject> | null) {
+function TDDCharts(commits: CommitDataObject[] | null,  jobsByCommit: JobDataObject[] | null) {
     
     function getDataLabels(){
         if (commits!=null){
@@ -44,8 +44,11 @@ function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Re
     }
 
     const getBarStyle = (commit:CommitDataObject) => {
-        if (jobsByCommit != null && jobsByCommit[commit.sha] != null) {
-            if (jobsByCommit[commit.sha].jobs[0].conclusion === 'success') {
+        
+        if (jobsByCommit != null) {
+            const job  = jobsByCommit.find(job => job.sha === commit.sha)
+            console.log("TEST",job )
+            if (job != null && job.conclusion === 'success') {
                 return "green";
             } else {
                 return "red";
@@ -84,25 +87,6 @@ function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Re
         }
     }
 
-    const dataBarChart = {
-        labels: getDataLabels(),
-        datasets: [{
-                        label: 'Lineas de Código Añadidas',
-                        backgroundColor: "green",
-                        data: getCommitStats()[0],
-                        links:getCommitLink(),
-                        fill:false
-                    },
-                    {
-                        label: 'Lineas de Código Eliminadas',
-                        backgroundColor: "red",
-                        data: getCommitStats()[1],
-                        links:getCommitLink(),
-                        fill:false
-                    }
-                ]
-    };
-
     const dataLineChart = {
         labels: getDataLabels(),
         datasets: [{
@@ -111,70 +95,6 @@ function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Re
                         data: getCommitStats()[2],
                         links:getCommitLink()
                 }]
-    };
-
-
-    const optionsBarChartVertical = {
-        responsive : true,
-        barThickness: 20,
-        scales:{
-            x:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Commits realizados",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            },
-            y:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Líneas de Código Modificadas",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            }
-        },
-    };
-
-    const optionsBarChartHorizontal = {
-        indexAxis: 'y' as const,
-        responsive : true,
-        barThickness: 15,
-        scales:{
-            x:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Líneas de Código Modificadas",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            },
-            y:{
-                stacked:true,
-                title: {
-                    display:true,
-                    text:"Commits realizados",
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                        lineHeight: 1.2,
-                    },
-                }
-            }
-        },
     };
 
     const optionsLineChart = {
@@ -222,14 +142,10 @@ function Charts(commits: CommitInformationDataObject[] | null,  jobsByCommit: Re
 
     return (
         <>
-            <h1>Gráfico de Barras Vertical</h1>
-            <Bar height="100" data={dataBarChart} options={optionsBarChartVertical} onClick={onClick} ref={chartRef}/>
-            <h1>Gráfico de Barras Horizontak</h1>
-            <Bar height="200" data={dataBarChart} options={optionsBarChartHorizontal} onClick={onClick} ref={chartRef}/>
             <h1>Gráfico de Lineas y puntos</h1>
             <Line height="100" data={dataLineChart} options={optionsLineChart} onClick={onClick} ref={chartRef}/>
         </>
       );
 }
 
-export default Charts;
+export default TDDCharts;
