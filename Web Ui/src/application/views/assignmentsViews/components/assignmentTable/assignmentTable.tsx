@@ -45,7 +45,6 @@ function Tareas({ mostrarFormulario }: TareasProps) {
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
-  const [githubLink, setGithubLink] = useState("");
   const navigate = useNavigate();
 
   const [, setSelectedRow] = useState<number | null>(null);
@@ -110,10 +109,7 @@ function Tareas({ mostrarFormulario }: TareasProps) {
               <CustomTableCell1>Tareas </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button
-                    variant="outlined"
-                    onClick={mostrarFormulario}
-                  >
+                  <Button variant="outlined" onClick={mostrarFormulario}>
                     Crear
                   </Button>
                 </ButtonContainer>
