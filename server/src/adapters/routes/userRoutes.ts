@@ -11,3 +11,4 @@ router.post('/login', loginUser);
 router.put('/update', updateUser);
 
 export default router;
+
