@@ -21,6 +21,7 @@ import { fetchAssignmentsUseCase } from "../../useCases/fetchAssignmentsApater";
 import { deleteAssignmentUseCase } from "../../useCases/deleteAssignmentAdapter";
 import { sendAssignemtUseCase } from "../../useCases/sendAssignmentsAdapter";
 
+
 const ButtonContainer = styled("div")({
   display: "flex",
   justifyContent: "flex-end",
@@ -60,13 +61,17 @@ function Tareas({ mostrarFormulario }: TareasProps) {
     // Navigate to the assignment detail view with the assignment's ID as a parameter
     navigate(`/assignment/${assignments[index].id}`);
   };
-  const handleClickDelete = (index: number) => {
+  //All of the handleClicks should be async, with a window.location.reload
+  const handleClickDelete = async (index: number) => {
     setSelectedRow(index);
-
-    // Navigate to the assignment detail view with the assignment's ID as a parameter
-    deleteAssignmentUseCase(assignments[index].id);
-    window.location.reload();
+    try {
+      await deleteAssignmentUseCase(assignments[index].id);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
 
   const handleClickUpdate =(index:number) => {
     setSelectedRow(index);

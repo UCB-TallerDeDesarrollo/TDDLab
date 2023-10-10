@@ -29,6 +29,7 @@ function Formulario() {
       await createAssignmentsUseCase(assignmentData);
 
       setSuccessMessage('Cambios guardados con éxito');
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }

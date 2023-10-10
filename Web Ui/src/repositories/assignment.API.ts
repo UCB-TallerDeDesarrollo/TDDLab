@@ -68,17 +68,9 @@ export const updateAssignment = async (assignmentId:number, assignmentData: Assi
 
 export const deleteAssignment = async (assignmentId: number): Promise<void> => {
   try {
-    // Send a GET request to fetch a specific assignment by ID
-    const response = await axios.delete(`${API_URL}/${assignmentId}`);
+    // Send a DELETE request to delete a specific assignment by ID
+    await axios.delete(`${API_URL}/${assignmentId}`);
 
-    // Check if the response status is successful (e.g., 200 OK)
-    if (response.status === 200) {
-      // Return the assignment data from the response
-      return response.data;
-    } else {
-      // Handle other response status codes or errors here if needed
-      throw new Error('Failed to delete assignment by ID');
-    }
   } catch (error) {
     // Handle any network errors or exceptions that may occur
     console.error('Error deleting assignment by ID:', error);
