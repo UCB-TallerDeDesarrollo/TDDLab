@@ -1,88 +1,72 @@
-// src/adapters/controllers/assignments/assignmentController.ts
+import { Request, Response } from "express";
+import AssignmentPostgresAdapter from "../../modules/Assignments/repositories/assignmentsPostgressAdapter";
+import { AssignmentDataObject } from "../../modules/Assignments/domain/Assignment"; // Adjust the import path based on your project structure
 
-import { Request, Response } from 'express';
-import { Pool } from 'pg'; // Import the Pool from 'pg'
-import config from '../../config/db'; // Import your database configuration
+class AssignmentController {
+  private assignmentAdapter: AssignmentPostgresAdapter;
 
-const pool = new Pool(config);
-
-
-
-export const getAssignments = async (_req: Request, res: Response) => {
-     const getAssignments(repository);
-     getAssignments.obtainAssignments();
-     
-};
-
-export const getAssignmentById = async (req: Request, res: Response) => {
-  try {
-    // Use a pool client to connect to the database
-    const client = await pool.connect();
-    // Query to retrieve all assignments from the 'assignments' table
-    const query = 'SELECT * FROM assignments WHERE id = $1 limit 1';
-    const values = [req.params.id];
-
-    // Execute the query
-    const result = await client.query(query, values);
-
-    // Release the client back to the pool
-    client.release();
-
-    // Respond with the fetched assignments as JSON
-    res.status(200).json(result.rows[0]);
-
-  } catch (error) {
-    console.error('Error fetching assignment:', error);
-    res.status(500).json({ error: 'Server error' });
+  constructor() {
+    this.assignmentAdapter = new AssignmentPostgresAdapter();
   }
+
+  async getAssignments(_req: Request, res: Response): Promise<void> {
+    try {
+      const assignments = await this.assignmentAdapter.obtainAssignments();
+      res.status(200).json(assignments);
+    } catch (error) {
+      console.error("Error fetching assignments:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+  async getAssignmentById(req: Request, res: Response): Promise<void> {
+    try {
+      const assignmentId = req.params.id;
+      const assignment = await this.assignmentAdapter.obtainAssignmentById(
+        assignmentId
+      );
+      if (assignment) {
+        res.status(200).json(assignment);
+      } else {
+        res.status(404).json({ error: "Assignment not found" });
+      }
+    } catch (error) {
+      console.error("Error fetching assignment:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async createAssignment(req: Request, res: Response): Promise<void> {
+    try {
+      const { title, description, state, start_date, end_date } = req.body;
+      const assignment: Omit<AssignmentDataObject, "id"> = {
+        title,
+        description,
+        start_date,
+        end_date,
+        state,
+      };
+      const newAssignment = await this.assignmentAdapter.createAssignment(
+        assignment
+      );
+      res.status(201).json(newAssignment);
+    } catch (error) {
+      console.error("Error adding assignment:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async deleteAssignment(req: Request, res: Response): Promise<void> {
+    try {
+      const assignmentId = req.params.id;
+      await this.assignmentAdapter.deleteAssignment(assignmentId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting assignment:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async updateAssignment(_req: Request, _res: Response): Promise<void> {}
 }
 
-export const createAssignment = async (req: Request, _res: Response) => {
-  try{
-    const {title, description, state} = req.body; 
-    // use date format "2023-09-23T12:00:00.000Z" on postman, thunderclient or others.
-    const  start_date = new Date(req.body.start_date)
-    const  end_date = new Date(req.body.end_date)
-     // Use a pool client to connect to the database
-    const client = await pool.connect();
-
-     // Query to retrieve all assignments from the 'assignments' table
-     const query = 'INSERT INTO assignments (title, description, start_date, end_date, state) VALUES ($1, $2, $3, $4, $5)';
-     const values = [title, description, start_date, end_date, state]
-
-    // Execute the query
-    const result = await client.query(query, values);
-
-    // Release the client back to the pool
-    client.release();
-
-    // Respond with the fetched assignments as JSON
-    _res.status(201).json(result.rows);
-  } catch (error) {
-    console.error('Error adding assignments:', error);
-    _res.status(500).json({ error: 'Server error' });
-  }
-};
-
-export const deleteAssignment = async (_req: Request, _res: Response) => {
-  try{
-    
-    const client = await pool.connect();
-
-     // Query to retrieve all assignments from the 'assignments' table
-    const query = 'DELETE FROM assignments WHERE id = $1';
-    const values = [_req.params.id];
-
-    // Execute the query
-    const result = await client.query(query, values);
-
-    // Release the client back to the pool
-    client.release();
-
-    // Respond with the fetched assignments as JSON
-    _res.status(201).json(result.rows);
-  } catch (error) {
-    console.error('Error adding assignments:', error);
-    _res.status(500).json({ error: 'Server error' });
-  }
-};
+export default AssignmentController;
