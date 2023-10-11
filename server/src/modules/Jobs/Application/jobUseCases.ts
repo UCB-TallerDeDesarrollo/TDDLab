@@ -1,4 +1,4 @@
-import { jobRepository } from "../../adapters/dataBaseRepositories/jobRepository";
+import { jobRepository } from "../Repositories/jobRepository";
 // import { Job } from "../../domain/models/Job";
 import { Request, Response } from 'express';
 

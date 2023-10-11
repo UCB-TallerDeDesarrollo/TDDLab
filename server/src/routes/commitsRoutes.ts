@@ -1,5 +1,5 @@
 import express from "express";
-import { getCommitsOfRepo } from "../application/usecases/commitUseCases";
+import { getCommitsOfRepo } from "../modules/Commits/Application/commitUseCases";
 
 const commitsRouter = express.Router();
 
