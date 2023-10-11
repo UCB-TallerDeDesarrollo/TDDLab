@@ -1,5 +1,5 @@
-import { commitRepository } from "../../adapters/dataBaseRepositories/commitRepository";
-import { CommitDTO } from "../../domain/models/CommitDTO";
+import { commitRepository } from "../Repositories/commitRepository";
+import { CommitDTO } from "../Domain/CommitDTO";
 import { Request, Response } from 'express';
 const Adapter=new commitRepository()
 

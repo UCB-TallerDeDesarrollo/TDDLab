@@ -1,6 +1,6 @@
 import { Pool } from 'pg'; // Import the Pool from 'pg'
-import config from '../../config/db';
-import { CommitDTO } from '../../domain/models/CommitDTO';
+import config from '../../../config/db';
+import { CommitDTO } from '../Domain/CommitDTO';
 
 
 export class commitRepository{
