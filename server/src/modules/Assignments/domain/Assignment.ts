@@ -1,5 +1,4 @@
 export interface AssignmentDataObject {
-  id: number;
   title: string;
   description: string | null;
   start_date: Date | null;
