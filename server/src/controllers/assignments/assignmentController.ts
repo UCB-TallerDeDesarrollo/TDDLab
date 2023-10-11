@@ -66,7 +66,35 @@ class AssignmentController {
     }
   }
 
-  async updateAssignment(_req: Request, _res: Response): Promise<void> {}
+  async updateAssignment(req: Request, res: Response): Promise<void> {
+    try {
+      const assignmentId = parseInt(req.params.id); // Parse the ID from the request params
+      const { title, description, state, start_date, end_date } = req.body;
+
+      const updatedAssignment: AssignmentDataObject = {
+        title,
+        description,
+        start_date,
+        end_date,
+        state,
+      };
+
+      const updatedAssignmentResult =
+        await this.assignmentAdapter.updateAssignment(
+          assignmentId,
+          updatedAssignment
+        );
+
+      if (updatedAssignmentResult) {
+        res.status(200).json(updatedAssignmentResult);
+      } else {
+        res.status(404).json({ error: "Assignment not found" });
+      }
+    } catch (error) {
+      console.error("Error updating assignment:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
 }
 
 export default AssignmentController;
