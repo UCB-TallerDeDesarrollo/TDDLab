@@ -6,7 +6,7 @@ const Adapter = new commitRepository();
 export const saveOneCommitInfo = async (
   commitData: CommitDTO,
   owner: string,
-  repoName: String
+  repoName: string
 ) => {
   return await Adapter.saveCommitInfoOfRepo(owner, repoName, commitData);
 };
