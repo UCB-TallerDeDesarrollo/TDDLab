@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import server from "./config/server";
 import router from "./routes/userRoutes";
 import assignmentsRouter from "./routes/assignmentRoutes";
-import commitsRouter from "./controllers/commitsRoutes";
+import commitsRouter from "./routes/commitsRoutes";
 import jobsRouter from "./routes/jobsRoutes";
 
 const app = express();
