@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import GestionTareas from "./application/views/assignmentsViews/components/assignmentManager";
+import GestionTareas from "./sections/Assignments/assignmentManager";
 import AssignmentDetail from "./application/views/assignmentDetailView/components/assignmentDetail";
 import {GithubAPIAdapter} from "./TDDCycles-Visualization/repository/GithubAPIAdapter";//Revisar el cambio por puerto
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
