@@ -20,3 +20,4 @@ $ npm run dev
 ```bash
 # unit tests
 $ npm run test
+$ npm run test:coverage
