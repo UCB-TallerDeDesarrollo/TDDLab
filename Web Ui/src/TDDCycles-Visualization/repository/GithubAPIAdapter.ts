@@ -13,7 +13,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       auth: 'coloca tu token github para mas requests'
   }*/
   );
-  this.backAPI="https:/tdd-lab-api-gold.vercel.app/api"
+  this.backAPI="https://tdd-lab-api-gold.vercel.app/api"
   }
   
   async obtainCommitsOfRepo(
@@ -23,11 +23,13 @@ export class GithubAPIAdapter implements GithubAPIRepository {
     try {
      
       const response = await axios.get(this.backAPI+`/commits?owner=${owner}&repoName=${repoName}`);
+      console.log(this.backAPI+`/commits?owner=${owner}&repoName=${repoName}`);
       
       if (response.status!=200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      const commits: CommitDataObject[] = response.data.map((commitData:any) => ({
+      const responseData:[]=response.data
+      const commits: CommitDataObject[] = responseData.map((commitData:any) => ({
         html_url: commitData.html_url,
         sha: commitData.sha,
         stats: {
@@ -77,8 +79,8 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      const jobs: JobDataObject[] = response.data.map((jobData: any) => ({
+      const responseData=response.data
+      const jobs: JobDataObject[] = responseData.map((jobData: any) => ({
         sha: jobData.sha,
         conclusion: jobData.conclusion
       }));
