@@ -45,7 +45,6 @@ function Tareas({ mostrarFormulario }: TareasProps) {
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
-  const [githubLink, setGithubLink] = useState("");
   const navigate = useNavigate();
 
   const [, setSelectedRow] = useState<number | null>(null);
@@ -73,19 +72,24 @@ function Tareas({ mostrarFormulario }: TareasProps) {
     setConfirmationOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (
-      selectedAssignmentIndex !== null &&
-      assignments[selectedAssignmentIndex]
-    ) {
-      console.log(
-        "ID de la tarea a eliminar:",
-        assignments[selectedAssignmentIndex].id
-      );
-      deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
-      window.location.reload();
+  const handleConfirmDelete = async () => {
+    try{
+      if (
+        selectedAssignmentIndex !== null &&
+        assignments[selectedAssignmentIndex]
+      ) {
+        console.log(
+          "ID de la tarea a eliminar:",
+          assignments[selectedAssignmentIndex].id
+        );
+        await deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
+      }
+      setConfirmationOpen(false);
     }
-    setConfirmationOpen(false);
+  catch (error) {
+    console.error(error);
+  }
+  window.location.reload();
   };
 
   const handleClickUpdate = (index: number) => {
@@ -110,10 +114,7 @@ function Tareas({ mostrarFormulario }: TareasProps) {
               <CustomTableCell1>Tareas </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button
-                    variant="outlined"
-                    onClick={mostrarFormulario}
-                  >
+                  <Button variant="outlined" onClick={mostrarFormulario}>
                     Crear
                   </Button>
                 </ButtonContainer>
