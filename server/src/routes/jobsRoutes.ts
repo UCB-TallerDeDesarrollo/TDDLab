@@ -1,5 +1,5 @@
 import express from "express";
-import { getJobs } from "../application/usecases/jobUseCases";
+import { getJobs } from "../modules/Jobs/Application/jobUseCases";
 
 const jobsRouter = express.Router();
 
