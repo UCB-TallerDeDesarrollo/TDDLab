@@ -1,5 +1,5 @@
 import { fetchAssignmentById } from "../../../../repositories/assignment.API";
-import { AssignmentDataObject } from "../../../../domain/models/assignmentInterfaces"; // Import your assignment model
+import { AssignmentDataObject } from "../../../../modules/Assignments/domain/assignmentInterfaces"; // Import your assignment model
 
 export const fetchAssignmentUseCase = async (assignmentId: number): Promise<AssignmentDataObject | null> => {
   try {

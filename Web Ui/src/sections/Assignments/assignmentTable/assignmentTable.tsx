@@ -15,11 +15,11 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../../../domain/models/assignmentInterfaces"; // Import your assignment model
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
 
-import { fetchAssignmentsUseCase } from "../../useCases/fetchAssignmentsApater"; // Import your fetchAssignments function\
-import { deleteAssignmentUseCase } from "../../useCases/deleteAssignmentAdapter";
-import { sendAssignemtUseCase } from "../../useCases/sendAssignmentsAdapter";
+import { fetchAssignmentsUseCase } from "../../../application/views/assignmentsViews/useCases/fetchAssignmentsApater"; // Import your fetchAssignments function\
+import { deleteAssignmentUseCase } from "../../../application/views/assignmentsViews/useCases/deleteAssignmentAdapter";
+import { sendAssignemtUseCase } from "../../../application/views/assignmentsViews/useCases/sendAssignmentsAdapter";
 import { ConfirmationDialog } from "../dialogBox/ConfirmationDialog";
 import { GitLinkDialog } from "../dialogBox/gitLinkDialog";
 
@@ -72,19 +72,24 @@ function Tareas({ mostrarFormulario }: TareasProps) {
     setConfirmationOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (
-      selectedAssignmentIndex !== null &&
-      assignments[selectedAssignmentIndex]
-    ) {
-      console.log(
-        "ID de la tarea a eliminar:",
-        assignments[selectedAssignmentIndex].id
-      );
-      deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
-      window.location.reload();
+  const handleConfirmDelete = async () => {
+    try{
+      if (
+        selectedAssignmentIndex !== null &&
+        assignments[selectedAssignmentIndex]
+      ) {
+        console.log(
+          "ID de la tarea a eliminar:",
+          assignments[selectedAssignmentIndex].id
+        );
+        await deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
+      }
+      setConfirmationOpen(false);
     }
-    setConfirmationOpen(false);
+  catch (error) {
+    console.error(error);
+  }
+  window.location.reload();
   };
 
   const handleClickUpdate = (index: number) => {
