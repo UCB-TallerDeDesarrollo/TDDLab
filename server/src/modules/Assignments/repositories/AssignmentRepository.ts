@@ -3,7 +3,7 @@ import config from "../../../config/db";
 import { AssignmentDataObject } from "../domain/Assignment";
 const pool = new Pool(config);
 
-class AssignmentPostgresAdapter {
+class AssignmentRepository {
   async obtainAssignments(): Promise<AssignmentDataObject[]> {
     try {
       // Use a pool client to connect to the database
@@ -123,4 +123,4 @@ class AssignmentPostgresAdapter {
   }
 }
 
-export default AssignmentPostgresAdapter;
+export default AssignmentRepository;
