@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { jobRepository } from "../../modules/Jobs/Repositories/jobRepository";
-import { getJobs } from "../../modules/Jobs/Application/jobUseCases";
+import { getJobs } from "../../modules/Jobs/Application/getJobs";
 class JobsController {
     repository: jobRepository
   constructor() {
