@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { fetchAssignmentUseCase } from "../../application/views/assignmentDetailView/useCases/fetchAssignmentAdapter";
-import { formatDate } from "../../application/utils/dateUtils";
-import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
+import { fetchAssignmentUseCase } from "../../../application/views/assignmentDetailView/useCases/fetchAssignmentAdapter";
+import { formatDate } from "../../../application/utils/dateUtils";
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import { useParams } from "react-router-dom";
 
 const AssignmentDetail: React.FC = () => {
