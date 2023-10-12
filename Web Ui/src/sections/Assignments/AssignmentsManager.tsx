@@ -1,5 +1,5 @@
-import Formulario from "./AssignmentForm";
-import Tareas from "./AssignmentsList";
+import Formulario from "./components/AssignmentForm";
+import Tareas from "./components/AssignmentsList";
 import { styled } from '@mui/system'; 
 import { useState } from "react";
 

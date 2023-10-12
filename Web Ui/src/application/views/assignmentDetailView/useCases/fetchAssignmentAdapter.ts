@@ -1,4 +1,4 @@
-import { fetchAssignmentById } from "../../../../repositories/assignment.API";
+import { fetchAssignmentById } from "../../../../modules/Assignments/repository/assignment.API";
 import { AssignmentDataObject } from "../../../../modules/Assignments/domain/assignmentInterfaces"; // Import your assignment model
 
 export const fetchAssignmentUseCase = async (assignmentId: number): Promise<AssignmentDataObject | null> => {
