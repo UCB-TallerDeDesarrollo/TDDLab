@@ -1,5 +1,5 @@
 import { AssignmentDataObject } from "../../../../modules/Assignments/domain/assignmentInterfaces";
-import { fetchAssignmentById, updateAssignment } from "../../../../repositories/assignment.API";
+import { fetchAssignmentById, updateAssignment } from "../../../../modules/Assignments/repository/assignment.API";
 
 export const sendAssignemtUseCase = async (assignmentId: number) => {
     try{
