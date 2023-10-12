@@ -20,7 +20,7 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 import { fetchAssignmentsUseCase } from "../../../application/views/assignmentsViews/useCases/fetchAssignmentsApater"; // Import your fetchAssignments function\
 import { deleteAssignmentUseCase } from "../../../application/views/assignmentsViews/useCases/deleteAssignmentAdapter";
 import { sendAssignemtUseCase } from "../../../application/views/assignmentsViews/useCases/sendAssignmentsAdapter";
-import { ConfirmationDialog } from "../ConfirmationDialog";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "../GitHubLinkDialog";
 
 
