@@ -5,8 +5,8 @@ import Stack from "@mui/material/Stack";
 import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import Filter from "./DatePicker";
-import { createAssignmentsUseCase } from "../../application/views/assignmentsViews/useCases/createAssingmentsAdapter";
+import Filter from "../DatePicker";
+import { createAssignmentsUseCase } from "../../../application/views/assignmentsViews/useCases/createAssingmentsAdapter";
 
 function Formulario() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
