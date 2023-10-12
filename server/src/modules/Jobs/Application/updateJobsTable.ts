@@ -45,7 +45,7 @@ export const updateJobsTable = async (owner: string, repoName: string,jobsAdapte
     let jobs:Record<string, JobDataObject>=await obtainJobsData(owner,repoName,jobsToAdd,githubAdapter);
     await addJobsToDb(owner,repoName,jobs,jobsAdapterDb)
   }
-
+  
 
 };
 
