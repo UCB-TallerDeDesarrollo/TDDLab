@@ -1,4 +1,4 @@
-import Formulario from "./AssignmentForm";
+import Formulario from "./components/AssignmentForm";
 import Tareas from "./AssignmentsList";
 import { styled } from '@mui/system'; 
 import { useState } from "react";
