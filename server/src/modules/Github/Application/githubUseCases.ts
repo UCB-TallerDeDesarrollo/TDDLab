@@ -5,7 +5,7 @@ import {
 import { JobDataObject } from "../Domain/jobInterfaces";
 import { GithubAdapter } from "../Repositories/github.API";
 
-export class TDDCyclesPort {
+export class githubUseCases {
   adapter: GithubAdapter;
   constructor() {
     this.adapter = new GithubAdapter();
