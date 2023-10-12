@@ -12,7 +12,7 @@ class AssignmentsController {
   private getAssignmentsUseCase: GetAssignmentsUseCase;
   private updateAssignmentUseCase: UpdateAssignmentUseCase;
 
-  constructor(private repository: AssignmentRepository) {
+  constructor(repository: AssignmentRepository) {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
     this.deleteAssignmentUseCase = new DeleteAssignmentUseCase(repository);
     this.getAssignmentByIdUseCase = new GetAssignmentByIdUseCase(repository);
