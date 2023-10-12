@@ -1,5 +1,4 @@
 import { GithubAdapter } from "../Repositories/github.API";
-import { CommitInformationDataObject } from "../Domain/commitInterfaces";
 import { JobDataObject } from "../Domain/jobInterfaces";
 import { Request, Response } from 'express';
 
@@ -25,8 +24,20 @@ async obtainCommitsOfRepo(req: Request, res: Response): Promise<void> {
     }
 }
 
-  async obtainCommitInformation(owner: string, repoName: string, sha: string): Promise<CommitInformationDataObject> {
-    return await this.adapter.obtainCommitsFromSha(owner, repoName, sha);
+  async obtainCommitsFromSha(req: Request, res: Response): Promise<void> {
+    try {
+        const owner = String(req.query.owner);
+        const repoName = String(req.query.repoName);
+        const sha = String(req.query.sha);
+        if (!owner || !repoName || !sha) {
+            res.status(400).json({ error: 'Bad request, missing owner or repoName or sha' });
+            return;
+        }
+        const ans = await this.adapter.obtainCommitsFromSha(owner, repoName, sha);
+        res.status(200).json(ans);
+    } catch (error) {
+        res.status(500).json({ error: 'Server errorr' });
+    }
   }
   async obtainJobsData(owner: string, repoName: string):Promise<Record<string, JobDataObject>> {
     let githubruns=await this.adapter.obtainRunsOfGithubActions(owner,repoName)
