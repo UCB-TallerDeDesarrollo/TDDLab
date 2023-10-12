@@ -1,4 +1,4 @@
-import { deleteAssignment } from "../../../../modules/Assignments/repository/assignment.API"; // Import your assignment model
+import { deleteAssignment } from "../repository/assignment.API"; // Import your assignment model
 
 export const deleteAssignmentUseCase = async (assignmentId: number)  => {
   try {
