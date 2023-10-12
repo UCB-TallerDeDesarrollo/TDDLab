@@ -1,7 +1,8 @@
 import express from "express";
 import AssignmentController from "../controllers/assignments/assignmentController"; // Import your controller class
-
-const assignmentController = new AssignmentController(); // Create an instance of your controller
+import AssignmentRepository from "../modules/Assignments/repositories/AssignmentRepository";
+const repository = new AssignmentRepository(); // Create an instance of your repository
+const assignmentController = new AssignmentController(repository); // Pass the repository instance to the controller
 
 const assignmentsRouter = express.Router();
 
