@@ -12,7 +12,7 @@ class AssignmentsController {
   private getAssignmentsUseCase: GetAssignmentsUseCase;
   private updateAssignmentUseCase: UpdateAssignmentUseCase;
 
-  constructor(repository: AssignmentRepository) {
+  constructor(private repository: AssignmentRepository) {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
     this.deleteAssignmentUseCase = new DeleteAssignmentUseCase(repository);
     this.getAssignmentByIdUseCase = new GetAssignmentByIdUseCase(repository);
@@ -49,13 +49,15 @@ class AssignmentsController {
 
   async createAssignment(req: Request, res: Response): Promise<void> {
     try {
-      const { title, description, state, start_date, end_date } = req.body;
+      const { title, description, state, start_date, end_date, link } =
+        req.body;
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
         description,
         state,
         start_date,
         end_date,
+        link,
       });
       res.status(201).json(newAssignment);
     } catch (error) {
@@ -78,7 +80,8 @@ class AssignmentsController {
   async updateAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = parseInt(req.params.id);
-      const { title, description, state, start_date, end_date } = req.body;
+      const { title, description, state, start_date, end_date, link } =
+        req.body;
       const updatedAssignment = await this.updateAssignmentUseCase.execute(
         assignmentId,
         {
@@ -87,6 +90,7 @@ class AssignmentsController {
           state,
           start_date,
           end_date,
+          link,
         }
       );
 
