@@ -43,13 +43,9 @@ export class TDDCyclesPort {
       res.status(500).json({ error: "Server errorr" });
     }
   }
-  async obtainJobsData(req: Request, res: Response): Promise<void> {
-    const owner = String(req.query.owner);
-    const repoName = String(req.query.repoName);
-    if (!owner || !repoName) {
-      res.status(400).json({ error: "Bad request, missing owner or repoName" });
-      return;
-    }
+  //Already declared in separated files
+  async obtainJobsData(owner: string, repoName: string){
+    
     const githubruns = await this.adapter.obtainRunsOfGithubActions(
       owner,
       repoName
@@ -70,7 +66,6 @@ export class TDDCyclesPort {
         jobs[workflowInfo[1]] = jobInfo;
       })
     );
-    console.log(jobs);
-    res.status(200).json(jobs);
+    return jobs
   }
 }
