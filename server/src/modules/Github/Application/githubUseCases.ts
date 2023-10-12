@@ -42,10 +42,9 @@ export class githubUseCases {
       throw error;
     }
   }
-  async obtainJobsData(
-    owner: string,
-    repoName: string
-  ): Promise<Record<string, JobDataObject>> {
+  //Already declared in separated files
+  async obtainJobsData(owner: string, repoName: string){
+    
     const githubruns = await this.adapter.obtainRunsOfGithubActions(
       owner,
       repoName
@@ -66,7 +65,6 @@ export class githubUseCases {
         jobs[workflowInfo[1]] = jobInfo;
       })
     );
-    console.log(jobs);
-    return jobs;
+    return jobs
   }
 }
