@@ -8,7 +8,7 @@ import { JobDataObject } from "../Domain/jobInterfaces";
 export class GithubAdapter {
   octokit: Octokit;
   constructor() {
-    this.octokit = new Octokit({auth:"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"});
+    this.octokit = new Octokit({});
   }
   async obtainCommitsOfRepo(
     owner: string,

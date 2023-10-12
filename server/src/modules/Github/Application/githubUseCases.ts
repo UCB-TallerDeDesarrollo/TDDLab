@@ -1,46 +1,45 @@
-import { GithubAdapter } from "../Repositories/github.API";
+import {
+  CommitDataObject,
+  CommitInformationDataObject,
+} from "../Domain/commitInterfaces";
 import { JobDataObject } from "../Domain/jobInterfaces";
-import { Request, Response } from "express";
+import { GithubAdapter } from "../Repositories/github.API";
 
-export class TDDCyclesPort {
+export class githubUseCases {
   adapter: GithubAdapter;
   constructor() {
     this.adapter = new GithubAdapter();
   }
 
-  async obtainCommitsOfRepo(req: Request, res: Response): Promise<void> {
+  async obtainCommitsOfRepo(
+    owner: string,
+    repoName: string
+  ): Promise<CommitDataObject[]> {
     try {
-      const owner = String(req.query.owner);
-      const repoName = String(req.query.repoName);
-
-      if (!owner || !repoName) {
-        res
-          .status(400)
-          .json({ error: "Bad request, missing owner or repoName" });
-        return;
-      }
-      const ans = await this.adapter.obtainCommitsOfRepo(owner, repoName);
-      res.status(200).json(ans);
+      const commits = await this.adapter.obtainCommitsOfRepo(owner, repoName);
+      console.log(commits);
+      return commits;
     } catch (error) {
-      res.status(500).json({ error: "Server errorr" });
+      console.log(error);
+      throw error;
     }
   }
 
-  async obtainCommitsFromSha(req: Request, res: Response): Promise<void> {
+  async obtainCommitsFromSha(
+    owner: string,
+    repoName: string,
+    sha: string
+  ): Promise<CommitInformationDataObject> {
     try {
-      const owner = String(req.query.owner);
-      const repoName = String(req.query.repoName);
-      const sha = String(req.query.sha);
-      if (!owner || !repoName || !sha) {
-        res
-          .status(400)
-          .json({ error: "Bad request, missing owner or repoName or sha" });
-        return;
-      }
-      const ans = await this.adapter.obtainCommitsFromSha(owner, repoName, sha);
-      res.status(200).json(ans);
+      const commit = await this.adapter.obtainCommitsFromSha(
+        owner,
+        repoName,
+        sha
+      );
+      return commit;
     } catch (error) {
-      res.status(500).json({ error: "Server errorr" });
+      console.log(error);
+      throw error;
     }
   }
   //Already declared in separated files
