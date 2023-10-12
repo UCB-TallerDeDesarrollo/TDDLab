@@ -1,4 +1,5 @@
 import axios from 'axios'; // Import Axios or your preferred HTTP library
+import { AssignmentDataObject } from '../domain/assignmentInterfaces'; // Import your assignment model
 
 const API_URL = 'https://tdd-lab-6hbrauuzu-tddlabs-projects.vercel.app/api/assignments';
 
