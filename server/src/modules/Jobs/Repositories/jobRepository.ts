@@ -1,5 +1,6 @@
 import { Pool } from 'pg'; // Import the Pool from 'pg'
 import config from '../../../config/db';
+import { JobDB } from '../Domain/Job';
 // import { Job } from '../../domain/models/Job';
 
 
@@ -48,7 +49,7 @@ export class jobRepository {
         }
     }
 
-    async insertRecordsIntoDatabase(records:{ id: number; sha: string; owner: string; reponame: string; conclusion: string; }[]) {
+    async insertRecordsIntoDatabase(records:JobDB[]) {
         const client = await this.pool.connect();
         try {
 

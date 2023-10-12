@@ -2,6 +2,7 @@ import { obtainJobsData } from "../../Github/Application/obtainJobs";
 import { obtainRunnedJobsList } from "../../Github/Application/obtainRunnedJobsList";
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
 import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { JobDB } from "../Domain/Job";
 import { jobRepository } from "../Repositories/jobRepository";
 // import { Job } from "../../domain/models/Job";
 
@@ -24,7 +25,7 @@ const checkForNewJobs = async (owner: string, repoName: string,listOfCommitsWith
   };
   
 const addJobsToDb = async (owner: string, repoName: string,jobs:Record<string, JobDataObject>,jobsAdapterDb:jobRepository=new jobRepository) => {
-    let jobsFormatted:{ id: number; sha: string; owner: string; reponame: string; conclusion: string; }[]=[]
+    let jobsFormatted:JobDB[]=[]
     for (const key in jobs) {
         jobsFormatted.push({id:jobs[key].jobs[0].run_id,sha:jobs[key].jobs[0].head_sha,owner:owner,reponame:repoName,conclusion:jobs[key].jobs[0].conclusion})
       }
