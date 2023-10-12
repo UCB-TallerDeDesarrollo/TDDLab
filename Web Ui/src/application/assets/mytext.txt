@@ -1,1 +1,0 @@
-aqui van assets que se usan en mas de una vista
