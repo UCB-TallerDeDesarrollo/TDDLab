@@ -15,5 +15,9 @@ githubRouter.get(
     "/commit/sha",
     async (req, res) => await githubUseCases.obtainCommitsFromSha(req, res)
   );
+  githubRouter.get(
+    "/jobs",
+    async (req, res) => await githubUseCases.obtainJobsData(req, res)
+  );
   
 export default githubRouter;
