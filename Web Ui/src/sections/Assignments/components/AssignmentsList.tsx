@@ -21,7 +21,7 @@ import { fetchAssignmentsUseCase } from "../../../application/views/assignmentsV
 import { deleteAssignmentUseCase } from "../../../application/views/assignmentsViews/useCases/deleteAssignmentAdapter";
 import { sendAssignemtUseCase } from "../../../application/views/assignmentsViews/useCases/sendAssignmentsAdapter";
 import { ConfirmationDialog } from "./ConfirmationDialog";
-import { GitLinkDialog } from "../GitHubLinkDialog";
+import { GitLinkDialog } from "./GitHubLinkDialog";
 
 
 const ButtonContainer = styled("div")({
