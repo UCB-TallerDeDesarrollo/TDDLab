@@ -1,12 +1,12 @@
-import { commitRepository } from "../Repositories/commitRepository";
+import { CommitRepository } from "../Repositories/commitRepository";
 import { CommitDTO } from "../Domain/CommitDTO";
 import { Request, Response } from "express";
-const Adapter = new commitRepository();
+const Adapter = new CommitRepository();
 
 export const saveOneCommitInfo = async (
   commitData: CommitDTO,
-  owner: String,
-  repoName: String
+  owner: string,
+  repoName: string
 ) => {
   return await Adapter.saveCommitInfoOfRepo(owner, repoName, commitData);
 };
