@@ -1,3 +1,0 @@
-interface AssignmentRepository {
-  obtainAssignments();
-}

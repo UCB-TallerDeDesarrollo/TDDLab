@@ -8,7 +8,7 @@ class UpdateAssignment {
   }
 
   async execute(
-    assignmentId: number,
+    assignmentId: string,
     updatedAssignment: AssignmentDataObject
   ): Promise<AssignmentDataObject | null> {
     try {
