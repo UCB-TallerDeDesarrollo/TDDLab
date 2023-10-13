@@ -15,10 +15,19 @@ export class GithubAdapter {
     repoName: string
   ): Promise<CommitDataObject[]> {
     try {
-      const response = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/commits?per_page=100`
-      );
-      console.log(response.data[0].author.login);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error("Request timed out"));
+        }, 5000);
+      });
+  
+      const response : any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
+          per_page: 100,
+        }),
+        timeoutPromise,
+      ]);
+      
 
       const commits: CommitDataObject[] = response.data.map(
         (githubCommit: any) => {
