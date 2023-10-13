@@ -14,7 +14,7 @@ interface CycleReportViewProps {
 
 function TDDChartPage({ port }: CycleReportViewProps) {
   const repoOwner = "DwijanX";
-  const repoName = "test";
+  const repoName = "Bulls-and-Cows";
 
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
