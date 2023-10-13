@@ -136,33 +136,3 @@ jobs:
             echo "No changes to commit in TypeScript files."
             exit 0
           fi
-  # Jobs for firebase      
-  jobs:
-  build_and_deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-
-      - name: Install Dependencies
-        working-directory: Web Ui
-        run: npm install 
-      
-      - name: Npm ci
-        working-directory: Web Ui
-        run: npm ci
-
-      - name: Npm run build
-        working-directory: Web Ui
-        run: npm run build
-
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          entryPoint: Web Ui
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}'
-          channelId: live
-          projectId: tddlab-hosting-firebase
