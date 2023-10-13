@@ -89,7 +89,7 @@ jobs:
 
   sonarcloud:
     name: SonarCloud
-    needs: cypress-tests, jest-tests
+    needs: [cypress-tests, jest-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
