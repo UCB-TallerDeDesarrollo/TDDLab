@@ -5,12 +5,14 @@ import GetAssignmentByIdUseCase from "../../modules/Assignments/application/Assi
 import GetAssignmentsUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentsUseCase";
 import UpdateAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/updateAssignmentUseCase";
 import AssignmentRepository from "../../modules/Assignments/repositories/AssignmentRepository";
+import DeliverAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/deliverAssignmentaUseCase";
 class AssignmentsController {
   private createAssignmentUseCase: CreateAssignmentUseCase;
   private deleteAssignmentUseCase: DeleteAssignmentUseCase;
   private getAssignmentByIdUseCase: GetAssignmentByIdUseCase;
   private getAssignmentsUseCase: GetAssignmentsUseCase;
   private updateAssignmentUseCase: UpdateAssignmentUseCase;
+  private deliverAssignmentUseCase: DeliverAssignmentUseCase;
 
   constructor(repository: AssignmentRepository) {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
@@ -18,6 +20,7 @@ class AssignmentsController {
     this.getAssignmentByIdUseCase = new GetAssignmentByIdUseCase(repository);
     this.getAssignmentsUseCase = new GetAssignmentsUseCase(repository);
     this.updateAssignmentUseCase = new UpdateAssignmentUseCase(repository);
+    this.deliverAssignmentUseCase = new DeliverAssignmentUseCase(repository);
   }
 
   async getAssignments(_req: Request, res: Response): Promise<void> {
@@ -77,9 +80,30 @@ class AssignmentsController {
     }
   }
 
+  async deliverAssignment(req: Request, res: Response): Promise<void> {
+    try {
+      const assignmentId = req.params.id;
+      const { link } = req.body;
+
+      const deliveredAssignment = await this.deliverAssignmentUseCase.execute(
+        assignmentId,
+        link
+      );
+
+      if (deliveredAssignment) {
+        res.status(200).json(deliveredAssignment);
+      } else {
+        res.status(404).json({ error: "Assignment not found" });
+      }
+    } catch (error) {
+      console.error("Error delivering assignment:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
   async updateAssignment(req: Request, res: Response): Promise<void> {
     try {
-      const assignmentId = parseInt(req.params.id);
+      const assignmentId = req.params.id;
       const { title, description, state, start_date, end_date, link } =
         req.body;
       const updatedAssignment = await this.updateAssignmentUseCase.execute(

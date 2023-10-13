@@ -27,6 +27,7 @@ class AssignmentRepository {
           start_date: row.start_date,
           end_date: row.end_date,
           state: row.state,
+          link: row.link,
         })
       );
 
@@ -51,6 +52,7 @@ class AssignmentRepository {
           start_date: result.rows[0].start_date,
           end_date: result.rows[0].end_date,
           state: result.rows[0].state,
+          link: result.rows[0].link,
         };
         return assignment;
       }
@@ -93,7 +95,7 @@ class AssignmentRepository {
   }
 
   async updateAssignment(
-    id: number,
+    id: string,
     updatedAssignment: AssignmentDataObject
   ): Promise<AssignmentDataObject | null> {
     try {
@@ -112,6 +114,7 @@ class AssignmentRepository {
           start_date: result.rows[0].start_date,
           end_date: result.rows[0].end_date,
           state: result.rows[0].state,
+          link: result.rows[0].link,
         };
         return assignment;
       }
