@@ -6,9 +6,13 @@ export const getCommits = async (
   repoName: string,
   Adapter: CommitRepository = new CommitRepository()
 ) => {
-  console.log("getCommits");
-  await updateCommitsTable(owner, repoName, Adapter);
-  console.log("getCommits2");
-  const Jobs = await Adapter.getCommits(owner, repoName);
-  return Jobs;
+  try {
+    await updateCommitsTable(owner, repoName, Adapter);
+  } catch (error) {
+    console.error("Error updating commits table:", error);
+    return { error: "Error updating commits table" };
+  } finally {
+    const Jobs = await Adapter.getCommits(owner, repoName);
+    return Jobs;
+  }
 };
