@@ -1,9 +1,12 @@
 import express from "express";
-import { getCommitsOfRepo } from "../modules/Commits/Application/commitUseCases";
+import CommitsController from "../controllers/Commits/commitsController";
+
 
 const commitsRouter = express.Router();
+const commitsController = new CommitsController()
 
-//commitsRouter.post('/', saveOneCommitInfo);
+commitsRouter.get("/", async(req,res)=> await commitsController.getCommits(req,res));
 
-commitsRouter.get("/", getCommitsOfRepo);
+
+
 export default commitsRouter;
