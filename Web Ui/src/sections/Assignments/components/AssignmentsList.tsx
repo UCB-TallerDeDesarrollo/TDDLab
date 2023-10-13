@@ -15,11 +15,11 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
 
-import { fetchAssignmentsUseCase } from "../../application/views/assignmentsViews/useCases/fetchAssignmentsApater"; // Import your fetchAssignments function\
-import { deleteAssignmentUseCase } from "../../application/views/assignmentsViews/useCases/deleteAssignmentAdapter";
-import { sendAssignemtUseCase } from "../../application/views/assignmentsViews/useCases/sendAssignmentsAdapter";
+import { fetchAssignmentsUseCase } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
+import { deleteAssignmentUseCase } from "../../../modules/Assignments/application/deleteAssignmentAdapter";
+import { sendAssignemtUseCase } from "../../../modules/Assignments/application/sendAssignmentsAdapter";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
 
