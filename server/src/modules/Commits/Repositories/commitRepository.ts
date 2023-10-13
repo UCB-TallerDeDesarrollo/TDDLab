@@ -35,7 +35,7 @@ export class CommitRepository {
     client.release();
     return result.rows;
   }
-  async getCommitsOfRepo(owner: String, repoName: String) {
+  async getCommits(owner: String, repoName: String) {
     const client = await this.pool.connect();
 
     const query =
