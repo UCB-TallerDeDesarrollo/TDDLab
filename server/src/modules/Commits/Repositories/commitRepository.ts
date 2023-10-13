@@ -39,7 +39,7 @@ export class CommitRepository {
     const client = await this.pool.connect();
 
     const query =
-      "SELECT * FROM commitsTable WHERE owner = $1 AND reponame = $2";
+      "SELECT * FROM commitsTable WHERE owner = $1 AND reponame = $2 ORDER BY commit_date ASC";
     const values = [owner, repoName];
 
     const result = await client.query(query, values);
