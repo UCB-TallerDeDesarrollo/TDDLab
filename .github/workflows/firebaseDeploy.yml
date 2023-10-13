@@ -19,7 +19,7 @@ jobs:
       - name: Install Dependencies
         working-directory: Web Ui
         run: npm install 
-      
+
       - name: Npm ci
         working-directory: Web Ui
         run: npm ci
