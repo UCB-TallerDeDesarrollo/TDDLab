@@ -1,21 +1,23 @@
 import { AssignmentDataObject } from "../domain/assignmentInterfaces";
-import { fetchAssignmentById, updateAssignment } from "../repository/assignment.API";
+import  AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInterface";
 
-export const sendAssignemtUseCase = async (assignmentId: number) => {
-    try{
-    const foundAssignment:AssignmentDataObject | null = await fetchAssignmentById(assignmentId);
+export class SendAssignment {
+  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
 
-    if (foundAssignment !== null){
-        foundAssignment.state = 'delivered'
-        return await updateAssignment(assignmentId, foundAssignment);
-    }
-    else{
-        throw new Error("No se encontro la tarea")
-    }
-    } catch(error){
-        console.error(error);
-        throw error;
+  async sendAsignment(assignmentId: number) {
+    try {
+      const foundAssignment: AssignmentDataObject | null = await this.assignmentsRepository.fetchAssignmentById(assignmentId);
+
+      if (foundAssignment !== null) {
+        foundAssignment.state = 'delivered';
+        return await this.assignmentsRepository.updateAssignment(assignmentId, foundAssignment);
+        
+      } else {
+        throw new Error("No se encontró la tarea");
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   }
-  
-  
+}

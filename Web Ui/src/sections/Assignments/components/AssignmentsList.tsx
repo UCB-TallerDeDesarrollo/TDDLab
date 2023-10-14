@@ -5,6 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';  
 import {
   Table,
   TableHead,
@@ -17,9 +18,9 @@ import {
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
 
-import { fetchAssignmentsUseCase } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
-import { deleteAssignmentUseCase } from "../../../modules/Assignments/application/deleteAssignmentAdapter";
-import { sendAssignemtUseCase } from "../../../modules/Assignments/application/sendAssignmentsAdapter";
+import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
+import {  DeleteAssignment } from "../../../modules/Assignments/application/deleteAssignmentAdapter";
+import { SendAssignment } from "../../../modules/Assignments/application/sendAssignmentsAdapter";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
 
@@ -51,10 +52,14 @@ function Tareas({ mostrarFormulario }: TareasProps) {
   const [, setSelectedRow] = useState<number | null>(null);
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]); // Specify the type as Assignment[]
+  const assignmentsRepository = new AssignmentsRepository();
+  const getAsignments = new GetAssignments(assignmentsRepository);
+  const deleteAsignments = new DeleteAssignment(assignmentsRepository);
+  const sendAsignments = new SendAssignment(assignmentsRepository);
 
   useEffect(() => {
     // Use the fetchAssignments function to fetch assignments
-    fetchAssignmentsUseCase()
+    getAsignments.obtainAllAssignments()
       .then((data) => {
         setAssignments(data); // Set the fetched assignments in state
       })
@@ -83,7 +88,8 @@ function Tareas({ mostrarFormulario }: TareasProps) {
           "ID de la tarea a eliminar:",
           assignments[selectedAssignmentIndex].id
         );
-        await deleteAssignmentUseCase(assignments[selectedAssignmentIndex].id);
+        await deleteAsignments.deleteAssignment(assignments[selectedAssignmentIndex].id);
+    
       }
       setConfirmationOpen(false);
     }
@@ -96,7 +102,7 @@ function Tareas({ mostrarFormulario }: TareasProps) {
   const handleClickUpdate = (index: number) => {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
-    sendAssignemtUseCase(assignments[index].id); //Verificar
+    sendAsignments.sendAsignment(assignments[index].id); 
   };
   const handleSendGithubLink = (link: string) => {
     // Lógica para manejar el envío del enlace de Github

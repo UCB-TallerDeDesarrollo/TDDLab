@@ -1,6 +1,13 @@
 import { AssignmentDataObject } from "../domain/assignmentInterfaces";
-import { createAssignment } from "../repository/assignment.API";
+import AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInterface";
 
-export const createAssignmentsUseCase = async (assignmentData: AssignmentDataObject) => {
-    return await createAssignment(assignmentData);
+export class CreateAssignments {
+  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
+
+  async createAssignment(assignmentData: AssignmentDataObject) {
+
+    return await this.assignmentsRepository.createAssignment(assignmentData);
   }
+}
+
+
