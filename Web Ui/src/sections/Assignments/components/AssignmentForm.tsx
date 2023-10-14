@@ -6,9 +6,10 @@ import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
-import { createAssignmentsUseCase } from "../../../modules/Assignments/application/createAssingmentsAdapter";
+import  {CreateAssignments }  from "../../../modules/Assignments/application/CreateAssingment";
+import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';  
 
-function Formulario() {
+function Form() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [assignmentData, setAssignmentData] = useState({
@@ -21,8 +22,11 @@ function Formulario() {
   });
 
   const handleGuardarClick = async () => {
+    const assignmentsRepository = new AssignmentsRepository();
+    const createAssignments = new CreateAssignments(assignmentsRepository);
     try {
-      await createAssignmentsUseCase(assignmentData);
+      
+      await createAssignments.createAssignment(assignmentData);
 
       setSuccessMessage("Cambios guardados con éxito");
     } catch (error) {
@@ -119,4 +123,4 @@ function Formulario() {
   );
 }
 
-export default Formulario;
+export default Form;
