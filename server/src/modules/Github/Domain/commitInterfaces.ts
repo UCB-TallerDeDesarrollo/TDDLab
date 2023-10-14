@@ -22,6 +22,7 @@ export interface CommitInformationDataObject {
   parents: Parent[];
   stats: Stats;
   files: File[];
+  coveragePercentage: String;
 }
 
 export interface File {
