@@ -4,7 +4,7 @@ import  AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInt
 export class SendAssignment {
   constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
 
-  async sendAsignment(assignmentId: number) {
+  async sendAssignment(assignmentId: number) {
     try {
       const foundAssignment: AssignmentDataObject | null = await this.assignmentsRepository.fetchAssignmentById(assignmentId);
 

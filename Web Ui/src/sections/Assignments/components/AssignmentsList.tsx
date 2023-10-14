@@ -102,7 +102,7 @@ function Assignments({ mostrarFormulario }: TareasProps) {
   const handleClickUpdate = (index: number) => {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
-    sendAsignments.sendAsignment(assignments[index].id); 
+    sendAsignments.sendAssignment(assignments[index].id); 
   };
   const handleSendGithubLink = (link: string) => {
     // Lógica para manejar el envío del enlace de Github
