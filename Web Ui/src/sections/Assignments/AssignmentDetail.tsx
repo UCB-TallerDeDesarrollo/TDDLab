@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { fetchAssignmentUseCase } from "../../application/views/assignmentDetailView/useCases/fetchAssignmentAdapter";
+import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
 import { formatDate } from "../../application/utils/dateUtils";
 import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
 import { useParams } from "react-router-dom";
+import AssignmentsRepository from '../../modules/Assignments/repository/assignment.API';  
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
@@ -13,7 +14,9 @@ const AssignmentDetail: React.FC = () => {
 
   useEffect(() => {
     // Fetch the assignment by its ID when the component mounts
-    fetchAssignmentUseCase(assignmentId)
+    const assignmentsRepository = new AssignmentsRepository();
+    const getAsignmentDetail = new GetAssignmentDetail(assignmentsRepository);
+    getAsignmentDetail.obtainAssignmentDetail(assignmentId)
       .then((fetchedAssignment) => {
         setAssignment(fetchedAssignment);
       })

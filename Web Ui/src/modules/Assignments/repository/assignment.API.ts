@@ -1,10 +1,14 @@
 import axios from 'axios'; // Import Axios or your preferred HTTP library
 import { AssignmentDataObject } from '../domain/assignmentInterfaces'; // Import your assignment model
+import AssignmentsRepositoryInterface from '../domain/AssignmentsRepositoryInterface';  
 
 const API_URL = 'https://tdd-lab-6hbrauuzu-tddlabs-projects.vercel.app/api/assignments';
 
+class AssignmentsRepository implements AssignmentsRepositoryInterface {
+
+
 // Define a function to fetch assignments
-export const fetchAssignments = async () => {
+async fetchAssignments(): Promise<AssignmentDataObject[]> {
   try {
     // Send a GET request to fetch assignments from the backend
     const response = await axios.get(API_URL);
@@ -22,13 +26,13 @@ export const fetchAssignments = async () => {
     console.error('Error fetching assignments:', error);
     throw error;
   }
-};
+}
 
 
 
 
 // Define a function to fetch an assignment by its ID
-export const fetchAssignmentById = async (assignmentId: number): Promise<AssignmentDataObject | null> => {
+async fetchAssignmentById(assignmentId: number): Promise<AssignmentDataObject | null> {
   try {
     // Send a GET request to fetch a specific assignment by ID
     const response = await axios.get(`${API_URL}/${assignmentId}`);
@@ -49,24 +53,24 @@ export const fetchAssignmentById = async (assignmentId: number): Promise<Assignm
     console.error('Error fetching assignment by ID:', error);
     throw error;
   }
-};
+}
 
 
-export const createAssignment = async (assignmentData: AssignmentDataObject): Promise<void> => {
+async createAssignment(assignmentData: AssignmentDataObject): Promise<void> {
   // Send a POST request to create a new assignment
   await axios.post(API_URL, assignmentData);
-};
+}
 
-export const updateAssignment = async (assignmentId:number, assignmentData: AssignmentDataObject): Promise<void> => {
+async updateAssignment(assignmentId: number, assignmentData: AssignmentDataObject): Promise<void> {
   // Send a PUT request to update an assignment
   console.log(API_URL)
   console.log(assignmentData.id);
   console.log(`${API_URL}/${assignmentId}`);
   
   await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
-};
+}
 
-export const deleteAssignment = async (assignmentId: number): Promise<void> => {
+async deleteAssignment(assignmentId: number): Promise<void> {
   try {
     // Send a GET request to fetch a specific assignment by ID
     const response = await axios.delete(`${API_URL}/${assignmentId}`);
@@ -85,3 +89,6 @@ export const deleteAssignment = async (assignmentId: number): Promise<void> => {
     throw error;
   }
 };
+}
+
+export default AssignmentsRepository;
