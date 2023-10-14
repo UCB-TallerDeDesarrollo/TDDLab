@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import SendIcon from "@mui/icons-material/Send";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';  
+import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';
 import {
   Table,
   TableHead,
@@ -16,14 +11,13 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
-
-import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
-import {  DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
+import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments";
+import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { SendAssignment } from "../../../modules/Assignments/application/SendAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
-
+import Assignment from "./Assignment";
 
 const ButtonContainer = styled("div")({
   display: "flex",
@@ -38,76 +32,67 @@ const CustomTableCell1 = styled(TableCell)({
 const CustomTableCell2 = styled(TableCell)({
   width: "10%",
 });
-interface TareasProps {
+
+interface AssignmentsProps {
   mostrarFormulario: () => void;
 }
-function Assignments({ mostrarFormulario }: TareasProps) {
+
+function Assignments({ mostrarFormulario }: AssignmentsProps) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
-  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-    number | null
-  >(null);
+  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const [, setSelectedRow] = useState<number | null>(null);
   const [, setHoveredRow] = useState<number | null>(null);
-  const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]); // Specify the type as Assignment[]
+  const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
-  const getAsignments = new GetAssignments(assignmentsRepository);
-  const deleteAsignments = new DeleteAssignment(assignmentsRepository);
-  const sendAsignments = new SendAssignment(assignmentsRepository);
+  const getAssignments = new GetAssignments(assignmentsRepository);
+  const deleteAssignments = new DeleteAssignment(assignmentsRepository);
+  const sendAssignments = new SendAssignment(assignmentsRepository);
 
   useEffect(() => {
-    // Use the fetchAssignments function to fetch assignments
-    getAsignments.obtainAllAssignments()
+    getAssignments.obtainAllAssignments()
       .then((data) => {
-        setAssignments(data); // Set the fetched assignments in state
+        setAssignments(data);
       })
       .catch((error) => {
         console.error("Error fetching assignments:", error);
       });
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+  }, []);
 
   const handleClickDetail = (index: number) => {
     setSelectedRow(index);
-    // Navigate to the assignment detail view with the assignment's ID as a parameter
     navigate(`/assignment/${assignments[index].id}`);
   };
+
   const handleClickDelete = (index: number) => {
     setSelectedAssignmentIndex(index);
     setConfirmationOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    try{
-      if (
-        selectedAssignmentIndex !== null &&
-        assignments[selectedAssignmentIndex]
-      ) {
-        console.log(
-          "ID de la tarea a eliminar:",
-          assignments[selectedAssignmentIndex].id
-        );
-        await deleteAsignments.deleteAssignment(assignments[selectedAssignmentIndex].id);
-    
+    try {
+      if (selectedAssignmentIndex !== null && assignments[selectedAssignmentIndex]) {
+        await deleteAssignments.deleteAssignment(assignments[selectedAssignmentIndex].id);
       }
       setConfirmationOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
     }
-  catch (error) {
-    console.error(error);
-  }
-  window.location.reload();
   };
 
   const handleClickUpdate = (index: number) => {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
-    sendAsignments.sendAssignment(assignments[index].id); 
+    sendAssignments.sendAssignment(assignments[index].id);
   };
+
   const handleSendGithubLink = (link: string) => {
-    // Lógica para manejar el envío del enlace de Github
     console.log("Sending Github link:", link);
   };
+
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
@@ -118,7 +103,7 @@ function Assignments({ mostrarFormulario }: TareasProps) {
         <Table>
           <TableHead>
             <TableRow>
-              <CustomTableCell1>Tareas </CustomTableCell1>
+              <CustomTableCell1>Tareas</CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
                   <Button variant="outlined" onClick={mostrarFormulario}>
@@ -130,42 +115,15 @@ function Assignments({ mostrarFormulario }: TareasProps) {
           </TableHead>
           <TableBody>
             {assignments.map((assignment, index) => (
-              <TableRow key={assignment.id}>
-                <TableCell>{assignment.title}</TableCell>
-                <TableCell>
-                  <ButtonContainer key={assignment.id}>
-                    <IconButton
-                      aria-label="see"
-                      onClick={() => handleClickDetail(index)}
-                      onMouseEnter={() => handleRowHover(index)}
-                      onMouseLeave={() => handleRowHover(null)}
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-
-                    <IconButton aria-label="edit">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => handleClickDelete(index)}
-                      onMouseEnter={() => handleRowHover(index)}
-                      onMouseLeave={() => handleRowHover(null)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-
-                    <IconButton
-                      aria-label="send"
-                      onClick={() => handleClickUpdate(index)}
-                      onMouseEnter={() => handleRowHover(index)}
-                      onMouseLeave={() => handleRowHover(null)}
-                    >
-                      <SendIcon />
-                    </IconButton>
-                  </ButtonContainer>
-                </TableCell>
-              </TableRow>
+              <Assignment
+                key={assignment.id}
+                assignment={assignment}
+                index={index}
+                handleClickDetail={handleClickDetail}
+                handleClickDelete={handleClickDelete}
+                handleClickUpdate={handleClickUpdate}
+                handleRowHover={handleRowHover}
+              />
             ))}
           </TableBody>
         </Table>
