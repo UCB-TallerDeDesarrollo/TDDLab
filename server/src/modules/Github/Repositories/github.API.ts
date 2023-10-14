@@ -20,14 +20,13 @@ export class GithubAdapter {
           reject(new Error("Request timed out"));
         }, 5000);
       });
-  
-      const response : any = await Promise.race([
+
+      const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
           per_page: 100,
         }),
         timeoutPromise,
       ]);
-      
 
       const commits: CommitDataObject[] = response.data.map(
         (githubCommit: any) => {
@@ -146,22 +145,24 @@ export class GithubAdapter {
         `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
       );
 
-      const percentageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
-        coverageResponse.data[0].body
-      );
-      console.log("Coverage ", percentageMatch);
+      let percentageMatch;
 
-      if (percentageMatch && percentageMatch.length >= 2) {
-        const percentageValue = String(percentageMatch[1]);
-        const commitInfo: CommitInformationDataObject = {
-          ...response.data,
-          coveragePercentage: percentageValue,
-        };
-        return commitInfo;
+      if (coverageResponse.data.length > 0) {
+        percentageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
+          coverageResponse.data[0].body
+        );
+        if (percentageMatch) {
+          percentageMatch = String(percentageMatch[1]);
+        }
       } else {
-        throw new Error("Percentage information not found in response data.");
+        percentageMatch = "";
       }
 
+      const commitInfo: CommitInformationDataObject = {
+        ...response.data,
+        coveragePercentage: percentageMatch,
+      };
+      return commitInfo;
     } catch (error) {
       console.error("Error obtaining commits:", error);
       throw error;
@@ -175,9 +176,9 @@ export class GithubAdapter {
           reject(new Error("Request timed out"));
         }, 5000);
       });
-  
-      const response : any = await Promise.race([
-        this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`,),
+
+      const response: any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`),
         timeoutPromise,
       ]);
 
