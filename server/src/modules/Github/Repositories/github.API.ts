@@ -137,7 +137,6 @@ export class GithubAdapter {
           reject(new Error("Request timed out"));
         }, 5000);
       });
-      console.log("Hola como va");
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
         timeoutPromise,
@@ -212,22 +211,4 @@ export class GithubAdapter {
       throw error;
     }
   }
-  // async obtainCoverageFromComment(
-  //   owner: string,
-  //   repoName: string,
-  //   sha: string
-  // ): Promise<CoverageComment> {
-  //   try {
-  //     const response = await this.octokit.request(
-  //       `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
-  //     );
-
-  //     const coverageResponse: CoverageComment = response.data;
-  //     return coverageResponse;
-  //     console.log("coverage obtained");
-  //   } catch (error) {
-  //     console.error("Error obtaining comments:", error);
-  //     throw error;
-  //   }
-  // }
 }
