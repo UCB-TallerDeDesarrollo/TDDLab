@@ -6,7 +6,7 @@ import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
-import  {CreateAssignments }  from "../../../modules/Assignments/application/createAssingmentsAdapter";
+import  {CreateAssignments }  from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';  
 
 function Formulario() {

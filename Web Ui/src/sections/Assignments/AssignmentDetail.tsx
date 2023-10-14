@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GetAssignmentDetail } from "../../modules/Assignments/application/fetchAssignmentAdapter";
+import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
 import { formatDate } from "../../application/utils/dateUtils";
 import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
 import { useParams } from "react-router-dom";

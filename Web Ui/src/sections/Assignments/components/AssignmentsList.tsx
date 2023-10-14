@@ -19,8 +19,8 @@ import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
 
 import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
-import {  DeleteAssignment } from "../../../modules/Assignments/application/deleteAssignmentAdapter";
-import { SendAssignment } from "../../../modules/Assignments/application/sendAssignmentsAdapter";
+import {  DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
+import { SendAssignment } from "../../../modules/Assignments/application/SendAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
 
