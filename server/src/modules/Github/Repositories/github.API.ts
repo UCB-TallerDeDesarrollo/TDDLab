@@ -147,12 +147,12 @@ export class GithubAdapter {
       );
 
       const percentageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
-        coverageResponse.data
+        coverageResponse.data[0].body
       );
       console.log("Coverage ", percentageMatch);
 
       if (percentageMatch && percentageMatch.length >= 2) {
-        const percentageValue = parseFloat(percentageMatch[1]);
+        const percentageValue = String(percentageMatch[1]);
         const commitInfo: CommitInformationDataObject = {
           ...response.data,
           coveragePercentage: percentageValue,
