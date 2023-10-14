@@ -1,5 +1,11 @@
-import { fetchAssignments } from "../repository/assignment.API";
 
-export const fetchAssignmentsUseCase = async () => {
-  return await fetchAssignments();
+
+import  AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInterface";
+
+export class GetAssignments {
+  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
+
+  async obtainAllAssignments() {
+    return await this.assignmentsRepository.fetchAssignments();
+  }
 }
