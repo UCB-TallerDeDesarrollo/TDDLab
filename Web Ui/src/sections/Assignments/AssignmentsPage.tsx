@@ -1,44 +1,44 @@
-import Formulario from "./components/AssignmentForm";
-import Tareas from "./components/AssignmentsList";
+import Form from "./components/AssignmentForm";
+import Assignments from "./components/AssignmentsList";
 import { styled } from '@mui/system'; 
 import { useState } from "react";
 
 
 
 
-const GestionTareasContainer = styled('section')({
+const AssignmentManagerContainer = styled('section')({
   display: 'flex',
   width: '100%',
 });
 
-const TareasContainer = styled('div')({
+const AssignmentsContainer = styled('div')({
   flex: '1',
   marginLeft: '16px',  
   marginRight: '20px',  
 });
 
-const FormularioContainer = styled('div')({
+const FormsContainer = styled('div')({
   flex: '1',
   marginLeft: '8px',  
   marginRight: '2px', 
 });
-function GestionTareas() {
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+function AssignmentManager() {
+  const [showForm, setShowForm] = useState(false);
 
-  const handleMostrarFormulario = () => {
-    setMostrarFormulario(true);
+  const handleShowForm = () => {
+    setShowForm(true);
   };
 
   return (
-    <GestionTareasContainer>
-      <TareasContainer>
-        <Tareas mostrarFormulario={handleMostrarFormulario}  />
-      </TareasContainer>
-      <FormularioContainer>
-        {mostrarFormulario && <Formulario/>}
-      </FormularioContainer>
-    </GestionTareasContainer>
+    <AssignmentManagerContainer>
+      <AssignmentsContainer>
+        <Assignments mostrarFormulario={handleShowForm}  />
+      </AssignmentsContainer>
+      <FormsContainer>
+        {showForm && <Form/>}
+      </FormsContainer>
+    </AssignmentManagerContainer>
   );
 }
 
-export default GestionTareas;
+export default AssignmentManager;

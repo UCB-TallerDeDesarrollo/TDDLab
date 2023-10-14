@@ -9,7 +9,7 @@ import Filter from "./DatePicker";
 import  {CreateAssignments }  from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';  
 
-function Formulario() {
+function Form() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [assignmentData, setAssignmentData] = useState({
@@ -123,4 +123,4 @@ function Formulario() {
   );
 }
 
-export default Formulario;
+export default Form;

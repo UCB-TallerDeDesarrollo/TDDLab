@@ -41,7 +41,7 @@ const CustomTableCell2 = styled(TableCell)({
 interface TareasProps {
   mostrarFormulario: () => void;
 }
-function Tareas({ mostrarFormulario }: TareasProps) {
+function Assignments({ mostrarFormulario }: TareasProps) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
@@ -192,4 +192,4 @@ function Tareas({ mostrarFormulario }: TareasProps) {
   );
 }
 
-export default Tareas;
+export default Assignments;
