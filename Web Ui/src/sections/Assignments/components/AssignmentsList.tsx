@@ -72,15 +72,24 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      if (selectedAssignmentIndex !== null && assignments[selectedAssignmentIndex]) {
+    try{
+      if (
+        selectedAssignmentIndex !== null &&
+        assignments[selectedAssignmentIndex]
+      ) {
+        console.log(
+          "ID de la tarea a eliminar:",
+          assignments[selectedAssignmentIndex].id
+        );
         await deleteAssignments.deleteAssignment(assignments[selectedAssignmentIndex].id);
+    
       }
       setConfirmationOpen(false);
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
     }
+  catch (error) {
+    console.error(error);
+  }
+  window.location.reload();
   };
 
   const handleClickUpdate = (index: number) => {
