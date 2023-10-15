@@ -17,13 +17,18 @@ beforeEach(() => {
 describe('Get assignments', () => {
     it('should respond with a status 200 and a list of assignments', async () => {
         jest.spyOn(GetAssignments.prototype, "execute").mockResolvedValue(assignmentList);
-    
         const req = createRequest();
         const res = createResponse();
-    
         await controller.getAssignments(req, res);
-    
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(assignmentList);
+      });
+      it('should respond with a 500 status and error message when getAssignments fails', async () => {
+        jest.spyOn(GetAssignments.prototype, "execute").mockRejectedValue(new Error("Error creating assignment"));
+        const req = createRequest();
+        const res = createResponse();
+        await controller.getAssignments(req, res);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
       });
 });
