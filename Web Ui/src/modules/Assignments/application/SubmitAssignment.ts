@@ -1,12 +1,12 @@
 import { AssignmentDataObject } from "../domain/assignmentInterfaces";
 import  AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInterface";
 
-export class SendAssignment {
+export class SubmitAssignment {
   constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
 
-  async sendAsignment(assignmentId: number) {
+  async submitAssignment(assignmentId: number) {
     try {
-      const foundAssignment: AssignmentDataObject | null = await this.assignmentsRepository.fetchAssignmentById(assignmentId);
+      const foundAssignment: AssignmentDataObject | null = await this.assignmentsRepository.getAssignmentById(assignmentId);
 
       if (foundAssignment !== null) {
         foundAssignment.state = 'delivered';

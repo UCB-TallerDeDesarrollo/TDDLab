@@ -5,7 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';  
+import AssignmentsRepository from '../../../modules/Assignments/repository/AssignmentsRepository';  
 import {
   Table,
   TableHead,
@@ -20,7 +20,7 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 
 import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
 import {  DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
-import { SendAssignment } from "../../../modules/Assignments/application/SendAssignment";
+import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
 
@@ -53,13 +53,13 @@ function Assignments({ mostrarFormulario }: TareasProps) {
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]); // Specify the type as Assignment[]
   const assignmentsRepository = new AssignmentsRepository();
-  const getAsignments = new GetAssignments(assignmentsRepository);
-  const deleteAsignments = new DeleteAssignment(assignmentsRepository);
-  const sendAsignments = new SendAssignment(assignmentsRepository);
+  const getAssignments = new GetAssignments(assignmentsRepository);
+  const deleteAssignment = new DeleteAssignment(assignmentsRepository);
+  const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
   useEffect(() => {
     // Use the fetchAssignments function to fetch assignments
-    getAsignments.obtainAllAssignments()
+    getAssignments.obtainAllAssignments()
       .then((data) => {
         setAssignments(data); // Set the fetched assignments in state
       })
@@ -88,7 +88,7 @@ function Assignments({ mostrarFormulario }: TareasProps) {
           "ID de la tarea a eliminar:",
           assignments[selectedAssignmentIndex].id
         );
-        await deleteAsignments.deleteAssignment(assignments[selectedAssignmentIndex].id);
+        await deleteAssignment.deleteAssignment(assignments[selectedAssignmentIndex].id);
     
       }
       setConfirmationOpen(false);
@@ -102,7 +102,7 @@ function Assignments({ mostrarFormulario }: TareasProps) {
   const handleClickUpdate = (index: number) => {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
-    sendAsignments.sendAsignment(assignments[index].id); 
+    submitAssignment.submitAssignment(assignments[index].id); 
   };
   const handleSendGithubLink = (link: string) => {
     // Lógica para manejar el envío del enlace de Github
