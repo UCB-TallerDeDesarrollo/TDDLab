@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
-import { formatDate } from "../../application/utils/dateUtils";
+import { formatDate } from "../../utils/dateUtils";
 import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
 import { useParams } from "react-router-dom";
-import AssignmentsRepository from '../../modules/Assignments/repository/assignment.API';  
+import AssignmentsRepository from '../../modules/Assignments/repository/AssignmentsRepository';  
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
