@@ -8,6 +8,7 @@ import { createRequest, createRequestWithBody, createRequestWithId } from "./__m
 import { createResponse } from "./__mocks__/responseMoks";
 import GetAssignmentById from "../../src/modules/Assignments/application/AssignmentUseCases/getAssignmentByIdUseCase";
 import CreateAssignment from "../../src/modules/Assignments/application/AssignmentUseCases/createAssignmentUseCase";
+import DeleteAssignment from "../../src/modules/Assignments/application/AssignmentUseCases/deleteAssignmentUseCase";
 
 let controller: AssignmentsController;
 let repository: AssignmentRepository;
@@ -63,7 +64,7 @@ describe('Get assignment by id', () => {
 });
 
 describe('Create Assignment', () => {
-    it('should respond with a 201 status and return the created assignment', async () => {
+    it('should respond with a status 201 and return the created assignment', async () => {
       jest.spyOn(CreateAssignment.prototype, "execute").mockResolvedValue(assignment);
       const req = createRequestWithBody(assignment);
       const res = createResponse();
@@ -71,7 +72,7 @@ describe('Create Assignment', () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(assignment);
     });
-    it('should respond with a 500 status and error message when assignment creation fails', async () => {
+    it('should respond with a status 500 and error message when assignment creation fails', async () => {
         jest.spyOn(CreateAssignment.prototype, "execute").mockRejectedValue(new Error);
         const req = createRequestWithBody(assignment);
         const res = createResponse();
@@ -80,3 +81,14 @@ describe('Create Assignment', () => {
         expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
 });
+
+describe('Delete Assignment', () => {
+    it('should respond with a status 204 when assignment deletion is successful', async () => {
+      jest.spyOn(DeleteAssignment.prototype, "execute").mockResolvedValue(undefined);
+      const req = createRequestWithId('existing_id');
+      const res = createResponse();
+      await controller.deleteAssignment(req, res);
+      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.send).toHaveBeenCalled();
+    });
+});  
