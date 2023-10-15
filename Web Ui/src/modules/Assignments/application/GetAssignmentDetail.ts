@@ -6,7 +6,7 @@ export class GetAssignmentDetail {
 
   async obtainAssignmentDetail(assignmentId: number): Promise<AssignmentDataObject | null> {
     try {
-      const assignment = await this.assignmentsRepository.fetchAssignmentById(assignmentId);
+      const assignment = await this.assignmentsRepository.getAssignmentById(assignmentId);
 
       if (assignment === null) {
         return null;
