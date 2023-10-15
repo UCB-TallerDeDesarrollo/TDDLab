@@ -91,4 +91,12 @@ describe('Delete Assignment', () => {
       expect(res.status).toHaveBeenCalledWith(204);
       expect(res.send).toHaveBeenCalled();
     });
+    it('should respond with a status 500 and error message when assignment deletion fails', async () => {    
+        jest.spyOn(DeleteAssignment.prototype, "execute").mockRejectedValue(new Error("Error deleting assignment"));
+        const req = createRequestWithId('non_existing_id');
+        const res = createResponse();
+        await controller.deleteAssignment(req, res);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
 });  
