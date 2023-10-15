@@ -71,4 +71,12 @@ describe('Create Assignment', () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(assignment);
     });
+    it('should respond with a 500 status and error message when assignment creation fails', async () => {
+        jest.spyOn(CreateAssignment.prototype, "execute").mockRejectedValue(new Error);
+        const req = createRequestWithBody(assignment);
+        const res = createResponse();
+        await controller.createAssignment(req, res);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
 });
