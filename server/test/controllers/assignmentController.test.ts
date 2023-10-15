@@ -104,12 +104,20 @@ describe('Delete Assignment', () => {
 });
 
 describe('Update Assignment', () => {
-    it('should respond with a 200 status and updated assignment when update is successful', async () => {
+    it('should respond with a status 200 and updated assignment when update is successful', async () => {
       jest.spyOn(UpdateAssignment.prototype, 'execute').mockResolvedValue(assignment);
       const req = createRequest('existing_id', assignment)
       const res = createResponse();
       await controller.updateAssignment(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(assignment);
+    });
+    it('should respond with a 404 status and error message when assignment is not found', async () => {
+        jest.spyOn(UpdateAssignment.prototype, 'execute').mockResolvedValue(null);
+        const req = createRequest('non_existing_id', assignment);
+        const res = createResponse();
+        await controller.updateAssignment(req, res);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Assignment not found' });
     });
 });
