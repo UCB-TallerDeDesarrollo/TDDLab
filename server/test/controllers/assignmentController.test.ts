@@ -4,9 +4,10 @@ import AssignmentRepository from "../../src/modules/Assignments/repositories/Ass
 
 import { assignmentList } from "./__mocks__/dataTypeMocks/assignmentListData"
 import { assignment } from "./__mocks__/dataTypeMocks/assignmentData"
-import { createRequest, createRequestWithId } from "./__mocks__/requestMocks";
+import { createRequest, createRequestWithBody, createRequestWithId } from "./__mocks__/requestMocks";
 import { createResponse } from "./__mocks__/responseMoks";
 import GetAssignmentById from "../../src/modules/Assignments/application/AssignmentUseCases/getAssignmentByIdUseCase";
+import CreateAssignment from "../../src/modules/Assignments/application/AssignmentUseCases/createAssignmentUseCase";
 
 let controller: AssignmentsController;
 let repository: AssignmentRepository;
@@ -58,5 +59,16 @@ describe('Get assignment by id', () => {
         await controller.getAssignmentById(req, res);
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
+});
+
+describe('Create Assignment', () => {
+    it('should respond with a 201 status and return the created assignment', async () => {
+      jest.spyOn(CreateAssignment.prototype, "execute").mockResolvedValue(assignment);
+      const req = createRequestWithBody(assignment);
+      const res = createResponse();
+      await controller.createAssignment(req, res);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith(assignment);
     });
 });
