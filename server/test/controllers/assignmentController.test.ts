@@ -52,4 +52,11 @@ describe('Get assignment by id', () => {
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ error: "Assignment not found" });
     });
+    it('should respond with a status 500 and error message when getAssignmentsById fails', async () => {
+        const req = createRequest();
+        const res = createResponse();
+        await controller.getAssignmentById(req, res);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
 });
