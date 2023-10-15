@@ -120,4 +120,12 @@ describe('Update Assignment', () => {
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ error: 'Assignment not found' });
     });
+    it('should respond with a 500 status and error message when update fails', async () => {
+        jest.spyOn(UpdateAssignment.prototype, 'execute').mockRejectedValue(new Error);
+        const req = createRequest('existing_id', assignment);
+        const res = createResponse();
+        await controller.updateAssignment(req, res);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Server error' });
+    });
 });
