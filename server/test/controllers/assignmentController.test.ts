@@ -4,11 +4,12 @@ import AssignmentRepository from "../../src/modules/Assignments/repositories/Ass
 
 import { assignmentList } from "./__mocks__/dataTypeMocks/assignmentListData"
 import { assignment } from "./__mocks__/dataTypeMocks/assignmentData"
-import { createRequest, createRequestWithBody, createRequestWithId } from "./__mocks__/requestMocks";
+import { createRequest } from "./__mocks__/requestMocks";
 import { createResponse } from "./__mocks__/responseMoks";
 import GetAssignmentById from "../../src/modules/Assignments/application/AssignmentUseCases/getAssignmentByIdUseCase";
 import CreateAssignment from "../../src/modules/Assignments/application/AssignmentUseCases/createAssignmentUseCase";
 import DeleteAssignment from "../../src/modules/Assignments/application/AssignmentUseCases/deleteAssignmentUseCase";
+import UpdateAssignment from "../../src/modules/Assignments/application/AssignmentUseCases/updateAssignmentUseCase";
 
 let controller: AssignmentsController;
 let repository: AssignmentRepository;
@@ -40,7 +41,7 @@ describe('Get assignments', () => {
 describe('Get assignment by id', () => {
     it('should respond with a status 200 and the assignments', async () => {
       jest.spyOn(GetAssignmentById.prototype, "execute").mockResolvedValue(assignment);
-      const req = createRequestWithId('Tarea 1');
+      const req = createRequest('Tarea 1');
       const res = createResponse();
       await controller.getAssignmentById(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -48,13 +49,14 @@ describe('Get assignment by id', () => {
     });
     it('should respond with a status 404 and an error message for non-existent assignment', async () => {
         jest.spyOn(GetAssignmentById.prototype, "execute").mockResolvedValue(null);
-        const req = createRequestWithId('non_existent_id');
+        const req = createRequest('non_existent_id');
         const res = createResponse();
         await controller.getAssignmentById(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ error: "Assignment not found" });
     });
     it('should respond with a status 500 and error message when getAssignmentsById fails', async () => {
+        jest.spyOn(GetAssignmentById.prototype, "execute").mockRejectedValue(new Error);
         const req = createRequest();
         const res = createResponse();
         await controller.getAssignmentById(req, res);
@@ -66,7 +68,7 @@ describe('Get assignment by id', () => {
 describe('Create Assignment', () => {
     it('should respond with a status 201 and return the created assignment', async () => {
       jest.spyOn(CreateAssignment.prototype, "execute").mockResolvedValue(assignment);
-      const req = createRequestWithBody(assignment);
+      const req = createRequest(undefined, assignment);
       const res = createResponse();
       await controller.createAssignment(req, res);
       expect(res.status).toHaveBeenCalledWith(201);
@@ -74,7 +76,7 @@ describe('Create Assignment', () => {
     });
     it('should respond with a status 500 and error message when assignment creation fails', async () => {
         jest.spyOn(CreateAssignment.prototype, "execute").mockRejectedValue(new Error);
-        const req = createRequestWithBody(assignment);
+        const req = createRequest(undefined, assignment);
         const res = createResponse();
         await controller.createAssignment(req, res);
         expect(res.status).toHaveBeenCalledWith(500);
@@ -85,7 +87,7 @@ describe('Create Assignment', () => {
 describe('Delete Assignment', () => {
     it('should respond with a status 204 when assignment deletion is successful', async () => {
       jest.spyOn(DeleteAssignment.prototype, "execute").mockResolvedValue(undefined);
-      const req = createRequestWithId('existing_id');
+      const req = createRequest('existing_id');
       const res = createResponse();
       await controller.deleteAssignment(req, res);
       expect(res.status).toHaveBeenCalledWith(204);
@@ -93,10 +95,21 @@ describe('Delete Assignment', () => {
     });
     it('should respond with a status 500 and error message when assignment deletion fails', async () => {    
         jest.spyOn(DeleteAssignment.prototype, "execute").mockRejectedValue(new Error("Error deleting assignment"));
-        const req = createRequestWithId('non_existing_id');
+        const req = createRequest('non_existing_id');
         const res = createResponse();
         await controller.deleteAssignment(req, res);
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
-});  
+});
+
+describe('Update Assignment', () => {
+    it('should respond with a 200 status and updated assignment when update is successful', async () => {
+      jest.spyOn(UpdateAssignment.prototype, 'execute').mockResolvedValue(assignment);
+      const req = createRequest('existing_id', assignment)
+      const res = createResponse();
+      await controller.updateAssignment(req, res);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(assignment);
+    });
+});
