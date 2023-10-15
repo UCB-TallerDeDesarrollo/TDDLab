@@ -25,7 +25,7 @@ describe('Get assignments', () => {
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(assignmentList);
       });
-      it('should respond with a 500 status and error message when getAssignments fails', async () => {
+      it('should respond with a 500 status 500 and error message when getAssignments fails', async () => {
         jest.spyOn(GetAssignments.prototype, "execute").mockRejectedValue(new Error);
         const req = createRequest();
         const res = createResponse();
@@ -36,12 +36,20 @@ describe('Get assignments', () => {
 });
 
 describe('Get assignment by id', () => {
-    it('should respond with a status 200 and a list of assignments', async () => {
+    it('should respond with a status 200 and the assignments', async () => {
       jest.spyOn(GetAssignmentById.prototype, "execute").mockResolvedValue(assignment);
       const req = createRequestWithId('Tarea 1');
       const res = createResponse();
       await controller.getAssignmentById(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(assignment);
+    });
+    it('should respond with a status 404 and an error message for non-existent assignment', async () => {
+        jest.spyOn(GetAssignmentById.prototype, "execute").mockResolvedValue(null);
+        const req = createRequestWithId('non_existent_id');
+        const res = createResponse();
+        await controller.getAssignmentById(req, res);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ error: "Assignment not found" });
     });
 });
