@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AssignmentsRepository from '../../../modules/Assignments/repository/assignment.API';
+import AssignmentsRepository from '../../../modules/Assignments/repository/AssignmentsRepository';  
 import {
   Table,
   TableHead,
@@ -11,11 +11,12 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments";
-import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
-import { SendAssignment } from "../../../modules/Assignments/application/SendAssignment";
-import { ConfirmationDialog } from "./ConfirmationDialog";
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
+
+import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
+import {  DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
+import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
+import { ConfirmationDialog } from "./ConfirmationDialog"; 
 import { GitLinkDialog } from "./GitHubLinkDialog";
 import Assignment from "./Assignment";
 
@@ -48,10 +49,11 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
   const getAssignments = new GetAssignments(assignmentsRepository);
-  const deleteAssignments = new DeleteAssignment(assignmentsRepository);
-  const sendAssignments = new SendAssignment(assignmentsRepository);
+  const deleteAssignment = new DeleteAssignment(assignmentsRepository);
+  const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
   useEffect(() => {
+    // Use the fetchAssignments function to fetch assignments
     getAssignments.obtainAllAssignments()
       .then((data) => {
         setAssignments(data);
@@ -81,7 +83,7 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
           "ID de la tarea a eliminar:",
           assignments[selectedAssignmentIndex].id
         );
-        await deleteAssignments.deleteAssignment(assignments[selectedAssignmentIndex].id);
+        await deleteAssignment.deleteAssignment(assignments[selectedAssignmentIndex].id);
     
       }
       setConfirmationOpen(false);
@@ -95,7 +97,7 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
   const handleClickUpdate = (index: number) => {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
-    sendAssignments.sendAssignment(assignments[index].id);
+    submitAssignment.submitAssignment(assignments[index].id); 
   };
 
   const handleSendGithubLink = (link: string) => {

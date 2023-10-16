@@ -1,8 +1,8 @@
-import { AssignmentDataObject } from '../domain/assignmentInterfaces';
+import { AssignmentDataObject } from './assignmentInterfaces';
 
 interface AssignmentsRepositoryInterface {
-  fetchAssignments(): Promise<AssignmentDataObject[]>;
-  fetchAssignmentById(assignmentId: number): Promise<AssignmentDataObject | null>;
+  getAssignments(): Promise<AssignmentDataObject[]>;
+  getAssignmentById(assignmentId: number): Promise<AssignmentDataObject | null>;
   createAssignment(assignmentData: AssignmentDataObject): Promise<void>;
   updateAssignment(assignmentId: number, assignmentData: AssignmentDataObject): Promise<void>;
   deleteAssignment(assignmentId: number): Promise<void>;
