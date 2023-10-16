@@ -15,10 +15,19 @@ export class GithubAdapter {
     repoName: string
   ): Promise<CommitDataObject[]> {
     try {
-      const response = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/commits?per_page=100`
-      );
-      console.log(response.data[0].author.login);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error("Request timed out"));
+        }, 5000);
+      });
+  
+      const response : any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
+          per_page: 100,
+        }),
+        timeoutPromise,
+      ]);
+      
 
       const commits: CommitDataObject[] = response.data.map(
         (githubCommit: any) => {
@@ -123,9 +132,16 @@ export class GithubAdapter {
     sha: string
   ): Promise<CommitInformationDataObject> {
     try {
-      const response = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/commits/${sha}`
-      );
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error("Request timed out"));
+        }, 5000);
+      });
+  
+      const response : any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`,),
+        timeoutPromise,
+      ]);
 
       const commits: CommitInformationDataObject = response.data;
       return commits;
@@ -137,9 +153,16 @@ export class GithubAdapter {
 
   async obtainRunsOfGithubActions(owner: string, repoName: string) {
     try {
-      const response = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/actions/runs`
-      );
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error("Request timed out"));
+        }, 5000);
+      });
+  
+      const response : any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`,),
+        timeoutPromise,
+      ]);
 
       return response;
     } catch (error) {

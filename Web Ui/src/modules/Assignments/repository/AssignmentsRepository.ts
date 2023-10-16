@@ -7,8 +7,8 @@ const API_URL = 'https://tdd-lab-6hbrauuzu-tddlabs-projects.vercel.app/api/assig
 class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
 
-// Define a function to fetch assignments
-async fetchAssignments(): Promise<AssignmentDataObject[]> {
+
+async getAssignments(): Promise<AssignmentDataObject[]> {
   try {
     // Send a GET request to fetch assignments from the backend
     const response = await axios.get(API_URL);
@@ -32,7 +32,7 @@ async fetchAssignments(): Promise<AssignmentDataObject[]> {
 
 
 // Define a function to fetch an assignment by its ID
-async fetchAssignmentById(assignmentId: number): Promise<AssignmentDataObject | null> {
+async getAssignmentById(assignmentId: number): Promise<AssignmentDataObject | null> {
   try {
     // Send a GET request to fetch a specific assignment by ID
     const response = await axios.get(`${API_URL}/${assignmentId}`);
