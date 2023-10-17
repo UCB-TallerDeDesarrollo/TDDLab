@@ -1,8 +1,8 @@
-import { CommitDataObject } from "../Domain/CommitDataObject";
 import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { CommitDataObject } from "../Domain/CommitDataObject";
 import { CommitRepository } from "../Repositories/commitRepository";
 
-export const checkForNewCommits = async (
+export const checkForNewCommits = async (   //cambio de nombre
   owner: string,
   repoName: string,
   commitsData: CommitDataObject[],
@@ -29,9 +29,9 @@ export const checkForNewCommits = async (
 export const updateCommitsTable = async (
   owner: string,
   repoName: string,
-  Adapter: CommitRepository = new CommitRepository()
+  repositoryAdapter: CommitRepository,
+  githubAdapter: GithubAdapter
 ): Promise<void> => {
-  const githubAdapter = new GithubAdapter();
 
   try {
     const commits = await githubAdapter.obtainCommitsOfRepo(owner, repoName);
@@ -66,7 +66,7 @@ export const updateCommitsTable = async (
     if (newCommits.length > 0) {
       await Promise.all(
         newCommits.map(async (commit: CommitDataObject) => {
-          !(await Adapter.saveCommitInfoOfRepo(owner, repoName, commit));
+          !(await repositoryAdapter.saveCommitInfoOfRepo(owner, repoName, commit));
         })
       );
     }
