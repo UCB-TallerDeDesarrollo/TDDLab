@@ -109,9 +109,9 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
 
     if (selectedAssignmentIndex !== null) {
       submitAssignment.submitAssignment(
-        assignments[selectedAssignmentIndex].id
+        assignments[selectedAssignmentIndex].id,
+        link
       );
-      console.log("Sending Github link:", link);
     }
   };
 
