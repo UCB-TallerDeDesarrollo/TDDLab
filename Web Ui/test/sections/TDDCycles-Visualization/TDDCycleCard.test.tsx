@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
-import TDDCycleCard from '../../../src/sections/TDDCycles-Visualization/TDDCycleCard';
+import TDDCycleCard from '../../../src/sections/TDDCycles-Visualization/components/TDDCycleCard';
 import {  mockCommitData } from './__mocks__/dataTypeMocks/commitData';
 import { mockSuccessJobData,mockFailedJobData } from './__mocks__/dataTypeMocks/jobData';
 import '@testing-library/jest-dom';

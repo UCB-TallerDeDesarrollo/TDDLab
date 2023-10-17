@@ -1,4 +1,4 @@
-import { JobDataObject } from "../../../../../src/TDDCycles-Visualization/domain/jobInterfaces";
+import { JobDataObject } from "../../../../../src/modules/TDDCycles-Visualization/domain/jobInterfaces";
 
 export const mockSuccessJobData: JobDataObject = {
   sha: "123321456",
