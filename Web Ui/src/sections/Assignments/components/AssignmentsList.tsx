@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AssignmentsRepository from '../../../modules/Assignments/repository/AssignmentsRepository';  
+import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import {
   Table,
   TableHead,
@@ -11,12 +11,12 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";// Import your assignment model
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; // Import your assignment model
 
 import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
-import {  DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
+import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
-import { ConfirmationDialog } from "./ConfirmationDialog"; 
+import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
 import Assignment from "./Assignment";
 
@@ -41,7 +41,9 @@ interface AssignmentsProps {
 function Assignments({ mostrarFormulario }: AssignmentsProps) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
-  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<number | null>(null);
+  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
+    number | null
+  >(null);
   const navigate = useNavigate();
 
   const [, setSelectedRow] = useState<number | null>(null);
@@ -54,7 +56,8 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
 
   useEffect(() => {
     // Use the fetchAssignments function to fetch assignments
-    getAssignments.obtainAllAssignments()
+    getAssignments
+      .obtainAllAssignments()
       .then((data) => {
         setAssignments(data);
       })
@@ -74,7 +77,7 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
   };
 
   const handleConfirmDelete = async () => {
-    try{
+    try {
       if (
         selectedAssignmentIndex !== null &&
         assignments[selectedAssignmentIndex]
@@ -83,25 +86,33 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
           "ID de la tarea a eliminar:",
           assignments[selectedAssignmentIndex].id
         );
-        await deleteAssignment.deleteAssignment(assignments[selectedAssignmentIndex].id);
-    
+        await deleteAssignment.deleteAssignment(
+          assignments[selectedAssignmentIndex].id
+        );
       }
       setConfirmationOpen(false);
+    } catch (error) {
+      console.error(error);
     }
-  catch (error) {
-    console.error(error);
-  }
-  window.location.reload();
+    window.location.reload();
   };
 
   const handleClickUpdate = (index: number) => {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
-    submitAssignment.submitAssignment(assignments[index].id); 
+    setSelectedAssignmentIndex(index);
+    // submitAssignment.submitAssignment(assignments[index].id);
   };
 
   const handleSendGithubLink = (link: string) => {
-    console.log("Sending Github link:", link);
+    console.log(setSelectedRow);
+
+    if (selectedAssignmentIndex !== null) {
+      submitAssignment.submitAssignment(
+        assignments[selectedAssignmentIndex].id
+      );
+      console.log("Sending Github link:", link);
+    }
   };
 
   const handleRowHover = (index: number | null) => {
