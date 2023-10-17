@@ -27,6 +27,7 @@ class AssignmentRepository {
           start_date: row.start_date,
           end_date: row.end_date,
           state: row.state,
+          link: row.link,
         })
       );
 
@@ -51,6 +52,7 @@ class AssignmentRepository {
           start_date: result.rows[0].start_date,
           end_date: result.rows[0].end_date,
           state: result.rows[0].state,
+          link: result.rows[0].link,
         };
         return assignment;
       }
@@ -93,16 +95,24 @@ class AssignmentRepository {
   }
 
   async updateAssignment(
-    id: number,
+    id: string,
     updatedAssignment: AssignmentDataObject
   ): Promise<AssignmentDataObject | null> {
     try {
       const client = await pool.connect();
-      const { title, description, start_date, end_date, state } =
+      const { title, description, start_date, end_date, state, link } =
         updatedAssignment;
       const query =
-        "UPDATE assignments SET title = $1, description = $2, start_date = $3, end_date = $4, state = $5 WHERE id = $6 RETURNING *";
-      const values = [title, description, start_date, end_date, state, id];
+        "UPDATE assignments SET title = $1, description = $2, start_date = $3, end_date = $4, state = $5, link = $6 WHERE id = $7 RETURNING *";
+      const values = [
+        title,
+        description,
+        start_date,
+        end_date,
+        state,
+        link,
+        id,
+      ];
       const result = await client.query(query, values);
       client.release();
       if (result.rows.length === 1) {
@@ -112,6 +122,7 @@ class AssignmentRepository {
           start_date: result.rows[0].start_date,
           end_date: result.rows[0].end_date,
           state: result.rows[0].state,
+          link: result.rows[0].link,
         };
         return assignment;
       }

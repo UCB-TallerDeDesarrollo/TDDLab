@@ -1,5 +1,5 @@
 import {  render} from '@testing-library/react';
-import TDDCycleList from '../../../src/sections/TDDCycles-Visualization/TDDCycleList';
+import TDDCycleList from '../../../src/sections/TDDCycles-Visualization/components/TDDCycleList';
 import { mockCommitData } from './__mocks__/dataTypeMocks/commitData';
 import { mockSuccessJobData} from './__mocks__/dataTypeMocks/jobData';
 import '@testing-library/jest-dom';
