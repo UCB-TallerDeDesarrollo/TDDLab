@@ -1,4 +1,4 @@
-import { GithubAPIRepository } from "../../../../src/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { GithubAPIRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { mockCommitData } from "../__mocks__/dataTypeMocks/commitData";
 
 export class MockGithubAPI implements GithubAPIRepository {
