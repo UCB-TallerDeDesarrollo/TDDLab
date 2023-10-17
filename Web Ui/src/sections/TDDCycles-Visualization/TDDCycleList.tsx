@@ -13,18 +13,13 @@ function TDDCycleList({ commitsInfo,jobsByCommit}: CycleReportViewProps) {
   if (commitsInfo === null || jobsByCommit === null) {
     return null;
   }
-  const combinedList: [CommitDataObject, JobDataObject][] = [];
-
-
-  if (commitsInfo.length === jobsByCommit.length) {
-    for (let i = 0; i < commitsInfo.length; i++) {
-      const commit = commitsInfo[i];
-      const job = jobsByCommit[i];
-      combinedList.push([commit, job]);
+  const combinedList: [CommitDataObject, JobDataObject|null][] = commitsInfo.map((commit) => {
+    const job = jobsByCommit.find((job) => job.sha === commit.sha);
+    if (job === undefined) {
+      return [commit, null];
     }
-  } else {
-    console.error('Las listas no tienen la misma longitud');
-  }
+    return [commit, job];
+  });
   return (
     <>
       {combinedList.map((commit) => (
