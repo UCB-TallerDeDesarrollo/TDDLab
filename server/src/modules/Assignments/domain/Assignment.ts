@@ -4,4 +4,5 @@ export interface AssignmentDataObject {
   start_date: Date | null;
   end_date: Date | null;
   state: "pending" | "delivered";
+  link: string | null; // Add the link field
 }

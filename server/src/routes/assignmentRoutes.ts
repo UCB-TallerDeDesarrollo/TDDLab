@@ -36,4 +36,10 @@ assignmentsRouter.delete(
   async (req, res) => await assignmentController.deleteAssignment(req, res)
 );
 
+// Delivery assignment link
+assignmentsRouter.put(
+  "/:id/deliver",
+  async (req, res) => await assignmentController.deliverAssignment(req, res)
+);
+
 export default assignmentsRouter;
