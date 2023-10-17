@@ -4,10 +4,15 @@ import { updateJobsTable } from "./updateJobsTable";
 
 
 export const getJobs = async (owner: string, repoName: string,Adapter:jobRepository=new jobRepository()) => {
-  
-  await updateJobsTable(owner,repoName,Adapter)
-  const Jobs = await Adapter.getJobs(owner, repoName);
-  return Jobs
+  try{
+    await updateJobsTable(owner,repoName,Adapter)
+  }catch(error){
+    console.error("Error updating jobs table:", error);
+    return { error: "Error updating jobs table" };
+  }finally{
+    const Jobs = await Adapter.getJobs(owner, repoName);
+    return Jobs;
+  }
 };
 
 
