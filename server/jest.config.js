@@ -10,4 +10,5 @@ module.exports = {
         tsconfig: 'tsconfig.json',
       },
     },
+    silent: true,
   };
