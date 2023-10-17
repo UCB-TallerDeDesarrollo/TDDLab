@@ -1,17 +1,23 @@
 import { AssignmentDataObject } from "../domain/assignmentInterfaces";
-import  AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInterface";
+import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
 export class SubmitAssignment {
   constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
 
-  async submitAssignment(assignmentId: number) {
+  async submitAssignment(assignmentId: number, link: string) {
     try {
-      const foundAssignment: AssignmentDataObject | null = await this.assignmentsRepository.getAssignmentById(assignmentId);
+      const foundAssignment: AssignmentDataObject | null =
+        await this.assignmentsRepository.getAssignmentById(assignmentId);
 
       if (foundAssignment !== null) {
-        foundAssignment.state = 'delivered';
-        return await this.assignmentsRepository.updateAssignment(assignmentId, foundAssignment);
-        
+        foundAssignment.state = "delivered";
+        foundAssignment.link = link;
+        console.log(foundAssignment);
+
+        return await this.assignmentsRepository.updateAssignment(
+          assignmentId,
+          foundAssignment
+        );
       } else {
         throw new Error("No se encontró la tarea");
       }
