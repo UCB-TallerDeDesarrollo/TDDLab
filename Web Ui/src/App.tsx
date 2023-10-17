@@ -7,7 +7,7 @@ import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 function App() {
   return (
     <Router>
-      Root Component Renders
+      
       <Routes>
         <Route path="/" element={<GestionTareas />} />
         <Route path="/assignment/:id" element={<AssignmentDetail />} />
