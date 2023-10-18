@@ -19,11 +19,15 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
 }) => {
   const [link, setLink] = useState("");
   const [isVerGraficaEnabled, setIsVerGraficaEnabled] = useState(false);
+  const [flag, setFlag] = React.useState(true);
 
   const handleSend = () => {
     onSend(link);
-    setIsVerGraficaEnabled(true);  
+    setIsVerGraficaEnabled(true);
+    setFlag(!flag);
   };
+
+  const handleRedirect = () => {};
 
   const dialogTitleStyle = {
     fontSize: "1rem",
@@ -33,8 +37,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     fontSize: "12px",
   };
 
-  
-
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
@@ -42,23 +44,22 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <TextField
           label="Enlace de Github"
           variant="outlined"
+          color={flag ? "primary" : "success"}
           value={link}
           onChange={(e) => setLink(e.target.value)}
           fullWidth
+          focused
           style={textFieldStyle}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
-          Cancelar
+          Cerrar
         </Button>
         <Button onClick={handleSend} color="primary">
           Enviar
         </Button>
-        <Button
-          color="primary"
-          disabled={!isVerGraficaEnabled}  
-        >
+        <Button color="primary" disabled={!isVerGraficaEnabled}>
           Ver gráfica
         </Button>
       </DialogActions>
