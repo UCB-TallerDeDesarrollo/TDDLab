@@ -110,7 +110,6 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
         assignments[selectedAssignmentIndex].id,
         link
       );
-      setGithubLinkDialogOpen(false);
     }
   };
 
