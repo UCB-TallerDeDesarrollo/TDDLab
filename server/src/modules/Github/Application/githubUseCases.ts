@@ -1,7 +1,6 @@
 import {
   CommitDataObject,
-  CommitInformationDataObject,
-  CoverageComment
+  CommitInformationDataObject
 } from "../Domain/commitInterfaces";
 import { JobDataObject } from "../Domain/jobInterfaces";
 import { GithubAdapter } from "../Repositories/github.API";
@@ -66,24 +65,5 @@ export class githubUseCases {
       })
     );
     return jobs;
-  }
-
-  async obtainCoverageOfCommit(
-    owner: string,
-    repoName: string,
-    sha: string
-  ): Promise<CoverageComment> {
-    try {
-      const coverage = await this.adapter.obtainCoverageFromComment(
-        owner,
-        repoName,
-        sha
-      );
-      console.log(coverage);
-      return coverage;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
   }
 }
