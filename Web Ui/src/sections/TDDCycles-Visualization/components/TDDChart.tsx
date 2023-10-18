@@ -1,5 +1,5 @@
-import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { JobDataObject } from '../../TDDCycles-Visualization/domain/jobInterfaces';
+import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { JobDataObject } from '../../../modules/TDDCycles-Visualization/domain/jobInterfaces';
 import { Line, getElementAtEvent} from 'react-chartjs-2';
 import { useRef } from "react";
 
