@@ -27,7 +27,24 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     setFlag(!flag);
   };
 
-  const handleRedirect = () => {};
+  const handleRedirect = () => {
+    if (!link) {
+      alert("Please enter a GitHub URL.");
+      return;
+    }
+
+    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+    const match = link.match(regex);
+
+    if (match) {
+      const [, user, repo] = match;
+
+      const githubURL = `https://github.com/${user}/${repo}`;
+      window.location.href = githubURL;
+    } else {
+      alert("Invalid GitHub URL. Please enter a valid GitHub repository URL.");
+    }
+  };
 
   const dialogTitleStyle = {
     fontSize: "1rem",
@@ -63,7 +80,11 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <Button onClick={handleSend} color="primary">
           Enviar
         </Button>
-        <Button color="primary" disabled={!isVerGraficaEnabled}>
+        <Button
+          onClick={handleRedirect}
+          color="primary"
+          disabled={!isVerGraficaEnabled}
+        >
           Ver gráfica
         </Button>
       </DialogActions>
