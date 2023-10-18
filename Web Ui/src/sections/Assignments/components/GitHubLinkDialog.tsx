@@ -38,6 +38,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
 
     if (match) {
       const [, user, repo] = match;
+      console.log(user, repo);
 
       const githubURL = `https://github.com/${user}/${repo}`;
       window.location.href = githubURL;
