@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useNavigate, createSearchParams } from "react-router-dom";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -17,6 +18,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onClose,
   onSend,
 }) => {
+  const navigate = useNavigate();
   const [link, setLink] = useState("");
   const [isVerGraficaEnabled, setIsVerGraficaEnabled] = useState(false);
   const [flag, setFlag] = React.useState(true);
@@ -38,9 +40,14 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
 
     if (match) {
       const [, user, repo] = match;
-
-      const githubURL = `https://github.com/${user}/${repo}`;
-      window.location.href = githubURL;
+      console.log(user, repo);
+      navigate({
+        pathname: "/graph",
+        search: createSearchParams({
+          repoOwner: user,
+          repoName: repo,
+        }).toString(),
+      });
     } else {
       alert("Invalid GitHub URL. Please enter a valid GitHub repository URL.");
     }
