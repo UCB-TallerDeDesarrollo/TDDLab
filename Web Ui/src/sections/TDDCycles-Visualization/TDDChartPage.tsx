@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { PortGetTDDCycles } from "../../TDDCycles-Visualization/application/GetTDDCycles";
-import { GithubAPIAdapter } from "../../TDDCycles-Visualization/repository/GithubAPIAdapter";
-import TDDChartsView from "./TDDChartsView";
-import TDDCycleList from "./TDDCycleList";
-import { JobDataObject } from "../../TDDCycles-Visualization/domain/jobInterfaces";
-import { CommitDataObject } from "../../TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
+import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
+import TDDChartsView from "./components/TDDChartsView";
+import TDDCycleList from "./components/TDDCycleList";
+import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
+import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css"
 
 

@@ -57,6 +57,7 @@ export const updateCommitsTable = async (
             comment_count: commit.commit.comment_count,
           },
           sha: commit.sha,
+          coverage: commit.coveragePercentage
         };
       }
     );
