@@ -6,8 +6,8 @@ import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
-import  {CreateAssignments }  from "../../../modules/Assignments/application/CreateAssingment";
-import AssignmentsRepository from '../../../modules/Assignments/repository/AssignmentsRepository';  
+import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
+import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 function Form() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -19,13 +19,13 @@ function Form() {
     start_date: new Date(),
     end_date: new Date(),
     state: "pending",
+    link: "",
   });
 
   const handleGuardarClick = async () => {
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
     try {
-      
       await createAssignments.createAssignment(assignmentData);
 
       setSuccessMessage("Cambios guardados con éxito");
@@ -95,10 +95,7 @@ function Form() {
               <Filter onUpdateDates={handleUpdateDates} />
             </LocalizationProvider>
           </section>
-          <Stack
-            direction="row"
-            spacing={2}
-          >
+          <Stack direction="row" spacing={2}>
             <Button
               variant="contained"
               endIcon={<SaveIcon />}
