@@ -1,4 +1,4 @@
-import { CommitDataObject } from "../../../../../src/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 
 export const mockCommitData: CommitDataObject = {
   html_url: "https://github.com/user2/repo2/commit/1234",

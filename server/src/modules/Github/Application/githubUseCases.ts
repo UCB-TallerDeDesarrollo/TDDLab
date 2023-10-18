@@ -1,6 +1,6 @@
 import {
   CommitDataObject,
-  CommitInformationDataObject,
+  CommitInformationDataObject
 } from "../Domain/commitInterfaces";
 import { JobDataObject } from "../Domain/jobInterfaces";
 import { GithubAdapter } from "../Repositories/github.API";
@@ -43,8 +43,7 @@ export class githubUseCases {
     }
   }
   //Already declared in separated files
-  async obtainJobsData(owner: string, repoName: string){
-    
+  async obtainJobsData(owner: string, repoName: string) {
     const githubruns = await this.adapter.obtainRunsOfGithubActions(
       owner,
       repoName
@@ -65,6 +64,6 @@ export class githubUseCases {
         jobs[workflowInfo[1]] = jobInfo;
       })
     );
-    return jobs
+    return jobs;
   }
 }
