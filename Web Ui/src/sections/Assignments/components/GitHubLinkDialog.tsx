@@ -19,10 +19,31 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
 }) => {
   const [link, setLink] = useState("");
   const [isVerGraficaEnabled, setIsVerGraficaEnabled] = useState(false);
+  const [flag, setFlag] = React.useState(true);
 
   const handleSend = () => {
     onSend(link);
-    setIsVerGraficaEnabled(true);  
+    setIsVerGraficaEnabled(true);
+    setFlag(!flag);
+  };
+
+  const handleRedirect = () => {
+    if (!link) {
+      alert("Please enter a GitHub URL.");
+      return;
+    }
+
+    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+    const match = link.match(regex);
+
+    if (match) {
+      const [, user, repo] = match;
+
+      const githubURL = `https://github.com/${user}/${repo}`;
+      window.location.href = githubURL;
+    } else {
+      alert("Invalid GitHub URL. Please enter a valid GitHub repository URL.");
+    }
   };
 
   const dialogTitleStyle = {
@@ -32,32 +53,37 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const textFieldStyle = {
     fontSize: "12px",
   };
-
-  
+  const contentStyle = {
+    fontSize: "12px",
+    padding: "20px",
+  };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog fullWidth={true} open={open} onClose={onClose}>
       <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
-      <DialogContent style={textFieldStyle}>
+      <DialogContent style={contentStyle}>
         <TextField
           label="Enlace de Github"
           variant="outlined"
+          color={flag ? "primary" : "success"}
           value={link}
           onChange={(e) => setLink(e.target.value)}
           fullWidth
+          focused
           style={textFieldStyle}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
-          Cancelar
+          Cerrar
         </Button>
         <Button onClick={handleSend} color="primary">
           Enviar
         </Button>
         <Button
+          onClick={handleRedirect}
           color="primary"
-          disabled={!isVerGraficaEnabled}  
+          disabled={!isVerGraficaEnabled}
         >
           Ver gráfica
         </Button>
