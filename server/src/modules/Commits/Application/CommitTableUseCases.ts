@@ -6,14 +6,25 @@ export class CommitTableUseCases {
   constructor(
     private repositoryAdapter: CommitRepository,
     private githubAdapter: GithubAdapter
-  ) {}
+  ) {
+    this.repositoryAdapter = repositoryAdapter;
+    this.githubAdapter = githubAdapter;
+  }
 
-  async checkNewCommits(owner: string, repoName: string, commitsData: CommitDataObject[]) {
+  async checkNewCommits(
+    owner: string,
+    repoName: string,
+    commitsData: CommitDataObject[]
+  ) {
     let commitsToAdd = [];
 
     for (let index = 0; index < commitsData.length; index++) {
       let currentCommit = commitsData[index];
-      let row = await this.repositoryAdapter.commitExists(owner, repoName, currentCommit.sha);
+      let row = await this.repositoryAdapter.commitExists(
+        owner,
+        repoName,
+        currentCommit.sha
+      );
       if (row.length != 0) {
         break;
       } else {
@@ -24,11 +35,18 @@ export class CommitTableUseCases {
   }
 
   async getCommitsAPI(owner: string, repoName: string) {
-    try{
-      const commits = await this.githubAdapter.obtainCommitsOfRepo(owner, repoName);
+    try {
+      const commits = await this.githubAdapter.obtainCommitsOfRepo(
+        owner,
+        repoName
+      );
       const commitsFromSha = await Promise.all(
         commits.map((commit: any) => {
-          return this.githubAdapter.obtainCommitsFromSha(owner, repoName, commit.sha);
+          return this.githubAdapter.obtainCommitsFromSha(
+            owner,
+            repoName,
+            commit.sha
+          );
         })
       );
       const commitsData: CommitDataObject[] = commitsFromSha.map(
@@ -50,19 +68,27 @@ export class CommitTableUseCases {
           };
         }
       );
-      return commitsData
+      return commitsData;
     } catch (error) {
       console.error("Error en la obtención de commits:", error);
       throw { error: "Error en la obtención de commits" };
     }
   }
 
-  async saveCommitsDB(owner: string, repoName: string, newCommits: CommitDataObject[]) {
+  async saveCommitsDB(
+    owner: string,
+    repoName: string,
+    newCommits: CommitDataObject[]
+  ) {
     try {
       if (newCommits.length > 0) {
         await Promise.all(
           newCommits.map(async (commit: CommitDataObject) => {
-            !(await this.repositoryAdapter.saveCommitInfoOfRepo(owner, repoName, commit));
+            !(await this.repositoryAdapter.saveCommitInfoOfRepo(
+              owner,
+              repoName,
+              commit
+            ));
           })
         );
       }
