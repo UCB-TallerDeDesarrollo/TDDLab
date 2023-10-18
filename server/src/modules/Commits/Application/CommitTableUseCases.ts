@@ -65,6 +65,7 @@ export class CommitTableUseCases {
               comment_count: commit.commit.comment_count,
             },
             sha: commit.sha,
+            coverage: commit.coveragePercentage
           };
         }
       );
