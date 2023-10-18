@@ -26,16 +26,13 @@ export const checkForNewCommits = async (   //cambio de nombre
   return commitsToAdd;
 };
 
-export const updateCommitsTable = async (
+export const getCommitsAPI = async (
   owner: string,
   repoName: string,
-  repositoryAdapter: CommitRepository,
-  githubAdapter: GithubAdapter
-): Promise<void> => {
-
-  try {
+  githubAdapter: GithubAdapter,
+) => {
+  try{
     const commits = await githubAdapter.obtainCommitsOfRepo(owner, repoName);
-
     const commitsFromSha = await Promise.all(
       commits.map((commit: any) => {
         return githubAdapter.obtainCommitsFromSha(owner, repoName, commit.sha);
@@ -60,9 +57,19 @@ export const updateCommitsTable = async (
         };
       }
     );
-
-    const newCommits = await checkForNewCommits(owner, repoName, commitsData);
-
+    return commitsData
+  } catch (error) {
+    console.error("Error en la obtención de commits:", error);
+    throw { error: "Error en la obtención de commits" };
+  }
+}
+export const saveCommitsDB = async (
+  owner: string,
+  repoName: string,
+  newCommits: CommitDataObject[],
+  repositoryAdapter: CommitRepository
+): Promise<void> => {
+  try {
     if (newCommits.length > 0) {
       await Promise.all(
         newCommits.map(async (commit: CommitDataObject) => {
