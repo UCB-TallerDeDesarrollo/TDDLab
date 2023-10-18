@@ -36,11 +36,15 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const textFieldStyle = {
     fontSize: "12px",
   };
+  const contentStyle = {
+    fontSize: "12px",
+    padding: "20px",
+  };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog fullWidth={true} open={open} onClose={onClose}>
       <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
-      <DialogContent style={textFieldStyle}>
+      <DialogContent style={contentStyle}>
         <TextField
           label="Enlace de Github"
           variant="outlined"
