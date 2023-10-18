@@ -2,7 +2,7 @@ import { GithubAdapter } from "../../Github/Repositories/github.API";
 import { CommitDataObject } from "../Domain/CommitDataObject";
 import { CommitRepository } from "../Repositories/commitRepository";
 
-export const checkForNewCommits = async (   //cambio de nombre
+export const checkNewCommits= async (
   owner: string,
   repoName: string,
   commitsData: CommitDataObject[],
