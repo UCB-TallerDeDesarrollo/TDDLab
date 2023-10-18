@@ -105,13 +105,12 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
   };
 
   const handleSendGithubLink = (link: string) => {
-    console.log(setSelectedRow);
-
     if (selectedAssignmentIndex !== null) {
       submitAssignment.submitAssignment(
         assignments[selectedAssignmentIndex].id,
         link
       );
+      setGithubLinkDialogOpen(false);
     }
   };
 
