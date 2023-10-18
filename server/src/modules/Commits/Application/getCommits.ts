@@ -1,6 +1,6 @@
 import { GithubAdapter } from "../../Github/Repositories/github.API";
 import { CommitRepository } from "../Repositories/commitRepository";
-import { updateCommitsTable } from "./updateCommitsTable";
+import { getCommitsAPI, saveCommitsDB } from "./updateCommitsTable";
 
 
 // export const getCommits = async (
@@ -27,15 +27,21 @@ export const getCommits = async (
   repositoryAdapter: CommitRepository,
   githubAdapter: GithubAdapter
 ) => {
-  ()
-  if (!repositoryExistDB(owner, repo)){
-    const commits = githubAdapter.getCommits
-    repositoryAdapter.saveCommitInfo(commits)
-
-  }else {
-    const commits = githubAdapter.getCommits
-    updateCommitsDB
+  try{
+    if (!repositoryAdapter.repositoryExist(owner, repoName)){
+      const commits = await getCommitsAPI(owner, repoName,githubAdapter)
+      saveCommitsDB(owner, repoName,commits,repositoryAdapter)
+  
+    }else {
+      const newCommits = await checkForNewCommits(owner, repoName, commitsData);
+      const commits = githubAdapter.getCommits
+      updateCommitsDB
+    }
+  }catch(error){
+    console.error("Error updating commits table:", error);
+    return { error: "Error updating commits table" };
+  }finally{
+    const Jobs = await repositoryAdapter.getCommits(owner, repoName);
+      return Jobs;
   }
-  const Jobs = await repositoryAdapter.getCommits(owner, repoName);
-    return Jobs;
 };
