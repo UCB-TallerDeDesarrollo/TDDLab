@@ -59,4 +59,16 @@ export class CommitRepository {
     client.release();
     return result.rows;
   }
+  async repositoryExist(owner: string, repoName: string) {
+    const client = await this.pool.connect();
+
+    const query =
+      "SELECT COUNT(*) FROM commitstable WHERE owner = $1 AND reponame = $2";
+    const values = [owner, repoName];
+
+    const result = await client.query(query, values);
+    client.release();
+
+    return result.rows[0].count > 0;
+  }
 }
