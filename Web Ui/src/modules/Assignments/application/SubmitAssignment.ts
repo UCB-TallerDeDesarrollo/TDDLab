@@ -14,7 +14,7 @@ export class SubmitAssignment {
         foundAssignment.link = link;
         console.log(foundAssignment);
 
-        return await this.assignmentsRepository.updateAssignment(
+        return await this.assignmentsRepository.deliverAssignment(
           assignmentId,
           foundAssignment
         );
