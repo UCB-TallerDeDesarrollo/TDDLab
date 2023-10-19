@@ -23,7 +23,8 @@ export class CommitUseCases {
           owner,
           repoName
         );
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, commits);
+        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, commits);
+        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
       } else {
         const commits = await this.commitTableUseCases.getCommitsAPI(
           owner,
@@ -34,7 +35,8 @@ export class CommitUseCases {
           repoName,
           commits
         );
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, newCommits);
+        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, newCommits);
+        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
       }
     } catch (error) {
       console.error("Error updating commits table:", error);
