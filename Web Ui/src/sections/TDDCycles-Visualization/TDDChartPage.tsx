@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
-import TDDChartsView from "./components/TDDChartsView";
+//import TDDChartsView from "./components/TDDChartsView";
+import TDDCharts from "./components/TDDChart";
 import TDDCycleList from "./components/TDDCycleList";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
@@ -79,10 +80,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
       ) : (
         <div className="tdd-charts-view">
           <h1>Repository: {repoName}</h1>
-          <TDDChartsView
-            commitsInfo={commitsInfo}
-            jobsByCommit={jobsByCommit}
-          />
+          <TDDCharts commits={commitsInfo} jobsByCommit={jobsByCommit} />
         </div>
       )}
     </div>
