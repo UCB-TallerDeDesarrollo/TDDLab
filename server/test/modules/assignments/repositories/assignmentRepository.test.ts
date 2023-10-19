@@ -61,4 +61,9 @@ describe('obtainAssignmentById', () => {
         const assignment = await repository.obtainAssignmentById('NonExistent_ID');
         expect(assignment).toBeNull();
     });
+    it('should handle errors when obtaining an assignment by ID', async () => {
+        const assignmentId = "1";
+        poolConnectMock.mockRejectedValue(new Error);
+        await expect(repository.obtainAssignmentById(assignmentId)).rejects.toThrow();
+    });
 });
