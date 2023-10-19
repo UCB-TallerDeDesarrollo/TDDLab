@@ -31,8 +31,12 @@ ChartJS.register(
     LineElement
 );
 
+interface CycleReportViewProps {
+    commits: CommitDataObject[] | null;
+    jobsByCommit: JobDataObject[] | null;
+}
 
-function TDDCharts(commits: CommitDataObject[] | null,  jobsByCommit: JobDataObject[] | null) {
+function TDDCharts({ commits,jobsByCommit }: CycleReportViewProps) {
     
     function getDataLabels(){
         if (commits!=null){
@@ -141,10 +145,10 @@ function TDDCharts(commits: CommitDataObject[] | null,  jobsByCommit: JobDataObj
 
 
     return (
-        <>
-            <h1>Gráfico de Lineas y puntos</h1>
+        <div className="lineChartContainer">
+            <h2>Gráfico de Lineas y puntos</h2>
             <Line height="100" data={dataLineChart} options={optionsLineChart} onClick={onClick} ref={chartRef}/>
-        </>
+        </div>
       );
 }
 
