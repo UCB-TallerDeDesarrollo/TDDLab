@@ -34,7 +34,7 @@ function getAssignmentTestData(count: number) {
     };
 }
 
-describe('obtainAssignments', () => {
+describe('Obtain assignments', () => {
     it('should retrieve all assignments', async () => {
         clientQueryMock.mockResolvedValue(getAssignmentTestData(2));
         const assignments = await repository.obtainAssignments();
@@ -46,7 +46,7 @@ describe('obtainAssignments', () => {
     });
 });
 
-describe('obtainAssignmentById', () => {
+describe('Obtain assignment by id', () => {
     it("should retrieve an assignment by existing ID", async () => {
         clientQueryMock.mockResolvedValue(getAssignmentTestData(1));
         const assignment = await repository.obtainAssignmentById('1');
@@ -68,7 +68,7 @@ describe('obtainAssignmentById', () => {
     });
 });
 
-describe('createAssignment', () => {
+describe('Create assignment', () => {
     it("should create an assignment", async () => {
         clientQueryMock.mockResolvedValue({ rows: [getAssignmentMock()] });
         const newAssignment = getAssignmentMock();
@@ -82,14 +82,22 @@ describe('createAssignment', () => {
 });
 
 
-describe('deleteAssignment', () => {
+describe('Delete assignment', () => {
     it("should delete an assignment", async () => {
         clientQueryMock.mockResolvedValue({ rowCount: 1 });
-        const result = await repository.deleteAssignment('1');
-        expect(result).toBeUndefined();
+        const deletedAssignment = await repository.deleteAssignment('1');
+        expect(deletedAssignment).toBeUndefined();
     });
     it('should handle errors when deleting an assignment', async () => {
         poolConnectMock.mockRejectedValue(new Error);
         await expect(repository.deleteAssignment('1')).rejects.toThrow();
+    });
+});
+
+describe('Update assignment', () => {
+    it("should update an assignment", async () => {
+        clientQueryMock.mockResolvedValue({ rows: [getAssignmentMock()] });
+        const updatedAssignment = await repository.updateAssignment(1, getAssignmentMock());
+        expect(updatedAssignment).toEqual(getAssignmentMock());
     });
 });
