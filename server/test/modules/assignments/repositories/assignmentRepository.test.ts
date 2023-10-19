@@ -1,5 +1,6 @@
 import AssignmentRepository from "../../../../src/modules/Assignments/repositories/AssignmentRepository";
 import { Pool } from 'pg';
+import { getAssignmentMock } from "../../../__mocks__/assignments/dataTypeMocks/assignmentData";
 
 let repository: AssignmentRepository;
 let poolConnectMock: jest.Mock;
@@ -65,5 +66,14 @@ describe('obtainAssignmentById', () => {
         const assignmentId = "1";
         poolConnectMock.mockRejectedValue(new Error);
         await expect(repository.obtainAssignmentById(assignmentId)).rejects.toThrow();
+    });
+});
+
+describe('createAssignment', () => {
+    it("should create an assignment", async () => {
+        clientQueryMock.mockResolvedValue({ rows: [getAssignmentMock()] });
+        const newAssignment = getAssignmentMock();
+        const createdAssignment = await repository.createAssignment(newAssignment);
+        expect(createdAssignment).toEqual(newAssignment);
     });
 });
