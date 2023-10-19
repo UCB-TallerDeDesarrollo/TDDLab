@@ -20,7 +20,7 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 1500);
       });
 
       const response: any = await Promise.race([
@@ -136,16 +136,17 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 2000);
       });
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
         timeoutPromise,
       ]);
 
-      const coverageResponse = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
-      );
+      const coverageResponse: any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}/comments`),
+        timeoutPromise,
+      ]);
 
       let percentageMatch;
 
@@ -176,7 +177,7 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 1500);
       });
 
       const response: any = await Promise.race([
