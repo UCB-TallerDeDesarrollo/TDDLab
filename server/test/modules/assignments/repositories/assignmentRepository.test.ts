@@ -100,4 +100,9 @@ describe('Update assignment', () => {
         const updatedAssignment = await repository.updateAssignment(1, getAssignmentMock());
         expect(updatedAssignment).toEqual(getAssignmentMock());
     });
+    it("should return null if no assignment was found", async () => {
+        clientQueryMock.mockResolvedValue({ rows: [] });
+        const updatedAssignment = await repository.updateAssignment(1, getAssignmentMock());
+        expect(updatedAssignment).toBeNull();
+    });
 });
