@@ -20,7 +20,7 @@ afterEach(() => {
     jest.restoreAllMocks();
 });
 
-describe('Obtain assignments', () => {
+describe('obtainAssignments', () => {
     it('should retrieve all assignments', async () => {
         const testData = {
             rows: [
@@ -34,8 +34,8 @@ describe('Obtain assignments', () => {
                 },
                 {
                     id: 2,
-                    title: 'Assignment 1',
-                    description: 'Description of Assignment 1',
+                    title: 'Assignment 2',
+                    description: 'Description of Assignment 2',
                     start_date: '2023-01-01',
                     end_date: '2023-01-10',
                     state: 'pending',
@@ -45,5 +45,9 @@ describe('Obtain assignments', () => {
         clientQueryMock.mockResolvedValue(testData);
         const assignments = await repository.obtainAssignments();
         expect(assignments).toHaveLength(2);
+    });
+    it('should handle errors when obtaining assignments', async () => {
+        poolConnectMock.mockRejectedValue(new Error);
+        await expect(repository.obtainAssignments()).rejects.toThrow();
     });
 });
