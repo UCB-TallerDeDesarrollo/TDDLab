@@ -105,4 +105,8 @@ describe('Update assignment', () => {
         const updatedAssignment = await repository.updateAssignment(1, getAssignmentMock());
         expect(updatedAssignment).toBeNull();
     });
+    it('should handle errors when updating an assignment', async () => {
+        poolConnectMock.mockRejectedValue(new Error);
+        await expect(repository.updateAssignment(1, getAssignmentMock())).rejects.toThrow();
+    });
 });
