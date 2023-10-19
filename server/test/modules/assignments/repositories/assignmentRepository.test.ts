@@ -63,9 +63,8 @@ describe('obtainAssignmentById', () => {
         expect(assignment).toBeNull();
     });
     it('should handle errors when obtaining an assignment by ID', async () => {
-        const assignmentId = "1";
         poolConnectMock.mockRejectedValue(new Error);
-        await expect(repository.obtainAssignmentById(assignmentId)).rejects.toThrow();
+        await expect(repository.obtainAssignmentById('1')).rejects.toThrow();
     });
 });
 
@@ -88,5 +87,9 @@ describe('deleteAssignment', () => {
         clientQueryMock.mockResolvedValue({ rowCount: 1 });
         const result = await repository.deleteAssignment('1');
         expect(result).toBeUndefined();
+    });
+    it('should handle errors when deleting an assignment', async () => {
+        poolConnectMock.mockRejectedValue(new Error);
+        await expect(repository.deleteAssignment('1')).rejects.toThrow();
     });
 });
