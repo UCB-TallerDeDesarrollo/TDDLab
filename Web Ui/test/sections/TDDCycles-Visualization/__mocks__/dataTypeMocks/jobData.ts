@@ -10,3 +10,7 @@ export const mockFailedJobData: JobDataObject = {
   conclusion: "failure"
   };
   
+  export const mockArrayJobData: JobDataObject[] = [{
+    sha: "123321456",
+    conclusion: "failure"
+    }];
