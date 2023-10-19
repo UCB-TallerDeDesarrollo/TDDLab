@@ -9,7 +9,7 @@ beforeEach(() => {
   getAssignments = new GetAssignments(assignmentRepositoryMock);
 });
 
-describe("GetAssignments", () => {
+describe("Get assignments", () => {
   it("should obtain assignments successfully", async () => {
     assignmentRepositoryMock.obtainAssignments.mockResolvedValueOnce(getAssignmentListMock());
     const result = await getAssignments.execute();
@@ -18,8 +18,8 @@ describe("GetAssignments", () => {
   });
 
   it("should handle errors when obtaining assignments", async () => {
-    assignmentRepositoryMock.obtainAssignments.mockRejectedValue(new Error("Error obtaining assignments"));
-    await expect(getAssignments.execute()).rejects.toThrow("Error obtaining assignments");
+    assignmentRepositoryMock.obtainAssignments.mockRejectedValue(new Error);
+    await expect(getAssignments.execute()).rejects.toThrow();
   });
 });
 

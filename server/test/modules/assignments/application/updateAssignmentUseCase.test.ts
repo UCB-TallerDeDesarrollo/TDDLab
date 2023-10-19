@@ -6,11 +6,11 @@ const assignmentRepositoryMock = getAssignmentRepositoryMock();
 
 let updateAssignment: UpdateAssignment;
 
-  beforeEach(() => {
-    updateAssignment = new UpdateAssignment(assignmentRepositoryMock);
-  });
+beforeEach(() => {
+  updateAssignment = new UpdateAssignment(assignmentRepositoryMock);
+});
 
-describe("UpdateAssignment", () => {
+describe("Update assignment", () => {
   it("should update an assignment successfully", async () => {
     const assignmentId = 1;
     assignmentRepositoryMock.updateAssignment.mockResolvedValueOnce(getAssignmentMock());
