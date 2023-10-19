@@ -4,11 +4,13 @@ import {
   CommitInformationDataObject,
 } from "../Domain/commitInterfaces";
 import { JobDataObject } from "../Domain/jobInterfaces";
-
+import dotenv from "dotenv"; // Import 'dotenv' as a module
+dotenv.config();
 export class GithubAdapter {
   octokit: Octokit;
   constructor() {
-    this.octokit = new Octokit({});
+    const { REACT_APP_AUTH_TOKEN } = process.env;
+    this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
   }
   async obtainCommitsOfRepo(
     owner: string,
@@ -18,16 +20,15 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 1500);
       });
-  
-      const response : any = await Promise.race([
+
+      const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
           per_page: 100,
         }),
         timeoutPromise,
       ]);
-      
 
       const commits: CommitDataObject[] = response.data.map(
         (githubCommit: any) => {
@@ -135,16 +136,36 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 2000);
       });
-  
-      const response : any = await Promise.race([
-        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`,),
+      const response: any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
         timeoutPromise,
       ]);
 
-      const commits: CommitInformationDataObject = response.data;
-      return commits;
+      const coverageResponse: any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}/comments`),
+        timeoutPromise,
+      ]);
+
+      let percentageMatch;
+
+      if (coverageResponse.data.length > 0) {
+        percentageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
+          coverageResponse.data[0].body
+        );
+        if (percentageMatch) {
+          percentageMatch = String(percentageMatch[1]);
+        }
+      } else {
+        percentageMatch = "";
+      }
+
+      const commitInfo: CommitInformationDataObject = {
+        ...response.data,
+        coveragePercentage: percentageMatch,
+      };
+      return commitInfo;
     } catch (error) {
       console.error("Error obtaining commits:", error);
       throw error;
@@ -156,11 +177,11 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 1500);
       });
-  
-      const response : any = await Promise.race([
-        this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`,),
+
+      const response: any = await Promise.race([
+        this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`),
         timeoutPromise,
       ]);
 

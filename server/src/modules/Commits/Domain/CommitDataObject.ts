@@ -1,8 +1,9 @@
-export interface CommitDataObject {
+export interface CommitDTO {
   html_url: string;
   stats: Stats;
   commit: Commit;
   sha: string;
+  coverage: string;
 }
 export interface Stats {
   total: number;

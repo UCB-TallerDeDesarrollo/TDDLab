@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useNavigate, createSearchParams } from "react-router-dom";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -17,11 +18,39 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onClose,
   onSend,
 }) => {
+  const navigate = useNavigate();
   const [link, setLink] = useState("");
+  const [isVerGraficaEnabled, setIsVerGraficaEnabled] = useState(false);
+  const [flag, setFlag] = React.useState(true);
 
   const handleSend = () => {
     onSend(link);
-    onClose();
+    setIsVerGraficaEnabled(true);
+    setFlag(!flag);
+  };
+
+  const handleRedirect = () => {
+    if (!link) {
+      alert("Please enter a GitHub URL.");
+      return;
+    }
+
+    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+    const match = link.match(regex);
+
+    if (match) {
+      const [, user, repo] = match;
+      console.log(user, repo);
+      navigate({
+        pathname: "/graph",
+        search: createSearchParams({
+          repoOwner: user,
+          repoName: repo,
+        }).toString(),
+      });
+    } else {
+      alert("Invalid GitHub URL. Please enter a valid GitHub repository URL.");
+    }
   };
 
   const dialogTitleStyle = {
@@ -31,35 +60,39 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const textFieldStyle = {
     fontSize: "12px",
   };
+  const contentStyle = {
+    fontSize: "12px",
+    padding: "20px",
+  };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog fullWidth={true} open={open} onClose={onClose}>
       <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
-      <DialogContent style={textFieldStyle}>
+      <DialogContent style={contentStyle}>
         <TextField
           label="Enlace de Github"
           variant="outlined"
+          color={flag ? "primary" : "success"}
           value={link}
           onChange={(e) => setLink(e.target.value)}
           fullWidth
+          focused
           style={textFieldStyle}
         />
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={onClose}
-          color="primary"
-        >
-          Cancelar
+        <Button onClick={onClose} color="primary">
+          Cerrar
+        </Button>
+        <Button onClick={handleSend} color="primary">
+          Enviar
         </Button>
         <Button
-          onClick={handleSend}
+          onClick={handleRedirect}
           color="primary"
+          disabled={!isVerGraficaEnabled}
         >
-          Enviar
+          Ver gráfica
         </Button>
       </DialogActions>
     </Dialog>
