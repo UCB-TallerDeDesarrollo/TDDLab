@@ -51,4 +51,14 @@ describe('obtainAssignmentById', () => {
         const assignment = await repository.obtainAssignmentById('1');
         expect(assignment).not.toBeNull();
     });
+    it('should retrieve null for a non-existing assignment ID', async () => {
+        poolConnectMock.mockResolvedValue({
+            query: jest.fn().mockResolvedValue({
+                rows: [],
+            }),
+            release: jest.fn(),
+        });
+        const assignment = await repository.obtainAssignmentById('NonExistent_ID');
+        expect(assignment).toBeNull();
+    });
 });
