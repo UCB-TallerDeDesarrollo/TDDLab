@@ -20,34 +20,35 @@ afterEach(() => {
     jest.restoreAllMocks();
 });
 
+function getAssignmentTestData(count: number) {
+    return {
+        rows: Array.from({ length: count }, (_, i) => ({
+            id: i + 1,
+            title: `Assignment ${i + 1}`,
+            description: `Description of Assignment ${i + 1}`,
+            start_date: '2023-01-01',
+            end_date: '2023-01-10',
+            state: 'pending',
+        })),
+    };
+}
+
 describe('obtainAssignments', () => {
     it('should retrieve all assignments', async () => {
-        const testData = {
-            rows: [
-                {
-                    id: 1,
-                    title: 'Assignment 1',
-                    description: 'Description of Assignment 1',
-                    start_date: '2023-01-01',
-                    end_date: '2023-01-10',
-                    state: 'pending',
-                },
-                {
-                    id: 2,
-                    title: 'Assignment 2',
-                    description: 'Description of Assignment 2',
-                    start_date: '2023-01-01',
-                    end_date: '2023-01-10',
-                    state: 'pending',
-                },
-            ],
-        };
-        clientQueryMock.mockResolvedValue(testData);
+        clientQueryMock.mockResolvedValue(getAssignmentTestData(2));
         const assignments = await repository.obtainAssignments();
         expect(assignments).toHaveLength(2);
     });
     it('should handle errors when obtaining assignments', async () => {
         poolConnectMock.mockRejectedValue(new Error);
         await expect(repository.obtainAssignments()).rejects.toThrow();
+    });
+});
+
+describe('obtainAssignmentById', () => {
+    it("should retrieve an assignment by existing ID", async () => {
+        clientQueryMock.mockResolvedValue(getAssignmentTestData(1));
+        const assignment = await repository.obtainAssignmentById('1');
+        expect(assignment).not.toBeNull();
     });
 });
