@@ -6,12 +6,13 @@ import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
-import  {CreateAssignments }  from "../../../modules/Assignments/application/CreateAssingment";
-import AssignmentsRepository from '../../../modules/Assignments/repository/AssignmentsRepository';  
+import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
+import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import React from "react";
 
 function Form() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+  const [flag, setFlag] = React.useState(true);
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
     title: "",
@@ -19,15 +20,21 @@ function Form() {
     start_date: new Date(),
     end_date: new Date(),
     state: "pending",
+    link: "",
   });
 
   const handleGuardarClick = async () => {
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
-    try {
-      
-      await createAssignments.createAssignment(assignmentData);
+    if (assignmentData.start_date > assignmentData.end_date) {
+      setFlag(false);
+      setSuccessMessage("Error fecha incorrecta");
 
+      return;
+    }
+    try {
+      await createAssignments.createAssignment(assignmentData);
+      setFlag(true);
       setSuccessMessage("Cambios guardados con éxito");
     } catch (error) {
       console.error(error);
@@ -95,10 +102,7 @@ function Form() {
               <Filter onUpdateDates={handleUpdateDates} />
             </LocalizationProvider>
           </section>
-          <Stack
-            direction="row"
-            spacing={2}
-          >
+          <Stack direction="row" spacing={2}>
             <Button
               variant="contained"
               endIcon={<SaveIcon />}
@@ -113,7 +117,7 @@ function Form() {
           </Stack>
 
           {successMessage && (
-            <Typography sx={{ marginTop: 2, color: "green" }}>
+            <Typography sx={{ marginTop: 2 }} color={flag ? "green" : "error"}>
               {successMessage}
             </Typography>
           )}

@@ -6,19 +6,24 @@ import TDDCharts from "./components/TDDChart";
 import TDDCycleList from "./components/TDDCycleList";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import "./styles/TDDChartPageStyles.css"
-
+import "./styles/TDDChartPageStyles.css";
+import { useSearchParams } from "react-router-dom";
 
 interface CycleReportViewProps {
   port: GithubAPIAdapter | any;
 }
 
 function TDDChartPage({ port }: CycleReportViewProps) {
-  const repoOwner = "DwijanX";
-  const repoName = "Bulls-and-Cows";
+  const [searchParams] = useSearchParams();
+  const repoOwner: string = String(searchParams.get("repoOwner"));
+  const repoName: string = String(searchParams.get("repoName"));
 
-  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
-  const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
+  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
+    null
+  );
+  const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(
+    null
+  );
 
   const [showCycleList, setShowCycleList] = useState(true);
 
@@ -31,29 +36,31 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const obtainJobsData = async () => {
     try {
       console.log("Fetching commits data...");
-      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(repoOwner, repoName);
+      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(
+        repoOwner,
+        repoName
+      );
       setJobsByCommit(jobsData);
     } catch (error) {
-      console.error('Error obtaining jobs:', error);
+      console.error("Error obtaining jobs:", error);
     }
   };
 
   const obtainCommitsData = async () => {
     console.log("Fetching commit information...");
     try {
-      const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
-      
+      const commits: CommitDataObject[] =
+        await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+
       setCommitsInfo(commits);
-      
     } catch (error) {
-      console.error('Error obtaining commit information:', error);
+      console.error("Error obtaining commit information:", error);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      await obtainJobsData();
-      await obtainCommitsData();
+      await Promise.all([obtainJobsData(), obtainCommitsData()]);
     };
     fetchData();
   }, []);
