@@ -42,7 +42,8 @@ describe('obtainAssignments', () => {
     });
     it('should handle errors when obtaining assignments', async () => {
         poolConnectMock.mockRejectedValue(new Error);
-        await expect(repository.obtainAssignments()).rejects.toThrow();
+        const assignments = await repository.obtainAssignments();
+        expect(assignments).rejects.toThrow();
     });
 });
 
@@ -65,7 +66,8 @@ describe('obtainAssignmentById', () => {
     it('should handle errors when obtaining an assignment by ID', async () => {
         const assignmentId = "1";
         poolConnectMock.mockRejectedValue(new Error);
-        await expect(repository.obtainAssignmentById(assignmentId)).rejects.toThrow();
+        const assignment = await repository.obtainAssignmentById(assignmentId);
+        expect(assignment).rejects.toThrow();
     });
 });
 
@@ -75,5 +77,10 @@ describe('createAssignment', () => {
         const newAssignment = getAssignmentMock();
         const createdAssignment = await repository.createAssignment(newAssignment);
         expect(createdAssignment).toEqual(newAssignment);
+    });
+    it('should handle errors when creating an assignment', async () => {
+        poolConnectMock.mockRejectedValue(new Error);
+        const createdAssignment = await repository.createAssignment(getAssignmentMock());
+        expect(createdAssignment).rejects.toThrow();
     });
 });
