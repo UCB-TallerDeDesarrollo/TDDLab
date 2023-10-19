@@ -1,5 +1,6 @@
 import { GithubAdapter } from "../../Github/Repositories/github.API";
-import { CommitDataObject } from "../Domain/CommitDataObject";
+import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
+import { CommitDTO } from "../Domain/CommitDataObject";
 import { CommitRepository } from "../Repositories/commitRepository";
 
 export class CommitTableUseCases {
@@ -40,6 +41,18 @@ export class CommitTableUseCases {
         owner,
         repoName
       );
+      return commits;
+    } catch (error) {
+      console.error("Error en la obtención de commits:", error);
+      throw { error: "Error en la obtención de commits" };
+    }
+  }
+  async getCommitsFromShaAPI(
+    owner: string,
+    repoName: string,
+    commits: CommitDataObject[]
+  ) {
+    try{
       const commitsFromSha = await Promise.all(
         commits.map((commit: any) => {
           return this.githubAdapter.obtainCommitsFromSha(
@@ -49,7 +62,7 @@ export class CommitTableUseCases {
           );
         })
       );
-      const commitsData: CommitDataObject[] = commitsFromSha.map(
+      const commitsData: CommitDTO[] = commitsFromSha.map(
         (commit: any) => {
           return {
             html_url: commit.html_url,
@@ -65,26 +78,27 @@ export class CommitTableUseCases {
               comment_count: commit.commit.comment_count,
             },
             sha: commit.sha,
-            coverage: commit.coveragePercentage
+            coverage: commit.coveragePercentage,
           };
         }
       );
       return commitsData;
-    } catch (error) {
+    }catch(error){
       console.error("Error en la obtención de commits:", error);
       throw { error: "Error en la obtención de commits" };
     }
+    
   }
 
   async saveCommitsDB(
     owner: string,
     repoName: string,
-    newCommits: CommitDataObject[]
+    newCommits: CommitDTO[]
   ) {
     try {
       if (newCommits.length > 0) {
         await Promise.all(
-          newCommits.map(async (commit: CommitDataObject) => {
+          newCommits.map(async (commit: CommitDTO) => {
             !(await this.repositoryAdapter.saveCommitInfoOfRepo(
               owner,
               repoName,

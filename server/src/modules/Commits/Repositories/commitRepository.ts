@@ -1,6 +1,6 @@
 import { Pool } from "pg"; // Import the Pool from 'pg'
 import config from "../../../config/db";
-import { CommitDataObject } from "../Domain/CommitDataObject";
+import {CommitDTO} from "../Domain/CommitDataObject";
 
 export class CommitRepository {
   pool: Pool;
@@ -10,7 +10,7 @@ export class CommitRepository {
   async saveCommitInfoOfRepo(
     owner: string,
     repoName: string,
-    commit: CommitDataObject
+    commit: CommitDTO
   ) {
     const client = await this.pool.connect();
 
