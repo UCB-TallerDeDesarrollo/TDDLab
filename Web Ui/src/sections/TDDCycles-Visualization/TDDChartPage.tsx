@@ -59,8 +59,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
 
   useEffect(() => {
     const fetchData = async () => {
-      await obtainJobsData();
-      await obtainCommitsData();
+      await Promise.all([obtainJobsData(), obtainCommitsData()]);
     };
     fetchData();
   }, []);
