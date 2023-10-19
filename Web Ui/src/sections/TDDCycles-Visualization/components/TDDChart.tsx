@@ -145,12 +145,10 @@ function TDDCharts({ commits,jobsByCommit }: CycleReportViewProps) {
 
 
     return (
-        <>
-            <div className="lineChartContainer">
-                <h2>Gráfico de Lineas y puntos</h2>
-                <Line height="100" data={dataLineChart} options={optionsLineChart} onClick={onClick} ref={chartRef}/>
-            </div>
-        </>
+        <div className="lineChartContainer">
+            <h2>Gráfico de Lineas y puntos</h2>
+            <Line height="100" data={dataLineChart} options={optionsLineChart} onClick={onClick} ref={chartRef}/>
+        </div>
       );
 }
 
