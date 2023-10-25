@@ -97,16 +97,16 @@ describe('Delete assignment', () => {
 describe('Update assignment', () => {
     it("should update an assignment", async () => {
         clientQueryMock.mockResolvedValue({ rows: [getAssignmentMock()] });
-        const updatedAssignment = await repository.updateAssignment(1, getAssignmentMock());
+        const updatedAssignment = await repository.updateAssignment("1", getAssignmentMock());
         expect(updatedAssignment).toEqual(getAssignmentMock());
     });
     it("should return null if no assignment was found", async () => {
         clientQueryMock.mockResolvedValue({ rows: [] });
-        const updatedAssignment = await repository.updateAssignment(1, getAssignmentMock());
+        const updatedAssignment = await repository.updateAssignment("1", getAssignmentMock());
         expect(updatedAssignment).toBeNull();
     });
     it('should handle errors when updating an assignment', async () => {
         poolConnectMock.mockRejectedValue(new Error);
-        await expect(repository.updateAssignment(1, getAssignmentMock())).rejects.toThrow();
+        await expect(repository.updateAssignment("1", getAssignmentMock())).rejects.toThrow();
     });
 });
