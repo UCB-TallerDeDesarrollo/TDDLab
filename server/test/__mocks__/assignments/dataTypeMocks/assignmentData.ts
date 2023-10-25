@@ -7,6 +7,7 @@ export function getAssignmentMock(): AssignmentDataObject {
     start_date: new Date("2023-01-01"),
     end_date: new Date("2023-01-10"),
     state: "pending",
+    link: "Enlace",
   };
 }
 
@@ -19,6 +20,7 @@ export function getAssignmentListMock(): AssignmentDataObject[] {
       start_date: new Date("2023-01-01"),
       end_date: new Date("2023-01-10"),
       state: "pending",
+      link: "Enlace",
     },
     {
       title: "Tarea 2",
@@ -26,6 +28,7 @@ export function getAssignmentListMock(): AssignmentDataObject[] {
       start_date: new Date("2023-02-15"),
       end_date: new Date("2023-02-28"),
       state: "delivered",
+      link: "Enlace",
     }
   ];
 }

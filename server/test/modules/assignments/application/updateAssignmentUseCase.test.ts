@@ -12,7 +12,7 @@ beforeEach(() => {
 
 describe("Update assignment", () => {
   it("should update an assignment successfully", async () => {
-    const assignmentId = 1;
+    const assignmentId = "1";
     assignmentRepositoryMock.updateAssignment.mockResolvedValueOnce(getAssignmentMock());
     const result = await updateAssignment.execute(assignmentId, getAssignmentMock());
     expect(result).toEqual(getAssignmentMock());
@@ -23,7 +23,7 @@ describe("Update assignment", () => {
   });
 
   it("should handle errors when updating an assignment", async () => {
-    const assignmentId = 2;
+    const assignmentId = "2";
     assignmentRepositoryMock.updateAssignment.mockRejectedValueOnce(new Error());
     await expect(updateAssignment.execute(assignmentId, getAssignmentMock())).rejects.toThrow();
     expect(assignmentRepositoryMock.updateAssignment).toHaveBeenCalledWith(
@@ -32,4 +32,3 @@ describe("Update assignment", () => {
     );
   });
 });
-
