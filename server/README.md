@@ -1,4 +1,3 @@
-
 ## Installation
 
 ```bash
@@ -21,3 +20,6 @@ $ npm run dev
 # unit tests
 $ npm run test
 $ npm run test:coverage
+
+--para probar sonar
+```
