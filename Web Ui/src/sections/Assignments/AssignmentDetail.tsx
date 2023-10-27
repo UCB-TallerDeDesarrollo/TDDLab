@@ -5,6 +5,7 @@ import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmen
 import { useParams } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button } from "@mui/material";
+
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
@@ -15,8 +16,8 @@ const AssignmentDetail: React.FC = () => {
   useEffect(() => {
     // Fetch the assignment by its ID when the component mounts
     const assignmentsRepository = new AssignmentsRepository();
-    const getAsignmentDetail = new GetAssignmentDetail(assignmentsRepository);
-    getAsignmentDetail
+    const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
+    getAssignmentDetail
       .obtainAssignmentDetail(assignmentId)
       .then((fetchedAssignment) => {
         setAssignment(fetchedAssignment);
@@ -25,6 +26,10 @@ const AssignmentDetail: React.FC = () => {
         console.error("Error fetching assignment:", error);
       });
   }, [assignmentId]);
+
+  const isTaskPending = assignment?.state === "pending";
+  const isTaskInProgressOrDelivered =
+    assignment?.state === "in progress" || assignment?.state === "delivered";
 
   return (
     <div>
@@ -38,7 +43,10 @@ const AssignmentDetail: React.FC = () => {
           <p>State: {assignment.state}</p>
           <p>Link: {assignment.link}</p>
 
-          <Button variant="contained"> Iniciar tarea </Button>
+          <Button variant="contained" disabled={!isTaskPending}>
+            Iniciar tarea
+          </Button>
+          <Button disabled={!isTaskInProgressOrDelivered}>Ver grafica</Button>
         </div>
       ) : (
         <p>Loading assignment...</p>
