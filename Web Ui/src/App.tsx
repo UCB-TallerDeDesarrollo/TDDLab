@@ -4,6 +4,7 @@ import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { GithubAPIAdapter } from "./modules/TDDCycles-Visualization/repository/GithubAPIAdapter"; //Revisar el cambio por puerto
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 
+
 function App() {
   return (
     <Router>
