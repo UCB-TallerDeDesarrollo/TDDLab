@@ -4,7 +4,7 @@ import { formatDate } from "../../utils/dateUtils";
 import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
 import { useParams } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
-
+import { Button } from "@mui/material";
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
@@ -37,6 +37,8 @@ const AssignmentDetail: React.FC = () => {
           <p>End Date: {formatDate(assignment.end_date.toString())}</p>
           <p>State: {assignment.state}</p>
           <p>Link: {assignment.link}</p>
+
+          <Button variant="contained"> Iniciar tarea </Button>
         </div>
       ) : (
         <p>Loading assignment...</p>
