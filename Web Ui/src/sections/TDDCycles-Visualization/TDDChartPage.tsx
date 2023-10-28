@@ -19,7 +19,6 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
-  const [loading, setLoading] = useState(true);
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
     null
   );
@@ -32,6 +31,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const handleSwitchButtonClick = () => {
     setShowCycleList(!showCycleList);
   };
+  const [loading, setLoading] = useState(true);
 
   const getTDDCycles = new PortGetTDDCycles(port);
 
@@ -70,32 +70,36 @@ function TDDChartPage({ port }: CycleReportViewProps) {
 
   return (
     <div className="container">
-      {loading == false ? (
+      <h1>Repository: {repoName}</h1>
+
+      {loading && (
+        <div className="mainInfoContainer">
+          <PropagateLoader color="#36d7b7" />
+        </div>
+      )}
+
+      {!loading && (!commitsInfo?.length || !jobsByCommit?.length) && (
+        <div className=" error-message">No se pudo cargar la Informacion</div>
+      )}
+
+      {!loading && commitsInfo?.length != 0 && jobsByCommit?.length != 0 && (
         <React.Fragment>
           <div className="center-content">
             <button className="myButton" onClick={handleSwitchButtonClick}>
               Switch Chart View
             </button>
           </div>
-          {showCycleList ? (
-            <div className="tdd-cycle-list">
-              <h1>Repository: {repoName}</h1>
+          <div className="mainInfoContainer">
+            {showCycleList ? (
               <TDDCycleList
                 commitsInfo={commitsInfo}
                 jobsByCommit={jobsByCommit}
               />
-            </div>
-          ) : (
-            <div className="tdd-charts-view">
-              <h1>Repository: {repoName}</h1>
+            ) : (
               <TDDCharts commits={commitsInfo} jobsByCommit={jobsByCommit} />
-            </div>
-          )}
+            )}
+          </div>
         </React.Fragment>
-      ) : (
-        <div className="chartPage_SpinnerCont">
-          <PropagateLoader color="#36d7b7" />
-        </div>
       )}
     </div>
   );

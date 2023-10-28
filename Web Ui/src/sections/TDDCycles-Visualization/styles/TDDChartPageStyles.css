@@ -1,5 +1,9 @@
 .container {
   align-items: center;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
 }
 
 .center-content {
@@ -34,18 +38,25 @@
   top: 1px;
 }
 
-.tdd-cycle-list {
-  flex: 1;
-}
-
-.tdd-charts-view {
-  flex: 1;
-}
-
-.chartPage_SpinnerCont {
+.mainInfoContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  height: 100vh;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+}
+.error-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #ff5252; /* Red background color */
+  color: #fff; /* White text color */
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px 0;
+  text-align: center;
+  font-weight: bold;
+  width: 40% !important;
+  height: 10rem;
 }
