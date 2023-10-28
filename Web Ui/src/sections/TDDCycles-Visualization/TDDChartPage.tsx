@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
-import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 //import TDDChartsView from "./components/TDDChartsView";
 import TDDCharts from "./components/TDDChart";
 import TDDCycleList from "./components/TDDCycleList";
@@ -10,9 +9,10 @@ import "./styles/TDDChartPageStyles.css";
 import { useSearchParams } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import React from "react";
+import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 
 interface CycleReportViewProps {
-  port: GithubAPIAdapter | any;
+  port: GithubAPIRepository | any;
 }
 
 function TDDChartPage({ port }: CycleReportViewProps) {
@@ -70,16 +70,18 @@ function TDDChartPage({ port }: CycleReportViewProps) {
 
   return (
     <div className="container">
-      <h1>Repository: {repoName}</h1>
+      <h1 data-testid="repoTitle">Repository: {repoName}</h1>
 
       {loading && (
         <div className="mainInfoContainer">
-          <PropagateLoader color="#36d7b7" />
+          <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
         </div>
       )}
 
       {!loading && (!commitsInfo?.length || !jobsByCommit?.length) && (
-        <div className=" error-message">No se pudo cargar la Informacion</div>
+        <div className=" error-message" data-testid="errorMessage">
+          No se pudo cargar la Informacion
+        </div>
       )}
 
       {!loading && commitsInfo?.length != 0 && jobsByCommit?.length != 0 && (
