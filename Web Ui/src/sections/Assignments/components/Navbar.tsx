@@ -1,15 +1,15 @@
-
-import React, { useState } from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { AppBar, Toolbar, Button, Tabs, Tab, Typography } from '@mui/material';
-import WindowIcon from '@mui/icons-material/Window';
+import React, { useState } from "react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { AppBar, Toolbar, Button, Tabs, Tab, Typography } from "@mui/material";
+import WindowIcon from "@mui/icons-material/Window";
+import LateralMenu from "./LateralMenu";
 
 const theme = createTheme({
   palette: {
     secondary: {
-      main: '#fff' // Cambiar el color secundario a blanco
-    }
-  }
+      main: "#fff",
+    },
+  },
 });
 
 const Navbar = () => {
@@ -23,27 +23,32 @@ const Navbar = () => {
     <ThemeProvider theme={theme}>
       <AppBar sx={{ background: "#052845" }}>
         <Toolbar>
-          <WindowIcon />
-          <Typography>
-            TDDLab
-          </Typography>
-          <Tabs
-            textColor="inherit"
-            value={value}
-            onChange={handleChange}
-            indicatorColor="secondary"
+          <WindowIcon sx={{ marginRight: "6px" }} />
+          <Typography sx={{ marginRight: "70px" }}>TDDLab</Typography>
+          <div style={{ marginLeft: 'auto' }}> 
+            <Tabs
+              textColor="inherit"
+              value={value}
+              onChange={handleChange}
+              indicatorColor="secondary"
+            >
+              <Tab label="Grupos" />
+              <Tab label="Tareas" />
+              <Tab label="Usuario" />
+            </Tabs>
+          </div>
+          
+          <Button
+            
+            variant="contained"
           >
-            <Tab label="Grupos" />
-            <Tab label="Tareas" />
-            <Tab label="Usuario" />
-          </Tabs>
-          <Button sx={{ marginLeft: 'auto' }} variant="contained">
             Iniciar sesión
           </Button>
         </Toolbar>
+        <LateralMenu/>
       </AppBar>
     </ThemeProvider>
   );
-}
+};
 
 export default Navbar;
