@@ -8,6 +8,8 @@ import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobI
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams } from "react-router-dom";
+import { PropagateLoader } from "react-spinners";
+import React from "react";
 
 interface CycleReportViewProps {
   port: GithubAPIAdapter | any;
@@ -17,7 +19,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
-
+  const [loading, setLoading] = useState(true);
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
     null
   );
@@ -61,26 +63,38 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([obtainJobsData(), obtainCommitsData()]);
+      setLoading(false);
     };
     fetchData();
   }, []);
 
   return (
     <div className="container">
-      <div className="center-content">
-        <button className="myButton" onClick={handleSwitchButtonClick}>
-          Switch Chart View
-        </button>
-      </div>
-      {showCycleList ? (
-        <div className="tdd-cycle-list">
-          <h1>Repository: {repoName}</h1>
-          <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
-        </div>
+      {loading == false ? (
+        <React.Fragment>
+          <div className="center-content">
+            <button className="myButton" onClick={handleSwitchButtonClick}>
+              Switch Chart View
+            </button>
+          </div>
+          {showCycleList ? (
+            <div className="tdd-cycle-list">
+              <h1>Repository: {repoName}</h1>
+              <TDDCycleList
+                commitsInfo={commitsInfo}
+                jobsByCommit={jobsByCommit}
+              />
+            </div>
+          ) : (
+            <div className="tdd-charts-view">
+              <h1>Repository: {repoName}</h1>
+              <TDDCharts commits={commitsInfo} jobsByCommit={jobsByCommit} />
+            </div>
+          )}
+        </React.Fragment>
       ) : (
-        <div className="tdd-charts-view">
-          <h1>Repository: {repoName}</h1>
-          <TDDCharts commits={commitsInfo} jobsByCommit={jobsByCommit} />
+        <div className="chartPage_SpinnerCont">
+          <PropagateLoader color="#36d7b7" />
         </div>
       )}
     </div>
