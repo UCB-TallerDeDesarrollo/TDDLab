@@ -3,17 +3,42 @@ import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { GithubAPIAdapter } from "./modules/TDDCycles-Visualization/repository/GithubAPIAdapter"; //Revisar el cambio por puerto
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
-import Login from "./sections/Assignments/LoginPage";
-import Groups from "./sections/Assignments/GroupsPage";
-import User from "./sections/Assignments/UserPage";
-import Navbar from "./sections/Assignments/components/Navbar";
+import Login from "./sections/Login/LoginPage";
+import Groups from "./sections/Groups/GroupsPage";
+import User from "./sections/User/UserPage";
+import Navbar from "./sections/Navbar/Navbar";
+import GroupsIcon from "@mui/icons-material/Groups";
+import DescriptionIcon from "@mui/icons-material/Description";
+import PersonIcon from "@mui/icons-material/Person";
+import LoginIcon from "@mui/icons-material/Login";
+const navArrayLinks = [
+  {
+    title: "Grupos",
+    path: "/groups",
+    icon: <GroupsIcon />,
+  },
+  {
+    title: "Tareas",
+    path: "/",
+    icon: <DescriptionIcon />,
+  },
+  {
+    title: "Usuario",
+    path: "/user",
+    icon: <PersonIcon />,
+  },
+  {
+    title: "Iniciar sesión",
+    path: "/login",
+    icon: <LoginIcon />,
+  },
+];
 
 
 function App() {
   return (
-    <>
-     <Navbar/>
-          <Router>
+        <Router>
+          <Navbar navArrayLinks={navArrayLinks} />
             <Routes>
               <Route path="/" element={<GestionTareas />} />
               <Route path="/assignment/:id" element={<AssignmentDetail />} />
@@ -26,7 +51,6 @@ function App() {
               />
             </Routes>
           </Router>
-    </>
   );
 }
 

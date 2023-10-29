@@ -6,26 +6,35 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { ReactElement } from "react";
+import { ReactElement,Dispatch,SetStateAction } from "react";
+//import { NavLink } from "react-router-dom";
 
 interface NavItem {
   title: string;
   path: string;
   icon: ReactElement;
 }
-export default function NavLateralMenu({ navLinks }: { navLinks: NavItem[] }) {
+interface NavLateralMenuProps {
+  navArrayLinks: NavItem[];
+  NavLink: React.ComponentType<any>; 
+  setOpen: Dispatch<SetStateAction<boolean>>;
+
+}
+
+export default function NavLateralMenu({ navArrayLinks, NavLink, setOpen }: NavLateralMenuProps) {
   return (
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          {navLinks.map((item) => (
+          {navArrayLinks.map((item) => (
             <ListItem
               disablePadding
               key={item.title}
             >
               <ListItemButton
-                component="a"
-                href={item.path}
+                component={NavLink}
+                to={item.path}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText>{item.title}</ListItemText>

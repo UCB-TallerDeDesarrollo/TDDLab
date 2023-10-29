@@ -7,41 +7,26 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import NavLateralMenu from "./NavLateralMenu";
+import NavLateralMenu from "./components/NavLateralMenu";
 import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
-import GroupsIcon from "@mui/icons-material/Groups";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PersonIcon from "@mui/icons-material/Person";
-import LoginIcon from "@mui/icons-material/Login";
+import { ReactElement } from "react";
+import { NavLink } from "react-router-dom";
 
-const navLinks = [
-  {
-    title: "Grupos",
-    path: "#",
-    icon: <GroupsIcon />,
-  },
-  {
-    title: "Tareas",
-    path: "#login",
-    icon: <DescriptionIcon />,
-  },
-  {
-    title: "Usuario",
-    path: "#register",
-    icon: <PersonIcon />,
-  },
-  {
-    title: "Iniciar sesión",
-    path: "#",
-    icon: <LoginIcon />,
-  },
-];
+type NavLink = {
+  title: string;
+  path: string;
+  icon:ReactElement;
+};
 
-export default function Navbar() {
+interface NavbarProps {
+  navArrayLinks: NavLink[];
+}
+
+export default function Navbar({navArrayLinks}:NavbarProps) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ marginTop: "75px" }}>
+    <div style={{ marginTop: "100px" }}>
       <AppBar
         position="fixed"
         sx={{ background: "#052845" }}
@@ -62,12 +47,12 @@ export default function Navbar() {
             TDDLab
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navLinks.map((item) => (
+            {navArrayLinks.map((item) => (
               <Button
                 color="inherit"
                 key={item.title}
-                component="a"
-                href={item.path}
+                component={NavLink}
+                to={item.path}
               >
                 {item.title}
               </Button>
@@ -82,7 +67,11 @@ export default function Navbar() {
         onClose={() => setOpen(false)}
         sx={{ display: { xs: "flex", sm: "none" } }}
       >
-        <NavLateralMenu navLinks={navLinks} />
+        <NavLateralMenu 
+          navArrayLinks={navArrayLinks} 
+          NavLink={NavLink}
+          setOpen={setOpen}
+        />
       </Drawer>
     </div>
   );
