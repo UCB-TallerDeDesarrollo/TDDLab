@@ -1,74 +1,73 @@
-import React, { useState } from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Tabs,
-  Tab,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import WindowIcon from "@mui/icons-material/Window";
-import LateralMenu from "./LateralMenu";
 
-const PAGES=["Grupos","Tareas", "Usuario"];
-const theme = createTheme({
-  palette: {
-    secondary: {
-      main: "#fff",
+import { Button,Box, Drawer,AppBar,IconButton,Toolbar,Typography } from "@mui/material";
+import NavLateralMenu from "./NavLateralMenu";
+import { useState } from "react";
+import MenuIcon from "@mui/icons-material/Menu"
+import InboxIcon from "@mui/icons-material/Inbox"
+
+const navLinks=[
+    {
+        title:"Grupos", 
+        path: "#",
+        icon: <InboxIcon/>
     },
-  },
-});
+    {
+        title:"Tareas", 
+        path: "#login",
+        icon: <InboxIcon/>
+    },
+    {
+        title:"Usuario", 
+        path: "#register",
+        icon: <InboxIcon/>
+    },
+]
 
-
-const Navbar = () => {
-  const [value, setValue] = useState(0);
-  const theme2 = useTheme();
-  console.log(theme2);
-  const isMatch = useMediaQuery(theme2.breakpoints.down("md"));
-  console.log(isMatch);
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
-  return (
-    <ThemeProvider theme={theme}>
-      <AppBar sx={{ background: "#052845" }}>
-        <Toolbar>
-          <WindowIcon sx={{ marginRight: "6px" }} />
-          <Typography sx={{ marginRight: "70px" }}>TDDLab</Typography>
-          {isMatch ? (
-            <>
-              <LateralMenu />
-            </>
-          ) : (
-            <>
-              <div style={{ marginLeft: "auto" }}>
-                <Tabs
-                  textColor="inherit"
-                  value={value}
-                  onChange={handleChange}
-                  indicatorColor="secondary"
+export default function Navbar(){
+    const [open, setOpen]=useState(false)
+    return(
+      <>
+        <AppBar position="fixed" sx={{ background: '#052845' }}> 
+            <Toolbar>
+                <IconButton
+                    color="inherit"
+                    size="large"
+                    onClick={()=>setOpen(true)}
+                    sx={{display:{xs:"flex",sm:"none"}}}
                 >
-                    {
-                      PAGES.map((page, index)=>(
-                        <Tab key={index} label={page}/>
-                      ))
-                    }
-
-                </Tabs>
-              </div>
-
-              <Button variant="contained" sx={{ marginLeft: "18px" }}>Iniciar sesión</Button>
-            </>
-          )}
-        </Toolbar>
-      </AppBar>
-    </ThemeProvider>
-  );
-};
-
-export default Navbar;
+                    <MenuIcon/>
+                </IconButton>
+                <Typography 
+                    variant="h6"
+                    sx={{flexGrow:1}}
+                >
+                TDDLab 
+                </Typography>
+                <Box sx={{display:{ xs:"none", sm:"block"}}}>
+                        {navLinks.map(item=>(
+                            <Button 
+                            color="inherit" 
+                            key={item.title}
+                            component="a"
+                            href={item.path}
+                            
+                            >{item.title}
+                            
+                            </Button>
+                        )) }
+            </Box>
+             
+            </Toolbar>
+        </AppBar>
+       
+     <Drawer
+        open={open}
+        anchor="left"
+        onClose={()=>setOpen(false)}
+        sx={{display:{xs:"flex",sm:"none"}}}
+     >
+        <NavLateralMenu navLinks={navLinks}/>
+     </Drawer>
+      </>  
+    )
+}
