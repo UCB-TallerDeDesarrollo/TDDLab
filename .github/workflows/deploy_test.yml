@@ -15,9 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: change to server
-        run: cd ./server
-
       - name: "Echo values"
         run: |
           echo $VERCEL_PROJECT_ID
@@ -26,6 +23,9 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: change to server
+        run: cd ./server
 
       - name: Install Vercel CLI
         run: npm install vercel
