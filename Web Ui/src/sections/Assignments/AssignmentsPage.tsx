@@ -3,9 +3,6 @@ import Assignments from "./components/AssignmentsList";
 import { styled } from '@mui/system'; 
 import { useState } from "react";
 
-
-
-
 const AssignmentManagerContainer = styled('section')({
   display: 'flex',
   width: '100%',
@@ -32,10 +29,10 @@ function AssignmentManager() {
   return (
     <AssignmentManagerContainer>
       <AssignmentsContainer>
-        <Assignments mostrarFormulario={handleShowForm}  />
+        <Assignments mostrarFormulario={handleShowForm} />
       </AssignmentsContainer>
       <FormsContainer>
-        {showForm && <Form/>}
+        {showForm && <Form />}
       </FormsContainer>
     </AssignmentManagerContainer>
   );
