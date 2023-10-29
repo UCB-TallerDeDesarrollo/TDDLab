@@ -10,13 +10,12 @@ import {
 import NavLateralMenu from "./NavLateralMenu";
 import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
-import GroupsIcon from '@mui/icons-material/Groups';
-import DescriptionIcon from '@mui/icons-material/Description';
-import PersonIcon from '@mui/icons-material/Person';
-import LoginIcon from '@mui/icons-material/Login';
+import GroupsIcon from "@mui/icons-material/Groups";
+import DescriptionIcon from "@mui/icons-material/Description";
+import PersonIcon from "@mui/icons-material/Person";
+import LoginIcon from "@mui/icons-material/Login";
 
-const navLinks = [  
- 
+const navLinks = [
   {
     title: "Grupos",
     path: "#",
@@ -36,13 +35,13 @@ const navLinks = [
     title: "Iniciar sesión",
     path: "#",
     icon: <LoginIcon />,
-    },
+  },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   return (
-    <>
+    <div style={{ marginTop: "75px" }}>
       <AppBar
         position="fixed"
         sx={{ background: "#052845" }}
@@ -85,6 +84,6 @@ export default function Navbar() {
       >
         <NavLateralMenu navLinks={navLinks} />
       </Drawer>
-    </>
+    </div>
   );
 }

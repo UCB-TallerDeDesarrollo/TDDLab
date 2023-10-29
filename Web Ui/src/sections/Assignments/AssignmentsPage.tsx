@@ -34,7 +34,6 @@ function AssignmentManager() {
 
   return (
     <AssignmentManagerContainer>
-    <Navbar/>
       <AssignmentsContainer>
         <Assignments mostrarFormulario={handleShowForm}  />
       </AssignmentsContainer>
