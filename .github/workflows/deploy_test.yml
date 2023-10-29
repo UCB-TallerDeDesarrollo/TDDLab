@@ -19,4 +19,4 @@ jobs:
       - name: Deploy to Vercel
         run: |
           cd ./server
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_TEAM_ID }} --project ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
