@@ -9,6 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "cy:open": "cypress open",
     "cy:run": "cypress run"
   },
