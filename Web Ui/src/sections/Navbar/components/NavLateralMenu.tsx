@@ -5,6 +5,8 @@ import {
   ListItemIcon,
   ListItemButton,
   ListItemText,
+  Typography,
+  Divider,
 } from "@mui/material";
 import { ReactElement,Dispatch,SetStateAction } from "react";
 //import { NavLink } from "react-router-dom";
@@ -26,6 +28,11 @@ export default function NavLateralMenu({ navArrayLinks, NavLink, setOpen }: NavL
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
+          <Typography 
+          sx={{ marginLeft: "14px" }}>
+            TDDLab
+          </Typography>
+          
           {navArrayLinks.map((item) => (
             <ListItem
               disablePadding
@@ -40,6 +47,7 @@ export default function NavLateralMenu({ navArrayLinks, NavLink, setOpen }: NavL
                 <ListItemText>{item.title}</ListItemText>
               </ListItemButton>
             </ListItem>
+            
           ))}
         </List>
       </nav>

@@ -12,18 +12,19 @@ import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ReactElement } from "react";
 import { NavLink } from "react-router-dom";
+import WindowIcon from "@mui/icons-material/Window";
 
 type NavLink = {
   title: string;
   path: string;
-  icon:ReactElement;
+  icon: ReactElement;
 };
 
 interface NavbarProps {
   navArrayLinks: NavLink[];
 }
 
-export default function Navbar({navArrayLinks}:NavbarProps) {
+export default function Navbar({ navArrayLinks }: NavbarProps) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ marginTop: "100px" }}>
@@ -40,6 +41,7 @@ export default function Navbar({navArrayLinks}:NavbarProps) {
           >
             <MenuIcon />
           </IconButton>
+          <WindowIcon sx={{ marginRight: "6px" }} />
           <Typography
             variant="h6"
             sx={{ flexGrow: 1 }}
@@ -67,8 +69,8 @@ export default function Navbar({navArrayLinks}:NavbarProps) {
         onClose={() => setOpen(false)}
         sx={{ display: { xs: "flex", sm: "none" } }}
       >
-        <NavLateralMenu 
-          navArrayLinks={navArrayLinks} 
+        <NavLateralMenu
+          navArrayLinks={navArrayLinks}
           NavLink={NavLink}
           setOpen={setOpen}
         />
