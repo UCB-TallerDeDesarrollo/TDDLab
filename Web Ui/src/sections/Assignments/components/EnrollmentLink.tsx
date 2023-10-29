@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const InvitationComponent: React.FC = () => {
   const [mostrarLink, setMostrarLink] = useState(false);
-  const link = "https://link-al-form-aca.com";
+  const link = "https://link-al-form.com";
 
   const generarLink = () => {
     setMostrarLink(true);
@@ -16,7 +16,7 @@ const InvitationComponent: React.FC = () => {
       alert("Link copiado al portapapeles");
     }
   };
-  
+
   return (
     <div>
       <button onClick={generarLink}>Generar Link de Invitación</button>
