@@ -1,13 +1,11 @@
 import {
   Box,
-  Divider,
   List,
   ListItem,
   ListItemIcon,
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import InboxIcon from "@mui/icons-material/Inbox";
 import { ReactElement } from "react";
 
 interface NavItem {
