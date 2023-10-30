@@ -30,27 +30,26 @@ name: Combined Workflow
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
 
 jobs:
-
   # Add a job for running Jest tests
   jest-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: "14"
 
       - name: Install dependencies for Jest
         working-directory: Web Ui
@@ -66,11 +65,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set up Node.js for Cypress
         uses: actions/setup-node@v3
         with:
-          node-version: '14' # You can adjust the Node.js version as needed for Cypress
+          node-version: "14" # You can adjust the Node.js version as needed for Cypress
 
       - name: Install dependencies for Cypress
         working-directory: Web Ui
@@ -81,11 +80,49 @@ jobs:
         with:
           working-directory: Web Ui
           start: npm run dev
-         
 
       - name: Stop Your Application
         working-directory: Web Ui
         run: pkill -f "vite" # Use pkill to stop the development server
+
+  deployment-vercel:
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
+
+    steps:
+      - name: "Echo values"
+        run: |
+          echo $VERCEL_PROJECT_ID
+          echo $VERCEL_ORG_ID
+          echo $VERCEL_TOKEN
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+
+      - name: Set Environment Variables
+        run: |
+          echo "PGHOST=${{ secrets.PGHOST }}" > ./server/.env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
+
+      - name: Install Vercel CLI
+        run: |
+          cd ./server
+          npm install vercel
+
+      - name: Deploy to Vercel
+        run: |
+          cd ./server
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
 
   sonarcloud:
     name: SonarCloud
@@ -94,14 +131,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  # Jobs for prettier       
+  # Jobs for prettier
   prettier:
     runs-on: ubuntu-latest
     needs: sonarcloud
@@ -112,15 +149,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 14 
+          node-version: 14
 
       - name: Install Dependencies
         working-directory: Web Ui
-        run: npm install 
+        run: npm install
 
       - name: Run Prettier
         working-directory: Web Ui
-        run: npx prettier --write "src/**/*.{js,ts,tsx}" 
+        run: npx prettier --write "src/**/*.{js,ts,tsx}"
 
       - name: Check for Changes in TypeScript files
         id: check-changes
@@ -137,7 +174,7 @@ jobs:
             echo "No changes to commit in TypeScript files."
             exit 0
           fi
-   
+
   build_and_deploy:
     runs-on: ubuntu-latest
     needs: prettier
@@ -150,7 +187,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: Web Ui
-        run: npm install 
+        run: npm install
 
       - name: Npm ci
         working-directory: Web Ui
@@ -163,7 +200,7 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           entryPoint: Web Ui
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}"
           channelId: live
           projectId: tddlab-hosting-firebase
