@@ -10,7 +10,7 @@ import Navbar from "./sections/Navbar/Navbar";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
-import LoginIcon from "@mui/icons-material/Login";
+
 const navArrayLinks = [
   {
     title: "Grupos",
@@ -27,11 +27,7 @@ const navArrayLinks = [
     path: "/user",
     icon: <PersonIcon />,
   },
-  {
-    title: "Iniciar sesión",
-    path: "/login",
-    icon: <LoginIcon />,
-  },
+  
 ];
 
 
