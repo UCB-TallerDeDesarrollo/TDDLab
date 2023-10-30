@@ -138,8 +138,8 @@ jobs:
           args: >
             -Dsonar.organization=tddlabteam2023
             -Dsonar.projectKey=tddlabteam2023_tddlabteam
-            -Dsonar.sources="Web Ui"
-            -Dsonar.tests="Web Ui/test"
+            -Dsonar.sources="Web\ ui"
+            -Dsonar.tests="Web\ ui/test"
             -Dsonar.dynamicAnalysis=reuseReports
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
