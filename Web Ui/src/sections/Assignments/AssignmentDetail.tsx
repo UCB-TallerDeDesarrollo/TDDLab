@@ -5,11 +5,13 @@ import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmen
 import { useParams } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button } from "@mui/material";
+import { GitLinkDialog } from "./components/GitHubLinkDialog"; // Import your GitHub link dialog component
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
+  const [isLinkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
   const { id } = useParams();
   const assignmentId = Number(id);
 
@@ -31,6 +33,31 @@ const AssignmentDetail: React.FC = () => {
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
 
+  const handleSendGithubLink = (link: string) => {
+    if (assignment) {
+      // Make an API call to update the assignment link in the database
+      // You can use the assignmentsRepository or any other method to update the assignment link
+      const updatedAssignment = {
+        ...assignment,
+        link: link,
+      };
+
+      // Update the assignment state with the new link
+      setAssignment(updatedAssignment);
+
+      // Close the GitHub link dialog after updating the link
+      handleCloseLinkDialog();
+    }
+  };
+
+  const handleOpenLinkDialog = () => {
+    setLinkDialogOpen(true);
+  };
+
+  const handleCloseLinkDialog = () => {
+    setLinkDialogOpen(false);
+  };
+
   return (
     <div>
       {assignment ? (
@@ -43,10 +70,20 @@ const AssignmentDetail: React.FC = () => {
           <p>State: {assignment.state}</p>
           <p>Link: {assignment.link}</p>
 
-          <Button variant="contained" disabled={!isTaskPending}>
+          <Button
+            variant="contained"
+            disabled={!isTaskPending}
+            onClick={handleOpenLinkDialog}
+          >
             Iniciar tarea
           </Button>
           <Button disabled={!isTaskInProgressOrDelivered}>Ver grafica</Button>
+
+          <GitLinkDialog
+            open={isLinkDialogOpen}
+            onClose={handleCloseLinkDialog}
+            onSend={handleSendGithubLink}
+          />
         </div>
       ) : (
         <p>Loading assignment...</p>
