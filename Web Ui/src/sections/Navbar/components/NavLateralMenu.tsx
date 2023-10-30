@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { ReactElement, Dispatch, SetStateAction } from "react";
 import LoginIcon from "@mui/icons-material/Login";
-import CloseIcon from "@mui/icons-material/Close";
+
 
 interface NavItem {
   title: string;
@@ -31,14 +31,6 @@ export default function NavLateralMenu({
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <ListItemIcon>
-              <CloseIcon
-                onClick={() => setOpen(false)}
-                sx={{ cursor: "pointer" }}
-              />
-            </ListItemIcon>
-          </Box>
           <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
 
           {navArrayLinks.map((item) => (
