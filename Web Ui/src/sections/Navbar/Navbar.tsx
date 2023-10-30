@@ -63,7 +63,15 @@ export default function Navbar({ navArrayLinks }: NavbarProps) {
                 {item.title}
               </Button>
             ))}
-            <Button variant="contained" sx={{ marginLeft: "18px" }}>Iniciar sesión</Button>
+            <Button
+              component={NavLink}
+              to="/login" 
+              variant="contained"
+              sx={{ marginLeft: "18px" }}
+            
+            >
+              Iniciar sesión
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
