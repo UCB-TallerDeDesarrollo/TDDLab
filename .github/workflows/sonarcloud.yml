@@ -125,32 +125,32 @@ jobs:
           vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
 
   sonarcloud:
-  name: SonarCloud
-  needs: [cypress-tests, jest-tests]
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-    - name: Set up SonarCloud project info
-      run: |
-        SONAR_ORGANIZATION=$(cat sonar-project.properties | grep 'sonar.organization' | cut -d'=' -f2)
-        SONAR_PROJECT_KEY=$(cat sonar-project.properties | grep 'sonar.projectKey' | cut -d'=' -f2)
-        echo "SONAR_ORGANIZATION=$SONAR_ORGANIZATION" >> $GITHUB_ENV
-        echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY" >> $GITHUB_ENV
-      shell: bash
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      with:
-        args: >
-          -Dsonar.organization=$SONAR_ORGANIZATION
-          -Dsonar.projectKey=$SONAR_PROJECT_KEY
-          -Dsonar.sources=Web Ui
-          -Dsonar.tests=Web Ui/test
-          -Dsonar.dynamicAnalysis=reuseReports
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    name: SonarCloud
+    needs: [cypress-tests, jest-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up SonarCloud project info
+        run: |
+          SONAR_ORGANIZATION=$(cat sonar-project.properties | grep 'sonar.organization' | cut -d'=' -f2)
+          SONAR_PROJECT_KEY=$(cat sonar-project.properties | grep 'sonar.projectKey' | cut -d'=' -f2)
+          echo "SONAR_ORGANIZATION=$SONAR_ORGANIZATION" >> $GITHUB_ENV
+          echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY" >> $GITHUB_ENV
+        shell: bash
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.organization=$SONAR_ORGANIZATION
+            -Dsonar.projectKey=$SONAR_PROJECT_KEY
+            -Dsonar.sources=Web Ui
+            -Dsonar.tests=Web Ui/test
+            -Dsonar.dynamicAnalysis=reuseReports
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
         
 
