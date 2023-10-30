@@ -105,10 +105,8 @@ function Form() {
           <Stack direction="row" spacing={2}>
             <Button
               variant="contained"
-              endIcon={<SaveIcon />}
               style={{
-                backgroundColor: "#001F3F",
-                textTransform: "uppercase",
+                textTransform: 'none'
               }}
               onClick={handleGuardarClick}
             >
