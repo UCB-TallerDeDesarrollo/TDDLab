@@ -3,30 +3,30 @@ import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain
 import { MockAssignmentsRepository } from "../../__mocks__/mockAssignmentsRepository";
 
 let mockRepository: MockAssignmentsRepository;
-let getAssignmentDetail: CreateAssignments;
+let createAssignment: CreateAssignments;
 
 beforeEach(() => {
     mockRepository = new MockAssignmentsRepository();
-    getAssignmentDetail = new CreateAssignments(mockRepository);
+    createAssignment = new CreateAssignments(mockRepository);
 });
-/*
-describe("Get assignment detail", () => {
-    it("Should successfully obtain assignment detail", async () => {
+describe("Create Assignment", () => {
+    it("Should successfully create a new assignment", async () => {
         const assignmentId = 1;
         const assignment: AssignmentDataObject = {
             id: assignmentId,
-            title: "Tarea 1",
-            description: "Esta es la primera tarea",
-            start_date: new Date("2023-01-01"),
-            end_date: new Date("2023-01-10"),
+            title: "Tarea Test",
+            description: "Esta es una tarea de prueba",
+            start_date: new Date("2023-10-31"),
+            end_date: new Date("2023-11-05"),
             state: "inProgress",
             link: "Enlace",
         };
         mockRepository.createAssignment(assignment);
-        const obtainedAssignment = await getAssignmentDetail.obtainAssignmentDetail(assignmentId);
+        await createAssignment.createAssignment(assignment);
+        const obtainedAssignment = await mockRepository.getAssignmentById(1);
         expect(obtainedAssignment).toEqual(assignment);
     });
-
+/*
     it("Should handle an exception if the assignment is not found", async () => {
         const obtainedAssignment = await getAssignmentDetail.obtainAssignmentDetail(2);
         expect(obtainedAssignment).toBeNull();
@@ -35,6 +35,7 @@ describe("Get assignment detail", () => {
     it("Should handle an exception if an error occurs", async () => {
         mockRepository.getAssignmentById.mockRejectedValue(new Error("Error simulado"));
         await expect(getAssignmentDetail.obtainAssignmentDetail(1)).rejects.toThrow("Error simulado");
-    });
+    });*/
 });
-*/
+ 
+
