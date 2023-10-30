@@ -24,11 +24,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: change to server
-        run: cd ./server
+      - name: Set Environment Variables
+        run: |
+          echo "PGHOST=${{ secrets.PGHOST }}" > ./server/.env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" > ./server/.env
+          echo "PGUSER=${{ secrets.PGUSER }}" > ./server/.env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" > ./server/.env
+          echo "PGPORT=${{ secrets.PGPORT }}" > ./server/.env
 
       - name: Install Vercel CLI
-        run: npm install vercel
+        run: |
+          cd ./server
+          npm install vercel
 
       - name: Deploy to Vercel
         run: |
