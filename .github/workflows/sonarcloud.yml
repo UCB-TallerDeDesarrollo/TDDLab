@@ -137,14 +137,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
-      - name: Analyze with SonarCloud
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: Web Ui
-          args: >
-            -Dsonar.organization=tddlabteam2023
-            -Dsonar.projectKey=tddlabteam2023_tddlabteam
+          SONAR_ORGANIZATION: tddlabteam2023 
+          SONAR_PROJECT_KEY: tddlabteam2023_tddlabteam
+        
 
   # Jobs for prettier
   prettier:
