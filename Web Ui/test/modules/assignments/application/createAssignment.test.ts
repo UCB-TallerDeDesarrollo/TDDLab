@@ -26,16 +26,6 @@ describe("Create Assignment", () => {
         const obtainedAssignment = await mockRepository.getAssignmentById(1);
         expect(obtainedAssignment).toEqual(assignment);
     });
-/*
-    it("Should handle an exception if the assignment is not found", async () => {
-        const obtainedAssignment = await getAssignmentDetail.obtainAssignmentDetail(2);
-        expect(obtainedAssignment).toBeNull();
-    });
-
-    it("Should handle an exception if an error occurs", async () => {
-        mockRepository.getAssignmentById.mockRejectedValue(new Error("Error simulado"));
-        await expect(getAssignmentDetail.obtainAssignmentDetail(1)).rejects.toThrow("Error simulado");
-    });*/
 });
  
 
