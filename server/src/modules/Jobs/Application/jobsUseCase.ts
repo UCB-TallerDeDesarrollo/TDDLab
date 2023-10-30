@@ -1,16 +1,21 @@
 import { jobRepository } from "../Repositories/jobRepository";
-import { updateJobsTable } from "./updateJobsTable";
+import { UpdateJobsTable } from "./updateJobsTable";
+import { GithubAdapter } from "../../Github/Repositories/github.API";
 
 export class JobsUseCase {
+  private updateJobsTable: UpdateJobsTable;
   private adapter: jobRepository;
+  private githubAdapter: GithubAdapter;
 
-  constructor(adapter: jobRepository = new jobRepository()) {
+  constructor(adapter: jobRepository, githubAdapter: GithubAdapter) {
     this.adapter = adapter;
+    this.githubAdapter = githubAdapter;
+    this.updateJobsTable = new UpdateJobsTable(this.adapter, this.githubAdapter);
   }
 
   public async getJobs(owner: string, repoName: string) {
     try {
-      await updateJobsTable(owner, repoName, this.adapter);
+      await this.updateJobsTable.updateJobsTable(owner, repoName);
     } catch (error) {
       console.error("Error updating jobs table:", error);
       return { error: "Error updating jobs table" };
