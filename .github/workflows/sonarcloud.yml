@@ -135,12 +135,12 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
-        args: >
-          -Dsonar.organization= <sonar.organization>
-          -Dsonar.projectKey= <sonar.projectKey>
-          -Dsonar.sources= Web Ui
-          -Dsonar.tests=Web Ui/test
-          -Dsonar.dynamicAnalysis=reuseReports
+          args: >
+            -Dsonar.organization= <sonar.organization>
+            -Dsonar.projectKey= <sonar.projectKey>
+            -Dsonar.sources= Web Ui
+            -Dsonar.tests=Web Ui/test
+            -Dsonar.dynamicAnalysis=reuseReports
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
