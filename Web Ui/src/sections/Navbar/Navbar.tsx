@@ -26,15 +26,18 @@ interface NavbarProps {
 
 export default function Navbar({ navArrayLinks }: NavbarProps) {
   const [open, setOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(""); 
+  const [activeButton, setActiveButton] = useState("");
 
   const handleButtonClick = (title: string) => {
-    setActiveButton(title); 
+    setActiveButton(title);
   };
 
   return (
     <div style={{ marginTop: "100px" }}>
-      <AppBar position="fixed" sx={{ background: "#052845" }}>
+      <AppBar
+        position="fixed"
+        sx={{ background: "#052845" }}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
@@ -45,7 +48,10 @@ export default function Navbar({ navArrayLinks }: NavbarProps) {
             <MenuIcon />
           </IconButton>
           <WindowIcon sx={{ marginRight: "6px" }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{ flexGrow: 1 }}
+          >
             TDDLab
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
@@ -54,9 +60,10 @@ export default function Navbar({ navArrayLinks }: NavbarProps) {
                 key={item.title}
                 component={NavLink}
                 to={item.path}
-                onClick={() => handleButtonClick(item.title)} 
+                onClick={() => handleButtonClick(item.title)}
                 sx={{
-                  borderBottom: activeButton === item.title ? "2px solid #fff" : "none",
+                  borderBottom:
+                    activeButton === item.title ? "2px solid #fff" : "none",
                   color: activeButton === item.title ? "#fff" : "#A9A9A9",
                 }}
               >
@@ -65,10 +72,9 @@ export default function Navbar({ navArrayLinks }: NavbarProps) {
             ))}
             <Button
               component={NavLink}
-              to="/login" 
+              to="/login"
               variant="contained"
               sx={{ marginLeft: "18px" }}
-            
             >
               Iniciar sesión
             </Button>

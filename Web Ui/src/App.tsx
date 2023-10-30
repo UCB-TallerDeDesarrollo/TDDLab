@@ -27,26 +27,39 @@ const navArrayLinks = [
     path: "/user",
     icon: <PersonIcon />,
   },
-  
 ];
-
 
 function App() {
   return (
-        <Router>
-          <Navbar navArrayLinks={navArrayLinks} />
-            <Routes>
-              <Route path="/" element={<GestionTareas />} />
-              <Route path="/assignment/:id" element={<AssignmentDetail />} />
-              <Route path="/login" element={<Login/>} />
-              <Route path="/groups" element={<Groups/>} />
-              <Route path="/user" element={<User/>} />
-              <Route
-                path="/graph"
-                element={<TDDChartPage port={new GithubAPIAdapter()} />}
-              />
-            </Routes>
-          </Router>
+    <Router>
+      <Navbar navArrayLinks={navArrayLinks} />
+      <Routes>
+        <Route
+          path="/"
+          element={<GestionTareas />}
+        />
+        <Route
+          path="/assignment/:id"
+          element={<AssignmentDetail />}
+        />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+        <Route
+          path="/groups"
+          element={<Groups />}
+        />
+        <Route
+          path="/user"
+          element={<User />}
+        />
+        <Route
+          path="/graph"
+          element={<TDDChartPage port={new GithubAPIAdapter()} />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
