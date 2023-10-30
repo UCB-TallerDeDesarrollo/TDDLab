@@ -139,6 +139,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORGANIZATION: tddlabteam2023 
           SONAR_PROJECT_KEY: tddlabteam2023_tddlabteam
+          SONAR_VERBOSE: true
         
 
   # Jobs for prettier
