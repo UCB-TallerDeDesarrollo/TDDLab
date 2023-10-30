@@ -132,20 +132,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: SonarCloud Analysis
-        run: |
-          npm run build
-          sonar-scanner
-      - name: Check Quality Gate
-        run: |
-          quality_gate_status=$(curl -s "https://sonarcloud.io/api/qualitygates/project_status?projectKey=tddlabteam2023_tddlabteam" | jq -r '.projectStatus.status')
-          if [ "$quality_gate_status" != "OK" ]; then
-            echo "Quality Gate Failed"
-            exit 1
-          fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Jobs for prettier
   prettier:
