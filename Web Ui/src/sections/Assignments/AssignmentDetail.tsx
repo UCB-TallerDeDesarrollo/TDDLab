@@ -31,6 +31,7 @@ const AssignmentDetail: React.FC = () => {
   }, [assignmentId]);
 
   const isTaskPending = assignment?.state === "pending";
+
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
 
