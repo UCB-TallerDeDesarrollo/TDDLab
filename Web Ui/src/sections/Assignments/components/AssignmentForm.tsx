@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
-import SaveIcon from "@mui/icons-material/Save";
 import Stack from "@mui/material/Stack";
 import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -105,10 +104,8 @@ function Form() {
           <Stack direction="row" spacing={2}>
             <Button
               variant="contained"
-              endIcon={<SaveIcon />}
               style={{
-                backgroundColor: "#001F3F",
-                textTransform: "uppercase",
+                textTransform: 'none'
               }}
               onClick={handleGuardarClick}
             >
