@@ -27,10 +27,10 @@ jobs:
       - name: Set Environment Variables
         run: |
           echo "PGHOST=${{ secrets.PGHOST }}" > ./server/.env
-          echo "PGDATABASE=${{ secrets.PGDATABASE }}" > ./server/.env
-          echo "PGUSER=${{ secrets.PGUSER }}" > ./server/.env
-          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" > ./server/.env
-          echo "PGPORT=${{ secrets.PGPORT }}" > ./server/.env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
 
       - name: Install Vercel CLI
         run: |
