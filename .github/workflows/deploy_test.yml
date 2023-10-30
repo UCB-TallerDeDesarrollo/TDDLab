@@ -41,5 +41,3 @@ jobs:
         run: |
           cd ./server
           vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
-          env:
-            VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
