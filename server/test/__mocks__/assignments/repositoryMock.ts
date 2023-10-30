@@ -5,6 +5,7 @@ export function getAssignmentRepositoryMock(){
         obtainAssignmentById: jest.fn(),
         deleteAssignment: jest.fn(),
         updateAssignment: jest.fn(),
+        deliverAssignment: jest.fn(),
     };
 }
   
