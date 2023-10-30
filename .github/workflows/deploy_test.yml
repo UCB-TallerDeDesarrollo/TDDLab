@@ -21,8 +21,11 @@ jobs:
           echo $VERCEL_ORG_ID
           echo $VERCEL_TOKEN
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
 
       - name: Set Environment Variables
         run: |
