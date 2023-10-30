@@ -12,13 +12,15 @@ const AssignmentManagerContainer = styled('section')({
 const AssignmentsContainer = styled('div')({
   flex: '1',
   marginLeft: '16px',  
-  marginRight: '20px',  
+  marginRight: '20px', 
+ // marginTop: '80px', 
 });
 
 const FormsContainer = styled('div')({
   flex: '1',
   marginLeft: '8px',  
   marginRight: '2px', 
+  marginTop: '68px',
 });
 function AssignmentManager() {
   const [showForm, setShowForm] = useState(false);
