@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
-import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 //import TDDChartsView from "./components/TDDChartsView";
 import TDDCharts from "./components/TDDChart";
 import TDDCycleList from "./components/TDDCycleList";
@@ -8,16 +7,18 @@ import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobI
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams } from "react-router-dom";
+import { PropagateLoader } from "react-spinners";
+import React from "react";
+import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 
 interface CycleReportViewProps {
-  port: GithubAPIAdapter | any;
+  port: GithubAPIRepository | any;
 }
 
 function TDDChartPage({ port }: CycleReportViewProps) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
-
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
     null
   );
@@ -30,6 +31,7 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const handleSwitchButtonClick = () => {
     setShowCycleList(!showCycleList);
   };
+  const [loading, setLoading] = useState(true);
 
   const getTDDCycles = new PortGetTDDCycles(port);
 
@@ -61,27 +63,45 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([obtainJobsData(), obtainCommitsData()]);
+      setLoading(false);
     };
     fetchData();
   }, []);
 
   return (
     <div className="container">
-      <div className="center-content">
-        <button className="myButton" onClick={handleSwitchButtonClick}>
-          Switch Chart View
-        </button>
-      </div>
-      {showCycleList ? (
-        <div className="tdd-cycle-list">
-          <h1>Repository: {repoName}</h1>
-          <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+      <h1 data-testid="repoTitle">Repository: {repoName}</h1>
+
+      {loading && (
+        <div className="mainInfoContainer">
+          <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
         </div>
-      ) : (
-        <div className="tdd-charts-view">
-          <h1>Repository: {repoName}</h1>
-          <TDDCharts commits={commitsInfo} jobsByCommit={jobsByCommit} />
+      )}
+
+      {!loading && (!commitsInfo?.length || !jobsByCommit?.length) && (
+        <div className=" error-message" data-testid="errorMessage">
+          No se pudo cargar la Informacion
         </div>
+      )}
+
+      {!loading && commitsInfo?.length != 0 && jobsByCommit?.length != 0 && (
+        <React.Fragment>
+          <div className="center-content">
+            <button className="myButton" onClick={handleSwitchButtonClick}>
+              Switch Chart View
+            </button>
+          </div>
+          <div className="mainInfoContainer">
+            {showCycleList ? (
+              <TDDCycleList
+                commitsInfo={commitsInfo}
+                jobsByCommit={jobsByCommit}
+              />
+            ) : (
+              <TDDCharts commits={commitsInfo} jobsByCommit={jobsByCommit} />
+            )}
+          </div>
+        </React.Fragment>
       )}
     </div>
   );
