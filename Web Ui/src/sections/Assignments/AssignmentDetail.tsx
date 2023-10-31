@@ -61,9 +61,9 @@ const AssignmentDetail: React.FC = () => {
   };
 
   const handleRedirect = () => {
-    if (assignment && assignment.link) {
+    if (assignment?.link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = assignment.link.match(regex);
+      const match = regex.exec(assignment.link);
 
       if (match) {
         const [, user, repo] = match;
