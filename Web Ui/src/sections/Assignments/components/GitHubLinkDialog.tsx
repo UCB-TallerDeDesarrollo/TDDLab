@@ -5,7 +5,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { useNavigate, createSearchParams } from "react-router-dom";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -18,39 +17,12 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onClose,
   onSend,
 }) => {
-  const navigate = useNavigate();
   const [link, setLink] = useState("");
-  const [isVerGraficaEnabled, setIsVerGraficaEnabled] = useState(false);
   const [flag, setFlag] = React.useState(true);
 
   const handleSend = () => {
     onSend(link);
-    setIsVerGraficaEnabled(true);
     setFlag(!flag);
-  };
-
-  const handleRedirect = () => {
-    if (!link) {
-      alert("Please enter a GitHub URL.");
-      return;
-    }
-
-    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-    const match = link.match(regex);
-
-    if (match) {
-      const [, user, repo] = match;
-      console.log(user, repo);
-      navigate({
-        pathname: "/graph",
-        search: createSearchParams({
-          repoOwner: user,
-          repoName: repo,
-        }).toString(),
-      });
-    } else {
-      alert("Invalid GitHub URL. Please enter a valid GitHub repository URL.");
-    }
   };
 
   const dialogTitleStyle = {
@@ -86,13 +58,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         </Button>
         <Button onClick={handleSend} color="primary">
           Enviar
-        </Button>
-        <Button
-          onClick={handleRedirect}
-          color="primary"
-          disabled={!isVerGraficaEnabled}
-        >
-          Ver gráfica
         </Button>
       </DialogActions>
     </Dialog>
