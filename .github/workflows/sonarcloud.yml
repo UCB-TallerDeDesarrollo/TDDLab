@@ -149,9 +149,9 @@ jobs:
             -Dsonar.organization=tddlabteam2023_tddlabteam
             -Dsonar.projectKey=tddlabteam2023
             -Dsonar.verbose=true
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
