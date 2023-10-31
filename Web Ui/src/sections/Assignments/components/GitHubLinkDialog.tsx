@@ -36,7 +36,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     }
 
     const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-    const match = link.match(regex);
+    const match = regex.exec(link);
 
     if (match) {
       const [, user, repo] = match;
