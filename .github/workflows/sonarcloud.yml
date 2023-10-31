@@ -144,7 +144,6 @@ jobs:
       - name: Analyze with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:
-          projectBaseDir: Web Ui
           args: >
             -Dsonar.organization=tddlabteam2023_tddlabteam
             -Dsonar.projectKey=tddlabteam2023
