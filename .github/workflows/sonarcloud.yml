@@ -141,6 +141,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      - name: Analyze with SonarCloud
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: Web Ui
+          args: >
+            -Dsonar.organization=tddlabteam2023_tddlabteam
+            -Dsonar.projectKey=tddlabteam2023
+            -Dsonar.verbose=true
 
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
@@ -153,13 +161,6 @@ jobs:
       - name: "Example show SonarQube Quality Gate Status value"
         run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
       
-      - name: Analyze with SonarCloud
-        uses: sonarsource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: Web Ui
-          args: >
-            -Dsonar.organization=tddlabteam2023_tddlabteam
-            -Dsonar.projectKey=tddlabteam2023
 
   # Jobs for prettier
   prettier:
