@@ -114,6 +114,14 @@ jobs:
           echo "${{ steps.quality-gate-check.outputs.project-status }}"
           echo "${{ steps.quality-gate-check.outputs.quality-gate-result }}"
       
+      - name: SonarQube Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          scanMetadataReportFile: target/sonar/report-task.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
 
   # Jobs for prettier
   prettier:
