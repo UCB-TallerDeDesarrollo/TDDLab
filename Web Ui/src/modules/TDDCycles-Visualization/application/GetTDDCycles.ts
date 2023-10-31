@@ -21,6 +21,4 @@ export class PortGetTDDCycles {
   ): Promise<JobDataObject[]> {
     return await this.adapter.obtainJobsOfRepo(owner, repoName);
   }
-
-
 }
