@@ -126,7 +126,8 @@ jobs:
 
 
 
-  sonarcloud-and-quality-gate:
+  sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
     needs: [cypress-tests, jest-tests]
     steps:
