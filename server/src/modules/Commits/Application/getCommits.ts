@@ -23,8 +23,17 @@ export class CommitUseCases {
           owner,
           repoName
         );
-        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, commits);
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
+        const commitsFromSha =
+          await this.commitTableUseCases.getCommitsFromShaAPI(
+            owner,
+            repoName,
+            commits
+          );
+        await this.commitTableUseCases.saveCommitsDB(
+          owner,
+          repoName,
+          commitsFromSha
+        );
       } else {
         const commits = await this.commitTableUseCases.getCommitsAPI(
           owner,
@@ -35,15 +44,23 @@ export class CommitUseCases {
           repoName,
           commits
         );
-        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, newCommits);
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
+        const commitsFromSha =
+          await this.commitTableUseCases.getCommitsFromShaAPI(
+            owner,
+            repoName,
+            newCommits
+          );
+        await this.commitTableUseCases.saveCommitsDB(
+          owner,
+          repoName,
+          commitsFromSha
+        );
       }
+      const jobs = await this.repositoryAdapter.getCommits(owner, repoName);
+      return jobs;
     } catch (error) {
       console.error("Error updating commits table:", error);
       return { error: "Error updating commits table" };
-    } finally {
-      const jobs = await this.repositoryAdapter.getCommits(owner, repoName);
-      return jobs;
     }
   }
 }
