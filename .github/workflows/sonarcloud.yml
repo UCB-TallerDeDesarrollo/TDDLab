@@ -113,9 +113,7 @@ jobs:
         run: |
           echo "${{ steps.quality-gate-check.outputs.project-status }}"
           echo "${{ steps.quality-gate-check.outputs.quality-gate-result }}"
-        with:
-            scanMetadataReportFile: .scannerwork/report-task.txt
-          
+      
       
 
   # Jobs for prettier
