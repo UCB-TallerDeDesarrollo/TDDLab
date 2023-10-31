@@ -85,46 +85,6 @@ jobs:
         working-directory: Web Ui
         run: pkill -f "vite" # Use pkill to stop the development server
 
-  deployment-vercel:
-    runs-on: ubuntu-latest
-
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
-
-    steps:
-      - name: "Echo values"
-        run: |
-          echo $VERCEL_PROJECT_ID
-          echo $VERCEL_ORG_ID
-          echo $VERCEL_TOKEN
-
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-
-      - name: Set Environment Variables
-        run: |
-          echo "PGHOST=${{ secrets.PGHOST }}" > ./server/.env
-          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
-          echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
-          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
-          echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
-
-      - name: Install Vercel CLI
-        run: |
-          cd ./server
-          npm install vercel
-
-      - name: Deploy to Vercel
-        run: |
-          cd ./server
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
-
-
 
   sonarcloud:
     name: SonarCloud
@@ -192,7 +152,47 @@ jobs:
             exit 0
           fi
 
-  build_and_deploy:
+  deployment_vercel_Backend:
+    runs-on: ubuntu-latest
+    needs: prettier
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
+
+    steps:
+      - name: "Echo values"
+        run: |
+          echo $VERCEL_PROJECT_ID
+          echo $VERCEL_ORG_ID
+          echo $VERCEL_TOKEN
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+
+      - name: Set Environment Variables
+        run: |
+          echo "PGHOST=${{ secrets.PGHOST }}" > ./server/.env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
+
+      - name: Install Vercel CLI
+        run: |
+          cd ./server
+          npm install vercel
+
+      - name: Deploy to Vercel
+        run: |
+          cd ./server
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+
+
+  deployment_build_Frontend:
     runs-on: ubuntu-latest
     needs: prettier
     steps:
@@ -221,3 +221,5 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}"
           channelId: live
           projectId: tddlab-hosting-firebase
+
+
