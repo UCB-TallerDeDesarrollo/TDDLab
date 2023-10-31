@@ -128,35 +128,29 @@ jobs:
 
   sonarcloud:
     name: SonarCloud
-    runs-on: ubuntu-latest
     needs: [cypress-tests, jest-tests]
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14'  # Puedes cambiar la versión de Node.js según tu proyecto
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        # Force to fail step after specific time.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: SonarCloud Analysis
-        run: |
-          npm run build
-          sonar-scanner
-
-      - name: Check Quality Gate
-        run: |
-          quality_gate_status=$(curl -s "https://sonarcloud.io/api/qualitygates/project_status?projectKey=tddlabteam2023_tddlabteam" | jq -r '.projectStatus.status')
-
-          if [ "$quality_gate_status" != "OK" ]; then
-            echo "Quality Gate Failed"
-            exit 1
-          fi
+      - name: "Example show SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 
   # Jobs for prettier
   prettier:
