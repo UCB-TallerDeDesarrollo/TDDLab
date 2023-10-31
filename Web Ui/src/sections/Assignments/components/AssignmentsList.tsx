@@ -64,7 +64,7 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
       .catch((error) => {
         console.error("Error fetching assignments:", error);
       });
-  }, []);
+  });
 
   const handleClickDetail = (index: number) => {
     setSelectedRow(index);
