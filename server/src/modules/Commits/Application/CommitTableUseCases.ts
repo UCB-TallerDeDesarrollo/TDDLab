@@ -52,7 +52,7 @@ export class CommitTableUseCases {
     repoName: string,
     commits: CommitDataObject[]
   ) {
-    try{
+    try {
       const commitsFromSha = await Promise.all(
         commits.map((commit: any) => {
           return this.githubAdapter.obtainCommitsFromSha(
@@ -62,32 +62,29 @@ export class CommitTableUseCases {
           );
         })
       );
-      const commitsData: CommitDTO[] = commitsFromSha.map(
-        (commit: any) => {
-          return {
-            html_url: commit.html_url,
-            stats: {
-              total: commit.stats.total,
-              additions: commit.stats.additions,
-              deletions: commit.stats.deletions,
-            },
-            commit: {
-              date: commit.commit.author.date,
-              message: commit.commit.message,
-              url: commit.commit.url,
-              comment_count: commit.commit.comment_count,
-            },
-            sha: commit.sha,
-            coverage: commit.coveragePercentage,
-          };
-        }
-      );
+      const commitsData: CommitDTO[] = commitsFromSha.map((commit: any) => {
+        return {
+          html_url: commit.html_url,
+          stats: {
+            total: commit.stats.total,
+            additions: commit.stats.additions,
+            deletions: commit.stats.deletions,
+          },
+          commit: {
+            date: commit.commit.author.date,
+            message: commit.commit.message,
+            url: commit.commit.url,
+            comment_count: commit.commit.comment_count,
+          },
+          sha: commit.sha,
+          coverage: commit.coveragePercentage,
+        };
+      });
       return commitsData;
-    }catch(error){
+    } catch (error) {
       console.error("Error en la obtención de commits:", error);
       throw { error: "Error en la obtención de commits" };
     }
-    
   }
 
   async saveCommitsDB(
@@ -99,11 +96,11 @@ export class CommitTableUseCases {
       if (newCommits.length > 0) {
         await Promise.all(
           newCommits.map(async (commit: CommitDTO) => {
-            !(await this.repositoryAdapter.saveCommitInfoOfRepo(
+            await this.repositoryAdapter.saveCommitInfoOfRepo(
               owner,
               repoName,
               commit
-            ));
+            );
           })
         );
       }
