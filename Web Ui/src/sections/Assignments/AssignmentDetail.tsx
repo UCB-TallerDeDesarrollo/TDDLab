@@ -69,6 +69,9 @@ const AssignmentDetail: React.FC = () => {
 
       // Close the GitHub link dialog after updating the link
       handleCloseLinkDialog();
+
+      //reloads page
+      window.location.reload();
     }
   };
 
