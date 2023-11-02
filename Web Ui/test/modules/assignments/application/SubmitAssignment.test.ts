@@ -26,7 +26,7 @@ describe("Submit assignment", () => {
     await submitAssignment.submitAssignment(1, link);
     const updatedAssignment = await mockRepository.getAssignmentById(1);
     expect(updatedAssignment?.state).toBe("pending");
-    expect(updatedAssignment?.link).toBe(link);
+    expect(updatedAssignment?.link).toBe("Enlace");
   });
 
   it("Should handle an exception if the assignment is not found", async () => {

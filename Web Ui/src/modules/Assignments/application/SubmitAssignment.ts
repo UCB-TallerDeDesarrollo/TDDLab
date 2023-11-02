@@ -12,8 +12,6 @@ export class SubmitAssignment {
       if (foundAssignment !== null) {
         foundAssignment.link = link;
         foundAssignment.state = "in progress";
-        console.log(foundAssignment);
-        console.log(foundAssignment.state);
 
         return await this.assignmentsRepository.updateAssignment(
           assignmentId,
