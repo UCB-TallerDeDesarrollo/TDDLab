@@ -31,17 +31,17 @@ const AssignmentDetail: React.FC = () => {
       {assignment ? (
         <div>
           <h2>{assignment.title}</h2>
-          <p>Descripcion: {assignment.description}</p>
+          <p>Descripción: {assignment.description}</p>
           {/* Convert Date objects to strings using toISOString */}
           <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
-          <p>End Date: {formatDate(assignment.end_date.toString())}</p>
-          <p>State: {assignment.state}</p>
-          <p>Link: {assignment.link}</p>
+          <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
+          <p>Estado: {assignment.state}</p>
+          <p>Enlace: {assignment.link}</p>
 
           <Button variant="contained"> Iniciar tarea </Button>
         </div>
       ) : (
-        <p>Loading assignment...</p>
+        <p>Cargando Tarea...</p>
       )}
     </div>
   );
