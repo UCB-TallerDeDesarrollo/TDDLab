@@ -28,7 +28,7 @@ const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
       <Grid container spacing={1} my={0} justifyContent='flex-end'>
         <Grid item xs={12} sm={12} xl={6} lg={6} style={{ marginBottom: '1px' }}>
           <DatePicker
-            label='Fecha de asignacion:'
+            label='Fecha de asignación:'
             value={dataForm.dateFrom}
             onChange={handleDateFromChange}
             renderInput={(params) => (
