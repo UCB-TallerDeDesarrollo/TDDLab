@@ -127,81 +127,77 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
     ],
   };
 
-  const optionsLineChart = {
-    responsive: true,
-    pointRadius: 12,
-    pointHoverRadius: 15,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Commits Realizados",
-          font: {
-            size: 20,
-            weight: "bold",
-            lineHeight: 1.2,
+  function getOptionsChart(axisText:string){
+    const optionsLineChart = {
+      responsive: true,
+      pointRadius: 12,
+      pointHoverRadius: 15,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Commits Realizados",
+            font: {
+              size: 20,
+              weight: "bold",
+              lineHeight: 1.2,
+            },
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: axisText,
+            font: {
+              size: 20,
+              weight: "bold",
+              lineHeight: 1.2,
+            },
           },
         },
       },
-      y: {
-        title: {
-          display: true,
-          text: "Líneas de Código Modificadas",
-          font: {
-            size: 20,
-            weight: "bold",
-            lineHeight: 1.2,
-          },
-        },
-      },
-    },
-  };
+    };
+    return optionsLineChart;
+  }
+  
 
   const chartRef = useRef<any>();
 
-  const onClick = (event: any) => {
-    if (getElementAtEvent(chartRef.current, event).length > 0) {
-      const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
-        .datasetIndex;
-      const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
-      console.log(dataLineChart.datasets[dataSetIndexNum].links[dataPoint]);
-      window.open(
-        dataLineChart.datasets[dataSetIndexNum].links[dataPoint],
-        "_blank"
-      );
-    }
-  };
-
-  const onClickCoverage = (event: any) => {
-    if (getElementAtEvent(chartRef.current, event).length > 0) {
-      const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
-        .datasetIndex;
-      const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
-      console.log(dataLineChartCoverage.datasets[dataSetIndexNum].links[dataPoint]);
-      window.open(
-        dataLineChartCoverage.datasets[dataSetIndexNum].links[dataPoint],
-        "_blank"
-      );
-    }
-  };
+  function getClickableLink(dataChart:any){
+    return (event: any) => {
+      if (getElementAtEvent(chartRef.current, event).length > 0) {
+        const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
+          .datasetIndex;
+        const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
+        console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
+        window.open(
+          dataChart.datasets[dataSetIndexNum].links[dataPoint],
+          "_blank"
+        );
+      }
+    };
+  }
 
   return (
     <div className="lineChartContainer">
-      <h2>Gráfico de Lineas y puntos</h2>
-      <Line
-        height="100"
-        data={dataLineChart}
-        options={optionsLineChart}
-        onClick={onClick}
-        ref={chartRef}
-      />
+      <div  className="CoverageChart lineChart">
       <Line
         height="100"
         data={dataLineChartCoverage}
-        options={optionsLineChart}
-        onClick={onClickCoverage}
+        options={getOptionsChart("Coverage")}
+        onClick={getClickableLink(dataLineChartCoverage)}
         ref={chartRef}
       />
+      </div>
+      <div className="CodeLinesChart lineCart">
+      <Line
+        height="100"
+        data={dataLineChart}
+        options={getOptionsChart("Lineas de Código")}
+        onClick={getClickableLink(dataLineChart)}
+        ref={chartRef}
+      />
+      </div>
     </div>
   );
 }
