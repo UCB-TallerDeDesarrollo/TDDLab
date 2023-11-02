@@ -60,10 +60,8 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    // Send a PUT request to update an assignment
-    console.log(API_URL);
-    console.log(assignmentData.id);
-    console.log(`${API_URL}/${assignmentId}`);
+    console.log(assignmentData);
+    console.log(assignmentId);
 
     await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
   }
@@ -92,11 +90,6 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    // Send a PUT request to update an assignment
-    console.log(API_URL);
-    console.log(assignmentData.id);
-    console.log(`${API_URL}/${assignmentId}`);
-
     await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData);
   }
 }
