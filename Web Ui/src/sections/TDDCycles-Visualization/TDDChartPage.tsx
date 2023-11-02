@@ -19,8 +19,6 @@ function TDDChartPage({ port }: CycleReportViewProps) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
-  //const repoOwner: string = "FranAliss";
- // const repoName: string = "parcel_jest_base_TDD";
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
     null
   );

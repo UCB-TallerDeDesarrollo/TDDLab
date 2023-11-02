@@ -43,7 +43,7 @@ interface CycleReportViewProps {
 function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
   function getDataLabels() {
     if (commits != null) {
-      const commitsArray = commits.map((commit) => commits.indexOf(commit));
+      const commitsArray = commits.map((commit) => commits.indexOf(commit) + 1);
       return commitsArray;
     } else {
       return [];
@@ -108,29 +108,22 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
     }
   }
 
-  const dataLineChart = {
-    labels: getDataLabels(),
-    datasets: [
-      {
-        label: "Lineas de Código Modificadas",
-        backgroundColor: getColorConclusion(),
-        data: getCommitStats()[2],
-        links: getCommitLink(),
-      }
-    ],
-  };
+  let dataChart:any = {};
 
-  const dataLineChartCoverage = {
-    labels: getDataLabels(),
-    datasets: [
-      {
-        label: "Coverage",
-        backgroundColor: getColorConclusion(),
-        data: getCommitCoverage(),
-        links: getCommitLink(),
-      },
-    ],
-  };
+  function getDataChart(dataChartSelected:any, dataLabel:string){
+    dataChart = {
+      labels: getDataLabels(),
+      datasets: [
+        {
+          label: dataLabel,
+          backgroundColor: getColorConclusion(),
+          data: dataChartSelected,
+          links: getCommitLink(),
+        }
+      ],
+    };
+    return dataChart;
+  }
 
   function getOptionsChart(axisText:string){
     const optionsLineChart = {
@@ -150,7 +143,6 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
           },
         },
         y: {
-          max: 100,
           title: {
             display: true,
             text: axisText,
@@ -166,66 +158,62 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
     return optionsLineChart;
   }
   
-
   const chartRef = useRef<any>();
 
-  function getClickableLink(dataChart:any){
-    return (event: any) => {
-      if (getElementAtEvent(chartRef.current, event).length > 0) {
-        const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
-          .datasetIndex;
-        const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
-        console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
-        window.open(
-          dataChart.datasets[dataSetIndexNum].links[dataPoint],
-          "_blank"
-        );
-      }
-    };
-  }
+  const onClick = (event: any) => {
+    if (getElementAtEvent(chartRef.current, event).length > 0) {
+      const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
+        .datasetIndex;
+      const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
+      console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
+      window.open(
+        dataChart.datasets[dataSetIndexNum].links[dataPoint],
+        "_blank"
+      );
+    }
+  };
 
-  const [age, setAge] = useState('');
+  const [metricSelected, setMetricSelected] = useState("Cobertura de Código");
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value as string);
+  const handleSelectChange = (event: SelectChangeEvent) => {
+    setMetricSelected(event.target.value)
   };
 
   return (
     <div className="lineChartContainer">
       <Box>
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Age</InputLabel>
+          <InputLabel id="simple-select-label">Métricas</InputLabel>
           <Select
             labelId="select-label"
             id="simple-select"
-            value={age}
-            label="Age"
-            onChange={handleChange}
+            onChange={handleSelectChange}
+            value={metricSelected}
+            label="Metrics"
           >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={"Cobertura de Código"}>Porcentaje de Cobertura de Código</MenuItem>
+            <MenuItem value={"Líneas de Código Modificadas"}>Líneas de Código Modificadas</MenuItem>
           </Select>
         </FormControl>
       </Box>
-      <div  className="CoverageChart lineChart">
-      <Line
-        height="100"
-        data={dataLineChartCoverage}
-        options={getOptionsChart("Coverage")}
-        onClick={getClickableLink(dataLineChartCoverage)}
-        ref={chartRef}
-      />
-      </div>
-      <div className="CodeLinesChart lineCart">
-      <Line
-        height="100"
-        data={dataLineChart}
-        options={getOptionsChart("Lineas de Código")}
-        onClick={getClickableLink(dataLineChart)}
-        ref={chartRef}
-      />
-      </div>
+
+      {metricSelected === "Cobertura de Código" ? (
+        <Line
+          height="100"
+          data={getDataChart(getCommitCoverage(), "Porcentaje de Cobertura de Código")}
+          options={getOptionsChart("Cobertura de Código")}
+          onClick={onClick}
+          ref={chartRef}
+        />
+      ) : (
+        <Line
+          height="100"
+          data={getDataChart(getCommitStats()[2], "Total de Líneas de Código Modificadas")}
+          options={getOptionsChart("Líneas de Código Modificadas")}
+          onClick={onClick}
+          ref={chartRef}
+        />
+      )}
     </div>
   );
 }
