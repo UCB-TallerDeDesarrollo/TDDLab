@@ -94,8 +94,9 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   ): Promise<void> {
     // Send a PUT request to update an assignment
     console.log(API_URL);
-    console.log(assignmentData.id);
+    console.log(assignmentId);
     console.log(`${API_URL}/${assignmentId}`);
+    console.log(assignmentData);
 
     await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData);
   }
