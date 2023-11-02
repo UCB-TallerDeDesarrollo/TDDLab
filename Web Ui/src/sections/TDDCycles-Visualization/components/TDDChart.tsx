@@ -83,6 +83,17 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
     }
   }
 
+  function getCommitCoverage(){
+    if (commits != null) {
+      const coverage = commits
+        .map((commit) => commit.coverage)
+        .reverse();
+      return coverage;
+    } else {
+      return [];
+    }
+  }
+
   function getCommitLink() {
     if (commits != null) {
       const urls = commits.map((commit) => commit.html_url);
@@ -99,6 +110,12 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
         label: "Lineas de Código Modificadas",
         backgroundColor: getColorConclusion(),
         data: getCommitStats()[2],
+        links: getCommitLink(),
+      },
+      {
+        label: "Coverage",
+        backgroundColor: getColorConclusion(),
+        data: getCommitCoverage(),
         links: getCommitLink(),
       },
     ],
