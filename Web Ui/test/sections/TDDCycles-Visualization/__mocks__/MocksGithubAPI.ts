@@ -19,6 +19,7 @@ export class MockGithubAPI implements GithubAPIRepository {
           comment_count: 0,
         },
         sha: "abc123",
+        coverage:100
       },
     ];
     return commits;
