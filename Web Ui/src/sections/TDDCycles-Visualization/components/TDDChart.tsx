@@ -1,7 +1,12 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { Line, getElementAtEvent } from "react-chartjs-2";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import "../styles/TDDChartStyles.css";
 import {
   Chart as ChartJS,
@@ -145,6 +150,7 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
           },
         },
         y: {
+          max: 100,
           title: {
             display: true,
             text: axisText,
@@ -178,8 +184,30 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
     };
   }
 
+  const [age, setAge] = useState('');
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value as string);
+  };
+
   return (
     <div className="lineChartContainer">
+      <Box>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Age</InputLabel>
+          <Select
+            labelId="select-label"
+            id="simple-select"
+            value={age}
+            label="Age"
+            onChange={handleChange}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
       <div  className="CoverageChart lineChart">
       <Line
         height="100"
