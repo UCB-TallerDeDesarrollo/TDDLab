@@ -111,7 +111,13 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
         backgroundColor: getColorConclusion(),
         data: getCommitStats()[2],
         links: getCommitLink(),
-      },
+      }
+    ],
+  };
+
+  const dataLineChartCoverage = {
+    labels: getDataLabels(),
+    datasets: [
       {
         label: "Coverage",
         backgroundColor: getColorConclusion(),
@@ -129,9 +135,9 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
       x: {
         title: {
           display: true,
-          text: "Commits realizados",
+          text: "Commits Realizados",
           font: {
-            size: 30,
+            size: 20,
             weight: "bold",
             lineHeight: 1.2,
           },
@@ -142,7 +148,7 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
           display: true,
           text: "Líneas de Código Modificadas",
           font: {
-            size: 30,
+            size: 20,
             weight: "bold",
             lineHeight: 1.2,
           },
@@ -152,6 +158,7 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
   };
 
   const chartRef = useRef<any>();
+
   const onClick = (event: any) => {
     if (getElementAtEvent(chartRef.current, event).length > 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
@@ -165,6 +172,19 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
     }
   };
 
+  const onClickCoverage = (event: any) => {
+    if (getElementAtEvent(chartRef.current, event).length > 0) {
+      const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
+        .datasetIndex;
+      const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
+      console.log(dataLineChartCoverage.datasets[dataSetIndexNum].links[dataPoint]);
+      window.open(
+        dataLineChartCoverage.datasets[dataSetIndexNum].links[dataPoint],
+        "_blank"
+      );
+    }
+  };
+
   return (
     <div className="lineChartContainer">
       <h2>Gráfico de Lineas y puntos</h2>
@@ -173,6 +193,13 @@ function TDDCharts({ commits, jobsByCommit }: CycleReportViewProps) {
         data={dataLineChart}
         options={optionsLineChart}
         onClick={onClick}
+        ref={chartRef}
+      />
+      <Line
+        height="100"
+        data={dataLineChartCoverage}
+        options={optionsLineChart}
+        onClick={onClickCoverage}
         ref={chartRef}
       />
     </div>
