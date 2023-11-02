@@ -6,6 +6,7 @@ import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog"; // Import your GitHub link dialog component
+import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
@@ -20,9 +21,11 @@ const AssignmentDetail: React.FC = () => {
     // Fetch the assignment by its ID when the component mounts
     const assignmentsRepository = new AssignmentsRepository();
     const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
+
     getAssignmentDetail
       .obtainAssignmentDetail(assignmentId)
       .then((fetchedAssignment) => {
+        //console.log(fetchedAssignment);
         setAssignment(fetchedAssignment);
       })
       .catch((error) => {
@@ -35,14 +38,31 @@ const AssignmentDetail: React.FC = () => {
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
 
-  const handleSendGithubLink = (link: string) => {
-    if (assignment) {
-      // Make an API call to update the assignment link in the database
-      // You can use the assignmentsRepository or any other method to update the assignment link
+  const handleSendGithubLink = async (link: string) => {
+    if (assignmentId) {
       const updatedAssignment = {
-        ...assignment,
+        id: assignmentId,
+        title: assignment ? assignment.title : "", // Provide a default value or handle the undefined case
+        description: assignment ? assignment.description : "", // Provide a default value or handle the undefined case
+        start_date: assignment ? assignment.start_date : new Date(), // Provide a default value or handle the undefined case
+        end_date: assignment ? assignment.end_date : new Date(), // Provide a default value or handle the undefined case
+        state: assignment ? assignment.state : "", // Provide a default value or handle the undefined case
         link: link,
       };
+
+      const assignmentsRepository = new AssignmentsRepository();
+      const submitAssignment = new SubmitAssignment(assignmentsRepository);
+
+      try {
+        console.log(updatedAssignment);
+
+        await submitAssignment.submitAssignment(
+          updatedAssignment.id,
+          updatedAssignment.link
+        );
+      } catch (error) {
+        console.error(error);
+      }
 
       // Update the assignment state with the new link
       setAssignment(updatedAssignment);
