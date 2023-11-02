@@ -42,11 +42,11 @@ const AssignmentDetail: React.FC = () => {
     if (assignmentId) {
       const updatedAssignment = {
         id: assignmentId,
-        title: assignment ? assignment.title : "", // Provide a default value or handle the undefined case
-        description: assignment ? assignment.description : "", // Provide a default value or handle the undefined case
-        start_date: assignment ? assignment.start_date : new Date(), // Provide a default value or handle the undefined case
-        end_date: assignment ? assignment.end_date : new Date(), // Provide a default value or handle the undefined case
-        state: assignment ? assignment.state : "", // Provide a default value or handle the undefined case
+        title: assignment ? assignment.title : "",
+        description: assignment ? assignment.description : "",
+        start_date: assignment ? assignment.start_date : new Date(),
+        end_date: assignment ? assignment.end_date : new Date(),
+        state: assignment ? assignment.state : "",
         link: link,
       };
 
