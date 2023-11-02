@@ -43,6 +43,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
           url: commitData.url,
           comment_count: commitData.comment_count,
         },
+        coverage: commitData.coverage,
       }));
       
       return commits;
