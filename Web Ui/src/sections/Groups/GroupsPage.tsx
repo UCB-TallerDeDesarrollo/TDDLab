@@ -1,7 +1,3 @@
 export default function Groups() {
-  return (
-    <>
-      <h1> Página de los grupos</h1>
-    </>
-  );
+  return <h1> Página de los grupos</h1>;
 }
