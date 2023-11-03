@@ -12,7 +12,7 @@ const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  const [isLinkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
@@ -25,7 +25,6 @@ const AssignmentDetail: React.FC = () => {
     getAssignmentDetail
       .obtainAssignmentDetail(assignmentId)
       .then((fetchedAssignment) => {
-        //console.log(fetchedAssignment);
         setAssignment(fetchedAssignment);
       })
       .catch((error) => {
@@ -113,12 +112,12 @@ const AssignmentDetail: React.FC = () => {
       {assignment ? (
         <div>
           <h2>{assignment.title}</h2>
-          <p>Descripcion: {assignment.description}</p>
+          <p>Descripción: {assignment.description}</p>
           {/* Convert Date objects to strings using toISOString */}
           <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
-          <p>End Date: {formatDate(assignment.end_date.toString())}</p>
-          <p>State: {assignment.state}</p>
-          <p>Link: {assignment.link}</p>
+          <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
+          <p>Estado: {assignment.state}</p>
+          <p>Enlace: {assignment.link}</p>
 
           <Button
             variant="contained"
@@ -136,7 +135,7 @@ const AssignmentDetail: React.FC = () => {
           </Button>
 
           <GitLinkDialog
-            open={isLinkDialogOpen}
+            open={linkDialogOpen}
             onClose={handleCloseLinkDialog}
             onSend={handleSendGithubLink}
           />

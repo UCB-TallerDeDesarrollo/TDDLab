@@ -35,10 +35,10 @@ describe('Get assignment by id', () => {
   it('should respond with a status 200 and the assignments', async () => {
     const req = createRequest('Tarea 1');
     const res = createResponse();
-    assignmentRepositoryMock.obtainAssignmentById.mockResolvedValue(getAssignmentMock);
+    assignmentRepositoryMock.obtainAssignmentById.mockResolvedValue(getAssignmentMock());
     await controller.getAssignmentById(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(getAssignmentMock);
+    expect(res.json).toHaveBeenCalledWith(getAssignmentMock());
   });
   it('should respond with a status 404 and an error message for non-existent assignment', async () => {
     const req = createRequest('non_existent_id');
@@ -91,6 +91,28 @@ describe('Delete Assignment', () => {
     const res = createResponse();
     assignmentRepositoryMock.deleteAssignment.mockRejectedValue(new Error);
     await controller.deleteAssignment(req, res);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+  });
+});
+
+describe('Deliver Assignment', () => {
+  const assignmentRepositoryMock = getAssignmentRepositoryMock();
+  const controller = new AssignmentsController(assignmentRepositoryMock);
+  it('should respond with a status 200 and delivered assignment when delivery is successful', async () => {
+    const req = createRequest('existing_id', undefined, 'https://example.com/assignment');
+    const res = createResponse();
+    await controller.deliverAssignment(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'Tarea 1',
+      link: 'https://example.com/assignment',
+    }));
+  });
+  it("should respond with a status 500 and error message when an error occurs during delivery", async () => {
+    const req = createRequest('id', undefined, 'https://example.com/assignment');
+    const res = createResponse();
+    await controller.deliverAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
   });

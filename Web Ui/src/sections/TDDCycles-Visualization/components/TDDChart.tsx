@@ -1,7 +1,12 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { Line, getElementAtEvent } from "react-chartjs-2";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import "../styles/TDDChartStyles.css";
 import {
   Chart as ChartJS,
@@ -45,6 +50,8 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
       const commitsArray = filteredCommitsObject.map((commit) =>
         filteredCommitsObject.indexOf(commit)
       );
+    if (commits != null) {
+      const commitsArray = commits.map((commit) => commits.indexOf(commit) + 1);
       return commitsArray;
     } else {
       return [];
@@ -93,6 +100,17 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
   }
 
+  function getCommitCoverage(){
+    if (commits != null) {
+      const coverage = commits
+        .map((commit) => commit.coverage)
+        .reverse();
+      return coverage;
+    } else {
+      return [];
+    }
+  }
+
   function getCommitLink() {
     if (filteredCommitsObject != null) {
       const urls = filteredCommitsObject.map((commit) => commit.html_url);
@@ -102,72 +120,112 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
   }
 
-  const dataLineChart = {
-    labels: getDataLabels(),
-    datasets: [
-      {
-        label: "Lineas de Código Modificadas",
-        backgroundColor: getColorConclusion(),
-        data: getCommitStats()[2],
-        links: getCommitLink(),
-      },
-    ],
-  };
+  let dataChart:any = {};
 
-  const optionsLineChart = {
-    responsive: true,
-    pointRadius: 12,
-    pointHoverRadius: 15,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Commits realizados",
-          font: {
-            size: 30,
-            weight: "bold",
-            lineHeight: 1.2,
+  function getDataChart(dataChartSelected:any, dataLabel:string){
+    dataChart = {
+      labels: getDataLabels(),
+      datasets: [
+        {
+          label: dataLabel,
+          backgroundColor: getColorConclusion(),
+          data: dataChartSelected,
+          links: getCommitLink(),
+        }
+      ],
+    };
+    return dataChart;
+  }
+
+  function getOptionsChart(axisText:string){
+    const optionsLineChart = {
+      responsive: true,
+      pointRadius: 12,
+      pointHoverRadius: 15,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Commits Realizados",
+            font: {
+              size: 20,
+              weight: "bold",
+              lineHeight: 1.2,
+            },
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: axisText,
+            font: {
+              size: 20,
+              weight: "bold",
+              lineHeight: 1.2,
+            },
           },
         },
       },
-      y: {
-        title: {
-          display: true,
-          text: "Líneas de Código Modificadas",
-          font: {
-            size: 30,
-            weight: "bold",
-            lineHeight: 1.2,
-          },
-        },
-      },
-    },
-  };
-
+    };
+    return optionsLineChart;
+  }
+  
   const chartRef = useRef<any>();
+
   const onClick = (event: any) => {
     if (getElementAtEvent(chartRef.current, event).length > 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
         .datasetIndex;
       const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
-      console.log(dataLineChart.datasets[dataSetIndexNum].links[dataPoint]);
+      console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
       window.open(
-        dataLineChart.datasets[dataSetIndexNum].links[dataPoint],
+        dataChart.datasets[dataSetIndexNum].links[dataPoint],
         "_blank"
       );
     }
   };
 
+  const [metricSelected, setMetricSelected] = useState("Cobertura de Código");
+
+  const handleSelectChange = (event: SelectChangeEvent) => {
+    setMetricSelected(event.target.value)
+  };
+
   return (
     <div className="lineChartContainer">
-      <h2>Gráfico de Lineas y puntos</h2>
-      <Line
-        height="100"
-        data={dataLineChart}
-        options={optionsLineChart}
-        onClick={onClick}
-        ref={chartRef}
-      />
+      <Box>
+        <FormControl fullWidth>
+          <InputLabel id="simple-select-label">Métricas</InputLabel>
+          <Select
+            labelId="select-label"
+            id="simple-select"
+            onChange={handleSelectChange}
+            value={metricSelected}
+            label="Metrics"
+          >
+            <MenuItem value={"Cobertura de Código"}>Porcentaje de Cobertura de Código</MenuItem>
+            <MenuItem value={"Líneas de Código Modificadas"}>Líneas de Código Modificadas</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+      {metricSelected === "Cobertura de Código" ? (
+        <Line
+          height="100"
+          data={getDataChart(getCommitCoverage(), "Porcentaje de Cobertura de Código")}
+          options={getOptionsChart("Cobertura de Código")}
+          onClick={onClick}
+          ref={chartRef}
+        />
+      ) : (
+        <Line
+          height="100"
+          data={getDataChart(getCommitStats()[2], "Total de Líneas de Código Modificadas")}
+          options={getOptionsChart("Líneas de Código Modificadas")}
+          onClick={onClick}
+          ref={chartRef}
+        />
+      )}
     </div>
   );
 }
