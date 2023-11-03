@@ -3,6 +3,7 @@ export interface CommitDataObject {
     stats:Stats;
     commit:Commit;
     sha:string;
+    coverage:number;
 }
 export interface Stats {
     total:     number;
