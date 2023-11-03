@@ -109,7 +109,7 @@ const AssignmentDetail: React.FC = () => {
   };
 
   const [isCommentDialogOpen, setCommentDialogOpen] = useState(false); 
-  const [comment, setComment] = useState(""); 
+  const [, setComment] = useState(""); 
 
   const handleOpenCommentDialog = () => {
     setCommentDialogOpen(true);
@@ -157,7 +157,10 @@ const AssignmentDetail: React.FC = () => {
             onSend={handleSendGithubLink}
           />
 
-          <Button variant="contained" onClick={handleOpenCommentDialog}>
+          <Button 
+          variant="contained" 
+          disabled={!isTaskInProgressOrDelivered}
+          onClick={handleOpenCommentDialog}>
             Enviar Tarea
           </Button>
 
@@ -165,6 +168,7 @@ const AssignmentDetail: React.FC = () => {
             open={isCommentDialogOpen}
             onClose={handleCloseCommentDialog}
             onSend={handleSendComment}
+            link={assignment?.link}
           />
 
 
