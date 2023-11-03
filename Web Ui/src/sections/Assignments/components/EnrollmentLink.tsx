@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Button from "@mui/material/Button";
+import Input from "@mui/material/Input";
 
 const InvitationComponent: React.FC = () => {
   const [mostrarLink, setMostrarLink] = useState(false);
@@ -19,11 +21,19 @@ const InvitationComponent: React.FC = () => {
 
   return (
     <div>
-      <button onClick={generarLink}>Generar Link de Invitación</button>
+      <Button variant="contained" color="primary" onClick={generarLink}>
+        Generar Link de Invitación
+      </Button>
       {mostrarLink && (
         <div>
-          <input type="text" id="linkText" value={link} readOnly />
-          <button onClick={copiarAlPortapapeles}>Copiar</button>
+          <Input type="text" id="linkText" value={link} readOnly />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={copiarAlPortapapeles}
+          >
+            Copiar
+          </Button>
         </div>
       )}
     </div>
