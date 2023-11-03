@@ -5,27 +5,25 @@ import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmen
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button } from "@mui/material";
-import { GitLinkDialog } from "./components/GitHubLinkDialog"; // Import your GitHub link dialog component
+import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  const [isLinkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [isLinkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the assignment by its ID when the component mounts
     const assignmentsRepository = new AssignmentsRepository();
     const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
 
     getAssignmentDetail
       .obtainAssignmentDetail(assignmentId)
       .then((fetchedAssignment) => {
-        //console.log(fetchedAssignment);
         setAssignment(fetchedAssignment);
       })
       .catch((error) => {
@@ -48,6 +46,7 @@ const AssignmentDetail: React.FC = () => {
         end_date: assignment ? assignment.end_date : new Date(),
         state: assignment ? assignment.state : "",
         link: link,
+        comment: assignment ? assignment.comment : "",
       };
 
       const assignmentsRepository = new AssignmentsRepository();

@@ -101,7 +101,6 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
     setSelectedAssignmentIndex(index);
-    // submitAssignment.submitAssignment(assignments[index].id);
   };
 
   const handleSendGithubLink = (link: string) => {

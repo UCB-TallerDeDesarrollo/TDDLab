@@ -6,4 +6,5 @@ export interface AssignmentDataObject {
   end_date: Date;
   state: string;
   link: string;
+  comment: string;
 }
