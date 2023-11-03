@@ -12,7 +12,7 @@ const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  const [isLinkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
@@ -135,7 +135,7 @@ const AssignmentDetail: React.FC = () => {
           </Button>
 
           <GitLinkDialog
-            open={isLinkDialogOpen}
+            open={linkDialogOpen}
             onClose={handleCloseLinkDialog}
             onSend={handleSendGithubLink}
           />

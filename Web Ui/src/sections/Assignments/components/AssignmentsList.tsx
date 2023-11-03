@@ -38,7 +38,7 @@ interface AssignmentsProps {
   mostrarFormulario: () => void;
 }
 
-function Assignments({ mostrarFormulario }: AssignmentsProps) {
+function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
