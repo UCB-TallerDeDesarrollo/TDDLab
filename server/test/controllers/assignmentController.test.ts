@@ -7,18 +7,9 @@ import {
 } from "../__mocks__/assignments/dataTypeMocks/assignmentData";
 import { createRequest } from "../__mocks__/assignments/requestMocks";
 import { createResponse } from "../__mocks__/assignments/responseMoks";
-interface DatabaseMock {
-  executeQuery: jest.Mock<any, any[]>;
-  mapAssignment: jest.Mock<any, any[]>;
-}
 
-// Create the databaseMock object
-const databaseMock: DatabaseMock = {
-  executeQuery: jest.fn(),
-  mapAssignment: jest.fn(),
-};
 let controller: AssignmentsController;
-const assignmentRepositoryMock = getAssignmentRepositoryMock(databaseMock);
+const assignmentRepositoryMock = getAssignmentRepositoryMock();
 
 beforeEach(() => {
   controller = new AssignmentsController(assignmentRepositoryMock);
@@ -117,7 +108,7 @@ describe("Delete Assignment", () => {
 });
 
 describe("Deliver Assignment", () => {
-  const assignmentRepositoryMock = getAssignmentRepositoryMock(databaseMock);
+  const assignmentRepositoryMock = getAssignmentRepositoryMock();
   const controller = new AssignmentsController(assignmentRepositoryMock);
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
