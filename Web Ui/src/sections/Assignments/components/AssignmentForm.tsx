@@ -19,6 +19,7 @@ function Form() {
     end_date: new Date(),
     state: "pending",
     link: "",
+    comment: "",
   });
 
   const handleGuardarClick = async () => {
