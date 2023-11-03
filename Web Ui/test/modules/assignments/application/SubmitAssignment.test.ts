@@ -21,6 +21,7 @@ describe("Submit assignment", () => {
       end_date: new Date("2023-01-10"),
       state: "pending",
       link: "Enlace",
+      comment: "Comentario",
     };
     mockRepository.createAssignment(assignment);
     await submitAssignment.submitAssignment(1, link);
