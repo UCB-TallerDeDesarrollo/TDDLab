@@ -8,9 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import NavLateralMenu from "./components/NavLateralMenu";
-import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import { NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 
@@ -24,7 +23,7 @@ interface NavbarProps {
   navArrayLinks: NavLink[];
 }
 
-export default function Navbar({ navArrayLinks }: NavbarProps) {
+export default function Navbar({ navArrayLinks }: Readonly<NavbarProps>) {
   const [open, setOpen] = useState(false);
   const [activeButton, setActiveButton] = useState("");
 
@@ -34,10 +33,7 @@ export default function Navbar({ navArrayLinks }: NavbarProps) {
 
   return (
     <div style={{ marginTop: "100px" }}>
-      <AppBar
-        position="fixed"
-        sx={{ background: "#052845" }}
-      >
+      <AppBar position="fixed" sx={{ background: "#052845" }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -48,10 +44,7 @@ export default function Navbar({ navArrayLinks }: NavbarProps) {
             <MenuIcon />
           </IconButton>
           <WindowIcon sx={{ marginRight: "6px" }} />
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 1 }}
-          >
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
             TDDLab
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
