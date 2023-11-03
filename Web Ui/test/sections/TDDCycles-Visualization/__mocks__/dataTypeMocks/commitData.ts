@@ -10,6 +10,7 @@ export const mockCommitData: CommitDataObject = {
     url: "https://github.com/user2/repo2/commit/98765",
     comment_count: 2,
   },
+  coverage: 80
 };
 
 export const mockArrayCommitData: CommitDataObject[] = [{
@@ -22,4 +23,5 @@ export const mockArrayCommitData: CommitDataObject[] = [{
     url: "https://github.com/user2/repo2/commit/98765",
     comment_count: 2,
   },
+  coverage: 100
 }];
