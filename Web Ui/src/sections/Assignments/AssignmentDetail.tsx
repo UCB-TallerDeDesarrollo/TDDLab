@@ -5,28 +5,27 @@ import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmen
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button } from "@mui/material";
-import { GitLinkDialog } from "./components/GitHubLinkDialog"; // Import your GitHub link dialog component
+import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
-import CommentDialog from "./components/CommentDialog"; 
+import CommentDialog from "./components/CommentDialog";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the assignment by its ID when the component mounts
     const assignmentsRepository = new AssignmentsRepository();
     const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
 
     getAssignmentDetail
       .obtainAssignmentDetail(assignmentId)
       .then((fetchedAssignment) => {
-       setAssignment(fetchedAssignment);
+        setAssignment(fetchedAssignment);
       })
       .catch((error) => {
         console.error("Error fetching assignment:", error);
@@ -64,13 +63,8 @@ const AssignmentDetail: React.FC = () => {
         console.error(error);
       }
 
-      // Update the assignment state with the new link
       setAssignment(updatedAssignment);
-
-      // Close the GitHub link dialog after updating the link
       handleCloseLinkDialog();
-
-      //reloads page
       window.location.reload();
     }
   };
@@ -108,8 +102,8 @@ const AssignmentDetail: React.FC = () => {
     }
   };
 
-  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false); 
-  const [, setComment] = useState(""); 
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [, setComment] = useState("");
 
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);
@@ -119,9 +113,9 @@ const AssignmentDetail: React.FC = () => {
     setIsCommentDialogOpen(false);
   };
 
-  const handleSendComment = (comment:string) => {
+  const handleSendComment = (comment: string) => {
     setComment(comment);
-    handleCloseCommentDialog(); 
+    handleCloseCommentDialog();
   };
 
   return (
@@ -157,10 +151,11 @@ const AssignmentDetail: React.FC = () => {
             onSend={handleSendGithubLink}
           />
 
-          <Button 
-          variant="contained" 
-          disabled={!isTaskInProgressOrDelivered}
-          onClick={handleOpenCommentDialog}>
+          <Button
+            variant="contained"
+            disabled={!isTaskInProgressOrDelivered}
+            onClick={handleOpenCommentDialog}
+          >
             Enviar Tarea
           </Button>
 
@@ -170,8 +165,6 @@ const AssignmentDetail: React.FC = () => {
             onSend={handleSendComment}
             link={assignment?.link}
           />
-
-
         </div>
       ) : (
         <p>Cargando Tarea...</p>
