@@ -28,6 +28,7 @@ class AssignmentRepository {
           end_date: row.end_date,
           state: row.state,
           link: row.link,
+          comment: row.comment,
         })
       );
 
@@ -53,6 +54,7 @@ class AssignmentRepository {
           end_date: result.rows[0].end_date,
           state: result.rows[0].state,
           link: result.rows[0].link,
+          comment: result.rows[0].comment,
         };
         return assignment;
       }
@@ -123,6 +125,7 @@ class AssignmentRepository {
           end_date: result.rows[0].end_date,
           state: result.rows[0].state,
           link: result.rows[0].link,
+          comment: result.rows[0].comment,
         };
         return assignment;
       }
