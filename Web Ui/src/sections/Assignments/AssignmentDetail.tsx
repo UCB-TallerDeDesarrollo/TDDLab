@@ -13,7 +13,7 @@ const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  const [isLinkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
@@ -76,11 +76,11 @@ const AssignmentDetail: React.FC = () => {
   };
 
   const handleOpenLinkDialog = () => {
-    setLinkDialogOpen(true);
+    setIsLinkDialogOpen(true);
   };
 
   const handleCloseLinkDialog = () => {
-    setLinkDialogOpen(false);
+    setIsLinkDialogOpen(false);
   };
 
   const handleRedirect = () => {
@@ -108,15 +108,15 @@ const AssignmentDetail: React.FC = () => {
     }
   };
 
-  const [isCommentDialogOpen, setCommentDialogOpen] = useState(false); 
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false); 
   const [, setComment] = useState(""); 
 
   const handleOpenCommentDialog = () => {
-    setCommentDialogOpen(true);
+    setIsCommentDialogOpen(true);
   };
 
   const handleCloseCommentDialog = () => {
-    setCommentDialogOpen(false);
+    setIsCommentDialogOpen(false);
   };
 
   const handleSendComment = (comment:string) => {
