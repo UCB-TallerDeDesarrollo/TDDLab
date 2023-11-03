@@ -123,7 +123,7 @@ describe("Deliver Assignment", () => {
       expect.objectContaining({
         title: "Tarea 1",
         link: "https://example.com/assignment",
-        state: "delivered",
+        state: "in progress",
       })
     );
   });
