@@ -38,7 +38,7 @@ interface AssignmentsProps {
   mostrarFormulario: () => void;
 }
 
-function Assignments({ mostrarFormulario }: AssignmentsProps) {
+function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
@@ -101,7 +101,6 @@ function Assignments({ mostrarFormulario }: AssignmentsProps) {
     setSelectedRow(index);
     setGithubLinkDialogOpen(true);
     setSelectedAssignmentIndex(index);
-    // submitAssignment.submitAssignment(assignments[index].id);
   };
 
   const handleSendGithubLink = (link: string) => {
