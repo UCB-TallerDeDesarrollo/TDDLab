@@ -11,10 +11,15 @@ interface CommentDialogProps {
   open: boolean;
   onClose: () => void;
   onSend: (comment: string) => void;
-  link?: string; 
+  link?: string;
 }
 
-const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend, link  }) => {
+const CommentDialog: React.FC<CommentDialogProps> = ({
+  open,
+  onClose,
+  onSend,
+  link,
+}) => {
   const [comment, setComment] = useState("");
 
   const handleCancel = () => {
@@ -42,10 +47,13 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend, li
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+    >
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
-      {link && ( 
+        {link && (
           <DialogContentText style={dialogContentStyle}>
             Enlace: {link}
           </DialogContentText>
@@ -70,10 +78,16 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend, li
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} color="primary">
+        <Button
+          onClick={handleCancel}
+          color="primary"
+        >
           Cancelar
         </Button>
-        <Button onClick={handleSend} color="primary">
+        <Button
+          onClick={handleSend}
+          color="primary"
+        >
           Enviar
         </Button>
       </DialogActions>
