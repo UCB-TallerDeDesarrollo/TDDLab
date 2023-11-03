@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Input from "@mui/material/Input";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 
 const InvitationComponent: React.FC = () => {
   const [mostrarLink, setMostrarLink] = useState(false);
@@ -14,8 +15,13 @@ const InvitationComponent: React.FC = () => {
     const inputLink = document.getElementById("linkText") as HTMLInputElement;
     if (inputLink) {
       inputLink.select();
-      document.execCommand("copy");
-      alert("Link copiado al portapapeles");
+
+      try {
+        navigator.clipboard.writeText(inputLink.value);
+        alert("Link copiado al portapapeles");
+      } catch (err) {
+        console.error("Error:", err);
+      }
     }
   };
 
@@ -32,7 +38,8 @@ const InvitationComponent: React.FC = () => {
             color="primary"
             onClick={copiarAlPortapapeles}
           >
-            Copiar
+            
+            <FileCopyIcon />
           </Button>
         </div>
       )}
