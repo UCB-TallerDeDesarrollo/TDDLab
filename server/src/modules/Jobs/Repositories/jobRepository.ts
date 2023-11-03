@@ -1,7 +1,6 @@
 import { Pool } from 'pg'; // Import the Pool from 'pg'
 import config from '../../../config/db';
 import { JobDB } from '../Domain/Job';
-// import { Job } from '../../domain/models/Job';
 
 
 export class jobRepository {

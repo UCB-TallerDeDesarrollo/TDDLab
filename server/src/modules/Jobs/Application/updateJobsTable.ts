@@ -4,18 +4,15 @@ import { JobDataObject } from "../../Github/Domain/jobInterfaces";
 import { GithubAdapter } from "../../Github/Repositories/github.API";
 import { JobDB } from "../Domain/Job";
 import { jobRepository } from "../Repositories/jobRepository";
-// import { Job } from "../../domain/models/Job";
+
 
 const checkForNewJobs = async (owner: string, repoName: string,listOfCommitsWithActions:[string,number ][],jobsAdapterDb:jobRepository=new jobRepository()) => {
     let jobsToAdd=[]
 
-    for(let index=0;index<listOfCommitsWithActions.length;index++)
+    for(const element of listOfCommitsWithActions)
     {
-        let currentJob=listOfCommitsWithActions[index]
-        
+        let currentJob=element     
         let row=await jobsAdapterDb.checkIfJobExistsInDb(owner,repoName,currentJob[1])
-        
-        
         if(row.length!=0)
             break
         else
