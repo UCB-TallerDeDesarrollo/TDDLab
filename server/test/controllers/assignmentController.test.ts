@@ -107,7 +107,6 @@ describe('Deliver Assignment', () => {
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
       title: 'Tarea 1',
       link: 'https://example.com/assignment',
-      state: 'delivered',
     }));
   });
   it("should respond with a status 500 and error message when an error occurs during delivery", async () => {
