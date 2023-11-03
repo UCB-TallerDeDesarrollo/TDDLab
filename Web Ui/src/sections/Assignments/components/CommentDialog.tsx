@@ -11,9 +11,10 @@ interface CommentDialogProps {
   open: boolean;
   onClose: () => void;
   onSend: (comment: string) => void;
+  link?: string; 
 }
 
-const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend }) => {
+const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend, link  }) => {
   const [comment, setComment] = useState("");
 
   const handleCancel = () => {
@@ -42,7 +43,15 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend }) 
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle style={titleStyle}>Enviar Comentario</DialogTitle>
+      <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
+      <DialogContent>
+      {link && ( 
+          <DialogContentText style={dialogContentStyle}>
+            Enlace: {link}
+          </DialogContentText>
+        )}
+      </DialogContent>
+      <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
       <DialogContent>
         <DialogContentText style={dialogContentStyle}>
           Si necesita, puede dejar un comentario en este espacio:
