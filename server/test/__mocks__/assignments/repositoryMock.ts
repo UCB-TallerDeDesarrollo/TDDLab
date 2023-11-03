@@ -1,4 +1,9 @@
-import { getAssignmentMock } from "./dataTypeMocks/assignmentData";
+import { AssignmentDataObject } from "../../../src/modules/Assignments/domain/Assignment";
+
+interface DatabaseMock {
+  executeQuery: jest.Mock<any, any, any>;
+  mapAssignment: jest.Mock<any, any, any>;
+}
 
 export function getAssignmentRepositoryMock() {
   return {
