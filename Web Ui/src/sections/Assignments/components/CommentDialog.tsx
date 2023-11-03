@@ -30,12 +30,22 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend }) 
     setComment(event.target.value);
   };
 
+  const dialogContentStyle = {
+    fontFamily: "Roboto",
+    fontSize: "15px",
+  };
+  const titleStyle = {
+    fontSize: "1.1rem",
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  };
+
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Enviar Comentario</DialogTitle>
+      <DialogTitle style={titleStyle}>Enviar Comentario</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Por favor, ingrese su comentario a continuación:
+        <DialogContentText style={dialogContentStyle}>
+          Si necesita, puede dejar un comentario en este espacio:
         </DialogContentText>
         <TextField
           autoFocus
@@ -43,13 +53,15 @@ const CommentDialog: React.FC<CommentDialogProps> = ({ open, onClose, onSend }) 
           id="comment"
           label="Comentario"
           type="text"
+          multiline
+          rows={4.5}
           fullWidth
           value={comment}
           onChange={handleCommentChange}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} color="secondary">
+        <Button onClick={handleCancel} color="primary">
           Cancelar
         </Button>
         <Button onClick={handleSend} color="primary">
