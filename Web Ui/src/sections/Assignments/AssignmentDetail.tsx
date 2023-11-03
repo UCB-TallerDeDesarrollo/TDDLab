@@ -25,7 +25,6 @@ const AssignmentDetail: React.FC = () => {
     getAssignmentDetail
       .obtainAssignmentDetail(assignmentId)
       .then((fetchedAssignment) => {
-        //console.log(fetchedAssignment);
         setAssignment(fetchedAssignment);
       })
       .catch((error) => {
