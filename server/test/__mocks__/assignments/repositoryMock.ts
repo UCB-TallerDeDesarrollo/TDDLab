@@ -1,13 +1,10 @@
-import { AssignmentDataObject } from "../../../src/modules/Assignments/domain/Assignment";
-
-interface DatabaseMock {
-  executeQuery: jest.Mock<any, any, any>;
-  mapAssignment: jest.Mock<any, any, any>;
-}
+import { getAssignmentMock } from "./dataTypeMocks/assignmentData";
 
 export function getAssignmentRepositoryMock() {
   return {
     createAssignment: jest.fn(),
+    executeQuery: jest.fn(),
+    mapRowToAssignment: jest.fn(),
     obtainAssignments: jest.fn(),
     obtainAssignmentById: jest.fn(async (id) => {
       if (id === "existing_id") {

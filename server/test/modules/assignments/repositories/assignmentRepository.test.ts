@@ -14,13 +14,7 @@ beforeEach(() => {
     release: jest.fn(),
   });
   jest.spyOn(Pool.prototype, "connect").mockImplementation(poolConnectMock);
-
-  const database = {
-    executeQuery: jest.fn(),
-    mapAssignment: jest.fn(),
-  };
-
-  repository = new AssignmentRepository(database);
+  repository = new AssignmentRepository();
 });
 
 afterEach(() => {
