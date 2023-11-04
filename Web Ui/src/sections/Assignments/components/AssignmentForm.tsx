@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
-import SaveIcon from "@mui/icons-material/Save";
 import Stack from "@mui/material/Stack";
 import { Box, Container, TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -8,11 +7,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
 import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-import React from "react";
 
 function Form() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [flag, setFlag] = React.useState(true);
+  const [flag, setFlag] = useState(true);
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
     title: "",
@@ -21,6 +19,7 @@ function Form() {
     end_date: new Date(),
     state: "pending",
     link: "",
+    comment: "",
   });
 
   const handleGuardarClick = async () => {
@@ -62,68 +61,60 @@ function Form() {
   };
 
   return (
-    <>
-      <Container maxWidth="sm">
-        <Box
-          sx={{ display: "grid", gap: 2 }}
-          component="form"
-          autoComplete="off"
-        >
-          <TextField
-            id="titulo"
-            label="Titulo"
-            variant="outlined"
-            size="small"
-            required
-            value={assignmentData.title}
-            onChange={(e) => handleInputChange(e, "title")}
-          />
-          <TextField
-            id="descripcion"
-            label="Descripcion"
-            variant="outlined"
-            size="small"
-            required
-            sx={{
-              "& label.Mui-focused": {
-                color: "#001F3F",
+    <Container maxWidth="sm">
+      <Box sx={{ display: "grid", gap: 2 }} component="form" autoComplete="off">
+        <TextField
+          id="titulo"
+          label="Titulo"
+          variant="outlined"
+          size="small"
+          required
+          value={assignmentData.title}
+          onChange={(e) => handleInputChange(e, "title")}
+        />
+        <TextField
+          id="descripcion"
+          label="Descripcion"
+          variant="outlined"
+          size="small"
+          required
+          sx={{
+            "& label.Mui-focused": {
+              color: "#001F3F",
+            },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "#001F3F",
               },
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#001F3F",
-                },
-              },
+            },
+          }}
+          onChange={(e) => handleInputChange(e, "description")}
+          defaultValue={assignmentData.description}
+        />
+        <section>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Filter onUpdateDates={handleUpdateDates} />
+          </LocalizationProvider>
+        </section>
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="contained"
+            style={{
+              textTransform: "none",
             }}
-            onChange={(e) => handleInputChange(e, "description")}
-            defaultValue={assignmentData.description}
-          />
-          <section>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Filter onUpdateDates={handleUpdateDates} />
-            </LocalizationProvider>
-          </section>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              endIcon={<SaveIcon />}
-              style={{
-                backgroundColor: "#001F3F",
-                textTransform: "uppercase",
-              }}
-              onClick={handleGuardarClick}
-            >
-              Guardar cambios
-            </Button>
-          </Stack>
+            onClick={handleGuardarClick}
+          >
+            Guardar cambios
+          </Button>
+        </Stack>
 
-          {successMessage && (
-            <Typography sx={{ marginTop: 2 }} color={flag ? "green" : "error"}>
-              {successMessage}
-            </Typography>
-          )}
-        </Box>
-      </Container>
-    </>
+        {successMessage && (
+          <Typography sx={{ marginTop: 2 }} color={flag ? "green" : "error"}>
+            {successMessage}
+          </Typography>
+        )}
+      </Box>
+    </Container>
   );
 }
 
