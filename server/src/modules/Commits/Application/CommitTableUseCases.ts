@@ -18,9 +18,7 @@ export class CommitTableUseCases {
     commitsData: CommitDataObject[]
   ) {
     let commitsToAdd = [];
-
-    for (let index = 0; index < commitsData.length; index++) {
-      let currentCommit = commitsData[index];
+    for (const currentCommit of commitsData) {
       let row = await this.repositoryAdapter.commitExists(
         owner,
         repoName,
@@ -99,7 +97,7 @@ export class CommitTableUseCases {
       if (newCommits.length > 0) {
         await Promise.all(
           newCommits.map(async (commit: CommitDTO) => {
-            !(await this.repositoryAdapter.saveCommitInfoOfRepo(
+            (await this.repositoryAdapter.saveCommitInfoOfRepo(
               owner,
               repoName,
               commit
