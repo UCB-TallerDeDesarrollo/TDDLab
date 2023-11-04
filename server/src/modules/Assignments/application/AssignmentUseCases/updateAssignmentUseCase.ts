@@ -1,5 +1,5 @@
 import AssignmentRepository from "../../repositories/AssignmentRepository";
-import { AssignmentDataObject } from "../../domain/Assignment";
+import { AssignmentCreationObject } from "../../domain/Assignment";
 class UpdateAssignment {
   private repository: AssignmentRepository;
 
@@ -9,8 +9,8 @@ class UpdateAssignment {
 
   async execute(
     assignmentId: string,
-    updatedAssignment: AssignmentDataObject
-  ): Promise<AssignmentDataObject | null> {
+    updatedAssignment: AssignmentCreationObject
+  ): Promise<AssignmentCreationObject | null> {
     try {
       const updatedAssignmentResult = await this.repository.updateAssignment(
         assignmentId,
