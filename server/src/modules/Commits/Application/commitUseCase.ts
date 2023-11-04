@@ -27,8 +27,17 @@ export class CommitUseCases {
           owner,
           repoName
         );
-        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, commits);
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
+        const commitsFromSha =
+          await this.commitTableUseCases.getCommitsFromShaAPI(
+            owner,
+            repoName,
+            commits
+          );
+        await this.commitTableUseCases.saveCommitsDB(
+          owner,
+          repoName,
+          commitsFromSha
+        );
       } else {
         const commits = await this.commitTableUseCases.getCommitsAPI(
           owner,
@@ -39,8 +48,17 @@ export class CommitUseCases {
           repoName,
           commits
         );
-        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, newCommits);
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
+        const commitsFromSha =
+          await this.commitTableUseCases.getCommitsFromShaAPI(
+            owner,
+            repoName,
+            newCommits
+          );
+        await this.commitTableUseCases.saveCommitsDB(
+          owner,
+          repoName,
+          commitsFromSha
+        );
       }
       commits = await this.repositoryAdapter.getCommits(owner, repoName);
     } catch (error) {
