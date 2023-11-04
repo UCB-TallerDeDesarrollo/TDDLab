@@ -5,7 +5,7 @@ import {
 import { JobDataObject } from "../Domain/jobInterfaces";
 import { GithubAdapter } from "../Repositories/github.API";
 
-export class githubUseCases {
+export class GithubUseCases {
   adapter: GithubAdapter;
   constructor() {
     this.adapter = new GithubAdapter();
@@ -17,7 +17,6 @@ export class githubUseCases {
   ): Promise<CommitDataObject[]> {
     try {
       const commits = await this.adapter.obtainCommitsOfRepo(owner, repoName);
-      console.log(commits);
       return commits;
     } catch (error) {
       console.log(error);

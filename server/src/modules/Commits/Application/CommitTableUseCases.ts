@@ -1,4 +1,4 @@
-import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { CommitRepository } from "../Repositories/commitRepository";
@@ -6,10 +6,10 @@ import { CommitRepository } from "../Repositories/commitRepository";
 export class CommitTableUseCases {
   constructor(
     private repositoryAdapter: CommitRepository,
-    private githubAdapter: GithubAdapter
+    private githubUseCases: GithubUseCases
   ) {
     this.repositoryAdapter = repositoryAdapter;
-    this.githubAdapter = githubAdapter;
+    this.githubUseCases = githubUseCases;
   }
 
   async checkNewCommits(
@@ -37,7 +37,7 @@ export class CommitTableUseCases {
 
   async getCommitsAPI(owner: string, repoName: string) {
     try {
-      const commits = await this.githubAdapter.obtainCommitsOfRepo(
+      const commits = await this.githubUseCases.obtainCommitsOfRepo(
         owner,
         repoName
       );
@@ -55,7 +55,7 @@ export class CommitTableUseCases {
     try{
       const commitsFromSha = await Promise.all(
         commits.map((commit: any) => {
-          return this.githubAdapter.obtainCommitsFromSha(
+          return this.githubUseCases.obtainCommitsFromSha(
             owner,
             repoName,
             commit.sha
