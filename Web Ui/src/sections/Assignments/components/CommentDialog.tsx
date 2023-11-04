@@ -62,7 +62,7 @@ const CommentDialog: React.FC<CommentDialogProps> = ({
       <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
       <DialogContent>
         <DialogContentText style={dialogContentStyle}>
-          Si necesita, puede dejar un comentario en este espacio:
+          Puedes dejar un comentario sobre tu tarea en este espacio (Opcional):
         </DialogContentText>
         <TextField
           autoFocus
