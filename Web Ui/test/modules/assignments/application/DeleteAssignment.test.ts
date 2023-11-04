@@ -8,7 +8,7 @@ beforeEach(() => {
     mockRepository = new MockAssignmentsRepository();
     deleteAssignment = new DeleteAssignment(mockRepository);
 });
-describe("Create Assignment", () => {
+describe("Delete Assignment", () => {
     it("Should successfully delete an assignment", async () => {
         const assignmentId = 1;
         const assignment: AssignmentDataObject = {
