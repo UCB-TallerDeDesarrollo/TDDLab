@@ -6,7 +6,7 @@ import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
-import Navbar from "./sections/Navbar/Navbar";
+import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
@@ -32,7 +32,7 @@ const navArrayLinks = [
 function App() {
   return (
     <Router>
-      <Navbar navArrayLinks={navArrayLinks} />
+      <MainMenu navArrayLinks={navArrayLinks} />
       <Routes>
         <Route
           path="/"
