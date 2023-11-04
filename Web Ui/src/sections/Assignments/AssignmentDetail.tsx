@@ -7,7 +7,7 @@ import AssignmentsRepository from "../../modules/Assignments/repository/Assignme
 import { Button } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
-import CommentDialog from "./components/CommentDialog";
+import { CommentDialog } from "./components/CommentDialog";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
@@ -37,32 +37,41 @@ const AssignmentDetail: React.FC = () => {
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
 
+  const handleUpdateAssignment = async (
+    updatedAssignment: AssignmentDataObject
+  ) => {
+    const assignmentsRepository = new AssignmentsRepository();
+    const submitAssignment = new SubmitAssignment(assignmentsRepository);
+
+    try {
+      await submitAssignment.submitAssignment(
+        updatedAssignment.id,
+        updatedAssignment.link
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleFindAssignment = async (assignmentId: number, link: string) => {
+    const updatedAssignment = {
+      id: assignmentId,
+      title: assignment ? assignment.title : "",
+      description: assignment ? assignment.description : "",
+      start_date: assignment ? assignment.start_date : new Date(),
+      end_date: assignment ? assignment.end_date : new Date(),
+      state: assignment ? assignment.state : "",
+      link: link,
+      comment: assignment ? assignment.comment : "",
+    };
+    return updatedAssignment;
+  };
+
   const handleSendGithubLink = async (link: string) => {
     if (assignmentId) {
-      const updatedAssignment = {
-        id: assignmentId,
-        title: assignment ? assignment.title : "",
-        description: assignment ? assignment.description : "",
-        start_date: assignment ? assignment.start_date : new Date(),
-        end_date: assignment ? assignment.end_date : new Date(),
-        state: assignment ? assignment.state : "",
-        link: link,
-        comment: assignment ? assignment.comment : "",
-      };
+      const updatedAssignment = await handleFindAssignment(assignmentId, link);
 
-      const assignmentsRepository = new AssignmentsRepository();
-      const submitAssignment = new SubmitAssignment(assignmentsRepository);
-
-      try {
-        console.log(updatedAssignment);
-
-        await submitAssignment.submitAssignment(
-          updatedAssignment.id,
-          updatedAssignment.link
-        );
-      } catch (error) {
-        console.error(error);
-      }
+      handleUpdateAssignment(updatedAssignment);
 
       setAssignment(updatedAssignment);
       handleCloseLinkDialog();
@@ -114,9 +123,15 @@ const AssignmentDetail: React.FC = () => {
     setIsCommentDialogOpen(false);
   };
 
-  const handleSendComment = (comment: string) => {
+  const handleSendComment = async (comment: string, link: string) => {
     setComment(comment);
     handleCloseCommentDialog();
+
+    if (assignment) {
+      const updatedAssignment = await handleFindAssignment(assignmentId, link);
+
+      handleUpdateAssignment(updatedAssignment);
+    }
   };
 
   return (
@@ -162,9 +177,9 @@ const AssignmentDetail: React.FC = () => {
 
           <CommentDialog
             open={isCommentDialogOpen}
-            onClose={handleCloseCommentDialog}
-            onSend={handleSendComment}
             link={assignment?.link}
+            onSend={handleSendComment}
+            onClose={handleCloseCommentDialog}
           />
         </div>
       ) : (
