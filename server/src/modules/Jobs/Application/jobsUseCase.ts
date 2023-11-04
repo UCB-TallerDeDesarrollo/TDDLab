@@ -1,13 +1,13 @@
-import { jobRepository } from "../Repositories/jobRepository";
+import { JobRepository } from "../Repositories/jobRepository";
 import { UpdateJobsTable } from "./updateJobsTable";
 import { GithubUseCases } from "../../Github/Application/githubUseCases";
 
 export class JobsUseCase {
   private updateJobsTable: UpdateJobsTable;
-  private adapter: jobRepository;
+  private adapter: JobRepository;
   private githubUseCases: GithubUseCases;
 
-  constructor(adapter: jobRepository, githubAdapter: GithubUseCases) {
+  constructor(adapter: JobRepository, githubAdapter: GithubUseCases) {
     this.adapter = adapter;
     this.githubUseCases = githubAdapter;
     this.updateJobsTable = new UpdateJobsTable(this.adapter, this.githubUseCases);
