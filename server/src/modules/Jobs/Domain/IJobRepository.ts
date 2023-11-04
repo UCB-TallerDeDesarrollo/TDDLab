@@ -6,4 +6,5 @@ export interface IJobRepository {
     getJobs(owner: string, repo: string): Promise<any>;
     checkIfJobExistsInDb(owner: string, repo: string, jobId: number): Promise<any>;
     insertRecordsIntoDatabase(records: JobDB[]): Promise<void>;
+    repositoryExist(owner: string, repoName: string): Promise<boolean>;
 }

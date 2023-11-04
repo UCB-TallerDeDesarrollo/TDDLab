@@ -1,5 +1,3 @@
-// import { obtainJobsData } from "../../Github/Application/obtainJobs";
-// import { obtainRunnedJobsList } from "../../Github/Application/obtainRunnedJobsList";
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
 import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { JobDB } from "../Domain/Job";
@@ -14,7 +12,7 @@ export class UpdateJobsTable {
     this.githubUseCases = githubAdapter;
   }
 
-  private async checkForNewJobs(
+  async checkForNewJobs(
     owner: string,
     repoName: string,
     listOfCommitsWithActions: [string, number][]
@@ -36,7 +34,7 @@ export class UpdateJobsTable {
     return jobsToAdd;
   }
 
-  private async addJobsToDb(
+  async saveJobsDB(
     owner: string,
     repoName: string,
     jobs: Record<string, JobDataObject>
@@ -54,22 +52,17 @@ export class UpdateJobsTable {
     this.adapter.insertRecordsIntoDatabase(jobsFormatted);
   }
 
-  public async updateJobsTable(owner: string, repoName: string) {
-    let listOfCommitsWithActions: [string, number][] =
-      await this.githubUseCases.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
-    let jobsToAdd: [string, number][] = await this.checkForNewJobs(
+  async getJobsAPI(owner: string, repoName: string) {
+    let jobList: [string, number][] = await this.githubUseCases.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
+    console.log("JOB LIST: ", jobList);
+    return jobList
+  }
+  async getJobsData(owner: string, repoName: string, jobList: [string, number][]){
+    let jobs: Record<string, JobDataObject> = await this.githubUseCases.obtainJobsData(
       owner,
       repoName,
-      listOfCommitsWithActions
+      jobList
     );
-    if (jobsToAdd.length > 0) {
-      console.log(jobsToAdd);
-      let jobs: Record<string, JobDataObject> = await this.githubUseCases.obtainJobsData(
-        owner,
-        repoName,
-        jobsToAdd
-      );
-      await this.addJobsToDb(owner, repoName, jobs);
-    }
+    return jobs;
   }
 }

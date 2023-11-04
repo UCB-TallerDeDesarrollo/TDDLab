@@ -4,9 +4,12 @@ import { CommitTableUseCases } from "./CommitTableUseCases";
 
 export class CommitUseCases {
   private commitTableUseCases: CommitTableUseCases;
+  private repositoryAdapter: CommitRepository;
+  private githubUseCases: GithubUseCases;
+
   constructor(
-    private repositoryAdapter: CommitRepository,
-    private githubUseCases: GithubUseCases
+    repositoryAdapter: CommitRepository,
+    githubUseCases: GithubUseCases
   ) {
     this.repositoryAdapter = repositoryAdapter;
     this.githubUseCases = githubUseCases;
