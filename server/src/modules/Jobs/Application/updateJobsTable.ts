@@ -1,17 +1,17 @@
-import { obtainJobsData } from "../../Github/Application/obtainJobs";
-import { obtainRunnedJobsList } from "../../Github/Application/obtainRunnedJobsList";
+// import { obtainJobsData } from "../../Github/Application/obtainJobs";
+// import { obtainRunnedJobsList } from "../../Github/Application/obtainRunnedJobsList";
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
-import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { JobDB } from "../Domain/Job";
 import { jobRepository } from "../Repositories/jobRepository";
 
 export class UpdateJobsTable {
   private adapter: jobRepository;
-  private githubAdapter: GithubAdapter;
+  private githubUseCases: GithubUseCases;
 
-  constructor(adapter: jobRepository, githubAdapter: GithubAdapter  ) {
+  constructor(adapter: jobRepository, githubAdapter: GithubUseCases  ) {
     this.adapter = adapter;
-    this.githubAdapter = githubAdapter;
+    this.githubUseCases = githubAdapter;
   }
 
   private async checkForNewJobs(
@@ -56,7 +56,7 @@ export class UpdateJobsTable {
 
   public async updateJobsTable(owner: string, repoName: string) {
     let listOfCommitsWithActions: [string, number][] =
-      await obtainRunnedJobsList(owner, repoName, this.githubAdapter); //[commitSha,workflowId][]
+      await this.githubUseCases.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
     let jobsToAdd: [string, number][] = await this.checkForNewJobs(
       owner,
       repoName,
@@ -64,11 +64,10 @@ export class UpdateJobsTable {
     );
     if (jobsToAdd.length > 0) {
       console.log(jobsToAdd);
-      let jobs: Record<string, JobDataObject> = await obtainJobsData(
+      let jobs: Record<string, JobDataObject> = await this.githubUseCases.obtainJobsData(
         owner,
         repoName,
-        jobsToAdd,
-        this.githubAdapter
+        jobsToAdd
       );
       await this.addJobsToDb(owner, repoName, jobs);
     }

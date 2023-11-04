@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { jobRepository } from "../../modules/Jobs/Repositories/jobRepository";
 import { JobsUseCase } from "../../modules/Jobs/Application/jobsUseCase";
-import { GithubAdapter } from "../../modules/Github/Repositories/github.API";
+import { GithubUseCases } from "../../modules/Github/Application/githubUseCases";
 class JobsController {
   JobsUseCase: JobsUseCase
   repository: jobRepository
-  github: GithubAdapter;
+  githubUseCases: GithubUseCases;
   constructor() {
     this.repository=new jobRepository()
-    this.github = new GithubAdapter();
-    this.JobsUseCase=new JobsUseCase(this.repository, this.github)
+    this.githubUseCases = new GithubUseCases();
+    this.JobsUseCase=new JobsUseCase(this.repository, this.githubUseCases)
   }
 
   async getJobs(req: Request, res: Response) {
