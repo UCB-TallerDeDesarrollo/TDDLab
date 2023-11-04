@@ -4,23 +4,35 @@ import { GithubUseCases } from "../../Github/Application/githubUseCases";
 
 export class JobsUseCase {
   private updateJobsTable: UpdateJobsTable;
-  private adapter: JobRepository;
+  private repository: JobRepository;
   private githubUseCases: GithubUseCases;
 
-  constructor(adapter: JobRepository, githubAdapter: GithubUseCases) {
-    this.adapter = adapter;
+  constructor(repository: JobRepository, githubAdapter: GithubUseCases) {
+    this.repository = repository;
     this.githubUseCases = githubAdapter;
-    this.updateJobsTable = new UpdateJobsTable(this.adapter, this.githubUseCases);
+    this.updateJobsTable = new UpdateJobsTable(
+      this.repository,
+      this.githubUseCases
+    );
   }
 
-  public async getJobs(owner: string, repoName: string) {
+  async getJobs(owner: string, repoName: string) {
     try {
-      await this.updateJobsTable.updateJobsTable(owner, repoName);
+      if (!(await this.repository.repositoryExist(owner, repoName))) {
+        const jobs = await this.updateJobsTable.getJobsAPI(owner, repoName);
+        const jobsFormatted = await this.updateJobsTable.getJobsData(owner, repoName, jobs);
+        this.updateJobsTable.saveJobsDB(owner, repoName, jobsFormatted);
+      }else{
+        const jobs = await this.updateJobsTable.getJobsAPI(owner, repoName); //getJobsAPI should be changed to getLastJobs once it is implemented
+        const newJobs = await this.updateJobsTable.checkForNewJobs(owner, repoName, jobs);
+        const jobsFormatted = await this.updateJobsTable.getJobsData(owner, repoName, newJobs);
+        this.updateJobsTable.saveJobsDB(owner, repoName, jobsFormatted);
+      }
     } catch (error) {
       console.error("Error updating jobs table:", error);
       return { error: "Error updating jobs table" };
     } finally {
-      const Jobs = await this.adapter.getJobs(owner, repoName);
+      const Jobs = await this.repository.getJobs(owner, repoName);
       return Jobs;
     }
   }
