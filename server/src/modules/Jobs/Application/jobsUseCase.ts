@@ -17,6 +17,7 @@ export class JobsUseCase {
   }
 
   async getJobs(owner: string, repoName: string) {
+    let jobs;
     try {
       if (!(await this.repository.repositoryExist(owner, repoName))) {
         const jobs = await this.updateJobsTable.getJobsAPI(owner, repoName);
@@ -28,12 +29,11 @@ export class JobsUseCase {
         const jobsFormatted = await this.updateJobsTable.getJobsData(owner, repoName, newJobs);
         this.updateJobsTable.saveJobsDB(owner, repoName, jobsFormatted);
       }
+      jobs = await this.repository.getJobs(owner, repoName);
     } catch (error) {
       console.error("Error updating jobs table:", error);
-      return { error: "Error updating jobs table" };
-    } finally {
-      const Jobs = await this.repository.getJobs(owner, repoName);
-      return Jobs;
+      throw new Error("Error updating jobs table");
     }
+    return jobs;
   }
 }

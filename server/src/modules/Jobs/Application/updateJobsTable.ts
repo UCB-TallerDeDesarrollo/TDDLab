@@ -19,9 +19,7 @@ export class UpdateJobsTable {
   ) {
     let jobsToAdd = [];
 
-    for (let index = 0; index < listOfCommitsWithActions.length; index++) {
-      let currentJob = listOfCommitsWithActions[index];
-
+    for (const currentJob of listOfCommitsWithActions) {
       let row = await this.adapter.checkIfJobExistsInDb(
         owner,
         repoName,
