@@ -44,7 +44,7 @@ export class CommitTableUseCases {
       return commits;
     } catch (error) {
       console.error("Error en la obtención de commits:", error);
-      throw { error: "Error en la obtención de commits" };
+      throw new Error("Error en la obtención de commits");
     }
   }
   async getCommitsFromShaAPI(
@@ -85,7 +85,7 @@ export class CommitTableUseCases {
       return commitsData;
     }catch(error){
       console.error("Error en la obtención de commits:", error);
-      throw { error: "Error en la obtención de commits" };
+      throw new Error("Error en la obtención de commits");
     }
     
   }

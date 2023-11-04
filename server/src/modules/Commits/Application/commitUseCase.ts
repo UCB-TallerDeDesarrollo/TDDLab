@@ -20,6 +20,7 @@ export class CommitUseCases {
   }
 
   async getCommits(owner: string, repoName: string) {
+    let commits;
     try {
       if (!(await this.repositoryAdapter.repositoryExist(owner, repoName))) {
         const commits = await this.commitTableUseCases.getCommitsAPI(
@@ -41,12 +42,11 @@ export class CommitUseCases {
         const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, newCommits);
         this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
       }
+      commits = await this.repositoryAdapter.getCommits(owner, repoName);
     } catch (error) {
       console.error("Error updating commits table:", error);
-      return { error: "Error updating commits table" };
-    } finally {
-      const jobs = await this.repositoryAdapter.getCommits(owner, repoName);
-      return jobs;
+      throw error;
     }
+    return commits;
   }
 }
