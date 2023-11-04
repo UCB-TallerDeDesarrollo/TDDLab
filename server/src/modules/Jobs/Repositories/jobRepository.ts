@@ -1,8 +1,6 @@
-import { Pool } from 'pg'; // Import the Pool from 'pg'
+import { Pool } from 'pg';
 import config from '../../../config/db';
 import { JobDB } from '../Domain/Job';
-// import { Job } from '../../domain/models/Job';
-
 
 export class jobRepository {
     pool: Pool
@@ -53,20 +51,19 @@ export class jobRepository {
         const client = await this.pool.connect();
         try {
 
-          for (const record of records) {
+        for (const record of records) {
             const { id, sha, owner, reponame, conclusion } = record;
-      
             const query = 'INSERT INTO jobsTable (id, sha, owner, repoName, conclusion) VALUES ($1, $2, $3, $4, $5)';
             const values = [id, sha, owner, reponame, conclusion];
-      
+
             await client.query(query, values);
-          }
+        }
         } catch (error) {
-          console.error('Error inserting records:', error);
+        console.error('Error inserting records:', error);
         } finally {
             if (client) {
                 client.release();
             }
         }
-      }
+    }
 }

@@ -1,4 +1,4 @@
-import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { CommitRepository } from "../Repositories/commitRepository";
 import { CommitTableUseCases } from "./CommitTableUseCases";
 
@@ -6,13 +6,13 @@ export class CommitUseCases {
   private commitTableUseCases: CommitTableUseCases;
   constructor(
     private repositoryAdapter: CommitRepository,
-    private githubAdapter: GithubAdapter
+    private githubUseCases: GithubUseCases
   ) {
     this.repositoryAdapter = repositoryAdapter;
-    this.githubAdapter = githubAdapter;
+    this.githubUseCases = githubUseCases;
     this.commitTableUseCases = new CommitTableUseCases(
       this.repositoryAdapter,
-      this.githubAdapter
+      this.githubUseCases
     );
   }
 
