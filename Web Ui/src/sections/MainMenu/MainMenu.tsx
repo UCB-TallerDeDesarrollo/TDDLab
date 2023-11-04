@@ -7,7 +7,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import NavLateralMenu from "./components/NavLateralMenu";
+import NavLateralMenu from "./components/LateralMenu";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ReactElement, useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -23,9 +23,9 @@ interface NavbarProps {
   navArrayLinks: NavLink[];
 }
 
-export default function Navbar({ navArrayLinks }: Readonly<NavbarProps>) {
+export default function MainMenu({ navArrayLinks }: Readonly<NavbarProps>) {
   const [open, setOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState("");
+  const [activeButton, setActiveButton] = useState("Tareas");
 
   const handleButtonClick = (title: string) => {
     setActiveButton(title);
