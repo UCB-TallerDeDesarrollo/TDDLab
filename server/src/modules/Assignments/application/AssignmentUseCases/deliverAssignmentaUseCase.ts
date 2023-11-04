@@ -22,8 +22,8 @@ class DeliverAssignmentUseCase {
       }
 
       // Update the assignment's state and link
-      assignment.state = "delivered";
       assignment.link = link;
+      assignment.state = "in progress";
 
       // Update the assignment in the repository
       await this.repository.updateAssignment(assignmentId, assignment);

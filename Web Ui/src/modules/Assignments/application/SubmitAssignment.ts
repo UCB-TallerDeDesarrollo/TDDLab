@@ -10,11 +10,10 @@ export class SubmitAssignment {
         await this.assignmentsRepository.getAssignmentById(assignmentId);
 
       if (foundAssignment !== null) {
-        foundAssignment.state = "delivered";
         foundAssignment.link = link;
-        console.log(foundAssignment);
+        foundAssignment.state = "in progress";
 
-        return await this.assignmentsRepository.deliverAssignment(
+        return await this.assignmentsRepository.updateAssignment(
           assignmentId,
           foundAssignment
         );

@@ -5,8 +5,8 @@ import { MockAssignmentsRepository } from "../../__mocks__/mockAssignmentsReposi
 let mockRepository: MockAssignmentsRepository;
 let deleteAssignment: DeleteAssignment;
 beforeEach(() => {
-    mockRepository = new MockAssignmentsRepository();
-    deleteAssignment = new DeleteAssignment(mockRepository);
+  mockRepository = new MockAssignmentsRepository();
+  deleteAssignment = new DeleteAssignment(mockRepository);
 });
 describe("Delete Assignment", () => {
     it("Should successfully delete an assignment", async () => {

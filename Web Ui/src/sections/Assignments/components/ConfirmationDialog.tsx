@@ -26,10 +26,10 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 }) => {
   const dialogContentStyle = {
     fontFamily: "Roboto",
-    fontSize: "13px",
+    fontSize: "15px",
   };
   const titleStyle = {
-    fontSize: "1rem",
+    fontSize: "1.1rem",
     fontWeight: "bold",
     fontFamily: "Roboto",
   };
