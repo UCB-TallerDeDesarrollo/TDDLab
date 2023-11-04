@@ -3,13 +3,13 @@
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
 import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { JobDB } from "../Domain/Job";
-import { jobRepository } from "../Repositories/jobRepository";
+import { JobRepository } from "../Repositories/jobRepository";
 
 export class UpdateJobsTable {
-  private adapter: jobRepository;
+  private adapter: JobRepository;
   private githubUseCases: GithubUseCases;
 
-  constructor(adapter: jobRepository, githubAdapter: GithubUseCases  ) {
+  constructor(adapter: JobRepository, githubAdapter: GithubUseCases  ) {
     this.adapter = adapter;
     this.githubUseCases = githubAdapter;
   }

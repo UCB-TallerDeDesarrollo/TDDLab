@@ -1,8 +1,9 @@
 import { Pool } from 'pg';
 import config from '../../../config/db';
 import { JobDB } from '../Domain/Job';
+import { IJobRepository } from '../Domain/IJobRepository';
 
-export class jobRepository {
+export class JobRepository implements IJobRepository {
     pool: Pool
     constructor() {
         this.pool = new Pool(config)
