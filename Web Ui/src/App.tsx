@@ -23,7 +23,7 @@ const navArrayLinks = [
     icon: <DescriptionIcon />,
   },
   {
-    title: "Usuario",
+    title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
   },
