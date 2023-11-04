@@ -9,7 +9,7 @@ beforeEach(() => {
     deleteAssignment = new DeleteAssignment(mockRepository);
 });
 describe("Create Assignment", () => {
-    it("Should successfully create a new assignment", async () => {
+    it("Should successfully delete an assignment", async () => {
         const assignmentId = 1;
         const assignment: AssignmentDataObject = {
             id: assignmentId,
@@ -23,5 +23,9 @@ describe("Create Assignment", () => {
         mockRepository.createAssignment(assignment);
         const obtainedAssignment = await deleteAssignment.deleteAssignment(1);
         expect(obtainedAssignment).toEqual('Succesful deletion');
+    });
+    it("Should handle an exception if an error occurs", async () => {
+        mockRepository.deleteAssignment.mockRejectedValue(new Error("Error simulado"));
+        await expect(deleteAssignment.deleteAssignment(1)).rejects.toThrow("Error simulado");
     });
 });
