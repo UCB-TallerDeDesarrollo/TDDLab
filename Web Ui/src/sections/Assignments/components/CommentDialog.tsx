@@ -9,16 +9,16 @@ import TextField from "@mui/material/TextField";
 
 interface CommentDialogProps {
   open: boolean;
-  onClose: () => void;
-  onSend: (comment: string) => void;
   link?: string;
+  onSend: (comment: string, link: string) => void;
+  onClose: () => void;
 }
 
-const CommentDialog: React.FC<CommentDialogProps> = ({
+export const CommentDialog: React.FC<CommentDialogProps> = ({
   open,
+  link,
   onClose,
   onSend,
-  link,
 }) => {
   const [comment, setComment] = useState("");
 
@@ -28,8 +28,7 @@ const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   const handleSend = () => {
-    onSend(comment);
-    setComment("");
+    onSend(comment, link ? link : "");
   };
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,10 +46,7 @@ const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
         {link && (
@@ -78,21 +74,13 @@ const CommentDialog: React.FC<CommentDialogProps> = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={handleCancel}
-          color="primary"
-        >
+        <Button onClick={handleCancel} color="primary">
           Cancelar
         </Button>
-        <Button
-          onClick={handleSend}
-          color="primary"
-        >
+        <Button onClick={handleSend} color="primary">
           Enviar
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
-
-export default CommentDialog;
