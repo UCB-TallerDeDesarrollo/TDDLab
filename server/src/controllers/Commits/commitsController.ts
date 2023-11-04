@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CommitRepository } from '../../modules/Commits/Repositories/commitRepository';
-import { CommitUseCases } from '../../modules/Commits/Application/getCommits';
+import { CommitUseCases } from '../../modules/Commits/Application/commitUseCase';
 import { GithubUseCases } from '../../modules/Github/Application/githubUseCases';
 
 class CommitsController {
