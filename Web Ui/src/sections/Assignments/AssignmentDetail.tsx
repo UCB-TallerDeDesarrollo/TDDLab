@@ -7,6 +7,7 @@ import AssignmentsRepository from "../../modules/Assignments/repository/Assignme
 import { Button } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
+import CommentDialog from "./components/CommentDialog";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
@@ -63,13 +64,8 @@ const AssignmentDetail: React.FC = () => {
         console.error(error);
       }
 
-      // Update the assignment state with the new link
       setAssignment(updatedAssignment);
-
-      // Close the GitHub link dialog after updating the link
       handleCloseLinkDialog();
-
-      //reloads page
       window.location.reload();
     }
   };
@@ -107,6 +103,22 @@ const AssignmentDetail: React.FC = () => {
     }
   };
 
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [, setComment] = useState("");
+
+  const handleOpenCommentDialog = () => {
+    setIsCommentDialogOpen(true);
+  };
+
+  const handleCloseCommentDialog = () => {
+    setIsCommentDialogOpen(false);
+  };
+
+  const handleSendComment = (comment: string) => {
+    setComment(comment);
+    handleCloseCommentDialog();
+  };
+
   return (
     <div>
       {assignment ? (
@@ -138,6 +150,21 @@ const AssignmentDetail: React.FC = () => {
             open={linkDialogOpen}
             onClose={handleCloseLinkDialog}
             onSend={handleSendGithubLink}
+          />
+
+          <Button
+            variant="contained"
+            disabled={!isTaskInProgressOrDelivered}
+            onClick={handleOpenCommentDialog}
+          >
+            Enviar Tarea
+          </Button>
+
+          <CommentDialog
+            open={isCommentDialogOpen}
+            onClose={handleCloseCommentDialog}
+            onSend={handleSendComment}
+            link={assignment?.link}
           />
         </div>
       ) : (
