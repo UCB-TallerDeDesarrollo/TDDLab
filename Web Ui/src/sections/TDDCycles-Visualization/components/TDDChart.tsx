@@ -2,11 +2,11 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { Line, getElementAtEvent } from "react-chartjs-2";
 import { useRef, useState } from "react";
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import {
   Chart as ChartJS,
@@ -47,14 +47,14 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   );
   function getDataLabels() {
     if (filteredCommitsObject != null) {
-      const commitsArray = filteredCommitsObject.map((commit) =>
-        filteredCommitsObject.indexOf(commit)
-      );
-    if (commits != null) {
-      const commitsArray = commits.map((commit) => commits.indexOf(commit) + 1);
-      return commitsArray;
-    } else {
-      return [];
+      if (commits != null) {
+        const commitsArray = commits.map(
+          (commit) => commits.indexOf(commit) + 1
+        );
+        return commitsArray;
+      } else {
+        return [];
+      }
     }
   }
 
@@ -100,11 +100,9 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
   }
 
-  function getCommitCoverage(){
+  function getCommitCoverage() {
     if (commits != null) {
-      const coverage = commits
-        .map((commit) => commit.coverage)
-        .reverse();
+      const coverage = commits.map((commit) => commit.coverage).reverse();
       return coverage;
     } else {
       return [];
@@ -120,9 +118,9 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
   }
 
-  let dataChart:any = {};
+  let dataChart: any = {};
 
-  function getDataChart(dataChartSelected:any, dataLabel:string){
+  function getDataChart(dataChartSelected: any, dataLabel: string) {
     dataChart = {
       labels: getDataLabels(),
       datasets: [
@@ -131,13 +129,13 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           backgroundColor: getColorConclusion(),
           data: dataChartSelected,
           links: getCommitLink(),
-        }
+        },
       ],
     };
     return dataChart;
   }
 
-  function getOptionsChart(axisText:string){
+  function getOptionsChart(axisText: string) {
     const optionsLineChart = {
       responsive: true,
       pointRadius: 12,
@@ -169,7 +167,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     };
     return optionsLineChart;
   }
-  
+
   const chartRef = useRef<any>();
 
   const onClick = (event: any) => {
@@ -188,7 +186,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   const [metricSelected, setMetricSelected] = useState("Cobertura de Código");
 
   const handleSelectChange = (event: SelectChangeEvent) => {
-    setMetricSelected(event.target.value)
+    setMetricSelected(event.target.value);
   };
 
   return (
@@ -203,8 +201,12 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             value={metricSelected}
             label="Metrics"
           >
-            <MenuItem value={"Cobertura de Código"}>Porcentaje de Cobertura de Código</MenuItem>
-            <MenuItem value={"Líneas de Código Modificadas"}>Líneas de Código Modificadas</MenuItem>
+            <MenuItem value={"Cobertura de Código"}>
+              Porcentaje de Cobertura de Código
+            </MenuItem>
+            <MenuItem value={"Líneas de Código Modificadas"}>
+              Líneas de Código Modificadas
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -212,7 +214,10 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
       {metricSelected === "Cobertura de Código" ? (
         <Line
           height="100"
-          data={getDataChart(getCommitCoverage(), "Porcentaje de Cobertura de Código")}
+          data={getDataChart(
+            getCommitCoverage(),
+            "Porcentaje de Cobertura de Código"
+          )}
           options={getOptionsChart("Cobertura de Código")}
           onClick={onClick}
           ref={chartRef}
@@ -220,7 +225,10 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
       ) : (
         <Line
           height="100"
-          data={getDataChart(getCommitStats()[2], "Total de Líneas de Código Modificadas")}
+          data={getDataChart(
+            getCommitStats()[2],
+            "Total de Líneas de Código Modificadas"
+          )}
           options={getOptionsChart("Líneas de Código Modificadas")}
           onClick={onClick}
           ref={chartRef}
