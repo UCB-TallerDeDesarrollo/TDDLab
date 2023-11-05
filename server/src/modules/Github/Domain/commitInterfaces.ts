@@ -124,9 +124,9 @@ export interface CoverageComment {
     type: string;
     site_admin: boolean;
   };
-  position: any;
-  line: any;
-  path: any;
+  position: null | string;
+  line: null | string;
+  path: null | string;
   commit_id: string;
   created_at: string;
   updated_at: string;

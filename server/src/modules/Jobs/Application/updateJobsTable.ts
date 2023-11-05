@@ -1,50 +1,66 @@
-import { obtainJobsData } from "../../Github/Application/obtainJobs";
-import { obtainRunnedJobsList } from "../../Github/Application/obtainRunnedJobsList";
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
-import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { JobDB } from "../Domain/Job";
-import { jobRepository } from "../Repositories/jobRepository";
+import { JobRepository } from "../Repositories/jobRepository";
 
+export class UpdateJobsTable {
+  private adapter: JobRepository;
+  private githubUseCases: GithubUseCases;
 
-const checkForNewJobs = async (owner: string, repoName: string,listOfCommitsWithActions:[string,number ][],jobsAdapterDb:jobRepository=new jobRepository()) => {
-    let jobsToAdd=[]
+  constructor(adapter: JobRepository, githubAdapter: GithubUseCases  ) {
+    this.adapter = adapter;
+    this.githubUseCases = githubAdapter;
+  }
 
-    for(const element of listOfCommitsWithActions)
-    {
-        let currentJob=element     
-        let row=await jobsAdapterDb.checkIfJobExistsInDb(owner,repoName,currentJob[1])
-        if(row.length!=0)
-            break
-        else
-            jobsToAdd.push(currentJob)
+  async checkForNewJobs(
+    owner: string,
+    repoName: string,
+    listOfCommitsWithActions: [string, number][]
+  ) {
+    let jobsToAdd = [];
+
+    for (const currentJob of listOfCommitsWithActions) {
+      let row = await this.adapter.checkIfJobExistsInDb(
+        owner,
+        repoName,
+        currentJob[1]
+      );
+
+      if (row.length != 0) break;
+      else jobsToAdd.push(currentJob);
     }
     return jobsToAdd;
-  };
-  
-const addJobsToDb = async (owner: string, repoName: string,jobs:Record<string, JobDataObject>,jobsAdapterDb:jobRepository=new jobRepository) => {
-    let jobsFormatted:JobDB[]=[]
-    for (const key in jobs) {
-        jobsFormatted.push({id:jobs[key].jobs[0].run_id,sha:jobs[key].jobs[0].head_sha,owner:owner,reponame:repoName,conclusion:jobs[key].jobs[0].conclusion})
-      }
-    jobsAdapterDb.insertRecordsIntoDatabase(jobsFormatted)
-  };
-  
-
-export const updateJobsTable = async (owner: string, repoName: string,jobsAdapterDb:jobRepository=new jobRepository()) => {
-  let githubAdapter=new GithubAdapter()
-
-  
-  let listOfCommitsWithActions:[string,number ][] = await obtainRunnedJobsList(owner,repoName,githubAdapter) //[commitSha,workflowId][]
-  let jobsToAdd:[string,number][]=await checkForNewJobs(owner,repoName,listOfCommitsWithActions)
-  if(jobsToAdd.length>0)
-  {
-    console.log(jobsToAdd);
-    let jobs:Record<string, JobDataObject>=await obtainJobsData(owner,repoName,jobsToAdd,githubAdapter);
-    await addJobsToDb(owner,repoName,jobs,jobsAdapterDb)
   }
-  
 
-};
+  async saveJobsDB(
+    owner: string,
+    repoName: string,
+    jobs: Record<string, JobDataObject>
+  ) {
+    let jobsFormatted: JobDB[] = [];
+    for (const key in jobs) {
+      jobsFormatted.push({
+        id: jobs[key].jobs[0].run_id,
+        sha: jobs[key].jobs[0].head_sha,
+        owner: owner,
+        reponame: repoName,
+        conclusion: jobs[key].jobs[0].conclusion,
+      });
+    }
+    this.adapter.insertRecordsIntoDatabase(jobsFormatted);
+  }
 
-
-  
+  async getJobsAPI(owner: string, repoName: string) {
+    let jobList: [string, number][] = await this.githubUseCases.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
+    console.log("JOB LIST: ", jobList);
+    return jobList
+  }
+  async getJobsData(owner: string, repoName: string, jobList: [string, number][]){
+    let jobs: Record<string, JobDataObject> = await this.githubUseCases.obtainJobsData(
+      owner,
+      repoName,
+      jobList
+    );
+    return jobs;
+  }
+}
