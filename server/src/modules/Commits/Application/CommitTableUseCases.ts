@@ -80,8 +80,8 @@ export class CommitTableUseCases {
       });
       return commitsData;
     } catch (error) {
-      console.error("Error en la obtención de commits:", error);
-      throw new Error("Error en la obtención de commits");
+      console.error("Error getting commits from SHA:", error);
+      throw new Error("Error getting commits from SHA");
     }
   }
 
@@ -103,7 +103,7 @@ export class CommitTableUseCases {
         );
       }
     } catch (error) {
-      console.error("Error en la actualización de la tabla de commits:", error);
+      console.error("Error updating the commit table in the database:", error);
     }
   }
 }
