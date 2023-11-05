@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
-import { jobRepository } from "../../modules/Jobs/Repositories/jobRepository";
-import { getJobs } from "../../modules/Jobs/Application/getJobs";
+import { JobRepository } from "../../modules/Jobs/Repositories/jobRepository";
+import { JobsUseCase } from "../../modules/Jobs/Application/jobsUseCase";
+import { GithubUseCases } from "../../modules/Github/Application/githubUseCases";
 class JobsController {
-    repository: jobRepository
+  JobsUseCase: JobsUseCase
+  repository: JobRepository
+  githubUseCases: GithubUseCases;
   constructor() {
-    this.repository=new jobRepository()
+    this.repository=new JobRepository()
+    this.githubUseCases = new GithubUseCases();
+    this.JobsUseCase=new JobsUseCase(this.repository, this.githubUseCases)
   }
 
   async getJobs(req: Request, res: Response) {
@@ -13,7 +18,7 @@ class JobsController {
         if (!owner || !repoName) {
             return res.status(400).json({ error: 'Bad request, missing owner or repoName' });
         }
-        const Jobs = await getJobs(String(owner),String(repoName));
+        const Jobs = await this.JobsUseCase.getJobs(String(owner),String(repoName));
         return res.status(200).json(Jobs);
     } catch (error) {
       console.error("Error fetching Jobs:", error);

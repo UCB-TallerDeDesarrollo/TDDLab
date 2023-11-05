@@ -1,30 +1,43 @@
-import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { CommitRepository } from "../Repositories/commitRepository";
 import { CommitTableUseCases } from "./CommitTableUseCases";
 
 export class CommitUseCases {
   private commitTableUseCases: CommitTableUseCases;
+  private repositoryAdapter: CommitRepository;
+  private githubUseCases: GithubUseCases;
+
   constructor(
-    private repositoryAdapter: CommitRepository,
-    private githubAdapter: GithubAdapter
+    repositoryAdapter: CommitRepository,
+    githubUseCases: GithubUseCases
   ) {
     this.repositoryAdapter = repositoryAdapter;
-    this.githubAdapter = githubAdapter;
+    this.githubUseCases = githubUseCases;
     this.commitTableUseCases = new CommitTableUseCases(
       this.repositoryAdapter,
-      this.githubAdapter
+      this.githubUseCases
     );
   }
 
   async getCommits(owner: string, repoName: string) {
+    let commits;
     try {
       if (!(await this.repositoryAdapter.repositoryExist(owner, repoName))) {
         const commits = await this.commitTableUseCases.getCommitsAPI(
           owner,
           repoName
         );
-        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, commits);
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
+        const commitsFromSha =
+          await this.commitTableUseCases.getCommitsFromShaAPI(
+            owner,
+            repoName,
+            commits
+          );
+        await this.commitTableUseCases.saveCommitsDB(
+          owner,
+          repoName,
+          commitsFromSha
+        );
       } else {
         const commits = await this.commitTableUseCases.getCommitsAPI(
           owner,
@@ -35,15 +48,23 @@ export class CommitUseCases {
           repoName,
           commits
         );
-        const commitsFromSha = await this.commitTableUseCases.getCommitsFromShaAPI(owner, repoName, newCommits);
-        this.commitTableUseCases.saveCommitsDB(owner, repoName, commitsFromSha);
+        const commitsFromSha =
+          await this.commitTableUseCases.getCommitsFromShaAPI(
+            owner,
+            repoName,
+            newCommits
+          );
+        await this.commitTableUseCases.saveCommitsDB(
+          owner,
+          repoName,
+          commitsFromSha
+        );
       }
+      commits = await this.repositoryAdapter.getCommits(owner, repoName);
     } catch (error) {
       console.error("Error updating commits table:", error);
-      return { error: "Error updating commits table" };
-    } finally {
-      const jobs = await this.repositoryAdapter.getCommits(owner, repoName);
-      return jobs;
+      throw error;
     }
+    return commits;
   }
 }

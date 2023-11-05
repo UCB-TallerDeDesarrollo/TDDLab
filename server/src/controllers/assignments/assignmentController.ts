@@ -52,7 +52,7 @@ class AssignmentsController {
 
   async createAssignment(req: Request, res: Response): Promise<void> {
     try {
-      const { title, description, state, start_date, end_date, link } =
+      const { title, description, state, start_date, end_date, link, comment } =
         req.body;
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
@@ -61,6 +61,7 @@ class AssignmentsController {
         start_date,
         end_date,
         link,
+        comment,
       });
       res.status(201).json(newAssignment);
     } catch (error) {
@@ -104,7 +105,7 @@ class AssignmentsController {
   async updateAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
-      const { title, description, state, start_date, end_date, link } =
+      const { title, description, state, start_date, end_date, link, comment } =
         req.body;
       const updatedAssignment = await this.updateAssignmentUseCase.execute(
         assignmentId,
@@ -115,6 +116,7 @@ class AssignmentsController {
           start_date,
           end_date,
           link,
+          comment,
         }
       );
 

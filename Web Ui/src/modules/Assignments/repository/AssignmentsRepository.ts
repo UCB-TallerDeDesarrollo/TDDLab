@@ -2,8 +2,7 @@ import axios from "axios"; // Import Axios or your preferred HTTP library
 import { AssignmentDataObject } from "../domain/assignmentInterfaces"; // Import your assignment model
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
-const API_URL =
-  "https://tdd-lab-ov9t0huz5-tddlabs-projects.vercel.app/api/assignments";
+const API_URL = "https://tdd-lab-api-gold.vercel.app/api/assignments";
 
 class AssignmentsRepository implements AssignmentsRepositoryInterface {
   async getAssignments(): Promise<AssignmentDataObject[]> {
@@ -61,10 +60,8 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    // Send a PUT request to update an assignment
-    console.log(API_URL);
-    console.log(assignmentData.id);
-    console.log(`${API_URL}/${assignmentId}`);
+    console.log(assignmentData);
+    console.log(assignmentId);
 
     await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
   }
@@ -93,11 +90,6 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    // Send a PUT request to update an assignment
-    console.log(API_URL);
-    console.log(assignmentData.id);
-    console.log(`${API_URL}/${assignmentId}`);
-
     await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData);
   }
 }
