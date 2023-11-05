@@ -10,7 +10,7 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
-import AuthComponent from "./sections/Invitation/CourseInvitationPage";
+import AuthComponent from "./sections/Invitation/InvitationPage";
 
 const navArrayLinks = [
   {
