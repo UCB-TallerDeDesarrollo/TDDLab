@@ -1,8 +1,6 @@
 import { JobDataObject } from "../Domain/jobInterfaces";
 import { GithubAdapter } from "../Repositories/github.API";
 
-
-
 export const obtainJobsData=async(owner: string, repoName: string,listOfCommitsWithActions: [string,number][],Adapter:GithubAdapter=new GithubAdapter())=>{
 
     const jobs: Record<string, JobDataObject> = {};
