@@ -10,6 +10,7 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
+import CourseInvitation from "./sections/Invitation/CourseInvitationPage";
 
 const navArrayLinks = [
   {
@@ -57,6 +58,10 @@ function App() {
         <Route
           path="/graph"
           element={<TDDChartPage port={new GithubAPIAdapter()} />}
+        />
+        <Route
+          path="/invitation"
+          element={<CourseInvitation/>}
         />
       </Routes>
     </Router>
