@@ -15,7 +15,7 @@ interface CycleReportViewProps {
   port: GithubAPIRepository | any;
 }
 
-function TDDChartPage({ port }: CycleReportViewProps) {
+function TDDChartPage({ port }: CycleReportViewProps): any {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
