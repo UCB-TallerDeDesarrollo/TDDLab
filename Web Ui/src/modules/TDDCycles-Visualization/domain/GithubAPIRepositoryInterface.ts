@@ -1,5 +1,4 @@
 import { CommitDataObject } from "./githubCommitInterfaces";
-//import { JobDataObject } from "../domain/models/jobInterfaces";
 
 export interface GithubAPIRepository {
   obtainCommitsOfRepo(
@@ -7,13 +6,7 @@ export interface GithubAPIRepository {
     repoName: string
   ): Promise<CommitDataObject[]>;
 
-  
-  obtainRunsOfGithubActions(
-    owner: string, 
-    repoName: string): any;
+  obtainRunsOfGithubActions(owner: string, repoName: string): any;
 
-  obtainJobsOfRepo(
-    owner: string,
-    repoName: string,
-  ): any;
+  obtainJobsOfRepo(owner: string, repoName: string): any;
 }
