@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
-//import TDDChartsView from "./components/TDDChartsView";
 import TDDCharts from "./components/TDDChart";
 import TDDCycleList from "./components/TDDCycleList";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
@@ -8,14 +7,13 @@ import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/g
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
-import React from "react";
 import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 
 interface CycleReportViewProps {
-  port: GithubAPIRepository | any;
+  port: GithubAPIRepository;
 }
 
-function TDDChartPage({ port }: CycleReportViewProps): any {
+function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
