@@ -1,5 +1,5 @@
-import AssignmentsRepositoryInterface from "../../../src/modules/Assignments/domain/AssignmentsRepositoryInterface";
-import { AssignmentDataObject } from "../../../src/modules/Assignments/domain/assignmentInterfaces";
+import AssignmentsRepositoryInterface from "../../../../src/modules/Assignments/domain/AssignmentsRepositoryInterface";
+import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain/assignmentInterfaces";
 
 export class MockAssignmentsRepository implements AssignmentsRepositoryInterface {
   private assignments: AssignmentDataObject[] = [];
