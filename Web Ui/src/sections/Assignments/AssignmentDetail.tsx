@@ -5,20 +5,21 @@ import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmen
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button } from "@mui/material";
-import { GitLinkDialog } from "./components/GitHubLinkDialog"; // Import your GitHub link dialog component
+import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
+import CommentDialog from "./components/CommentDialog";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [assignmentState, setAssignmentState] = useState("");
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the assignment by its ID when the component mounts
     const assignmentsRepository = new AssignmentsRepository();
     const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
 
@@ -47,6 +48,7 @@ const AssignmentDetail: React.FC = () => {
         end_date: assignment ? assignment.end_date : new Date(),
         state: assignment ? assignment.state : "",
         link: link,
+        comment: assignment ? assignment.comment : "",
       };
 
       const assignmentsRepository = new AssignmentsRepository();
@@ -63,13 +65,8 @@ const AssignmentDetail: React.FC = () => {
         console.error(error);
       }
 
-      // Update the assignment state with the new link
       setAssignment(updatedAssignment);
-
-      // Close the GitHub link dialog after updating the link
       handleCloseLinkDialog();
-
-      //reloads page
       window.location.reload();
     }
   };
@@ -107,6 +104,23 @@ const AssignmentDetail: React.FC = () => {
     }
   };
 
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [, setComment] = useState("");
+
+  const handleOpenCommentDialog = () => {
+    setIsCommentDialogOpen(true);
+  };
+
+  const handleCloseCommentDialog = () => {
+    setIsCommentDialogOpen(false);
+  };
+
+  const handleSendComment = (comment: string) => {
+    setAssignmentState("terminado");
+    setComment(comment);
+    handleCloseCommentDialog();
+  };
+
   return (
     <div>
       {assignment ? (
@@ -116,7 +130,7 @@ const AssignmentDetail: React.FC = () => {
           {/* Convert Date objects to strings using toISOString */}
           <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
           <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
-          <p>Estado: {assignment.state}</p>
+          <p>Estado: {assignmentState || assignment.state}</p>
           <p>Enlace: {assignment.link}</p>
 
           <Button
@@ -138,6 +152,21 @@ const AssignmentDetail: React.FC = () => {
             open={linkDialogOpen}
             onClose={handleCloseLinkDialog}
             onSend={handleSendGithubLink}
+          />
+
+          <Button
+            variant="contained"
+            disabled={!isTaskInProgressOrDelivered}
+            onClick={handleOpenCommentDialog}
+          >
+            Enviar Tarea
+          </Button>
+
+          <CommentDialog
+            open={isCommentDialogOpen}
+            onClose={handleCloseCommentDialog}
+            onSend={handleSendComment}
+            link={assignment?.link}
           />
         </div>
       ) : (

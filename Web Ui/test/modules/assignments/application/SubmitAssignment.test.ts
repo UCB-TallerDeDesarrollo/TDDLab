@@ -1,6 +1,6 @@
 import { SubmitAssignment } from "../../../../src/modules/Assignments/application/SubmitAssignment";
 import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain/assignmentInterfaces";
-import { MockAssignmentsRepository } from "../../__mocks__/mockAssignmentsRepository";
+import { MockAssignmentsRepository } from "../../__mocks__/assignments/mockAssignmentsRepository";
 
 let mockRepository: MockAssignmentsRepository;
 let submitAssignment: SubmitAssignment;
@@ -21,6 +21,7 @@ describe("Submit assignment", () => {
       end_date: new Date("2023-01-10"),
       state: "pending",
       link: "Enlace",
+      comment: "Comentario",
     };
     mockRepository.createAssignment(assignment);
     await submitAssignment.submitAssignment(1, link);
