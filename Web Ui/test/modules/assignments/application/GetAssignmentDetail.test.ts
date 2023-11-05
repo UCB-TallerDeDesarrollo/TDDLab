@@ -1,6 +1,6 @@
 import { GetAssignmentDetail } from "../../../../src/modules/Assignments/application/GetAssignmentDetail";
 import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain/assignmentInterfaces";
-import { MockAssignmentsRepository } from "../../__mocks__/mockAssignmentsRepository";
+import { MockAssignmentsRepository } from "../../__mocks__/assignments/mockAssignmentsRepository";
 
 let mockRepository: MockAssignmentsRepository;
 let getAssignmentDetail: GetAssignmentDetail;
