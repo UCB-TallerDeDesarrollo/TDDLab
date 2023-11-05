@@ -25,6 +25,7 @@ const AuthComponent: React.FC = () => {
       const auth = getAuth(firebase); // Obtén la instancia de autenticación aquí
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
+      console.log(auth,result)
     } catch (error) {
       console.error('Error de autenticación con GitHub', error);
     }
