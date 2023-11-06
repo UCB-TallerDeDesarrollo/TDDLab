@@ -1,7 +1,7 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import "../styles/TDDCycleCard.css";
-
+import "../styles/fonts.css";
 interface CycleReportViewProps {
   commit: CommitDataObject;
   jobs: JobDataObject | null;
