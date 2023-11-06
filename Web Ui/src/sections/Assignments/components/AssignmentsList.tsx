@@ -36,10 +36,10 @@ const CustomTableCell2 = styled(TableCell)({
 });
 
 interface AssignmentsProps {
-  mostrarFormulario: () => void;
+  ShowForm: () => void;
 }
 
-function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
+function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -128,7 +128,7 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
               <CustomTableCell1>Tareas</CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button variant="outlined" onClick={mostrarFormulario}>
+                  <Button variant="outlined" onClick={showForm}>
                     Crear
                   </Button>
                 </ButtonContainer>
