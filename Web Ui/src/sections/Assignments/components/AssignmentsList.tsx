@@ -18,6 +18,7 @@ import { DeleteAssignment } from "../../../modules/Assignments/application/Delet
 import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
+import { ValidationDialog } from "./ValidationDialog";
 import Assignment from "./Assignment";
 
 const ButtonContainer = styled("div")({
@@ -41,6 +42,7 @@ interface AssignmentsProps {
 function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -74,6 +76,7 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
   const handleClickDelete = (index: number) => {
     setSelectedAssignmentIndex(index);
     setConfirmationOpen(true);
+    setValidationDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -90,6 +93,7 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
           assignments[selectedAssignmentIndex].id
         );
       }
+      setValidationDialogOpen(true);
       setConfirmationOpen(false);
     } catch (error) {
       console.error(error);
@@ -162,6 +166,14 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
             deleteText="Eliminar"
             onCancel={() => setConfirmationOpen(false)}
             onDelete={handleConfirmDelete}
+          />
+        )}
+        {validationDialogOpen && (
+          <ValidationDialog
+            open={validationDialogOpen}
+            title="Tarea Eliminada exitosamente"
+            closeText="Cerrar" // Change "cancelText" to "closeText"
+            onClose={() => setValidationDialogOpen(false)}
           />
         )}
       </section>
