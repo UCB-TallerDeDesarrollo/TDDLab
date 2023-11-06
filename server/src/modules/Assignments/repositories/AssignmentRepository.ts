@@ -1,6 +1,9 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { AssignmentDataObject } from "../domain/Assignment";
+import {
+  AssignmentDataObject,
+  AssignmentCreationObject,
+} from "../domain/Assignment";
 
 const pool = new Pool(config);
 
@@ -17,6 +20,7 @@ class AssignmentRepository {
 
   public mapRowToAssignment(row: any): AssignmentDataObject {
     return {
+      id: row.id,
       title: row.title,
       description: row.description,
       start_date: row.start_date,
@@ -28,7 +32,8 @@ class AssignmentRepository {
   }
 
   async obtainAssignments(): Promise<AssignmentDataObject[]> {
-    const query = "SELECT * FROM assignments";
+    const query =
+      "SELECT id, title, description, start_date, end_date, state, link, comment FROM assignments";
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToAssignment(row));
   }
@@ -44,8 +49,8 @@ class AssignmentRepository {
   }
 
   async createAssignment(
-    assignment: AssignmentDataObject
-  ): Promise<AssignmentDataObject> {
+    assignment: AssignmentCreationObject
+  ): Promise<AssignmentCreationObject> {
     const { title, description, start_date, end_date, state } = assignment;
     const query =
       "INSERT INTO assignments (title, description, start_date, end_date, state) VALUES ($1, $2, $3, $4, $5) RETURNING *";
@@ -62,8 +67,8 @@ class AssignmentRepository {
 
   async updateAssignment(
     id: string,
-    updatedAssignment: AssignmentDataObject
-  ): Promise<AssignmentDataObject | null> {
+    updatedAssignment: AssignmentCreationObject
+  ): Promise<AssignmentCreationObject | null> {
     const { title, description, start_date, end_date, state, link } =
       updatedAssignment;
     const query =

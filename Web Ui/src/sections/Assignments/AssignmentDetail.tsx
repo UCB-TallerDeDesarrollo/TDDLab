@@ -14,6 +14,7 @@ const AssignmentDetail: React.FC = () => {
     null
   );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [assignmentState, setAssignmentState] = useState("");
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
@@ -143,7 +144,7 @@ const AssignmentDetail: React.FC = () => {
           {/* Convert Date objects to strings using toISOString */}
           <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
           <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
-          <p>Estado: {assignment.state}</p>
+          <p>Estado: {assignmentState || assignment.state}</p>
           <p>Enlace: {assignment.link}</p>
 
           <Button
