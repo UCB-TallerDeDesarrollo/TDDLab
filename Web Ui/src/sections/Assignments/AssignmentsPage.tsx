@@ -31,7 +31,7 @@ function AssignmentManager() {
   return (
     <AssignmentManagerContainer>
       <AssignmentsContainer>
-        <Assignments mostrarFormulario={handleShowForm} />
+        <Assignments ShowForm={handleShowForm} />
       </AssignmentsContainer>
       <FormsContainer>
         {showForm && <Form />}

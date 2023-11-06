@@ -127,6 +127,17 @@ describe("Deliver Assignment", () => {
       })
     );
   });
+  it('should respond with a status 404 and error message when assignment is not found during delivery', async () => {
+    const req = createRequest(
+      "non_existing_id",
+      undefined,
+      "https://example.com/assignment"
+    );
+    const res = createResponse();
+    await controller.deliverAssignment(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: "Assignment not found" });
+  });
   it("should respond with a status 500 and error message when an error occurs during delivery", async () => {
     const req = createRequest(
       "id",

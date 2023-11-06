@@ -1,10 +1,9 @@
-import { Pool } from 'pg'; // Import the Pool from 'pg'
+import { Pool } from 'pg';
 import config from '../../../config/db';
 import { JobDB } from '../Domain/Job';
-// import { Job } from '../../domain/models/Job';
+import { IJobRepository } from '../Domain/IJobRepository';
 
-
-export class jobRepository {
+export class JobRepository implements IJobRepository {
     pool: Pool
     constructor() {
         this.pool = new Pool(config)
@@ -53,20 +52,31 @@ export class jobRepository {
         const client = await this.pool.connect();
         try {
 
-          for (const record of records) {
+        for (const record of records) {
             const { id, sha, owner, reponame, conclusion } = record;
-      
             const query = 'INSERT INTO jobsTable (id, sha, owner, repoName, conclusion) VALUES ($1, $2, $3, $4, $5)';
             const values = [id, sha, owner, reponame, conclusion];
-      
+
             await client.query(query, values);
-          }
+        }
         } catch (error) {
-          console.error('Error inserting records:', error);
+        console.error('Error inserting records:', error);
         } finally {
             if (client) {
                 client.release();
             }
         }
-      }
+    }
+    async repositoryExist(owner: string, repoName: string) {
+        const client = await this.pool.connect();
+    
+        const query =
+        "SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2";
+        const values = [owner, repoName];
+    
+        const result = await client.query(query, values);
+        client.release();
+    
+        return result.rows[0].count > 0;
+    }
 }
