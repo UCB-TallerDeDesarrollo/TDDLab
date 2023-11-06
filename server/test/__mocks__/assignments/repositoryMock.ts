@@ -1,4 +1,4 @@
-import { getAssignmentMock } from "./dataTypeMocks/assignmentData";
+import { AssignmentInProgresDataMock, assignmentPendingDataMock } from "./dataTypeMocks/assignmentData";
 
 export function getAssignmentRepositoryMock() {
   return {
@@ -8,9 +8,11 @@ export function getAssignmentRepositoryMock() {
     obtainAssignments: jest.fn(),
     obtainAssignmentById: jest.fn(async (id) => {
       switch (id) {
-        case "existing_id":
-          return getAssignmentMock();
-          case "non_existing_id":
+        case "id_assignment_pending":
+          return assignmentPendingDataMock;
+        case "id_assignment_in_progress":
+          return AssignmentInProgresDataMock;
+        case "non_existing_id":
           return null;
         default:
           throw new Error("Assignment not found");

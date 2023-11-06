@@ -1,6 +1,6 @@
 import AssignmentRepository from "../../../../src/modules/Assignments/repositories/AssignmentRepository";
 import { Pool } from "pg";
-import { getAssignmentMock } from "../../../__mocks__/assignments/dataTypeMocks/assignmentData";
+import { assignmentPendingDataMock } from "../../../__mocks__/assignments/dataTypeMocks/assignmentData";
 
 let repository: AssignmentRepository;
 let poolConnectMock: jest.Mock;
@@ -70,15 +70,15 @@ describe("Obtain assignment by id", () => {
 
 describe("Create assignment", () => {
   it("should create an assignment", async () => {
-    clientQueryMock.mockResolvedValue({ rows: [getAssignmentMock()] });
-    const newAssignment = getAssignmentMock();
+    clientQueryMock.mockResolvedValue({ rows: [assignmentPendingDataMock] });
+    const newAssignment = assignmentPendingDataMock;
     const createdAssignment = await repository.createAssignment(newAssignment);
     expect(createdAssignment).toEqual(newAssignment);
   });
   it("should handle errors when creating an assignment", async () => {
     poolConnectMock.mockRejectedValue(new Error());
     await expect(
-      repository.createAssignment(getAssignmentMock())
+      repository.createAssignment(assignmentPendingDataMock)
     ).rejects.toThrow();
   });
 });
@@ -97,25 +97,25 @@ describe("Delete assignment", () => {
 
 describe("Update assignment", () => {
   it("should update an assignment", async () => {
-    clientQueryMock.mockResolvedValue({ rows: [getAssignmentMock()] });
+    clientQueryMock.mockResolvedValue({ rows: [assignmentPendingDataMock] });
     const updatedAssignment = await repository.updateAssignment(
       "1",
-      getAssignmentMock()
+      assignmentPendingDataMock
     );
-    expect(updatedAssignment).toEqual(getAssignmentMock());
+    expect(updatedAssignment).toEqual(assignmentPendingDataMock);
   });
   it("should return null if no assignment was found", async () => {
     clientQueryMock.mockResolvedValue({ rows: [] });
     const updatedAssignment = await repository.updateAssignment(
       "1",
-      getAssignmentMock()
+      assignmentPendingDataMock
     );
     expect(updatedAssignment).toBeNull();
   });
   it("should handle errors when updating an assignment", async () => {
     poolConnectMock.mockRejectedValue(new Error());
     await expect(
-      repository.updateAssignment("1", getAssignmentMock())
+      repository.updateAssignment("1", assignmentPendingDataMock)
     ).rejects.toThrow();
   });
 });

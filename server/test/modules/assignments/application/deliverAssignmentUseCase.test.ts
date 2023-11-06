@@ -10,16 +10,33 @@ beforeEach(() => {
 
 describe("Deliver assignment", () => {
   it("Should deliver an assignment successfully", async () => {
-    const assignmentId = 'existing_id';
+    const assignmentId = 'id_assignment_pending';
     const link = 'Enlace de la tarea';
     const result = await deliverAssignment.execute(assignmentId, link);
     expect(result).toEqual(
       expect.objectContaining({
-        title: "Tarea 1",
+        title: "Tarea pendiente",
         link: "Enlace de la tarea",
         state: "in progress",
         id: "1",
-        description: "Esta es la primera tarea",
+        description: "Esta es una tarea pendiente",
+        start_date: new Date("2023-01-01"),
+        end_date: new Date("2023-01-10"),
+        comment: "Comentario",
+      })
+    );
+  });
+  it("Should deliver an assignment successfully", async () => {
+    const assignmentId = 'id_assignment_in_progress';
+    const link = 'Enlace de la tarea';
+    const result = await deliverAssignment.execute(assignmentId, link);
+    expect(result).toEqual(
+      expect.objectContaining({
+        title: "Tarea en progreso",
+        link: "Enlace de la tarea",
+        state: "delivered",
+        id: "2",
+        description: "Esta es una tarea en progreso",
         start_date: new Date("2023-01-01"),
         end_date: new Date("2023-01-10"),
         comment: "Comentario",
