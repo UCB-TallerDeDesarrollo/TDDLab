@@ -5,20 +5,17 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 
 interface ValidationDialogProps {
-  // Change the interface name
   open: boolean;
   title: string;
-  content: string;
-  closeText: string; // Change "cancelText" to "closeText"
+  closeText: string;
   onClose: () => void;
 }
 
 export const ValidationDialog: React.FC<ValidationDialogProps> = ({
-  // Change the component name and props
   open,
   title,
-  closeText, // Change "cancelText" to "closeText"
-  onClose, // Change "onCancel" to "onClose"
+  closeText,
+  onClose,
 }) => {
   const dialogContentStyle = {
     fontFamily: "Roboto",
@@ -34,11 +31,7 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
     <Dialog open={open}>
       <DialogTitle style={titleStyle}>{title}</DialogTitle>
       <DialogActions>
-        <Button
-          onClick={onClose} // Change "onCancel" to "onClose"
-          color="primary"
-          style={dialogContentStyle}
-        >
+        <Button onClick={onClose} color="primary" style={dialogContentStyle}>
           {closeText}
         </Button>
       </DialogActions>
