@@ -11,14 +11,14 @@ class DeliverAssignmentUseCase {
   async execute(
     assignmentId: string,
     link: string
-  ): Promise<AssignmentDataObject> {
+  ): Promise<AssignmentDataObject | null> {
     try {
       const assignment = await this.repository.obtainAssignmentById(
         assignmentId
       );
 
       if (!assignment) {
-        throw new Error("Assignment not found");
+        return null;
       }
 
       // Update the assignment's state and link
