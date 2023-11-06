@@ -3,7 +3,7 @@ import AssignmentsController from "../../src/controllers/assignments/assignmentC
 import { getAssignmentRepositoryMock } from "../__mocks__/assignments/repositoryMock";
 import {
   getAssignmentListMock,
-  getAssignmentMock,
+  assignmentPendingDataMock,
 } from "../__mocks__/assignments/dataTypeMocks/assignmentData";
 import { createRequest } from "../__mocks__/assignments/requestMocks";
 import { createResponse } from "../__mocks__/assignments/responseMoks";
@@ -41,11 +41,11 @@ describe("Get assignment by id", () => {
     const req = createRequest("Tarea 1");
     const res = createResponse();
     assignmentRepositoryMock.obtainAssignmentById.mockResolvedValue(
-      getAssignmentMock()
+      assignmentPendingDataMock
     );
     await controller.getAssignmentById(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(getAssignmentMock());
+    expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
   });
   it("should respond with a status 404 and an error message for non-existent assignment", async () => {
     const req = createRequest("non_existent_id");
@@ -69,17 +69,17 @@ describe("Get assignment by id", () => {
 
 describe("Create Assignment", () => {
   it("should respond with a status 201 and return the created assignment", async () => {
-    const req = createRequest(undefined, getAssignmentMock());
+    const req = createRequest(undefined, assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.createAssignment.mockResolvedValue(
-      getAssignmentMock
+      assignmentPendingDataMock
     );
     await controller.createAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(getAssignmentMock);
+    expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
   });
   it("should respond with a status 500 and error message when assignment creation fails", async () => {
-    const req = createRequest(undefined, getAssignmentMock());
+    const req = createRequest(undefined, assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.createAssignment.mockRejectedValue(new Error());
     await controller.createAssignment(req, res);
@@ -112,20 +112,23 @@ describe("Deliver Assignment", () => {
   const controller = new AssignmentsController(assignmentRepositoryMock);
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
-      "existing_id",
+      "id_assignment_pending",
       undefined,
       "https://example.com/assignment"
     );
     const res = createResponse();
     await controller.deliverAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: "Tarea 1",
-        link: "https://example.com/assignment",
-        state: "in progress",
-      })
-    );
+    expect(res.json).toHaveBeenCalledWith({  
+      "comment": "Comentario", 
+      "description": "Esta es una tarea pendiente", 
+      "end_date": new Date("2023-01-10T00:00:00.000Z"), 
+      "id": "1", 
+      "link": "https://example.com/assignment", 
+      "start_date": new Date("2023-01-01T00:00:00.000Z"), 
+      "state": "in progress", 
+      "title": "Tarea pendiente"
+    });
   });
   it('should respond with a status 404 and error message when assignment is not found during delivery', async () => {
     const req = createRequest(
@@ -153,17 +156,17 @@ describe("Deliver Assignment", () => {
 
 describe("Update Assignment", () => {
   it("should respond with a status 200 and updated assignment when update is successful", async () => {
-    const req = createRequest("existing_id", getAssignmentMock());
+    const req = createRequest("existing_id", assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.updateAssignment.mockResolvedValue(
-      getAssignmentMock
+      assignmentPendingDataMock
     );
     await controller.updateAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(getAssignmentMock);
+    expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
   });
   it("should respond with a 404 status and error message when assignment is not found", async () => {
-    const req = createRequest("non_existing_id", getAssignmentMock());
+    const req = createRequest("non_existing_id", assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.updateAssignment.mockResolvedValue(null);
     await controller.updateAssignment(req, res);
@@ -171,7 +174,7 @@ describe("Update Assignment", () => {
     expect(res.json).toHaveBeenCalledWith({ error: "Assignment not found" });
   });
   it("should respond with a 500 status and error message when update fails", async () => {
-    const req = createRequest("existing_id", getAssignmentMock());
+    const req = createRequest("existing_id", assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.updateAssignment.mockRejectedValue(new Error());
     await controller.updateAssignment(req, res);
