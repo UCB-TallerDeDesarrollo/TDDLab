@@ -76,7 +76,6 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
   const handleClickDelete = (index: number) => {
     setSelectedAssignmentIndex(index);
     setConfirmationOpen(true);
-    setValidationDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -93,12 +92,12 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
           assignments[selectedAssignmentIndex].id
         );
       }
-      setValidationDialogOpen(true);
       setConfirmationOpen(false);
     } catch (error) {
       console.error(error);
     }
-    window.location.reload();
+    setValidationDialogOpen(true);
+    setConfirmationOpen(false);
   };
 
   const handleClickUpdate = (index: number) => {
@@ -172,7 +171,7 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
           <ValidationDialog
             open={validationDialogOpen}
             title="Tarea Eliminada exitosamente"
-            closeText="Cerrar" // Change "cancelText" to "closeText"
+            closeText="Cerrar"
             onClose={() => setValidationDialogOpen(false)}
           />
         )}
