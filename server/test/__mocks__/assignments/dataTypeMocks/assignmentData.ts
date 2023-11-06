@@ -2,6 +2,7 @@ import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain
 
 export function getAssignmentMock(): AssignmentDataObject {
   return {
+    id: "1",
     title: "Tarea 1",
     description: "Esta es la primera tarea",
     start_date: new Date("2023-01-01"),
@@ -15,6 +16,7 @@ export function getAssignmentMock(): AssignmentDataObject {
 export function getAssignmentListMock(): AssignmentDataObject[] {
   return [
     {
+      id: "1",
       title: "Tarea 1",
       description: "Esta es la primera tarea",
       start_date: new Date("2023-01-01"),
@@ -24,6 +26,7 @@ export function getAssignmentListMock(): AssignmentDataObject[] {
       comment: "Comentario",
     },
     {
+      id: "2",
       title: "Tarea 2",
       description: "Esta es la segunda tarea",
       start_date: new Date("2023-02-15"),
