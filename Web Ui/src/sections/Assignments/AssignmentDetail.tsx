@@ -128,8 +128,10 @@ const AssignmentDetail: React.FC = () => {
     setComment(comment);
     handleCloseCommentDialog();
 
-    if (assignment) {
+    if (assignmentId) {
       const updatedAssignment = await handleFindAssignment(assignmentId, link);
+
+      console.log(updatedAssignment);
 
       handleUpdateAssignment(updatedAssignment);
     }
