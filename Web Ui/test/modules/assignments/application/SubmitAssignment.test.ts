@@ -1,5 +1,5 @@
 import { SubmitAssignment } from "../../../../src/modules/Assignments/application/SubmitAssignment";
-import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain/assignmentInterfaces";
+import { assignmentInProgresDataMock, assignmentPendingDataMock } from "../../__mocks__/assignments/data/assigmentDataMock";
 import { MockAssignmentsRepository } from "../../__mocks__/assignments/mockAssignmentsRepository";
 
 let mockRepository: MockAssignmentsRepository;
@@ -11,25 +11,21 @@ beforeEach(() => {
 });
 
 describe("Submit assignment", () => {
-  it("Should successfully submit an assignment", async () => {
-    const link = "https://example.com";
-    const assignment: AssignmentDataObject = {
-      id: 1,
-      title: "Tarea 1",
-      description: "Esta es la primera tarea",
-      start_date: new Date("2023-01-01"),
-      end_date: new Date("2023-01-10"),
-      state: "pending",
-      link: "Enlace",
-      comment: "Comentario",
-    };
-    mockRepository.createAssignment(assignment);
-    await submitAssignment.submitAssignment(1, link);
+  it("Should successfully submit an assignment pending", async () => {
+    mockRepository.createAssignment(assignmentPendingDataMock);
+    await submitAssignment.submitAssignment(1, '');
     const updatedAssignment = await mockRepository.getAssignmentById(1);
-    expect(updatedAssignment?.state).toBe("pending");
-    expect(updatedAssignment?.link).toBe("Enlace");
+    expect(updatedAssignment?.state).toBe("in progress");
+    expect(updatedAssignment?.link).toBe("");
   });
-
+  it("Should successfully submit an assignment in progress", async () => {
+    const link = "https://example.com";
+    mockRepository.createAssignment(assignmentInProgresDataMock);
+    await submitAssignment.submitAssignment(2, link);
+    const updatedAssignment = await mockRepository.getAssignmentById(2);
+    expect(updatedAssignment?.state).toBe("delivered");
+    expect(updatedAssignment?.link).toBe("https://example.com");
+  });
   it("Should handle an exception if the assignment is not found", async () => {
     const link = "https://example.com";
     await expect(submitAssignment.submitAssignment(2, link)).rejects.toThrow(

@@ -15,7 +15,12 @@ export class MockAssignmentsRepository implements AssignmentsRepositoryInterface
     this.assignments.push(assignmentData);
   });
 
-  updateAssignment = jest.fn();
+  updateAssignment = jest.fn(async (assignmentId: number, assignmentData: AssignmentDataObject) => {
+    const assignmentIndex = this.assignments.findIndex((assignment) => assignment.id === assignmentId);
+    if (assignmentIndex !== -1) {
+      this.assignments[assignmentIndex] = assignmentData;
+    }
+  });
   deleteAssignment = jest.fn();
 
   deliverAssignment = jest.fn(async (assignmentId: number, assignmentData: AssignmentDataObject) => {
