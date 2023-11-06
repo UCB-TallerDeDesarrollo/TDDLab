@@ -7,10 +7,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
 import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import { ValidationDialog } from "./ValidationDialog";
 
 function Form() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [flag, setFlag] = useState(true);
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
     title: "",
@@ -34,11 +36,10 @@ function Form() {
     try {
       await createAssignments.createAssignment(assignmentData);
       setFlag(true);
-      setSuccessMessage("Cambios guardados con éxito");
+      setValidationDialogOpen(true);
     } catch (error) {
       console.error(error);
     }
-    window.location.reload();
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -114,6 +115,14 @@ function Form() {
           </Typography>
         )}
       </Box>
+      {validationDialogOpen && (
+        <ValidationDialog
+          open={validationDialogOpen}
+          title="Tarea Creada Exitosamente"
+          closeText="Cerrar"
+          onClose={() => window.location.reload()}
+        />
+      )}
     </Container>
   );
 }
