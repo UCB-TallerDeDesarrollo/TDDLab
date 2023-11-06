@@ -1,6 +1,6 @@
 import AssignmentsRepository from "../../../../src/modules/Assignments/repository/AssignmentsRepository";
 import axios from "axios";
-import { assignmentDataMock } from "../../__mocks__/assignments/data/assigmentDataMock";
+import { assignmentInProgresDataMock } from "../../__mocks__/assignments/data/assigmentDataMock";
 
 const axiosGetSpy = jest.spyOn(axios, 'get');
 const axiosPostSpy = jest.spyOn(axios, 'post');
@@ -11,9 +11,9 @@ let mockRepository = new AssignmentsRepository();
 
 describe('Get assignments', () => {
     it('should fetch assignments successfully', async () => {
-        axiosGetSpy.mockResolvedValue({ status: 200, data: assignmentDataMock });
+        axiosGetSpy.mockResolvedValue({ status: 200, data: assignmentInProgresDataMock });
         const result = await mockRepository.getAssignments();
-        expect(result).toEqual(assignmentDataMock);
+        expect(result).toEqual(assignmentInProgresDataMock);
     });
 
     it('should handle assignment fetch failure', async () => {
@@ -29,9 +29,9 @@ describe('Get assignments', () => {
 
 describe('Get assignment by ID', () => {
     it('should fetch an assignment by ID successfully', async () => {
-        axiosGetSpy.mockResolvedValue({ status: 200, data: assignmentDataMock });
+        axiosGetSpy.mockResolvedValue({ status: 200, data: assignmentInProgresDataMock });
         const assignmentSearched = await mockRepository.getAssignmentById(1);
-        expect(assignmentSearched).toEqual(assignmentDataMock);
+        expect(assignmentSearched).toEqual(assignmentInProgresDataMock);
     });
 
     it('should return null when fetching a non-existent assignment', async () => {
@@ -54,14 +54,14 @@ describe('Get assignment by ID', () => {
 describe('Create assignment', () => {
     it('should create an assignment successfully', async () => {
         axiosPostSpy.mockResolvedValue({ status: 201 });
-        await expect(mockRepository.createAssignment(assignmentDataMock)).resolves.not.toThrowError();
+        await expect(mockRepository.createAssignment(assignmentInProgresDataMock)).resolves.not.toThrowError();
     });
 });
 
 describe('Update assignment', () => {
     it('should update an assignment successfully', async () => {
         axiosPutSpy.mockResolvedValue({ status: 201 });
-        await expect(mockRepository.updateAssignment(1, assignmentDataMock)).resolves.not.toThrowError();
+        await expect(mockRepository.updateAssignment(1, assignmentInProgresDataMock)).resolves.not.toThrowError();
     });
 });
 
@@ -86,6 +86,6 @@ describe('Delete assignment', () => {
 describe('Deliver assignment', () => {
     it('should deliver an assignment successfully', async () => {
         axiosPutSpy.mockResolvedValue({ status: 200 });
-        await expect(mockRepository.deliverAssignment(1, assignmentDataMock)).resolves.not.toThrowError();
+        await expect(mockRepository.deliverAssignment(1, assignmentInProgresDataMock)).resolves.not.toThrowError();
     });
 });
