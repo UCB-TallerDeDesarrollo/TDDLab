@@ -22,7 +22,7 @@ export interface CommitInformationDataObject {
   parents: Parent[];
   stats: Stats;
   files: File[];
-  coveragePercentage: String;
+  coveragePercentage: string;
 }
 
 export interface File {
@@ -124,9 +124,9 @@ export interface CoverageComment {
     type: string;
     site_admin: boolean;
   };
-  position: null | any;
-  line: null | any;
-  path: null | any;
+  position: null | string;
+  line: null | string;
+  path: null | string;
   commit_id: string;
   created_at: string;
   updated_at: string;

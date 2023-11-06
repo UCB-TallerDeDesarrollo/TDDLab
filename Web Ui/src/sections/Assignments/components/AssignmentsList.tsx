@@ -18,6 +18,7 @@ import { DeleteAssignment } from "../../../modules/Assignments/application/Delet
 import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
+import { ValidationDialog } from "./ValidationDialog";
 import Assignment from "./Assignment";
 
 const ButtonContainer = styled("div")({
@@ -35,12 +36,13 @@ const CustomTableCell2 = styled(TableCell)({
 });
 
 interface AssignmentsProps {
-  mostrarFormulario: () => void;
+  ShowForm: () => void;
 }
 
-function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
+function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -94,7 +96,8 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
     } catch (error) {
       console.error(error);
     }
-    window.location.reload();
+    setValidationDialogOpen(true);
+    setConfirmationOpen(false);
   };
 
   const handleClickUpdate = (index: number) => {
@@ -125,7 +128,7 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
               <CustomTableCell1>Tareas</CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button variant="outlined" onClick={mostrarFormulario}>
+                  <Button variant="outlined" onClick={showForm}>
                     Crear
                   </Button>
                 </ButtonContainer>
@@ -162,6 +165,14 @@ function Assignments({ mostrarFormulario }: Readonly<AssignmentsProps>) {
             deleteText="Eliminar"
             onCancel={() => setConfirmationOpen(false)}
             onDelete={handleConfirmDelete}
+          />
+        )}
+        {validationDialogOpen && (
+          <ValidationDialog
+            open={validationDialogOpen}
+            title="Tarea Eliminada exitosamente"
+            closeText="Cerrar"
+            onClose={() => setValidationDialogOpen(false)}
           />
         )}
       </section>

@@ -7,13 +7,14 @@ export function getAssignmentRepositoryMock() {
     mapRowToAssignment: jest.fn(),
     obtainAssignments: jest.fn(),
     obtainAssignmentById: jest.fn(async (id) => {
-      if (id === "existing_id") {
-        return getAssignmentMock();
+      switch (id) {
+        case "existing_id":
+          return getAssignmentMock();
+          case "non_existing_id":
+          return null;
+        default:
+          throw new Error("Assignment not found");
       }
-      if (id !== "existing_id") {
-        return null;
-      }
-      throw new Error("Assignment not found aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }),
     deleteAssignment: jest.fn(),
     updateAssignment: jest.fn(),

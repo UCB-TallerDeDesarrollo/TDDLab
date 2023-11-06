@@ -1,16 +1,16 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import { Box, Container, TextField, Typography } from "@mui/material";
+import { Box, Container, TextField } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
 import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import { ValidationDialog } from "./ValidationDialog";
 
 function Form() {
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [flag, setFlag] = useState(true);
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
     title: "",
@@ -26,19 +26,14 @@ function Form() {
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
     if (assignmentData.start_date > assignmentData.end_date) {
-      setFlag(false);
-      setSuccessMessage("Error fecha incorrecta");
-
       return;
     }
     try {
       await createAssignments.createAssignment(assignmentData);
-      setFlag(true);
-      setSuccessMessage("Cambios guardados con éxito");
+      setValidationDialogOpen(true);
     } catch (error) {
       console.error(error);
     }
-    window.location.reload();
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -107,13 +102,15 @@ function Form() {
             Guardar cambios
           </Button>
         </Stack>
-
-        {successMessage && (
-          <Typography sx={{ marginTop: 2 }} color={flag ? "green" : "error"}>
-            {successMessage}
-          </Typography>
-        )}
       </Box>
+      {validationDialogOpen && (
+        <ValidationDialog
+          open={validationDialogOpen}
+          title="Tarea Creada Exitosamente"
+          closeText="Cerrar"
+          onClose={() => window.location.reload()}
+        />
+      )}
     </Container>
   );
 }
