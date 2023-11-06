@@ -1,9 +1,9 @@
 import UserOnDb from "../domain/userOnDb.interface";
-import LoginRepository from "../repository/LoginRepository";
+import AuthRepository from "../repository/LoginRepository";
 
 export class PortLogin {
-  adapter: LoginRepository;
-  constructor(loginRepository: LoginRepository) {
+  adapter: AuthRepository;
+  constructor(loginRepository: AuthRepository) {
     this.adapter = loginRepository;
   }
 
