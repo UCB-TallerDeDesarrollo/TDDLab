@@ -42,12 +42,12 @@
 }
 
 .noActionsBox {
-  background-color: #d73a49;
+  background-color: #000000;
 }
 
 .commit-link {
   display: inline-block;
-  padding: 10px 20px; /* Mayor padding para el botón */
+  padding: 16px 28px; /* Mayor padding para el botón */
   background-color: #0366d6;
   color: #fff;
   text-decoration: none;
@@ -59,3 +59,4 @@
 .commit-link:hover {
   background-color: #0056b3;
 }
+
