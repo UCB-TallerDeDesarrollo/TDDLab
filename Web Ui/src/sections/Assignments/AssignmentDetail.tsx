@@ -38,6 +38,8 @@ const AssignmentDetail: React.FC = () => {
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
 
+  const isTaskDelivered = assignment?.state === "delivered";
+
   const handleUpdateAssignment = async (
     updatedAssignment: AssignmentDataObject
   ) => {
@@ -172,7 +174,7 @@ const AssignmentDetail: React.FC = () => {
 
           <Button
             variant="contained"
-            disabled={!isTaskInProgressOrDelivered}
+            disabled={isTaskDelivered}
             onClick={handleOpenCommentDialog}
           >
             Enviar Tarea
