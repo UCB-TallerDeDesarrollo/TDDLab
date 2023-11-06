@@ -31,11 +31,16 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
   }
 
   function getCommitStats() {
+    const coverageText = commit.coverage
+      ? `Cobertura: ${commit.coverage}`
+      : "Cobertura: no se encontró cobertura"; // Establece un valor predeterminado
+
     return (
       <div className="commit-stats">
         Total: {commit.stats.total} <br />
         Adiciones: {commit.stats.additions} <br />
-        Sustraccion: {commit.stats.deletions} <br />
+        Sustracción: {commit.stats.deletions} <br />
+        {coverageText}
       </div>
     );
   }
@@ -46,17 +51,21 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
       {getCommitStats()}
       {jobs != null && (
         <div className={"conclusionBox"} style={getBoxStyle(jobs.conclusion)}>
-          Actions:{jobs.conclusion}
+          Actions: {jobs.conclusion}
         </div>
       )}
       {jobs == null && (
-        <div className={"conclusionBox noActionsBox"}>Actions werent Found</div>
+        <div className={"conclusionBox noActionsBox"}>Actions weren't Found</div>
       )}
       {getCommitLink()}
-
       <br />
     </div>
   );
 }
 
 export default TDDCycleCard;
+
+
+
+
+
