@@ -11,7 +11,12 @@ export class SubmitAssignment {
 
       if (foundAssignment !== null) {
         foundAssignment.link = link;
-        foundAssignment.state = "in progress";
+
+        if (foundAssignment.state == "pending") {
+          foundAssignment.state = "in progress";
+        } else {
+          foundAssignment.state = "delivered";
+        }
 
         return await this.assignmentsRepository.updateAssignment(
           assignmentId,
