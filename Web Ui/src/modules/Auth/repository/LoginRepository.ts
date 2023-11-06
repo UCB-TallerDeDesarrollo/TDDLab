@@ -1,29 +1,32 @@
 import axios from "axios"; // Import Axios or your preferred HTTP library
-import LoginRepositoryInterface from "../domain/LoginRepositoryInterface";
+import AuthDBRepositoryInterface from "../domain/LoginRepositoryInterface";
 import UserOnDb from "../domain/userOnDb.interface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/";
+const API_URL = "https://tdd-lab-api-gold.vercel.app/api";
 
-class LoginRepository implements LoginRepositoryInterface {
+class AuthRepository implements AuthDBRepositoryInterface {
   async getAccountInfo(email: string): Promise<UserOnDb> {
     try {
-      // Send a GET request to fetch assignments from the backend
-      const response = await axios.get(API_URL + "users/" + email);
+      const response = await axios.get(API_URL + "/users/" + email);
 
-      // Check if the response status is successful (e.g., 200 OK)
       if (response.status === 200) {
-        // Return the assignments data from the response
         return response.data;
       } else {
-        // Handle other response status codes or errors here if needed
         throw new Error("Failed to get user Course");
       }
     } catch (error) {
-      // Handle any network errors or exceptions that may occur
       console.error("Error fetching user course:", error);
+      throw error;
+    }
+  }
+  async registerAccount(user: UserOnDb): Promise<void> {
+    try {
+      await axios.post(API_URL + "/users", user);
+    } catch (error) {
+      console.error("Error saving user", error);
       throw error;
     }
   }
 }
 
-export default LoginRepository;
+export default AuthRepository;

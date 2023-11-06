@@ -6,10 +6,13 @@ import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import { GithubAuthPort } from "../../modules/Auth/application/GithubAuthPort";
+import { RegisterPort } from "../../modules/Auth/application/RegisterPort";
+import UserOnDb from "../../modules/Auth/domain/userOnDb.interface";
 
 const AuthComponent: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const githubAuthPort = new GithubAuthPort();
+  const dbAuthPort = new RegisterPort();
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -22,10 +25,17 @@ const AuthComponent: React.FC = () => {
 
   const [showPopUp, setShowPopUp] = useState(false);
 
+  const handleSignUp = async () => {
+    let userData = await githubAuthPort.handleSignInWithGitHub();
+    if (userData?.email) {
+      let user: UserOnDb = { email: userData.email, course: "mainCourse" };
+      await dbAuthPort.register(user);
+      setUser(userData);
+    }
+  };
   const handleAcceptInvitation = () => {
     setShowPopUp(true);
   };
-
   return (
     <div>
       {user ? (
@@ -42,11 +52,7 @@ const AuthComponent: React.FC = () => {
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
         </div>
       ) : (
-        <Button
-          color="primary"
-          aria-label="GitHub"
-          onClick={githubAuthPort.handleSignInWithGitHub}
-        >
+        <Button color="primary" aria-label="GitHub" onClick={handleSignUp}>
           <GitHubIcon></GitHubIcon>
           Iniciar Sesión
         </Button>
