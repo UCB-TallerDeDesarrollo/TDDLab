@@ -1,54 +1,36 @@
 import { Request, Response } from "express";
-import { User } from "../../modules/Users/Domain/User";
+import { registerUser } from "../../modules/Users/Application/registerUser";
+import { getUser } from "../../modules/Users/Application/getUser";
 
-const users: User[] = [];
+export const registerUserController = (req: Request, res: Response): void => {
+  const { email, course } = req.body;
 
-// Controlador para la ruta de registro de usuario
-export const registerUser = (req: Request, res: Response): void => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
+  if (!email || !course) {
     res.status(400).json({
-      error: "Debes proporcionar un nombre de usuario y una contraseña.",
+      error: "Debes proporcionar un correo y curso valido",
     });
     return;
   }
 
-  // Simula el almacenamiento de usuarios
-  users.push({ username, password });
+  registerUser({ email: email, course: course });
 
   res.status(201).json({ message: "Usuario registrado con éxito." });
 };
+export const getUserController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { email } = req.body;
 
-// Controlador para la ruta de inicio de sesión
-export const loginUser = (req: Request, res: Response): void => {
-  const { username, password } = req.body;
-
-  const user = users.find(
-    (user) => user.username === username && user.password === password
-  );
-
-  if (!user) {
-    res.status(401).json({ error: "Credenciales incorrectas." });
+  if (!email) {
+    res.status(400).json({
+      error: "Debes proporcionar un correo valido",
+    });
     return;
   }
 
-  res.json({ message: "Inicio de sesión exitoso." });
-};
-
-export const updateUser = (req: Request, res: Response): void => {
-  const { username, password, newPassword } = req.body;
-
-  const user = users.find(
-    (user) => user.username === username && user.password === password
-  );
-
-  if (!user) {
-    res.status(404).json({ error: "Credenciales incorrectas" });
-    return;
-  }
-
-  user.password = newPassword;
-
-  res.status(200).json({ message: "Contraseña actualizada con éxito." });
+  let userData = await getUser(email);
+  if (userData == null)
+    res.status(404).json({ message: "Usuario no encontrado" });
+  else res.status(200).json(userData);
 };
