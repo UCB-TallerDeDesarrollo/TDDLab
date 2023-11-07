@@ -18,6 +18,8 @@ export class SubmitAssignment {
           foundAssignment.state = "delivered";
         }
 
+        console.log(foundAssignment.state);
+
         return await this.assignmentsRepository.updateAssignment(
           assignmentId,
           foundAssignment
