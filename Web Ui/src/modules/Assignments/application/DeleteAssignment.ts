@@ -5,12 +5,7 @@ export class DeleteAssignment {
 
   async deleteAssignment(assignmentId: number) {
     try {
-      const assignment = await this.assignmentsRepository.deleteAssignment(assignmentId);
-
-      if (assignment === null) {
-        return null;
-      }
-
+      await this.assignmentsRepository.deleteAssignment(assignmentId);
       return 'Succesful deletion';
     } catch (error) {
       console.error('Error deleting assignment by ID:', error);

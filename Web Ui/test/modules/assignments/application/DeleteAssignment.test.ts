@@ -19,7 +19,7 @@ describe("Delete Assignment", () => {
             end_date: new Date("2023-11-05"),
             state: "inProgress",
             link: "Enlace",
-            comment: null
+            comment: null,
         };
         mockRepository.createAssignment(assignment);
         const obtainedAssignment = await deleteAssignment.deleteAssignment(1);
