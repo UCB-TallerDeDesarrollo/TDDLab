@@ -12,9 +12,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { ReactElement, useState } from "react";
 import { NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
-import { LoginPort } from "../../modules/Auth/application/LoginPort";
-import { GithubAuthPort } from "../../modules/Auth/application/GithubAuthPort";
-import UserOnDb from "../../modules/Auth/domain/userOnDb.interface";
 import LoginComponent from "./components/loginComponent";
 
 type NavLink = {
@@ -33,19 +30,6 @@ export default function MainMenu({ navArrayLinks }: Readonly<NavbarProps>) {
 
   const handleButtonClick = (title: string) => {
     setActiveButton(title);
-  };
-  const handleLogin = async () => {
-    const githbAuthPort = new GithubAuthPort();
-    let userData = await githbAuthPort.handleSignInWithGitHub();
-    if (userData?.email) {
-      const loginPort = new LoginPort();
-      let userCourse = await loginPort.userHasAnAcount(userData.email);
-      if (userCourse) {
-        console.log("Valid User");
-      } else {
-        console.log("Invalid User");
-      }
-    }
   };
 
   return (
