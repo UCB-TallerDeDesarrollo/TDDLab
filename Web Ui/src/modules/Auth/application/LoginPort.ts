@@ -1,17 +1,17 @@
 import UserOnDb from "../domain/userOnDb.interface";
 import AuthRepository from "../repository/LoginRepository";
 
-export class PortLogin {
+export class LoginPort {
   adapter: AuthRepository;
-  constructor(loginRepository: AuthRepository) {
+  constructor(loginRepository: AuthRepository = new AuthRepository()) {
     this.adapter = loginRepository;
   }
 
-  async login(email: string) {
+  async userHasAnAcount(email: string) {
     let answerData: UserOnDb = await this.adapter.getAccountInfo(email);
     if (answerData.course) {
-      return true;
+      return answerData.course;
     }
-    return false;
+    return null;
   }
 }
