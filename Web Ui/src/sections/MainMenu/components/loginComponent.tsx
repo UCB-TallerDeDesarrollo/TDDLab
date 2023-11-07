@@ -27,6 +27,15 @@ export default function LoginComponent() {
       }
     }
   };
+  const handleLogout = async () => {
+    const githbAuthPort = new GithubAuthPort();
+    await githbAuthPort.handleSignOut();
+    setGlobalState("authData", {
+      userProfilePic: "",
+      userEmail: "",
+      userCourse: "",
+    });
+  };
 
   return (
     <React.Fragment>
@@ -40,11 +49,20 @@ export default function LoginComponent() {
         </Button>
       )}
       {authData[0].userEmail && (
-        <img
-          src={authData[0].userProfilePic}
-          alt="Profile Picture"
-          className="profilePicture"
-        />
+        <React.Fragment>
+          <Button
+            onClick={handleLogout}
+            variant="contained"
+            sx={{ marginLeft: "18px" }}
+          >
+            Cerrar Sesion
+          </Button>
+          <img
+            src={authData[0].userProfilePic}
+            alt="Profile Picture"
+            className="profilePicture"
+          />
+        </React.Fragment>
       )}
     </React.Fragment>
   );

@@ -64,8 +64,8 @@ export default function MainMenu({ navArrayLinks }: Readonly<NavbarProps>) {
                 {item.title}
               </Button>
             ))}
-            <LoginComponent></LoginComponent>
           </Box>
+          <LoginComponent></LoginComponent>
         </Toolbar>
       </AppBar>
 
