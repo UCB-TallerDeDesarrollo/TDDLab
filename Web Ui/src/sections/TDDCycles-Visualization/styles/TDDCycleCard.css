@@ -14,7 +14,7 @@
 .cycleCardContainer span {
   font-size: 18px;
   font-weight: 600;
-  margin-right: 12px;
+  margin-right: 80px;
 }
 
 .commit-stats {
@@ -23,10 +23,6 @@
   align-items: center;
   margin-right: auto;
   padding: 12px;
-}
-
-.commit-stats div {
-  margin: 8px 0;
 }
 
 .conclusionBox {
@@ -60,3 +56,51 @@
   background-color: #0056b3;
 }
 
+.commit-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: auto;
+  padding: 12px;
+}
+
+.commit-stat-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.commit-stat-item span {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.commit-stat-item .circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.circle.total {
+  background-color: #28a3bc; 
+}
+
+.circle.additions {
+  background-color: #28a745; 
+}
+
+.circle.deletions {
+  background-color: #d73a49; 
+}
+
+.circle.coverage {
+  background-color: #0366d6;
+}
+
+.cycleCardContainer span.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 80px;
+  width: 400px;
+}
