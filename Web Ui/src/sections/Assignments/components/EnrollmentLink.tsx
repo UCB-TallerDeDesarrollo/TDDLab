@@ -5,11 +5,12 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 
 const InvitationComponent: React.FC = () => {
   const [mostrarLink, setMostrarLink] = useState(false);
-  const link = "https://link-al-form.com";
 
   const generarLink = () => {
     setMostrarLink(true);
   };
+
+  const currentPage:string = (window.location.href)+"invitation";
 
   const copiarAlPortapapeles = () => {
     const inputLink = document.getElementById("linkText") as HTMLInputElement;
@@ -32,7 +33,7 @@ const InvitationComponent: React.FC = () => {
       </Button>
       {mostrarLink && (
         <div>
-          <Input type="text" id="linkText" value={link} readOnly />
+          <Input type="text" id="linkText" value={currentPage} readOnly />
           <Button
             variant="contained"
             color="primary"

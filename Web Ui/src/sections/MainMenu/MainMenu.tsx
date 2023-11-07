@@ -12,6 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { ReactElement, useState } from "react";
 import { NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
+import LoginComponent from "./components/loginComponent";
 
 type NavLink = {
   title: string;
@@ -63,15 +64,8 @@ export default function MainMenu({ navArrayLinks }: Readonly<NavbarProps>) {
                 {item.title}
               </Button>
             ))}
-            <Button
-              component={NavLink}
-              to="/login"
-              variant="contained"
-              sx={{ marginLeft: "18px" }}
-            >
-              Iniciar sesión
-            </Button>
           </Box>
+          <LoginComponent></LoginComponent>
         </Toolbar>
       </AppBar>
 
