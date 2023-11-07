@@ -15,6 +15,7 @@ import WindowIcon from "@mui/icons-material/Window";
 import { LoginPort } from "../../modules/Auth/application/LoginPort";
 import { GithubAuthPort } from "../../modules/Auth/application/GithubAuthPort";
 import UserOnDb from "../../modules/Auth/domain/userOnDb.interface";
+import LoginComponent from "./components/loginComponent";
 
 type NavLink = {
   title: string;
@@ -79,13 +80,7 @@ export default function MainMenu({ navArrayLinks }: Readonly<NavbarProps>) {
                 {item.title}
               </Button>
             ))}
-            <Button
-              onClick={handleLogin}
-              variant="contained"
-              sx={{ marginLeft: "18px" }}
-            >
-              Iniciar sesión
-            </Button>
+            <LoginComponent></LoginComponent>
           </Box>
         </Toolbar>
       </AppBar>
