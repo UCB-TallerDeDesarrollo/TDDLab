@@ -1,52 +1,106 @@
-.conclusionBox{
-    width: 150px;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.cycleCardContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 16px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+  width: 1200px; /* Cambio a ancho fijo para igualar el tamaño */
 }
-.cycleCardContainer{
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: right;
-    flex-direction: row;
-    margin-bottom: 10px;
+
+.cycleCardContainer span {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 80px;
 }
-.cycleCardContainer span{
-    margin-right: 24px;
-    margin-top: 18px;
+
+.commit-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: auto;
+  padding: 12px;
 }
-.noActionsBox{
-    background-color: black;
+
+.conclusionBox {
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #28a745;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 12px; /* Mayor padding para el botón */
+}
+
+.noActionsBox {
+  background-color: #000000;
 }
 
 .commit-link {
-    display: flex;
-    padding: 8px 16px;
-    background-color: #007BFF;
-    color: #fff;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-    margin-left: 5px;
-    align-items: center;
-  }
-  
-  .commit-link:hover {
-    background-color: #0056b3;
-  }
+  display: inline-block;
+  padding: 16px 28px; /* Mayor padding para el botón */
+  background-color: #0366d6;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  margin-left: 12px;
+}
 
-  .commit-stats {
-    width: 150px;
-    color: white;
-    background-color: orange;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 5px;
-    background-clip: content-box;
-  }
-  
+.commit-link:hover {
+  background-color: #0056b3;
+}
+
+.commit-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: auto;
+  padding: 12px;
+}
+
+.commit-stat-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.commit-stat-item span {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.commit-stat-item .circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.circle.total {
+  background-color: #28a3bc; 
+}
+
+.circle.additions {
+  background-color: #28a745; 
+}
+
+.circle.deletions {
+  background-color: #d73a49; 
+}
+
+.circle.coverage {
+  background-color: #0366d6;
+}
+
+.cycleCardContainer span.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 80px;
+  width: 400px;
+}
