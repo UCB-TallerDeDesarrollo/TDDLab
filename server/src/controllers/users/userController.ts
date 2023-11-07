@@ -1,54 +1,17 @@
 import { Request, Response } from "express";
-import { User } from "../../modules/Users/Domain/User";
+import { registerUser } from "../../modules/Users/Application/registerUser";
 
-const users: User[] = [];
+export const registerUserController = (req: Request, res: Response): void => {
+  const { email, course } = req.body;
 
-// Controlador para la ruta de registro de usuario
-export const registerUser = (req: Request, res: Response): void => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
+  if (!email || !course) {
     res.status(400).json({
-      error: "Debes proporcionar un nombre de usuario y una contraseña.",
+      error: "Debes proporcionar un corre y curso valido",
     });
     return;
   }
 
-  // Simula el almacenamiento de usuarios
-  users.push({ username, password });
+  registerUser({ email: email, course: course });
 
   res.status(201).json({ message: "Usuario registrado con éxito." });
-};
-
-// Controlador para la ruta de inicio de sesión
-export const loginUser = (req: Request, res: Response): void => {
-  const { username, password } = req.body;
-
-  const user = users.find(
-    (user) => user.username === username && user.password === password
-  );
-
-  if (!user) {
-    res.status(401).json({ error: "Credenciales incorrectas." });
-    return;
-  }
-
-  res.json({ message: "Inicio de sesión exitoso." });
-};
-
-export const updateUser = (req: Request, res: Response): void => {
-  const { username, password, newPassword } = req.body;
-
-  const user = users.find(
-    (user) => user.username === username && user.password === password
-  );
-
-  if (!user) {
-    res.status(404).json({ error: "Credenciales incorrectas" });
-    return;
-  }
-
-  user.password = newPassword;
-
-  res.status(200).json({ message: "Contraseña actualizada con éxito." });
 };
