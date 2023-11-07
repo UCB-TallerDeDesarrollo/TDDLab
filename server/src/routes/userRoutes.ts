@@ -1,17 +1,8 @@
 import express from "express";
-import {
-  registerUser,
-  loginUser,
-  updateUser,
-} from "../controllers/users/userController";
+import { registerUserController } from "../controllers/users/userController";
 
 const router = express.Router();
 
 // Ruta de registro de usuario
-router.post("/register", registerUser);
-// Ruta de inicio de sesión
-router.post("/login", loginUser);
-//Ruta para actualizar contraseñas de un usuario
-router.put("/update", updateUser);
-
+router.post("/register", registerUserController);
 export default router;
