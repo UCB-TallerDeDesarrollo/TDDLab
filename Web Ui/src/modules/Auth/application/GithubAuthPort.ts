@@ -1,4 +1,9 @@
-import { OAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import {
+  OAuthProvider,
+  getAuth,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import firebase from "../../../firebaseConfig";
 
 export class GithubAuthPort {
@@ -11,6 +16,14 @@ export class GithubAuthPort {
       return result.user;
     } catch (error) {
       console.error("Error de autenticación con GitHub", error);
+    }
+  }
+  async handleSignOut() {
+    const auth = getAuth(firebase);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error al cerrar sesión", error);
     }
   }
 }
