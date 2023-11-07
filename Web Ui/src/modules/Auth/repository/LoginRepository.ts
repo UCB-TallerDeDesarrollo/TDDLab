@@ -7,7 +7,9 @@ const API_URL = "https://tdd-lab-api-gold.vercel.app/api";
 class AuthRepository implements AuthDBRepositoryInterface {
   async getAccountInfo(email: string): Promise<UserOnDb> {
     try {
-      const response = await axios.get(API_URL + "/users/" + email);
+      const response = await axios.post(API_URL + "/user/login", {
+        email: email,
+      });
 
       if (response.status === 200) {
         return response.data;
@@ -21,7 +23,7 @@ class AuthRepository implements AuthDBRepositoryInterface {
   }
   async registerAccount(user: UserOnDb): Promise<void> {
     try {
-      await axios.post(API_URL + "/users", user);
+      await axios.post(API_URL + "/user/register", user);
     } catch (error) {
       console.error("Error saving user", error);
       throw error;
