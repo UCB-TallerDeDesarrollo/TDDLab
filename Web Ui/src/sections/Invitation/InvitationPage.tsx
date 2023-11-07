@@ -27,14 +27,16 @@ const AuthComponent: React.FC = () => {
 
   const handleSignUp = async () => {
     let userData = await githubAuthPort.handleSignInWithGitHub();
-    if (userData?.email) {
-      let user: UserOnDb = { email: userData.email, course: "mainCourse" };
-      await dbAuthPort.register(user);
+    if (userData) {
       setUser(userData);
     }
   };
-  const handleAcceptInvitation = () => {
-    setShowPopUp(true);
+  const handleAcceptInvitation = async () => {
+    if (user?.email) {
+      let userObj: UserOnDb = { email: user.email, course: "mainCourse" };
+      await dbAuthPort.register(userObj);
+      setShowPopUp(true);
+    }
   };
   return (
     <div>
