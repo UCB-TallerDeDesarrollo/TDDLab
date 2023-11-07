@@ -17,10 +17,14 @@ export class GithubAdapter {
     repoName: string
   ): Promise<CommitDataObject[]> {
     try {
+      //Show the rate limit remaining for the token used to make the request 
+      const rate_limit = await this.octokit.request("GET /rate_limit");
+      console.log("Rate Limit Remaining:",rate_limit.data.rate.remaining);
+
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 1500);
+        }, 10000);
       });
 
       const response: any = await Promise.race([
@@ -136,7 +140,7 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 2000);
+        }, 5000);
       });
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
@@ -177,7 +181,7 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 1500);
+        }, 5000);
       });
 
       const response: any = await Promise.race([

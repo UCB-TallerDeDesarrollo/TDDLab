@@ -1,8 +1,9 @@
 import { Pool } from "pg"; // Import the Pool from 'pg'
 import config from "../../../config/db";
 import {CommitDTO} from "../Domain/CommitDataObject";
+import {ICommitRepository} from "../Domain/ICommitRepository";
 
-export class CommitRepository {
+export class CommitRepository implements ICommitRepository {
   pool: Pool;
   constructor() {
     this.pool = new Pool(config);
@@ -36,7 +37,7 @@ export class CommitRepository {
     client.release();
     return result.rows;
   }
-  async getCommits(owner: String, repoName: String) {
+  async getCommits(owner: string, repoName: string) {
     const client = await this.pool.connect();
 
     const query =
