@@ -137,6 +137,8 @@ const AssignmentDetail: React.FC = () => {
       console.log(updatedAssignment);
 
       await handleUpdateAssignment(updatedAssignment);
+
+      window.location.reload();
     }
   };
 
