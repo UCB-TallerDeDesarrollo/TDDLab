@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { CommitRepository } from '../../modules/Commits/Repositories/commitRepository';
-import { CommitUseCases } from '../../modules/Commits/Application/getCommits';
-import { GithubAdapter } from '../../modules/Github/Repositories/github.API';
+import { CommitUseCases } from '../../modules/Commits/Application/commitUseCase';
+import { GithubUseCases } from '../../modules/Github/Application/githubUseCases';
 
 class CommitsController {
     commitUseCases: CommitUseCases;
     repository: CommitRepository;
-    github: GithubAdapter;
+    githubUseCases: GithubUseCases;
     constructor() {
         this.repository = new CommitRepository();
-        this.github = new GithubAdapter();
-        this.commitUseCases = new CommitUseCases(this.repository, this.github);
+        this.githubUseCases = new GithubUseCases();
+        this.commitUseCases = new CommitUseCases(this.repository, this.githubUseCases);
     }
     async getCommits(req: Request, res: Response) {
         try {

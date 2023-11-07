@@ -1,22 +1,26 @@
-import { GithubAdapter } from "../../Github/Repositories/github.API";
+import { GithubUseCases } from "../../Github/Application/githubUseCases";
 import { CommitRepository } from "../Repositories/commitRepository";
 import { CommitTableUseCases } from "./CommitTableUseCases";
 
 export class CommitUseCases {
   private commitTableUseCases: CommitTableUseCases;
+  private repositoryAdapter: CommitRepository;
+  private githubUseCases: GithubUseCases;
+
   constructor(
-    private repositoryAdapter: CommitRepository,
-    private githubAdapter: GithubAdapter
+    repositoryAdapter: CommitRepository,
+    githubUseCases: GithubUseCases
   ) {
     this.repositoryAdapter = repositoryAdapter;
-    this.githubAdapter = githubAdapter;
+    this.githubUseCases = githubUseCases;
     this.commitTableUseCases = new CommitTableUseCases(
       this.repositoryAdapter,
-      this.githubAdapter
+      this.githubUseCases
     );
   }
 
   async getCommits(owner: string, repoName: string) {
+    let commits;
     try {
       if (!(await this.repositoryAdapter.repositoryExist(owner, repoName))) {
         const commits = await this.commitTableUseCases.getCommitsAPI(
@@ -56,11 +60,11 @@ export class CommitUseCases {
           commitsFromSha
         );
       }
-      const jobs = await this.repositoryAdapter.getCommits(owner, repoName);
-      return jobs;
+      commits = await this.repositoryAdapter.getCommits(owner, repoName);
     } catch (error) {
       console.error("Error updating commits table:", error);
-      return { error: "Error updating commits table" };
+      throw error;
     }
+    return commits;
   }
 }
