@@ -1,6 +1,6 @@
 import { getAssignmentRepositoryMock } from "../../../__mocks__/assignments/repositoryMock";
 import GetAssignmentById from "../../../../src/modules/Assignments/application/AssignmentUseCases/getAssignmentByIdUseCase";
-import { getAssignmentMock } from "../../../__mocks__/assignments/dataTypeMocks/assignmentData";
+import { assignmentPendingDataMock } from "../../../__mocks__/assignments/dataTypeMocks/assignmentData";
 
 let assignmentRepositoryMock: any;
 let getAssignmentById: any;
@@ -13,7 +13,7 @@ beforeEach(() => {
 describe("Get assignment by id", () => {
     it("should retrieve an assignment by ID", async () => {
         const assignmentId = "1";
-        const expectedAssignment = getAssignmentMock();
+        const expectedAssignment = assignmentPendingDataMock;
         assignmentRepositoryMock.obtainAssignmentById.mockResolvedValue(expectedAssignment);
         const result = await getAssignmentById.execute(assignmentId);
         expect(result).toEqual(expectedAssignment);

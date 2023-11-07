@@ -41,12 +41,20 @@ interface CycleReportViewProps {
 }
 
 function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
+  const maxLinesInGraph = 100;
+  const filteredCommitsObject = commits?.filter(
+    (commit) => commit.stats.total < maxLinesInGraph
+  );
   function getDataLabels() {
-    if (commits != null) {
-      const commitsArray = commits.map((commit) => commits.indexOf(commit) + 1);
-      return commitsArray;
-    } else {
-      return [];
+    if (filteredCommitsObject != null) {
+      if (commits != null) {
+        const commitsArray = commits.map(
+          (commit) => commits.indexOf(commit) + 1
+        );
+        return commitsArray;
+      } else {
+        return [];
+      }
     }
   }
 
@@ -65,8 +73,10 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   };
 
   function getColorConclusion() {
-    if (commits != null && jobsByCommit != null) {
-      const conclusions = commits.map((commit) => getBarStyle(commit));
+    if (filteredCommitsObject != null && jobsByCommit != null) {
+      const conclusions = filteredCommitsObject.map((commit) =>
+        getBarStyle(commit)
+      );
       return conclusions.reverse();
     } else {
       return ["white"];
@@ -74,14 +84,16 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   }
 
   function getCommitStats() {
-    if (commits != null) {
-      const additions = commits
+    if (filteredCommitsObject != null) {
+      const additions = filteredCommitsObject
         .map((commit) => commit.stats.additions)
         .reverse();
-      const deletions = commits
+      const deletions = filteredCommitsObject
         .map((commit) => commit.stats.deletions)
         .reverse();
-      const total = commits.map((commit) => commit.stats.total).reverse();
+      const total = filteredCommitsObject
+        .map((commit) => commit.stats.total)
+        .reverse();
       return [additions, deletions, total];
     } else {
       return [[], [], []];
@@ -98,8 +110,8 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   }
 
   function getCommitLink() {
-    if (commits != null) {
-      const urls = commits.map((commit) => commit.html_url);
+    if (filteredCommitsObject != null) {
+      const urls = filteredCommitsObject.map((commit) => commit.html_url);
       return urls.reverse();
     } else {
       return [];
