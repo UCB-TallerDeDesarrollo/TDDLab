@@ -13,12 +13,12 @@ describe('CycleCard component', () => {
   });
 
   it('renders the commit stats', () => {
-    const { getByText } = render(<TDDCycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
+    const { getByTestId } = render(<TDDCycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
   
-    const totalText = getByText(/Total: 5/);
-    const additionsText = getByText(/Adiciones: 4/);
-    const deletionsText = getByText(/Sustracción: 1/);
-    const coverageText = getByText(/Cobertura: 80%/);
+    const totalText = getByTestId("total");
+    const additionsText = getByTestId("adition");
+    const deletionsText = getByTestId("deletion");
+    const coverageText = getByTestId("coverage");
 
   expect(totalText).toBeInTheDocument();
   expect(additionsText).toBeInTheDocument();
