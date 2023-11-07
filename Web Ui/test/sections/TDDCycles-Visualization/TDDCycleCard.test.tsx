@@ -41,8 +41,8 @@ describe('CycleCard component', () => {
 
   it('renders the card with no actions', () => {
     const { getByText } = render(<TDDCycleCard commit={mockCommitData} jobs={null} />);
-    const commitMessageElement = getByText('Actions werent Found');
-    expect(commitMessageElement).toBeInTheDocument();
+  const commitMessageElement = getByText(/Actions weren't Found/);
+  expect(commitMessageElement).toBeInTheDocument();
   });
 
   it('redirects to the GitHub commit page when the "Ver commit" button is clicked', () => {
