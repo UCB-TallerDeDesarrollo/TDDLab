@@ -174,7 +174,7 @@ const AssignmentDetail: React.FC = () => {
 
           <Button
             variant="contained"
-            disabled={isTaskDelivered}
+            disabled={!isTaskDelivered}
             onClick={handleOpenCommentDialog}
           >
             Enviar Tarea
