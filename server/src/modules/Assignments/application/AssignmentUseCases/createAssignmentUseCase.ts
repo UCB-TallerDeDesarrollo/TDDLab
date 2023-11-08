@@ -1,5 +1,6 @@
 import { AssignmentDataObject } from "../../domain/Assignment";
 import AssignmentRepository from "../../repositories/AssignmentRepository";
+
 class CreateAssignment {
   private adapter: AssignmentRepository;
 

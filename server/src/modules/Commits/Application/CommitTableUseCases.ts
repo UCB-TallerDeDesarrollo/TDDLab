@@ -19,8 +19,8 @@ export class CommitTableUseCases {
   ) {
     let commitsToAdd = [];
 
-    for (let index = 0; index < commitsData.length; index++) {
-      let currentCommit = commitsData[index];
+    for (const element of commitsData) {
+      let currentCommit = element;
       let row = await this.repositoryAdapter.commitExists(
         owner,
         repoName,
@@ -47,6 +47,7 @@ export class CommitTableUseCases {
       throw new Error("Error en la obtención de commits" );
     }
   }
+  
   async getCommitsFromShaAPI(
     owner: string,
     repoName: string,

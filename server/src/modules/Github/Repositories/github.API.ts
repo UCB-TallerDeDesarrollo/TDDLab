@@ -5,6 +5,7 @@ import {
 } from "../Domain/commitInterfaces";
 import { JobDataObject } from "../Domain/jobInterfaces";
 import dotenv from "dotenv"; // Import 'dotenv' as a module
+
 dotenv.config();
 export class GithubAdapter {
   octokit: Octokit;
@@ -12,6 +13,7 @@ export class GithubAdapter {
     const { REACT_APP_AUTH_TOKEN } = process.env;
     this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
   }
+
   async obtainCommitsOfRepo(
     owner: string,
     repoName: string
@@ -192,6 +194,7 @@ export class GithubAdapter {
       throw error;
     }
   }
+
   async obtainJobsOfACommit(
     owner: string,
     repoName: string,

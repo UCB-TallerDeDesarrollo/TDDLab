@@ -11,7 +11,6 @@ export function getAssignmentMock(): AssignmentDataObject {
   };
 }
 
-
 export function getAssignmentListMock(): AssignmentDataObject[] { 
   return [
     {
