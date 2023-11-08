@@ -11,7 +11,8 @@ function SuccessfulSignUpPopUp({ photoAccount,nameAccount}: Readonly<GithubAccou
   const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
-    setOpen(false);
+    setOpen(!open);
+    console.log(open);
   };
 
   const dialogContent:any = (

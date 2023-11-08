@@ -42,7 +42,7 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-
+  console.log(jobsByCommit, commits)
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
@@ -57,10 +57,9 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   function getDataLabels() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
-        //(commit) => commits.indexOf(commit) + 1
-        (commit) => commit.commit.message
+        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
       );
-        return commitsArray.reverse();
+        return commitsArray;
     } else {
       return [];
     }
