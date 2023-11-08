@@ -8,6 +8,7 @@ import { Button } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
@@ -203,7 +204,9 @@ const AssignmentDetail: React.FC = () => {
           />
         </div>
       ) : (
-        <p>Cargando Tarea...</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '250px' }}>
+          <CircularProgress size={60} thickness={5} /> 
+        </div>
       )}
     </div>
   );
