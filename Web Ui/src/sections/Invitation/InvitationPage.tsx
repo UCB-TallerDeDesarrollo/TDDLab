@@ -107,9 +107,8 @@ function AuthComponent(){
                   </Typography>
                   <Button
                     onClick={handleAcceptInvitation}
-                    variant="contained"
+                    variant="contained" 
                     color="primary"
-                    fullWidth // Esto hará que el botón ocupe todo el ancho del Card
                     sx={{ marginTop: 2 }}
                   >
                     Aceptar invitación al curso
@@ -121,10 +120,27 @@ function AuthComponent(){
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
         </div>
       ) : (
-        <Button color="primary" aria-label="GitHub" onClick={handleSignUp}>
-          <GitHubIcon></GitHubIcon>
-          Registrarse
+        
+        <Grid
+      container
+      spacing={0}
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      style={{ minHeight: '100vh' }}
+    >
+      <Grid item>
+        <Button
+          color="primary"
+          onClick={handleSignUp}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <GitHubIcon style={{ marginRight: '8px' }} />
+            Registrarse
+          </div>
         </Button>
+      </Grid>
+    </Grid>
       )}
 
       {user && (
