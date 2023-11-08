@@ -141,16 +141,29 @@ const AssignmentDetail: React.FC = () => {
     }
   };
 
+  const getDisplayStatus = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'Pendiente';
+      case 'in progress':
+        return 'En progreso';
+      case 'delivered':
+        return 'Enviado';
+      default:
+        return status; 
+    }
+  };
+
+
   return (
     <div>
       {assignment ? (
         <div>
           <h2>{assignment.title}</h2>
           <p>Descripción: {assignment.description}</p>
-          {/* Convert Date objects to strings using toISOString */}
           <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
           <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
-          <p>Estado: {assignment.state}</p>
+          <p>Estado: {getDisplayStatus(assignment.state)}</p>
           <p>Enlace: {assignment.link}</p>
 
           <Button
