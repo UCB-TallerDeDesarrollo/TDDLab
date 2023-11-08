@@ -72,6 +72,8 @@ function Form() {
           label="Descripcion"
           variant="outlined"
           size="small"
+          multiline
+          rows={5}
           required
           sx={{
             "& label.Mui-focused": {
