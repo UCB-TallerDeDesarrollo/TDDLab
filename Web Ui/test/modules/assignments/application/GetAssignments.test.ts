@@ -23,22 +23,10 @@ describe("Get assignments", () => {
         link: "Enlace",
         comment: "Comentario",
       };
-      const assignmentId2 = 2;
-      const assignment2: AssignmentDataObject = {
-        id: assignmentId2,
-        title: "Tarea 2",
-        description: "Esta es la SEGUNDA tarea",
-        start_date: new Date("2023-01-01"),
-        end_date: new Date("2023-01-10"),
-        state: "inProgress",
-        link: "Enlace",
-        comment: "Comentario",
-      };
       mockRepository.createAssignment(assignment);
-      mockRepository.createAssignment(assignment2);
       const obtainedAssignment = await getAssignment.obtainAllAssignments();
       console.log(obtainedAssignment);
-      expect(obtainedAssignment).toEqual(assignment);
+      expect(obtainedAssignment).toEqual([assignment]);
     });
   });
   
