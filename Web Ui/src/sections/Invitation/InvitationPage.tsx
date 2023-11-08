@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import firebase from "../../firebaseConfig";
-import SuccessfulSignUpPopUp from "./components/SuccessfulSignUpPopUp";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -45,6 +44,8 @@ function AuthComponent(){
       setShowPopUp(true);
     }
   };
+
+
   return (
     <div>
       {user ? (
@@ -110,6 +111,7 @@ function AuthComponent(){
                     variant="contained" 
                     color="primary"
                     sx={{ marginTop: 2 }}
+                    fullWidth
                   >
                     Aceptar invitación al curso
                   </Button>
@@ -141,13 +143,6 @@ function AuthComponent(){
         </Button>
       </Grid>
     </Grid>
-      )}
-
-      {user && (
-        <SuccessfulSignUpPopUp
-          photoAccount={user.photoURL}
-          nameAccount={user.displayName}
-        ></SuccessfulSignUpPopUp>
       )}
     </div>
   );
