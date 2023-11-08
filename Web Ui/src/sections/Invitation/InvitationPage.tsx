@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import firebase from "../../firebaseConfig";
 import SuccessfulSignUpPopUp from "./components/SuccessfulSignUpPopUp";
@@ -9,7 +9,8 @@ import { GithubAuthPort } from "../../modules/Auth/application/GithubAuthPort";
 import { RegisterPort } from "../../modules/Auth/application/RegisterPort";
 import UserOnDb from "../../modules/Auth/domain/userOnDb.interface";
 
-const AuthComponent: React.FC = () => {
+
+function AuthComponent(){
   const [user, setUser] = useState<User | null>(null);
   const githubAuthPort = new GithubAuthPort();
   const dbAuthPort = new RegisterPort();
@@ -56,7 +57,7 @@ const AuthComponent: React.FC = () => {
       ) : (
         <Button color="primary" aria-label="GitHub" onClick={handleSignUp}>
           <GitHubIcon></GitHubIcon>
-          Iniciar Sesión
+          Registrarse
         </Button>
       )}
 
