@@ -4,7 +4,9 @@ import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain
 export class MockAssignmentsRepository implements AssignmentsRepositoryInterface {
   private assignments: AssignmentDataObject[] = [];
 
-  getAssignments = jest.fn();
+  getAssignments = jest.fn(async () => {
+    return this.assignments;
+  });
 
   getAssignmentById = jest.fn(async (assignmentId: number) => {
     const foundAssignment = this.assignments.find((assignment) => assignment.id === assignmentId);
