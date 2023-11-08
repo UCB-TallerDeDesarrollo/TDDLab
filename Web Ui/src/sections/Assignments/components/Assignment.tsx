@@ -50,17 +50,9 @@ const Assignment: React.FC<AssignmentProps> = ({
           >
             <DeleteIcon />
           </IconButton>
-
-          <IconButton
-            aria-label="send"
-            onClick={() => handleClickUpdate(index)}
-            onMouseEnter={() => handleRowHover(index)}
-            onMouseLeave={() => handleRowHover(null)}
-          >
-            <SendIcon />
-          </IconButton>
         </div>
       </TableCell>
+      <TableCell>{assignment.state}</TableCell>
     </TableRow>
   );
 };
