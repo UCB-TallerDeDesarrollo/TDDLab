@@ -6,14 +6,24 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import SendIcon from "@mui/icons-material/Send";
+const getStatusText = (status:String) => {
+  switch (status) {
+    case 'pending':
+      return 'Pendiente';
+    case 'in progress':
+      return 'En progreso';
+    case 'delivered':
+      return 'Enviado';
+    default:
+      return status; 
+  }
+};
 
 interface AssignmentProps {
   assignment: AssignmentDataObject;
   index: number;
   handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
-  handleClickUpdate: (index: number) => void;
   handleRowHover: (index: number | null) => void;
 }
 
@@ -22,14 +32,14 @@ const Assignment: React.FC<AssignmentProps> = ({
   index,
   handleClickDetail,
   handleClickDelete,
-  handleClickUpdate,
   handleRowHover,
 }) => {
+  const statusText = getStatusText(assignment.state);
   return (
     <TableRow key={assignment.id}>
-      <TableCell>{assignment.title}</TableCell>
+      <TableCell >{assignment.title}</TableCell>
       <TableCell>
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div style={{ display: "flex",alignItems: "center", gap: "8px" }}>
           <IconButton
             aria-label="see"
             onClick={() => handleClickDetail(index)}
@@ -50,9 +60,10 @@ const Assignment: React.FC<AssignmentProps> = ({
           >
             <DeleteIcon />
           </IconButton>
+          <span>{statusText}</span>
         </div>
       </TableCell>
-      <TableCell>{assignment.state}</TableCell>
+      
     </TableRow>
   );
 };
