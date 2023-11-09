@@ -6,14 +6,13 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import SendIcon from "@mui/icons-material/Send";
+
 
 interface AssignmentProps {
   assignment: AssignmentDataObject;
   index: number;
   handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
-  handleClickUpdate: (index: number) => void;
   handleRowHover: (index: number | null) => void;
 }
 
@@ -22,7 +21,6 @@ const Assignment: React.FC<AssignmentProps> = ({
   index,
   handleClickDetail,
   handleClickDelete,
-  handleClickUpdate,
   handleRowHover,
 }) => {
   return (
