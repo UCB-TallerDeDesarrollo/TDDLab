@@ -42,40 +42,45 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const filteredCommitsObject = commits?.filter(
-    (commit) => commit.stats.total < maxLinesInGraph
-  );
+  console.log(jobsByCommit, commits)
+  const filteredCommitsObject = (() => {
+    if (commits != null) {
+      const filteredCommitsObject = commits.filter(
+        (commit) => commit.stats.total < maxLinesInGraph
+      );
+      return filteredCommitsObject;
+    }
+    return commits;
+  })();
+
+
   function getDataLabels() {
     if (filteredCommitsObject != null) {
-      if (commits != null) {
-        const commitsArray = commits.map(
-          (commit) => commits.indexOf(commit) + 1
-        );
+      const commitsArray = filteredCommitsObject.map(
+        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
+      );
         return commitsArray;
-      } else {
-        return [];
-      }
+    } else {
+      return [];
     }
   }
 
-  const getBarStyle = (commit: CommitDataObject) => {
-    if (jobsByCommit != null) {
-      const job = jobsByCommit.find((job) => job.sha === commit.sha);
-      console.log("TEST", job);
-      if (job != null && job.conclusion === "success") {
-        return "green";
-      } else {
+  const getBarStyle = (commit: CommitDataObject, jobByCommit: JobDataObject[]) => {
+    const job = jobByCommit.find((job) => job.sha === commit.sha);
+    if (job != null && job.conclusion === "success") {
+      return "green";
+    } else if (job === undefined) {
+        return "black";
+      } 
+      else {
         return "red";
       }
-    } else {
-      return "black";
-    }
   };
 
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
       const conclusions = filteredCommitsObject.map((commit) =>
-        getBarStyle(commit)
+        getBarStyle(commit, jobsByCommit)
       );
       return conclusions.reverse();
     } else {
@@ -101,8 +106,8 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   }
 
   function getCommitCoverage() {
-    if (commits != null) {
-      const coverage = commits.map((commit) => commit.coverage).reverse();
+    if (filteredCommitsObject != null) {
+      const coverage = filteredCommitsObject.map((commit) => commit.coverage).reverse();
       return coverage;
     } else {
       return [];
