@@ -10,9 +10,12 @@ beforeEach(() => {
 
 describe("Deliver assignment", () => {
   it("Should deliver an assignment successfully", async () => {
-    const assignmentId = 'id_assignment_pending';
-    const link = 'Enlace de la tarea';
-    const result = await deliverAssignment.execute(assignmentId, link);
+    const assignmentId = "id_assignment_pending";
+    const link = "Enlace de la tarea";
+    const comment = "Comentario";
+
+    const result = await deliverAssignment.execute(assignmentId, link, comment);
+
     expect(result).toEqual(
       expect.objectContaining({
         title: "Tarea pendiente",
@@ -27,9 +30,11 @@ describe("Deliver assignment", () => {
     );
   });
   it("Should deliver an assignment successfully", async () => {
-    const assignmentId = 'id_assignment_in_progress';
-    const link = 'Enlace de la tarea';
-    const result = await deliverAssignment.execute(assignmentId, link);
+    const assignmentId = "id_assignment_in_progress";
+    const link = "Enlace de la tarea";
+    const comment = "Comentario";
+
+    const result = await deliverAssignment.execute(assignmentId, link, comment);
     expect(result).toEqual(
       expect.objectContaining({
         title: "Tarea en progreso",
@@ -43,15 +48,19 @@ describe("Deliver assignment", () => {
       })
     );
   });
-  it('should return null when the assignment does not exist', async () => {
-    const assignmentId = 'non_existing_id';
-    const link = 'Enlace de la tarea';
-    const result = await deliverAssignment.execute(assignmentId, link);
+  it("should return null when the assignment does not exist", async () => {
+    const assignmentId = "non_existing_id";
+    const link = "Enlace de la tarea";
+    const comment = "no pude probar una funcionalidad";
+    const result = await deliverAssignment.execute(assignmentId, link, comment);
     expect(result).toBeNull();
   });
-  it('should handle errors during assignment delivery', async () => {
-    assignmentRepositoryMock.obtainAssignmentById.mockRejectedValue(new Error);
-    await expect(deliverAssignment.execute('existing_id', 'Enlace de la tarea')).rejects.toThrowError();
+  it("should handle errors during assignment delivery", async () => {
+    assignmentRepositoryMock.obtainAssignmentById.mockRejectedValue(
+      new Error()
+    );
+    await expect(
+      deliverAssignment.execute("existing_id", "Enlace de la tarea", "")
+    ).rejects.toThrowError();
   });
 });
-
