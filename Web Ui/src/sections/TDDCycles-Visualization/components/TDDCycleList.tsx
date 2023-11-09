@@ -9,7 +9,6 @@ interface CycleReportViewProps {
 }
 
 function TDDCycleList({ commitsInfo,jobsByCommit}: CycleReportViewProps) {
-  
   if (commitsInfo === null || jobsByCommit === null) {
     return null;
   }

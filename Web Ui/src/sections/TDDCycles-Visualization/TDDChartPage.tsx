@@ -62,6 +62,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
     const fetchData = async () => {
       await Promise.all([obtainJobsData(), obtainCommitsData()]);
       setLoading(false);
+      console.log(commitsInfo, jobsByCommit);
     };
     fetchData();
   }, []);

@@ -10,9 +10,9 @@ interface CycleReportViewProps {
 function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === "success") {
-      return { backgroundColor: "green", width: "150px" };
+      return { backgroundColor: "green"};
     } else {
-      return { backgroundColor: "red", width: "150px" };
+      return { backgroundColor: "red"};
     }
   };
 
@@ -39,7 +39,7 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
       <div className="commit-stats">
   <div className="commit-stat-item">
     <div className="circle total" data-testid="total"></div>
-    <span>Total:</span> {commit.stats.total}
+    <span>Total de modificaciones:</span> {commit.stats.total}
   </div>
   <div className="commit-stat-item">
     <div className="circle additions" data-testid="adition"></div>
