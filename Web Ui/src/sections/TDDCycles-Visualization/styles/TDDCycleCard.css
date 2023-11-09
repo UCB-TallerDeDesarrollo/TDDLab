@@ -8,7 +8,7 @@
   border-radius: 6px;
   background-color: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  width: 1200px; /* Cambio a ancho fijo para igualar el tamaño */
+  width: 80vw; /* Cambio a ancho fijo para igualar el tamaño */
 }
 
 .cycleCardContainer span {
@@ -102,5 +102,5 @@
   font-size: 18px;
   font-weight: 600;
   margin-right: 80px;
-  width: 400px;
+  width: 20vw;
 }
