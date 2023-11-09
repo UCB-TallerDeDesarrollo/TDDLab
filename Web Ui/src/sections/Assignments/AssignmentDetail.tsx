@@ -50,14 +50,19 @@ const AssignmentDetail: React.FC = () => {
     try {
       await submitAssignment.submitAssignment(
         updatedAssignment.id,
-        updatedAssignment.link
+        updatedAssignment.link,
+        updatedAssignment.comment
       );
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleFindAssignment = async (assignmentId: number, link: string) => {
+  const handleFindAssignment = async (
+    assignmentId: number,
+    link: string,
+    comment: string
+  ) => {
     const updatedAssignment = {
       id: assignmentId,
       title: assignment ? assignment.title : "",
@@ -66,14 +71,18 @@ const AssignmentDetail: React.FC = () => {
       end_date: assignment ? assignment.end_date : new Date(),
       state: assignment ? assignment.state : "",
       link: link,
-      comment: assignment ? assignment.comment : "",
+      comment: comment,
     };
     return updatedAssignment;
   };
 
   const handleSendGithubLink = async (link: string) => {
     if (assignmentId) {
-      const updatedAssignment = await handleFindAssignment(assignmentId, link);
+      const updatedAssignment = await handleFindAssignment(
+        assignmentId,
+        link,
+        ""
+      );
 
       await handleUpdateAssignment(updatedAssignment);
 
@@ -117,7 +126,6 @@ const AssignmentDetail: React.FC = () => {
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-  const [, setComment] = useState("");
 
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);
@@ -128,16 +136,17 @@ const AssignmentDetail: React.FC = () => {
   };
 
   const handleSendComment = async (comment: string, link: string) => {
-    setComment(comment);
-    handleCloseCommentDialog();
-
     if (assignmentId) {
-      const updatedAssignment = await handleFindAssignment(assignmentId, link);
-
-      console.log(updatedAssignment);
+      const updatedAssignment = await handleFindAssignment(
+        assignmentId,
+        link,
+        comment
+      );
 
       await handleUpdateAssignment(updatedAssignment);
 
+      setAssignment(updatedAssignment);
+      handleCloseLinkDialog();
       window.location.reload();
     }
   };
