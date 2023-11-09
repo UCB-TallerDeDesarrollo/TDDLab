@@ -8,7 +8,7 @@
   border-radius: 6px;
   background-color: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  width: 1200px; /* Cambio a ancho fijo para igualar el tamaño */
+  width: 80vw; /* Cambio a ancho fijo para igualar el tamaño */
 }
 
 .cycleCardContainer span {
@@ -26,7 +26,7 @@
 }
 
 .conclusionBox {
-  width: 150px;
+  width: calc(5vw + 100px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -38,6 +38,7 @@
 }
 
 .noActionsBox {
+  width: calc(7vw + 100px);
   background-color: #000000;
 }
 
@@ -50,10 +51,22 @@
   border-radius: 4px;
   transition: background-color 0.3s ease;
   margin-left: 12px;
+  width: calc(4vw + 10px);
 }
 
 .commit-link:hover {
   background-color: #0056b3;
+  color: rgb(40, 239, 76);
+}
+
+
+.commit-link:visited {
+  background-color: grey;
+}
+
+.commit-link:visited:hover {
+  color: rgb(233, 239, 40);
+  background-color: rgb(102, 102, 102);
 }
 
 .commit-stats {
@@ -101,6 +114,6 @@
 .cycleCardContainer span.title {
   font-size: 18px;
   font-weight: 600;
-  margin-right: 80px;
-  width: 400px;
+  margin-right: 40px;
+  width: calc(24vw + 10px);
 }

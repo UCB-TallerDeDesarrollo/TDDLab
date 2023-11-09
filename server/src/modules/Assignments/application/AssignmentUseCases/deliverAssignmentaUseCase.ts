@@ -10,7 +10,8 @@ class DeliverAssignmentUseCase {
 
   async execute(
     assignmentId: string,
-    link: string
+    link: string,
+    comment: string
   ): Promise<AssignmentDataObject | null> {
     try {
       const assignment = await this.repository.obtainAssignmentById(
@@ -23,10 +24,12 @@ class DeliverAssignmentUseCase {
 
       // Update the assignment's state and link
       assignment.link = link;
+
       if (assignment.state == "pending") {
         assignment.state = "in progress";
       } else {
         assignment.state = "delivered";
+        assignment.comment = comment; // Set the comment property
       }
 
       // Update the assignment in the repository

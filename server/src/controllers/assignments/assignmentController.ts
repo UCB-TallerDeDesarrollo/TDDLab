@@ -84,11 +84,12 @@ class AssignmentsController {
   async deliverAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
-      const { link } = req.body;
+      const { link, comment } = req.body; // Extract comment from the request body
 
       const deliveredAssignment = await this.deliverAssignmentUseCase.execute(
         assignmentId,
-        link
+        link,
+        comment
       );
 
       if (deliveredAssignment) {
