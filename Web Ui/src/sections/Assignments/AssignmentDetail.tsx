@@ -8,7 +8,7 @@ import { Button } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
@@ -144,17 +144,16 @@ const AssignmentDetail: React.FC = () => {
 
   const getDisplayStatus = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'Pendiente';
-      case 'in progress':
-        return 'En progreso';
-      case 'delivered':
-        return 'Enviado';
+      case "pending":
+        return "Pendiente";
+      case "in progress":
+        return "En progreso";
+      case "delivered":
+        return "Enviado";
       default:
-        return status; 
+        return status;
     }
   };
-
 
   return (
     <div>
@@ -166,6 +165,7 @@ const AssignmentDetail: React.FC = () => {
           <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
           <p>Estado: {getDisplayStatus(assignment.state)}</p>
           <p>Enlace: {assignment.link}</p>
+          {assignment.comment ? <p>Comentario: {assignment.comment}</p> : null}
 
           <Button
             variant="contained"
@@ -204,8 +204,15 @@ const AssignmentDetail: React.FC = () => {
           />
         </div>
       ) : (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '250px' }}>
-          <CircularProgress size={60} thickness={5} /> 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "250px",
+          }}
+        >
+          <CircularProgress size={60} thickness={5} />
         </div>
       )}
     </div>
