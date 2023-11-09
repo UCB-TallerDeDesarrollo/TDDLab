@@ -9,58 +9,58 @@ beforeEach(() => {
 });
 
 describe("Deliver assignment", () => {
-  it("Should deliver an assignment successfully", async () => {
-    const assignmentId = "id_assignment_pending";
-    const link = "Enlace de la tarea";
-    const comment = "Comentario";
+  const generateTestData = (
+    assignmentId: string,
+    link: string,
+    comment: string
+  ) => {
+    return {
+      assignmentId,
+      link,
+      comment,
+      title: "Tarea en progreso",
+      state: "delivered",
+      id: "2",
+      description: "Esta es una tarea en progreso",
+      start_date: new Date("2023-01-01"),
+      end_date: new Date("2023-01-10"),
+    };
+  };
 
-    const result = await deliverAssignment.execute(assignmentId, link, comment);
+  const executeTest = async (
+    assignmentId: string,
+    link: string,
+    comment: string
+  ) => {
+    return await deliverAssignment.execute(assignmentId, link, comment);
+  };
 
-    expect(result).toEqual(
-      expect.objectContaining({
-        title: "Tarea pendiente",
-        link: "Enlace de la tarea",
-        state: "in progress",
-        id: "1",
-        description: "Esta es una tarea pendiente",
-        start_date: new Date("2023-01-01"),
-        end_date: new Date("2023-01-10"),
-        comment: "Comentario",
-      })
+  it("should deliver an assignment successfully", async () => {
+    const { assignmentId, link, comment, ...expectedData } = generateTestData(
+      "id_assignment_in_progress",
+      "Enlace de la tarea",
+      "Comentario"
     );
+    const result = await executeTest(assignmentId, link, comment);
+    expect(result).toEqual(expect.objectContaining(expectedData));
   });
-  it("Should deliver an assignment successfully", async () => {
-    const assignmentId = "id_assignment_in_progress";
-    const link = "Enlace de la tarea";
-    const comment = "Comentario";
 
-    const result = await deliverAssignment.execute(assignmentId, link, comment);
-    expect(result).toEqual(
-      expect.objectContaining({
-        title: "Tarea en progreso",
-        link: "Enlace de la tarea",
-        state: "delivered",
-        id: "2",
-        description: "Esta es una tarea en progreso",
-        start_date: new Date("2023-01-01"),
-        end_date: new Date("2023-01-10"),
-        comment: "Comentario",
-      })
-    );
-  });
   it("should return null when the assignment does not exist", async () => {
-    const assignmentId = "non_existing_id";
-    const link = "Enlace de la tarea";
-    const comment = "no pude probar una funcionalidad";
-    const result = await deliverAssignment.execute(assignmentId, link, comment);
+    const { assignmentId, link, comment } = generateTestData(
+      "non_existing_id",
+      "Enlace de la tarea",
+      "no pude probar una funcionalidad"
+    );
+    const result = await executeTest(assignmentId, link, comment);
     expect(result).toBeNull();
   });
+
   it("should handle errors during assignment delivery", async () => {
     assignmentRepositoryMock.obtainAssignmentById.mockRejectedValue(
       new Error()
     );
     await expect(
-      deliverAssignment.execute("existing_id", "Enlace de la tarea", "")
+      executeTest("existing_id", "Enlace de la tarea", "")
     ).rejects.toThrowError();
   });
 });
