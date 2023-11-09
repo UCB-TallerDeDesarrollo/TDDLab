@@ -10,9 +10,9 @@ interface CycleReportViewProps {
 function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === "success") {
-      return { backgroundColor: "green", width: "150px" };
+      return { backgroundColor: "green"};
     } else {
-      return { backgroundColor: "red", width: "150px" };
+      return { backgroundColor: "red"};
     }
   };
 
