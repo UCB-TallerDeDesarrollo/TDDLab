@@ -39,7 +39,7 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
       <div className="commit-stats">
   <div className="commit-stat-item">
     <div className="circle total" data-testid="total"></div>
-    <span>Total:</span> {commit.stats.total}
+    <span>Total de modificaciones:</span> {commit.stats.total}
   </div>
   <div className="commit-stat-item">
     <div className="circle additions" data-testid="adition"></div>
