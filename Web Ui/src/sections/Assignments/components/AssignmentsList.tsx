@@ -100,8 +100,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     setConfirmationOpen(false);
   };
 
-
-
   const handleSendGithubLink = (link: string) => {
     if (selectedAssignmentIndex !== null) {
       submitAssignment.submitAssignment(
