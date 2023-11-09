@@ -100,11 +100,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     setConfirmationOpen(false);
   };
 
-  const handleClickUpdate = (index: number) => {
-    setSelectedRow(index);
-    setGithubLinkDialogOpen(true);
-    setSelectedAssignmentIndex(index);
-  };
+
 
   const handleSendGithubLink = (link: string) => {
     if (selectedAssignmentIndex !== null) {
@@ -143,7 +139,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
                 index={index}
                 handleClickDetail={handleClickDetail}
                 handleClickDelete={handleClickDelete}
-                handleClickUpdate={handleClickUpdate}
                 handleRowHover={handleRowHover}
               />
             ))}
