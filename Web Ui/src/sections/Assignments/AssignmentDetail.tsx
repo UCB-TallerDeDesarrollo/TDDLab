@@ -14,7 +14,9 @@ const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  const [linkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
@@ -58,11 +60,7 @@ const AssignmentDetail: React.FC = () => {
     }
   };
 
-  const handleFindAssignment = async (
-    assignmentId: number,
-    link: string,
-    comment: string
-  ) => {
+  const handleFindAssignment = async (assignmentId: number, link: string) => {
     const updatedAssignment = {
       id: assignmentId,
       title: assignment ? assignment.title : "",
@@ -71,18 +69,14 @@ const AssignmentDetail: React.FC = () => {
       end_date: assignment ? assignment.end_date : new Date(),
       state: assignment ? assignment.state : "",
       link: link,
-      comment: comment,
+      comment: assignment ? assignment.comment : "",
     };
     return updatedAssignment;
   };
 
   const handleSendGithubLink = async (link: string) => {
     if (assignmentId) {
-      const updatedAssignment = await handleFindAssignment(
-        assignmentId,
-        link,
-        ""
-      );
+      const updatedAssignment = await handleFindAssignment(assignmentId, link);
 
       await handleUpdateAssignment(updatedAssignment);
 
@@ -125,8 +119,6 @@ const AssignmentDetail: React.FC = () => {
     }
   };
 
-  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);
   };
@@ -136,18 +128,33 @@ const AssignmentDetail: React.FC = () => {
   };
 
   const handleSendComment = async (comment: string, link: string) => {
-    if (assignmentId) {
-      const updatedAssignment = await handleFindAssignment(
-        assignmentId,
-        link,
-        comment
-      );
+    if (assignmentId && assignment) {
+      const assignmentsRepository = new AssignmentsRepository();
+      const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
-      await handleUpdateAssignment(updatedAssignment);
+      try {
+        const updatedAssignment = await submitAssignment.submitAssignment(
+          assignmentId,
+          link,
+          comment
+        );
 
-      setAssignment(updatedAssignment);
-      handleCloseLinkDialog();
-      window.location.reload();
+        if (updatedAssignment) {
+          // Assuming setAssignment is a state setter function
+          setAssignment(updatedAssignment);
+          handleCloseLinkDialog();
+          // Optionally, you can show a success notification to the user
+          // showSuccessNotification("Assignment submitted successfully!");
+        } else {
+          // Handle the case where updatedAssignment is null or undefined
+          // For example, show an error message to the user
+          // showErrorNotification("Failed to update assignment. Please try again.");
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle the error, e.g., show an error notification to the user
+        // showErrorNotification("An error occurred while submitting the assignment.");
+      }
     }
   };
 

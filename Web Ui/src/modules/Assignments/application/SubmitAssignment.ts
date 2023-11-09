@@ -4,7 +4,11 @@ import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInter
 export class SubmitAssignment {
   constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
 
-  async submitAssignment(assignmentId: number, link: string, comment: string) {
+  async submitAssignment(
+    assignmentId: number,
+    link: string,
+    comment: string
+  ): Promise<AssignmentDataObject | null> {
     try {
       const foundAssignment: AssignmentDataObject | null =
         await this.assignmentsRepository.getAssignmentById(assignmentId);
@@ -19,12 +23,12 @@ export class SubmitAssignment {
           foundAssignment.comment = comment;
         }
 
-        console.log(foundAssignment.state);
-
-        return await this.assignmentsRepository.updateAssignment(
+        await this.assignmentsRepository.updateAssignment(
           assignmentId,
           foundAssignment
         );
+
+        return foundAssignment; // Return the updated assignment
       } else {
         throw new Error("No se encontró la tarea");
       }
