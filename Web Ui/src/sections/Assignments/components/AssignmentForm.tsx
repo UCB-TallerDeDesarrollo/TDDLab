@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { Box, Container, TextField } from "@mui/material";
@@ -21,8 +21,10 @@ function Form() {
     link: "",
     comment: "",
   });
-
-  const handleGuardarClick = async () => {
+  const isCreateButtonClicked = useRef(false);
+  const handleSaveClick = async () => {
+    if (isCreateButtonClicked.current) return; // Prevent multiple clicks
+    isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
     if (assignmentData.start_date > assignmentData.end_date) {
@@ -30,10 +32,10 @@ function Form() {
     }
     try {
       await createAssignments.createAssignment(assignmentData);
-      setValidationDialogOpen(true);
     } catch (error) {
       console.error(error);
     }
+    setValidationDialogOpen(true);
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -72,8 +74,6 @@ function Form() {
           label="Descripcion"
           variant="outlined"
           size="small"
-          multiline
-          rows={5}
           required
           sx={{
             "& label.Mui-focused": {
@@ -99,7 +99,7 @@ function Form() {
             style={{
               textTransform: "none",
             }}
-            onClick={handleGuardarClick}
+            onClick={handleSaveClick}
           >
             Guardar cambios
           </Button>
