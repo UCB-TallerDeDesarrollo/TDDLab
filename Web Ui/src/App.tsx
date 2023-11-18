@@ -12,8 +12,8 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import AuthComponent from "./sections/Invitation/InvitationPage";
 import { useEffect } from "react";
-import { getSessionCookie } from "./sections/Login/cookieService";
 import { setGlobalState } from "./modules/Auth/domain/authStates";
+import { getSessionCookie } from "./modules/Auth/application/setSessionCookie";
 
 const navArrayLinks = [
   {
