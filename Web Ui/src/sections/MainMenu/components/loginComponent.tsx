@@ -22,6 +22,7 @@ export default function LoginComponent() {
           userEmail: userData.email,
           userCourse: userCourse,
         });
+        setSessionCookie(userData);
       } else {
         console.log("Invalid User");
       }
@@ -35,6 +36,7 @@ export default function LoginComponent() {
       userEmail: "",
       userCourse: "",
     });
+    setSessionCookie(userData);
   };
 
   return (
