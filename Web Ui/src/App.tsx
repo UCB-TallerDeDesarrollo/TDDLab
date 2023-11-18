@@ -11,6 +11,9 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import AuthComponent from "./sections/Invitation/InvitationPage";
+import { useEffect } from "react";
+import { getSessionCookie } from "./sections/Login/cookieService";
+import { setGlobalState } from "./modules/Auth/domain/authStates";
 
 const navArrayLinks = [
   {
@@ -31,6 +34,17 @@ const navArrayLinks = [
 ];
 
 function App() {
+  useEffect(() => {
+    console.log("entrando a sessionCookie");
+    const storedSession = getSessionCookie();
+    if (storedSession) {
+      setGlobalState('authData', {
+        userProfilePic: storedSession.photoURL,
+        userEmail: storedSession.email,
+        userCourse: storedSession.course,
+      });
+    }
+  }, []);
   return (
     <Router>
       <MainMenu navArrayLinks={navArrayLinks} />

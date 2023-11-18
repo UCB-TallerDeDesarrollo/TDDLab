@@ -9,8 +9,6 @@ import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
-import { getSessionCookie } from "../Login/cookieService"; 
-import { setGlobalState} from "../../modules/Auth/domain/authStates";
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
@@ -21,16 +19,6 @@ const AssignmentDetail: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("entrando a sessionCookie");
-    const storedSession = getSessionCookie();
-    if (storedSession) {
-      setGlobalState('authData', {
-        userProfilePic: storedSession.photoURL,
-        userEmail: storedSession.email,
-        userCourse: storedSession.course,
-      });
-    }
-
     const assignmentsRepository = new AssignmentsRepository();
     const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
 
