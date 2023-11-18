@@ -7,6 +7,8 @@ import {
 } from "../../../modules/Auth/domain/authStates";
 import React from "react";
 import "../styles/loginComponentStyles.css";
+import { setSessionCookie, removeSessionCookie } from "../../Login/cookieService"; 
+
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
 
@@ -36,7 +38,7 @@ export default function LoginComponent() {
       userEmail: "",
       userCourse: "",
     });
-    setSessionCookie(userData);
+    removeSessionCookie();
   };
 
   return (
