@@ -7,7 +7,8 @@ import {
 } from "../../../modules/Auth/domain/authStates";
 import React from "react";
 import "../styles/loginComponentStyles.css";
-import { setSessionCookie, removeSessionCookie } from "../../Login/cookieService"; 
+import { setSessionCookie } from "../../../modules/Auth/application/getSessionCookie";
+import { removeSessionCookie } from "../../../modules/Auth/application/deleteSessionCookie";
 
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
