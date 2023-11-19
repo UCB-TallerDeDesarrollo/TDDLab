@@ -23,7 +23,6 @@ export const cookieUserData =
     },
     "createdAt": "1699331020761",
     "lastLoginAt": "1700430802520",
-    "apiKey": "AIzaSyDU3ba-B2j1DqTEOktFx8lNTTBeXasKjH8",
     "appName": "[DEFAULT]"
   }
   
