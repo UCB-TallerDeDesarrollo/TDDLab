@@ -7,6 +7,9 @@ import {
 } from "../../../modules/Auth/domain/authStates";
 import React from "react";
 import "../styles/loginComponentStyles.css";
+import { setSessionCookie } from "../../../modules/Auth/application/getSessionCookie";
+import { removeSessionCookie } from "../../../modules/Auth/application/deleteSessionCookie";
+
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
 
@@ -22,6 +25,7 @@ export default function LoginComponent() {
           userEmail: userData.email,
           userCourse: userCourse,
         });
+        setSessionCookie(userData);
       } else {
         console.log("Invalid User");
       }
@@ -35,6 +39,7 @@ export default function LoginComponent() {
       userEmail: "",
       userCourse: "",
     });
+    removeSessionCookie();
   };
 
   return (
