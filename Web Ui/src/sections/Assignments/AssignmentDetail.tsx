@@ -9,7 +9,6 @@ import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
-
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
