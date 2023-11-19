@@ -14,13 +14,13 @@ const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
   });
 
   const handleDateFromChange = (newValue: Date | null) => {
-    const updatedDateFrom = newValue || new Date(); // Use a default date if newValue is null
+    const updatedDateFrom = newValue ?? new Date();
     setDataForm({ ...dataForm, dateFrom: updatedDateFrom });
     onUpdateDates(updatedDateFrom, dataForm.dateTo);
   };
 
   const handleDateToChange = (newValue: Date | null) => {
-    const updatedDateTo = newValue || new Date(); // Use a default date if newValue is null
+    const updatedDateTo = newValue ?? new Date();
     setDataForm({ ...dataForm, dateTo: updatedDateTo });
     onUpdateDates(dataForm.dateFrom, updatedDateTo);
   };
