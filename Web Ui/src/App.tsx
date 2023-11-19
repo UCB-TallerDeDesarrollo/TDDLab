@@ -11,7 +11,12 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import AuthComponent from "./sections/Invitation/InvitationPage";
+import { useEffect } from "react";
+import { setGlobalState } from "./modules/Auth/domain/authStates";
+import { getSessionCookie } from "./modules/Auth/application/setSessionCookie";
 
+import { useGlobalState } from "./modules/Auth/domain/authStates";
+import "./App.css";
 const navArrayLinks = [
   {
     title: "Grupos",
@@ -31,38 +36,32 @@ const navArrayLinks = [
 ];
 
 function App() {
+  useEffect(() => {
+    console.log("entrando a sessionCookie");
+    const storedSession = getSessionCookie();
+    if (storedSession) {
+      setGlobalState('authData', {
+        userProfilePic: storedSession.photoURL,
+        userEmail: storedSession.email,
+        userCourse: storedSession.course,
+      });
+    }
+  }, []);
+  const authData = useGlobalState("authData")[0];
   return (
     <Router>
-      <MainMenu navArrayLinks={navArrayLinks} />
+      {authData.userEmail != "" && <MainMenu navArrayLinks={navArrayLinks} />}
       <Routes>
-        <Route
-          path="/"
-          element={<GestionTareas />}
-        />
-        <Route
-          path="/assignment/:id"
-          element={<AssignmentDetail />}
-        />
-        <Route
-          path="/login"
-          element={<Login />}
-        />
-        <Route
-          path="/groups"
-          element={<Groups />}
-        />
-        <Route
-          path="/user"
-          element={<User />}
-        />
+        <Route path="/" element={<GestionTareas />} />
+        <Route path="/assignment/:id" element={<AssignmentDetail />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/groups" element={<Groups />} />
+        <Route path="/user" element={<User />} />
         <Route
           path="/graph"
           element={<TDDChartPage port={new GithubAPIAdapter()} />}
         />
-        <Route
-          path="/invitation"
-          element={<AuthComponent/>}
-        />
+        <Route path="/invitation" element={<AuthComponent />} />
       </Routes>
     </Router>
   );
