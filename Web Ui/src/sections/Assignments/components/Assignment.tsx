@@ -6,16 +6,16 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-const getStatusText = (status:String) => {
+const getStatusText = (status: string) => {
   switch (status) {
-    case 'pending':
-      return 'Pendiente';
-    case 'in progress':
-      return 'En progreso';
-    case 'delivered':
-      return 'Enviado';
+    case "pending":
+      return "Pendiente";
+    case "in progress":
+      return "En progreso";
+    case "delivered":
+      return "Enviado";
     default:
-      return status; 
+      return status;
   }
 };
 
@@ -37,9 +37,9 @@ const Assignment: React.FC<AssignmentProps> = ({
   const statusText = getStatusText(assignment.state);
   return (
     <TableRow key={assignment.id}>
-      <TableCell >{assignment.title}</TableCell>
+      <TableCell>{assignment.title}</TableCell>
       <TableCell>
-        <div style={{ display: "flex",alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <IconButton
             aria-label="see"
             onClick={() => handleClickDetail(index)}
@@ -63,7 +63,6 @@ const Assignment: React.FC<AssignmentProps> = ({
           <span>{statusText}</span>
         </div>
       </TableCell>
-      
     </TableRow>
   );
 };
