@@ -42,7 +42,7 @@ function EditAssignmentForm({
       id: 0,
       state: "",
       link: "",
-      comment: null, // Provide a default value or make it nullable
+      comment: null,
       title: "",
       description: "",
       start_date: new Date(),
