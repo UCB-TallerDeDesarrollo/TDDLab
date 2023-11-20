@@ -11,7 +11,7 @@ export class JobsUseCase {
         this.adapter = repository;
         this.githubUseCases = githubAdapter;
     }
-    async getJobs(owner: string, repoName: string) {
+    async execute(owner: string, repoName: string) {
         let jobs;
         try {
             if (!(await this.adapter.repositoryExist(owner, repoName))) {
