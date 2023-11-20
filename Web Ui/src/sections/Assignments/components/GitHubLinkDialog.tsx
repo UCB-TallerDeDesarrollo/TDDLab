@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { Typography } from "@mui/material";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -18,7 +19,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onSend,
 }) => {
   const [link, setLink] = useState("");
-  const [validLink, setValidLink] = React.useState(false);
+  const [validLink, setValidLink] = React.useState(true);
 
   const handleSend = () => {
     if (validLink) {
@@ -36,12 +37,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     const newLink = e.target.value;
     setLink(newLink);
     setValidLink(validateGitHubLink(newLink));
-  };
-
-  const warningStyle = {
-    color: "red",
-    position: "relative" as const,
-    top: "0.5rem",
   };
 
   const dialogTitleStyle = {
@@ -65,7 +60,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           label="Enlace de Github"
           variant="outlined"
           color={
-            validLink ? "primary" : validLink === false ? "error" : "success"
+            link === "" ? "primary" : validLink === false ? "error" : "success"
           }
           value={link}
           onChange={handleLinkChange}
@@ -73,13 +68,21 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           focused
           style={textFieldStyle}
         />
-        {!validLink && <div style={warningStyle}>Warning: Invalid link</div>}
+        {!validLink && (
+          <Typography variant="body2" color="error">
+            Warning: Invalid link
+          </Typography>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cerrar
         </Button>
-        <Button onClick={handleSend} color="primary" disabled={!validLink}>
+        <Button
+          onClick={handleSend}
+          color="primary"
+          disabled={!validLink || link == ""}
+        >
           Enviar
         </Button>
       </DialogActions>
