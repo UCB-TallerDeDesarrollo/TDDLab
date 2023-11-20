@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import { Box, Container, TextField } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Box, TextField } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
@@ -23,7 +26,7 @@ interface ExistingAssignmentData extends AssignmentData {
   comment: string | null; // Make comment nullable
 }
 
-function EditAssignmentForm({
+function EditAssignmentDialog({
   assignmentId,
   onClose,
 }: {
@@ -126,53 +129,57 @@ function EditAssignmentForm({
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ display: "grid", gap: 2 }} component="form" autoComplete="off">
-        <TextField
-          id="titulo"
-          label="Titulo"
-          variant="outlined"
-          size="small"
-          required
-          value={assignmentData.title}
-          onChange={(e) => handleInputChange(e, "title")}
-        />
-        <TextField
-          id="descripcion"
-          label="Descripcion"
-          variant="outlined"
-          size="small"
-          required
-          sx={{
-            "& label.Mui-focused": {
-              color: "#001F3F",
-            },
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "#001F3F",
+    <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Edit Assignment</DialogTitle>
+      <DialogContent>
+        <Box sx={{ display: "grid", gap: 2 }}>
+          <TextField
+            id="titulo"
+            label="Titulo"
+            variant="outlined"
+            size="small"
+            required
+            value={assignmentData.title}
+            onChange={(e) => handleInputChange(e, "title")}
+          />
+          <TextField
+            id="descripcion"
+            label="Descripcion"
+            variant="outlined"
+            size="small"
+            required
+            sx={{
+              "& label.Mui-focused": {
+                color: "#001F3F",
               },
-            },
-          }}
-          onChange={(e) => handleInputChange(e, "description")}
-          defaultValue={assignmentData.description}
-        />
-        <section>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Filter onUpdateDates={handleUpdateDates} />
-          </LocalizationProvider>
-        </section>
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="contained"
-            style={{
-              textTransform: "none",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#001F3F",
+                },
+              },
             }}
-            onClick={handleSaveClick}
-          >
-            Guardar cambios
-          </Button>
-        </Stack>
-      </Box>
+            onChange={(e) => handleInputChange(e, "description")}
+            defaultValue={assignmentData.description}
+          />
+          <section>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Filter onUpdateDates={handleUpdateDates} />
+            </LocalizationProvider>
+          </section>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          variant="contained"
+          style={{
+            textTransform: "none",
+          }}
+          onClick={handleSaveClick}
+        >
+          Save Changes
+        </Button>
+      </DialogActions>
       {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
@@ -184,8 +191,8 @@ function EditAssignmentForm({
           }}
         />
       )}
-    </Container>
+    </Dialog>
   );
 }
 
-export default EditAssignmentForm;
+export default EditAssignmentDialog;
