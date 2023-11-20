@@ -68,7 +68,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           focused
           style={textFieldStyle}
         />
-        {!validLink && (
+        {!validLink && link !== "" && (
           <Typography variant="body2" color="error">
             Warning: Invalid link
           </Typography>
