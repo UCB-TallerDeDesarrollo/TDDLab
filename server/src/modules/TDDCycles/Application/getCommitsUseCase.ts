@@ -13,47 +13,19 @@ export class GetCommits {
         this.repositoryAdapter = repositoryAdapter;
         this.githubUseCases = githubUseCases;
     }
-
     async execute(owner: string, repoName: string) {
         let commits;
         try {
             if (!(await this.repositoryAdapter.repositoryExist(owner, repoName))) {
-                const commits = await this.getCommitsAPI(
-                    owner,
-                    repoName
-                );
+                const commits = await this.getCommitsAPI(owner, repoName);
                 const commitsFromSha =
-                    await this.getCommitsFromShaAPI(
-                        owner,
-                        repoName,
-                        commits
-                    );
-                await this.saveCommitsDB(
-                    owner,
-                    repoName,
-                    commitsFromSha
-                );
+                    await this.getCommitsFromShaAPI(owner, repoName, commits);
+                await this.saveCommitsDB(owner, repoName, commitsFromSha);
             } else {
-                const commits = await this.getCommitsAPI(
-                    owner,
-                    repoName
-                ); //getCommitsAPI should be changed to getLastCommits once it is implemented
-                const newCommits = await this.checkNewCommits(
-                    owner,
-                    repoName,
-                    commits
-                );
-                const commitsFromSha =
-                    await this.getCommitsFromShaAPI(
-                        owner,
-                        repoName,
-                        newCommits
-                    );
-                await this.saveCommitsDB(
-                    owner,
-                    repoName,
-                    commitsFromSha
-                );
+                const commits = await this.getCommitsAPI(owner, repoName); //getCommitsAPI should be changed to getLastCommits once it is implemented
+                const newCommits = await this.checkNewCommits(owner, repoName, commits);
+                const commitsFromSha = await this.getCommitsFromShaAPI(owner, repoName, newCommits);
+                await this.saveCommitsDB(owner, repoName, commitsFromSha);
             }
             commits = await this.repositoryAdapter.getCommits(owner, repoName);
         } catch (error) {
@@ -69,11 +41,7 @@ export class GetCommits {
     ) {
         let commitsToAdd = [];
         for (const currentCommit of commitsData) {
-            let row = await this.repositoryAdapter.commitExists(
-                owner,
-                repoName,
-                currentCommit.sha
-            );
+            let row = await this.repositoryAdapter.commitExists(owner, repoName, currentCommit.sha);
             if (row.length != 0) {
                 break;
             } else {
@@ -85,10 +53,7 @@ export class GetCommits {
 
     async getCommitsAPI(owner: string, repoName: string) {
         try {
-            const commits = await this.githubUseCases.obtainCommitsOfRepo(
-                owner,
-                repoName
-            );
+            const commits = await this.githubUseCases.obtainCommitsOfRepo(owner, repoName);
             return commits;
         } catch (error) {
             console.error("Error en la obtención de commits:", error);
@@ -103,11 +68,7 @@ export class GetCommits {
         try {
             const commitsFromSha = await Promise.all(
                 commits.map((commit: any) => {
-                    return this.githubUseCases.obtainCommitsFromSha(
-                        owner,
-                        repoName,
-                        commit.sha
-                    );
+                    return this.githubUseCases.obtainCommitsFromSha(owner, repoName, commit.sha);
                 })
             );
             const commitsData: CommitDTO[] = commitsFromSha.map((commit: any) => {
@@ -144,11 +105,7 @@ export class GetCommits {
             if (newCommits.length > 0) {
                 await Promise.all(
                     newCommits.map(async (commit: CommitDTO) => {
-                        await this.repositoryAdapter.saveCommitInfoOfRepo(
-                            owner,
-                            repoName,
-                            commit
-                        );
+                        await this.repositoryAdapter.saveCommitInfoOfRepo(owner, repoName, commit);
                     })
                 );
             }

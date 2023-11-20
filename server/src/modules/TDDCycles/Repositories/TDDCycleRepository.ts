@@ -6,8 +6,6 @@ import { ICommitRepository } from "../Domain/ICommitRepository";
 import { JobDB } from '../Domain/Job';
 import { IJobRepository } from '../Domain/IJobRepository';
 
-
-
 export class CommitRepository implements ICommitRepository {
     pool: Pool;
     constructor() {
@@ -78,12 +76,9 @@ export class JobRepository implements IJobRepository {
         let client;
         try {
             client = await this.pool.connect();
-
             const query = 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2';
             const values = [owner, repo];
-
             const result = await client.query(query, values);
-
             return result.rows;
         } catch (error) {
             console.error('Error en la consulta a la base de datos:', error);
@@ -100,9 +95,7 @@ export class JobRepository implements IJobRepository {
             client = await this.pool.connect();
             const query = 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3';
             const values = [owner, repo,jobId];
-            
             const result = await client.query(query, values);
-
             return result.rows;
         } catch (error) {
             console.error('Error en la consulta a la base de datos:', error);
@@ -122,7 +115,6 @@ export class JobRepository implements IJobRepository {
             const { id, sha, owner, reponame, conclusion } = record;
             const query = 'INSERT INTO jobsTable (id, sha, owner, repoName, conclusion) VALUES ($1, $2, $3, $4, $5)';
             const values = [id, sha, owner, reponame, conclusion];
-
             await client.query(query, values);
         }
         } catch (error) {
@@ -135,14 +127,11 @@ export class JobRepository implements IJobRepository {
     }
     async repositoryExist(owner: string, repoName: string) {
         const client = await this.pool.connect();
-    
         const query =
         "SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2";
         const values = [owner, repoName];
-    
         const result = await client.query(query, values);
         client.release();
-    
         return result.rows[0].count > 0;
     }
 }
