@@ -18,7 +18,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onSend,
 }) => {
   const [link, setLink] = useState("");
-  const [validLink, setValidLink] = React.useState(true);
+  const [validLink, setValidLink] = React.useState(false);
 
   const handleSend = () => {
     if (validLink) {
@@ -35,15 +35,13 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLink = e.target.value;
     setLink(newLink);
-    setValidLink((prevValidLink) => {
-      return validateGitHubLink(newLink) ? true : prevValidLink;
-    });
+    setValidLink(validateGitHubLink(newLink));
   };
 
   const warningStyle = {
-    color: "orange",
-    position: "absolute" as const,
-    bottom: "-20px",
+    color: "red",
+    position: "relative" as const,
+    top: "0.5rem",
   };
 
   const dialogTitleStyle = {
@@ -53,8 +51,9 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const textFieldStyle = {
     fontSize: "12px",
   };
+
   const contentStyle = {
-    fontSize: "12px",
+    fontSize: ".75rem",
     padding: "20px",
   };
 
