@@ -9,6 +9,20 @@ import { UpdateAssignment } from "../../../modules/Assignments/application/Updat
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import { ValidationDialog } from "./ValidationDialog";
 
+interface AssignmentData {
+  title: string;
+  description: string;
+  start_date: Date;
+  end_date: Date;
+}
+
+interface ExistingAssignmentData extends AssignmentData {
+  id: number;
+  state: string;
+  link: string;
+  comment: string | null; // Make comment nullable
+}
+
 function EditAssignmentForm({
   assignmentId,
   onClose,
@@ -17,12 +31,23 @@ function EditAssignmentForm({
   onClose: () => void;
 }) {
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [assignmentData, setAssignmentData] = useState({
+  const [assignmentData, setAssignmentData] = useState<AssignmentData>({
     title: "",
     description: "",
     start_date: new Date(),
     end_date: new Date(),
   });
+  const [existingAssignmentData, setExistingAssignmentData] =
+    useState<ExistingAssignmentData>({
+      id: 0,
+      state: "",
+      link: "",
+      comment: null, // Provide a default value or make it nullable
+      title: "",
+      description: "",
+      start_date: new Date(),
+      end_date: new Date(),
+    });
   const isUpdateButtonClicked = useRef(false);
 
   const assignmentsRepository = new AssignmentsRepository();
@@ -32,13 +57,28 @@ function EditAssignmentForm({
     // Fetch the current assignment data and populate the form
     assignmentsRepository.getAssignmentById(assignmentId).then((data) => {
       if (data) {
-        setAssignmentData(data);
+        setAssignmentData({
+          title: data.title,
+          description: data.description,
+          start_date: data.start_date,
+          end_date: data.end_date,
+        });
+        setExistingAssignmentData({
+          id: data.id,
+          state: data.state,
+          link: data.link,
+          comment: data.comment,
+          title: data.title,
+          description: data.description,
+          start_date: data.start_date,
+          end_date: data.end_date,
+        });
       }
     });
   }, [assignmentId]);
 
   const handleSaveClick = async () => {
-    if (isUpdateButtonClicked.current) return; // Prevent multiple clicks
+    if (isUpdateButtonClicked.current) return;
     isUpdateButtonClicked.current = true;
 
     if (assignmentData.start_date > assignmentData.end_date) {
@@ -46,7 +86,20 @@ function EditAssignmentForm({
     }
 
     try {
-      await updateAssignment.updateAssignment(assignmentId, assignmentData);
+      // Create a new object with the modified properties
+      const updatedAssignmentData = {
+        ...existingAssignmentData,
+        title: assignmentData.title,
+        description: assignmentData.description,
+        start_date: assignmentData.start_date,
+        end_date: assignmentData.end_date,
+      };
+
+      // Update the assignment with the new data
+      await updateAssignment.updateAssignment(
+        assignmentId,
+        updatedAssignmentData
+      );
     } catch (error) {
       console.error(error);
     }
