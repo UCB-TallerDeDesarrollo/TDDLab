@@ -133,8 +133,6 @@ const AssignmentDetail: React.FC = () => {
     if (assignmentId) {
       const updatedAssignment = await handleFindAssignment(assignmentId, link);
 
-      console.log(updatedAssignment);
-
       await handleUpdateAssignment(updatedAssignment);
 
       window.location.reload();
