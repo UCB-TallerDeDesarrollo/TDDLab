@@ -27,8 +27,8 @@ function EditAssignmentForm({
   assignmentId,
   onClose,
 }: {
-  assignmentId: number;
-  onClose: () => void;
+  readonly assignmentId: number;
+  readonly onClose: () => void;
 }) {
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState<AssignmentData>({
