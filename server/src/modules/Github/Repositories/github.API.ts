@@ -140,7 +140,7 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 10000);
       });
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
@@ -181,7 +181,7 @@ export class GithubAdapter {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error("Request timed out"));
-        }, 5000);
+        }, 10000);
       });
 
       const response: any = await Promise.race([
