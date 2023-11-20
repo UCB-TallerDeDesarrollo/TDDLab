@@ -2,7 +2,7 @@ import { CommitRepository } from "../Repositories/TDDCycleRepository";
 import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { GithubUseCases } from "../../Github/Application/githubUseCases";
-export class GetCommits {
+export class CommitsUseCase {
     private repositoryAdapter: CommitRepository;
     private githubUseCases: GithubUseCases;
 
