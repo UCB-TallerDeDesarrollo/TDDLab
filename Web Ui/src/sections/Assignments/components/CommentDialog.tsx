@@ -28,7 +28,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   const handleSend = () => {
-    onSend(comment, link ? link : "");
+    onSend(comment, link ?? "");
   };
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {

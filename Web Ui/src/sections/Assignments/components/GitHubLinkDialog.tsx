@@ -18,11 +18,32 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onSend,
 }) => {
   const [link, setLink] = useState("");
-  const [flag, setFlag] = React.useState(true);
+  const [validLink, setValidLink] = React.useState(true);
 
   const handleSend = () => {
-    onSend(link);
-    setFlag(!flag);
+    if (validLink) {
+      onSend(link);
+      setValidLink(false);
+    }
+  };
+
+  const validateGitHubLink = (text: string): boolean => {
+    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+    return regex.test(text);
+  };
+
+  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newLink = e.target.value;
+    setLink(newLink);
+    setValidLink((prevValidLink) => {
+      return validateGitHubLink(newLink) ? true : prevValidLink;
+    });
+  };
+
+  const warningStyle = {
+    color: "orange",
+    position: "absolute" as const,
+    bottom: "-20px",
   };
 
   const dialogTitleStyle = {
@@ -44,20 +65,23 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <TextField
           label="Enlace de Github"
           variant="outlined"
-          color={flag ? "primary" : "success"}
+          color={
+            validLink ? "primary" : validLink === false ? "error" : "success"
+          }
           value={link}
-          onChange={(e) => setLink(e.target.value)}
+          onChange={handleLinkChange}
           fullWidth
           focused
           style={textFieldStyle}
         />
+        {!validLink && <div style={warningStyle}>Warning: Invalid link</div>}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cerrar
         </Button>
-        <Button onClick={handleSend} color="primary">
-          Iniciar
+        <Button onClick={handleSend} color="primary" disabled={!validLink}>
+          Enviar
         </Button>
       </DialogActions>
     </Dialog>
