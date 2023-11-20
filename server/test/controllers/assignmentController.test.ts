@@ -1,4 +1,4 @@
-import AssignmentsController from "../../src/controllers/assignments/assignmentController";
+import AssignmentsController from "../../src/controllers/Assignments/assignmentController";
 
 import { getAssignmentRepositoryMock } from "../__mocks__/assignments/repositoryMock";
 import {
@@ -119,18 +119,18 @@ describe("Deliver Assignment", () => {
     const res = createResponse();
     await controller.deliverAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({  
-      "comment": "Comentario", 
-      "description": "Esta es una tarea pendiente", 
-      "end_date": new Date("2023-01-10T00:00:00.000Z"), 
-      "id": "1", 
-      "link": "https://example.com/assignment", 
-      "start_date": new Date("2023-01-01T00:00:00.000Z"), 
-      "state": "in progress", 
-      "title": "Tarea pendiente"
+    expect(res.json).toHaveBeenCalledWith({
+      comment: "Comentario",
+      description: "Esta es una tarea pendiente",
+      end_date: new Date("2023-01-10T00:00:00.000Z"),
+      id: "1",
+      link: "https://example.com/assignment",
+      start_date: new Date("2023-01-01T00:00:00.000Z"),
+      state: "in progress",
+      title: "Tarea pendiente",
     });
   });
-  it('should respond with a status 404 and error message when assignment is not found during delivery', async () => {
+  it("should respond with a status 404 and error message when assignment is not found during delivery", async () => {
     const req = createRequest(
       "non_existing_id",
       undefined,
