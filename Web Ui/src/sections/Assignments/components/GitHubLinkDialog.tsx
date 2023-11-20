@@ -24,7 +24,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const handleSend = () => {
     if (validLink) {
       onSend(link);
-      setValidLink(false);
     }
   };
 
