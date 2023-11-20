@@ -17,15 +17,15 @@ export class CommitsUseCase {
         let commits;
         try {
             if (!(await this.repositoryAdapter.repositoryExist(owner, repoName))) {
-                const commits = await this.getCommitsAPI(owner, repoName);
+                const commits = await this.getCommitsFromGithub(owner, repoName);
                 const commitsFromSha =
-                    await this.getCommitsFromShaAPI(owner, repoName, commits);
-                await this.saveCommitsDB(owner, repoName, commitsFromSha);
+                    await this.getCommitsShaFromGithub(owner, repoName, commits);
+                await this.saveCommitsToDB(owner, repoName, commitsFromSha);
             } else {
-                const commits = await this.getCommitsAPI(owner, repoName); //getCommitsAPI should be changed to getLastCommits once it is implemented
+                const commits = await this.getCommitsFromGithub(owner, repoName); //getCommitsAPI should be changed to getLastCommits once it is implemented
                 const newCommits = await this.checkNewCommits(owner, repoName, commits);
-                const commitsFromSha = await this.getCommitsFromShaAPI(owner, repoName, newCommits);
-                await this.saveCommitsDB(owner, repoName, commitsFromSha);
+                const commitsFromSha = await this.getCommitsShaFromGithub(owner, repoName, newCommits);
+                await this.saveCommitsToDB(owner, repoName, commitsFromSha);
             }
             commits = await this.repositoryAdapter.getCommits(owner, repoName);
         } catch (error) {
@@ -51,7 +51,7 @@ export class CommitsUseCase {
         return commitsToAdd;
     }
 
-    async getCommitsAPI(owner: string, repoName: string) {
+    async getCommitsFromGithub(owner: string, repoName: string) {
         try {
             const commits = await this.githubUseCases.obtainCommitsOfRepo(owner, repoName);
             return commits;
@@ -60,7 +60,7 @@ export class CommitsUseCase {
             throw new Error("Error en la obtención de commits");
         }
     }
-    async getCommitsFromShaAPI(
+    async getCommitsShaFromGithub(
         owner: string,
         repoName: string,
         commits: CommitDataObject[]
@@ -96,7 +96,7 @@ export class CommitsUseCase {
         }
     }
 
-    async saveCommitsDB(
+    async saveCommitsToDB(
         owner: string,
         repoName: string,
         newCommits: CommitDTO[]

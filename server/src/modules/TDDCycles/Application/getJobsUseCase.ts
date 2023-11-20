@@ -15,14 +15,14 @@ export class JobsUseCase {
         let jobs;
         try {
             if (!(await this.adapter.repositoryExist(owner, repoName))) {
-                const jobs = await this.getJobsAPI(owner, repoName);
-                const jobsFormatted = await this.getJobsData(owner, repoName, jobs);
-                this.saveJobsDB(owner, repoName, jobsFormatted);
+                const jobs = await this.getJobsFromGithub(owner, repoName);
+                const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, jobs);
+                this.saveJobsToDB(owner, repoName, jobsFormatted);
             } else {
-                const jobs = await this.getJobsAPI(owner, repoName); //getJobsAPI should be changed to getLastJobs once it is implemented
+                const jobs = await this.getJobsFromGithub(owner, repoName); //getJobsAPI should be changed to getLastJobs once it is implemented
                 const newJobs = await this.checkForNewJobs(owner, repoName, jobs);
-                const jobsFormatted = await this.getJobsData(owner, repoName, newJobs);
-                this.saveJobsDB(owner, repoName, jobsFormatted);
+                const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, newJobs);
+                this.saveJobsToDB(owner, repoName, jobsFormatted);
             }
             jobs = await this.adapter.getJobs(owner, repoName);
         } catch (error) {
@@ -46,7 +46,7 @@ export class JobsUseCase {
         return jobsToAdd;
     }
 
-    async saveJobsDB(
+    async saveJobsToDB(
         owner: string,
         repoName: string,
         jobs: Record<string, JobDataObject>
@@ -64,12 +64,12 @@ export class JobsUseCase {
         this.adapter.insertRecordsIntoDatabase(jobsFormatted);
     }
 
-    async getJobsAPI(owner: string, repoName: string) {
+    async getJobsFromGithub(owner: string, repoName: string) {
         let jobList: [string, number][] = await this.githubUseCases.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
         console.log("JOB LIST: ", jobList);
         return jobList
     }
-    async getJobsData(owner: string, repoName: string, jobList: [string, number][]) {
+    async getJobsDataFromGithub(owner: string, repoName: string, jobList: [string, number][]) {
         let jobs: Record<string, JobDataObject> = await this.githubUseCases.obtainJobsData(
             owner,
             repoName,
