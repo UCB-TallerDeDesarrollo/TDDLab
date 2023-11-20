@@ -130,7 +130,7 @@ function EditAssignmentDialog({
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Edit Assignment</DialogTitle>
+      <DialogTitle>Editar Tarea</DialogTitle>
       <DialogContent>
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
@@ -169,7 +169,7 @@ function EditAssignmentDialog({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>Cancelar</Button>
         <Button
           variant="contained"
           style={{
@@ -177,7 +177,7 @@ function EditAssignmentDialog({
           }}
           onClick={handleSaveClick}
         >
-          Save Changes
+          Guardar Cambios
         </Button>
       </DialogActions>
       {validationDialogOpen && (
