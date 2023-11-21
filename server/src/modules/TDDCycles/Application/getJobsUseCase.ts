@@ -1,15 +1,15 @@
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
 import { JobDB } from "../Domain/Job";
 import { JobRepository } from "../Repositories/TDDCyclesJobsRepository";
-import { GithubUseCases } from "../../Github/Application/githubUseCases";
+import { GithubRepository } from '../Repositories/TDDCyclesGithubRepository';
 
 export class JobsUseCase {
     private adapter: JobRepository;
-    private githubUseCases: GithubUseCases;
+    private githubUseCases: GithubRepository;
 
-    constructor(repository: JobRepository, githubAdapter: GithubUseCases) {
-        this.adapter = repository;
-        this.githubUseCases = githubAdapter;
+    constructor(jobRepository: JobRepository, githubRepository: GithubRepository) {
+        this.adapter = jobRepository;
+        this.githubUseCases = githubRepository;
     }
     async execute(owner: string, repoName: string) {
         let jobs;

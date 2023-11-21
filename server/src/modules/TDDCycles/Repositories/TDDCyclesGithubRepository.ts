@@ -3,7 +3,7 @@ import { CommitDataObject, CommitInformationDataObject } from "../Domain/commitI
 import { JobDataObject } from "../Domain/jobInterfaces";
 import dotenv from "dotenv"; // Import 'dotenv' as a module
 dotenv.config();
-export class GithubAdapter {
+export class GithubRepository {
     octokit: Octokit;
     constructor() {
         const { REACT_APP_AUTH_TOKEN } = process.env;

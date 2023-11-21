@@ -1,17 +1,17 @@
 import { CommitRepository } from "../Repositories/TDDCyclesCommitsRepository";
 import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
-import { GithubUseCases } from "../../Github/Application/githubUseCases";
+import { GithubRepository } from '../Repositories/TDDCyclesGithubRepository';
 export class CommitsUseCase {
     private repositoryAdapter: CommitRepository;
-    private githubUseCases: GithubUseCases;
+    private githubRepository: GithubRepository;
 
     constructor(
-        repositoryAdapter: CommitRepository,
-        githubUseCases: GithubUseCases
+        commitRepository: CommitRepository,
+        githubUseCases: GithubRepository
     ) {
-        this.repositoryAdapter = repositoryAdapter;
-        this.githubUseCases = githubUseCases;
+        this.repositoryAdapter = commitRepository;
+        this.githubRepository = githubUseCases;
     }
     async execute(owner: string, repoName: string) {
         let commits;
@@ -53,7 +53,7 @@ export class CommitsUseCase {
 
     async getCommitsFromGithub(owner: string, repoName: string) {
         try {
-            const commits = await this.githubUseCases.obtainCommitsOfRepo(owner, repoName);
+            const commits = await this.githubRepository.obtainCommitsOfRepo(owner, repoName);
             return commits;
         } catch (error) {
             console.error("Error en la obtención de commits:", error);
@@ -68,7 +68,7 @@ export class CommitsUseCase {
         try {
             const commitsFromSha = await Promise.all(
                 commits.map((commit: any) => {
-                    return this.githubUseCases.obtainCommitsFromSha(owner, repoName, commit.sha);
+                    return this.githubRepository.obtainCommitsFromSha(owner, repoName, commit.sha);
                 })
             );
             const commitsData: CommitDTO[] = commitsFromSha.map((commit: any) => {

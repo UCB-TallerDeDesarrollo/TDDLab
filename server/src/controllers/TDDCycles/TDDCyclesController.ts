@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { JobRepository } from '../../modules/TDDCycles/Repositories/TDDCyclesJobsRepository';
 import { CommitRepository } from '../../modules/TDDCycles/Repositories/TDDCyclesCommitsRepository';
+import { GithubRepository } from '../../modules/TDDCycles/Repositories/TDDCyclesGithubRepository';
 import { CommitsUseCase } from '../../modules/TDDCycles/Application/getCommitsUseCase';
 import { JobsUseCase } from '../../modules/TDDCycles/Application/getJobsUseCase';
 import { GithubUseCases } from '../../modules/Github/Application/githubUseCases';
@@ -9,10 +10,10 @@ class TDDCyclesController {
     commitUseCase: CommitsUseCase;
     JobsUseCase: JobsUseCase;
     githubUseCases: GithubUseCases;
-    constructor(jobRepository: JobRepository, commitRepository: CommitRepository) {
+    constructor(commitRepository: CommitRepository, jobRepository: JobRepository, githubRepository: GithubRepository) {
         this.githubUseCases = new GithubUseCases();
-        this.commitUseCase = new CommitsUseCase(commitRepository, this.githubUseCases);
-        this.JobsUseCase = new JobsUseCase(jobRepository, this.githubUseCases)
+        this.commitUseCase = new CommitsUseCase(commitRepository, githubRepository);
+        this.JobsUseCase = new JobsUseCase(jobRepository, githubRepository)
     }
     async getCommits(req: Request, res: Response) {
         try {
