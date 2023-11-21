@@ -8,11 +8,7 @@ export class DBCommitRepository implements ICommitRepository {
   constructor() {
     this.pool = new Pool(config);
   }
-  async saveCommitInfoOfRepo(
-    owner: string,
-    repoName: string,
-    commit: CommitDTO
-  ) {
+  async saveCommit(owner: string, repoName: string, commit: CommitDTO) {
     const client = await this.pool.connect();
     const query =
       "INSERT INTO commitsTable (owner, repoName, html_url, sha, total,additions,deletions,message,url,comment_count,commit_date, coverage) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10,$11, $12)";
@@ -52,7 +48,7 @@ export class DBCommitRepository implements ICommitRepository {
     client.release();
     return result.rows;
   }
-  async repositoryExist(owner: string, repoName: string) {
+  async repositoryExists(owner: string, repoName: string) {
     const client = await this.pool.connect();
     const query =
       "SELECT COUNT(*) FROM commitstable WHERE owner = $1 AND reponame = $2";

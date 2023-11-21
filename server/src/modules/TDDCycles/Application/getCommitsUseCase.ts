@@ -16,29 +16,27 @@ export class CommitsUseCase {
   async execute(owner: string, repoName: string) {
     let commits;
     try {
-      if (!(await this.dbCommitRepository.repositoryExist(owner, repoName))) {
-        const commits = await this.githubRepository.obtainCommitsOfRepo(
-          owner,
-          repoName
-        );
-        const commitsFromSha = await this.getCommitsShaFromGithub(
+      if (!(await this.dbCommitRepository.repositoryExists(owner, repoName))) {
+        const commits = await this.githubRepository.getCommits(owner, repoName);
+        const commitsInfoForTDDCycles = await this.getCommitsInforForTDDCycle(
           owner,
           repoName,
           commits
         );
-        await this.saveCommitsToDB(owner, repoName, commitsFromSha);
+        await this.saveCommitsToDB(owner, repoName, commitsInfoForTDDCycles);
       } else {
-        const commits = await this.githubRepository.obtainCommitsOfRepo(
+        const commits = await this.githubRepository.getCommits(owner, repoName); //getCommitsAPI should be changed to getLastCommits once it is implemented
+        const newCommits = await this.getCommitsNotSavedInDB(
           owner,
-          repoName
-        ); //getCommitsAPI should be changed to getLastCommits once it is implemented
-        const newCommits = await this.checkNewCommits(owner, repoName, commits);
-        const commitsFromSha = await this.getCommitsShaFromGithub(
+          repoName,
+          commits
+        );
+        const commitsInfoForTDDCycle = await this.getCommitsInforForTDDCycle(
           owner,
           repoName,
           newCommits
         );
-        await this.saveCommitsToDB(owner, repoName, commitsFromSha);
+        await this.saveCommitsToDB(owner, repoName, commitsInfoForTDDCycle);
       }
       commits = await this.dbCommitRepository.getCommits(owner, repoName);
     } catch (error) {
@@ -47,7 +45,7 @@ export class CommitsUseCase {
     }
     return commits;
   }
-  async checkNewCommits(
+  async getCommitsNotSavedInDB(
     owner: string,
     repoName: string,
     commitsData: CommitDataObject[]
@@ -68,7 +66,7 @@ export class CommitsUseCase {
     return commitsToAdd;
   }
 
-  async getCommitsShaFromGithub(
+  async getCommitsInforForTDDCycle(
     owner: string,
     repoName: string,
     commits: CommitDataObject[]
@@ -76,7 +74,7 @@ export class CommitsUseCase {
     try {
       const commitsFromSha = await Promise.all(
         commits.map((commit: any) => {
-          return this.githubRepository.obtainCommitsFromSha(
+          return this.githubRepository.getCommitInfoForTDDCycle(
             owner,
             repoName,
             commit.sha
@@ -117,11 +115,7 @@ export class CommitsUseCase {
       if (newCommits.length > 0) {
         await Promise.all(
           newCommits.map(async (commit: CommitDTO) => {
-            await this.dbCommitRepository.saveCommitInfoOfRepo(
-              owner,
-              repoName,
-              commit
-            );
+            await this.dbCommitRepository.saveCommit(owner, repoName, commit);
           })
         );
       }
