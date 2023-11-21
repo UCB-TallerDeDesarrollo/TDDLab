@@ -1,6 +1,6 @@
 import express from "express";
-import { CommitRepository } from "../modules/TDDCycles/Repositories/TDDCycleCommitsRepository";
-import { JobRepository } from "../modules/TDDCycles/Repositories/TDDCycleJobsRepository";
+import { CommitRepository } from "../modules/TDDCycles/Repositories/TDDCyclesCommitsRepository";
+import { JobRepository } from "../modules/TDDCycles/Repositories/TDDCyclesJobsRepository";
 import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
 
 const commitsRepository = new CommitRepository();
