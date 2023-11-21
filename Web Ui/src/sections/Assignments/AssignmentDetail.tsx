@@ -49,7 +49,8 @@ const AssignmentDetail: React.FC = () => {
     try {
       await submitAssignment.submitAssignment(
         updatedAssignment.id,
-        updatedAssignment.link
+        updatedAssignment.link,
+        updatedAssignment.comment
       );
     } catch (error) {
       console.error(error);
@@ -132,6 +133,7 @@ const AssignmentDetail: React.FC = () => {
 
     if (assignmentId) {
       const updatedAssignment = await handleFindAssignment(assignmentId, link);
+      updatedAssignment.comment = comment;
 
       await handleUpdateAssignment(updatedAssignment);
 
@@ -161,7 +163,13 @@ const AssignmentDetail: React.FC = () => {
           <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
           <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
           <p>Estado: {getDisplayStatus(assignment.state)}</p>
-          <p>Enlace: {assignment.link}</p>
+          <p>
+            Enlace:{" "}
+            <a href={assignment.link} target="_blank" rel="noopener noreferrer">
+              {assignment.link}
+            </a>
+          </p>
+
           {assignment.comment ? <p>Comentario: {assignment.comment}</p> : null}
 
           <Button
