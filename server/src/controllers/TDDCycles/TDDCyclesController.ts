@@ -6,16 +6,12 @@ import { GithubUseCases } from '../../modules/Github/Application/githubUseCases'
 
 class TDDCyclesController {
     commitUseCase: CommitsUseCase;
-    commitRepository: CommitRepository;
     JobsUseCase: JobsUseCase;
-    jobRepository: JobRepository;
     githubUseCases: GithubUseCases;
-    constructor() {
+    constructor(jobRepository: JobRepository, commitRepository: CommitRepository) {
         this.githubUseCases = new GithubUseCases();
-        this.commitRepository = new CommitRepository();
-        this.commitUseCase = new CommitsUseCase(this.commitRepository, this.githubUseCases);
-        this.jobRepository = new JobRepository()
-        this.JobsUseCase = new JobsUseCase(this.jobRepository, this.githubUseCases)
+        this.commitUseCase = new CommitsUseCase(commitRepository, this.githubUseCases);
+        this.JobsUseCase = new JobsUseCase(jobRepository, this.githubUseCases)
     }
     async getCommits(req: Request, res: Response) {
         try {
