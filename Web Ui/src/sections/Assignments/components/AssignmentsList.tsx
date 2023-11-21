@@ -28,10 +28,14 @@ const ButtonContainer = styled("div")({
 });
 
 const CustomTableCell1 = styled(TableCell)({
-  width: "90%",
+  width: "80%",
 });
 
 const CustomTableCell2 = styled(TableCell)({
+  width: "10%",
+});
+
+const CustomTableCell3 = styled(TableCell)({
   width: "10%",
 });
 
@@ -120,6 +124,11 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
           <TableHead>
             <TableRow>
               <CustomTableCell1>Tareas</CustomTableCell1>
+              <CustomTableCell3>
+                <ButtonContainer>
+                  <Button variant="outlined">Ordenar</Button>
+                </ButtonContainer>
+              </CustomTableCell3>
               <CustomTableCell2>
                 <ButtonContainer>
                   <Button variant="outlined" onClick={showForm}>
