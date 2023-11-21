@@ -15,9 +15,7 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 
 import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
-import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
-import { GitLinkDialog } from "./GitHubLinkDialog";
 import { ValidationDialog } from "./ValidationDialog";
 import Assignment from "./Assignment";
 
@@ -41,7 +39,6 @@ interface AssignmentsProps {
 
 function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
@@ -54,7 +51,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const assignmentsRepository = new AssignmentsRepository();
   const getAssignments = new GetAssignments(assignmentsRepository);
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
-  const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
   useEffect(() => {
     // Use the fetchAssignments function to fetch assignments
@@ -99,16 +95,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
   };
-
-  const handleSendGithubLink = (link: string) => {
-    if (selectedAssignmentIndex !== null) {
-      submitAssignment.submitAssignment(
-        assignments[selectedAssignmentIndex].id,
-        link
-      );
-    }
-  };
-
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
@@ -142,13 +128,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
             ))}
           </TableBody>
         </Table>
-        {githubLinkDialogOpen && (
-          <GitLinkDialog
-            open={githubLinkDialogOpen}
-            onClose={() => setGithubLinkDialogOpen(false)}
-            onSend={handleSendGithubLink}
-          />
-        )}
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
