@@ -20,6 +20,7 @@ import { ConfirmationDialog } from "./ConfirmationDialog";
 import { GitLinkDialog } from "./GitHubLinkDialog";
 import { ValidationDialog } from "./ValidationDialog";
 import Assignment from "./Assignment";
+import { MenuItem, Select } from "@mui/material";
 
 const ButtonContainer = styled("div")({
   display: "flex",
@@ -47,6 +48,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [selectedSorting, setSelectedSorting] = useState<string>("sortByDate");
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -117,6 +119,13 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     setHoveredRow(index);
   };
 
+  const handleOrdenarChange = (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    setSelectedSorting(event.target.value as string);
+    // Handle sorting logic based on the selected value
+    // You can add logic here to sort the assignments accordingly
+  };
   return (
     <Container>
       <section className="Tareas">
@@ -126,7 +135,19 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
               <CustomTableCell1>Tareas</CustomTableCell1>
               <CustomTableCell3>
                 <ButtonContainer>
-                  <Button variant="outlined">Ordenar</Button>
+                  {/* Use Select component for the Ordenar button */}
+                  <Select
+                    value={selectedSorting}
+                    onChange={handleOrdenarChange}
+                    displayEmpty
+                    inputProps={{ "aria-label": "Ordenar" }}
+                  >
+                    <MenuItem value="" disabled>
+                      Ordenar
+                    </MenuItem>
+                    <MenuItem value="sortByDate">Orden alfabetico</MenuItem>
+                    {/* Add more sorting options as needed */}
+                  </Select>
                 </ButtonContainer>
               </CustomTableCell3>
               <CustomTableCell2>
