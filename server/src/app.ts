@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import server from "./config/server";
 import router from "./routes/userRoutes";
 import assignmentsRouter from "./routes/assignmentRoutes";
-import TDDCyclesVisualizationRouter from "./routes/TDDCyclesVisualizationRoutes";
+import TDDCyclesRouter from "./routes/TDDCyclesRoutes";
 
 const app = express();
 const port = 3000;
@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/user", router);
 app.use("/api/assignments", assignmentsRouter);
-app.use("/api/tddcyclesvisualization", TDDCyclesVisualizationRouter);
+app.use("/api/tddcycles", TDDCyclesRouter);
 
 server(app, port);
 export default app;
