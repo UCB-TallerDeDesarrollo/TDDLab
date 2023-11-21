@@ -23,17 +23,15 @@ interface ExistingAssignmentData extends AssignmentData {
   id: number;
   state: string;
   link: string;
-  comment: string | null; // Make comment nullable
+  comment: string | null;
 }
 
-function EditAssignmentDialog({
-  assignmentId,
-  onClose,
-}: {
+interface EditAssignmentDialogProps {
   readonly assignmentId: number;
   readonly onClose: () => void;
-}) {
-  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+}
+
+const useAssignmentData = (assignmentId: number) => {
   const [assignmentData, setAssignmentData] = useState<AssignmentData>({
     title: "",
     description: "",
@@ -51,10 +49,11 @@ function EditAssignmentDialog({
       start_date: new Date(),
       end_date: new Date(),
     });
-  const isUpdateButtonClicked = useRef(false);
 
   const assignmentsRepository = new AssignmentsRepository();
   const updateAssignment = new UpdateAssignment(assignmentsRepository);
+
+  const isUpdateButtonClicked = useRef(false);
 
   useEffect(() => {
     // Fetch the current assignment data and populate the form
@@ -106,7 +105,6 @@ function EditAssignmentDialog({
     } catch (error) {
       console.error(error);
     }
-    setValidationDialogOpen(true);
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -127,6 +125,27 @@ function EditAssignmentDialog({
       [field]: value,
     }));
   };
+
+  return {
+    assignmentData,
+    handleSaveClick,
+    handleUpdateDates,
+    handleInputChange,
+  };
+};
+
+function EditAssignmentDialog({
+  assignmentId,
+  onClose,
+}: EditAssignmentDialogProps) {
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+
+  const {
+    assignmentData,
+    handleSaveClick,
+    handleUpdateDates,
+    handleInputChange,
+  } = useAssignmentData(assignmentId);
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
