@@ -3,20 +3,20 @@ import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { GithubRepository } from '../Repositories/TDDCyclesGithubRepository';
 export class CommitsUseCase {
-    private repositoryAdapter: CommitRepository;
+    private commitRepository: CommitRepository;
     private githubRepository: GithubRepository;
 
     constructor(
         commitRepository: CommitRepository,
         githubUseCases: GithubRepository
     ) {
-        this.repositoryAdapter = commitRepository;
+        this.commitRepository = commitRepository;
         this.githubRepository = githubUseCases;
     }
     async execute(owner: string, repoName: string) {
         let commits;
         try {
-            if (!(await this.repositoryAdapter.repositoryExist(owner, repoName))) {
+            if (!(await this.commitRepository.repositoryExist(owner, repoName))) {
                 const commits = await this.getCommitsFromGithub(owner, repoName);
                 const commitsFromSha =
                     await this.getCommitsShaFromGithub(owner, repoName, commits);
@@ -27,7 +27,7 @@ export class CommitsUseCase {
                 const commitsFromSha = await this.getCommitsShaFromGithub(owner, repoName, newCommits);
                 await this.saveCommitsToDB(owner, repoName, commitsFromSha);
             }
-            commits = await this.repositoryAdapter.getCommits(owner, repoName);
+            commits = await this.commitRepository.getCommits(owner, repoName);
         } catch (error) {
             console.error("Error updating commits table:", error);
             throw error;
@@ -41,7 +41,7 @@ export class CommitsUseCase {
     ) {
         let commitsToAdd = [];
         for (const currentCommit of commitsData) {
-            let row = await this.repositoryAdapter.commitExists(owner, repoName, currentCommit.sha);
+            let row = await this.commitRepository.commitExists(owner, repoName, currentCommit.sha);
             if (row.length != 0) {
                 break;
             } else {
@@ -105,7 +105,7 @@ export class CommitsUseCase {
             if (newCommits.length > 0) {
                 await Promise.all(
                     newCommits.map(async (commit: CommitDTO) => {
-                        await this.repositoryAdapter.saveCommitInfoOfRepo(owner, repoName, commit);
+                        await this.commitRepository.saveCommitInfoOfRepo(owner, repoName, commit);
                     })
                 );
             }
