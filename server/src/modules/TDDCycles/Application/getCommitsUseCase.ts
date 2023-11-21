@@ -17,7 +17,10 @@ export class CommitsUseCase {
     let commits;
     try {
       if (!(await this.dbCommitRepository.repositoryExist(owner, repoName))) {
-        const commits = await this.getCommitsFromGithub(owner, repoName);
+        const commits = await this.githubRepository.obtainCommitsOfRepo(
+          owner,
+          repoName
+        );
         const commitsFromSha = await this.getCommitsShaFromGithub(
           owner,
           repoName,
@@ -25,7 +28,10 @@ export class CommitsUseCase {
         );
         await this.saveCommitsToDB(owner, repoName, commitsFromSha);
       } else {
-        const commits = await this.getCommitsFromGithub(owner, repoName); //getCommitsAPI should be changed to getLastCommits once it is implemented
+        const commits = await this.githubRepository.obtainCommitsOfRepo(
+          owner,
+          repoName
+        ); //getCommitsAPI should be changed to getLastCommits once it is implemented
         const newCommits = await this.checkNewCommits(owner, repoName, commits);
         const commitsFromSha = await this.getCommitsShaFromGithub(
           owner,
@@ -62,18 +68,6 @@ export class CommitsUseCase {
     return commitsToAdd;
   }
 
-  async getCommitsFromGithub(owner: string, repoName: string) {
-    try {
-      const commits = await this.githubRepository.obtainCommitsOfRepo(
-        owner,
-        repoName
-      );
-      return commits;
-    } catch (error) {
-      console.error("Error en la obtención de commits:", error);
-      throw new Error("Error en la obtención de commits");
-    }
-  }
   async getCommitsShaFromGithub(
     owner: string,
     repoName: string,
