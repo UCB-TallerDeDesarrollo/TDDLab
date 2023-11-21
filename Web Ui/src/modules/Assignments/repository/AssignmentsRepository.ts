@@ -90,6 +90,10 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
+    console.log(assignmentData);
+    console.log(assignmentId);
+    console.log(`${API_URL}/${assignmentId}/deliver`);
+
     await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData);
   }
 }
