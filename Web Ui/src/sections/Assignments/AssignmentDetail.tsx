@@ -137,7 +137,7 @@ const AssignmentDetail: React.FC = () => {
 
       await handleUpdateAssignment(updatedAssignment);
 
-      //window.location.reload();
+      window.location.reload();
     }
   };
 
