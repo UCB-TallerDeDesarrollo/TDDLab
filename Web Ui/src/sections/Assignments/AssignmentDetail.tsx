@@ -49,7 +49,8 @@ const AssignmentDetail: React.FC = () => {
     try {
       await submitAssignment.submitAssignment(
         updatedAssignment.id,
-        updatedAssignment.link
+        updatedAssignment.link,
+        updatedAssignment.comment
       );
     } catch (error) {
       console.error(error);
@@ -132,10 +133,11 @@ const AssignmentDetail: React.FC = () => {
 
     if (assignmentId) {
       const updatedAssignment = await handleFindAssignment(assignmentId, link);
+      updatedAssignment.comment = comment;
 
       await handleUpdateAssignment(updatedAssignment);
 
-      window.location.reload();
+      //window.location.reload();
     }
   };
 
