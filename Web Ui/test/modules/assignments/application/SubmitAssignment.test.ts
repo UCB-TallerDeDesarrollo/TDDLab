@@ -20,7 +20,7 @@ describe("Submit assignment", () => {
     const updatedAssignment = await mockRepository.getAssignmentById(1);
     expect(updatedAssignment?.state).toBe("in progress");
     expect(updatedAssignment?.link).toBe("");
-    expect(updatedAssignment?.comment).toBe("");
+    expect(updatedAssignment?.comment).toBe("Comentario");
   });
   it("Should successfully submit an assignment in progress", async () => {
     const link = "https://example.com";
