@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { JobRepository } from "../../modules/TDDCycles/Repositories/TDDCyclesJobsRepository";
-import { CommitRepository } from "../../modules/TDDCycles/Repositories/TDDCyclesCommitsRepository";
+import { DBCommitRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GithubRepository } from "../../modules/TDDCycles/Repositories/TDDCyclesGithubRepository";
 import { CommitsUseCase } from "../../modules/TDDCycles/Application/getCommitsUseCase";
 import { JobsUseCase } from "../../modules/TDDCycles/Application/getJobsUseCase";
@@ -9,11 +9,14 @@ class TDDCyclesController {
   commitUseCase: CommitsUseCase;
   JobsUseCase: JobsUseCase;
   constructor(
-    commitRepository: CommitRepository,
+    dbCommitRepository: DBCommitRepository,
     jobRepository: JobRepository,
     githubRepository: GithubRepository
   ) {
-    this.commitUseCase = new CommitsUseCase(commitRepository, githubRepository);
+    this.commitUseCase = new CommitsUseCase(
+      dbCommitRepository,
+      githubRepository
+    );
     this.JobsUseCase = new JobsUseCase(jobRepository, githubRepository);
   }
   async getTDDCycles(req: Request, res: Response) {
