@@ -99,17 +99,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
   };
-
-  const handleSendGithubLink = (link: string) => {
-    if (selectedAssignmentIndex !== null) {
-      submitAssignment.submitAssignment(
-        assignments[selectedAssignmentIndex].id,
-        link,
-        ""
-      );
-    }
-  };
-
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
@@ -143,13 +132,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
             ))}
           </TableBody>
         </Table>
-        {githubLinkDialogOpen && (
-          <GitLinkDialog
-            open={githubLinkDialogOpen}
-            onClose={() => setGithubLinkDialogOpen(false)}
-            onSend={handleSendGithubLink}
-          />
-        )}
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
