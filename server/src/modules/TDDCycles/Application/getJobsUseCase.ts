@@ -4,17 +4,17 @@ import { JobRepository } from "../Repositories/TDDCyclesJobsRepository";
 import { GithubRepository } from '../Repositories/TDDCyclesGithubRepository';
 
 export class JobsUseCase {
-    private adapter: JobRepository;
-    private githubUseCases: GithubRepository;
+    private jobRepository: JobRepository;
+    private githubRepository: GithubRepository;
 
     constructor(jobRepository: JobRepository, githubRepository: GithubRepository) {
-        this.adapter = jobRepository;
-        this.githubUseCases = githubRepository;
+        this.jobRepository = jobRepository;
+        this.githubRepository = githubRepository;
     }
     async execute(owner: string, repoName: string) {
         let jobs;
         try {
-            if (!(await this.adapter.repositoryExist(owner, repoName))) {
+            if (!(await this.jobRepository.repositoryExist(owner, repoName))) {
                 const jobs = await this.getJobsFromGithub(owner, repoName);
                 const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, jobs);
                 this.saveJobsToDB(owner, repoName, jobsFormatted);
@@ -24,7 +24,7 @@ export class JobsUseCase {
                 const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, newJobs);
                 this.saveJobsToDB(owner, repoName, jobsFormatted);
             }
-            jobs = await this.adapter.getJobs(owner, repoName);
+            jobs = await this.jobRepository.getJobs(owner, repoName);
         } catch (error) {
             console.error("Error updating jobs table:", error);
             throw new Error("Error updating jobs table");
@@ -39,7 +39,7 @@ export class JobsUseCase {
         let jobsToAdd = [];
 
         for (const currentJob of listOfCommitsWithActions) {
-            let row = await this.adapter.checkIfJobExistsInDb(owner, repoName, currentJob[1]);
+            let row = await this.jobRepository.checkIfJobExistsInDb(owner, repoName, currentJob[1]);
             if (row.length != 0) break;
             else jobsToAdd.push(currentJob);
         }
@@ -61,16 +61,16 @@ export class JobsUseCase {
                 conclusion: jobs[key].jobs[0].conclusion,
             });
         }
-        this.adapter.insertRecordsIntoDatabase(jobsFormatted);
+        this.jobRepository.insertRecordsIntoDatabase(jobsFormatted);
     }
 
     async getJobsFromGithub(owner: string, repoName: string) {
-        let jobList: [string, number][] = await this.githubUseCases.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
+        let jobList: [string, number][] = await this.githubRepository.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
         console.log("JOB LIST: ", jobList);
         return jobList
     }
     async getJobsDataFromGithub(owner: string, repoName: string, jobList: [string, number][]) {
-        let jobs: Record<string, JobDataObject> = await this.githubUseCases.obtainJobsData(
+        let jobs: Record<string, JobDataObject> = await this.githubRepository.obtainJobsData(
             owner,
             repoName,
             jobList
