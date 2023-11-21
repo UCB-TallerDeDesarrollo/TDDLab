@@ -104,7 +104,8 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     if (selectedAssignmentIndex !== null) {
       submitAssignment.submitAssignment(
         assignments[selectedAssignmentIndex].id,
-        link
+        link,
+        ""
       );
     }
   };
