@@ -15,7 +15,7 @@ class TDDCyclesController {
         this.commitUseCase = new CommitsUseCase(commitRepository, githubRepository);
         this.JobsUseCase = new JobsUseCase(jobRepository, githubRepository)
     }
-    async getCommits(req: Request, res: Response) {
+    async getTDDCycles(req: Request, res: Response) {
         try {
             const { owner, repoName } = req.query;
             if (!owner || !repoName) {
