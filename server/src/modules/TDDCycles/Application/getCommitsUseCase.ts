@@ -1,4 +1,4 @@
-import { CommitRepository } from "../Repositories/TDDCycleCommitsRepository";
+import { CommitRepository } from "../Repositories/TDDCyclesCommitsRepository";
 import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { GithubUseCases } from "../../Github/Application/githubUseCases";
