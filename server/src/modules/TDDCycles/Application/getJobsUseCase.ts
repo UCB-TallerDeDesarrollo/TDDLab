@@ -1,6 +1,6 @@
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
 import { JobDB } from "../Domain/Job";
-import { JobRepository } from "../Repositories/TDDCycleRepository";
+import { JobRepository } from "../Repositories/TDDCycleJobsRepository";
 import { GithubUseCases } from "../../Github/Application/githubUseCases";
 
 export class JobsUseCase {

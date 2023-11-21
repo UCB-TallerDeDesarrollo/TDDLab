@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { CommitRepository, JobRepository } from '../../modules/TDDCycles/Repositories/TDDCycleRepository';
+import { JobRepository } from '../../modules/TDDCycles/Repositories/TDDCycleJobsRepository';
+import { CommitRepository } from '../../modules/TDDCycles/Repositories/TDDCycleCommitsRepository';
 import { CommitsUseCase } from '../../modules/TDDCycles/Application/getCommitsUseCase';
 import { JobsUseCase } from '../../modules/TDDCycles/Application/getJobsUseCase';
 import { GithubUseCases } from '../../modules/Github/Application/githubUseCases';
