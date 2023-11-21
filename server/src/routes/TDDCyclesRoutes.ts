@@ -11,12 +11,12 @@ const githubRepository = new GithubRepository();
 
 const _TDDCyclesController = new TDDCyclesController(commitsRepository, jobsRepository, githubRepository);
 
-const TDDCycles = express.Router();
+const TDDCyclesRouter = express.Router();
 
-TDDCycles.get("/commits", async (req, res) => await _TDDCyclesController.getCommits(req, res));
+TDDCyclesRouter.get("/commits", async (req, res) => await _TDDCyclesController.getCommits(req, res));
 
-TDDCycles.get("/jobs", async (req, res) => await _TDDCyclesController.getTestOutcomes(req, res));
+TDDCyclesRouter.get("/jobs", async (req, res) => await _TDDCyclesController.getTestOutcomes(req, res));
 
 
 
-export default TDDCycles;
+export default TDDCyclesRouter;
