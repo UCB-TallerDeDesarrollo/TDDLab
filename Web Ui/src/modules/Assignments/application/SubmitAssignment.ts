@@ -15,12 +15,12 @@ export class SubmitAssignment {
 
       if (foundAssignment !== null) {
         foundAssignment.link = link;
-        foundAssignment.comment = comment;
 
         if (foundAssignment.state == "pending") {
           foundAssignment.state = "in progress";
         } else {
           foundAssignment.state = "delivered";
+          foundAssignment.comment = comment;
         }
 
         console.log(foundAssignment.comment);
