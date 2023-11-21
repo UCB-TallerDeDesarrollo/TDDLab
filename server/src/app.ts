@@ -6,6 +6,7 @@ import router from "./routes/userRoutes";
 import assignmentsRouter from "./routes/assignmentRoutes";
 import commitsRouter from "./routes/commitsRoutes";
 import jobsRouter from "./routes/jobsRoutes";
+import TDDCyclesRouter from "./routes/TDDCyclesRoutes";
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/user", router);
 app.use("/api/assignments", assignmentsRouter);
+app.use("/api/TDDCycles", TDDCyclesRouter);
 app.use("/api/commits", commitsRouter);
 app.use("/api/jobs", jobsRouter);
 

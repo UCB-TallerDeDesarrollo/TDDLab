@@ -13,9 +13,9 @@ const _TDDCyclesController = new TDDCyclesController(commitsRepository, jobsRepo
 
 const TDDCycles = express.Router();
 
-TDDCycles.get("/", async (req, res) => await _TDDCyclesController.getCommits(req, res));
+TDDCycles.get("/commits", async (req, res) => await _TDDCyclesController.getCommits(req, res));
 
-TDDCycles.get("/", async (req, res) => await _TDDCyclesController.getTestOutcomes(req, res));
+TDDCycles.get("/jobs", async (req, res) => await _TDDCyclesController.getTestOutcomes(req, res));
 
 
 
