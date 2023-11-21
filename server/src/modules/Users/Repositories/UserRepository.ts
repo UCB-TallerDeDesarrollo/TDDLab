@@ -19,8 +19,8 @@ export class UserRepository {
   async registerUser(user: User) {
     const client = await this.pool.connect();
     try {
-      const query = "INSERT INTO usersTable (email,course) VALUES ($1, $2)";
-      const values = [user.email, user.course];
+      const query = "INSERT INTO usersTable (email,course,rol) VALUES ($1, $2, $3)";
+      const values = [user.email, user.course, "student"];
 
       await client.query(query, values);
     } catch (error) {
