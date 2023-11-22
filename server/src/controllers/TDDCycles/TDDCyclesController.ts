@@ -37,7 +37,7 @@ class TDDCyclesController {
       return res.status(500).json({ error: "Server error" });
     }
   }
-  async getTestOutcomes(req: Request, res: Response) {
+  async getTestResults(req: Request, res: Response) {
     try {
       const { owner, repoName } = req.query;
       if (!owner || !repoName) {
