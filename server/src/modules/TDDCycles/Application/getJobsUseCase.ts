@@ -63,15 +63,45 @@ export class JobsUseCase {
     }
 
     async getJobsFromGithub(owner: string, repoName: string) {
-        let jobList: [string, number][] = await this.githubRepository.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
+        let jobList: [string, number][] = await this.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
         return jobList
     }
     async getJobsDataFromGithub(owner: string, repoName: string, jobList: [string, number][]) {
-        let jobs: Record<string, JobDataObject> = await this.githubRepository.obtainJobsData(
+        let jobs: Record<string, JobDataObject> = await this.obtainJobsData(
             owner,
             repoName,
             jobList
         );
         return jobs;
+    }
+    async obtainJobsData(
+        owner: string,
+        repoName: string,
+        listOfCommitsWithActions: [string, number][]
+    ) {
+        const jobs: Record<string, JobDataObject> = {};
+        await Promise.all(
+            listOfCommitsWithActions.map(async (workflowInfo) => {
+                const jobInfo = await this.githubRepository.obtainJobsOfACommit(
+                    owner,
+                    repoName,
+                    workflowInfo[1],
+                    1
+                );
+                jobs[workflowInfo[0]] = jobInfo;
+            })
+        );
+        return jobs;
+    }
+    async obtainRunnedJobsList(
+        owner: string,
+        repoName: string
+    ) {
+        const githubruns = await this.githubRepository.obtainRunsOfGithubActions(owner, repoName);
+        const commitsWithActions: [string, number][] =
+            githubruns.data.workflow_runs.map((workFlowRun: any) => {
+                return [workFlowRun.head_commit.id, workFlowRun.id];
+            });
+        return commitsWithActions;
     }
 }
