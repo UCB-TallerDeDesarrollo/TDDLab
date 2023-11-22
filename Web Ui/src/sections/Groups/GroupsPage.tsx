@@ -1,10 +1,10 @@
 import { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import GroupsIcon from '@mui/icons-material/Groups';
-import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import GroupsIcon from "@mui/icons-material/Groups";
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
-import React from 'react';
+import React from "react";
 
 import {
   Table,
@@ -57,6 +57,22 @@ function Groups() {
     return index === selectedRow || index === hoveredRow;
   };
 
+  const handleHomeworksClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    setSelectedRow(index);
+  };
+
+  const handleStudentsClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    setSelectedRow(index);
+  };
+
   return (
     <CenteredContainer>
       <section className="Grupos">
@@ -74,7 +90,11 @@ function Groups() {
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: 'none', fontSize: "0.95rem" }}
+                    sx={{
+                      borderRadius: "17px",
+                      textTransform: "none",
+                      fontSize: "0.95rem",
+                    }}
                   >
                     Crear
                   </Button>
@@ -95,25 +115,43 @@ function Groups() {
                   <TableCell>
                     <ButtonContainer>
                       <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="delete">
-                          {" "}
-                          <AutoAwesomeMotionIcon />{" "}
+                        <IconButton
+                          aria-label="tareas"
+                          onClick={(event) =>
+                            handleHomeworksClick(event, index)
+                          }
+                        >
+                          <AutoAwesomeMotionIcon />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Alumnos" arrow>
-                        <IconButton aria-label="send">
-                          {" "}
-                          <GroupsIcon />{" "}
+                        <IconButton
+                          aria-label="alumnos"
+                          onClick={(event) => handleStudentsClick(event, index)}
+                        >
+                          <GroupsIcon />
                         </IconButton>
                       </Tooltip>
                     </ButtonContainer>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell style={{ width: '100%', padding: 0, margin: 0 }} colSpan={2}>
-                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', borderRadius: '2px' }}>
-                        <div style={{ padding: '50px',marginLeft: '-30px' }}>
+                  <TableCell
+                    style={{ width: "100%", padding: 0, margin: 0 }}
+                    colSpan={2}
+                  >
+                    <Collapse
+                      in={expandedRows.includes(index)}
+                      timeout="auto"
+                      unmountOnExit
+                    >
+                      <div
+                        style={{
+                          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                          borderRadius: "2px",
+                        }}
+                      >
+                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
                           Contenido adicional para la fila {grupo}
                         </div>
                       </div>
