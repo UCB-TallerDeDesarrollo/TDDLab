@@ -11,9 +11,9 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; // Import your assignment model
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; 
 
-import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
+import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; 
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
@@ -57,7 +57,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
   useEffect(() => {
-    // Use the fetchAssignments function to fetch assignments
+  
     getAssignments
       .obtainAllAssignments()
       .then((data) => {
@@ -163,7 +163,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}
-            title="Tarea Eliminada exitosamente"
+            title="Tarea eliminada exitosamente"
             closeText="Cerrar"
             onClose={() => setValidationDialogOpen(false)}
           />

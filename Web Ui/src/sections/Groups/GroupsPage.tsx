@@ -6,6 +6,7 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
+import { ConfirmationDialog } from "../Assignments/components/ConfirmationDialog";
 
 import {
   Table,
@@ -40,6 +41,7 @@ function Groups() {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
+  const [confirmationOpen, setConfirmationOpen] = useState(false); // Nuevo estado
 
   const handleRowClick = (index: number) => {
     if (expandedRows.includes(index)) {
@@ -79,8 +81,8 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    // Lógica para eliminar
-    console.log(`Eliminar grupo ${index}`);
+    setSelectedRow(index);
+    setConfirmationOpen(true);
   };
 
   const handleLinkClick = (
@@ -88,8 +90,12 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    // Lógica para enlazar
-    console.log(`Enlazar grupo ${index}`);
+  
+  };
+
+  const handleConfirmDelete = () => {
+    console.log(`Eliminar grupo ${selectedRow}`);
+    setConfirmationOpen(false);
   };
 
   return (
@@ -198,6 +204,17 @@ function Groups() {
           </TableBody>
         </StyledTable>
       </section>
+      {confirmationOpen && (
+        <ConfirmationDialog
+          open={confirmationOpen}
+          title="Eliminar grupo"
+          content={`¿Estás seguro de que deseas eliminar el grupo ${selectedRow}?`}
+          cancelText="Cancelar"
+          deleteText="Eliminar"
+          onCancel={() => setConfirmationOpen(false)}
+          onDelete={handleConfirmDelete}
+        />
+      )}
     </CenteredContainer>
   );
 }
