@@ -8,10 +8,10 @@ export class CommitsUseCase {
 
   constructor(
     dbCommitRepository: DBCommitRepository,
-    githubUseCases: GithubRepository
+    githubRepository: GithubRepository
   ) {
     this.dbCommitRepository = dbCommitRepository;
-    this.githubRepository = githubUseCases;
+    this.githubRepository = githubRepository;
   }
   async execute(owner: string, repoName: string) {
     let commits;
