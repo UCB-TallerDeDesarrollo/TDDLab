@@ -25,10 +25,10 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getTDDCycles(req, res)
 );
 
-// Get all test outcomes from a repository in Github
+// Get all test results from a repository in Github
 TDDCyclesRouter.get(
   "/jobs",
-  async (req, res) => await tddCyclesController.getTestOutcomes(req, res)
+  async (req, res) => await tddCyclesController.getTestResults(req, res)
 );
 
 export default TDDCyclesRouter;
