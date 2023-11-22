@@ -3,7 +3,6 @@ import {
   CommitDataObject,
   CommitInformationDataObject,
 } from "../Domain/commitInterfaces";
-import { JobDataObject } from "../Domain/jobInterfaces";
 import dotenv from "dotenv"; // Import 'dotenv' as a module
 dotenv.config();
 export class GithubRepository {
@@ -21,17 +20,12 @@ export class GithubRepository {
       const rate_limit = await this.octokit.request("GET /rate_limit");
       console.log("Rate Limit Remaining:", rate_limit.data.rate.remaining);
 
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
-          reject(new Error("Request timed out"));
-        }, 10000);
-      });
 
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
           per_page: 100,
         }),
-        timeoutPromise,
+        this.timeout(10000),
       ]);
 
       const commits: CommitDataObject[] = response.data.map(
@@ -137,21 +131,16 @@ export class GithubRepository {
     sha: string
   ): Promise<CommitInformationDataObject> {
     try {
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
-          reject(new Error("Request timed out"));
-        }, 10000);
-      });
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
-        timeoutPromise,
+        this.timeout(10000),
       ]);
 
       const coverageResponse: any = await Promise.race([
         this.octokit.request(
           `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
         ),
-        timeoutPromise,
+        this.timeout(10000),
       ]);
 
       let percentageMatch;
@@ -178,26 +167,26 @@ export class GithubRepository {
     }
   }
 
+  timeout(ms: number) {
+    return new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("Request timed out"));
+      }, ms);
+    });
+  }
   async obtainRunsOfGithubActions(owner: string, repoName: string) {
     try {
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
-          reject(new Error("Request timed out"));
-        }, 10000);
-      });
+        const response : any = await Promise.race([
+            this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`),
+            this.timeout(10000),
+        ]);
 
-      const response: any = await Promise.race([
-        this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`),
-        timeoutPromise,
-      ]);
-
-      return response;
+        return response;
     } catch (error) {
-      // Handle any errors here
-      console.error("Error obtaining runs:", error);
-      throw error;
+        console.error("Error obtaining runs:", error);
+        throw error;
     }
-  }
+}
   async obtainJobsOfACommit(
     owner: string,
     repoName: string,
@@ -205,18 +194,17 @@ export class GithubRepository {
     attempt: number
   ) {
     try {
-      const response = await this.octokit.request(
+      const { data: { total_count, jobs } } = await this.octokit.request(
         `GET /repos/${owner}/${repoName}/actions/runs/${jobId}/attempts/${attempt}/jobs`
       );
-      const { total_count, jobs } = response.data;
 
-      const jobData: JobDataObject = {
+      const jobData = {
         total_count,
         jobs,
       };
+
       return jobData;
     } catch (error) {
-      // Handle any errors here
       console.error("Error obtaining job:", error);
       throw error;
     }
