@@ -3,8 +3,9 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from '@mui/icons-material/Groups';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import React from 'react';
+
 import {
   Table,
   TableHead,
@@ -13,6 +14,7 @@ import {
   TableCell,
   Container,
   Button,
+  Collapse,
 } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -36,8 +38,14 @@ const StyledTable = styled(Table)({
 function Groups() {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [expandedRows, setExpandedRows] = useState<number[]>([]);
 
   const handleRowClick = (index: number) => {
+    if (expandedRows.includes(index)) {
+      setExpandedRows(expandedRows.filter((row) => row !== index));
+    } else {
+      setExpandedRows([index]);
+    }
     setSelectedRow(index);
   };
 
@@ -51,7 +59,7 @@ function Groups() {
 
   return (
     <CenteredContainer>
-      <section className="Tareas">
+      <section className="Grupos">
         <StyledTable>
           <TableHead>
             <TableRow>
@@ -66,7 +74,7 @@ function Groups() {
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px" , textTransform: 'none',fontSize: "0.95rem" }}
+                    sx={{ borderRadius: "17px", textTransform: 'none', fontSize: "0.95rem" }}
                   >
                     Crear
                   </Button>
@@ -75,32 +83,44 @@ function Groups() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {["Grupo 1", "Grupo 2", "Grupo 3"].map((tarea, index) => (
-              <TableRow
-                key={tarea}
-                selected={isRowSelected(index)}
-                onClick={() => handleRowClick(index)}
-                onMouseEnter={() => handleRowHover(index)}
-                onMouseLeave={() => handleRowHover(null)}
-              >
-                <TableCell>{tarea}</TableCell>
-                <TableCell>
-                  <ButtonContainer>
-                    <Tooltip title="Tareas" arrow>
-                      <IconButton aria-label="delete">
-                        {" "}
-                        <AutoAwesomeMotionIcon />{" "}
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Alumnos" arrow>
-                      <IconButton aria-label="send">
-                        {" "}
-                        <GroupsIcon />{" "}
-                      </IconButton>
-                    </Tooltip>
-                  </ButtonContainer>
-                </TableCell>
-              </TableRow>
+            {["Grupo 1", "Grupo 2", "Grupo 3"].map((grupo, index) => (
+              <React.Fragment key={grupo}>
+                <TableRow
+                  selected={isRowSelected(index)}
+                  onClick={() => handleRowClick(index)}
+                  onMouseEnter={() => handleRowHover(index)}
+                  onMouseLeave={() => handleRowHover(null)}
+                >
+                  <TableCell>{grupo}</TableCell>
+                  <TableCell>
+                    <ButtonContainer>
+                      <Tooltip title="Tareas" arrow>
+                        <IconButton aria-label="delete">
+                          {" "}
+                          <AutoAwesomeMotionIcon />{" "}
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Alumnos" arrow>
+                        <IconButton aria-label="send">
+                          {" "}
+                          <GroupsIcon />{" "}
+                        </IconButton>
+                      </Tooltip>
+                    </ButtonContainer>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ width: '100%', padding: 0, margin: 0 }} colSpan={2}>
+                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
+                      <div style={{ boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', borderRadius: '2px' }}>
+                        <div style={{ padding: '50px',marginLeft: '-30px' }}>
+                          Contenido adicional para la fila {grupo}
+                        </div>
+                      </div>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
             ))}
           </TableBody>
         </StyledTable>
