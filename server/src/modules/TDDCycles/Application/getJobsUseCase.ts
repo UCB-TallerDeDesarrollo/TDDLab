@@ -20,7 +20,7 @@ export class JobsUseCase {
                 this.saveJobsToDB(owner, repoName, jobsFormatted);
             } else {
                 const jobs = await this.getJobsFromGithub(owner, repoName); //getJobsAPI should be changed to getLastJobs once it is implemented
-                const newJobs = await this.checkForNewJobs(owner, repoName, jobs);
+                const newJobs = await this.getJobsNotSavedInDB(owner, repoName, jobs);
                 const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, newJobs);
                 this.saveJobsToDB(owner, repoName, jobsFormatted);
             }
@@ -31,14 +31,14 @@ export class JobsUseCase {
         }
         return jobs;
     }
-    async checkForNewJobs(
+    async getJobsNotSavedInDB(
         owner: string,
         repoName: string,
-        listOfCommitsWithActions: [string, number][]
+        commitsWithActions: [string, number][]
     ) {
         let jobsToAdd = [];
 
-        for (const currentJob of listOfCommitsWithActions) {
+        for (const currentJob of commitsWithActions) {
             let row = await this.jobRepository.checkIfJobExistsInDb(owner, repoName, currentJob[1]);
             if (row.length != 0) break;
             else jobsToAdd.push(currentJob);
