@@ -14,7 +14,7 @@ export class JobsUseCase {
     async execute(owner: string, repoName: string) {
         let jobs;
         try {
-            if (!(await this.jobRepository.repositoryExist(owner, repoName))) {
+            if (!(await this.jobRepository.repositoryExists(owner, repoName))) {
                 const jobs = await this.getJobsFromGithub(owner, repoName);
                 const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, jobs);
                 this.saveJobsToDB(owner, repoName, jobsFormatted);
@@ -61,7 +61,10 @@ export class JobsUseCase {
                 conclusion: jobs[key].jobs[0].conclusion,
             });
         }
-        this.jobRepository.insertRecordsIntoDatabase(jobsFormatted);
+        //itera sobre jobsFormatted y guarda cada job en la base de datos
+        for (const job of jobsFormatted) {
+            await this.jobRepository.saveJob(job);
+        }
     }
 
     async getJobsFromGithub(owner: string, repoName: string) {
