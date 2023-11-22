@@ -9,7 +9,7 @@ import { dialogContentStyle, titleStyle, primaryButtonStyle, secondaryButtonStyl
 interface ConfirmationDialogProps {
   open: boolean;
   title: string;
-  content: string;
+  content: React.ReactNode;
   cancelText: string;
   deleteText: string;
   onCancel: () => void;

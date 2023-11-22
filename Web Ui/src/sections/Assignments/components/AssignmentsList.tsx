@@ -152,8 +152,12 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
-            title="Eliminar tarea"
-            content="¿Estás seguro de que deseas eliminar esta tarea?"
+            title="¿Eliminar la tarea?"
+            content= {
+              <>
+                Ten en cuenta que esta acción tambien eliminará  <br /> todas las entregas asociadas.
+              </>
+            }
             cancelText="Cancelar"
             deleteText="Eliminar"
             onCancel={() => setConfirmationOpen(false)}
