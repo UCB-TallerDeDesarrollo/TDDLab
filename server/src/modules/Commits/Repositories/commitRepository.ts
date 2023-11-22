@@ -16,7 +16,7 @@ export class CommitRepository implements ICommitRepository {
     const client = await this.pool.connect();
 
     const query =
-      "INSERT INTO commitsTable (owner, repoName, html_url, sha, total,additions,deletions,message,url,comment_count,commit_date, coverage) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10,$11, $12)";
+      "INSERT INTO commitsTable (owner, repoName, html_url, sha, total,additions,deletions,message,url,comment_count,commit_date,coverage,test_count) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13)";
     const values = [
       owner,
       repoName,
@@ -29,7 +29,8 @@ export class CommitRepository implements ICommitRepository {
       commit.commit.url,
       commit.commit.comment_count,
       commit.commit.date,
-      commit.coverage
+      commit.coverage,
+      commit.test_count
     ];
 
     const result = await client.query(query, values);
