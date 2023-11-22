@@ -1,10 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
-import React from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LinkIcon from "@mui/icons-material/Link";
 
 import {
   Table,
@@ -73,6 +74,24 @@ function Groups() {
     setSelectedRow(index);
   };
 
+  const handleDeleteClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    // Lógica para eliminar
+    console.log(`Eliminar grupo ${index}`);
+  };
+
+  const handleLinkClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    // Lógica para enlazar
+    console.log(`Enlazar grupo ${index}`);
+  };
+
   return (
     <CenteredContainer>
       <section className="Grupos">
@@ -124,12 +143,28 @@ function Groups() {
                           <AutoAwesomeMotionIcon />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Alumnos" arrow>
+                      <Tooltip title="Estudiantes" arrow>
                         <IconButton
-                          aria-label="alumnos"
+                          aria-label="estudiantes"
                           onClick={(event) => handleStudentsClick(event, index)}
                         >
                           <GroupsIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Eliminar grupo" arrow>
+                        <IconButton
+                          aria-label="eliminar"
+                          onClick={(event) => handleDeleteClick(event, index)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Copiar enlace de invitacion" arrow>
+                        <IconButton
+                          aria-label="enlace"
+                          onClick={(event) => handleLinkClick(event, index)}
+                        >
+                          <LinkIcon />
                         </IconButton>
                       </Tooltip>
                     </ButtonContainer>
