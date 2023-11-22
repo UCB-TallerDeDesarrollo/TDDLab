@@ -3,11 +3,11 @@ import { JobRepository } from "../../modules/TDDCycles/Repositories/TDDCyclesJob
 import { DBCommitRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GithubRepository } from "../../modules/TDDCycles/Repositories/TDDCyclesGithubRepository";
 import { CommitsUseCase } from "../../modules/TDDCycles/Application/getCommitsUseCase";
-import { JobsUseCase } from "../../modules/TDDCycles/Application/getJobsUseCase";
+import { TestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 
 class TDDCyclesController {
   commitUseCase: CommitsUseCase;
-  JobsUseCase: JobsUseCase;
+  testResultsUseCase: TestResultsUseCase;
   constructor(
     dbCommitRepository: DBCommitRepository,
     jobRepository: JobRepository,
@@ -17,7 +17,10 @@ class TDDCyclesController {
       dbCommitRepository,
       githubRepository
     );
-    this.JobsUseCase = new JobsUseCase(jobRepository, githubRepository);
+    this.testResultsUseCase = new TestResultsUseCase(
+      jobRepository,
+      githubRepository
+    );
   }
   async getTDDCycles(req: Request, res: Response) {
     try {
@@ -45,13 +48,13 @@ class TDDCyclesController {
           .status(400)
           .json({ error: "Bad request, missing owner or repoName" });
       }
-      const Jobs = await this.JobsUseCase.execute(
+      const testResults = await this.testResultsUseCase.execute(
         String(owner),
         String(repoName)
       );
-      return res.status(200).json(Jobs);
+      return res.status(200).json(testResults);
     } catch (error) {
-      console.error("Error fetching Jobs:", error);
+      console.error("Error getting test results:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }
