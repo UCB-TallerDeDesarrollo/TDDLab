@@ -10,7 +10,7 @@ const jobsRepository = new JobRepository();
 const githubRepository = new GithubRepository();
 
 // Create an instance of your controller
-const _TDDCyclesController = new TDDCyclesController(
+const tddCyclesController = new TDDCyclesController(
   dbCommitsRepository,
   jobsRepository,
   githubRepository
@@ -22,13 +22,13 @@ const TDDCyclesRouter = express.Router();
 // Get all commits from a repository in Github (TDD Cycles)
 TDDCyclesRouter.get(
   "/commits",
-  async (req, res) => await _TDDCyclesController.getTDDCycles(req, res)
+  async (req, res) => await tddCyclesController.getTDDCycles(req, res)
 );
 
 // Get all test outcomes from a repository in Github
 TDDCyclesRouter.get(
   "/jobs",
-  async (req, res) => await _TDDCyclesController.getTestOutcomes(req, res)
+  async (req, res) => await tddCyclesController.getTestOutcomes(req, res)
 );
 
 export default TDDCyclesRouter;
