@@ -51,25 +51,19 @@ export class JobsUseCase {
         repoName: string,
         jobs: Record<string, JobDataObject>
     ) {
-        let jobsFormatted: JobDB[] = [];
-        for (const key in jobs) {
-            jobsFormatted.push({
-                id: jobs[key].jobs[0].run_id,
-                sha: jobs[key].jobs[0].head_sha,
-                owner: owner,
-                reponame: repoName,
-                conclusion: jobs[key].jobs[0].conclusion,
-            });
-        }
-        //itera sobre jobsFormatted y guarda cada job en la base de datos
-        for (const job of jobsFormatted) {
-            await this.jobRepository.saveJob(job);
-        }
+        let jobsFormatted: JobDB[] = Object.values(jobs).map(job => ({
+            id: job.jobs[0].run_id,
+            sha: job.jobs[0].head_sha,
+            owner: owner,
+            reponame: repoName,
+            conclusion: job.jobs[0].conclusion,
+        }));
+
+        await Promise.all(jobsFormatted.map(job => this.jobRepository.saveJob(job)));
     }
 
     async getJobsFromGithub(owner: string, repoName: string) {
         let jobList: [string, number][] = await this.githubRepository.obtainRunnedJobsList(owner, repoName); //[commitSha,workflowId][]
-        console.log("JOB LIST: ", jobList);
         return jobList
     }
     async getJobsDataFromGithub(owner: string, repoName: string, jobList: [string, number][]) {

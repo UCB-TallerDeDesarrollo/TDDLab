@@ -73,32 +73,26 @@ export class CommitsUseCase {
   ) {
     try {
       const commitsFromSha = await Promise.all(
-        commits.map((commit: any) => {
-          return this.githubRepository.getCommitInfoForTDDCycle(
-            owner,
-            repoName,
-            commit.sha
-          );
-        })
+        commits.map(commit => this.githubRepository.getCommitInfoForTDDCycle(owner, repoName, commit.sha))
       );
-      const commitsData: CommitDTO[] = commitsFromSha.map((commit: any) => {
-        return {
-          html_url: commit.html_url,
-          stats: {
-            total: commit.stats.total,
-            additions: commit.stats.additions,
-            deletions: commit.stats.deletions,
-          },
-          commit: {
-            date: commit.commit.author.date,
-            message: commit.commit.message,
-            url: commit.commit.url,
-            comment_count: commit.commit.comment_count,
-          },
-          sha: commit.sha,
-          coverage: commit.coveragePercentage,
-        };
-      });
+
+      const commitsData = commitsFromSha.map(({ html_url, stats, commit, sha, coveragePercentage }) => ({
+        html_url,
+        stats: {
+          total: stats.total,
+          additions: stats.additions,
+          deletions: stats.deletions,
+        },
+        commit: {
+          date: commit.author.date,
+          message: commit.message,
+          url: commit.url,
+          comment_count: commit.comment_count,
+        },
+        sha,
+        coverage: coveragePercentage,
+      }));
+
       return commitsData;
     } catch (error) {
       console.error("Error getting commits from SHA:", error);
