@@ -153,21 +153,30 @@ export class GithubAdapter {
       ]);
 
       let percentageMatch;
+      let testCount;
 
       if (coverageResponse.data.length > 0) {
         percentageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
           coverageResponse.data[0].body
         );
+        testCount = /(\d+)(?=\s*tests passing)/.exec(
+          coverageResponse.data[0].body
+        );
         if (percentageMatch) {
           percentageMatch = String(percentageMatch[1]);
         }
+        if(testCount) {
+          testCount = String(testCount[1]);
+        }
       } else {
         percentageMatch = "";
+        testCount = "";
       }
 
       const commitInfo: CommitInformationDataObject = {
         ...response.data,
         coveragePercentage: percentageMatch,
+        test_count: testCount
       };
       return commitInfo;
     } catch (error) {
