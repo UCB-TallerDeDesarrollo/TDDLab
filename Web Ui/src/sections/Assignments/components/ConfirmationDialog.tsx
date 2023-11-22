@@ -4,6 +4,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import { dialogContentStyle, titleStyle, primaryButtonStyle, secondaryButtonStyle } from "../Styles/DialogBoxStyles";
 
 interface ConfirmationDialogProps {
   open: boolean;
@@ -24,16 +25,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onCancel,
   onDelete,
 }) => {
-  const dialogContentStyle = {
-    fontFamily: "Roboto",
-    fontSize: "15px",
-  };
-  const titleStyle = {
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-    fontFamily: "Roboto",
-  };
-
   return (
     <Dialog open={open}>
       <DialogTitle style={titleStyle}>{title}</DialogTitle>
@@ -42,14 +33,14 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         <Button
           onClick={onCancel}
           color="primary"
-          style={dialogContentStyle}
+          style={{ ...dialogContentStyle, ...secondaryButtonStyle }}
         >
           {cancelText}
         </Button>
         <Button
           onClick={onDelete}
           color="primary"
-          style={dialogContentStyle}
+          style={{ ...dialogContentStyle, ...primaryButtonStyle }}
         >
           {deleteText}
         </Button>
