@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { JobDB } from '../Domain/Job';
+import { JobDB } from '../Domain/JobDataObject';
 import { IJobRepository } from '../Domain/IJobRepository';
 
 export class JobRepository implements IJobRepository {

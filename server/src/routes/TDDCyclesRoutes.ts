@@ -1,7 +1,7 @@
 import express from "express";
 import { DBCommitRepository } from "../modules/TDDCycles/Repositories/DBCommitsRepository";
-import { JobRepository } from "../modules/TDDCycles/Repositories/TDDCyclesJobsRepository";
-import { GithubRepository } from "../modules/TDDCycles/Repositories/TDDCyclesGithubRepository";
+import { JobRepository } from "../modules/TDDCycles/Repositories/DBJobsRepository";
+import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubRepository";
 import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
 
 // Create instances of your repositories

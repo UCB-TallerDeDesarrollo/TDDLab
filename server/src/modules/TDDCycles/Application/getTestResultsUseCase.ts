@@ -1,7 +1,7 @@
 import { JobDataObject } from "../../Github/Domain/jobInterfaces";
-import { JobDB } from "../Domain/Job";
-import { JobRepository } from "../Repositories/TDDCyclesJobsRepository";
-import { GithubRepository } from "../Repositories/TDDCyclesGithubRepository";
+import { JobDB } from "../Domain/JobDataObject";
+import { JobRepository } from "../Repositories/DBJobsRepository";
+import { GithubRepository } from "../Repositories/GithubRepository";
 
 export class TestResultsUseCase {
   private jobRepository: JobRepository;
