@@ -62,17 +62,32 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
   const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
+
   useEffect(() => {
-    // Use the fetchAssignments function to fetch assignments
-    getAssignments
-      .obtainAllAssignments()
-      .then((data) => {
-        setAssignments(data);
-      })
-      .catch((error) => {
+    const fetchAssignments = async () => {
+      try {
+        const data = await getAssignments.obtainAllAssignments();
+
+        // Sort assignments based on the selectedSorting option
+        const sortedAssignments = [...data];
+        if (selectedSorting === "sortByDate") {
+          sortedAssignments.sort((a, b) => a.title.localeCompare(b.title));
+        }
+        // Add more sorting options as needed
+
+        setAssignments(sortedAssignments);
+      } catch (error) {
         console.error("Error fetching assignments:", error);
-      });
-  });
+      }
+    };
+    fetchAssignments();
+  }, [selectedSorting]);
+
+  const handleOrdenarChange = (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    setSelectedSorting(event.target.value as string);
+  };
 
   const handleClickDetail = (index: number) => {
     setSelectedRow(index);
@@ -119,13 +134,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     setHoveredRow(index);
   };
 
-  const handleOrdenarChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
-    setSelectedSorting(event.target.value as string);
-    // Handle sorting logic based on the selected value
-    // You can add logic here to sort the assignments accordingly
-  };
   return (
     <Container>
       <section className="Tareas">
@@ -145,7 +153,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
                     <MenuItem value="" disabled>
                       Ordenar
                     </MenuItem>
-                    <MenuItem value="sortByDate">Orden alfabetico</MenuItem>
+                    <MenuItem value="A_Up_Order">Orden alfabetico</MenuItem>
                     {/* Add more sorting options as needed */}
                   </Select>
                 </ButtonContainer>
