@@ -28,7 +28,6 @@ export const mockArrayJobData: JobDataObject[] = [
   { sha: "7e19c19f4eecac0173b227badbd56fcb4fed8c54", conclusion: "failure" },
   { sha: "c1109ba1e9227dadf15d63d94115f8050935cbca", conclusion: "failure" },
   { sha: "40b54f8f8e2239e243ed08a760b180677d49b77f", conclusion: "failure" },
-  { sha: "677b1f0c722b17daf8dd29a71a152fe16458fbc5", conclusion: "failure" },
   { sha: "53116f1f7e2dd4d5f27d44d779da7afb6c18b6c8", conclusion: "success" },
   { sha: "b1993d41bddae96ea46febb47dab5037f4b4e7cd", conclusion: "failure" },
 ];
