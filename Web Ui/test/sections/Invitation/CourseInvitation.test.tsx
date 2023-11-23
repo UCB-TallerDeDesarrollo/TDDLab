@@ -1,10 +1,13 @@
-import AuthComponent from "../../../src/sections/Invitation/InvitationPage";
+import InvitationPage from "../../../src/sections/Invitation/InvitationPage";
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 jest.mock("firebase/auth", () => ({
   getAuth: jest.fn(),
-  onAuthStateChanged: jest.fn(() => jest.fn()),
+  onAuthStateChanged: jest.fn((_, func) => {
+    func(null);
+    return jest.fn();
+  }),
   User: jest.fn(),
 }));
 
@@ -17,7 +20,7 @@ jest.mock("../../../src/firebaseConfig", () => {
 });
 describe("InvitationPage component", () => {
   it("Renders the Sign Up button", () => {
-    const { getByText } = render(<AuthComponent />);
+    const { getByText } = render(<InvitationPage />);
     const signUpButton = getByText("Registrarse");
     expect(signUpButton).toBeInTheDocument();
   });
