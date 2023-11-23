@@ -1,12 +1,12 @@
 import express from "express";
 import { DBCommitRepository } from "../modules/TDDCycles/Repositories/DBCommitsRepository";
-import { JobRepository } from "../modules/TDDCycles/Repositories/DBJobsRepository";
+import { DBJobsRepository } from "../modules/TDDCycles/Repositories/DBJobsRepository";
 import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubRepository";
 import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
 
 // Create instances of your repositories
 const dbCommitsRepository = new DBCommitRepository();
-const jobsRepository = new JobRepository();
+const jobsRepository = new DBJobsRepository();
 const githubRepository = new GithubRepository();
 
 // Create an instance of your controller
