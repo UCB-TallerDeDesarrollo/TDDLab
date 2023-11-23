@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { JobDB } from '../Domain/Job';
+import { JobDB } from './JobDataObject';
 
 export interface IJobRepository {
     pool: Pool;

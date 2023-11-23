@@ -1,7 +1,7 @@
 import { DBCommitRepository } from "../Repositories/DBCommitsRepository";
 import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
-import { GithubRepository } from "../Repositories/TDDCyclesGithubRepository";
+import { GithubRepository } from "../Repositories/GithubRepository";
 export class CommitsUseCase {
   private dbCommitRepository: DBCommitRepository;
   private githubRepository: GithubRepository;

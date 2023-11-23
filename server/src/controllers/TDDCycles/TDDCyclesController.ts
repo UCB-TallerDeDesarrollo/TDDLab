@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { JobRepository } from "../../modules/TDDCycles/Repositories/TDDCyclesJobsRepository";
+import { JobRepository } from "../../modules/TDDCycles/Repositories/DBJobsRepository";
 import { DBCommitRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
-import { GithubRepository } from "../../modules/TDDCycles/Repositories/TDDCyclesGithubRepository";
+import { GithubRepository } from "../../modules/TDDCycles/Repositories/GithubRepository";
 import { CommitsUseCase } from "../../modules/TDDCycles/Application/getCommitsUseCase";
 import { TestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 
