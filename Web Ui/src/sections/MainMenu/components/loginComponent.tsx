@@ -1,5 +1,4 @@
 import { Button } from "@mui/material";
-import { GithubAuthPort } from "../../../modules/Auth/application/GithubAuthPort";
 import { LoginPort } from "../../../modules/Auth/application/LoginPort";
 import {
   setGlobalState,
@@ -9,13 +8,14 @@ import React from "react";
 import "../styles/loginComponentStyles.css";
 import { setSessionCookie } from "../../../modules/Auth/application/getSessionCookie";
 import { removeSessionCookie } from "../../../modules/Auth/application/deleteSessionCookie";
+import { handleSignInWithGitHub } from "../../../modules/Auth/application/signInWithGithub";
+import { handleGithubSignOut } from "../../../modules/Auth/application/signOutWithGithub";
 
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
 
   const handleLogin = async () => {
-    const githbAuthPort = new GithubAuthPort();
-    let userData = await githbAuthPort.handleSignInWithGitHub();
+    let userData = await handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new LoginPort();
       let userCourse = await loginPort.userHasAnAcount(userData.email);
@@ -32,8 +32,7 @@ export default function LoginComponent() {
     }
   };
   const handleLogout = async () => {
-    const githbAuthPort = new GithubAuthPort();
-    await githbAuthPort.handleSignOut();
+    await handleGithubSignOut();
     setGlobalState("authData", {
       userProfilePic: "",
       userEmail: "",
