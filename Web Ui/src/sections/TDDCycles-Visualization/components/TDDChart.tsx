@@ -116,6 +116,10 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
   }
 
+ /* function getTooltipStats(dataIndex:number){
+    return ``
+  }*/
+
   function getCommitCoverage() {
     if (filteredCommitsObject != null) {
       const coverage = filteredCommitsObject.map((commit) => commit.coverage).reverse();
@@ -184,7 +188,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
         tooltip: {
           callbacks: {
             title: function(context:any){
-              return getCommitName()[context[0].dataIndex]
+              return `${getDataLabels()[context[0].dataIndex]}: ${getCommitName()[context[0].dataIndex]}`
             }
           },
         },
