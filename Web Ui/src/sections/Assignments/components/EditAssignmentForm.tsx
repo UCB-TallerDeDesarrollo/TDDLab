@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import { Box, TextField } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
@@ -30,7 +33,8 @@ interface EditAssignmentDialogProps {
   readonly assignmentId: number;
   readonly onClose: () => void;
 }
-const getDefaultAssignmentData = () => ({
+
+const getDefaultAssignmentData = (): ExistingAssignmentData => ({
   id: 0,
   state: "",
   link: "",
@@ -41,18 +45,19 @@ const getDefaultAssignmentData = () => ({
   end_date: new Date(),
 });
 
-const getAssignmentData = (data: ExistingAssignmentData) => {
+const getAssignmentData = (data: ExistingAssignmentData): AssignmentData => {
   const { title, description, start_date, end_date } = data;
   return { title, description, start_date, end_date };
 };
 
 const useAssignmentData = (assignmentId: number, onClose: () => void) => {
-  const [assignmentData, setAssignmentData] = useState<AssignmentData>(
-    getDefaultAssignmentData()
-  );
-
-  const [existingAssignmentData, setExistingAssignmentData] =
-    useState<ExistingAssignmentData>(getDefaultAssignmentData());
+  const [assignment, setAssignment] = useState<{
+    data: AssignmentData;
+    existingData: ExistingAssignmentData;
+  }>({
+    data: getDefaultAssignmentData(),
+    existingData: getDefaultAssignmentData(),
+  });
 
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
 
@@ -62,13 +67,15 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
 
   const setAssignmentDataFromResponse = (data: ExistingAssignmentData) => {
     const commonData = getAssignmentData(data);
-    setAssignmentData(commonData);
-    setExistingAssignmentData({
-      ...commonData,
-      id: data.id,
-      state: data.state,
-      link: data.link,
-      comment: data.comment,
+    setAssignment({
+      data: commonData,
+      existingData: {
+        ...commonData,
+        id: data.id,
+        state: data.state,
+        link: data.link,
+        comment: data.comment,
+      },
     });
   };
 
@@ -85,18 +92,18 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
     if (isUpdateButtonClicked.current) return;
     isUpdateButtonClicked.current = true;
 
-    if (assignmentData.start_date > assignmentData.end_date) {
+    if (assignment.data.start_date > assignment.data.end_date) {
       return;
     }
 
     try {
       // Create a new object with the modified properties
       const updatedAssignmentData = {
-        ...existingAssignmentData,
-        title: assignmentData.title,
-        description: assignmentData.description,
-        start_date: assignmentData.start_date,
-        end_date: assignmentData.end_date,
+        ...assignment.existingData,
+        title: assignment.data.title,
+        description: assignment.data.description,
+        start_date: assignment.data.start_date,
+        end_date: assignment.data.end_date,
       };
 
       // Update the assignment with the new data
@@ -113,10 +120,13 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
-    setAssignmentData((prevData) => ({
-      ...prevData,
-      start_date: newStartDate,
-      end_date: newEndDate,
+    setAssignment((prevAssignment) => ({
+      ...prevAssignment,
+      data: {
+        ...prevAssignment.data,
+        start_date: newStartDate,
+        end_date: newEndDate,
+      },
     }));
   };
 
@@ -125,9 +135,12 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
     field: string
   ) => {
     const { value } = event.target;
-    setAssignmentData((prevData) => ({
-      ...prevData,
-      [field]: value,
+    setAssignment((prevAssignment) => ({
+      ...prevAssignment,
+      data: {
+        ...prevAssignment.data,
+        [field]: value,
+      },
     }));
   };
 
@@ -138,7 +151,7 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   };
 
   return {
-    assignmentData,
+    assignmentData: assignment.data,
     validationDialogOpen,
     handleSaveClick,
     handleUpdateDates,
@@ -147,10 +160,10 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   };
 };
 
-function EditAssignmentDialog({
+const EditAssignmentDialog = ({
   assignmentId,
   onClose,
-}: EditAssignmentDialogProps) {
+}: EditAssignmentDialogProps) => {
   const {
     assignmentData,
     validationDialogOpen,
@@ -222,6 +235,6 @@ function EditAssignmentDialog({
       )}
     </Dialog>
   );
-}
+};
 
 export default EditAssignmentDialog;
