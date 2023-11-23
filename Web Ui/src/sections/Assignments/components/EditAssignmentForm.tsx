@@ -66,16 +66,14 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
       link,
       comment,
     } = data;
-    setAssignmentData({ title, description, start_date, end_date });
+    const commonData = { title, description, start_date, end_date };
+    setAssignmentData(commonData);
     setExistingAssignmentData({
+      ...commonData,
       id,
       state,
       link,
       comment,
-      title,
-      description,
-      start_date,
-      end_date,
     });
   };
 
