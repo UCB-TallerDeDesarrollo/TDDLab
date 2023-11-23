@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import { JobDB } from './JobDataObject';
 
-export interface IJobRepository {
+export interface IDBJobsRepository {
     pool: Pool;
     getJobs(owner: string, repo: string): Promise<any>;
     checkIfJobExistsInDb(owner: string, repo: string, jobId: number): Promise<any>;
