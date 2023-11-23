@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { JobRepository } from "../../modules/TDDCycles/Repositories/DBJobsRepository";
 import { DBCommitRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GithubRepository } from "../../modules/TDDCycles/Repositories/GithubRepository";
-import { CommitsUseCase } from "../../modules/TDDCycles/Application/getCommitsUseCase";
+import { CommitsUseCase } from "../../modules/TDDCycles/Application/getTDDCyclesUseCase";
 import { TestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 
 class TDDCyclesController {
@@ -36,7 +36,7 @@ class TDDCyclesController {
       );
       return res.status(200).json(commits);
     } catch (error) {
-      console.error("Error fetching commits:", error);
+      console.error("Error getting TDD Cycles:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }
