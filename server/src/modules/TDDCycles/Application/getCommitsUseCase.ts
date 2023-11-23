@@ -14,36 +14,25 @@ export class CommitsUseCase {
     this.githubRepository = githubRepository;
   }
   async execute(owner: string, repoName: string) {
-    let commits;
     try {
+      const commitsFromGithub = await this.githubRepository.getCommits(owner, repoName);
+      let commitsToSave;
+
       if (!(await this.dbCommitRepository.repositoryExists(owner, repoName))) {
-        const commits = await this.githubRepository.getCommits(owner, repoName);
-        const commitsInfoForTDDCycles = await this.getCommitsInforForTDDCycle(
-          owner,
-          repoName,
-          commits
-        );
-        await this.saveCommitsToDB(owner, repoName, commitsInfoForTDDCycles);
+        commitsToSave = commitsFromGithub;
       } else {
-        const commits = await this.githubRepository.getCommits(owner, repoName); //getCommitsAPI should be changed to getLastCommits once it is implemented
-        const newCommits = await this.getCommitsNotSavedInDB(
-          owner,
-          repoName,
-          commits
-        );
-        const commitsInfoForTDDCycle = await this.getCommitsInforForTDDCycle(
-          owner,
-          repoName,
-          newCommits
-        );
-        await this.saveCommitsToDB(owner, repoName, commitsInfoForTDDCycle);
+        commitsToSave = await this.getCommitsNotSavedInDB(owner, repoName, commitsFromGithub);
       }
-      commits = await this.dbCommitRepository.getCommits(owner, repoName);
+
+      const commitsInfoForTDDCycles = await this.getCommitsInforForTDDCycle(owner, repoName, commitsToSave);
+      await this.saveCommitsToDB(owner, repoName, commitsInfoForTDDCycles);
+
+      const commits = await this.dbCommitRepository.getCommits(owner, repoName);
+      return commits;
     } catch (error) {
       console.error("Error updating commits table:", error);
       throw error;
     }
-    return commits;
   }
   async getCommitsNotSavedInDB(
     owner: string,
