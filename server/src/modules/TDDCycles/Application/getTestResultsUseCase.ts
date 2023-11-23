@@ -1,15 +1,15 @@
 import { JobDataObject } from "../Domain/jobInterfaces";
 import { JobDB } from "../Domain/JobDataObject";
 import { JobRepository } from "../Repositories/DBJobsRepository";
-import { GithubRepository } from "../Repositories/GithubRepository";
+import { IGithubRepository } from "../Domain/IGithubRepository";
 
 export class TestResultsUseCase {
   private jobRepository: JobRepository;
-  private githubRepository: GithubRepository;
+  private githubRepository: IGithubRepository;
 
   constructor(
     jobRepository: JobRepository,
-    githubRepository: GithubRepository
+    githubRepository: IGithubRepository
   ) {
     this.jobRepository = jobRepository;
     this.githubRepository = githubRepository;
