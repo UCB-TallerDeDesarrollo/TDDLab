@@ -15,32 +15,25 @@ export class TestResultsUseCase {
     this.githubRepository = githubRepository;
   }
   async execute(owner: string, repoName: string) {
-    let jobs;
     try {
+      const jobsFromGithub = await this.getJobsFromGithub(owner, repoName);
+      let jobsToSave;
+
       if (!(await this.jobRepository.repositoryExists(owner, repoName))) {
-        const jobs = await this.getJobsFromGithub(owner, repoName);
-        const jobsFormatted = await this.getJobsDataFromGithub(
-          owner,
-          repoName,
-          jobs
-        );
-        this.saveJobsToDB(owner, repoName, jobsFormatted);
+        jobsToSave = jobsFromGithub;
       } else {
-        const jobs = await this.getJobsFromGithub(owner, repoName); //getJobsAPI should be changed to getLastJobs once it is implemented
-        const newJobs = await this.getJobsNotSavedInDB(owner, repoName, jobs);
-        const jobsFormatted = await this.getJobsDataFromGithub(
-          owner,
-          repoName,
-          newJobs
-        );
-        this.saveJobsToDB(owner, repoName, jobsFormatted);
+        jobsToSave = await this.getJobsNotSavedInDB(owner, repoName, jobsFromGithub);
       }
-      jobs = await this.jobRepository.getJobs(owner, repoName);
+
+      const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, jobsToSave);
+      await this.saveJobsToDB(owner, repoName, jobsFormatted);
+
+      const jobs = await this.jobRepository.getJobs(owner, repoName);
+      return jobs;
     } catch (error) {
       console.error("Error updating jobs table:", error);
       throw new Error("Error updating jobs table");
     }
-    return jobs;
   }
   async getJobsNotSavedInDB(
     owner: string,
