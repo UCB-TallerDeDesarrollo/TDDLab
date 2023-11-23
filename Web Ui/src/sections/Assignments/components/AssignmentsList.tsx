@@ -73,6 +73,10 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
           sortedAssignments.sort((a, b) => a.title.localeCompare(b.title));
         } else if (selectedSorting === "A_Down_Order") {
           sortedAssignments.sort((a, b) => b.title.localeCompare(a.title));
+        } else if (selectedSorting === "Time_Up") {
+          sortedAssignments.sort((a, b) => b.id - a.id);
+        } else if (selectedSorting === "Time_Down") {
+          sortedAssignments.sort((a, b) => a.id - b.id);
         } else {
           setAssignments(data);
         }
@@ -146,7 +150,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
               <CustomTableCell1>Tareas</CustomTableCell1>
               <CustomTableCell3>
                 <ButtonContainer>
-                  {/* Use Select component for the Ordenar button */}
                   <Select
                     value={selectedSorting}
                     onChange={handleOrdenarChange}
@@ -163,9 +166,8 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
                     <MenuItem value="A_Down_Order">
                       Orden alfabetico descendiente
                     </MenuItem>
-                    <MenuItem value="A_Up_Order">Orden alfabetico</MenuItem>
-                    <MenuItem value="A_Up_Order">Orden alfabetico</MenuItem>
-                    {/* Add more sorting options as needed */}
+                    <MenuItem value="Time_Up">Recientes</MenuItem>
+                    <MenuItem value="Time_Down">Antiguos</MenuItem>
                   </Select>
                 </ButtonContainer>
               </CustomTableCell3>
