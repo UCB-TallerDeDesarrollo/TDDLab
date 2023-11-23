@@ -11,9 +11,9 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; 
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 
-import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; 
+import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { ValidationDialog } from "./ValidationDialog";
@@ -86,9 +86,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     fetchAssignments();
   }, [selectedSorting]);
 
-  const handleOrdenarChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
+  const handleOrdenarChange = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
   };
 
@@ -183,9 +181,10 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
           <ConfirmationDialog
             open={confirmationOpen}
             title="¿Eliminar la tarea?"
-            content= {
+            content={
               <>
-                Ten en cuenta que esta acción tambien eliminará  <br /> todas las entregas asociadas.
+                Ten en cuenta que esta acción tambien eliminará <br /> todas las
+                entregas asociadas.
               </>
             }
             cancelText="Cancelar"
