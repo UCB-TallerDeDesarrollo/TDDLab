@@ -2,12 +2,16 @@ import { createGlobalState } from "react-hooks-global-state";
 
 const { setGlobalState, useGlobalState } = createGlobalState<{
   authData: {
-    userProfilePic: string | null;
-    userEmail: string | null;
-    userCourse: string | null;
+    userProfilePic: string | undefined;
+    userEmail: string | undefined;
+    userCourse: string | undefined;
   };
 }>({
-  authData: { userProfilePic: null, userEmail: null, userCourse: null },
+  authData: {
+    userProfilePic: undefined,
+    userEmail: undefined,
+    userCourse: undefined,
+  },
 });
 
 export { setGlobalState, useGlobalState };
