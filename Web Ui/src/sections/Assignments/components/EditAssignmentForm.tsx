@@ -41,6 +41,11 @@ const getDefaultAssignmentData = () => ({
   end_date: new Date(),
 });
 
+const getAssignmentData = (data: ExistingAssignmentData) => {
+  const { title, description, start_date, end_date } = data;
+  return { title, description, start_date, end_date };
+};
+
 const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   const [assignmentData, setAssignmentData] = useState<AssignmentData>(
     getDefaultAssignmentData()
@@ -56,24 +61,14 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   const isUpdateButtonClicked = useRef(false);
 
   const setAssignmentDataFromResponse = (data: ExistingAssignmentData) => {
-    const {
-      title,
-      description,
-      start_date,
-      end_date,
-      id,
-      state,
-      link,
-      comment,
-    } = data;
-    const commonData = { title, description, start_date, end_date };
+    const commonData = getAssignmentData(data);
     setAssignmentData(commonData);
     setExistingAssignmentData({
       ...commonData,
-      id,
-      state,
-      link,
-      comment,
+      id: data.id,
+      state: data.state,
+      link: data.link,
+      comment: data.comment,
     });
   };
 
