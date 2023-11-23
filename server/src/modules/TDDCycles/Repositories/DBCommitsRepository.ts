@@ -1,9 +1,9 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
 import { CommitDTO } from "../Domain/CommitDataObject";
-import { ICommitRepository } from "../Domain/ICommitRepository";
+import { IDBCommitsRepository } from "../Domain/IDBCommitsRepository";
 
-export class DBCommitRepository implements ICommitRepository {
+export class DBCommitsRepository implements IDBCommitsRepository {
   pool: Pool;
   constructor() {
     this.pool = new Pool(config);

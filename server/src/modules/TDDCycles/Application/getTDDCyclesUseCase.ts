@@ -1,13 +1,13 @@
-import { DBCommitRepository } from "../Repositories/DBCommitsRepository";
+import { IDBCommitsRepository } from "../Domain/IDBCommitsRepository";
 import { CommitDataObject } from "../Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { IGithubRepository } from "../Domain/IGithubRepository";
 export class CommitsUseCase {
-  private dbCommitRepository: DBCommitRepository;
+  private dbCommitRepository: IDBCommitsRepository;
   private githubRepository: IGithubRepository;
 
   constructor(
-    dbCommitRepository: DBCommitRepository,
+    dbCommitRepository: IDBCommitsRepository,
     githubRepository: IGithubRepository
   ) {
     this.dbCommitRepository = dbCommitRepository;
