@@ -51,11 +51,8 @@ const getAssignmentData = (data: ExistingAssignmentData): AssignmentData => {
 };
 
 const useAssignmentData = (assignmentId: number, onClose: () => void) => {
-  const [assignment, setAssignment] = useState<{
-    data: AssignmentData;
-    existingData: ExistingAssignmentData;
-  }>({
-    data: getDefaultAssignmentData(),
+  const [assignment, setAssignment] = useState({
+    data: getAssignmentData(getDefaultAssignmentData()),
     existingData: getDefaultAssignmentData(),
   });
 
@@ -69,13 +66,7 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
     const commonData = getAssignmentData(data);
     setAssignment({
       data: commonData,
-      existingData: {
-        ...commonData,
-        id: data.id,
-        state: data.state,
-        link: data.link,
-        comment: data.comment,
-      },
+      existingData: data,
     });
   };
 
