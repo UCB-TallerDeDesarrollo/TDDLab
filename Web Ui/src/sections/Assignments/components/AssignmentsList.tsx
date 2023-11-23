@@ -11,9 +11,9 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; // Import your assignment model
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; 
 
-import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
+import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; 
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { ValidationDialog } from "./ValidationDialog";
@@ -53,7 +53,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
 
   useEffect(() => {
-    // Use the fetchAssignments function to fetch assignments
+  
     getAssignments
       .obtainAllAssignments()
       .then((data) => {
@@ -131,8 +131,12 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
-            title="Eliminar tarea"
-            content="¿Estás seguro de que deseas eliminar esta tarea?"
+            title="¿Eliminar la tarea?"
+            content= {
+              <>
+                Ten en cuenta que esta acción tambien eliminará  <br /> todas las entregas asociadas.
+              </>
+            }
             cancelText="Cancelar"
             deleteText="Eliminar"
             onCancel={() => setConfirmationOpen(false)}
@@ -142,7 +146,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}
-            title="Tarea Eliminada exitosamente"
+            title="Tarea eliminada exitosamente"
             closeText="Cerrar"
             onClose={() => setValidationDialogOpen(false)}
           />
