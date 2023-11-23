@@ -169,6 +169,18 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           },
         },
       },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (context: any) => {
+              const label = context.dataset.label || "";
+              const value = context.parsed.y;
+              const link = dataChart.datasets[context.datasetIndex].links[context.dataIndex];
+              return `${label}: ${value} - ${link}`;
+            },
+          },
+        },
+      },
     };
     return optionsLineChart;
   }
