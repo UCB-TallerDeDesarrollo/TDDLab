@@ -143,7 +143,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
     coverage: 100,
     html_url:
       "https://github.com/FranAliss/parcel_jest_base_TDD/commit/7fe269f057942086fb1e8698d09f4e1100f1c5ff",
-    sha: "7fe269f057942086fb1e8698d09f4e1100f1c5ff",
+    sha: "0d1e0964873fbd9db2898ef06e5bed128078c876",
     stats: {
       total: 2,
       additions: 1,

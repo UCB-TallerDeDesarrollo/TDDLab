@@ -1,13 +1,13 @@
 import { render, screen, fireEvent, within } from "@testing-library/react";
-import { mockSuccessJobData } from "./__mocks__/dataTypeMocks/jobData";
-import { mockCommitData } from "./__mocks__/dataTypeMocks/commitData";
+import { mockArrayJobData } from "./__mocks__/dataTypeMocks/jobData";
+import { mockArrayCommitData } from "./__mocks__/dataTypeMocks/commitData";
 import TDDCharts from "../../../src/sections/TDDCycles-Visualization/components/TDDChart";
 import "@testing-library/jest-dom";
 
 describe("TDDCharts", () => {
-  const commitsData = [mockCommitData];
+  const commitsData = mockArrayCommitData;
 
-  const jobsByCommitData = [mockSuccessJobData];
+  const jobsByCommitData = mockArrayJobData;
 
   it("renders with default props", () => {
     render(<TDDCharts commits={null} jobsByCommit={null} />);
