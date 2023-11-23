@@ -55,26 +55,35 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   const updateAssignment = new UpdateAssignment(assignmentsRepository);
   const isUpdateButtonClicked = useRef(false);
 
+  const setAssignmentDataFromResponse = (data: ExistingAssignmentData) => {
+    const {
+      title,
+      description,
+      start_date,
+      end_date,
+      id,
+      state,
+      link,
+      comment,
+    } = data;
+    setAssignmentData({ title, description, start_date, end_date });
+    setExistingAssignmentData({
+      id,
+      state,
+      link,
+      comment,
+      title,
+      description,
+      start_date,
+      end_date,
+    });
+  };
+
   useEffect(() => {
     // Fetch the current assignment data and populate the form
     assignmentsRepository.getAssignmentById(assignmentId).then((data) => {
       if (data) {
-        setAssignmentData({
-          title: data.title,
-          description: data.description,
-          start_date: data.start_date,
-          end_date: data.end_date,
-        });
-        setExistingAssignmentData({
-          id: data.id,
-          state: data.state,
-          link: data.link,
-          comment: data.comment,
-          title: data.title,
-          description: data.description,
-          start_date: data.start_date,
-          end_date: data.end_date,
-        });
+        setAssignmentDataFromResponse(data);
       }
     });
   }, [assignmentId, assignmentsRepository]);
