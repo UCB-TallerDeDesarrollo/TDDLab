@@ -54,10 +54,21 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   })();
 
 
-  function getDataLabels() {
+  function getDataLabels()  {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
         (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
+      );
+        return commitsArray;
+    } else {
+      return [];
+    }
+  }
+
+  function getCommitName() {
+    if (filteredCommitsObject != null) {
+      const commitsArray = filteredCommitsObject.map(
+        (commit) => commit.commit.message
       );
         return commitsArray;
     } else {
@@ -171,12 +182,18 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
       },
       plugins: {
         tooltip: {
+          useHTML: true,
           callbacks: {
             label: (context: any) => {
               const label = context.dataset.label || "";
               const value = context.parsed.y;
               const link = dataChart.datasets[context.datasetIndex].links[context.dataIndex];
-              return `${label}: ${value} - ${link}`;
+              const pointName = getCommitName()[context.dataIndex];
+
+              return `
+              
+              <div>Nombre: ${pointName}</div>
+              `;
             },
           },
         },
