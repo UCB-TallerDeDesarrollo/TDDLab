@@ -63,7 +63,12 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   const isUpdateButtonClicked = useRef(false);
 
   const setAssignmentDataFromResponse = (data: ExistingAssignmentData) => {
-    const commonData = getAssignmentData(data);
+    const commonData = {
+      title: data.title,
+      description: data.description,
+      start_date: data.start_date,
+      end_date: data.end_date,
+    };
     setAssignment({
       data: commonData,
       existingData: data,
