@@ -30,25 +30,25 @@ interface EditAssignmentDialogProps {
   readonly assignmentId: number;
   readonly onClose: () => void;
 }
+const getDefaultAssignmentData = () => ({
+  id: 0,
+  state: "",
+  link: "",
+  comment: null,
+  title: "",
+  description: "",
+  start_date: new Date(),
+  end_date: new Date(),
+});
 
 const useAssignmentData = (assignmentId: number, onClose: () => void) => {
-  const [assignmentData, setAssignmentData] = useState<AssignmentData>({
-    title: "",
-    description: "",
-    start_date: new Date(),
-    end_date: new Date(),
-  });
+  const [assignmentData, setAssignmentData] = useState<AssignmentData>(
+    getDefaultAssignmentData()
+  );
+
   const [existingAssignmentData, setExistingAssignmentData] =
-    useState<ExistingAssignmentData>({
-      id: 0,
-      state: "",
-      link: "",
-      comment: null,
-      title: "",
-      description: "",
-      start_date: new Date(),
-      end_date: new Date(),
-    });
+    useState<ExistingAssignmentData>(getDefaultAssignmentData());
+
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
 
   const assignmentsRepository = useMemo(() => new AssignmentsRepository(), []);
