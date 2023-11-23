@@ -4,7 +4,7 @@ import firebase from "../../firebaseConfig";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { RegisterPort } from "../../modules/Auth/application/RegisterPort";
+import { RegisterUserOnDb } from "../../modules/Auth/application/RegisterUserOnDb";
 import UserOnDb from "../../modules/Auth/domain/userOnDb.interface";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -16,7 +16,7 @@ import { handleGithubSignOut } from "../../modules/Auth/application/signOutWithG
 
 function InvitationPage() {
   const [user, setUser] = useState<User | null>(null);
-  const dbAuthPort = new RegisterPort();
+  const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
