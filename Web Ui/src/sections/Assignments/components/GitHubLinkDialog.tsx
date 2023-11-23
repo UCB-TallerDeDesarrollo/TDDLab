@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { Typography } from "@mui/material";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -18,11 +19,23 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onSend,
 }) => {
   const [link, setLink] = useState("");
-  const [flag, setFlag] = React.useState(true);
+  const [validLink, setValidLink] = React.useState(true);
 
   const handleSend = () => {
-    onSend(link);
-    setFlag(!flag);
+    if (validLink) {
+      onSend(link);
+    }
+  };
+
+  const validateGitHubLink = (text: string): boolean => {
+    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+    return regex.test(text);
+  };
+
+  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newLink = e.target.value;
+    setLink(newLink);
+    setValidLink(validateGitHubLink(newLink));
   };
 
   const dialogTitleStyle = {
@@ -32,8 +45,9 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const textFieldStyle = {
     fontSize: "12px",
   };
+
   const contentStyle = {
-    fontSize: "12px",
+    fontSize: ".75rem",
     padding: "20px",
   };
 
@@ -44,20 +58,31 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <TextField
           label="Enlace de Github"
           variant="outlined"
-          color={flag ? "primary" : "success"}
+          color={
+            link === "" ? "primary" : validLink === false ? "error" : "success"
+          }
           value={link}
-          onChange={(e) => setLink(e.target.value)}
+          onChange={handleLinkChange}
           fullWidth
           focused
           style={textFieldStyle}
         />
+        {!validLink && link !== "" && (
+          <Typography variant="body2" color="error">
+            Warning: Invalid link
+          </Typography>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cerrar
         </Button>
-        <Button onClick={handleSend} color="primary">
-          Iniciar
+        <Button
+          onClick={handleSend}
+          color="primary"
+          disabled={!validLink || link == ""}
+        >
+          Enviar
         </Button>
       </DialogActions>
     </Dialog>
