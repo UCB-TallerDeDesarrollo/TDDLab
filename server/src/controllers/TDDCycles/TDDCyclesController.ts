@@ -3,11 +3,11 @@ import { IDBJobsRepository } from "../../modules/TDDCycles/Domain/IDBJobsReposit
 import { IDBCommitsRepository } from "../../modules/TDDCycles/Domain/IDBCommitsRepository";
 import { IGithubRepository } from "../../modules/TDDCycles/Domain/IGithubRepository";
 import { CommitsUseCase } from "../../modules/TDDCycles/Application/getTDDCyclesUseCase";
-import { TestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
+import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 
 class TDDCyclesController {
   commitUseCase: CommitsUseCase;
-  testResultsUseCase: TestResultsUseCase;
+  testResultsUseCase: GetTestResultsUseCase;
   constructor(
     dbCommitRepository: IDBCommitsRepository,
     jobRepository: IDBJobsRepository,
@@ -17,7 +17,7 @@ class TDDCyclesController {
       dbCommitRepository,
       githubRepository
     );
-    this.testResultsUseCase = new TestResultsUseCase(
+    this.testResultsUseCase = new GetTestResultsUseCase(
       jobRepository,
       githubRepository
     );
