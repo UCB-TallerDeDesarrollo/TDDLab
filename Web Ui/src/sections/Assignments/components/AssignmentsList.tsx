@@ -48,7 +48,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState<string>("sortByDate");
+  const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -62,7 +62,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
   const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
-
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
@@ -70,8 +69,14 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
 
         // Sort assignments based on the selectedSorting option
         const sortedAssignments = [...data];
-        if (selectedSorting === "sortByDate") {
+        if (selectedSorting === "A_Up_Order") {
           sortedAssignments.sort((a, b) => a.title.localeCompare(b.title));
+        }
+        // else if(){
+
+        // }
+        else {
+          setAssignments(data);
         }
         // Add more sorting options as needed
 
@@ -147,12 +152,20 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
                   <Select
                     value={selectedSorting}
                     onChange={handleOrdenarChange}
-                    displayEmpty
                     inputProps={{ "aria-label": "Ordenar" }}
+                    displayEmpty
                   >
+                    <option value="">Opciones</option>
                     <MenuItem value="" disabled>
                       Ordenar
                     </MenuItem>
+                    <MenuItem value="A_Up_Order">
+                      Orden alfabetico ascendiente
+                    </MenuItem>
+                    <MenuItem value="A_Down_Order">
+                      Orden alfabetico descendiente
+                    </MenuItem>
+                    <MenuItem value="A_Up_Order">Orden alfabetico</MenuItem>
                     <MenuItem value="A_Up_Order">Orden alfabetico</MenuItem>
                     {/* Add more sorting options as needed */}
                   </Select>
