@@ -81,20 +81,7 @@ export class GetTestResultsUseCase {
       jobsFormatted.map((job) => this.dbJobRepository.saveJob(job))
     );
   }
-
   async getJobsDataFromGithub(
-    owner: string,
-    repoName: string,
-    jobList: [string, number][]
-  ) {
-    let jobs: Record<string, JobDataObject> = await this.obtainJobsData(
-      owner,
-      repoName,
-      jobList
-    );
-    return jobs;
-  }
-  async obtainJobsData(
     owner: string,
     repoName: string,
     listOfCommitsWithActions: [string, number][]
