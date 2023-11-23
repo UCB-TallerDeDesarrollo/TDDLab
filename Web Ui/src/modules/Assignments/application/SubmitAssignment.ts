@@ -4,7 +4,11 @@ import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInter
 export class SubmitAssignment {
   constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
 
-  async submitAssignment(assignmentId: number, link: string) {
+  async submitAssignment(
+    assignmentId: number,
+    link: string,
+    comment: string | null
+  ) {
     try {
       const foundAssignment: AssignmentDataObject | null =
         await this.assignmentsRepository.getAssignmentById(assignmentId);
@@ -16,11 +20,12 @@ export class SubmitAssignment {
           foundAssignment.state = "in progress";
         } else {
           foundAssignment.state = "delivered";
+          foundAssignment.comment = comment;
         }
 
-        console.log(foundAssignment.state);
+        console.log(foundAssignment.comment);
 
-        return await this.assignmentsRepository.updateAssignment(
+        return await this.assignmentsRepository.deliverAssignment(
           assignmentId,
           foundAssignment
         );
