@@ -71,11 +71,9 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         const sortedAssignments = [...data];
         if (selectedSorting === "A_Up_Order") {
           sortedAssignments.sort((a, b) => a.title.localeCompare(b.title));
-        }
-        // else if(){
-
-        // }
-        else {
+        } else if (selectedSorting === "A_Down_Order") {
+          sortedAssignments.sort((a, b) => b.title.localeCompare(a.title));
+        } else {
           setAssignments(data);
         }
         // Add more sorting options as needed
