@@ -116,10 +116,6 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
   }
 
- /* function getTooltipStats(dataIndex:number){
-    return ``
-  }*/
-
   function getCommitCoverage() {
     if (filteredCommitsObject != null) {
       const coverage = filteredCommitsObject.map((commit) => commit.coverage).reverse();
@@ -147,7 +143,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
         {
           label: dataLabel,
           backgroundColor: getColorConclusion(),
-          data: dataChartSelected,
+          data:dataChartSelected,
           links: getCommitLink(),
         },
       ],
@@ -189,6 +185,12 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           callbacks: {
             title: function(context:any){
               return `${getDataLabels()[context[0].dataIndex]}: ${getCommitName()[context[0].dataIndex]}`
+            },
+            afterBody: function(context:any){
+              const afterBodyContent:any = [];
+              afterBodyContent.push(`Líneas de Código Añadido: ${getCommitStats()[0][context[0].dataIndex]}`);
+              afterBodyContent.push(`Líneas de Código Eliminado: ${getCommitStats()[1][context[0].dataIndex]}`);
+              return afterBodyContent;
             }
           },
         },
