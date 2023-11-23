@@ -1,22 +1,155 @@
+import React, { useState, useRef, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, TextField } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import Filter from "./DatePicker";
+import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
+import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import { ValidationDialog } from "./ValidationDialog";
+
+interface AssignmentData {
+  title: string;
+  description: string;
+  start_date: Date;
+  end_date: Date;
+}
+
+interface ExistingAssignmentData extends AssignmentData {
+  id: number;
+  state: string;
+  link: string;
+  comment: string | null;
+}
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
   readonly onClose: () => void;
 }
 
+const useAssignmentData = (assignmentId: number) => {
+  const [assignmentData, setAssignmentData] = useState<AssignmentData>({
+    title: "",
+    description: "",
+    start_date: new Date(),
+    end_date: new Date(),
+  });
+  const [existingAssignmentData, setExistingAssignmentData] =
+    useState<ExistingAssignmentData>({
+      id: 0,
+      state: "",
+      link: "",
+      comment: null,
+      title: "",
+      description: "",
+      start_date: new Date(),
+      end_date: new Date(),
+    });
+
+  const assignmentsRepository = new AssignmentsRepository();
+  const updateAssignment = new UpdateAssignment(assignmentsRepository);
+
+  const isUpdateButtonClicked = useRef(false);
+
+  useEffect(() => {
+    // Fetch the current assignment data and populate the form
+    assignmentsRepository.getAssignmentById(assignmentId).then((data) => {
+      if (data) {
+        setAssignmentData({
+          title: data.title,
+          description: data.description,
+          start_date: data.start_date,
+          end_date: data.end_date,
+        });
+        setExistingAssignmentData({
+          id: data.id,
+          state: data.state,
+          link: data.link,
+          comment: data.comment,
+          title: data.title,
+          description: data.description,
+          start_date: data.start_date,
+          end_date: data.end_date,
+        });
+      }
+    });
+  }, [assignmentId]);
+
+  const handleSaveClick = async () => {
+    if (isUpdateButtonClicked.current) return;
+    isUpdateButtonClicked.current = true;
+
+    if (assignmentData.start_date > assignmentData.end_date) {
+      return;
+    }
+
+    try {
+      // Create a new object with the modified properties
+      const updatedAssignmentData = {
+        ...existingAssignmentData,
+        title: assignmentData.title,
+        description: assignmentData.description,
+        start_date: assignmentData.start_date,
+        end_date: assignmentData.end_date,
+      };
+
+      // Update the assignment with the new data
+      await updateAssignment.updateAssignment(
+        assignmentId,
+        updatedAssignmentData
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      start_date: newStartDate,
+      end_date: newEndDate,
+    }));
+  };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: string
+  ) => {
+    const { value } = event.target;
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
+  return {
+    assignmentData,
+    handleSaveClick,
+    handleUpdateDates,
+    handleInputChange,
+  };
+};
+
 function EditAssignmentDialog({
   assignmentId,
   onClose,
 }: EditAssignmentDialogProps) {
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+
+  const {
+    assignmentData,
+    handleSaveClick,
+    handleUpdateDates,
+    handleInputChange,
+  } = useAssignmentData(assignmentId);
+
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Tarea - ID: {assignmentId}</DialogTitle>
+      <DialogTitle>Editar Tarea</DialogTitle>
       <DialogContent>
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
@@ -25,8 +158,8 @@ function EditAssignmentDialog({
             variant="outlined"
             size="small"
             required
-            value=""
-            onChange={() => {}}
+            value={assignmentData.title}
+            onChange={(e) => handleInputChange(e, "title")}
           />
           <TextField
             id="descripcion"
@@ -44,10 +177,14 @@ function EditAssignmentDialog({
                 },
               },
             }}
-            onChange={() => {}}
-            defaultValue=""
+            onChange={(e) => handleInputChange(e, "description")}
+            defaultValue={assignmentData.description}
           />
-          <section>{/* The rest of your components go here */}</section>
+          <section>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Filter onUpdateDates={handleUpdateDates} />
+            </LocalizationProvider>
+          </section>
         </Box>
       </DialogContent>
       <DialogActions>
@@ -57,11 +194,22 @@ function EditAssignmentDialog({
           style={{
             textTransform: "none",
           }}
-          onClick={() => {}}
+          onClick={handleSaveClick}
         >
           Guardar Cambios
         </Button>
       </DialogActions>
+      {validationDialogOpen && (
+        <ValidationDialog
+          open={validationDialogOpen}
+          title="Tarea Actualizada Exitosamente"
+          closeText="Cerrar"
+          onClose={() => {
+            setValidationDialogOpen(false);
+            onClose();
+          }}
+        />
+      )}
     </Dialog>
   );
 }
