@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { CommitDTO } from "./CommitDataObject";
 
-export interface ICommitRepository {
+export interface IDBCommitsRepository {
   pool: Pool;
   saveCommit(owner: string, repoName: string, commit: CommitDTO): Promise<any>;
   getCommits(owner: string, repoName: string): Promise<any>;
