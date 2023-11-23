@@ -11,15 +11,14 @@ import {
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; // Import your assignment model
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces"; 
 
-import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; // Import your fetchAssignments function\
+import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments"; 
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
-import { SubmitAssignment } from "../../../modules/Assignments/application/SubmitAssignment";
 import { ConfirmationDialog } from "./ConfirmationDialog";
-import { GitLinkDialog } from "./GitHubLinkDialog";
 import { ValidationDialog } from "./ValidationDialog";
 import Assignment from "./Assignment";
+import { MenuItem, Select } from "@mui/material";
 
 const ButtonContainer = styled("div")({
   display: "flex",
@@ -28,10 +27,14 @@ const ButtonContainer = styled("div")({
 });
 
 const CustomTableCell1 = styled(TableCell)({
-  width: "90%",
+  width: "80%",
 });
 
 const CustomTableCell2 = styled(TableCell)({
+  width: "10%",
+});
+
+const CustomTableCell3 = styled(TableCell)({
   width: "10%",
 });
 
@@ -41,8 +44,8 @@ interface AssignmentsProps {
 
 function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [githubLinkDialogOpen, setGithubLinkDialogOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -54,19 +57,40 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const assignmentsRepository = new AssignmentsRepository();
   const getAssignments = new GetAssignments(assignmentsRepository);
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
-  const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
   useEffect(() => {
-    // Use the fetchAssignments function to fetch assignments
-    getAssignments
-      .obtainAllAssignments()
-      .then((data) => {
-        setAssignments(data);
-      })
-      .catch((error) => {
+    const fetchAssignments = async () => {
+      try {
+        const data = await getAssignments.obtainAllAssignments();
+
+        // Sort assignments based on the selectedSorting option
+        const sortedAssignments = [...data];
+        if (selectedSorting === "A_Up_Order") {
+          sortedAssignments.sort((a, b) => a.title.localeCompare(b.title));
+        } else if (selectedSorting === "A_Down_Order") {
+          sortedAssignments.sort((a, b) => b.title.localeCompare(a.title));
+        } else if (selectedSorting === "Time_Up") {
+          sortedAssignments.sort((a, b) => b.id - a.id);
+        } else if (selectedSorting === "Time_Down") {
+          sortedAssignments.sort((a, b) => a.id - b.id);
+        } else {
+          setAssignments(data);
+        }
+        // Add more sorting options as needed
+
+        setAssignments(sortedAssignments);
+      } catch (error) {
         console.error("Error fetching assignments:", error);
-      });
-  });
+      }
+    };
+    fetchAssignments();
+  }, [selectedSorting]);
+
+  const handleOrdenarChange = (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    setSelectedSorting(event.target.value as string);
+  };
 
   const handleClickDetail = (index: number) => {
     setSelectedRow(index);
@@ -99,16 +123,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
   };
-
-  const handleSendGithubLink = (link: string) => {
-    if (selectedAssignmentIndex !== null) {
-      submitAssignment.submitAssignment(
-        assignments[selectedAssignmentIndex].id,
-        link
-      );
-    }
-  };
-
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
@@ -120,6 +134,29 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
           <TableHead>
             <TableRow>
               <CustomTableCell1>Tareas</CustomTableCell1>
+              <CustomTableCell3>
+                <ButtonContainer>
+                  <Select
+                    value={selectedSorting}
+                    onChange={handleOrdenarChange}
+                    inputProps={{ "aria-label": "Ordenar" }}
+                    displayEmpty
+                  >
+                    <option value="">Opciones</option>
+                    <MenuItem value="" disabled>
+                      Ordenar
+                    </MenuItem>
+                    <MenuItem value="A_Up_Order">
+                      Orden alfabetico ascendiente
+                    </MenuItem>
+                    <MenuItem value="A_Down_Order">
+                      Orden alfabetico descendiente
+                    </MenuItem>
+                    <MenuItem value="Time_Up">Recientes</MenuItem>
+                    <MenuItem value="Time_Down">Antiguos</MenuItem>
+                  </Select>
+                </ButtonContainer>
+              </CustomTableCell3>
               <CustomTableCell2>
                 <ButtonContainer>
                   <Button variant="outlined" onClick={showForm}>
@@ -142,18 +179,15 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
             ))}
           </TableBody>
         </Table>
-        {githubLinkDialogOpen && (
-          <GitLinkDialog
-            open={githubLinkDialogOpen}
-            onClose={() => setGithubLinkDialogOpen(false)}
-            onSend={handleSendGithubLink}
-          />
-        )}
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
-            title="Eliminar tarea"
-            content="¿Estás seguro de que deseas eliminar esta tarea?"
+            title="¿Eliminar la tarea?"
+            content= {
+              <>
+                Ten en cuenta que esta acción tambien eliminará  <br /> todas las entregas asociadas.
+              </>
+            }
             cancelText="Cancelar"
             deleteText="Eliminar"
             onCancel={() => setConfirmationOpen(false)}
@@ -163,7 +197,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}
-            title="Tarea Eliminada exitosamente"
+            title="Tarea eliminada exitosamente"
             closeText="Cerrar"
             onClose={() => setValidationDialogOpen(false)}
           />
