@@ -43,7 +43,7 @@ function Groups() {
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [validationDialogOpen, setValidationDialogOpen] = useState(false); // Nuevo estado
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false); 
 
   const handleRowClick = (index: number) => {
     if (expandedRows.includes(index)) {
@@ -92,6 +92,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
+    console.log(index)
   };
 
   const handleConfirmDelete = () => {
