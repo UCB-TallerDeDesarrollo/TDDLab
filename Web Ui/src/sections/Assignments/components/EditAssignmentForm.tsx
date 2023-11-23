@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -51,7 +51,7 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
     });
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
 
-  const assignmentsRepository = new AssignmentsRepository();
+  const assignmentsRepository = useMemo(() => new AssignmentsRepository(), []);
   const updateAssignment = new UpdateAssignment(assignmentsRepository);
   const isUpdateButtonClicked = useRef(false);
 
@@ -77,7 +77,7 @@ const useAssignmentData = (assignmentId: number, onClose: () => void) => {
         });
       }
     });
-  }, [assignmentId]);
+  }, [assignmentId, assignmentsRepository]);
 
   const handleSaveClick = async () => {
     if (isUpdateButtonClicked.current) return;
