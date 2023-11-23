@@ -70,7 +70,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
       const commitsArray = filteredCommitsObject.map(
         (commit) => commit.commit.message
       );
-        return commitsArray;
+        return commitsArray.reverse();
     } else {
       return [];
     }
@@ -182,19 +182,10 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
       },
       plugins: {
         tooltip: {
-          useHTML: true,
           callbacks: {
-            label: (context: any) => {
-              const label = context.dataset.label || "";
-              const value = context.parsed.y;
-              const link = dataChart.datasets[context.datasetIndex].links[context.dataIndex];
-              const pointName = getCommitName()[context.dataIndex];
-
-              return `
-              
-              <div>Nombre: ${pointName}</div>
-              `;
-            },
+            title: function(context:any){
+              return getCommitName()[context[0].dataIndex]
+            }
           },
         },
       },
