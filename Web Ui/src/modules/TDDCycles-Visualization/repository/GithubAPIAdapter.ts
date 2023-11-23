@@ -13,7 +13,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       auth: 'coloca tu token github para mas requests'
   }*/
   );
-  this.backAPI="https://tdd-lab-api-gold.vercel.app/api"
+  this.backAPI="https://tdd-lab-api-gold.vercel.app/api/TDDCycles"
   }
   
   async obtainCommitsOfRepo(
@@ -21,7 +21,6 @@ export class GithubAPIAdapter implements GithubAPIRepository {
     repoName: string
   ): Promise<CommitDataObject[]> {
     try {
-     
       const response = await axios.get(this.backAPI+`/commits?owner=${owner}&repoName=${repoName}`);
       console.log(this.backAPI+`/commits?owner=${owner}&repoName=${repoName}`);
       
