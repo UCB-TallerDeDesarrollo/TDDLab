@@ -102,14 +102,7 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
-        <Route
-          path="/invitation"
-          element={
-            <ProtectedRouteComponent>
-              <AuthComponent />
-            </ProtectedRouteComponent>
-          }
-        />
+        <Route path="/invitation" element={<AuthComponent />} />
       </Routes>
     </Router>
   );
