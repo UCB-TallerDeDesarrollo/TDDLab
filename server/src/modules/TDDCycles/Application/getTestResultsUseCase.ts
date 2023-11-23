@@ -4,28 +4,30 @@ import { IDBJobsRepository } from "../Domain/IDBJobsRepository";
 import { IGithubRepository } from "../Domain/IGithubRepository";
 
 export class GetTestResultsUseCase {
-  private jobRepository: IDBJobsRepository;
+  private dbJobRepository: IDBJobsRepository;
   private githubRepository: IGithubRepository;
 
   constructor(
     jobRepository: IDBJobsRepository,
     githubRepository: IGithubRepository
   ) {
-    this.jobRepository = jobRepository;
+    this.dbJobRepository = jobRepository;
     this.githubRepository = githubRepository;
   }
   async execute(owner: string, repoName: string) {
     try {
-      const jobsFromGithub = await this.getJobsFromGithub(owner, repoName);
-      let jobsToSave;
+      const githubActionsRunsList = await this.getRunsOfGithubActionsIds(
+        owner,
+        repoName
+      );
 
-      if (!(await this.jobRepository.repositoryExists(owner, repoName))) {
-        jobsToSave = jobsFromGithub;
-      } else {
+      let jobsToSave = githubActionsRunsList;
+
+      if (await this.dbJobRepository.repositoryExists(owner, repoName)) {
         jobsToSave = await this.getJobsNotSavedInDB(
           owner,
           repoName,
-          jobsFromGithub
+          githubActionsRunsList
         );
       }
 
@@ -36,7 +38,7 @@ export class GetTestResultsUseCase {
       );
       await this.saveJobsToDB(owner, repoName, jobsFormatted);
 
-      const jobs = await this.jobRepository.getJobs(owner, repoName);
+      const jobs = await this.dbJobRepository.getJobs(owner, repoName);
       return jobs;
     } catch (error) {
       console.error("Error executing Test Results Use case:", error);
@@ -51,7 +53,7 @@ export class GetTestResultsUseCase {
     let jobsToAdd = [];
 
     for (const currentJob of commitsWithActions) {
-      let row = await this.jobRepository.checkIfJobExistsInDb(
+      let row = await this.dbJobRepository.checkIfJobExistsInDb(
         owner,
         repoName,
         currentJob[1]
@@ -76,17 +78,10 @@ export class GetTestResultsUseCase {
     }));
 
     await Promise.all(
-      jobsFormatted.map((job) => this.jobRepository.saveJob(job))
+      jobsFormatted.map((job) => this.dbJobRepository.saveJob(job))
     );
   }
 
-  async getJobsFromGithub(owner: string, repoName: string) {
-    let jobList: [string, number][] = await this.obtainRunnedJobsList(
-      owner,
-      repoName
-    ); //[commitSha,workflowId][]
-    return jobList;
-  }
   async getJobsDataFromGithub(
     owner: string,
     repoName: string,
@@ -118,7 +113,7 @@ export class GetTestResultsUseCase {
     );
     return jobs;
   }
-  async obtainRunnedJobsList(owner: string, repoName: string) {
+  async getRunsOfGithubActionsIds(owner: string, repoName: string) {
     const githubruns = await this.githubRepository.obtainRunsOfGithubActions(
       owner,
       repoName
