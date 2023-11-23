@@ -31,7 +31,7 @@ interface EditAssignmentDialogProps {
   readonly onClose: () => void;
 }
 
-const useAssignmentData = (assignmentId: number) => {
+const useAssignmentData = (assignmentId: number, onClose: () => void) => {
   const [assignmentData, setAssignmentData] = useState<AssignmentData>({
     title: "",
     description: "",
@@ -49,10 +49,10 @@ const useAssignmentData = (assignmentId: number) => {
       start_date: new Date(),
       end_date: new Date(),
     });
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
 
   const assignmentsRepository = new AssignmentsRepository();
   const updateAssignment = new UpdateAssignment(assignmentsRepository);
-
   const isUpdateButtonClicked = useRef(false);
 
   useEffect(() => {
@@ -102,6 +102,9 @@ const useAssignmentData = (assignmentId: number) => {
         assignmentId,
         updatedAssignmentData
       );
+
+      // Show the validation dialog
+      setValidationDialogOpen(true);
     } catch (error) {
       console.error(error);
     }
@@ -126,11 +129,19 @@ const useAssignmentData = (assignmentId: number) => {
     }));
   };
 
+  const handleCloseValidationDialog = () => {
+    setValidationDialogOpen(false);
+    // Close the parent dialog
+    onClose();
+  };
+
   return {
     assignmentData,
+    validationDialogOpen,
     handleSaveClick,
     handleUpdateDates,
     handleInputChange,
+    handleCloseValidationDialog,
   };
 };
 
@@ -138,14 +149,14 @@ function EditAssignmentDialog({
   assignmentId,
   onClose,
 }: EditAssignmentDialogProps) {
-  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-
   const {
     assignmentData,
+    validationDialogOpen,
     handleSaveClick,
     handleUpdateDates,
     handleInputChange,
-  } = useAssignmentData(assignmentId);
+    handleCloseValidationDialog,
+  } = useAssignmentData(assignmentId, onClose);
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
@@ -204,10 +215,7 @@ function EditAssignmentDialog({
           open={validationDialogOpen}
           title="Tarea Actualizada Exitosamente"
           closeText="Cerrar"
-          onClose={() => {
-            setValidationDialogOpen(false);
-            onClose();
-          }}
+          onClose={handleCloseValidationDialog}
         />
       )}
     </Dialog>
