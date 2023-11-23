@@ -1,4 +1,4 @@
-import { JobDataObject } from "../../Github/Domain/jobInterfaces";
+import { JobDataObject } from "../Domain/jobInterfaces";
 import { JobDB } from "../Domain/JobDataObject";
 import { JobRepository } from "../Repositories/DBJobsRepository";
 import { GithubRepository } from "../Repositories/GithubRepository";

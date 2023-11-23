@@ -1,5 +1,5 @@
 import { DBCommitRepository } from "../Repositories/DBCommitsRepository";
-import { CommitDataObject } from "../../Github/Domain/commitInterfaces";
+import { CommitDataObject } from "../Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { GithubRepository } from "../Repositories/GithubRepository";
 export class CommitsUseCase {
