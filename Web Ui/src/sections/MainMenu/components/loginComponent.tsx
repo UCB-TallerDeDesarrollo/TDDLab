@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { LoginPort } from "../../../modules/Auth/application/LoginPort";
+import { CheckIfUserHasAccount } from "../../../modules/Auth/application/checkIfUserHasAccount";
 import {
   setGlobalState,
   useGlobalState,
@@ -17,7 +17,7 @@ export default function LoginComponent() {
   const handleLogin = async () => {
     let userData = await handleSignInWithGitHub();
     if (userData?.email) {
-      const loginPort = new LoginPort();
+      const loginPort = new CheckIfUserHasAccount();
       let userCourse = await loginPort.userHasAnAcount(userData.email);
       if (userCourse && userData.photoURL) {
         setGlobalState("authData", {
