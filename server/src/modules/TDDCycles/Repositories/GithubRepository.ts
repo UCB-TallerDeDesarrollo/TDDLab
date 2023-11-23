@@ -21,7 +21,6 @@ export class GithubRepository implements IGithubRepository{
       const rate_limit = await this.octokit.request("GET /rate_limit");
       console.log("Rate Limit Remaining:", rate_limit.data.rate.remaining);
 
-
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
           per_page: 100,
@@ -132,38 +131,24 @@ export class GithubRepository implements IGithubRepository{
     sha: string
   ): Promise<CommitInformationDataObject> {
     try {
-      const response: any = await Promise.race([
+      const [response, coverageResponse] = await Promise.all([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
-        this.timeout(10000),
+        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}/comments`)
       ]);
-
-      const coverageResponse: any = await Promise.race([
-        this.octokit.request(
-          `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
-        ),
-        this.timeout(10000),
-      ]);
-
-      let percentageMatch;
-
+      let percentageMatch = "";
       if (coverageResponse.data.length > 0) {
-        percentageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
-          coverageResponse.data[0].body
-        );
-        if (percentageMatch) {
-          percentageMatch = String(percentageMatch[1]);
+        const match = /Statements\s*\|\s*([\d.]+)%/.exec(coverageResponse.data[0].body);
+        if (match) {
+          percentageMatch = String(match[1]);
         }
-      } else {
-        percentageMatch = "";
       }
-
       const commitInfo: CommitInformationDataObject = {
         ...response.data,
         coveragePercentage: percentageMatch,
       };
       return commitInfo;
     } catch (error) {
-      console.error("Error obtaining commits:", error);
+      console.error("Error obtaining commit Information for TDD Cycle:", error);
       throw error;
     }
   }
@@ -181,7 +166,6 @@ export class GithubRepository implements IGithubRepository{
             this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`),
             this.timeout(10000),
         ]);
-
         return response;
     } catch (error) {
         console.error("Error obtaining runs:", error);
@@ -198,12 +182,10 @@ export class GithubRepository implements IGithubRepository{
       const { data: { total_count, jobs } } = await this.octokit.request(
         `GET /repos/${owner}/${repoName}/actions/runs/${jobId}/attempts/${attempt}/jobs`
       );
-
       const jobData = {
         total_count,
         jobs,
       };
-
       return jobData;
     } catch (error) {
       console.error("Error obtaining job:", error);
