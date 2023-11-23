@@ -69,11 +69,20 @@ class AssignmentRepository {
     id: string,
     updatedAssignment: AssignmentCreationObject
   ): Promise<AssignmentCreationObject | null> {
-    const { title, description, start_date, end_date, state, link } =
+    const { title, description, start_date, end_date, state, link, comment } =
       updatedAssignment;
     const query =
-      "UPDATE assignments SET title = $1, description = $2, start_date = $3, end_date = $4, state = $5, link = $6 WHERE id = $7 RETURNING *";
-    const values = [title, description, start_date, end_date, state, link, id];
+      "UPDATE assignments SET title = $1, description = $2, start_date = $3, end_date = $4, state = $5, link = $6, comment = $7 WHERE id = $8 RETURNING *";
+    const values = [
+      title,
+      description,
+      start_date,
+      end_date,
+      state,
+      link,
+      comment,
+      id,
+    ];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
       return this.mapRowToAssignment(rows[0]);
