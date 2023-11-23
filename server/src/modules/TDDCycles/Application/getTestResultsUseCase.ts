@@ -31,8 +31,8 @@ export class TestResultsUseCase {
       const jobs = await this.jobRepository.getJobs(owner, repoName);
       return jobs;
     } catch (error) {
-      console.error("Error updating jobs table:", error);
-      throw new Error("Error updating jobs table");
+      console.error("Error executing Test Results Use case:", error);
+      throw error;
     }
   }
   async getJobsNotSavedInDB(
