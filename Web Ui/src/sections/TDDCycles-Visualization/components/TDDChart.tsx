@@ -42,7 +42,7 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  console.log(jobsByCommit, commits)
+  console.log(jobsByCommit, commits);
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
@@ -53,28 +53,29 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     return commits;
   })();
 
-
   function getDataLabels() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
         (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
       );
-        return commitsArray;
+      return commitsArray;
     } else {
       return [];
     }
   }
 
-  const getBarStyle = (commit: CommitDataObject, jobByCommit: JobDataObject[]) => {
+  const getBarStyle = (
+    commit: CommitDataObject,
+    jobByCommit: JobDataObject[]
+  ) => {
     const job = jobByCommit.find((job) => job.sha === commit.sha);
     if (job != null && job.conclusion === "success") {
       return "green";
     } else if (job === undefined) {
-        return "black";
-      } 
-      else {
-        return "red";
-      }
+      return "black";
+    } else {
+      return "red";
+    }
   };
 
   function getColorConclusion() {
@@ -107,7 +108,9 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
 
   function getCommitCoverage() {
     if (filteredCommitsObject != null) {
-      const coverage = filteredCommitsObject.map((commit) => commit.coverage).reverse();
+      const coverage = filteredCommitsObject
+        .map((commit) => commit.coverage)
+        .reverse();
       return coverage;
     } else {
       return [];
@@ -204,6 +207,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             id="simple-select"
             onChange={handleSelectChange}
             value={metricSelected}
+            data-testid="select-graph-type"
             label="Metrics"
           >
             <MenuItem value={"Cobertura de Código"}>
@@ -226,6 +230,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           options={getOptionsChart("Cobertura de Código")}
           onClick={onClick}
           ref={chartRef}
+          data-testid="graph-coverage"
         />
       ) : (
         <Line
@@ -237,6 +242,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           options={getOptionsChart("Líneas de Código Modificadas")}
           onClick={onClick}
           ref={chartRef}
+          data-testid="graph-modified-lines"
         />
       )}
     </div>

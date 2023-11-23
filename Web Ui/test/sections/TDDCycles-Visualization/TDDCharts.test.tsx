@@ -1,100 +1,33 @@
-//import { mockArrayCommitData } from './__mocks__/dataTypeMocks/commitData';
-//import { mockArrayJobData } from './__mocks__/dataTypeMocks/jobData';
-import { render, screen, waitFor} from '@testing-library/react';
-//import TDDCharts from '../../../src/sections/TDDCycles-Visualization/components/TDDChart';
+import { render, screen, fireEvent, within } from "@testing-library/react";
+import { mockSuccessJobData } from "./__mocks__/dataTypeMocks/jobData";
+import { mockCommitData } from "./__mocks__/dataTypeMocks/commitData";
+import TDDCharts from "../../../src/sections/TDDCycles-Visualization/components/TDDChart";
 import "@testing-library/jest-dom";
 
-import { Line } from 'react-chartjs-2';
+describe("TDDCharts", () => {
+  const commitsData = [mockCommitData];
 
-function ChartComponent({ data }:any) {
-  return (
-    <div data-testid="chart-container">
-      <Line data={data} />
-    </div>
-  );
-}
-// Datos de muestra para el gráfico
-const sampleData = {
-  labels: ['A', 'B', 'C'],
-  datasets: [
-    {
-      label: 'Sample Data',
-      data: [1, 2, 3],
-    },
-  ],
-};
+  const jobsByCommitData = [mockSuccessJobData];
 
-describe('ChartComponent', () => {
-  it('renders a Chart.js chart with the provided data', () => {
-    render(<ChartComponent data={sampleData} />);
+  it("renders with default props", () => {
+    render(<TDDCharts commits={null} jobsByCommit={null} />);
+  });
 
+  it("renders with provided data", () => {
+    render(<TDDCharts commits={commitsData} jobsByCommit={jobsByCommitData} />);
 
-    waitFor(() => {
-      const chartContainer = screen.getByTestId('chart-container');
-      const chart = chartContainer.querySelector('.chartjs-render-monitor');
-      expect(chartContainer).toBeInTheDocument();
+    expect(screen.getByText("Métricas")).toBeInTheDocument();
+    expect(screen.getByTestId("graph-coverage")).toBeInTheDocument();
+  });
 
-      expect(chart).toBeInTheDocument();
-      expect(chart).toHaveTextContent('Sample Data');
-      expect(chart).toHaveTextContent('A');
-      expect(chart).toHaveTextContent('B');
-      expect(chart).toHaveTextContent('C');
-      expect(chart).toHaveTextContent('1');
-      expect(chart).toHaveTextContent('10000000');
-      expect(chart).toHaveTextContent('3');
-    });
+  it("Check that type of graph can be changed", async () => {
+    render(<TDDCharts commits={commitsData} jobsByCommit={jobsByCommitData} />);
+
+    fireEvent.mouseDown(screen.getByTestId("select-graph-type"));
+    const listbox = within(screen.getByRole("combobox"));
+    fireEvent.click(listbox.getByText(/Porcentaje de Cobertura de Código/i));
+    expect(screen.getByTestId("select-graph-type")).toHaveTextContent(
+      /Porcentaje de Cobertura de Código/i
+    );
   });
 });
-
-/*describe('TDDChart', () => {
-  it('renders a Chart.js chart with the provided data', () => {
-    render(<TDDCharts commits={mockArrayCommitData} jobsByCommit={mockArrayJobData} ></TDDCharts>) 
-
-    waitFor(() => {
-      const chartContainer = screen.getByTestId('lineChartContainer');
-      expect(chartContainer).toBeInTheDocument();
-    });
-  });
-
-  it('Render coverage text in select input', () => {
-    render(<TDDCharts commits={mockArrayCommitData} jobsByCommit={mockArrayJobData} ></TDDCharts>) 
-
-    waitFor(() => {
-      const chartContainer = screen.getByText('Porcentaje de Cobertura de Código');
-      expect(chartContainer).toBeVisible();
-    });
-  });
-
-  it('Render code lines text in select input', () => {
-    render(<TDDCharts commits={mockArrayCommitData} jobsByCommit={mockArrayJobData} ></TDDCharts>) 
-
-    waitFor(() => {
-      fireEvent.mouseDown(screen.getByRole('button'));
-      fireEvent.click(screen.getByText('Líneas de Código Modificadas'));
-      const chartContainer = screen.getByText('Lineas de Código Modificadas');
-      expect(chartContainer).toBeVisible();
-    });
-  });
-
-  it('Render coverage graph', () => {
-    
-    waitFor(() => {
-      const {getByTestId} = render(<TDDCharts commits={mockArrayCommitData} jobsByCommit={mockArrayJobData} ></TDDCharts>) 
-      const chartContainer = getByTestId('lineChartContainer');
-      const chart = chartContainer.querySelector('.chartjs-render-monitor');
-      expect(chart).toBeInTheDocument();
-      expect(chart).toHaveTextContent('Cobertura de Código');
-    });
-  });
-  
-  it('Filter the data over the lines limit', () => {
-    render(<TDDCharts commits={mockArrayCommitData} jobsByCommit={mockArrayJobData} ></TDDCharts>) 
-
-    waitFor(() => {
-      const chartContainer = screen.getByTestId('lineChartContainer');
-      const chart = chartContainer.querySelector('.chartjs-render-monitor');
-      expect(chart).toBeInTheDocument();
-      expect(chart).not.toHaveTextContent('Commit 10');
-    });
-  });
-});*/
