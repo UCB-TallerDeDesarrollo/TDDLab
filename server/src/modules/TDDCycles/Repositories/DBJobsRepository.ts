@@ -58,13 +58,17 @@ export class JobRepository implements IJobRepository {
             }
         }
     }
-    async repositoryExists(owner: string, repoName: string) {
+    async repositoryExists(owner: string, repoName: string): Promise<boolean> {
         const client = await this.pool.connect();
-        const query =
-            "SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2";
-        const values = [owner, repoName];
-        const result = await client.query(query, values);
-        client.release();
-        return result.rows[0].count > 0;
+        try {
+            const query = "SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2";
+            const values = [owner, repoName];
+            const result = await client.query(query, values);
+            return result.rows[0].count > 0;
+        } catch (error) {
+            throw new Error(`Error checking repository existence: ${error}`);
+        } finally {
+            client.release();
+        }
     }
 }
