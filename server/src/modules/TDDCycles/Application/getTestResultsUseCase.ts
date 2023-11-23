@@ -3,7 +3,7 @@ import { JobDB } from "../Domain/JobDataObject";
 import { IDBJobsRepository } from "../Domain/IDBJobsRepository";
 import { IGithubRepository } from "../Domain/IGithubRepository";
 
-export class TestResultsUseCase {
+export class GetTestResultsUseCase {
   private jobRepository: IDBJobsRepository;
   private githubRepository: IGithubRepository;
 
@@ -22,10 +22,18 @@ export class TestResultsUseCase {
       if (!(await this.jobRepository.repositoryExists(owner, repoName))) {
         jobsToSave = jobsFromGithub;
       } else {
-        jobsToSave = await this.getJobsNotSavedInDB(owner, repoName, jobsFromGithub);
+        jobsToSave = await this.getJobsNotSavedInDB(
+          owner,
+          repoName,
+          jobsFromGithub
+        );
       }
 
-      const jobsFormatted = await this.getJobsDataFromGithub(owner, repoName, jobsToSave);
+      const jobsFormatted = await this.getJobsDataFromGithub(
+        owner,
+        repoName,
+        jobsToSave
+      );
       await this.saveJobsToDB(owner, repoName, jobsFormatted);
 
       const jobs = await this.jobRepository.getJobs(owner, repoName);
