@@ -1,11 +1,12 @@
 import { Octokit } from "octokit";
+import { IGithubRepository } from "../Domain/IGithubRepository";
 import {
   CommitDataObject,
   CommitInformationDataObject,
 } from "../Domain/commitInterfaces";
 import dotenv from "dotenv"; // Import 'dotenv' as a module
 dotenv.config();
-export class GithubRepository {
+export class GithubRepository implements IGithubRepository{
   octokit: Octokit;
   constructor() {
     const { REACT_APP_AUTH_TOKEN } = process.env;
@@ -167,8 +168,8 @@ export class GithubRepository {
     }
   }
 
-  timeout(ms: number) {
-    return new Promise((_, reject) => {
+  timeout(ms: number): Promise<void> {
+    return new Promise<void>((_, reject) => {
       setTimeout(() => {
         reject(new Error("Request timed out"));
       }, ms);
