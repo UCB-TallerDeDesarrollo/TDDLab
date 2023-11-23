@@ -104,7 +104,6 @@ jobs:
         working-directory: Web Ui
         run: pkill -f "vite" # Use pkill to stop the development server
 
-
   sonarcloud:
     name: SonarCloud
     needs: [cypress-tests, jest-tests-frontend, jest-tests-backend]
@@ -138,8 +137,6 @@ jobs:
         run: |
           echo "${{ steps.sonarqube-quality-gate-check.outputs.project-status }}"
           echo "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-result }}"
-      
-      
 
   # Jobs for prettier
   prettier:
@@ -217,7 +214,6 @@ jobs:
           cd ./server
           vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
 
-
   deployment_build_Frontend:
     runs-on: ubuntu-latest
     needs: prettier
@@ -227,6 +223,11 @@ jobs:
 
       - name: Setup Node
         uses: actions/setup-node@v3
+
+      - name: Set Environment Variables
+        working-directory: Web Ui
+        run: |
+          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
 
       - name: Install Dependencies
         working-directory: Web Ui
@@ -247,5 +248,3 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}"
           channelId: live
           projectId: tddlab-hosting-firebase
-
-
