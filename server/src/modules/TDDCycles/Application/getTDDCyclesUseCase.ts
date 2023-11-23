@@ -95,13 +95,9 @@ export class CommitsUseCase {
     newCommits: CommitDTO[]
   ) {
     try {
-      if (newCommits.length > 0) {
         await Promise.all(
-          newCommits.map(async (commit: CommitDTO) => {
-            await this.dbCommitRepository.saveCommit(owner, repoName, commit);
-          })
+        newCommits.map(commit => this.dbCommitRepository.saveCommit(owner, repoName, commit))
         );
-      }
     } catch (error) {
       console.error("Error updating the commit table in the database:", error);
     }
