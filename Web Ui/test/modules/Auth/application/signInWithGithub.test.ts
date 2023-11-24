@@ -1,6 +1,6 @@
 import { signInWithPopup } from "firebase/auth";
 import { handleSignInWithGitHub } from "../../../../src/modules/Auth/application/signInWithGithub";
-import { mockUserCredential } from "../__mocks__/mockedUserCredential";
+import { mockUserCredential } from "../../__mocks__/Auth/mockedUserCredential";
 
 jest.mock("firebase/auth", () => ({
   getAuth: jest.fn(),

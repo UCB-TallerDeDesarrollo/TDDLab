@@ -36,6 +36,8 @@ function InvitationPage() {
     }
   };
   const handleAcceptInvitation = async () => {
+    console.log(user?.email);
+
     if (user?.email) {
       let userObj: UserOnDb = { email: user.email, course: "mainCourse" };
       await dbAuthPort.register(userObj);
