@@ -10,5 +10,5 @@ export default {
     "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/test/__ mocks __/fileMock.js",
     "^.+\\.(css|less)$": "<rootDir>/CSSStub.js",
   },
-  silent: false,
+  silent: true,
 };
