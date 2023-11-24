@@ -8,6 +8,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
 import { ConfirmationDialog } from "../Assignments/components/ConfirmationDialog";
 import { ValidationDialog } from "../Assignments/components/ValidationDialog";
+import CreateGroupPopup from "../Groups/components/GroupsForm"; 
+
 
 import {
   Table,
@@ -44,7 +46,12 @@ function Groups() {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false); 
+  const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
 
+  const handleCreateGroupClick = () => {
+    setCreateGroupPopupOpen(true);
+  };
+  
   const handleRowClick = (index: number) => {
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
@@ -129,6 +136,7 @@ function Groups() {
                       textTransform: "none",
                       fontSize: "0.95rem",
                     }}
+                    onClick={handleCreateGroupClick}
                   >
                     Crear
                   </Button>
@@ -230,7 +238,6 @@ function Groups() {
         />
       )}
 
-      {/* ValidationDialog */}
       {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
@@ -239,6 +246,8 @@ function Groups() {
           onClose={handleValidationDialogClose}
         />
       )}
+      <CreateGroupPopup open={createGroupPopupOpen} handleClose={() => setCreateGroupPopupOpen(false)} />
+
     </CenteredContainer>
   );
 }
