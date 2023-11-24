@@ -64,25 +64,14 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
   }
 
-  const getBarStyle = (
-    commit: CommitDataObject,
-    jobByCommit: JobDataObject[]
-  ) => {
-    const job = jobByCommit.find((job) => job.sha === commit.sha);
-    if (job != null && job.conclusion === "success") {
-      return "green";
-    } else if (job === undefined) {
-      return "black";
-    } else {
-      return "red";
-    }
-  };
-
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
-      const conclusions = filteredCommitsObject.map((commit) =>
-        getBarStyle(commit, jobsByCommit)
-      );
+      const conclusions = filteredCommitsObject.map((commit) => {
+        let job = jobsByCommit.find((job) => job.sha === commit.sha);
+        if (job != null && job.conclusion === "success") return "green";
+        else if (job === undefined) return "black";
+        else return "red";
+      });
       return conclusions.reverse();
     } else {
       return ["white"];
