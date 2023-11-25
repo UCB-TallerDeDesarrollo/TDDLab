@@ -11,6 +11,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useGitHubLinkValidation } from "./GitValidationHook";
+import { Typography } from "@mui/material";
 
 interface CommentDialogProps {
   open: boolean;
@@ -45,6 +46,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const dialogContentStyle = {
     fontFamily: "Roboto",
     fontSize: "15px",
+    backgroundColor: "transparent",
   };
   const titleStyle = {
     fontSize: "1.1rem",
@@ -64,19 +66,25 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
-        {link && (
-          <TextField
-            margin="dense"
-            label="Enlace del Repositorio"
-            type="text"
-            fullWidth
-            value={link}
-            onChange={handleLinkChange}
-            disabled={!edit}
-            InputProps={{
-              endAdornment: renderEndAdornmentEdit(),
-            }}
-          />
+        <TextField
+          margin="dense"
+          label="Enlace del Repositorio"
+          type="text"
+          fullWidth
+          value={repo}
+          onChange={handleLinkChange}
+          disabled={!edit}
+          color={
+            repo === "" ? "primary" : validLink === false ? "error" : "success"
+          }
+          InputProps={{
+            endAdornment: renderEndAdornmentEdit(),
+          }}
+        />
+        {!validLink && repo !== "" && (
+          <Typography variant="body2" color="error">
+            Warning: Invalid link
+          </Typography>
         )}
       </DialogContent>
       <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
