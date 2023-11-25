@@ -3,6 +3,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import { dialogContentStyle, titleStyle2, primaryButtonStyle } from "../Styles/DialogBoxStyles";
 
 interface ValidationDialogProps {
   open: boolean;
@@ -17,21 +18,11 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
   closeText,
   onClose,
 }) => {
-  const dialogContentStyle = {
-    fontFamily: "Roboto",
-    fontSize: "15px",
-  };
-  const titleStyle = {
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-    fontFamily: "Roboto",
-  };
-
   return (
     <Dialog open={open}>
-      <DialogTitle style={titleStyle}>{title}</DialogTitle>
+      <DialogTitle style={titleStyle2}>{title}</DialogTitle>
       <DialogActions>
-        <Button onClick={onClose} color="primary" style={dialogContentStyle}>
+        <Button onClick={onClose} color="primary" style={{ ...dialogContentStyle, ...primaryButtonStyle }}>
           {closeText}
         </Button>
       </DialogActions>

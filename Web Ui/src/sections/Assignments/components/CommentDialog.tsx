@@ -38,13 +38,11 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   const dialogContentStyle = {
-    fontFamily: "Roboto",
     fontSize: "15px",
   };
   const titleStyle = {
     fontSize: "1.1rem",
     fontWeight: "bold",
-    fontFamily: "Roboto",
   };
 
   const navigate = useNavigate();
