@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import InputAdornment from "@mui/material/InputAdornment";
+import { useGitHubLinkValidation } from "./GitValidationHook";
 
 interface CommentDialogProps {
   open: boolean;
@@ -25,7 +26,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   onSend,
 }) => {
   const [comment, setComment] = useState("");
-  const [repo, setRepo] = useState(link);
+  const { repo, validLink, handleLinkChange } = useGitHubLinkValidation(link!);
   const [edit, setEdit] = useState(false);
 
   const handleCancel = () => {
@@ -39,10 +40,6 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setComment(event.target.value);
-  };
-
-  const handleRepoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRepo(event.target.value);
   };
 
   const dialogContentStyle = {
@@ -67,14 +64,14 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
-        {repo && (
+        {link && (
           <TextField
             margin="dense"
             label="Enlace del Repositorio"
             type="text"
             fullWidth
-            value={repo}
-            onChange={handleRepoChange}
+            value={link}
+            onChange={handleLinkChange}
             disabled={!edit}
             InputProps={{
               endAdornment: renderEndAdornmentEdit(),
@@ -104,7 +101,11 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         <Button onClick={handleCancel} color="primary">
           Cancelar
         </Button>
-        <Button onClick={handleSend} color="primary">
+        <Button
+          onClick={handleSend}
+          color="primary"
+          disabled={!validLink || repo == ""}
+        >
           Enviar
         </Button>
       </DialogActions>
