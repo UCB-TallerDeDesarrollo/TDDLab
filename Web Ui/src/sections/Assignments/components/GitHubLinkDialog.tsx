@@ -6,6 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
+import { useGitHubLinkValidation } from "./GitValidationHook";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -18,24 +19,16 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   onClose,
   onSend,
 }) => {
-  const [link, setLink] = useState("");
-  const [validLink, setValidLink] = React.useState(true);
+  const {
+    repo: link,
+    validLink,
+    handleLinkChange,
+  } = useGitHubLinkValidation("");
 
   const handleSend = () => {
     if (validLink) {
       onSend(link);
     }
-  };
-
-  const validateGitHubLink = (text: string): boolean => {
-    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-    return regex.test(text);
-  };
-
-  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLink = e.target.value;
-    setLink(newLink);
-    setValidLink(validateGitHubLink(newLink));
   };
 
   const dialogTitleStyle = {
