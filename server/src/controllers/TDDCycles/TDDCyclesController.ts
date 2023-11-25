@@ -2,18 +2,18 @@ import { Request, Response } from "express";
 import { IDBJobsRepository } from "../../modules/TDDCycles/Domain/IDBJobsRepository";
 import { IDBCommitsRepository } from "../../modules/TDDCycles/Domain/IDBCommitsRepository";
 import { IGithubRepository } from "../../modules/TDDCycles/Domain/IGithubRepository";
-import { CommitsUseCase } from "../../modules/TDDCycles/Application/getTDDCyclesUseCase";
+import { GetTDDCyclesUseCase } from "../../modules/TDDCycles/Application/getTDDCyclesUseCase";
 import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 
 class TDDCyclesController {
-  commitUseCase: CommitsUseCase;
+  tddCyclesUseCase: GetTDDCyclesUseCase;
   testResultsUseCase: GetTestResultsUseCase;
   constructor(
     dbCommitRepository: IDBCommitsRepository,
     jobRepository: IDBJobsRepository,
     githubRepository: IGithubRepository
   ) {
-    this.commitUseCase = new CommitsUseCase(
+    this.tddCyclesUseCase = new GetTDDCyclesUseCase(
       dbCommitRepository,
       githubRepository
     );
@@ -30,7 +30,7 @@ class TDDCyclesController {
           .status(400)
           .json({ error: "Bad request, missing owner or repoName" });
       }
-      const commits = await this.commitUseCase.execute(
+      const commits = await this.tddCyclesUseCase.execute(
         String(owner),
         String(repoName)
       );

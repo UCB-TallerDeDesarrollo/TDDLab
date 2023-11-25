@@ -2,7 +2,7 @@ import { IDBCommitsRepository } from "../Domain/IDBCommitsRepository";
 import { CommitDataObject } from "../Domain/commitInterfaces";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { IGithubRepository } from "../Domain/IGithubRepository";
-export class CommitsUseCase {
+export class GetTDDCyclesUseCase {
   private dbCommitRepository: IDBCommitsRepository;
   private githubRepository: IGithubRepository;
 
