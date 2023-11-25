@@ -48,8 +48,12 @@ class GroupsController {
 
   async createGroup(req: Request, res: Response): Promise<void> {
     try {
+      const { groupName } = req.body;
       const { groupDetail } = req.body;
-      const newGroup = await this.createGroupUseCase.execute({ groupDetail });
+      const newGroup = await this.createGroupUseCase.execute({
+        groupName,
+        groupDetail,
+      });
       res.status(201).json(newGroup);
     } catch (error) {
       console.error("Error adding group:", error);
@@ -72,9 +76,11 @@ class GroupsController {
     try {
       const groupId = req.params.id;
       const { groupDetail } = req.body;
+      const { groupName } = req.body;
 
       const updatedGroup = await this.updateGroupUseCase.execute(groupId, {
-        id: groupId, // Add the id here
+        id: groupId,
+        groupName,
         groupDetail,
       });
 
