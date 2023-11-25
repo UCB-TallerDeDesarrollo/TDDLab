@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import config from "../../../config/db";
 import { CommitDTO } from "../Domain/CommitDataObject";
 import { IDBCommitsRepository } from "../Domain/IDBCommitsRepository";
+import { CommitDataObject } from "../Domain/commitInterfaces";
 
 export class DBCommitsRepository implements IDBCommitsRepository {
   pool: Pool;
@@ -80,5 +81,25 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     } finally {
       client.release();
     }
+  }
+  async getCommitsNotSavedInDB(
+    owner: string,
+    repoName: string,
+    commitsData: CommitDataObject[]
+  ) {
+    let commitsToAdd = [];
+    for (const currentCommit of commitsData) {
+      let row = await this.commitExists(
+        owner,
+        repoName,
+        currentCommit.sha
+      );
+      if (row.length != 0) {
+        break;
+      } else {
+        commitsToAdd.push(currentCommit);
+      }
+    }
+    return commitsToAdd;
   }
 }
