@@ -9,16 +9,16 @@ class TDDCyclesController {
   tddCyclesUseCase: GetTDDCyclesUseCase;
   testResultsUseCase: GetTestResultsUseCase;
   constructor(
-    dbCommitRepository: IDBCommitsRepository,
-    jobRepository: IDBJobsRepository,
+    dbCommitsRepository: IDBCommitsRepository,
+    dbJobsRepository: IDBJobsRepository,
     githubRepository: IGithubRepository
   ) {
     this.tddCyclesUseCase = new GetTDDCyclesUseCase(
-      dbCommitRepository,
+      dbCommitsRepository,
       githubRepository
     );
     this.testResultsUseCase = new GetTestResultsUseCase(
-      jobRepository,
+      dbJobsRepository,
       githubRepository
     );
   }
