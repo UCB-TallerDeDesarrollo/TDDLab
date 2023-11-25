@@ -1,15 +1,15 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { CommitDTO } from "../Domain/CommitDataObject";
+import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 import { IDBCommitsRepository } from "../Domain/IDBCommitsRepository";
-import { CommitDataObject } from "../Domain/commitInterfaces";
+import { CommitDataObject } from "../Domain/CommitDataObject";
 
 export class DBCommitsRepository implements IDBCommitsRepository {
   pool: Pool;
   constructor() {
     this.pool = new Pool(config);
   }
-  async saveCommit(owner: string, repoName: string, commit: CommitDTO) {
+  async saveCommit(owner: string, repoName: string, commit: TDDCycleDataObject) {
     const client = await this.pool.connect();
     try {
       const query =

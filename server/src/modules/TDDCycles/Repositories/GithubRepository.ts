@@ -1,8 +1,9 @@
 import { Octokit } from "octokit";
 import { IGithubRepository } from "../Domain/IGithubRepository";
-import { CommitDataObject, CommitInformationDataObject } from "../Domain/commitInterfaces";
+import { CommitDataObject, CommitInformationDataObject } from "../Domain/CommitDataObject";
 import dotenv from "dotenv";
-import { JobDataObject } from "../Domain/jobInterfaces";
+import { JobDataObject } from "../Domain/JobDataObject";
+import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
@@ -149,6 +150,40 @@ export class GithubRepository implements IGithubRepository {
     } catch (error) {
       console.error("Error obtaining commit Information for TDD Cycle:", error);
       throw error;
+    }
+  }
+
+  async getCommitsInforForTDDCycle(
+    owner: string,
+    repoName: string,
+    commits: CommitDataObject[]
+  ) {
+    try {
+      const commitsFromSha = await Promise.all(
+        commits.map(commit => this.getCommitInfoForTDDCycle(owner, repoName, commit.sha))
+      );
+
+      const commitsData: TDDCycleDataObject[]= commitsFromSha.map(({ html_url, stats, commit, sha, coveragePercentage }) => ({
+        html_url,
+        stats: {
+          total: stats.total,
+          additions: stats.additions,
+          deletions: stats.deletions,
+        },
+        commit: {
+          date: commit.author.date,
+          message: commit.message,
+          url: commit.url,
+          comment_count: commit.comment_count,
+        },
+        sha,
+        coverage: coveragePercentage,
+      }));
+
+      return commitsData;
+    } catch (error) {
+      console.error("Error getting commits from SHA:", error);
+      throw new Error("Error getting commits from SHA");
     }
   }
 
