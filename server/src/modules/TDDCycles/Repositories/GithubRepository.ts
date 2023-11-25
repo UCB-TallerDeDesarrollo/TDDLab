@@ -192,4 +192,15 @@ export class GithubRepository implements IGithubRepository{
       throw error;
     }
   }
+  async getRunsOfGithubActionsIds(owner: string, repoName: string) {
+    const githubruns = await this.obtainRunsOfGithubActions(
+      owner,
+      repoName
+    );
+    const commitsWithActions: [string, number][] =
+      githubruns.data.workflow_runs.map((workFlowRun: any) => {
+        return [workFlowRun.head_commit.id, workFlowRun.id];
+      });
+    return commitsWithActions;
+  }
 }

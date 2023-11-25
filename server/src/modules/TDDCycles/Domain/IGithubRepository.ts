@@ -6,4 +6,5 @@ export interface IGithubRepository {
     timeout(ms: number): Promise<void>;
     obtainRunsOfGithubActions(owner: string, repoName: string): Promise<any>;
     obtainJobsOfACommit(owner: string, repoName: string, jobId: number, attempt: number): Promise<any>;
+    getRunsOfGithubActionsIds(owner: string, repoName: string): Promise<[string, number][]>;
 }
