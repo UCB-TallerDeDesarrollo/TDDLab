@@ -6,13 +6,13 @@ import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
 
 // Create instances of your repositories
 const dbCommitsRepository = new DBCommitsRepository();
-const jobsRepository = new DBJobsRepository();
+const dbJobsRepository = new DBJobsRepository();
 const githubRepository = new GithubRepository();
 
 // Create an instance of your controller
 const tddCyclesController = new TDDCyclesController(
   dbCommitsRepository,
-  jobsRepository,
+  dbJobsRepository,
   githubRepository
 );
 
