@@ -1,5 +1,4 @@
-import AssignmentsController from "../../src/controllers/assignments/assignmentController";
-
+import AssignmentController from "../../src/controllers/assignments/assignmentController";
 import { getAssignmentRepositoryMock } from "../__mocks__/assignments/repositoryMock";
 import {
   getAssignmentListMock,
@@ -8,11 +7,11 @@ import {
 import { createRequest } from "../__mocks__/assignments/requestMocks";
 import { createResponse } from "../__mocks__/assignments/responseMoks";
 
-let controller: AssignmentsController;
+let controller: AssignmentController;
 const assignmentRepositoryMock = getAssignmentRepositoryMock();
 
 beforeEach(() => {
-  controller = new AssignmentsController(assignmentRepositoryMock);
+  controller = new AssignmentController(assignmentRepositoryMock);
 });
 
 describe("Get assignments", () => {
@@ -109,7 +108,7 @@ describe("Delete Assignment", () => {
 
 describe("Deliver Assignment", () => {
   const assignmentRepositoryMock = getAssignmentRepositoryMock();
-  const controller = new AssignmentsController(assignmentRepositoryMock);
+  const controller = new AssignmentController(assignmentRepositoryMock);
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
       "id_assignment_pending",
@@ -119,18 +118,18 @@ describe("Deliver Assignment", () => {
     const res = createResponse();
     await controller.deliverAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({  
-      "comment": "Comentario", 
-      "description": "Esta es una tarea pendiente", 
-      "end_date": new Date("2023-01-10T00:00:00.000Z"), 
-      "id": "1", 
-      "link": "https://example.com/assignment", 
-      "start_date": new Date("2023-01-01T00:00:00.000Z"), 
-      "state": "in progress", 
-      "title": "Tarea pendiente"
+    expect(res.json).toHaveBeenCalledWith({
+      comment: "Comentario",
+      description: "Esta es una tarea pendiente",
+      end_date: new Date("2023-01-10T00:00:00.000Z"),
+      id: "1",
+      link: "https://example.com/assignment",
+      start_date: new Date("2023-01-01T00:00:00.000Z"),
+      state: "in progress",
+      title: "Tarea pendiente",
     });
   });
-  it('should respond with a status 404 and error message when assignment is not found during delivery', async () => {
+  it("should respond with a status 404 and error message when assignment is not found during delivery", async () => {
     const req = createRequest(
       "non_existing_id",
       undefined,
