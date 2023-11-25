@@ -16,7 +16,7 @@ export class GetTestResultsUseCase {
   }
   async execute(owner: string, repoName: string) {
     try {
-      const githubActionsRunsList = await this.getRunsOfGithubActionsIds(
+      const githubActionsRunsList = await this.githubRepository.getRunsOfGithubActionsIds(
         owner,
         repoName
       );
@@ -99,16 +99,5 @@ export class GetTestResultsUseCase {
       })
     );
     return jobs;
-  }
-  async getRunsOfGithubActionsIds(owner: string, repoName: string) {
-    const githubruns = await this.githubRepository.obtainRunsOfGithubActions(
-      owner,
-      repoName
-    );
-    const commitsWithActions: [string, number][] =
-      githubruns.data.workflow_runs.map((workFlowRun: any) => {
-        return [workFlowRun.head_commit.id, workFlowRun.id];
-      });
-    return commitsWithActions;
   }
 }
