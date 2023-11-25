@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import config from "../../../config/db";
 import { JobDB } from '../Domain/JobDataObject';
 import { IDBJobsRepository } from '../Domain/IDBJobsRepository';
+import { JobDataObject } from "../Domain/jobInterfaces";
 
 export class DBJobsRepository implements IDBJobsRepository {
     pool: Pool
@@ -19,8 +20,8 @@ export class DBJobsRepository implements IDBJobsRepository {
         } catch (error) {
             console.error('Error inserting job:', error);
         } finally {
-            if (client) { 
-                client.release(); 
+            if (client) {
+                client.release();
             }
         }
     }
@@ -70,5 +71,40 @@ export class DBJobsRepository implements IDBJobsRepository {
         } finally {
             client.release();
         }
+    }
+    async getJobsNotSavedInDB(
+        owner: string,
+        repoName: string,
+        commitsWithActions: [string, number][]
+    ) {
+        let jobsToAdd = [];
+
+        for (const currentJob of commitsWithActions) {
+            let row = await this.checkIfJobExistsInDb(
+                owner,
+                repoName,
+                currentJob[1]
+            );
+            if (row.length != 0) break;
+            else jobsToAdd.push(currentJob);
+        }
+        return jobsToAdd;
+    }
+    async saveJobsToDB(
+        owner: string,
+        repoName: string,
+        jobs: Record<string, JobDataObject>
+    ) {
+        let jobsFormatted: JobDB[] = Object.values(jobs).map((job) => ({
+            id: job.jobs[0].run_id,
+            sha: job.jobs[0].head_sha,
+            owner: owner,
+            reponame: repoName,
+            conclusion: job.jobs[0].conclusion,
+        }));
+
+        await Promise.all(
+            jobsFormatted.map((job) => this.saveJob(job))
+        );
     }
 }
