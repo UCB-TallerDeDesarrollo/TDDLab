@@ -6,6 +6,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import CancelIcon from "@mui/icons-material/Cancel";
+import InputAdornment from "@mui/material/InputAdornment";
 
 interface CommentDialogProps {
   open: boolean;
@@ -21,6 +25,8 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   onSend,
 }) => {
   const [comment, setComment] = useState("");
+  const [repo, setRepo] = useState(link);
+  const [edit, setEdit] = useState(false);
 
   const handleCancel = () => {
     setComment("");
@@ -28,11 +34,15 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   const handleSend = () => {
-    onSend(comment, link ?? "");
+    onSend(comment, repo ?? "");
   };
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setComment(event.target.value);
+  };
+
+  const handleRepoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRepo(event.target.value);
   };
 
   const dialogContentStyle = {
@@ -45,14 +55,31 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     fontFamily: "Roboto",
   };
 
+  const renderEndAdornmentEdit = () => (
+    <InputAdornment position="end">
+      <IconButton aria-label="edit" edge="end" onClick={() => setEdit(!edit)}>
+        {edit ? <CancelIcon /> : <EditIcon />}
+      </IconButton>
+    </InputAdornment>
+  );
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
-        {link && (
-          <DialogContentText style={dialogContentStyle}>
-            Enlace: {link}
-          </DialogContentText>
+        {repo && (
+          <TextField
+            margin="dense"
+            label="Enlace del Repositorio"
+            type="text"
+            fullWidth
+            value={repo}
+            onChange={handleRepoChange}
+            disabled={!edit}
+            InputProps={{
+              endAdornment: renderEndAdornmentEdit(),
+            }}
+          />
         )}
       </DialogContent>
       <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
