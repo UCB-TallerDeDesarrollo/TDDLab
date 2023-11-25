@@ -8,11 +8,11 @@ import {
 import { createRequest } from "../__mocks__/assignments/requestMocks";
 import { createResponse } from "../__mocks__/assignments/responseMoks";
 
-let controller: AssignmentsController;
+let controller: AssignmentController;
 const assignmentRepositoryMock = getAssignmentRepositoryMock();
 
 beforeEach(() => {
-  controller = new AssignmentsController(assignmentRepositoryMock);
+  controller = new AssignmentController(assignmentRepositoryMock);
 });
 
 describe("Get assignments", () => {
@@ -109,7 +109,7 @@ describe("Delete Assignment", () => {
 
 describe("Deliver Assignment", () => {
   const assignmentRepositoryMock = getAssignmentRepositoryMock();
-  const controller = new AssignmentsController(assignmentRepositoryMock);
+  const controller = new AssignmentController(assignmentRepositoryMock);
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
       "id_assignment_pending",

@@ -6,7 +6,7 @@ import GetAssignmentsUseCase from "../../modules/Assignments/application/Assignm
 import UpdateAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/updateAssignmentUseCase";
 import AssignmentRepository from "../../modules/Assignments/repositories/AssignmentRepository";
 import DeliverAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/deliverAssignmentaUseCase";
-class AssignmentsController {
+class AssignmentController {
   private createAssignmentUseCase: CreateAssignmentUseCase;
   private deleteAssignmentUseCase: DeleteAssignmentUseCase;
   private getAssignmentByIdUseCase: GetAssignmentByIdUseCase;
@@ -133,4 +133,4 @@ class AssignmentsController {
   }
 }
 
-export default AssignmentsController;
+export default AssignmentController;
