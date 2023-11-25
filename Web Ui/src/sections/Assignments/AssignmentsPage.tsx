@@ -30,12 +30,12 @@ function AssignmentManager() {
 
   return (
     <AssignmentManagerContainer>
-      <AssignmentsContainer>
+      <AssignmentsContainer data-testid="assignments-container">
         <Assignments ShowForm={handleShowForm} />
       </AssignmentsContainer>
       <FormsContainer>
-        {showForm && <Form />}
-        <InvitationComponent />
+        {showForm && <Form data-testid="form-container"/>}
+        <InvitationComponent data-testid="invitation-component"/>
       </FormsContainer>
     </AssignmentManagerContainer>
   );
