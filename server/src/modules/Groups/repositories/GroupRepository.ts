@@ -21,15 +21,17 @@ class GroupRepository {
   }
 
   public mapRowToGroup(row: any): GroupDTO {
+    console.log("Row from database:", row);
+
     return {
       id: row.id,
-      groupName: row.groupName,
-      groupDetail: row.groupDetail,
+      groupName: row.groupname,
+      groupDetail: row.groupdetail,
     };
   }
 
   async obtainGroups(): Promise<GroupDTO[]> {
-    const query = "SELECT id,groupName,groupDetail FROM Groups";
+    const query = "SELECT id, groupname, groupdetail FROM Groups";
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToGroup(row));
   }
@@ -47,7 +49,7 @@ class GroupRepository {
   async createGroup(group: GroupCreationObject): Promise<GroupDTO> {
     const { groupName, groupDetail } = group; // Added groupName to the destructuring
     const query =
-      "INSERT INTO Groups (groupName, groupDetail) VALUES ($1, $2) RETURNING *"; // Updated to include the new field
+      "INSERT INTO Groups (groupName, groupDetail) VALUES ($1, $2) RETURNING *";
     const values = [groupName, groupDetail];
     const rows = await this.executeQuery(query, values);
     return this.mapRowToGroup(rows[0]);
