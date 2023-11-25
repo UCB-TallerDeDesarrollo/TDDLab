@@ -1,14 +1,5 @@
 import GroupRepository from "../../repositories/GroupRepository";
-import GroupDataObject from "../../domain/Group";
-
-interface UpdateGroupData {
-  id: string;
-  groupDetail: string;
-  // Include other fields that can be updated
-  // For example:
-  // name: string;
-  // description: string;
-}
+import GroupDTO from "../../domain/Group";
 
 class UpdateGroupUseCase {
   private groupRepository: GroupRepository;
@@ -19,8 +10,8 @@ class UpdateGroupUseCase {
 
   async execute(
     groupId: string,
-    updatedGroupData: UpdateGroupData
-  ): Promise<GroupDataObject | null> {
+    updatedGroupData: GroupDTO
+  ): Promise<GroupDTO | null> {
     try {
       // Check if the group with the given ID exists
       const existingGroup = await this.groupRepository.obtainGroupById(groupId);
@@ -33,10 +24,9 @@ class UpdateGroupUseCase {
       // Update the group data with the provided values
       const updatedGroup = {
         ...existingGroup,
-        // Update fields based on the provided data
-        // For example:
-        // name: updatedGroupData.name || existingGroup.name,
-        // description: updatedGroupData.description || existingGroup.description,
+        groupName: updatedGroupData.groupName || existingGroup.groupName,
+        groupDetail: updatedGroupData.groupDetail || existingGroup.groupDetail,
+        // Add other fields as needed
       };
 
       // Call the repository method to update the group
