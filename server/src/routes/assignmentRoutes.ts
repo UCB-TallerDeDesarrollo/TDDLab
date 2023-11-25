@@ -1,5 +1,5 @@
 import express from "express";
-import AssignmentController from "../controllers/Assignments/assignmentController";
+import AssignmentController from "../controllers/assignments/assignmentController";
 import AssignmentRepository from "../modules/Assignments/repositories/AssignmentRepository";
 const repository = new AssignmentRepository();
 const assignmentController = new AssignmentController(repository);
