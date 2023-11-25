@@ -1,5 +1,3 @@
-import { JobDataObject } from "../Domain/jobInterfaces";
-import { JobDB } from "../Domain/JobDataObject";
 import { IDBJobsRepository } from "../Domain/IDBJobsRepository";
 import { IGithubRepository } from "../Domain/IGithubRepository";
 
@@ -8,10 +6,10 @@ export class GetTestResultsUseCase {
   private githubRepository: IGithubRepository;
 
   constructor(
-    jobRepository: IDBJobsRepository,
+    dbJobRepository: IDBJobsRepository,
     githubRepository: IGithubRepository
   ) {
-    this.dbJobRepository = jobRepository;
+    this.dbJobRepository = dbJobRepository;
     this.githubRepository = githubRepository;
   }
   async execute(owner: string, repoName: string) {
@@ -33,7 +31,7 @@ export class GetTestResultsUseCase {
         repoName,
         jobsToSave
       );
-      await this.saveJobsToDB(owner, repoName, jobsFormatted);
+      await this.dbJobRepository.saveJobsToDB(owner, repoName, jobsFormatted);
       const jobs = await this.dbJobRepository.getJobs(owner, repoName);
       return jobs;
     } catch (error) {
