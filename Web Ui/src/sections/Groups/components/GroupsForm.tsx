@@ -16,7 +16,6 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({ open, handleClose }
   const [groupDescription, setGroupDescription] = useState('');
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
-  const getGroups = groupRepository.getGroups();
 
   useEffect(() => {
     const fetchGroups = async () => {
