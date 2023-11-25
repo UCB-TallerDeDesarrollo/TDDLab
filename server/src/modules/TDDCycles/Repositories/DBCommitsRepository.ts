@@ -102,4 +102,17 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     }
     return commitsToAdd;
   }
+  async saveCommitsToDB(
+    owner: string,
+    repoName: string,
+    newCommits: TDDCycleDataObject[]
+  ) {
+    try {
+        await Promise.all(
+        newCommits.map(commit => this.saveCommit(owner, repoName, commit))
+        );
+    } catch (error) {
+      console.error("Error updating the commit table in the database:", error);
+    }
+  }
 }

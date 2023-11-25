@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { JobDB } from '../Domain/TestResultDataObject';
+import { TestResultDataObject } from '../Domain/TestResultDataObject';
 import { IDBJobsRepository } from '../Domain/IDBJobsRepository';
 import { JobDataObject } from "../Domain/JobDataObject";
 
@@ -9,7 +9,7 @@ export class DBJobsRepository implements IDBJobsRepository {
     constructor() {
         this.pool = new Pool(config)
     }
-    async saveJob(job: JobDB) {
+    async saveJob(job: TestResultDataObject) {
         const client = await this.pool.connect();
         try {
             const { id, sha, owner, reponame, conclusion } = job;
@@ -95,7 +95,7 @@ export class DBJobsRepository implements IDBJobsRepository {
         repoName: string,
         jobs: Record<string, JobDataObject>
     ) {
-        let jobsFormatted: JobDB[] = Object.values(jobs).map((job) => ({
+        let jobsFormatted: TestResultDataObject[] = Object.values(jobs).map((job) => ({
             id: job.jobs[0].run_id,
             sha: job.jobs[0].head_sha,
             owner: owner,
