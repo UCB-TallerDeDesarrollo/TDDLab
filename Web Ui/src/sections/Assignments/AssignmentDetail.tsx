@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
 import { formatDate } from "../../utils/dateUtils";
 import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
-import { useParams, createSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
+import { redirectToGitHubGraph } from "../../utils/redirectToGitHubGraphUtils";
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
@@ -91,28 +92,7 @@ const AssignmentDetail: React.FC = () => {
   };
 
   const handleRedirect = () => {
-    if (assignment?.link) {
-      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(assignment.link);
-
-      if (match) {
-        const [, user, repo] = match;
-        console.log(user, repo);
-        navigate({
-          pathname: "/graph",
-          search: createSearchParams({
-            repoOwner: user,
-            repoName: repo,
-          }).toString(),
-        });
-      } else {
-        alert(
-          "Invalid GitHub URL. Please enter a valid GitHub repository URL."
-        );
-      }
-    } else {
-      alert("No GitHub URL found for this assignment.");
-    }
+    redirectToGitHubGraph(assignment?.link, navigate);
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
