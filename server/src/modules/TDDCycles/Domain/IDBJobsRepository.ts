@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
-import { JobDB } from './JobDataObject';
-import { JobDataObject } from './jobInterfaces';
+import { JobDB } from './TestResultDataObject';
+import { JobDataObject } from './JobDataObject';
 
 export interface IDBJobsRepository {
     pool: Pool;

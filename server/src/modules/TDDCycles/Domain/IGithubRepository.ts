@@ -1,5 +1,6 @@
-import { CommitDataObject, CommitInformationDataObject } from "./commitInterfaces";
-import { JobDataObject } from "./jobInterfaces";
+import { TDDCycleDataObject } from "./TDDCycleDataObject";
+import { CommitDataObject, CommitInformationDataObject } from "./CommitDataObject";
+import { JobDataObject } from "./JobDataObject";
 
 export interface IGithubRepository {
     getCommits(owner: string, repoName: string): Promise<CommitDataObject[]>;
@@ -9,4 +10,5 @@ export interface IGithubRepository {
     obtainJobsOfACommit(owner: string, repoName: string, jobId: number, attempt: number): Promise<any>;
     getRunsOfGithubActionsIds(owner: string, repoName: string): Promise<[string, number][]>;
     getJobsDataFromGithub(owner: string, repoName: string, listOfCommitsWithActions: [string, number][]): Promise<Record<string, JobDataObject>>;
+    getCommitsInforForTDDCycle(owner: string, repoName: string, commits: CommitDataObject[]): Promise<TDDCycleDataObject[]>;
 }
