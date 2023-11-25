@@ -6,6 +6,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { redirectToGitHubGraph } from "../../../utils/redirectToGitHubGraphUtils";
+import { useNavigate } from "react-router-dom";
 
 interface CommentDialogProps {
   open: boolean;
@@ -43,6 +45,12 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     fontWeight: "bold",
   };
 
+  const navigate = useNavigate();
+
+  const handleRedirect = () => {
+    redirectToGitHubGraph(link, navigate);
+  };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
@@ -52,6 +60,12 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
             Enlace: {link}
           </DialogContentText>
         )}
+        <Button
+          // disabled={!isTaskInProgressOrDelivered}
+          onClick={handleRedirect}
+          color="primary">
+            Ver grafica
+        </Button>
       </DialogContent>
       <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
       <DialogContent>
