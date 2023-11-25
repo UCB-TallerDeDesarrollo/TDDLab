@@ -16,17 +16,12 @@ export class GetTDDCyclesUseCase {
   async execute(owner: string, repoName: string) {
     try {
       const commitsFromGithub = await this.githubRepository.getCommits(owner, repoName);
-      let commitsToSave;
-
-      if (!(await this.dbCommitRepository.repositoryExists(owner, repoName))) {
-        commitsToSave = commitsFromGithub;
-      } else {
+      let commitsToSave = commitsFromGithub;
+      if ((await this.dbCommitRepository.repositoryExists(owner, repoName))) {
         commitsToSave = await this.getCommitsNotSavedInDB(owner, repoName, commitsFromGithub);
       }
-
       const commitsInfoForTDDCycles = await this.getCommitsInforForTDDCycle(owner, repoName, commitsToSave);
       await this.saveCommitsToDB(owner, repoName, commitsInfoForTDDCycles);
-
       const commits = await this.dbCommitRepository.getCommits(owner, repoName);
       return commits;
     } catch (error) {
