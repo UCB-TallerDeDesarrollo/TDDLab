@@ -1,5 +1,4 @@
 import AssignmentController from "../../src/controllers/Assignments/assignmentController";
-
 import { getAssignmentRepositoryMock } from "../__mocks__/assignments/repositoryMock";
 import {
   getAssignmentListMock,
