@@ -1,5 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import GroupsRepository from '../../../modules/Groups/repository/GroupsRepository';
+import GetGroups from '../../../modules/Groups/application/GetGroups';
+import { GroupDataObject } from '../../../modules/Groups/domain/GroupInterface';
+import CreateGroup from '../../../modules/Groups/application/CreateGroup';
+
 
 interface CreateGroupPopupProps {
   open: boolean;
@@ -9,13 +14,37 @@ interface CreateGroupPopupProps {
 const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({ open, handleClose }) => {
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
+  const groupRepository = new GroupsRepository();
+  const getGroups = groupRepository.getGroups();
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const getGroups = new GetGroups(groupRepository);
+      const allGroups = await getGroups.getGroups();
+      setGroups(allGroups);
+    };
+
+    fetchGroups();
+  }, []);
 
   const handleCancel = () => {
     handleClose();
   };
 
-  const handleCreate = () => {
-    handleClose();
+  const handleCreate = async () => {
+    // await createGroup(groupName, groupDescription);
+    // const allGroups = await getGroups();
+    // setGroups(allGroups);
+    // handleClose();
+    const createGroup=new CreateGroup(groupRepository);
+    const payload: GroupDataObject = {
+      id: 1,
+      name: '',
+      description: '',
+    };
+    const response =  await createGroup.createGroup(payload);
+    console.log('response : ', response);
   };
 
   return (
