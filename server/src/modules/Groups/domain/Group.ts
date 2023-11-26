@@ -1,7 +1,6 @@
-// GroupDTO.ts
-
 interface GroupDTO {
-  id: number;
+  id: string;
+  groupName: string;
   groupDetail: string;
 }
 
