@@ -4,16 +4,24 @@ import { formatDate } from "../../utils/dateUtils";
 import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
-import { Button } from "@mui/material";
+import { Button, Card, CardContent, Typography } from "@mui/material";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
+import {
+  AccessTime as AccessTimeIcon,
+  Link as LinkIcon,
+  Comment as CommentIcon,
+} from "@mui/icons-material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
+
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
-  const [linkDialogOpen, setLinkDialogOpen] = useState(false); // State for GitHub link dialog visibility
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentId = Number(id);
   const navigate = useNavigate();
@@ -33,10 +41,8 @@ const AssignmentDetail: React.FC = () => {
   }, [assignmentId]);
 
   const isTaskPending = assignment?.state === "pending";
-
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
-
   const isTaskDeliveredOrPending =
     assignment?.state === "delivered" || assignment?.state === "pending";
 
@@ -49,7 +55,8 @@ const AssignmentDetail: React.FC = () => {
     try {
       await submitAssignment.submitAssignment(
         updatedAssignment.id,
-        updatedAssignment.link
+        updatedAssignment.link,
+        updatedAssignment.comment
       );
     } catch (error) {
       console.error(error);
@@ -132,8 +139,7 @@ const AssignmentDetail: React.FC = () => {
 
     if (assignmentId) {
       const updatedAssignment = await handleFindAssignment(assignmentId, link);
-
-      console.log(updatedAssignment);
+      updatedAssignment.comment = comment;
 
       await handleUpdateAssignment(updatedAssignment);
 
@@ -155,53 +161,193 @@ const AssignmentDetail: React.FC = () => {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {assignment ? (
-        <div>
-          <h2>{assignment.title}</h2>
-          <p>Descripción: {assignment.description}</p>
-          <p>Fecha Inicio: {formatDate(assignment.start_date.toString())}</p>
-          <p>Fecha Fin: {formatDate(assignment.end_date.toString())}</p>
-          <p>Estado: {getDisplayStatus(assignment.state)}</p>
-          <p>Enlace: {assignment.link}</p>
-          {assignment.comment ? <p>Comentario: {assignment.comment}</p> : null}
+        <Card variant="elevation" elevation={0}>
+          <CardContent>
+            <div style={{ marginBottom: "40px" }}>
+              <Typography
+                variant="h5"
+                component="div"
+                style={{ fontSize: "30px", lineHeight: "3.8" }}
+              >
+                {assignment.title}
+              </Typography>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                }}
+              >
+                <NotesOutlinedIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                >
+                  <strong>Instrucciones:</strong> {assignment.description}
+                </Typography>
+              </div>
 
-          <Button
-            variant="contained"
-            disabled={!isTaskPending}
-            onClick={handleOpenLinkDialog}
-          >
-            Iniciar tarea
-          </Button>
-          <Button
-            disabled={!isTaskInProgressOrDelivered}
-            onClick={handleRedirect}
-            color="primary"
-          >
-            Ver grafica
-          </Button>
-
-          <GitLinkDialog
-            open={linkDialogOpen}
-            onClose={handleCloseLinkDialog}
-            onSend={handleSendGithubLink}
-          />
-
-          <Button
-            variant="contained"
-            disabled={isTaskDeliveredOrPending}
-            onClick={handleOpenCommentDialog}
-          >
-            Enviar Tarea
-          </Button>
-
-          <CommentDialog
-            open={isCommentDialogOpen}
-            link={assignment?.link}
-            onSend={handleSendComment}
-            onClose={handleCloseCommentDialog}
-          />
-        </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                }}
+              >
+                <CalendarMonthIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                >
+                  <strong>Inicio:</strong>{" "}
+                  {formatDate(assignment.start_date.toString())}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                }}
+              >
+                <CalendarMonthIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                >
+                  <strong>Fecha límite:</strong>{" "}
+                  {formatDate(assignment.end_date.toString())}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                }}
+              >
+                <AccessTimeIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                >
+                  <strong>Estado:</strong> {getDisplayStatus(assignment.state)}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                }}
+              >
+                <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                >
+                  <strong>Enlace:</strong>
+                  <a
+                    href={assignment.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {assignment.link}
+                  </a>
+                </Typography>
+              </div>
+              {assignment.comment ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <CommentIcon
+                    style={{ marginRight: "8px", color: "#666666" }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  >
+                    <strong>Comentario:</strong> {assignment.comment}
+                  </Typography>
+                </div>
+              ) : null}
+            </div>
+            <Button
+              variant="contained"
+              disabled={!isTaskPending}
+              onClick={handleOpenLinkDialog}
+              style={{
+                textTransform: "none",
+                fontSize: "15px",
+                marginRight: "8px",
+              }}
+            >
+              Iniciar tarea
+            </Button>
+            <Button
+              variant="contained"
+              disabled={!isTaskInProgressOrDelivered}
+              onClick={handleRedirect}
+              color="primary"
+              style={{
+                textTransform: "none",
+                fontSize: "15px",
+                marginRight: "8px",
+              }}
+            >
+              Ver gráfica
+            </Button>
+            <GitLinkDialog
+              open={linkDialogOpen}
+              onClose={handleCloseLinkDialog}
+              onSend={handleSendGithubLink}
+            />
+            <Button
+              variant="contained"
+              disabled={isTaskDeliveredOrPending}
+              onClick={handleOpenCommentDialog}
+              style={{
+                textTransform: "none",
+                fontSize: "15px",
+                marginRight: "8px",
+              }}
+            >
+              Enviar tarea
+            </Button>
+            <CommentDialog
+              open={isCommentDialogOpen}
+              link={assignment?.link}
+              onSend={handleSendComment}
+              onClose={handleCloseCommentDialog}
+            />
+          </CardContent>
+        </Card>
       ) : (
         <div
           style={{
