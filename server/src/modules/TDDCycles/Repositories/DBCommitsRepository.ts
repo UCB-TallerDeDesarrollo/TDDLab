@@ -82,7 +82,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       client.release();
     }
   }
-  async getCommitsNotSavedInDB(
+  async getCommitsNotSaved(
     owner: string,
     repoName: string,
     commitsData: CommitDataObject[]
@@ -102,7 +102,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     }
     return commitsToAdd;
   }
-  async saveCommitsToDB(
+  async saveCommitsList(
     owner: string,
     repoName: string,
     newCommits: TDDCycleDataObject[]
