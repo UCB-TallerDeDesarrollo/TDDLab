@@ -81,17 +81,17 @@ function App() {
         <Route
           path="/groups"
           element={
-            <ProtectedRouteComponent>
+           <ProtectedRouteComponent>
               <Groups />
-            </ProtectedRouteComponent>
+           </ProtectedRouteComponent>
           }
         />
         <Route
           path="/user"
           element={
-            <ProtectedRouteComponent>
+           <ProtectedRouteComponent>
               <User />
-            </ProtectedRouteComponent>
+           </ProtectedRouteComponent>
           }
         />
         <Route
