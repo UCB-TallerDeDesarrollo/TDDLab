@@ -20,7 +20,7 @@ export class GetTestResultsUseCase {
       );
       let jobsToSave = githubActionsRunsList;
       if (await this.dbJobRepository.repositoryExists(owner, repoName)) {
-        jobsToSave = await this.dbJobRepository.getJobsNotSavedInDB(
+        jobsToSave = await this.dbJobRepository.getJobsNotSaved(
           owner,
           repoName,
           githubActionsRunsList
@@ -31,7 +31,7 @@ export class GetTestResultsUseCase {
         repoName,
         jobsToSave
       );
-      await this.dbJobRepository.saveJobsToDB(owner, repoName, jobsFormatted);
+      await this.dbJobRepository.saveJobsList(owner, repoName, jobsFormatted);
       const jobs = await this.dbJobRepository.getJobs(owner, repoName);
       return jobs;
     } catch (error) {
