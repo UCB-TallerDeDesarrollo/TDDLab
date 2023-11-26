@@ -28,8 +28,9 @@ class DeliverAssignmentUseCase {
       if (assignment.state == "pending") {
         assignment.state = "in progress";
       } else {
+        assignment.comment = comment;
         assignment.state = "delivered";
-        assignment.comment = comment; // Set the comment property
+        // Set the comment property
       }
 
       // Update the assignment in the repository
