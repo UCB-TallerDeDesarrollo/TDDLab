@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 describe("Update an assignment", () => {
-  it("Should successfully update an assignment", async () => {
+  it("Should successfully update an assignment title", async () => {
     const assignmentId = 1;
     const assignment: AssignmentDataObject = {
       id: assignmentId,
@@ -38,5 +38,31 @@ describe("Update an assignment", () => {
       const obtainedAssignment = await mockRepository.getAssignmentById(1);
     expect(obtainedAssignment).toEqual(newAssignment);
   });
- 
+  it("Should successfully update an assignment description", async () => {
+    const assignmentId = 1;
+    const assignment: AssignmentDataObject = {
+      id: assignmentId,
+      title: "Tarea 1",
+      description: "Esta es la primera tarea",
+      start_date: new Date("2023-01-01"),
+      end_date: new Date("2023-01-10"),
+      state: "inProgress",
+      link: "Enlace",
+      comment: "Comentario",
+    };
+    const newAssignment: AssignmentDataObject = {
+        id: 1,
+        title: "Tarea 1",
+        description: "Esta descripción está actualizada",
+        start_date: new Date("2023-01-01"),
+        end_date: new Date("2023-01-10"),
+        state: "inProgress",
+        link: "Enlace",
+        comment: "Comentario",
+      };
+    mockRepository.createAssignment(assignment);
+      await updateAssignment.updateAssignment(assignmentId,newAssignment);
+      const obtainedAssignment = await mockRepository.getAssignmentById(1);
+    expect(obtainedAssignment).toEqual(newAssignment);
+  });
 });
