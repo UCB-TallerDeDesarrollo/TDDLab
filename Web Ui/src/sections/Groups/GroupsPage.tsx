@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -9,6 +9,9 @@ import LinkIcon from "@mui/icons-material/Link";
 import { ConfirmationDialog } from "../Assignments/components/ConfirmationDialog";
 import { ValidationDialog } from "../Assignments/components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm"; 
+import { GroupDataObject } from '../../modules/Groups/domain/GroupInterface';
+import GetGroups from '../../modules/Groups/application/GetGroups';
+import GroupsRepository from '../../modules/Groups/repository/GroupsRepository';
 
 
 import {
@@ -47,6 +50,22 @@ function Groups() {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false); 
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
+  const groupRepository = new GroupsRepository();
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const getGroups = new GetGroups(groupRepository);
+      const allGroups = await getGroups.getGroups();
+      console.log('allGroups: ', allGroups);
+      setGroups(allGroups);
+    };
+
+    fetchGroups();
+  }, []);
+
+
+
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -105,15 +124,13 @@ function Groups() {
   const handleConfirmDelete = () => {
     console.log(`Eliminar grupo ${selectedRow}`);
     setConfirmationOpen(false);
-    // Abre el ValidationDialog
     setValidationDialogOpen(true);
   };
 
   const handleValidationDialogClose = () => {
-    // Cierra el ValidationDialog
     setValidationDialogOpen(false);
   };
-
+console.log("Estos son los grupos",groups);
   return (
     <CenteredContainer>
       <section className="Grupos">
@@ -145,15 +162,15 @@ function Groups() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {["Grupo 1", "Grupo 2", "Grupo 3"].map((grupo, index) => (
-              <React.Fragment key={grupo}>
+          {groups.map((group, index) => (
+              <React.Fragment key={group.groupName}>
                 <TableRow
                   selected={isRowSelected(index)}
                   onClick={() => handleRowClick(index)}
                   onMouseEnter={() => handleRowHover(index)}
                   onMouseLeave={() => handleRowHover(null)}
                 >
-                  <TableCell>{grupo}</TableCell>
+                  <TableCell>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
                       <Tooltip title="Tareas" arrow>
@@ -174,20 +191,21 @@ function Groups() {
                           <GroupsIcon />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton
-                          aria-label="eliminar"
-                          onClick={(event) => handleDeleteClick(event, index)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
+                      
                       <Tooltip title="Copiar enlace de invitacion" arrow>
                         <IconButton
                           aria-label="enlace"
                           onClick={(event) => handleLinkClick(event, index)}
                         >
                           <LinkIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Eliminar grupo" arrow>
+                        <IconButton
+                          aria-label="eliminar"
+                          onClick={(event) => handleDeleteClick(event, index)}
+                        >
+                          <DeleteIcon />
                         </IconButton>
                       </Tooltip>
                     </ButtonContainer>
@@ -210,7 +228,7 @@ function Groups() {
                         }}
                       >
                         <div style={{ padding: "50px", marginLeft: "-30px" }}>
-                          Contenido adicional para la fila {grupo}
+                          Detalle del grupo: {  groups[index].groupDetail}
                         </div>
                       </div>
                     </Collapse>
@@ -241,7 +259,7 @@ function Groups() {
       {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
-          title="Tarea eliminada exitosamente"
+          title="Grupo eliminado exitosamente"
           closeText="Cerrar"
           onClose={handleValidationDialogClose}
         />
