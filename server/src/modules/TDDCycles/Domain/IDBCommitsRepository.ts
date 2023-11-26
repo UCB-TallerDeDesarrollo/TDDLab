@@ -8,6 +8,6 @@ export interface IDBCommitsRepository {
   getCommits(owner: string, repoName: string): Promise<any>;
   commitExists(owner: string, repoName: string, sha: string): Promise<any>;
   repositoryExists(owner: string, repoName: string): Promise<boolean>;
-  getCommitsNotSavedInDB(owner: string, repoName: string, commitsData: CommitDataObject[]): Promise<CommitDataObject[]>;
-  saveCommitsToDB(owner: string, repoName: string, newCommits: TDDCycleDataObject[]): Promise<void>;
+  getCommitsNotSaved(owner: string, repoName: string, commitsData: CommitDataObject[]): Promise<CommitDataObject[]>;
+  saveCommitsList(owner: string, repoName: string, newCommits: TDDCycleDataObject[]): Promise<void>;
 }
