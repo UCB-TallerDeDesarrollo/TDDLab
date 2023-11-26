@@ -42,7 +42,7 @@ export class DBJobsRepository implements IDBJobsRepository {
             }
         }
     }
-    async checkIfJobExistsInDb(owner: string, repo: string, jobId: number) {
+    async jobExists(owner: string, repo: string, jobId: number) {
         let client;
         try {
             client = await this.pool.connect();
@@ -72,7 +72,7 @@ export class DBJobsRepository implements IDBJobsRepository {
             client.release();
         }
     }
-    async getJobsNotSavedInDB(
+    async getJobsNotSaved(
         owner: string,
         repoName: string,
         commitsWithActions: [string, number][]
@@ -80,7 +80,7 @@ export class DBJobsRepository implements IDBJobsRepository {
         let jobsToAdd = [];
 
         for (const currentJob of commitsWithActions) {
-            let row = await this.checkIfJobExistsInDb(
+            let row = await this.jobExists(
                 owner,
                 repoName,
                 currentJob[1]
@@ -90,7 +90,7 @@ export class DBJobsRepository implements IDBJobsRepository {
         }
         return jobsToAdd;
     }
-    async saveJobsToDB(
+    async saveJobsList(
         owner: string,
         repoName: string,
         jobs: Record<string, JobDataObject>
