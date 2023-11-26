@@ -9,6 +9,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import { ConfirmationDialog } from "../Assignments/components/ConfirmationDialog";
 import { ValidationDialog } from "../Assignments/components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm"; 
+import { GroupDataObject } from '../../modules/Groups/domain/GroupInterface';
 
 
 import {
@@ -47,6 +48,9 @@ function Groups() {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false); 
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
+
+
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -145,15 +149,15 @@ function Groups() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {["Grupo 1", "Grupo 2", "Grupo 3"].map((grupo, index) => (
-              <React.Fragment key={grupo}>
+          {groups.map((group, index) => (
+              <React.Fragment key={group.groupName}>
                 <TableRow
                   selected={isRowSelected(index)}
                   onClick={() => handleRowClick(index)}
                   onMouseEnter={() => handleRowHover(index)}
                   onMouseLeave={() => handleRowHover(null)}
                 >
-                  <TableCell>{grupo}</TableCell>
+                  <TableCell>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
                       <Tooltip title="Tareas" arrow>
@@ -210,7 +214,9 @@ function Groups() {
                         }}
                       >
                         <div style={{ padding: "50px", marginLeft: "-30px" }}>
-                          Contenido adicional para la fila {grupo}
+                          Contenido adicional para la fila {group.groupDetail}
+                          <br />
+  Detalle del grupo: {  groups[index].groupDetail}
                         </div>
                       </div>
                     </Collapse>

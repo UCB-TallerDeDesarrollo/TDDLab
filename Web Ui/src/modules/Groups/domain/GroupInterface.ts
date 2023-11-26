@@ -1,5 +1,4 @@
 export interface GroupDataObject {
-    id: number;
-    name: string;
-    description: string;
-  }
+  groupName: string;
+  groupDetail: string;
+}

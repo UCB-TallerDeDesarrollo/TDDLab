@@ -21,6 +21,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({ open, handleClose }
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
+      console.log('allGroups : ', allGroups);
       setGroups(allGroups);
     };
 
@@ -32,19 +33,28 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({ open, handleClose }
   };
 
   const handleCreate = async () => {
-    // await createGroup(groupName, groupDescription);
-    // const allGroups = await getGroups();
-    // setGroups(allGroups);
-    // handleClose();
-    const createGroup=new CreateGroup(groupRepository);
-    const payload: GroupDataObject = {
-      id: 1,
-      name: '',
-      description: '',
-    };
-    const response =  await createGroup.createGroup(payload);
-    console.log('response : ', response);
+    const createGroup = new CreateGroup(groupRepository);
+  const payload: GroupDataObject = {
+    groupName: groupName,
+    groupDetail: groupDescription,
   };
+  try {
+    const response: any = await createGroup.createGroup(payload);
+    console.log('response : ', response);
+    if (response && typeof response.id !== 'undefined') {
+      const getGroups = new GetGroups(groupRepository);
+      const allGroups = await getGroups.getGroups();
+      setGroups(allGroups);
+      handleClose();
+    } else {
+      console.error('La respuesta de la creación del grupo no es válida.');
+    }
+  } catch (error) {
+    console.error('Error al crear el grupo:', error);
+  }
+  console.log('groups:', groups);
+};
+
 
   return (
     <Dialog open={open} onClose={handleClose}  >
@@ -53,6 +63,8 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({ open, handleClose }
         <TextField
           autoFocus
           margin="dense"
+          id="group-name"
+          name="groupName" 
           label="Nombre del grupo*"
           type="text"
           fullWidth
@@ -64,6 +76,8 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({ open, handleClose }
           multiline  
           rows={3.7}
           margin="dense"
+          id="group-description" 
+          name="groupDescription" 
           label="Descripcion*"
           type="text"
           fullWidth
