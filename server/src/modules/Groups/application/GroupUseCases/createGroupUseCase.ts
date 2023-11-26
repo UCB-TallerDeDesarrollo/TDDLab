@@ -1,6 +1,6 @@
 import GroupRepository from "../../repositories/GroupRepository";
-
 interface CreateGroupDTO {
+  groupName: string;
   groupDetail: string;
 }
 

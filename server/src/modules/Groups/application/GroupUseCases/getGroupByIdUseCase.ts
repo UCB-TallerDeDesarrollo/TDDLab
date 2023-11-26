@@ -1,5 +1,5 @@
 import GroupRepository from "../../repositories/GroupRepository";
-import GroupDataObject from "../../domain/Group";
+import GroupDTO from "../../domain/Group";
 class GetGroupByIdUseCase {
   private groupRepository: GroupRepository;
 
@@ -7,7 +7,7 @@ class GetGroupByIdUseCase {
     this.groupRepository = groupRepository;
   }
 
-  async execute(groupId: string): Promise<GroupDataObject | null> {
+  async execute(groupId: string): Promise<GroupDTO | null> {
     try {
       // Call the repository method to get the group by ID
       const group = await this.groupRepository.obtainGroupById(groupId);

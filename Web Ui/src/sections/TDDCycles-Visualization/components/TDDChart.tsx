@@ -54,12 +54,23 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   })();
 
 
-  function getDataLabels() {
+  function getDataLabels()  {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
         (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
       );
         return commitsArray;
+    } else {
+      return [];
+    }
+  }
+
+  function getCommitName() {
+    if (filteredCommitsObject != null) {
+      const commitsArray = filteredCommitsObject.map(
+        (commit) => commit.commit.message
+      );
+        return commitsArray.reverse();
     } else {
       return [];
     }
@@ -132,7 +143,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
         {
           label: dataLabel,
           backgroundColor: getColorConclusion(),
-          data: dataChartSelected,
+          data:dataChartSelected,
           links: getCommitLink(),
         },
       ],
@@ -166,6 +177,21 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
               weight: "bold",
               lineHeight: 1.2,
             },
+          },
+        },
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            title: function(context:any){
+              return `${getDataLabels()[context[0].dataIndex]}: ${getCommitName()[context[0].dataIndex]}`
+            },
+            afterBody: function(context:any){
+              const afterBodyContent:any = [];
+              afterBodyContent.push(`Líneas de Código Añadido: ${getCommitStats()[0][context[0].dataIndex]}`);
+              afterBodyContent.push(`Líneas de Código Eliminado: ${getCommitStats()[1][context[0].dataIndex]}`);
+              return afterBodyContent;
+            }
           },
         },
       },
