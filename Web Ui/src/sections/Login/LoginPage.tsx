@@ -17,7 +17,8 @@ const Login = () => {
         setGlobalState("authData", {
           userProfilePic: userData.photoURL,
           userEmail: userData.email,
-          userCourse: userCourse,
+          userCourse: userCourse.course,
+          userRole: userCourse.role,
         });
         navigate({
           pathname: "/",

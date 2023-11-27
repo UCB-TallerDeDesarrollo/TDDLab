@@ -23,7 +23,8 @@ export default function LoginComponent() {
         setGlobalState("authData", {
           userProfilePic: userData.photoURL,
           userEmail: userData.email,
-          userCourse: userCourse,
+          userCourse: userCourse.course,
+          userRole: userCourse.role,
         });
         setSessionCookie(userData);
       } else {
@@ -38,6 +39,7 @@ export default function LoginComponent() {
       userProfilePic: "",
       userEmail: "",
       userCourse: "",
+      userRole: "",
     });
     removeSessionCookie();
   };

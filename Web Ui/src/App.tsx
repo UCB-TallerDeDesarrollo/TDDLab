@@ -45,12 +45,14 @@ function App() {
         userProfilePic: storedSession.photoURL,
         userEmail: storedSession.email,
         userCourse: storedSession.course,
+        userRole: storedSession.role,
       });
     } else {
       setGlobalState("authData", {
         userProfilePic: "",
         userEmail: "",
         userCourse: "",
+        userRole: "",
       });
     }
   }, []);

@@ -39,7 +39,7 @@ function AuthComponent(){
   };
   const handleAcceptInvitation = async () => {
     if (user?.email) {
-      let userObj: UserOnDb = { email: user.email, course: "mainCourse" };
+      let userObj: UserOnDb = { email: user.email, course: "mainCourse", role: "student" };
       await dbAuthPort.register(userObj);
       setShowPopUp(true);
     }
