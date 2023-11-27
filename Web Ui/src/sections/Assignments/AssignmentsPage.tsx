@@ -1,7 +1,7 @@
 import Form from "./components/AssignmentForm";
 import Assignments from "./components/AssignmentsList";
 import InvitationComponent from "./components/EnrollmentLink";
-import { styled } from '@mui/system'; 
+import { styled } from '@mui/system';
 import { useState } from "react";
 
 const AssignmentManagerContainer = styled('section')({
@@ -11,14 +11,14 @@ const AssignmentManagerContainer = styled('section')({
 
 const AssignmentsContainer = styled('div')({
   flex: '1',
-  marginLeft: '16px',  
-  marginRight: '20px', 
+  marginLeft: '16px',
+  marginRight: '20px',
 });
 
 const FormsContainer = styled('div')({
   flex: '1',
-  marginLeft: '8px',  
-  marginRight: '2px', 
+  marginLeft: '8px',
+  marginRight: '2px',
   marginTop: '68px',
 });
 
@@ -38,8 +38,10 @@ function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
         <Assignments ShowForm={handleShowForm} userRole={userRole} />
       </AssignmentsContainer>
       <FormsContainer>
-        {showForm && <Form data-testid="form-container"/>}
-        <InvitationComponent data-testid="invitation-component"/>
+        {showForm && <Form data-testid="form-container" />}
+        {userRole === 'Admin' && (
+          <InvitationComponent data-testid="invitation-component" />
+        )}
       </FormsContainer>
     </AssignmentManagerContainer>
   );
