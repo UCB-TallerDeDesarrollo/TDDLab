@@ -32,7 +32,7 @@ export class UserRepository {
     }
   }
   async obtainUser(email: string): Promise<User | null> {
-    const query = "SELECT email, course FROM usersTable WHERE email = $1";
+    const query = "SELECT email, course, role FROM usersTable WHERE email = $1";
     const values = [email];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
