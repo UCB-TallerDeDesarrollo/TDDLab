@@ -39,7 +39,7 @@ function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
       </AssignmentsContainer>
       <FormsContainer>
         {showForm && <Form data-testid="form-container" />}
-        {userRole === 'Admin' && (
+        {userRole === 'admin' && (
           <InvitationComponent data-testid="invitation-component" />
         )}
       </FormsContainer>
