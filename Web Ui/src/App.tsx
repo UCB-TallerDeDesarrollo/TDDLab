@@ -24,16 +24,19 @@ const navArrayLinks = [
     title: "Grupos",
     path: "/groups",
     icon: <GroupsIcon />,
+    access: ["admin"],
   },
   {
     title: "Tareas",
     path: "/",
     icon: <DescriptionIcon />,
+    access: ["admin","student"],
   },
   {
     title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
+    access: ["admin","student"],
   },
 ];
 
@@ -59,7 +62,7 @@ function App() {
   const authData = useGlobalState("authData")[0];
   return (
     <Router>
-      {authData.userEmail != "" && <MainMenu navArrayLinks={navArrayLinks} />}
+      {authData.userEmail != "" && authData.userRole !== undefined && <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />}
       <Routes>
         <Route
           path="/"
