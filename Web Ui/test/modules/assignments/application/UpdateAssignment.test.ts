@@ -11,32 +11,51 @@ beforeEach(() => {
 });
 
 describe("Update an assignment", () => {
-  it("Should successfully update an assignment", async () => {
-    const assignmentId = 1;
-    const assignment: AssignmentDataObject = {
-      id: assignmentId,
-      title: "Tarea 1",
-      description: "Esta es la primera tarea",
-      start_date: new Date("2023-01-01"),
-      end_date: new Date("2023-01-10"),
-      state: "inProgress",
-      link: "Enlace",
-      comment: "Comentario",
-    };
-    const newAssignment: AssignmentDataObject = {
-        id: 1,
-        title: "Tarea 2",
-        description: "Esta es la primera tarea",
-        start_date: new Date("2023-01-01"),
-        end_date: new Date("2023-01-10"),
-        state: "inProgress",
-        link: "Enlace",
-        comment: "Comentario",
-      };
-    mockRepository.createAssignment(assignment);
-      await updateAssignment.updateAssignment(assignmentId,newAssignment);
-      const obtainedAssignment = await mockRepository.getAssignmentById(1);
-    expect(obtainedAssignment).toEqual(newAssignment);
+  const assignmentId = 1;
+  const baseAssignment: AssignmentDataObject = {
+    id: assignmentId,
+    title: "Tarea 1",
+    description: "Esta es la primera tarea",
+    start_date: new Date("2023-01-01"),
+    end_date: new Date("2023-01-10"),
+    state: "inProgress",
+    link: "Enlace",
+    comment: "Comentario",
+  };
+
+  const createAndExpectUpdatedAssignment = async (update: Partial<AssignmentDataObject>) => {
+    mockRepository.createAssignment(baseAssignment);
+    await updateAssignment.updateAssignment(assignmentId, { ...baseAssignment, ...update });
+    const obtainedAssignment = await mockRepository.getAssignmentById(1);
+    expect(obtainedAssignment).toEqual({ ...baseAssignment, ...update });
+  };
+
+  it("Should successfully update an assignment title", async () => {
+    await createAndExpectUpdatedAssignment({ title: "Tarea 2" });
   });
- 
+
+  it("Should successfully update an assignment description", async () => {
+    await createAndExpectUpdatedAssignment({ description: "Esta descripción está actualizada" });
+  });
+
+  it("Should successfully update an assignment start date", async () => {
+    await createAndExpectUpdatedAssignment({ start_date: new Date("2023-01-02") });
+  });
+
+  it("Should successfully update an assignment end date", async () => {
+    await createAndExpectUpdatedAssignment({ end_date: new Date("2023-01-09") });
+  });
+
+  it("Should successfully update an assignment state", async () => {
+    await createAndExpectUpdatedAssignment({ state: "Pending" });
+  });
+
+  it("Should successfully update an assignment link", async () => {
+    await createAndExpectUpdatedAssignment({ link: "link" });
+  });
+
+  it("Should successfully update an assignment comment", async () => {
+    await createAndExpectUpdatedAssignment({ comment: "nuevo comentario" });
+  });
 });
+
