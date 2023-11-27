@@ -23,13 +23,10 @@ type NavLink = {
 
 interface NavbarProps {
   navArrayLinks: NavLink[];
-}
-
-interface UserRole {
   userRole: string;
 }
 
-export default function MainMenu({ navArrayLinks, userRole }: Readonly<NavbarProps & UserRole>) {
+export default function MainMenu({ navArrayLinks, userRole }: Readonly<NavbarProps>) {
   const [open, setOpen] = useState(false);
   const [activeButton, setActiveButton] = useState("Tareas");
 
