@@ -27,4 +27,11 @@ describe("Obtain assignments", () => {
         expect(poolConnectMock).toBeCalledTimes(1);
         expect(clientQueryMock).toBeCalledWith('INSERT INTO jobsTable (id, sha, owner, repoName, conclusion) VALUES ($1, $2, $3, $4, $5)', [1, 'sha', 'owner', 'repo', 'success']);
     });
+    it('should get jobs', async () => {
+        clientQueryMock.mockResolvedValueOnce({ rows: [{ id: 1 }] });
+        const jobs = await repository.getJobs('owner', 'repo');
+        expect(poolConnectMock).toBeCalledTimes(1);
+        expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
+        expect(jobs).toEqual([{ id: 1 }]);
+    });
 });
