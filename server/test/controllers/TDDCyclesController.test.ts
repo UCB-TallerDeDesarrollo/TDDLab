@@ -56,5 +56,12 @@ describe('TDDCyclesController', () => {
             expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
         });
     });
-    
+    describe('getTestResults', () => {
+        it('should return 400 if owner or repoName is missing', async () => {
+            mockRequest.query = {};
+            await controller.getTestResults(mockRequest as Request, mockResponse as Response);
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
+            expect(mockResponse.json).toHaveBeenCalledWith({ error: "Bad request, missing owner or repoName" });
+        });
+    });
 });
