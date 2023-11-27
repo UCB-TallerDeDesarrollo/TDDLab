@@ -63,5 +63,16 @@ describe('TDDCyclesController', () => {
             expect(mockResponse.status).toHaveBeenCalledWith(400);
             expect(mockResponse.json).toHaveBeenCalledWith({ error: "Bad request, missing owner or repoName" });
         });
+        it('should return 200 and the expected test results if owner and repoName are provided', async () => {
+            const expectedTestResults = [{ id: 1 }, { id: 2 }];
+            mockRequest.query = { owner: 'owner', repoName: 'repoName' };
+            controller.testResultsUseCase.execute = jest.fn().mockResolvedValue(expectedTestResults);
+    
+            await controller.getTestResults(mockRequest as Request, mockResponse as Response);
+    
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith(expectedTestResults);
+            expect(controller.testResultsUseCase.execute).toHaveBeenCalledWith('owner', 'repoName');
+        });
     });
 });
