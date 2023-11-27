@@ -3,7 +3,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import { dialogContentStyle, titleStyle2, primaryButtonStyle } from "../../Assignments/Styles/DialogBoxStyles";
+import { dialogContentStyle, titleStyle2, primaryButtonStyle } from "../Styles/DialogBoxStyles";
 
 interface ValidationDialogProps {
   open: boolean;
