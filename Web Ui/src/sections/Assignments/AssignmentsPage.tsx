@@ -21,7 +21,11 @@ const FormsContainer = styled('div')({
   marginRight: '2px', 
   marginTop: '68px',
 });
-function AssignmentManager() {
+
+interface AssignmentManagerProps {
+  userRole: string;
+}
+function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
   const [showForm, setShowForm] = useState(false);
 
   const handleShowForm = () => {
@@ -31,7 +35,7 @@ function AssignmentManager() {
   return (
     <AssignmentManagerContainer>
       <AssignmentsContainer data-testid="assignments-container">
-        <Assignments ShowForm={handleShowForm} />
+        <Assignments ShowForm={handleShowForm} userRole={userRole} />
       </AssignmentsContainer>
       <FormsContainer>
         {showForm && <Form data-testid="form-container"/>}

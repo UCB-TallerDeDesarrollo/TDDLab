@@ -40,9 +40,10 @@ const CustomTableCell3 = styled(TableCell)({
 
 interface AssignmentsProps {
   ShowForm: () => void;
+  userRole: string;
 }
 
-function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
+function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -57,7 +58,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const assignmentsRepository = new AssignmentsRepository();
   const getAssignments = new GetAssignments(assignmentsRepository);
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
-
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
@@ -157,9 +157,11 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
               </CustomTableCell3>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Button variant="outlined" onClick={showForm}>
-                    Crear
-                  </Button>
+                  {userRole === 'admin' && (
+                    <Button variant="outlined" onClick={showForm}>
+                      Crear
+                    </Button>
+                  )}
                 </ButtonContainer>
               </CustomTableCell2>
             </TableRow>
