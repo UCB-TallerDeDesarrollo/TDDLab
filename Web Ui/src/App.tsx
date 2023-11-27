@@ -68,7 +68,7 @@ function App() {
           path="/"
           element={
             <ProtectedRouteComponent>
-              <GestionTareas />
+              <GestionTareas userRole={authData.userRole?? ""}/>
             </ProtectedRouteComponent>
           }
         />
