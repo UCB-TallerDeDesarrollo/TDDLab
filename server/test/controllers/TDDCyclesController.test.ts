@@ -45,7 +45,16 @@ describe('TDDCyclesController', () => {
             expect(mockResponse.json).toHaveBeenCalledWith(expectedCommits);
             expect(controller.tddCyclesUseCase.execute).toHaveBeenCalledWith('owner', 'repoName');
         });
-        
+        it('should return 500 and an error message if an error is thrown', async () => {
+            const error = new Error('Server error');
+            mockRequest.query = { owner: 'owner', repoName: 'repoName' };
+            controller.tddCyclesUseCase.execute = jest.fn().mockRejectedValue(error);
+    
+            await controller.getTDDCycles(mockRequest as Request, mockResponse as Response);
+    
+            expect(mockResponse.status).toHaveBeenCalledWith(500);
+            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
+        });
     });
     
 });
