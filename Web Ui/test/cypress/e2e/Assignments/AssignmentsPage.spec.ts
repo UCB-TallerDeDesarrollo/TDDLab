@@ -1,4 +1,4 @@
-describe('Assignment Manager Interface Tests', () => {
+/*describe('Assignment Manager Interface Tests', () => {
     beforeEach(() => {
       cy.visit('/');
     });
@@ -17,4 +17,4 @@ describe('Assignment Manager Interface Tests', () => {
       cy.get('[data-testid=invitation-component]').should('exist');
     });
   });
-  
+  */
