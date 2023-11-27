@@ -15,8 +15,8 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 
 import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
-import { ConfirmationDialog } from "./ConfirmationDialog";
-import { ValidationDialog } from "./ValidationDialog";
+import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
+import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import Assignment from "./Assignment";
 import { MenuItem, Select } from "@mui/material";
 

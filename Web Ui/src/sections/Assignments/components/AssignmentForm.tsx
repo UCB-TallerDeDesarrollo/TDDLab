@@ -7,7 +7,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
 import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-import { ValidationDialog } from "./ValidationDialog";
+import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 
 function Form() {
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);

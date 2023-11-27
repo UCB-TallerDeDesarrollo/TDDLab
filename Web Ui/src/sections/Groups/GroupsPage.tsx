@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -6,13 +6,12 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
-import { ConfirmationDialog } from "../Assignments/components/ConfirmationDialog";
-import { ValidationDialog } from "../Assignments/components/ValidationDialog";
-import CreateGroupPopup from "../Groups/components/GroupsForm"; 
-import { GroupDataObject } from '../../modules/Groups/domain/GroupInterface';
-import GetGroups from '../../modules/Groups/application/GetGroups';
-import GroupsRepository from '../../modules/Groups/repository/GroupsRepository';
-
+import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import CreateGroupPopup from "../Groups/components/GroupsForm";
+import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
+import GetGroups from "../../modules/Groups/application/GetGroups";
+import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 
 import {
   Table,
@@ -48,7 +47,7 @@ function Groups() {
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [validationDialogOpen, setValidationDialogOpen] = useState(false); 
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
@@ -57,20 +56,16 @@ function Groups() {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
-      console.log('allGroups: ', allGroups);
       setGroups(allGroups);
     };
 
     fetchGroups();
   }, []);
 
-
-
-
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
   };
-  
+
   const handleRowClick = (index: number) => {
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
@@ -118,7 +113,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    console.log(index)
+    console.log(index);
   };
 
   const handleConfirmDelete = () => {
@@ -130,7 +125,7 @@ function Groups() {
   const handleValidationDialogClose = () => {
     setValidationDialogOpen(false);
   };
-console.log("Estos son los grupos",groups);
+
   return (
     <CenteredContainer>
       <section className="Grupos">
@@ -162,8 +157,8 @@ console.log("Estos son los grupos",groups);
             </TableRow>
           </TableHead>
           <TableBody>
-          {groups.map((group, index) => (
-              <React.Fragment key={group.groupName}>
+            {groups.map((group, index) => (
+              <React.Fragment key={index}>
                 <TableRow
                   selected={isRowSelected(index)}
                   onClick={() => handleRowClick(index)}
@@ -191,7 +186,7 @@ console.log("Estos son los grupos",groups);
                           <GroupsIcon />
                         </IconButton>
                       </Tooltip>
-                      
+
                       <Tooltip title="Copiar enlace de invitacion" arrow>
                         <IconButton
                           aria-label="enlace"
@@ -228,7 +223,7 @@ console.log("Estos son los grupos",groups);
                         }}
                       >
                         <div style={{ padding: "50px", marginLeft: "-30px" }}>
-                          Detalle del grupo: {  groups[index].groupDetail}
+                          Detalle del grupo: {groups[index].groupDetail}
                         </div>
                       </div>
                     </Collapse>
@@ -246,7 +241,8 @@ console.log("Estos son los grupos",groups);
           title="¿Eliminar el grupo?"
           content={
             <>
-              Ten en cuenta que esta acción también eliminará <br /> todas las tareas y estudiantes asociados.
+              Ten en cuenta que esta acción también eliminará <br /> todas las
+              tareas y estudiantes asociados.
             </>
           }
           cancelText="Cancelar"
@@ -264,8 +260,10 @@ console.log("Estos son los grupos",groups);
           onClose={handleValidationDialogClose}
         />
       )}
-      <CreateGroupPopup open={createGroupPopupOpen} handleClose={() => setCreateGroupPopupOpen(false)} />
-
+      <CreateGroupPopup
+        open={createGroupPopupOpen}
+        handleClose={() => setCreateGroupPopupOpen(false)}
+      />
     </CenteredContainer>
   );
 }
