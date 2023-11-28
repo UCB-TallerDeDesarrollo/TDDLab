@@ -169,7 +169,7 @@ export class GithubRepository implements IGithubRepository {
         commits.map(commit => this.getCommitInfoForTDDCycle(owner, repoName, commit.sha))
       );
 
-      const commitsData: TDDCycleDataObject[]= commitsFromSha.map(({ html_url, stats, commit, sha, coveragePercentage }) => ({
+      const commitsData: TDDCycleDataObject[]= commitsFromSha.map(({ html_url, stats, commit, sha, coveragePercentage, test_count }) => ({
         html_url,
         stats: {
           total: stats.total,
@@ -184,7 +184,7 @@ export class GithubRepository implements IGithubRepository {
         },
         sha,
         coverage: coveragePercentage,
-        test_count: commit.test_count
+        test_count: test_count
       }));
 
       return commitsData;
