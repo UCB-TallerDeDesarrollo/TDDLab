@@ -1,10 +1,10 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import GroupDataObject from "../domain/Group";
+import GroupDTO from "../domain/Group";
 
 const pool = new Pool(config);
-
 interface GroupCreationObject {
+  groupName: string;
   groupDetail: string;
 }
 
@@ -19,20 +19,23 @@ class GroupRepository {
     }
   }
 
-  public mapRowToGroup(row: any): GroupDataObject {
+  public mapRowToGroup(row: any): GroupDTO {
+    console.log("Row from database:", row);
+
     return {
       id: row.id,
-      groupDetail: row.groupDetail,
+      groupName: row.groupname,
+      groupDetail: row.groupdetail,
     };
   }
 
-  async obtainGroups(): Promise<GroupDataObject[]> {
-    const query = "SELECT id, groupDetail FROM Groups";
+  async obtainGroups(): Promise<GroupDTO[]> {
+    const query = "SELECT id, groupname, groupdetail FROM Groups";
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToGroup(row));
   }
 
-  async obtainGroupById(id: string): Promise<GroupDataObject | null> {
+  async obtainGroupById(id: string): Promise<GroupDTO | null> {
     const query = "SELECT * FROM Groups WHERE id = $1";
     const values = [id];
     const rows = await this.executeQuery(query, values);
@@ -42,10 +45,11 @@ class GroupRepository {
     return null;
   }
 
-  async createGroup(group: GroupCreationObject): Promise<GroupDataObject> {
-    const { groupDetail } = group;
-    const query = "INSERT INTO Groups (groupDetail) VALUES ($1) RETURNING *";
-    const values = [groupDetail];
+  async createGroup(group: GroupCreationObject): Promise<GroupDTO> {
+    const { groupName, groupDetail } = group; // Added groupName to the destructuring
+    const query =
+      "INSERT INTO Groups (groupName, groupDetail) VALUES ($1, $2) RETURNING *";
+    const values = [groupName, groupDetail];
     const rows = await this.executeQuery(query, values);
     return this.mapRowToGroup(rows[0]);
   }
@@ -59,11 +63,11 @@ class GroupRepository {
   async updateGroup(
     id: string,
     updatedGroup: GroupCreationObject
-  ): Promise<GroupDataObject | null> {
-    const { groupDetail } = updatedGroup;
+  ): Promise<GroupDTO | null> {
+    const { groupName, groupDetail } = updatedGroup; // Added groupName to the destructuring
     const query =
-      "UPDATE Groups SET groupDetail = $1 WHERE id = $2 RETURNING *";
-    const values = [groupDetail, id];
+      "UPDATE Groups SET groupName = $1, groupDetail = $2 WHERE id = $3 RETURNING *"; // Updated to include the new field
+    const values = [groupName, groupDetail, id];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
       return this.mapRowToGroup(rows[0]);

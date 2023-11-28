@@ -6,6 +6,7 @@ import router from "./routes/userRoutes";
 import assignmentsRouter from "./routes/assignmentRoutes";
 import commitsRouter from "./routes/commitsRoutes";
 import jobsRouter from "./routes/jobsRoutes";
+import groupsRouter from "./routes/groupsRouter";
 
 const app = express();
 const port = 3000;
@@ -17,6 +18,7 @@ app.use("/api/user", router);
 app.use("/api/assignments", assignmentsRouter);
 app.use("/api/commits", commitsRouter);
 app.use("/api/jobs", jobsRouter);
+app.use("/api/groups", groupsRouter);
 
 server(app, port);
 export default app;
