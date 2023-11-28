@@ -10,7 +10,7 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
-import AuthComponent from "./sections/Invitation/InvitationPage";
+import InvitationPage from "./sections/Invitation/InvitationPage";
 import { useEffect } from "react";
 import {
   setGlobalState,
@@ -107,7 +107,7 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
-        <Route path="/invitation" element={<AuthComponent />} />
+        <Route path="/invitation" element={<InvitationPage />} />
       </Routes>
     </Router>
   );

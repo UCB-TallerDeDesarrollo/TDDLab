@@ -1,7 +1,7 @@
 import UserOnDb from "../domain/userOnDb.interface";
 import AuthRepository from "../repository/LoginRepository";
 
-export class LoginPort {
+export class CheckIfUserHasAccount {
   adapter: AuthRepository;
   constructor(loginRepository: AuthRepository = new AuthRepository()) {
     this.adapter = loginRepository;
