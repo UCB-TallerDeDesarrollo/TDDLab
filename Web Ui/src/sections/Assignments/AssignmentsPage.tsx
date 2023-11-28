@@ -22,19 +22,19 @@ const FormsContainer = styled('div')({
   marginTop: '68px',
 });
 function AssignmentManager() {
-  const [showForm, setShowForm] = useState(false);
+  const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] = useState(false);
 
-  const handleShowForm = () => {
-    setShowForm(true);
+  const handleCreateAssignmentClick = () => {
+    setCreateAssignmentPopupOpen(true);
   };
 
   return (
     <AssignmentManagerContainer>
       <AssignmentsContainer data-testid="assignments-container">
-        <Assignments ShowForm={handleShowForm} />
+        <Assignments ShowForm={handleCreateAssignmentClick} />
       </AssignmentsContainer>
       <FormsContainer>
-        {showForm && <Form data-testid="form-container"/>}
+        {createAssignmentPopupOpen && <Form data-testid="form-container" open={createAssignmentPopupOpen} handleClose={() => setCreateAssignmentPopupOpen(false)} />}
         <InvitationComponent data-testid="invitation-component"/>
       </FormsContainer>
     </AssignmentManagerContainer>

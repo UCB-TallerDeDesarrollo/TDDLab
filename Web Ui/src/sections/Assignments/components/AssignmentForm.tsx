@@ -1,7 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import { Box, Container, TextField } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
@@ -9,7 +8,13 @@ import { CreateAssignments } from "../../../modules/Assignments/application/Crea
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 
-function Form() {
+interface CreateAssignmentPopupProps {
+  open: boolean;
+  handleClose: () => void;
+}
+
+function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
+  const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
@@ -22,18 +27,33 @@ function Form() {
     comment: "",
   });
   const isCreateButtonClicked = useRef(false);
+  
   const handleSaveClick = async () => {
-    if (isCreateButtonClicked.current) return; // Prevent multiple clicks
+    setSave(true);
+    if (formInvalid()) {
+      return;
+    }
+
+    /*if (isCreateButtonClicked.current) {
+      alert(`Clicks varios: ${assignmentData.start_date} + ${assignmentData.end_date}`)
+      return;
+    }*/ 
+    // Prevent multiple clicks
     isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
     if (assignmentData.start_date > assignmentData.end_date) {
+      alert(`Fin > Inicio: ${assignmentData.start_date} + ${assignmentData.end_date}`)
       return;
     }
     try {
       await createAssignments.createAssignment(assignmentData);
+      alert(`Entra al try: ${assignmentData.start_date} + ${assignmentData.end_date}`)
     } catch (error) {
       console.error(error);
+    }finally {
+      alert(`Algo raro: ${assignmentData.start_date} + ${assignmentData.end_date}`)
+      setSave(false);
     }
     setValidationDialogOpen(true);
   };
@@ -45,6 +65,7 @@ function Form() {
       end_date: newEndDate,
     }));
   };
+
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: string // 'title' or 'description'
@@ -57,63 +78,85 @@ function Form() {
     }));
   };
 
+
+  const handleCancel = () => {
+    handleClose();
+  };
+
+  const formInvalid = () => {
+    return assignmentData.title === "";
+  };
+
+  useEffect(() => {
+    setSave(false);
+  }, [open]);
+
+
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ display: "grid", gap: 2 }} component="form" autoComplete="off">
-        <TextField
-          id="titulo"
-          label="Titulo"
-          variant="outlined"
-          size="small"
-          required
-          value={assignmentData.title}
-          onChange={(e) => handleInputChange(e, "title")}
-        />
-        <TextField
-          id="descripcion"
-          label="Descripcion"
-          variant="outlined"
-          size="small"
-          required
-          sx={{
-            "& label.Mui-focused": {
-              color: "#001F3F",
-            },
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "#001F3F",
-              },
-            },
-          }}
-          onChange={(e) => handleInputChange(e, "description")}
-          defaultValue={assignmentData.description}
-        />
-        <section>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Filter onUpdateDates={handleUpdateDates} />
-          </LocalizationProvider>
-        </section>
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="contained"
-            style={{
-              textTransform: "none",
-            }}
-            onClick={handleSaveClick}
-          >
-            Guardar cambios
-          </Button>
-        </Stack>
-      </Box>
-      {validationDialogOpen && (
+
+    <Dialog open={open} onClose={handleClose}>
+      {!validationDialogOpen && (
+        <>
+          <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear tarea</DialogTitle>
+          <DialogContent>
+            <TextField
+              error={formInvalid() && !!save}
+              autoFocus
+              margin="dense"
+              id="assigment-title"
+              name="assignmentTitle"
+              label="Nombre de la Tarea*"
+              type="text"
+              fullWidth
+              value={assignmentData.title}
+              onChange={(e) => handleInputChange(e, "title")}
+              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+            />
+            <TextField
+              multiline
+              rows={3.7}
+              margin="dense"
+              id="assignment-description"
+              name="assignmentDescription"
+              label="Descripción"
+              type="text"
+              fullWidth
+              value={assignmentData.description}
+              onChange={(e) => handleInputChange(e, "description")}
+              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+            />
+            <section>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Filter onUpdateDates={handleUpdateDates} />
+              </LocalizationProvider>
+            </section>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCancel}
+              style={{ color: "#555", textTransform: "none" }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSaveClick}
+              color="primary"
+              style={{ textTransform: "none" }}
+            >
+              Crear
+            </Button>
+          </DialogActions>
+        </>
+      )}
+      {!!validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
-          title="Tarea Creada Exitosamente"
+          title="Tarea creada exitosamente"
           closeText="Cerrar"
           onClose={() => window.location.reload()}
         />
       )}
-    </Container>
+    </Dialog>
   );
 }
 
