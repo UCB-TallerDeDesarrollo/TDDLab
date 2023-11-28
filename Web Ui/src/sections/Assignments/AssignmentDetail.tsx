@@ -5,8 +5,8 @@ import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmen
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import { Button, Card, CardContent, Typography } from "@mui/material";
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
@@ -186,7 +186,9 @@ const AssignmentDetail: React.FC = () => {
                   marginBottom: "8px",
                 }}
               >
-                <NotesOutlinedIcon style={{ marginRight: "8px", color: '#666666' }} />
+                <NotesOutlinedIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -203,7 +205,9 @@ const AssignmentDetail: React.FC = () => {
                   marginBottom: "8px",
                 }}
               >
-                <CalendarMonthIcon style={{ marginRight: "8px", color: '#666666' }} />
+                <CalendarMonthIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -220,7 +224,9 @@ const AssignmentDetail: React.FC = () => {
                   marginBottom: "8px",
                 }}
               >
-                <CalendarMonthIcon style={{ marginRight: "8px" , color: '#666666'}} />
+                <CalendarMonthIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -237,7 +243,9 @@ const AssignmentDetail: React.FC = () => {
                   marginBottom: "8px",
                 }}
               >
-                <AccessTimeIcon style={{ marginRight: "8px",color: '#666666' }} />
+                <AccessTimeIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -253,13 +261,20 @@ const AssignmentDetail: React.FC = () => {
                   marginBottom: "8px",
                 }}
               >
-                <LinkIcon style={{ marginRight: "8px",color: '#666666' }} />
+                <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
                 <Typography
                   variant="body2"
                   color="text.secondary"
                   style={{ fontSize: "16px", lineHeight: "1.8" }}
                 >
-                  <strong>Enlace:</strong> {assignment.link}
+                  <strong>Enlace:</strong>
+                  <a
+                    href={assignment.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {assignment.link}
+                  </a>
                 </Typography>
               </div>
               {assignment.comment ? (
@@ -270,7 +285,9 @@ const AssignmentDetail: React.FC = () => {
                     marginBottom: "8px",
                   }}
                 >
-                  <CommentIcon style={{ marginRight: "8px",color: '#666666' }} />
+                  <CommentIcon
+                    style={{ marginRight: "8px", color: "#666666" }}
+                  />
                   <Typography
                     variant="body2"
                     color="text.secondary"
