@@ -1,4 +1,4 @@
 export interface JobDataObject {
-    sha: string;
-    conclusion:        string;
+  sha: string;
+  conclusion: string;
 }
