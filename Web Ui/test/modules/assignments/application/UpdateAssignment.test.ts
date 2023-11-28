@@ -57,5 +57,10 @@ describe("Update an assignment", () => {
   it("Should successfully update an assignment comment", async () => {
     await createAndExpectUpdatedAssignment({ comment: "nuevo comentario" });
   });
+  it("Should handle error during assignment update", async () => {
+    const errorMessage = "Update failed";
+    mockRepository.updateAssignment = jest.fn().mockRejectedValue(new Error(errorMessage));
+    await expect(updateAssignment.updateAssignment(assignmentId, baseAssignment)).rejects.toThrowError(errorMessage);
+  });
 });
 
