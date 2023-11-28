@@ -19,7 +19,7 @@ describe("setSessionCookie", () => {
     expect(Cookies.set).toHaveBeenCalledWith(
       "userSession",
       JSON.stringify(userData),
-      { expires: 1 }
+      { expires: 30 }
     );
   });
 
@@ -35,7 +35,7 @@ describe("setSessionCookie", () => {
     expect(Cookies.set).toHaveBeenCalledWith(
       "userSession",
       JSON.stringify({}),
-      { expires: 1 }
+      { expires: 30 }
     );
     expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenNthCalledWith(
