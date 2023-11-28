@@ -9,10 +9,10 @@ const Login = () => {
 
   const handleGitHubLogin = async () => {
     const githbAuthPort = new GithubAuthPort();
-    let userData = await githbAuthPort.handleSignInWithGitHub();
+    const userData = await githbAuthPort.handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new LoginPort();
-      let userCourse = await loginPort.userHasAnAcount(userData.email);
+      const userCourse = await loginPort.userHasAnAcount(userData.email);
       if (userCourse && userData.photoURL) {
         setGlobalState("authData", {
           userProfilePic: userData.photoURL,

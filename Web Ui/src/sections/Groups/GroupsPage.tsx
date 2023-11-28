@@ -11,6 +11,7 @@ import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GetGroups from "../../modules/Groups/application/GetGroups";
+import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 
 import {
@@ -116,10 +117,18 @@ function Groups() {
     console.log(index);
   };
 
-  const handleConfirmDelete = () => {
-    console.log(`Eliminar grupo ${selectedRow}`);
-    setConfirmationOpen(false);
-    setValidationDialogOpen(true);
+  const handleConfirmDelete = async () => {
+    try {
+      if (selectedRow !== null) {
+        const deleteGroup = new DeleteGroup(groupRepository);
+        await deleteGroup.deleteGroup(selectedRow);
+        setValidationDialogOpen(true);
+      }
+    } catch (error) {
+      console.error("Error deleting group:", error);
+    } finally {
+      setConfirmationOpen(false);
+    }
   };
 
   const handleValidationDialogClose = () => {

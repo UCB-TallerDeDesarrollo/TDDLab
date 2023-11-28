@@ -9,6 +9,8 @@ import {
   TableCell,
   Container,
   Button,
+  MenuItem, 
+  Select
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -18,7 +20,6 @@ import { DeleteAssignment } from "../../../modules/Assignments/application/Delet
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import Assignment from "./Assignment";
-import { MenuItem, Select } from "@mui/material";
 
 const ButtonContainer = styled("div")({
   display: "flex",
