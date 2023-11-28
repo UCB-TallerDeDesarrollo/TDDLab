@@ -3,7 +3,6 @@ import config from "../../../config/db";
 import GroupDTO from "../domain/Group";
 
 const pool = new Pool(config);
-
 interface GroupCreationObject {
   groupName: string;
   groupDetail: string;
