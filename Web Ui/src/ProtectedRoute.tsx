@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-function ProtectedRouteComponent({ children }: ProtectedRouteProps) {
+function ProtectedRouteComponent({ children }: Readonly<ProtectedRouteProps>) {
   const authData = useGlobalState("authData")[0];
   const navigate = useNavigate();
   useEffect(() => {
