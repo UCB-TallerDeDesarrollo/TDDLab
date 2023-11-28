@@ -14,6 +14,7 @@ export interface CommitInformationDataObject extends CommitDataObject {
   stats: Stats;
   files: File[];
   coveragePercentage: string;
+  test_count: string;
 }
 
 export interface File {
