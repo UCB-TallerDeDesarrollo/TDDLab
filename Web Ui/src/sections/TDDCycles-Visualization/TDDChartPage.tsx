@@ -69,7 +69,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
 
   return (
     <div className="container">
-      <h1 data-testid="repoTitle">Repository: {repoName}</h1>
+      <h1 data-testid="repoTitle">Repositorio: {repoName}</h1>
 
       {loading && (
         <div className="mainInfoContainer">
@@ -87,7 +87,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         <React.Fragment>
           <div className="center-content">
             <button className="myButton" onClick={handleSwitchButtonClick}>
-              Switch Chart View
+              Cambiar vista grafica
             </button>
           </div>
           <div className="mainInfoContainer">
