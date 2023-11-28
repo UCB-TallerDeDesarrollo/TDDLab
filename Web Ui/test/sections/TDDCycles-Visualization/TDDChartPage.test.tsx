@@ -1,7 +1,11 @@
 import TDDChartPage from "../../../src/sections/TDDCycles-Visualization/TDDChartPage";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { MockGithubAPI } from "./__mocks__/MocksGithubAPI";
+import {
+  MockGithubAPI,
+  MockGithubAPIEmpty,
+  MockGithubAPIError,
+} from "./__mocks__/MocksGithubAPI";
 
 jest.mock("react-router-dom", () => ({
   useSearchParams: jest.fn(() => {
@@ -24,7 +28,9 @@ describe("TDDChartPage", () => {
     });
   });
   it("displays an error message when no data is available", async () => {
-    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} />);
+    const { getByTestId } = render(
+      <TDDChartPage port={new MockGithubAPIEmpty()} />
+    );
     await waitFor(() => {
       const error = getByTestId("errorMessage");
       expect(error).toBeInTheDocument();
@@ -37,5 +43,32 @@ describe("TDDChartPage", () => {
       const repoName = getByTestId("repoTitle");
       expect(repoName).toBeInTheDocument();
     });
+  });
+  it("click on Cambiar Grafico button", async () => {
+    const { getByText } = render(<TDDChartPage port={new MockGithubAPI()} />);
+    await waitFor(() => {
+      fireEvent.click(getByText("Cambiar Grafico"));
+      expect(getByText("Métricas")).toBeInTheDocument();
+    });
+  });
+
+  it("tests the catch event for both, obtainJobsData and obtainCommits Data", async () => {
+    const spyConsoleError = jest.spyOn(console, "error");
+    spyConsoleError.mockImplementation(() => {});
+
+    await act(async () => {
+      render(<TDDChartPage port={new MockGithubAPIError()} />);
+    });
+
+    expect(spyConsoleError).toHaveBeenCalledWith(
+      "Error obtaining jobs:",
+      expect.any(Error)
+    );
+    expect(spyConsoleError).toHaveBeenCalledWith(
+      "Error obtaining commit information:",
+      expect.any(Error)
+    );
+
+    spyConsoleError.mockRestore();
   });
 });

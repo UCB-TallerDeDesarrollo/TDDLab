@@ -4,19 +4,19 @@ import firebase from "../../firebaseConfig";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { GithubAuthPort } from "../../modules/Auth/application/GithubAuthPort";
-import { RegisterPort } from "../../modules/Auth/application/RegisterPort";
 import UserOnDb from "../../modules/Auth/domain/userOnDb.interface";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { Grid } from "@mui/material";
+import { handleSignInWithGitHub } from "../../modules/Auth/application/signInWithGithub";
+import { handleGithubSignOut } from "../../modules/Auth/application/signOutWithGithub";
+import { RegisterUserOnDb } from "../../modules/Auth/application/registerUserOnDb";
 
-function AuthComponent() {
+function InvitationPage() {
   const [user, setUser] = useState<User | null>(null);
-  const githubAuthPort = new GithubAuthPort();
-  const dbAuthPort = new RegisterPort();
+  const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -30,12 +30,14 @@ function AuthComponent() {
   const [showPopUp, setShowPopUp] = useState(false);
 
   const handleSignUp = async () => {
-    const userData = await githubAuthPort.handleSignInWithGitHub();
+    let userData = await handleSignInWithGitHub();
     if (userData) {
       setUser(userData);
     }
   };
   const handleAcceptInvitation = async () => {
+    console.log(user?.email);
+
     if (user?.email) {
       const userObj: UserOnDb = { email: user.email, course: "mainCourse", role: "student" };
       await dbAuthPort.register(userObj);
@@ -108,7 +110,7 @@ function AuthComponent() {
                       </Grid>
                       <Grid item sx={{ marginTop: "auto" }}>
                         <Button
-                          onClick={githubAuthPort.handleSignOut}
+                          onClick={handleGithubSignOut}
                           variant="contained"
                           color="primary"
                         >
@@ -176,4 +178,4 @@ function AuthComponent() {
   );
 }
 
-export default AuthComponent;
+export default InvitationPage;
