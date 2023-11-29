@@ -1,4 +1,4 @@
-export interface JobDB{
+export interface TestResultDataObject{
     id:number,
     sha:string,
     owner:string,

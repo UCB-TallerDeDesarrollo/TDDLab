@@ -1,4 +1,4 @@
-export interface CommitDTO {
+export interface TDDCycleDataObject {
   html_url: string;
   stats: Stats;
   commit: Commit;
