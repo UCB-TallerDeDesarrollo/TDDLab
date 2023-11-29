@@ -4,6 +4,7 @@ export interface TDDCycleDataObject {
   commit: Commit;
   sha: string;
   coverage: string;
+  test_count: string;
 }
 export interface Stats {
   total: number;
