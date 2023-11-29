@@ -1,17 +1,16 @@
 import "./styles/Login.css"; // Archivo de estilos CSS
-import { GithubAuthPort } from "../../modules/Auth/application/GithubAuthPort";
-import { LoginPort } from "../../modules/Auth/application/LoginPort";
+import { CheckIfUserHasAccount } from "../../modules/Auth/application/checkIfUserHasAccount";
 import { setGlobalState } from "../../modules/Auth/domain/authStates";
 import { useNavigate } from "react-router-dom";
+import { handleSignInWithGitHub } from "../../modules/Auth/application/signInWithGithub";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const handleGitHubLogin = async () => {
-    const githbAuthPort = new GithubAuthPort();
-    let userData = await githbAuthPort.handleSignInWithGitHub();
+    let userData = await handleSignInWithGitHub();
     if (userData?.email) {
-      const loginPort = new LoginPort();
+      const loginPort = new CheckIfUserHasAccount();
       let userCourse = await loginPort.userHasAnAcount(userData.email);
       if (userCourse && userData.photoURL) {
         setGlobalState("authData", {

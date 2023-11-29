@@ -1,8 +1,9 @@
 import UserOnDb from "../domain/userOnDb.interface";
 import AuthRepository from "../repository/LoginRepository";
 
-export class RegisterPort {
+export class RegisterUserOnDb {
   adapter: AuthRepository;
+  static mock: any;
   constructor(loginRepository: AuthRepository = new AuthRepository()) {
     this.adapter = loginRepository;
   }
