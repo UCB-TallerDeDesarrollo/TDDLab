@@ -34,26 +34,32 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
     const coverageText = commit.coverage
       ? `${commit.coverage}%`
       : "no se encontró cobertura"; // Establece un valor predeterminado
-
+    const testCountText = commit.testCount
+      ? `${commit.testCount}%`
+      : "no se encontraron tests";
     return (
       <div className="commit-stats">
-  <div className="commit-stat-item">
-    <div className="circle total" data-testid="total"></div>
-    <span>Total de modificaciones:</span> {commit.stats.total}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle additions" data-testid="adition"></div>
-    <span>Adiciones:</span> {commit.stats.additions}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle deletions" data-testid="deletion"></div>
-    <span>Sustracciones:</span> {commit.stats.deletions}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle coverage" data-testid="coverage"></div>
-    <span>Cobertura:</span> {coverageText}
-  </div>
-</div>
+        <div className="commit-stat-item">
+          <div className="circle total" data-testid="total"></div>
+          <span>Total de modificaciones:</span> {commit.stats.total}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle additions" data-testid="adition"></div>
+          <span>Adiciones:</span> {commit.stats.additions}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle deletions" data-testid="deletion"></div>
+          <span>Sustracciones:</span> {commit.stats.deletions}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle coverage" data-testid="coverage"></div>
+          <span>Cobertura:</span> {coverageText}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle tests" data-testid="tests"></div>
+          <span>Numero de tests:</span> {testCountText}
+        </div>
+      </div>
     );
   }
 
