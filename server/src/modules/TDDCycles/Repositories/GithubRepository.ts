@@ -136,15 +136,21 @@ export class GithubRepository implements IGithubRepository {
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}/comments`)
       ]);
       let percentageMatch = "";
+      let testCount = "";
       if (coverageResponse.data.length > 0) {
-        const match = /Statements\s*\|\s*([\d.]+)%/.exec(coverageResponse.data[0].body);
-        if (match) {
-          percentageMatch = String(match[1]);
+        const coverageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(coverageResponse.data[0].body); 
+        const testCountMatch = /(\d+)(?=\s*tests passing)/.exec(coverageResponse.data[0].body);
+        if (coverageMatch) {
+          percentageMatch = String(coverageMatch[1]);
+        }
+        if (testCountMatch) {
+          testCount = String(testCountMatch[1]);
         }
       }
       const commitInfo: CommitInformationDataObject = {
         ...response.data,
         coveragePercentage: percentageMatch,
+        test_count: testCount,
       };
       return commitInfo;
     } catch (error) {
@@ -163,7 +169,7 @@ export class GithubRepository implements IGithubRepository {
         commits.map(commit => this.getCommitInfoForTDDCycle(owner, repoName, commit.sha))
       );
 
-      const commitsData: TDDCycleDataObject[]= commitsFromSha.map(({ html_url, stats, commit, sha, coveragePercentage }) => ({
+      const commitsData: TDDCycleDataObject[]= commitsFromSha.map(({ html_url, stats, commit, sha, coveragePercentage, test_count }) => ({
         html_url,
         stats: {
           total: stats.total,
@@ -178,6 +184,7 @@ export class GithubRepository implements IGithubRepository {
         },
         sha,
         coverage: coveragePercentage,
+        test_count: test_count
       }));
 
       return commitsData;

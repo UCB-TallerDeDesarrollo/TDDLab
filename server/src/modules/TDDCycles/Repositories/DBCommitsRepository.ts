@@ -13,7 +13,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     const client = await this.pool.connect();
     try {
       const query =
-        "INSERT INTO commitsTable (owner, repoName, html_url, sha, total,additions,deletions,message,url,comment_count,commit_date, coverage) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10,$11, $12)";
+      "INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13)";
       const values = [
         owner,
         repoName,
@@ -27,6 +27,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
         commit.commit.comment_count,
         commit.commit.date,
         commit.coverage,
+        commit.test_count
       ];
       const result = await client.query(query, values);
       return result.rows;

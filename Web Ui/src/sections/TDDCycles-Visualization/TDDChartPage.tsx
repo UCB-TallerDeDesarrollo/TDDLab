@@ -61,6 +61,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([obtainJobsData(), obtainCommitsData()]);
+
       setLoading(false);
       console.log(commitsInfo, jobsByCommit);
     };
@@ -87,7 +88,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         <React.Fragment>
           <div className="center-content">
             <button className="myButton" onClick={handleSwitchButtonClick}>
-              Switch Chart View
+              Cambiar Grafico
             </button>
           </div>
           <div className="mainInfoContainer">
@@ -97,7 +98,11 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
                 jobsByCommit={jobsByCommit}
               />
             ) : (
-              <TDDCharts commits={commitsInfo} jobsByCommit={jobsByCommit} />
+              <TDDCharts
+                data-testId="cycle-chart"
+                commits={commitsInfo}
+                jobsByCommit={jobsByCommit}
+              />
             )}
           </div>
         </React.Fragment>
