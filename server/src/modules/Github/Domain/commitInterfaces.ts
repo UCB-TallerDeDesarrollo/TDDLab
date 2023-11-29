@@ -23,7 +23,7 @@ export interface CommitInformationDataObject {
   stats: Stats;
   files: File[];
   coveragePercentage: string;
-  test_count: string;
+  testCount: string;
 }
 
 export interface File {
