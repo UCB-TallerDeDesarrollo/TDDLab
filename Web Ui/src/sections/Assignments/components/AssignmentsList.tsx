@@ -40,9 +40,6 @@ const CustomTableCell2 = styled(TableCell)({
   width: "10%",
 });
 
-const CustomTableCell3 = styled(TableCell)({
-  width: "10%",
-});
 
 interface AssignmentsProps {
   ShowForm: () => void;
@@ -119,6 +116,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         await deleteAssignment.deleteAssignment(
           assignments[selectedAssignmentIndex].id
         );
+        
       }
       setConfirmationOpen(false);
     } catch (error) {
@@ -126,7 +124,8 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     }
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
-    
+    window.location.reload();
+
   };
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
