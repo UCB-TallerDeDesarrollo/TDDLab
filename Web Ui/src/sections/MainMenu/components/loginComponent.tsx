@@ -18,8 +18,8 @@ export default function LoginComponent() {
     let userData = await handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new CheckIfUserHasAccount();
-      let userCourse = await loginPort.userHasAnAcount(userData.email);
-      setCookieAndGlobalStateForValidUser(userData, userCourse);
+      let userAccount = await loginPort.userHasAnAcount(userData.email);
+      setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };
   const handleLogout = async () => {
