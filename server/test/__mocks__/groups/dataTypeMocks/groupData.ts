@@ -28,3 +28,9 @@ export const getDataGroupMock: GroupDTO = {
   groupName: 'Grupo', 
   groupDetail: 'Detalles del Grupo'
 }
+
+export const getModifiedGroupDataMock: GroupDTO = {
+  id: '1', 
+  groupName: 'Grupo actualizado', 
+  groupDetail: 'Detalles del Grupo actualizado'
+}
