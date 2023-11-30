@@ -1,32 +1,24 @@
 import "./styles/Login.css"; // Archivo de estilos CSS
 import { CheckIfUserHasAccount } from "../../modules/Auth/application/checkIfUserHasAccount";
-import { setGlobalState } from "../../modules/Auth/domain/authStates";
 import { useNavigate } from "react-router-dom";
 import { handleSignInWithGitHub } from "../../modules/Auth/application/signInWithGithub";
+import { setCookieAndGlobalStateForValidUser } from "../../modules/Auth/application/setCookieAndGlobalStateForValidUser";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const handleGitHubLogin = async () => {
-    let userData = await handleSignInWithGitHub();
+    const userData = await handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new CheckIfUserHasAccount();
-      let userCourse = await loginPort.userHasAnAcount(userData.email);
-      if (userCourse && userData.photoURL) {
-        setGlobalState("authData", {
-          userProfilePic: userData.photoURL,
-          userEmail: userData.email,
-          userCourse: userCourse.course,
-          userRole: userCourse.role,
-        });
+      const userCourse = await loginPort.userHasAnAcount(userData.email);
+      setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
-        });
-      } else {
-        console.log("Invalid User");
-      }
+        })
+      );
     } else {
-      alert("tu usuario no esta registrado");
+      alert("Disculpa, tu usuario no esta registrado");
     }
   };
 
@@ -37,10 +29,10 @@ const Login = () => {
       </header>
       <div className="login-content">
         <p className="login-Title">
-          Welcome to TDDLab! Please login using GitHub:
+          ¡Bienvenido a TDDLab!, usa tu cuenta de GitHub para acceder:
         </p>
         <button className="github-button" onClick={handleGitHubLogin}>
-          Login with GitHub
+          Accede con GitHub
         </button>
       </div>
     </div>

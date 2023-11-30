@@ -1,13 +1,9 @@
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
-export const getSessionCookie = () => {
+export const setSessionCookie = (userData: any) => {
   try {
-    const cookie = Cookies.get('userSession');
-    const parsedCookie = cookie ? JSON.parse(cookie) : null;
-    return parsedCookie;
+    Cookies.set("userSession", JSON.stringify(userData), { expires: 30 });
   } catch (error) {
-    console.error('Error retrieving session cookie:', error);
-    return null;
+    console.error("Error setting session cookie:", error);
   }
 };
-
