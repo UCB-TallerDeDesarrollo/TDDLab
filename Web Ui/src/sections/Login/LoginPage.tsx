@@ -3,6 +3,8 @@ import { CheckIfUserHasAccount } from "../../modules/Auth/application/checkIfUse
 import { setGlobalState } from "../../modules/Auth/domain/authStates";
 import { useNavigate } from "react-router-dom";
 import { handleSignInWithGitHub } from "../../modules/Auth/application/signInWithGithub";
+import { setSessionCookie } from "../../modules/Auth/application/setSessionCookie";
+import { setCookieAndGlobalStateForValidUser } from "../../modules/Auth/application/setCookieAndGlobalStateForValidUser";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,18 +14,11 @@ const Login = () => {
     if (userData?.email) {
       const loginPort = new CheckIfUserHasAccount();
       let userCourse = await loginPort.userHasAnAcount(userData.email);
-      if (userCourse && userData.photoURL) {
-        setGlobalState("authData", {
-          userProfilePic: userData.photoURL,
-          userEmail: userData.email,
-          userCourse: userCourse,
-        });
+      setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
-        });
-      } else {
-        console.log("Invalid User");
-      }
+        })
+      );
     } else {
       alert("tu usuario no esta registrado");
     }
