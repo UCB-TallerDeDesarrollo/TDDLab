@@ -8,7 +8,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditAssignmentForm from "./EditAssignmentForm"; // Import the new form
-
+import Tooltip from "@mui/material/Tooltip";
 const getStatusText = (status: string) => {
   switch (status) {
     case "pending":
@@ -54,15 +54,16 @@ const Assignment: React.FC<AssignmentProps> = ({
       <TableCell>{assignment.title}</TableCell>
       <TableCell>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <IconButton
-            aria-label="see"
-            onClick={() => handleClickDetail(index)}
-            onMouseEnter={() => handleRowHover(index)}
-            onMouseLeave={() => handleRowHover(null)}
-          >
-            <VisibilityIcon />
-          </IconButton>
-
+          <Tooltip title="Ver tarea" arrow>
+            <IconButton
+              aria-label="see"
+              onClick={() => handleClickDetail(index)}
+              onMouseEnter={() => handleRowHover(index)}
+              onMouseLeave={() => handleRowHover(null)}
+            >
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
           {/* Replace the EditIconButton with the EditAssignmentForm */}
           {isEditFormOpen ? (
             <EditAssignmentForm
@@ -70,11 +71,14 @@ const Assignment: React.FC<AssignmentProps> = ({
               onClose={handleCloseEditForm}
             />
           ) : (
+            <Tooltip title="Editar tarea" arrow>
             <IconButton aria-label="edit" onClick={handleEditClick}>
               <EditIcon />
             </IconButton>
+            </Tooltip>
           )}
 
+        <Tooltip title="Eliminar tarea" arrow>
           <IconButton
             aria-label="delete"
             onClick={() => handleClickDelete(index)}
@@ -83,6 +87,8 @@ const Assignment: React.FC<AssignmentProps> = ({
           >
             <DeleteIcon />
           </IconButton>
+        </Tooltip>
+
           <span>{statusText}</span>
         </div>
       </TableCell>
