@@ -39,7 +39,7 @@ function InvitationPage() {
     console.log(user?.email);
 
     if (user?.email) {
-      const userObj: UserOnDb = { email: user.email, course: "mainCourse" };
+      const userObj: UserOnDb = { email: user.email, course: "mainCourse", role: "student" };
       await dbAuthPort.register(userObj);
       setShowPopUp(true);
     }
