@@ -126,6 +126,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
     }
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
+    
   };
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
@@ -137,8 +138,12 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
         <StyledTable>
           <TableHead>
             <TableRow>
-              <CustomTableCell1>Tareas</CustomTableCell1>
-             
+              <CustomTableCell1
+                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+              >
+                Tareas
+              </CustomTableCell1>
+
               <CustomTableCell2>
                 <ButtonContainer>
                   <Select
@@ -146,6 +151,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
                     onChange={handleOrdenarChange}
                     inputProps={{ "aria-label": "Ordenar" }}
                     displayEmpty
+                    style={{ fontSize: "14px", height: "36px" }}
                   >
                     <option value="">Opciones</option>
                     <MenuItem value="" disabled>

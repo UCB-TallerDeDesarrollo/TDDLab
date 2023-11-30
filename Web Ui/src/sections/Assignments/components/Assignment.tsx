@@ -1,9 +1,9 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-
 import React, { useState } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -54,14 +54,16 @@ const Assignment: React.FC<AssignmentProps> = ({
       <TableCell>{assignment.title}</TableCell>
       <TableCell>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <IconButton
-            aria-label="see"
-            onClick={() => handleClickDetail(index)}
-            onMouseEnter={() => handleRowHover(index)}
-            onMouseLeave={() => handleRowHover(null)}
-          >
-            <VisibilityIcon />
-          </IconButton>
+          <Tooltip title="Ver tarea" arrow>
+            <IconButton
+              aria-label="see"
+              onClick={() => handleClickDetail(index)}
+              onMouseEnter={() => handleRowHover(index)}
+              onMouseLeave={() => handleRowHover(null)}
+            >
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
 
           {/* Replace the EditIconButton with the EditAssignmentForm */}
           {isEditFormOpen ? (
@@ -70,19 +72,23 @@ const Assignment: React.FC<AssignmentProps> = ({
               onClose={handleCloseEditForm}
             />
           ) : (
-            <IconButton aria-label="edit" onClick={handleEditClick}>
-              <EditIcon />
-            </IconButton>
+            <Tooltip title="Editar tarea" arrow>
+              <IconButton aria-label="edit" onClick={handleEditClick}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
           )}
 
-          <IconButton
-            aria-label="delete"
-            onClick={() => handleClickDelete(index)}
-            onMouseEnter={() => handleRowHover(index)}
-            onMouseLeave={() => handleRowHover(null)}
-          >
-            <DeleteIcon />
-          </IconButton>
+          <Tooltip title="Eliminar tarea" arrow>
+            <IconButton
+              aria-label="delete"
+              onClick={() => handleClickDelete(index)}
+              onMouseEnter={() => handleRowHover(index)}
+              onMouseLeave={() => handleRowHover(null)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
           <span>{statusText}</span>
         </div>
       </TableCell>
