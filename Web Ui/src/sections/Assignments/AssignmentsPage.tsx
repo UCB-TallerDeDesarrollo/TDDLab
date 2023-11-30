@@ -4,9 +4,7 @@ import InvitationComponent from "./components/EnrollmentLink";
 import { styled } from '@mui/system'; 
 import { useState } from "react";
 
-const AssignmentManagerContainer = styled('section')({
 
-});
 
 const AssignmentsContainer = styled('div')({
   justifyContent: "center",
@@ -28,7 +26,7 @@ function AssignmentManager() {
   };
 
   return (
-    <AssignmentManagerContainer>
+    <>
       <AssignmentsContainer data-testid="assignments-container">
         <Assignments ShowForm={handleCreateAssignmentClick} />
       </AssignmentsContainer>
@@ -36,7 +34,8 @@ function AssignmentManager() {
         {createAssignmentPopupOpen && <Form data-testid="form-container" open={createAssignmentPopupOpen} handleClose={() => setCreateAssignmentPopupOpen(false)} />}
         <InvitationComponent data-testid="invitation-component"/>
       </FormsContainer>
-    </AssignmentManagerContainer>
+    </>
+  
   );
 }
 
