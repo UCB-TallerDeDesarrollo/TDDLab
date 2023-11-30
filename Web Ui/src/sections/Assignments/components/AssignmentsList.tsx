@@ -40,9 +40,7 @@ const CustomTableCell2 = styled(TableCell)({
   width: "10%",
 });
 
-const CustomTableCell3 = styled(TableCell)({
-  width: "10%",
-});
+
 
 interface AssignmentsProps {
   ShowForm: () => void;
