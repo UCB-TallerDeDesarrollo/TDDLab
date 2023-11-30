@@ -60,7 +60,7 @@ describe("Get Commits", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM commitsTable WHERE owner = $1 AND reponame = $2 ORDER BY commit_date DESC', ['owner', 'repo']);
         expect(jobs).toEqual([{ id: 1 }]);
     });
-    it("should handle errors when saving a commit", async () => {
+    it("should handle errors when getting a commit", async () => {
         clientQueryMock.mockRejectedValue(new Error());
         await expect(
             repository.getCommits('owner', 'repo')
@@ -76,7 +76,7 @@ describe("Commit Exists", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM commitstable WHERE owner = $1 AND reponame = $2 AND sha=$3', ['owner', 'repo', 'sha']);
         expect(exists).toEqual(true);
     });
-    it("should handle errors when saving a commit", async () => {
+    it("should handle errors checking if commit exists", async () => {
         clientQueryMock.mockRejectedValue(new Error());
         await expect(
             repository.commitExists('owner', 'repo',  'sha')
@@ -93,7 +93,7 @@ describe("Repository Existence", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT COUNT(*) FROM commitstable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
         expect(exists).toEqual(true);
     });
-    it("should handle errors when saving a commit", async () => {
+    it("should handle errors when checking repository existence", async () => {
         clientQueryMock.mockRejectedValue(new Error());
         await expect(
             repository.repositoryExists('owner', 'repo')

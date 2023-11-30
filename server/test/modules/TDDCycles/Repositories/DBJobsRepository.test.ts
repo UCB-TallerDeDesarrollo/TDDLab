@@ -44,7 +44,7 @@ describe("Get jobs", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
         expect(jobs).toEqual([{ id: 1 }]);
     });
-    it("should handle errors when saving a job", async () => {
+    it("should handle errors when getting a job", async () => {
         clientQueryMock.mockRejectedValue(new Error());
         await expect(
             repository.getJobs('owner', 'repo')
@@ -60,7 +60,7 @@ describe("JobExists", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ['owner', 'repo', 1]);
         expect(exists).toEqual(true);
     });
-    it("should handle errors when saving a job", async () => {
+    it("should handle errors when checking if job exists", async () => {
         clientQueryMock.mockRejectedValue(new Error());
         await expect(
             repository.jobExists('owner', 'repo', 1)
@@ -76,7 +76,7 @@ describe("RepositoryExists", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
         expect(exists).toEqual(true);
     });
-    it("should handle errors when saving a job", async () => {
+    it("should handle errors when checking if repository exists", async () => {
         clientQueryMock.mockRejectedValue(new Error());
         await expect(
             repository.repositoryExists('owner', 'repo')
