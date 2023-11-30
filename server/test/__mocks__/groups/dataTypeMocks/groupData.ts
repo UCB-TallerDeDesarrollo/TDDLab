@@ -22,3 +22,9 @@ export const getDataListOfGroupsMock: GroupDTO[] = [
         groupDetail: 'Detalles del Grupo 4',
     },
 ];
+
+export const getDataGroupMock: GroupDTO = {
+  id: '1', 
+  groupName: 'Grupo', 
+  groupDetail: 'Detalles del Grupo'
+}
