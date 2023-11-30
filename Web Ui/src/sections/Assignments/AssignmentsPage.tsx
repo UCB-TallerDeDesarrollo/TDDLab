@@ -3,15 +3,11 @@ import Assignments from "./components/AssignmentsList";
 import { styled } from "@mui/system";
 import { useState } from "react";
 
-const AssignmentManagerContainer = styled("section")({
-  display: "flex",
-  width: "100%",
-});
 
-const AssignmentsContainer = styled("div")({
-  flex: "1",
-  marginLeft: "16px",
-  marginRight: "20px",
+
+const AssignmentsContainer = styled('div')({
+    justifyContent: "center",
+   	alignItems: "center", 
 });
 
 const FormsContainer = styled("div")({
@@ -33,7 +29,7 @@ function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
   };
 
   return (
-    <AssignmentManagerContainer>
+    <>
       <AssignmentsContainer data-testid="assignments-container">
         <Assignments
           ShowForm={handleCreateAssignmentClick}
@@ -49,7 +45,7 @@ function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
           />
         )}
       </FormsContainer>
-    </AssignmentManagerContainer>
+    </>
   );
 }
 
