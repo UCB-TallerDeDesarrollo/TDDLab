@@ -66,4 +66,12 @@ describe("GetTestResultsUseCase", () => {
         expect(dbJobRepository.getJobs).toHaveBeenCalledWith(owner, repoName);
         expect(result).toEqual(jobs);
     });
+    it("should throw an error when there is an issue with fetching or saving commits", async () => {
+        const owner = "owner";
+        const repoName = "repoName";
+
+        githubRepository.getRunsOfGithubActionsIds.mockRejectedValue(new Error("Error fetching jobs"));
+
+        await expect(useCase.execute(owner, repoName)).rejects.toThrow("Error fetching jobs");
+    });
 });
