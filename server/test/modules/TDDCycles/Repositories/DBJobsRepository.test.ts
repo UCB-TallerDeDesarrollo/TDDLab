@@ -6,6 +6,13 @@ let repository: DBJobsRepository;
 let poolConnectMock: jest.Mock;
 let clientQueryMock: jest.Mock;
 
+function testErrorHandling(methodUnderTest: () => Promise<any>) {
+    it("should handle errors", async () => {
+        clientQueryMock.mockRejectedValue(new Error());
+        await expect(methodUnderTest()).rejects.toThrow();
+    });
+}
+
 beforeEach(() => {
     poolConnectMock = jest.fn();
     clientQueryMock = jest.fn();
@@ -28,12 +35,7 @@ describe("Save a job", () => {
         expect(poolConnectMock).toBeCalledTimes(1);
         expect(clientQueryMock).toBeCalledWith('INSERT INTO jobsTable (id, sha, owner, repoName, conclusion) VALUES ($1, $2, $3, $4, $5)', [1, 'sha', 'owner', 'repo', 'success']);
     });
-    it("should handle errors when saving a job", async () => {
-        clientQueryMock.mockRejectedValue(new Error());
-        await expect(
-            repository.saveJob({ id: 1, sha: 'sha', owner: 'owner', reponame: 'repo', conclusion: 'success' })
-        ).rejects.toThrow();
-    });
+    testErrorHandling(() => repository.saveJob({ id: 1, sha: 'sha', owner: 'owner', reponame: 'repo', conclusion: 'success' }));
 });
 
 describe("Get jobs", () => {
@@ -44,12 +46,7 @@ describe("Get jobs", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
         expect(jobs).toEqual([{ id: 1 }]);
     });
-    it("should handle errors when getting a job", async () => {
-        clientQueryMock.mockRejectedValue(new Error());
-        await expect(
-            repository.getJobs('owner', 'repo')
-        ).rejects.toThrow();
-    });
+    testErrorHandling(() => repository.getJobs('owner', 'repo'));
 });
 
 describe("JobExists", () => {
@@ -60,34 +57,23 @@ describe("JobExists", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ['owner', 'repo', 1]);
         expect(exists).toEqual(true);
     });
-    it("should handle errors when checking if job exists", async () => {
-        clientQueryMock.mockRejectedValue(new Error());
-        await expect(
-            repository.jobExists('owner', 'repo', 1)
-        ).rejects.toThrow();
-    });
+    testErrorHandling(() => repository.jobExists('owner', 'repo', 1));
 });
 
 describe("RepositoryExists", () => {
     it('should check if job exists', async () => {
-        clientQueryMock.mockResolvedValueOnce({ rows: [{ count: "1" }]  });
+        clientQueryMock.mockResolvedValueOnce({ rows: [{ count: "1" }] });
         const exists = await repository.repositoryExists('owner', 'repo');
         expect(poolConnectMock).toBeCalledTimes(1);
-        expect(clientQueryMock).toBeCalledWith('SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
+        const repositoryExistsQuery = 'SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2';
+        expect(clientQueryMock).toBeCalledWith(repositoryExistsQuery, ['owner', 'repo']);
         expect(exists).toEqual(true);
     });
-    it("should handle errors when checking if repository exists", async () => {
-        clientQueryMock.mockRejectedValue(new Error());
-        await expect(
-            repository.repositoryExists('owner', 'repo')
-        ).rejects.toThrow();
-    });
+    testErrorHandling(() => repository.repositoryExists('owner', 'repo'));
 });
 
 describe("GetJobsNotSaved", () => {
     it("should return jobs that are not saved in the database", async () => {
-        const owner = "owner";
-        const repoName = "repoName";
         const commitsWithActions: [string, number][] = [["commit1", 1], ["commit2", 2], ["commit3", 3]];
         const jobsNotSaved: [string, number][] = [["commit1", 1], ["commit2", 2], ["commit3", 3]];
 
@@ -95,12 +81,12 @@ describe("GetJobsNotSaved", () => {
             .mockResolvedValueOnce({ rows: [] })
             .mockResolvedValueOnce({ rows: [] });
 
-        const result = await repository.getJobsNotSaved(owner, repoName, commitsWithActions);
+        const result = await repository.getJobsNotSaved("owner", "repoName", commitsWithActions);
 
         expect(poolConnectMock).toBeCalledTimes(3);
-        expect(clientQueryMock).toHaveBeenNthCalledWith(1, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', [owner, repoName, commitsWithActions[0][1]]);
-        expect(clientQueryMock).toHaveBeenNthCalledWith(2, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', [owner, repoName, commitsWithActions[1][1]]);
-        expect(clientQueryMock).toHaveBeenNthCalledWith(3, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', [owner, repoName, commitsWithActions[2][1]]);
+        expect(clientQueryMock).toHaveBeenNthCalledWith(1, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ["owner", "repoName", commitsWithActions[0][1]]);
+        expect(clientQueryMock).toHaveBeenNthCalledWith(2, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ["owner", "repoName", commitsWithActions[1][1]]);
+        expect(clientQueryMock).toHaveBeenNthCalledWith(3, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ["owner", "repoName", commitsWithActions[2][1]]);
         expect(result).toEqual(jobsNotSaved);
     });
 });
