@@ -47,7 +47,7 @@ describe("TDDChartPage", () => {
   it("click on Cambiar Grafico button", async () => {
     const { getByText } = render(<TDDChartPage port={new MockGithubAPI()} />);
     await waitFor(() => {
-      fireEvent.click(getByText("Cambiar Grafico"));
+      fireEvent.click(getByText("Cambiar vista grafica"));
       expect(getByText("Métricas")).toBeInTheDocument();
     });
   });

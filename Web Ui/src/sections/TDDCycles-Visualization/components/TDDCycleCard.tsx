@@ -63,11 +63,13 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
       {getCommitStats()}
       {jobs != null && (
         <div className={"conclusionBox"} style={getBoxStyle(jobs.conclusion)}>
-          Actions: {jobs.conclusion}
+          Acciones: {jobs.conclusion}
         </div>
       )}
       {jobs == null && (
-        <div className={"conclusionBox noActionsBox"}>Actions weren't Found</div>
+        <div className={"conclusionBox noActionsBox"}>
+          No se encontraron acciones
+        </div>
       )}
       {getCommitLink()}
       <br />

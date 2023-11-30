@@ -20,7 +20,11 @@ const FormsContainer = styled("div")({
   marginRight: "2px",
   marginTop: "68px",
 });
-function AssignmentManager() {
+
+interface AssignmentManagerProps {
+  userRole: string;
+}
+function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
 
@@ -31,7 +35,10 @@ function AssignmentManager() {
   return (
     <AssignmentManagerContainer>
       <AssignmentsContainer data-testid="assignments-container">
-        <Assignments ShowForm={handleCreateAssignmentClick} />
+        <Assignments
+          ShowForm={handleCreateAssignmentClick}
+          userRole={userRole}
+        />
       </AssignmentsContainer>
       <FormsContainer>
         {createAssignmentPopupOpen && (
