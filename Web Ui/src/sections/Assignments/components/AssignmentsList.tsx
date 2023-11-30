@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-
+import AddIcon from "@mui/icons-material/Add";
 import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
@@ -40,13 +40,15 @@ const CustomTableCell2 = styled(TableCell)({
   width: "10%",
 });
 
-
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
 }
 
-function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps>) {
+function Assignments({
+  ShowForm: showForm,
+  userRole,
+}: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -116,7 +118,6 @@ function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps
         await deleteAssignment.deleteAssignment(
           assignments[selectedAssignmentIndex].id
         );
-        
       }
       setConfirmationOpen(false);
     } catch (error) {
@@ -125,8 +126,6 @@ function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps
     setValidationDialogOpen(true);
     window.location.reload();
     setConfirmationOpen(false);
-    
-
   };
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
@@ -170,8 +169,18 @@ function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps
               </CustomTableCell2>
               <CustomTableCell2>
                 <ButtonContainer>
-                  {userRole === 'admin' && (
-                    <Button variant="outlined" onClick={showForm}>
+                  {userRole === "admin" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                      sx={{
+                        borderRadius: "17px",
+                        textTransform: "none",
+                        fontSize: "0.95rem",
+                      }}
+                      onClick={showForm}
+                    >
                       Crear
                     </Button>
                   )}
