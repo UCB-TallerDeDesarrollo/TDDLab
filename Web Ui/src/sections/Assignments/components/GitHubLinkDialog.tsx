@@ -66,13 +66,17 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} 
+        color="primary"
+        style={{ textTransform: "none" }}
+        >
           Cerrar
         </Button>
         <Button
           onClick={handleSend}
           color="primary"
           disabled={!validLink || link == ""}
+          style={{ textTransform: "none" }}
         >
           Enviar
         </Button>
