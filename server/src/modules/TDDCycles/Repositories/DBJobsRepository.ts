@@ -49,7 +49,7 @@ export class DBJobsRepository implements IDBJobsRepository {
             const query = 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3';
             const values = [owner, repo, jobId];
             const result = await client.query(query, values);
-            return result.rows;
+            return result.rows.length > 0;
         } catch (error) {
             console.error('Error en la consulta a la base de datos:', error);
             throw new Error('Error en la consulta a la base de datos');
@@ -80,12 +80,12 @@ export class DBJobsRepository implements IDBJobsRepository {
         let jobsToAdd = [];
 
         for (const currentJob of commitsWithActions) {
-            let row = await this.jobExists(
+            let exists = await this.jobExists(
                 owner,
                 repoName,
                 currentJob[1]
             );
-            if (row.length != 0) break;
+            if (exists) break;
             else jobsToAdd.push(currentJob);
         }
         return jobsToAdd;
