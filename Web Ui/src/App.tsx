@@ -62,17 +62,17 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRouteComponent>
+           // <ProtectedRouteComponent>
               <GestionTareas />
-            </ProtectedRouteComponent>
+           // </ProtectedRouteComponent>
           }
         />
         <Route
           path="/assignment/:id"
           element={
-            <ProtectedRouteComponent>
+          //  <ProtectedRouteComponent>
               <AssignmentDetail />
-            </ProtectedRouteComponent>
+          //  </ProtectedRouteComponent>
           }
         />
 

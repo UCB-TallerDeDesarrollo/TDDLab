@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import AddIcon from "@mui/icons-material/Add";
 import {
   Table,
   TableHead,
@@ -9,8 +10,8 @@ import {
   TableCell,
   Container,
   Button,
-  MenuItem, 
-  Select
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -20,7 +21,11 @@ import { DeleteAssignment } from "../../../modules/Assignments/application/Delet
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import Assignment from "./Assignment";
-
+const StyledTable = styled(Table)({
+  width: "82%",
+  marginLeft: "auto",
+  marginRight: "auto",
+});
 const ButtonContainer = styled("div")({
   display: "flex",
   justifyContent: "flex-end",
@@ -129,11 +134,12 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   return (
     <Container>
       <section className="Tareas">
-        <Table>
+        <StyledTable>
           <TableHead>
             <TableRow>
               <CustomTableCell1>Tareas</CustomTableCell1>
-              <CustomTableCell3>
+             
+              <CustomTableCell2>
                 <ButtonContainer>
                   <Select
                     value={selectedSorting}
@@ -154,11 +160,17 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
                     <MenuItem value="Time_Up">Recientes</MenuItem>
                     <MenuItem value="Time_Down">Antiguos</MenuItem>
                   </Select>
-                </ButtonContainer>
-              </CustomTableCell3>
-              <CustomTableCell2>
-                <ButtonContainer>
-                  <Button variant="outlined" onClick={showForm}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    sx={{
+                      borderRadius: "17px",
+                      textTransform: "none",
+                      fontSize: "0.95rem",
+                    }}
+                    onClick={showForm}
+                  >
                     Crear
                   </Button>
                 </ButtonContainer>
@@ -177,7 +189,7 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
               />
             ))}
           </TableBody>
-        </Table>
+        </StyledTable>
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}

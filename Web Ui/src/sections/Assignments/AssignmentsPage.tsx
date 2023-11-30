@@ -5,14 +5,13 @@ import { styled } from '@mui/system';
 import { useState } from "react";
 
 const AssignmentManagerContainer = styled('section')({
-  display: 'flex',
-  width: '100%',
+
 });
 
 const AssignmentsContainer = styled('div')({
-  flex: '1',
-  marginLeft: '16px',  
-  marginRight: '20px', 
+  justifyContent: "center",
+  alignItems: "center",  
+
 });
 
 const FormsContainer = styled('div')({
