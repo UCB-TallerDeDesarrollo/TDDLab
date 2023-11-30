@@ -19,6 +19,7 @@ export class DBJobsRepository implements IDBJobsRepository {
 
         } catch (error) {
             console.error('Error inserting job:', error);
+            throw new Error('Error inserting job');
         } finally {
             if (client) {
                 client.release();
