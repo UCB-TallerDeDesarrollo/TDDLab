@@ -56,3 +56,13 @@ describe("getJobsNotSaved", () => {
         expect(result).toEqual(jobsNotSaved);
     });
 });
+
+describe("Job Existence and Saving Jobs List", () => {
+    it('should check if job exists', async () => {
+        clientQueryMock.mockResolvedValueOnce({ rows: [{ exists: true }] });
+        const exists = await repository.jobExists('owner', 'repo', 1);
+        expect(poolConnectMock).toBeCalledTimes(1);
+        expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ['owner', 'repo', 1]);
+        expect(exists).toEqual(true);
+    });
+});
