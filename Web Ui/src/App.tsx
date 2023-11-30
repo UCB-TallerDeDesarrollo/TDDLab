@@ -10,7 +10,7 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
-import InvitationPage from "./sections/Invitation/InvitationPage";
+import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
   setGlobalState,
