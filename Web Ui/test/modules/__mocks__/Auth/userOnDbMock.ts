@@ -1,4 +1,4 @@
-import UserOnDb from "../../../../src/modules/Auth/domain/userOnDb.interface";
+import UserOnDb from "../../../../src/modules/User-Authentication/domain/userOnDb.interface";
 
 export const dbUserMock: UserOnDb = {
   email: "test@gmail.com",
