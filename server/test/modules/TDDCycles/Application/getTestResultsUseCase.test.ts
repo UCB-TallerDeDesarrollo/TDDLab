@@ -1,7 +1,7 @@
 import { GetTestResultsUseCase } from "../../../../src/modules/TDDCycles/Application/getTestResultsUseCase";
 import { IDBJobsRepository } from "../../../../src/modules/TDDCycles/Domain/IDBJobsRepository";
 import { IGithubRepository } from "../../../../src/modules/TDDCycles/Domain/IGithubRepository";
-import { githubActionsRunsList, jobs, jobsFormatted, jobsToSave } from "../../../__mocks__/TDDCycles/dataTypeMocks/jobData";
+import { githubActionsRunsList, jobsFormatted, jobsToSave, mockJobDataObject } from "../../../__mocks__/TDDCycles/dataTypeMocks/jobData";
 
 jest.mock("../../../../src/modules/TDDCycles/Domain/IDBJobsRepository", () => {
     return jest.fn().mockImplementation(() => {
@@ -54,7 +54,7 @@ describe("GetTestResultsUseCase", () => {
         dbJobRepository.repositoryExists.mockResolvedValue(true);
         dbJobRepository.getJobsNotSaved.mockResolvedValue(jobsToSave);
         githubRepository.getJobsDataFromGithub.mockResolvedValue(jobsFormatted);
-        dbJobRepository.getJobs.mockResolvedValue(jobs);
+        dbJobRepository.getJobs.mockResolvedValue(mockJobDataObject);
 
         const result = await useCase.execute(owner, repoName);
 
@@ -64,7 +64,7 @@ describe("GetTestResultsUseCase", () => {
         expect(githubRepository.getJobsDataFromGithub).toHaveBeenCalledWith(owner, repoName, jobsToSave);
         expect(dbJobRepository.saveJobsList).toHaveBeenCalledWith(owner, repoName, jobsFormatted);
         expect(dbJobRepository.getJobs).toHaveBeenCalledWith(owner, repoName);
-        expect(result).toEqual(jobs);
+        expect(result).toEqual(mockJobDataObject);
     });
     it("should throw an error when there is an issue with fetching or saving commits", async () => {
         const owner = "owner";
