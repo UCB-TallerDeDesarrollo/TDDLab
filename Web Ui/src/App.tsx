@@ -45,8 +45,8 @@ function App() {
     const storedSession = getSessionCookie();
     if (storedSession) {
       setGlobalState("authData", {
-        userProfilePic: storedSession.photoURL,
-        userEmail: storedSession.email,
+        userProfilePic: storedSession.userData.photoURL,
+        userEmail: storedSession.userData.email,
         userCourse: storedSession.course,
         userRole: storedSession.role,
       });
