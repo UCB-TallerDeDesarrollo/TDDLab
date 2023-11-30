@@ -29,8 +29,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
         commit.coverage,
         commit.test_count
       ];
-      const result = await client.query(query, values);
-      return result.rows;
+      await client.query(query, values);
     } catch (error) {
       console.error("Error saving commit to the database:", error);
       throw error;
@@ -60,7 +59,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
         "SELECT * FROM commitstable WHERE owner = $1 AND reponame = $2 AND sha=$3";
       const values = [owner, repoName, sha];
       const result = await client.query(query, values);
-      return result.rows;
+      return result.rows.length > 0;
     } catch (error) {
       console.error("Error checking if commit exists in the database:", error);
       throw error;
@@ -90,12 +89,12 @@ export class DBCommitsRepository implements IDBCommitsRepository {
   ) {
     let commitsToAdd = [];
     for (const currentCommit of commitsData) {
-      let row = await this.commitExists(
+      let exists = await this.commitExists(
         owner,
         repoName,
         currentCommit.sha
       );
-      if (row.length != 0) {
+      if (exists) {
         break;
       } else {
         commitsToAdd.push(currentCommit);
