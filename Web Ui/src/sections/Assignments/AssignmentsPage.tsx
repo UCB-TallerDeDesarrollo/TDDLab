@@ -1,6 +1,5 @@
 import Form from "./components/AssignmentForm";
 import Assignments from "./components/AssignmentsList";
-import InvitationComponent from "./components/EnrollmentLink";
 import { styled } from "@mui/system";
 import { useState } from "react";
 
