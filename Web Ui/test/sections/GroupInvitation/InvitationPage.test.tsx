@@ -1,4 +1,4 @@
-import InvitationPage from "../../../src/sections/Invitation/InvitationPage";
+import InvitationPage from "../../../src/sections/GroupInvitation/InvitationPage";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { handleSignInWithGitHub } from "../../../src/modules/User-Authentication/application/signInWithGithub";
