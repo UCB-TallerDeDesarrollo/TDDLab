@@ -28,6 +28,12 @@ describe("Save a job", () => {
         expect(poolConnectMock).toBeCalledTimes(1);
         expect(clientQueryMock).toBeCalledWith('INSERT INTO jobsTable (id, sha, owner, repoName, conclusion) VALUES ($1, $2, $3, $4, $5)', [1, 'sha', 'owner', 'repo', 'success']);
     });
+    it("should handle errors when saving a job", async () => {
+        clientQueryMock.mockRejectedValue(new Error());
+        await expect(
+            repository.saveJob({ id: 1, sha: 'sha', owner: 'owner', reponame: 'repo', conclusion: 'success' })
+        ).rejects.toThrow();
+    });
 });
 
 describe("Get jobs", () => {
@@ -37,6 +43,12 @@ describe("Get jobs", () => {
         expect(poolConnectMock).toBeCalledTimes(1);
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
         expect(jobs).toEqual([{ id: 1 }]);
+    });
+    it("should handle errors when saving a job", async () => {
+        clientQueryMock.mockRejectedValue(new Error());
+        await expect(
+            repository.getJobs('owner', 'repo')
+        ).rejects.toThrow();
     });
 });
 
@@ -48,6 +60,12 @@ describe("JobExists", () => {
         expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ['owner', 'repo', 1]);
         expect(exists).toEqual(true);
     });
+    it("should handle errors when saving a job", async () => {
+        clientQueryMock.mockRejectedValue(new Error());
+        await expect(
+            repository.jobExists('owner', 'repo', 1)
+        ).rejects.toThrow();
+    });
 });
 
 describe("RepositoryExists", () => {
@@ -57,6 +75,12 @@ describe("RepositoryExists", () => {
         expect(poolConnectMock).toBeCalledTimes(1);
         expect(clientQueryMock).toBeCalledWith('SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
         expect(exists).toEqual(true);
+    });
+    it("should handle errors when saving a job", async () => {
+        clientQueryMock.mockRejectedValue(new Error());
+        await expect(
+            repository.repositoryExists('owner', 'repo')
+        ).rejects.toThrow();
     });
 });
 
