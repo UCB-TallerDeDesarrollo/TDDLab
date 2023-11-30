@@ -1,7 +1,7 @@
 import { GetTestResultsUseCase } from "../../../../src/modules/TDDCycles/Application/getTestResultsUseCase";
 import { IDBJobsRepository } from "../../../../src/modules/TDDCycles/Domain/IDBJobsRepository";
 import { IGithubRepository } from "../../../../src/modules/TDDCycles/Domain/IGithubRepository";
-import { JobDataObject } from "../../../../src/modules/TDDCycles/Domain/JobDataObject";
+import { githubActionsRunsList, jobs, jobsFormatted, jobsToSave } from "../../../__mocks__/TDDCycles/dataTypeMocks/jobData";
 
 jest.mock("../../../../src/modules/TDDCycles/Domain/IDBJobsRepository", () => {
     return jest.fn().mockImplementation(() => {
@@ -49,10 +49,6 @@ describe("GetTestResultsUseCase", () => {
 
         const owner = "owner";
         const repoName = "repoName";
-        const githubActionsRunsList: [string, number][] = [["run1", 1], ["run2", 0]];
-        const jobsToSave: [string, number][] = ["run1"].map((run) => [run, 1]);
-        const jobs: JobDataObject[] = []; 
-        const jobsFormatted: Record<string, JobDataObject> = { job1: {} as JobDataObject, job2: {} as JobDataObject };
 
         githubRepository.getRunsOfGithubActionsIds.mockResolvedValue(githubActionsRunsList);
         dbJobRepository.repositoryExists.mockResolvedValue(true);
