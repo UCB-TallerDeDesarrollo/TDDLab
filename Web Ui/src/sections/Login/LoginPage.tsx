@@ -20,7 +20,7 @@ const Login = () => {
         })
       );
     } else {
-      alert("tu usuario no esta registrado");
+      alert("Disculpa, tu usuario no esta registrado");
     }
   };
 
@@ -31,10 +31,10 @@ const Login = () => {
       </header>
       <div className="login-content">
         <p className="login-Title">
-          Welcome to TDDLab! Please login using GitHub:
+          ¡Bienvenido a TDDLab!, usa tu cuenta de GitHub para acceder:
         </p>
         <button className="github-button" onClick={handleGitHubLogin}>
-          Login with GitHub
+          Accede con GitHub
         </button>
       </div>
     </div>

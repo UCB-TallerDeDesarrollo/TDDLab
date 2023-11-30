@@ -114,11 +114,11 @@ const AssignmentDetail: React.FC = () => {
         });
       } else {
         alert(
-          "Invalid GitHub URL. Please enter a valid GitHub repository URL."
+          "Link Invalido, por favor ingrese un link valido."
         );
       }
     } else {
-      alert("No GitHub URL found for this assignment.");
+      alert("No se encontro un link para esta tarea.");
     }
   };
 
@@ -338,7 +338,7 @@ const AssignmentDetail: React.FC = () => {
                 marginRight: "8px",
               }}
             >
-              Enviar tarea
+              Finalizar tarea
             </Button>
             <CommentDialog
               open={isCommentDialogOpen}
