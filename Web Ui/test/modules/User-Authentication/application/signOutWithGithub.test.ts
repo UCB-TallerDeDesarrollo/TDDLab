@@ -1,5 +1,5 @@
 import { signOut, getAuth } from "firebase/auth";
-import { handleGithubSignOut } from "../../../../src/modules/Auth/application/signOutWithGithub";
+import { handleGithubSignOut } from "../../../../src/modules/User-Authentication/application/signOutWithGithub";
 import { mockAuth } from "../../__mocks__/Auth/mockedAuthObject";
 
 jest.mock("firebase/auth", () => ({

@@ -1,5 +1,5 @@
 import axios from "axios";
-import AuthRepository from "../../../../src/modules/Auth/repository/LoginRepository";
+import AuthRepository from "../../../../src/modules/User-Authentication/repository/LoginRepository";
 import { dbUserMock } from "../../__mocks__/Auth/userOnDbMock";
 
 // Mocking Axios to avoid actual HTTP requests
