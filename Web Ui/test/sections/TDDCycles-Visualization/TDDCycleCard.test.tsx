@@ -26,23 +26,29 @@ describe('CycleCard component', () => {
   expect(coverageText).toBeInTheDocument();
   });
 
-  it('renders the card as success', () => {
-    const { getByText } = render(<TDDCycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
-    const commitMessageElement = getByText('Actions: success');
+  it("renders the card as success", () => {
+    const { getByText } = render(
+      <TDDCycleCard commit={mockCommitData} jobs={mockSuccessJobData} />
+    );
+    const commitMessageElement = getByText("Acciones: success");
 
     expect(commitMessageElement).toBeInTheDocument();
   });
 
-  it('renders the card as failed', () => {
-    const { getByText } = render(<TDDCycleCard commit={mockCommitData} jobs={mockFailedJobData} />);
-    const commitMessageElement = getByText('Actions: failure');
+  it("renders the card as failed", () => {
+    const { getByText } = render(
+      <TDDCycleCard commit={mockCommitData} jobs={mockFailedJobData} />
+    );
+    const commitMessageElement = getByText("Acciones: failure");
     expect(commitMessageElement).toBeInTheDocument();
   });
 
-  it('renders the card with no actions', () => {
-    const { getByText } = render(<TDDCycleCard commit={mockCommitData} jobs={null} />);
-  const commitMessageElement = getByText(/Actions weren't Found/);
-  expect(commitMessageElement).toBeInTheDocument();
+  it("renders the card with no actions", () => {
+    const { getByText } = render(
+      <TDDCycleCard commit={mockCommitData} jobs={null} />
+    );
+    const commitMessageElement = getByText(/No se encontraron acciones/);
+    expect(commitMessageElement).toBeInTheDocument();
   });
 
   it('redirects to the GitHub commit page when the "Ver commit" button is clicked', () => {
