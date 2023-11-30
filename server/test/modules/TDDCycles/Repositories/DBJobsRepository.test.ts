@@ -1,5 +1,6 @@
 import { DBJobsRepository } from '../../../../src/modules/TDDCycles/Repositories/DBJobsRepository';
 import { Pool } from "pg";
+import { jobsFormatted } from '../../../__mocks__/TDDCycles/dataTypeMocks/jobData';
 
 let repository: DBJobsRepository;
 let poolConnectMock: jest.Mock;
@@ -21,12 +22,15 @@ afterEach(() => {
 });
 
 
-describe("Obtain assignments", () => {
+describe("Save a job", () => {
     it("should save a job", async () => {
         await repository.saveJob({ id: 1, sha: 'sha', owner: 'owner', reponame: 'repo', conclusion: 'success' });
         expect(poolConnectMock).toBeCalledTimes(1);
         expect(clientQueryMock).toBeCalledWith('INSERT INTO jobsTable (id, sha, owner, repoName, conclusion) VALUES ($1, $2, $3, $4, $5)', [1, 'sha', 'owner', 'repo', 'success']);
     });
+});
+
+describe("Get jobs", () => {
     it('should get jobs', async () => {
         clientQueryMock.mockResolvedValueOnce({ rows: [{ id: 1 }] });
         const jobs = await repository.getJobs('owner', 'repo');
@@ -36,7 +40,27 @@ describe("Obtain assignments", () => {
     });
 });
 
-describe("getJobsNotSaved", () => {
+describe("JobExists", () => {
+    it('should check if job exists', async () => {
+        clientQueryMock.mockResolvedValueOnce({ rows: [{ exists: true }] });
+        const exists = await repository.jobExists('owner', 'repo', 1);
+        expect(poolConnectMock).toBeCalledTimes(1);
+        expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ['owner', 'repo', 1]);
+        expect(exists).toEqual(true);
+    });
+});
+
+describe("RepositoryExists", () => {
+    it('should check if job exists', async () => {
+        clientQueryMock.mockResolvedValueOnce({ rows: [{ count: "1" }]  });
+        const exists = await repository.repositoryExists('owner', 'repo');
+        expect(poolConnectMock).toBeCalledTimes(1);
+        expect(clientQueryMock).toBeCalledWith('SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
+        expect(exists).toEqual(true);
+    });
+});
+
+describe("GetJobsNotSaved", () => {
     it("should return jobs that are not saved in the database", async () => {
         const owner = "owner";
         const repoName = "repoName";
@@ -57,12 +81,21 @@ describe("getJobsNotSaved", () => {
     });
 });
 
-describe("Job Existence and Saving Jobs List", () => {
-    it('should check if job exists', async () => {
-        clientQueryMock.mockResolvedValueOnce({ rows: [{ exists: true }] });
-        const exists = await repository.jobExists('owner', 'repo', 1);
-        expect(poolConnectMock).toBeCalledTimes(1);
-        expect(clientQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ['owner', 'repo', 1]);
-        expect(exists).toEqual(true);
+describe("SaveJobsList", () => {
+    it("should save a list of jobs", async () => {
+        const saveJobSpy = jest.spyOn(repository, 'saveJob');
+
+        await repository.saveJobsList("owner", "repo", jobsFormatted);
+
+        expect(saveJobSpy).toHaveBeenCalledTimes(1);
+        expect(saveJobSpy).toHaveBeenNthCalledWith(1, {
+            id: 123,
+            sha: "abc123",
+            owner: "owner",
+            reponame: "repo",
+            conclusion: "success"
+        });
     });
 });
+
+
