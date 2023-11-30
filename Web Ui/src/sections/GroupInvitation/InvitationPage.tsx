@@ -4,15 +4,15 @@ import firebase from "../../firebaseConfig";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import UserOnDb from "../../modules/Auth/domain/userOnDb.interface";
+import UserOnDb from "../../modules/User-Authentication/domain/userOnDb.interface";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { Grid } from "@mui/material";
-import { handleSignInWithGitHub } from "../../modules/Auth/application/signInWithGithub";
-import { handleGithubSignOut } from "../../modules/Auth/application/signOutWithGithub";
-import { RegisterUserOnDb } from "../../modules/Auth/application/registerUserOnDb";
+import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
+import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
+import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 
 function InvitationPage() {
   const [user, setUser] = useState<User | null>(null);

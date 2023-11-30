@@ -10,13 +10,13 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
-import InvitationPage from "./sections/Invitation/InvitationPage";
+import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
   setGlobalState,
   useGlobalState,
-} from "./modules/Auth/domain/authStates";
-import { getSessionCookie } from "./modules/Auth/application/getSessionCookie";
+} from "./modules/User-Authentication/domain/authStates";
+import { getSessionCookie } from "./modules/User-Authentication/application/getSessionCookie";
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 const navArrayLinks = [
@@ -45,8 +45,8 @@ function App() {
     const storedSession = getSessionCookie();
     if (storedSession) {
       setGlobalState("authData", {
-        userProfilePic: storedSession.photoURL,
-        userEmail: storedSession.email,
+        userProfilePic: storedSession.userData.photoURL,
+        userEmail: storedSession.userData.email,
         userCourse: storedSession.course,
         userRole: storedSession.role,
       });
