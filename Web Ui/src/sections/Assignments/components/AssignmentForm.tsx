@@ -34,25 +34,17 @@ function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
       return;
     }
 
-    /*if (isCreateButtonClicked.current) {
-      alert(`Clicks varios: ${assignmentData.start_date} + ${assignmentData.end_date}`)
-      return;
-    }*/ 
-    // Prevent multiple clicks
     isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
     if (assignmentData.start_date > assignmentData.end_date) {
-      alert(`Fin > Inicio: ${assignmentData.start_date} + ${assignmentData.end_date}`)
       return;
     }
     try {
       await createAssignments.createAssignment(assignmentData);
-      alert(`Entra al try: ${assignmentData.start_date} + ${assignmentData.end_date}`)
     } catch (error) {
       console.error(error);
     }finally {
-      alert(`Algo raro: ${assignmentData.start_date} + ${assignmentData.end_date}`)
       setSave(false);
     }
     setValidationDialogOpen(true);
