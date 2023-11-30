@@ -1,8 +1,8 @@
 import Cookies from "js-cookie";
 import "@testing-library/jest-dom";
-import { setSessionCookie } from "../../../src/modules/Auth/application/setSessionCookie";
-import { getSessionCookie } from "../../../src/modules/Auth/application/getSessionCookie";
-import { removeSessionCookie } from "../../../src/modules/Auth/application/deleteSessionCookie";
+import { setSessionCookie } from "../../../src/modules/Users-Authentication/application/setSessionCookie";
+import { getSessionCookie } from "../../../src/modules/Users-Authentication/application/getSessionCookie";
+import { removeSessionCookie } from "../../../src/modules/Users-Authentication/application/deleteSessionCookie";
 import { cookieUserData } from "./__mocks__/cookieData";
 
 jest.mock("js-cookie", () => ({

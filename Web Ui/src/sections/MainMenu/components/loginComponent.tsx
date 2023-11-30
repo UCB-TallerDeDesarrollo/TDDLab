@@ -1,15 +1,15 @@
 import { Button } from "@mui/material";
-import { CheckIfUserHasAccount } from "../../../modules/Auth/application/checkIfUserHasAccount";
+import { CheckIfUserHasAccount } from "../../../modules/Users-Authentication/application/checkIfUserHasAccount";
 import {
   setGlobalState,
   useGlobalState,
-} from "../../../modules/Auth/domain/authStates";
+} from "../../../modules/Users-Authentication/domain/authStates";
 import React from "react";
 import "../styles/loginComponentStyles.css";
-import { removeSessionCookie } from "../../../modules/Auth/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/Auth/application/signInWithGithub";
-import { handleGithubSignOut } from "../../../modules/Auth/application/signOutWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/Auth/application/setCookieAndGlobalStateForValidUser";
+import { removeSessionCookie } from "../../../modules/Users-Authentication/application/deleteSessionCookie";
+import { handleSignInWithGitHub } from "../../../modules/Users-Authentication/application/signInWithGithub";
+import { handleGithubSignOut } from "../../../modules/Users-Authentication/application/signOutWithGithub";
+import { setCookieAndGlobalStateForValidUser } from "../../../modules/Users-Authentication/application/setCookieAndGlobalStateForValidUser";
 
 export default function LoginComponent() {
   const authData = useGlobalState("authData");

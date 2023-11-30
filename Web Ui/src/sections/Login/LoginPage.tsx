@@ -1,8 +1,8 @@
 import "./styles/Login.css"; // Archivo de estilos CSS
-import { CheckIfUserHasAccount } from "../../modules/Auth/application/checkIfUserHasAccount";
+import { CheckIfUserHasAccount } from "../../modules/Users-Authentication/application/checkIfUserHasAccount";
 import { useNavigate } from "react-router-dom";
-import { handleSignInWithGitHub } from "../../modules/Auth/application/signInWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../modules/Auth/application/setCookieAndGlobalStateForValidUser";
+import { handleSignInWithGitHub } from "../../modules/Users-Authentication/application/signInWithGithub";
+import { setCookieAndGlobalStateForValidUser } from "../../modules/Users-Authentication/application/setCookieAndGlobalStateForValidUser";
 
 const Login = () => {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { signInWithPopup } from "firebase/auth";
-import { handleSignInWithGitHub } from "../../../../src/modules/Auth/application/signInWithGithub";
+import { handleSignInWithGitHub } from "../../../../src/modules/Users-Authentication/application/signInWithGithub";
 import { mockUserCredential } from "../../__mocks__/Auth/mockedUserCredential";
 
 jest.mock("firebase/auth", () => ({

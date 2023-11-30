@@ -1,4 +1,4 @@
-import { useGlobalState } from "./modules/Auth/domain/authStates";
+import { useGlobalState } from "./modules/Users-Authentication/domain/authStates";
 import { useNavigate } from "react-router-dom";
 import React, { ReactNode, useEffect } from "react";
 
