@@ -15,8 +15,8 @@ import { useEffect } from "react";
 import {
   setGlobalState,
   useGlobalState,
-} from "./modules/Auth/domain/authStates";
-import { getSessionCookie } from "./modules/Auth/application/getSessionCookie";
+} from "./modules/Users-Authentication/domain/authStates";
+import { getSessionCookie } from "./modules/Users-Authentication/application/getSessionCookie";
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 const navArrayLinks = [

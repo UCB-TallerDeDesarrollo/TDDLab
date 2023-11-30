@@ -1,9 +1,9 @@
-import { RegisterUserOnDb } from "../../../../src/modules/Auth/application/registerUserOnDb";
-import UserOnDb from "../../../../src/modules/Auth/domain/userOnDb.interface";
-import AuthRepository from "../../../../src/modules/Auth/repository/LoginRepository";
+import { RegisterUserOnDb } from "../../../../src/modules/Users-Authentication/application/registerUserOnDb";
+import UserOnDb from "../../../../src/modules/Users-Authentication/domain/userOnDb.interface";
+import AuthRepository from "../../../../src/modules/Users-Authentication/repository/LoginRepository";
 
 // Mock the AuthRepository
-jest.mock("../../../../src/modules/Auth/repository/LoginRepository", () => {
+jest.mock("../../../../src/modules/Users-Authentication/repository/LoginRepository", () => {
   return jest.fn().mockImplementation(() => ({
     registerAccount: jest.fn(),
   }));
