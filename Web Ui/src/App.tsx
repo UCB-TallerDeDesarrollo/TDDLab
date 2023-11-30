@@ -16,7 +16,7 @@ import {
   setGlobalState,
   useGlobalState,
 } from "./modules/Auth/domain/authStates";
-import { getSessionCookie } from "./modules/Auth/application/setSessionCookie";
+import { getSessionCookie } from "./modules/Auth/application/getSessionCookie";
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 const navArrayLinks = [
@@ -81,17 +81,17 @@ function App() {
         <Route
           path="/groups"
           element={
-           <ProtectedRouteComponent>
+            <ProtectedRouteComponent>
               <Groups />
-           </ProtectedRouteComponent>
+            </ProtectedRouteComponent>
           }
         />
         <Route
           path="/user"
           element={
-           <ProtectedRouteComponent>
+            <ProtectedRouteComponent>
               <User />
-           </ProtectedRouteComponent>
+            </ProtectedRouteComponent>
           }
         />
         <Route

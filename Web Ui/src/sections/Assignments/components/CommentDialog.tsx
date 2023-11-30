@@ -81,7 +81,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         />
         {!validLink && repo !== "" && (
           <Typography variant="body2" color="error">
-            Warning: Invalid link
+            Advertencia: Link invalido
           </Typography>
         )}
       </DialogContent>
