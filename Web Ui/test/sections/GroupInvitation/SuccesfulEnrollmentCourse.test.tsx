@@ -1,6 +1,6 @@
 import { render, fireEvent , waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
-import SuccessfulEnrollmentPopUp from '../../../src/sections/Invitation/components/SuccessfulEnrollmentPopUp';
+import SuccessfulEnrollmentPopUp from '../../../src/sections/GroupInvitation/components/SuccessfulEnrollmentPopUp';
 
 describe('Succesful Sign Up Pop up component', () => {
     it('Renders basic components', () => {
