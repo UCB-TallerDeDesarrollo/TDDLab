@@ -10,7 +10,7 @@ export class CheckIfUserHasAccount {
   async userHasAnAcount(email: string) {
     let answerData: UserOnDb = await this.adapter.getAccountInfo(email);
     if (answerData.course) {
-      return answerData;
+      return answerData.course;
     }
     return null;
   }
