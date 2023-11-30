@@ -13,7 +13,8 @@ jest.mock("js-cookie", () => ({
 
 describe("setSessionCookie", () => {
   it("sets the session cookie successfully", () => {
-    const userData = { cookieUserData };
+    const role = "admin"
+    const userData = { cookieUserData, role };
     setSessionCookie(userData);
 
     expect(Cookies.set).toHaveBeenCalledWith(
@@ -34,7 +35,7 @@ describe("setSessionCookie", () => {
 
     expect(Cookies.set).toHaveBeenCalledWith(
       "userSession",
-      JSON.stringify({}),
+      JSON.stringify({},),
       { expires: 30 }
     );
     expect(console.error).toHaveBeenCalledTimes(1);

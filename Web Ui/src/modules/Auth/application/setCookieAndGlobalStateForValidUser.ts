@@ -15,7 +15,8 @@ export function setCookieAndGlobalStateForValidUser(
       userCourse: userCourse.course,
       userRole: userCourse.role,
     });
-    setSessionCookie(userData, userCourse.role);
+    const role =  userCourse.role;
+    setSessionCookie({userData, role});
     positiveCallback();
   } else {
     console.log("Invalid User");
