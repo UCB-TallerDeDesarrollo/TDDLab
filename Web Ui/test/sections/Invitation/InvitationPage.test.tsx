@@ -1,4 +1,4 @@
-import InvitationPage from "../../../src/sections/Invitation/InvitationPage";
+import InvitationPage from "../../../src/sections/GroupInvitation/InvitationPage";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { handleSignInWithGitHub } from "../../../src/modules/Users-Authentication/application/signInWithGithub";
@@ -13,7 +13,7 @@ jest.mock("firebase/auth", () => ({
   }),
   User: jest.fn(),
 }));
-jest.mock("../../../src/modules/Auth/application/signInWithGithub", () => ({
+jest.mock("../../../src/modules/Users-Authentication/application/signInWithGithub", () => ({
   handleSignInWithGitHub: jest.fn(),
 }));
 jest.mock("../../../src/firebaseConfig", () => {
@@ -22,7 +22,7 @@ jest.mock("../../../src/firebaseConfig", () => {
     default: jest.fn(),
   };
 });
-jest.mock("../../../src/modules/Auth/application/registerUserOnDb", () => {
+jest.mock("../../../src/modules/Users-Authentication/application/registerUserOnDb", () => {
   return {
     RegisterUserOnDb: jest.fn().mockImplementation(() => ({
       register: jest.fn().mockResolvedValue(undefined),

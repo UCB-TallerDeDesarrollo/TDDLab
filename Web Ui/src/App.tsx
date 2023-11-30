@@ -5,12 +5,12 @@ import { GithubAPIAdapter } from "./modules/TDDCycles-Visualization/repository/G
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
-import User from "./sections/User/UserPage";
+import User from "./sections/Users/UserPage";
 import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
-import InvitationPage from "./sections/Invitation/InvitationPage";
+import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
   setGlobalState,
