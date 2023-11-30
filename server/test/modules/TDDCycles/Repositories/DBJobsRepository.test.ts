@@ -35,3 +35,24 @@ describe("Obtain assignments", () => {
         expect(jobs).toEqual([{ id: 1 }]);
     });
 });
+
+describe("getJobsNotSaved", () => {
+    it("should return jobs that are not saved in the database", async () => {
+        const owner = "owner";
+        const repoName = "repoName";
+        const commitsWithActions: [string, number][] = [["commit1", 1], ["commit2", 2], ["commit3", 3]];
+        const jobsNotSaved: [string, number][] = [["commit1", 1], ["commit2", 2], ["commit3", 3]];
+
+        clientQueryMock.mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] });
+
+        const result = await repository.getJobsNotSaved(owner, repoName, commitsWithActions);
+
+        expect(poolConnectMock).toBeCalledTimes(3);
+        expect(clientQueryMock).toHaveBeenNthCalledWith(1, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', [owner, repoName, commitsWithActions[0][1]]);
+        expect(clientQueryMock).toHaveBeenNthCalledWith(2, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', [owner, repoName, commitsWithActions[1][1]]);
+        expect(clientQueryMock).toHaveBeenNthCalledWith(3, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', [owner, repoName, commitsWithActions[2][1]]);
+        expect(result).toEqual(jobsNotSaved);
+    });
+});
