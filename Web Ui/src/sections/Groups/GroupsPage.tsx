@@ -124,9 +124,13 @@ function Groups() {
   const handleConfirmDelete = async () => {
     try {
       if (selectedRow !== null) {
-        const deleteGroup = new DeleteGroup(groupRepository);
-        await deleteGroup.deleteGroup(selectedRow);
-        setValidationDialogOpen(true);
+        const itemFound = groups[selectedRow];
+        if (!!itemFound) {
+          const deleteGroup = new DeleteGroup(groupRepository);
+          await deleteGroup.deleteGroup(itemFound.id || 0);
+          setValidationDialogOpen(true);
+          delete groups[selectedRow];
+        }
       }
     } catch (error) {
       console.error("Error deleting group:", error);
