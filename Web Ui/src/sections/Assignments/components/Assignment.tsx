@@ -88,8 +88,9 @@ const Assignment: React.FC<AssignmentProps> = ({
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-
-          <span>{statusText}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
+            <span>{statusText}</span>
+          </div>
         </div>
       </TableCell>
     </TableRow>
