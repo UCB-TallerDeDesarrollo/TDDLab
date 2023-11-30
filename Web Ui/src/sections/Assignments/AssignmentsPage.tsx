@@ -4,15 +4,12 @@ import InvitationComponent from "./components/EnrollmentLink";
 import { styled } from '@mui/system';
 import { useState } from "react";
 
-const AssignmentManagerContainer = styled('section')({
-  display: 'flex',
-  width: '100%',
-});
+
 
 const AssignmentsContainer = styled('div')({
-  flex: '1',
-  marginLeft: '16px',
-  marginRight: '20px',
+  justifyContent: "center",
+  alignItems: "center",  
+
 });
 
 const FormsContainer = styled('div')({
@@ -33,7 +30,7 @@ function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
   };
 
   return (
-    <AssignmentManagerContainer>
+    <>
       <AssignmentsContainer data-testid="assignments-container">
         <Assignments ShowForm={handleCreateAssignmentClick} userRole={userRole} />
       </AssignmentsContainer>
@@ -43,7 +40,8 @@ function AssignmentManager({ userRole }: Readonly<AssignmentManagerProps>) {
           <InvitationComponent data-testid="invitation-component" />
         )}
       </FormsContainer>
-    </AssignmentManagerContainer>
+    </>
+  
   );
 }
 

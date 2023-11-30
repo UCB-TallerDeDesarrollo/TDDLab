@@ -75,9 +75,9 @@ function App() {
         <Route
           path="/assignment/:id"
           element={
-            <ProtectedRouteComponent>
+           <ProtectedRouteComponent>
               <AssignmentDetail />
-            </ProtectedRouteComponent>
+           </ProtectedRouteComponent>
           }
         />
 

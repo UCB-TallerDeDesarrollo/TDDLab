@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+
 import {
   Table,
   TableHead,
@@ -9,18 +10,22 @@ import {
   TableCell,
   Container,
   Button,
-  MenuItem, 
-  Select
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-
+import AddIcon from "@mui/icons-material/Add";
 import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import Assignment from "./Assignment";
-
+const StyledTable = styled(Table)({
+  width: "82%",
+  marginLeft: "auto",
+  marginRight: "auto",
+});
 const ButtonContainer = styled("div")({
   display: "flex",
   justifyContent: "flex-end",
@@ -35,16 +40,15 @@ const CustomTableCell2 = styled(TableCell)({
   width: "10%",
 });
 
-const CustomTableCell3 = styled(TableCell)({
-  width: "10%",
-});
-
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
 }
 
-function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps>) {
+function Assignments({
+  ShowForm: showForm,
+  userRole,
+}: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -120,6 +124,7 @@ function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps
       console.error(error);
     }
     setValidationDialogOpen(true);
+    window.location.reload();
     setConfirmationOpen(false);
   };
   const handleRowHover = (index: number | null) => {
@@ -129,17 +134,23 @@ function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps
   return (
     <Container>
       <section className="Tareas">
-        <Table>
+        <StyledTable>
           <TableHead>
             <TableRow>
-              <CustomTableCell1>Tareas</CustomTableCell1>
-              <CustomTableCell3>
+              <CustomTableCell1
+                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+              >
+                Tareas
+              </CustomTableCell1>
+
+              <CustomTableCell2>
                 <ButtonContainer>
                   <Select
                     value={selectedSorting}
                     onChange={handleOrdenarChange}
                     inputProps={{ "aria-label": "Ordenar" }}
                     displayEmpty
+                    style={{ fontSize: "14px", height: "36px" }}
                   >
                     <option value="">Opciones</option>
                     <MenuItem value="" disabled>
@@ -155,11 +166,21 @@ function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps
                     <MenuItem value="Time_Down">Antiguos</MenuItem>
                   </Select>
                 </ButtonContainer>
-              </CustomTableCell3>
+              </CustomTableCell2>
               <CustomTableCell2>
                 <ButtonContainer>
-                  {userRole === 'admin' && (
-                    <Button variant="outlined" onClick={showForm}>
+                  {userRole === "admin" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                      sx={{
+                        borderRadius: "17px",
+                        textTransform: "none",
+                        fontSize: "0.95rem",
+                      }}
+                      onClick={showForm}
+                    >
                       Crear
                     </Button>
                   )}
@@ -179,7 +200,7 @@ function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps
               />
             ))}
           </TableBody>
-        </Table>
+        </StyledTable>
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
