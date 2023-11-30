@@ -5,12 +5,14 @@ const { setGlobalState, useGlobalState } = createGlobalState<{
     userProfilePic: string | undefined;
     userEmail: string | undefined;
     userCourse: string | undefined;
+    userRole: string | undefined;
   };
 }>({
   authData: {
     userProfilePic: undefined,
     userEmail: undefined,
     userCourse: undefined,
+    userRole: undefined,
   },
 });
 

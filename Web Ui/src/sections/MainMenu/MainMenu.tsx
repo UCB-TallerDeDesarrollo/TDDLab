@@ -18,13 +18,15 @@ type NavLink = {
   title: string;
   path: string;
   icon: ReactElement;
+  access: string[];
 };
 
 interface NavbarProps {
   navArrayLinks: NavLink[];
+  userRole: string;
 }
 
-export default function MainMenu({ navArrayLinks }: Readonly<NavbarProps>) {
+export default function MainMenu({ navArrayLinks, userRole }: Readonly<NavbarProps>) {
   const [open, setOpen] = useState(false);
   const [activeButton, setActiveButton] = useState("Tareas");
 
@@ -50,19 +52,21 @@ export default function MainMenu({ navArrayLinks }: Readonly<NavbarProps>) {
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navArrayLinks.map((item) => (
-              <Button
-                key={item.title}
-                component={NavLink}
-                to={item.path}
-                onClick={() => handleButtonClick(item.title)}
-                sx={{
-                  borderBottom:
-                    activeButton === item.title ? "2px solid #fff" : "none",
-                  color: activeButton === item.title ? "#fff" : "#A9A9A9",
-                }}
-              >
-                {item.title}
-              </Button>
+              item.access.includes(userRole) && (
+                <Button
+                  key={item.title}
+                  component={NavLink}
+                  to={item.path}
+                  onClick={() => handleButtonClick(item.title)}
+                  sx={{
+                    borderBottom:
+                      activeButton === item.title ? "2px solid #fff" : "none",
+                    color: activeButton === item.title ? "#fff" : "#A9A9A9",
+                  }}
+                >
+                  {item.title}
+                </Button>
+              )
             ))}
           </Box>
           <LoginComponent></LoginComponent>

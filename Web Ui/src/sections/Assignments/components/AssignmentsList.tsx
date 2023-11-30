@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-import AddIcon from "@mui/icons-material/Add";
+
 import {
   Table,
   TableHead,
@@ -43,9 +43,10 @@ const CustomTableCell2 = styled(TableCell)({
 
 interface AssignmentsProps {
   ShowForm: () => void;
+  userRole: string;
 }
 
-function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
+function Assignments({ ShowForm: showForm, userRole }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -60,7 +61,6 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
   const assignmentsRepository = new AssignmentsRepository();
   const getAssignments = new GetAssignments(assignmentsRepository);
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
-
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
@@ -166,19 +166,15 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
                     <MenuItem value="Time_Up">Recientes</MenuItem>
                     <MenuItem value="Time_Down">Antiguos</MenuItem>
                   </Select>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    sx={{
-                      borderRadius: "17px",
-                      textTransform: "none",
-                      fontSize: "0.95rem",
-                    }}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
+                </ButtonContainer>
+              </CustomTableCell2>
+              <CustomTableCell2>
+                <ButtonContainer>
+                  {userRole === 'admin' && (
+                    <Button variant="outlined" onClick={showForm}>
+                      Crear
+                    </Button>
+                  )}
                 </ButtonContainer>
               </CustomTableCell2>
             </TableRow>
