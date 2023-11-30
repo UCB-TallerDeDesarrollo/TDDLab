@@ -25,6 +25,7 @@ import {
   Collapse,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -114,7 +115,10 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    console.log(index);
+    let group = groups[index];
+    if (group.id) {
+      getCourseLink(group.id);
+    }
   };
 
   const handleConfirmDelete = async () => {
