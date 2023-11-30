@@ -123,8 +123,9 @@ function Assignments({ ShowForm: showForm }: Readonly<AssignmentsProps>) {
       console.error(error);
     }
     setValidationDialogOpen(true);
-    setConfirmationOpen(false);
     window.location.reload();
+    setConfirmationOpen(false);
+    
 
   };
   const handleRowHover = (index: number | null) => {

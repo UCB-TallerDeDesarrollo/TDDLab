@@ -62,7 +62,7 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRouteComponent>
+           <ProtectedRouteComponent>
               <GestionTareas />
             </ProtectedRouteComponent>
           }
