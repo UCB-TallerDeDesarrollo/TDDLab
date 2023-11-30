@@ -16,7 +16,7 @@ import {
   setGlobalState,
   useGlobalState,
 } from "./modules/Auth/domain/authStates";
-import { getSessionCookie } from "./modules/Auth/application/setSessionCookie";
+import { getSessionCookie } from "./modules/Auth/application/getSessionCookie";
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 const navArrayLinks = [
@@ -24,16 +24,19 @@ const navArrayLinks = [
     title: "Grupos",
     path: "/groups",
     icon: <GroupsIcon />,
+    access: ["admin"],
   },
   {
     title: "Tareas",
     path: "/",
     icon: <DescriptionIcon />,
+    access: ["admin","student"],
   },
   {
     title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
+    access: ["admin","student"],
   },
 ];
 
@@ -45,25 +48,27 @@ function App() {
         userProfilePic: storedSession.photoURL,
         userEmail: storedSession.email,
         userCourse: storedSession.course,
+        userRole: storedSession.role,
       });
     } else {
       setGlobalState("authData", {
         userProfilePic: "",
         userEmail: "",
         userCourse: "",
+        userRole: "",
       });
     }
   }, []);
   const authData = useGlobalState("authData")[0];
   return (
     <Router>
-      {authData.userEmail != "" && <MainMenu navArrayLinks={navArrayLinks} />}
+      {authData.userEmail != "" && authData.userRole !== undefined && <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />}
       <Routes>
         <Route
           path="/"
           element={
             <ProtectedRouteComponent>
-              <GestionTareas />
+              <GestionTareas userRole={authData.userRole?? ""}/>
             </ProtectedRouteComponent>
           }
         />
@@ -81,17 +86,17 @@ function App() {
         <Route
           path="/groups"
           element={
-           <ProtectedRouteComponent>
+            <ProtectedRouteComponent>
               <Groups />
-           </ProtectedRouteComponent>
+            </ProtectedRouteComponent>
           }
         />
         <Route
           path="/user"
           element={
-           <ProtectedRouteComponent>
+            <ProtectedRouteComponent>
               <User />
-           </ProtectedRouteComponent>
+            </ProtectedRouteComponent>
           }
         />
         <Route

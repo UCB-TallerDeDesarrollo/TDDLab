@@ -6,10 +6,10 @@ import {
 } from "../../../modules/Auth/domain/authStates";
 import React from "react";
 import "../styles/loginComponentStyles.css";
-import { setSessionCookie } from "../../../modules/Auth/application/getSessionCookie";
 import { removeSessionCookie } from "../../../modules/Auth/application/deleteSessionCookie";
 import { handleSignInWithGitHub } from "../../../modules/Auth/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/Auth/application/signOutWithGithub";
+import { setCookieAndGlobalStateForValidUser } from "../../../modules/Auth/application/setCookieAndGlobalStateForValidUser";
 
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
@@ -18,17 +18,8 @@ export default function LoginComponent() {
     let userData = await handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new CheckIfUserHasAccount();
-      let userCourse = await loginPort.userHasAnAcount(userData.email);
-      if (userCourse && userData.photoURL) {
-        setGlobalState("authData", {
-          userProfilePic: userData.photoURL,
-          userEmail: userData.email,
-          userCourse: userCourse,
-        });
-        setSessionCookie(userData);
-      } else {
-        console.log("Invalid User");
-      }
+      let userAccount = await loginPort.userHasAnAcount(userData.email);
+      setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };
   const handleLogout = async () => {
@@ -37,6 +28,7 @@ export default function LoginComponent() {
       userProfilePic: "",
       userEmail: "",
       userCourse: "",
+      userRole: "",
     });
     removeSessionCookie();
   };
