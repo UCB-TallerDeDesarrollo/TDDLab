@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { getModifiedGroupDataMock } from '../../../__mocks__/groups/dataTypeMocks/groupData';
+import { getDataGroupMock, getModifiedGroupDataMock } from '../../../__mocks__/groups/dataTypeMocks/groupData';
 import GroupRepository from '../../../../src/modules/Groups/repositories/GroupRepository';
 
 let repository: GroupRepository;
@@ -73,6 +73,16 @@ describe('Create group', () => {
         poolConnectMock.mockRejectedValue(new Error());
         await expect(repository.createGroup(getModifiedGroupDataMock)).rejects.toThrow();
     });
+    it('should create a group', async () => {
+        const newGroup = {
+            groupName: undefined,
+            groupDetail: undefined,
+            id: undefined
+        };
+        clientQueryMock.mockResolvedValue({ rows: [newGroup] });
+        const createdGroup = await repository.createGroup(getDataGroupMock);
+        expect(createdGroup).toEqual(newGroup);
+    });
 });
 
 describe('Delete group', () => {
@@ -93,9 +103,14 @@ describe('Update group', () => {
         const updatedGroup = await repository.updateGroup('1', getModifiedGroupDataMock);
         expect(updatedGroup).toBeNull();
     });
-
-    it('should handle errors when updating a group', async () => {
-        poolConnectMock.mockRejectedValue(new Error());
-        await expect(repository.updateGroup('1', getModifiedGroupDataMock)).rejects.toThrow();
+    it('should update a group', async () => {
+        const updatedGroup = {
+            groupName: undefined,
+            groupDetail: undefined,
+            id: undefined
+        };
+        clientQueryMock.mockResolvedValue({ rows: [updatedGroup] });
+        const result = await repository.updateGroup('1', getModifiedGroupDataMock);
+        expect(result).toEqual(updatedGroup);
     });
 });
