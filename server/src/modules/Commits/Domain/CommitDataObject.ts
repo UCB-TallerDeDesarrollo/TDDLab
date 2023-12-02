@@ -4,7 +4,7 @@ export interface CommitDTO {
   commit: Commit;
   sha: string;
   coverage: string;
-  testCount: string;
+  test: string;
 }
 export interface Stats {
   total: number;

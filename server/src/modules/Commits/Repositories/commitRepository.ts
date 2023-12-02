@@ -30,7 +30,7 @@ export class CommitRepository implements ICommitRepository {
       commit.commit.comment_count,
       commit.commit.date,
       commit.coverage,
-      commit.testCount
+      commit.test
     ];
 
     const result = await client.query(query, values);

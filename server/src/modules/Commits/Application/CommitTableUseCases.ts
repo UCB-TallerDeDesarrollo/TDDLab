@@ -76,7 +76,7 @@ export class CommitTableUseCases {
           },
           sha: commit.sha,
           coverage: commit.coveragePercentage,
-          testCount: commit.testCount
+          test: commit.testCount
         };
       });
       return commitsData;
