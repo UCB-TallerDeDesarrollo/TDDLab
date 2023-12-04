@@ -29,6 +29,10 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
       onSend(link);
     }
   };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleLinkChange(e.target.value);
+  };
+  
 
   const dialogTitleStyle = {
     fontSize: "1rem",
@@ -54,7 +58,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
             link === "" ? "primary" : validLink === false ? "error" : "success"
           }
           value={link}
-          onChange={handleLinkChange}
+          onChange={handleInputChange}
           fullWidth
           focused
           style={textFieldStyle}
