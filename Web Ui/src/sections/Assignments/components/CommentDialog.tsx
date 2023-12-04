@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -29,8 +29,16 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const [comment, setComment] = useState("");
   const { repo, validLink, handleLinkChange } = useGitHubLinkValidation(link!);
   const [edit, setEdit] = useState(false);
+  const [originalLink, setOriginalLink] = useState(link);
+  
+  useEffect(() => {
+    setOriginalLink(link); 
+  }, [link]);
 
   const handleCancel = () => {
+    if (originalLink) {
+      handleLinkChange(originalLink); 
+    }
     setComment("");
     onClose();
   };
@@ -41,6 +49,9 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setComment(event.target.value);
+  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleLinkChange(e);
   };
 
   const dialogContentStyle = {
@@ -70,7 +81,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
           type="text"
           fullWidth
           value={repo}
-          onChange={handleLinkChange}
+          onChange={handleInputChange}
           disabled={!edit}
           color={
             repo === "" ? "primary" : validLink === false ? "error" : "success"

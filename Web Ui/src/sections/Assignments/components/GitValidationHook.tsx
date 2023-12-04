@@ -3,7 +3,7 @@ import { useState } from "react";
 interface UseGitHubLinkValidation {
   repo: string;
   validLink: boolean;
-  handleLinkChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleLinkChange: (e: React.ChangeEvent<HTMLInputElement> | string) => void;
 }
 
 export const useGitHubLinkValidation = (
@@ -17,8 +17,8 @@ export const useGitHubLinkValidation = (
     return regex.test(text);
   };
 
-  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLink = e.target.value;
+  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>| string) => {
+    const newLink = typeof e === 'string' ? e : e.target.value;
     setRepo(newLink);
     setValidLink(validateGitHubLink(newLink));
   };
