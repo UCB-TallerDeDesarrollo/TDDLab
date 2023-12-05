@@ -155,7 +155,6 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             text: "Commits Realizados",
             font: {
               size: 20,
-              weight: "bold",
               lineHeight: 1.2,
             },
           },
@@ -166,7 +165,6 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             text: axisText,
             font: {
               size: 20,
-              weight: "bold",
               lineHeight: 1.2,
             },
           },
