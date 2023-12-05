@@ -13,8 +13,17 @@ import { Grid } from "@mui/material";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
+import { useLocation } from "react-router-dom";
 
 function InvitationPage() {
+  const location = useLocation();
+  const getQueryParam = (param: string) => {
+    const searchParams = new URLSearchParams(location.search);
+    return searchParams.get(param);
+  };
+
+  const courseId = getQueryParam("courseId");
+
   const [user, setUser] = useState<User | null>(null);
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
@@ -38,8 +47,12 @@ function InvitationPage() {
   const handleAcceptInvitation = async () => {
     console.log(user?.email);
 
-    if (user?.email) {
-      const userObj: UserOnDb = { email: user.email, course: "mainCourse", role: "student" };
+    if (user?.email && courseId) {
+      const userObj: UserOnDb = {
+        email: user.email,
+        course: Number(courseId),
+        role: "student",
+      };
       await dbAuthPort.register(userObj);
       setShowPopUp(true);
     }
