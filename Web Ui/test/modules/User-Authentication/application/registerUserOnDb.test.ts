@@ -3,11 +3,14 @@ import UserOnDb from "../../../../src/modules/User-Authentication/domain/userOnD
 import AuthRepository from "../../../../src/modules/User-Authentication/repository/LoginRepository";
 
 // Mock the AuthRepository
-jest.mock("../../../../src/modules/User-Authentication/repository/LoginRepository", () => {
-  return jest.fn().mockImplementation(() => ({
-    registerAccount: jest.fn(),
-  }));
-});
+jest.mock(
+  "../../../../src/modules/User-Authentication/repository/LoginRepository",
+  () => {
+    return jest.fn().mockImplementation(() => ({
+      registerAccount: jest.fn(),
+    }));
+  }
+);
 
 describe("RegisterUserOnDb class", () => {
   afterEach(() => {
@@ -17,7 +20,7 @@ describe("RegisterUserOnDb class", () => {
   it("should register a user successfully", async () => {
     const mockUser: UserOnDb = {
       email: "test@example.com",
-      course: "2",
+      course: 2,
       role: "student",
     };
 

@@ -3,10 +3,20 @@ import { CheckIfUserHasAccount } from "../../modules/User-Authentication/applica
 import { useNavigate } from "react-router-dom";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+import { useEffect } from "react";
+import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 
 const Login = () => {
   const navigate = useNavigate();
+  const authData = useGlobalState("authData");
 
+  useEffect(() => {
+    if (authData[0].userEmail) {
+      navigate({
+        pathname: "/",
+      });
+    }
+  }, [authData]);
   const handleGitHubLogin = async () => {
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
