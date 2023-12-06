@@ -190,6 +190,7 @@ function Assignments({
                 handleClickDetail={handleClickDetail}
                 handleClickDelete={handleClickDelete}
                 handleRowHover={handleRowHover}
+                role={userRole}
               />
             ))}
           </TableBody>
