@@ -34,8 +34,8 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
     const coverageText = commit.coverage
       ? `${commit.coverage}%`
       : "no se encontró cobertura"; // Establece un valor predeterminado
-    const testCountText = commit.testCount
-      ? `${commit.testCount}%`
+    const testCountText = commit.test_count
+      ? `${commit.test_count}%`
       : "no se encontraron tests";
     return (
       <div className="commit-stats">
