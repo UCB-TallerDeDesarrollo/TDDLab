@@ -36,7 +36,7 @@ const navArrayLinks = [
     title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
-    access: ["admin", "student"],
+    access: ["admin"],
   },
 ];
 
