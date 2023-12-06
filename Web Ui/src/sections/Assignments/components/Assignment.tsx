@@ -72,17 +72,19 @@ const Assignment: React.FC<AssignmentProps> = ({
             </IconButton>
           </Tooltip>
           {/* Replace the EditIconButton with the EditAssignmentForm */}
-          {isEditFormOpen ? (
+          {isAdmin(role) && isEditFormOpen ? (
             <EditAssignmentForm
               assignmentId={assignment.id}
               onClose={handleCloseEditForm}
             />
           ) : (
-            <Tooltip title="Editar tarea" arrow>
-              <IconButton aria-label="edit" onClick={handleEditClick}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
+            isAdmin(role) && (
+              <Tooltip title="Editar tarea" arrow>
+                <IconButton aria-label="edit" onClick={handleEditClick}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+            )
           )}
 
           {isAdmin(role) && (
