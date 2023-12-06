@@ -78,13 +78,13 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!loading && (!commitsInfo?.length || !jobsByCommit?.length) && (
+      {!loading && (!commitsInfo?.length) && (
         <div className=" error-message" data-testid="errorMessage">
           No se pudo cargar la Informacion
         </div>
       )}
 
-      {!loading && commitsInfo?.length != 0 && jobsByCommit?.length != 0 && (
+      {!loading && commitsInfo?.length != 0 && (
         <React.Fragment>
           <div className="center-content">
             <button className="myButton" onClick={handleSwitchButtonClick}>
