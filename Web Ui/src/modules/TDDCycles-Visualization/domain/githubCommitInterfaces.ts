@@ -4,7 +4,7 @@ export interface CommitDataObject {
     commit:Commit;
     sha:string;
     coverage:number;
-    testCount:string;
+    test_count:string;
 }
 export interface Stats {
     total:     number;
