@@ -15,6 +15,13 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
       return { backgroundColor: "red"};
     }
   };
+  const traduceConclusion = (conclusion: string) => {
+      if (conclusion === "success") {
+        return "exito";
+      } else {
+        return "fallido";
+      }
+  };
 
   function getCommitLink() {
     const htmlUrl = commit.html_url;
@@ -63,7 +70,7 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
       {getCommitStats()}
       {jobs != null && (
         <div className={"conclusionBox"} style={getBoxStyle(jobs.conclusion)}>
-          Acciones: {jobs.conclusion}
+          Acciones: {traduceConclusion(jobs.conclusion)}
         </div>
       )}
       {jobs == null && (
