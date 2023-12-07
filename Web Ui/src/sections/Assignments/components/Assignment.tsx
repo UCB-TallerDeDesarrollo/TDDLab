@@ -9,6 +9,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditAssignmentForm from "./EditAssignmentForm"; // Import the new form
 import Tooltip from "@mui/material/Tooltip";
+
+function isAdmin(role: string): boolean {
+  return role === "admin";
+}
+
 const getStatusText = (status: string) => {
   switch (status) {
     case "pending":
@@ -28,6 +33,7 @@ interface AssignmentProps {
   handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
   handleRowHover: (index: number | null) => void;
+  role: string;
 }
 
 const Assignment: React.FC<AssignmentProps> = ({
@@ -36,6 +42,7 @@ const Assignment: React.FC<AssignmentProps> = ({
   handleClickDetail,
   handleClickDelete,
   handleRowHover,
+  role,
 }) => {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
@@ -65,29 +72,33 @@ const Assignment: React.FC<AssignmentProps> = ({
             </IconButton>
           </Tooltip>
           {/* Replace the EditIconButton with the EditAssignmentForm */}
-          {isEditFormOpen ? (
+          {isAdmin(role) && isEditFormOpen ? (
             <EditAssignmentForm
               assignmentId={assignment.id}
               onClose={handleCloseEditForm}
             />
           ) : (
-            <Tooltip title="Editar tarea" arrow>
-            <IconButton aria-label="edit" onClick={handleEditClick}>
-              <EditIcon />
-            </IconButton>
-            </Tooltip>
+            isAdmin(role) && (
+              <Tooltip title="Editar tarea" arrow>
+                <IconButton aria-label="edit" onClick={handleEditClick}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+            )
           )}
 
-        <Tooltip title="Eliminar tarea" arrow>
-          <IconButton
-            aria-label="delete"
-            onClick={() => handleClickDelete(index)}
-            onMouseEnter={() => handleRowHover(index)}
-            onMouseLeave={() => handleRowHover(null)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+          {isAdmin(role) && (
+            <Tooltip title="Eliminar tarea" arrow>
+              <IconButton
+                aria-label="delete"
+                onClick={() => handleClickDelete(index)}
+                onMouseEnter={() => handleRowHover(index)}
+                onMouseLeave={() => handleRowHover(null)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          )}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
             <span>{statusText}</span>
           </div>
