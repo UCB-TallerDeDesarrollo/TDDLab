@@ -136,46 +136,47 @@ function Assignments({
         <StyledTable>
           <TableHead>
             <TableRow>
-              <CustomTableCell1 sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
-              >Tareas</CustomTableCell1>
+              <CustomTableCell1
+                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+              >
+                Tareas
+              </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
                   <Select
-                      value={selectedSorting}
-                      onChange={handleOrdenarChange}
-                      inputProps={{ "aria-label": "Ordenar" }}
-                      displayEmpty
-                      style={{ fontSize: "14px", height: "36px" }}
-                    >
-                      <option value="">Opciones</option>
-                      <MenuItem value="" disabled>
-                        Ordenar
-                      </MenuItem>
-                      <MenuItem value="A_Up_Order">
-                        Orden alfabetico ascendiente
-                      </MenuItem>
-                      <MenuItem value="A_Down_Order">
-                        Orden alfabetico descendiente
-                      </MenuItem>
-                      <MenuItem value="Time_Up">Recientes</MenuItem>
-                      <MenuItem value="Time_Down">Antiguos</MenuItem>
-                    </Select>
+                    value={selectedSorting}
+                    onChange={handleOrdenarChange}
+                    inputProps={{ "aria-label": "Ordenar" }}
+                    displayEmpty
+                    style={{ fontSize: "14px", height: "36px" }}
+                  >
+                    <option value="">Opciones</option>
+                    <MenuItem value="" disabled>
+                      Ordenar
+                    </MenuItem>
+                    <MenuItem value="A_Up_Order">
+                      Orden alfabetico ascendiente
+                    </MenuItem>
+                    <MenuItem value="A_Down_Order">
+                      Orden alfabetico descendiente
+                    </MenuItem>
+                    <MenuItem value="Time_Up">Recientes</MenuItem>
+                    <MenuItem value="Time_Down">Antiguos</MenuItem>
+                  </Select>
                   {userRole === "admin" && (
-
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<AddIcon />}
-                        sx={{
-                          borderRadius: "17px",
-                          textTransform: "none",
-                          fontSize: "0.95rem",
-                        }}
-                        onClick={showForm}
-                      >
-                        Crear
-                      </Button>
-    
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                      sx={{
+                        borderRadius: "17px",
+                        textTransform: "none",
+                        fontSize: "0.95rem",
+                      }}
+                      onClick={showForm}
+                    >
+                      Crear
+                    </Button>
                   )}
                 </ButtonContainer>
               </CustomTableCell2>
@@ -216,7 +217,7 @@ function Assignments({
             open={validationDialogOpen}
             title="Tarea eliminada exitosamente"
             closeText="Cerrar"
-            onClose={() => setValidationDialogOpen(false)}
+            onClose={() => window.location.reload()}
           />
         )}
       </section>
