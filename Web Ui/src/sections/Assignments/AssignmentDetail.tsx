@@ -304,18 +304,20 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 </div>
               ) : null}
             </div>
-            <Button
-              variant="contained"
-              disabled={!isTaskPending}
-              onClick={handleOpenLinkDialog}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
-            >
-              Iniciar tarea
-            </Button>
+            {isStudent(role) && (
+              <Button
+                variant="contained"
+                disabled={!isTaskPending}
+                onClick={handleOpenLinkDialog}
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Iniciar tarea
+              </Button>
+            )}
             <Button
               variant="contained"
               disabled={!isTaskInProgressOrDelivered}
@@ -334,18 +336,20 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
               onClose={handleCloseLinkDialog}
               onSend={handleSendGithubLink}
             />
-            <Button
-              variant="contained"
-              disabled={isTaskDeliveredOrPending}
-              onClick={handleOpenCommentDialog}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
-            >
-              Finalizar tarea
-            </Button>
+            {isStudent(role) && (
+              <Button
+                variant="contained"
+                disabled={isTaskDeliveredOrPending}
+                onClick={handleOpenCommentDialog}
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Finalizar tarea
+              </Button>
+            )}
             <CommentDialog
               open={isCommentDialogOpen}
               link={assignment?.link}
