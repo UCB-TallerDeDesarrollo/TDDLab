@@ -113,9 +113,7 @@ const AssignmentDetail: React.FC = () => {
           }).toString(),
         });
       } else {
-        alert(
-          "Link Invalido, por favor ingrese un link valido."
-        );
+        alert("Link Invalido, por favor ingrese un link valido.");
       }
     } else {
       alert("No se encontro un link para esta tarea.");

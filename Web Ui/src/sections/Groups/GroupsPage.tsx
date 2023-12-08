@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
+import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -52,6 +53,7 @@ function Groups() {
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
+  const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
 
   useEffect(() => {
@@ -66,6 +68,23 @@ function Groups() {
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
+  };
+
+  const handleGroupsOrder = (event: { target: { value: string } }) => {
+    setSelectedSorting(event.target.value);
+    let selectedSortingLocal = event.target.value as keyof typeof sortings;
+
+    let sortings = {
+      A_Up_Order: () =>
+        [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
+      A_Down_Order: () =>
+        [...groups].sort((a, b) => b.groupName.localeCompare(a.groupName)),
+      Time_Up: () => [...groups].sort((a, b) => 1), // Assuming timestamp is a property of groups for time comparison
+      Time_Down: () => [...groups].sort((a, b) => 1), // Assuming timestamp is a property of groups for time comparison
+    };
+
+    let sortedGroups = sortings[selectedSortingLocal]();
+    setGroups(sortedGroups);
   };
 
   const handleRowClick = (index: number) => {
@@ -156,6 +175,10 @@ function Groups() {
               </TableCell>
               <TableCell>
                 <ButtonContainer>
+                  <SortingComponent
+                    selectedSorting={selectedSorting}
+                    onChangeHandler={handleGroupsOrder}
+                  />
                   <Button
                     variant="contained"
                     color="primary"
