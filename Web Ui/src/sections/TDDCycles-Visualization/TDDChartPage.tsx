@@ -53,6 +53,8 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
 
       setCommitsInfo(commits);
+      console.log("Página TDDChartPage: ");
+      console.log(commitsInfo)
     } catch (error) {
       console.error("Error obtaining commit information:", error);
     }
@@ -63,7 +65,6 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
       await Promise.all([obtainJobsData(), obtainCommitsData()]);
 
       setLoading(false);
-      console.log(commitsInfo, jobsByCommit);
     };
     fetchData();
   }, []);

@@ -42,7 +42,7 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  console.log(jobsByCommit, commits);
+
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
@@ -112,6 +112,17 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
         .map((commit) => commit.coverage)
         .reverse();
       return coverage;
+    } else {
+      return [];
+    }
+  }
+
+  function getTestsCount() {
+    if (filteredCommitsObject != null) {
+      const testCount = filteredCommitsObject
+        .map((commit) => commit.test_count)
+        .reverse();
+      return testCount;
     } else {
       return [];
     }
@@ -239,11 +250,15 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             <MenuItem value={"Líneas de Código Modificadas"}>
               Líneas de Código Modificadas
             </MenuItem>
+            <MenuItem value={"Total Número de Tests"}>
+              Total Número de Tests
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
 
-      {metricSelected === "Cobertura de Código" ? (
+      {metricSelected === "Cobertura de Código" ? 
+      (
         <Line
           height="100"
           data={getDataChart(
@@ -255,7 +270,8 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           ref={chartRef}
           data-testid="graph-coverage"
         />
-      ) : (
+      ): metricSelected === "Líneas de Código Modificadas" ?
+      (
         <Line
           height="100"
           data={getDataChart(
@@ -266,6 +282,18 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           onClick={onClick}
           ref={chartRef}
           data-testid="graph-modified-lines"
+        />
+      ):(
+        <Line
+          height="100"
+          data={getDataChart(
+            getTestsCount(),
+            "Total Número de Tests"
+          )}
+          options={getOptionsChart("Número de Tests")}
+          onClick={onClick}
+          ref={chartRef}
+          data-testid="graph-test-count"
         />
       )}
     </div>
