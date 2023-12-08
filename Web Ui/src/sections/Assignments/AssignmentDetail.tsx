@@ -17,7 +17,15 @@ import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAs
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const AssignmentDetail: React.FC = () => {
+interface AssignmentDetailProps {
+  role: string;
+}
+
+function isStudent(role: string): boolean {
+  return role === "student";
+}
+
+const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
@@ -113,9 +121,7 @@ const AssignmentDetail: React.FC = () => {
           }).toString(),
         });
       } else {
-        alert(
-          "Link Invalido, por favor ingrese un link valido."
-        );
+        alert("Link Invalido, por favor ingrese un link valido.");
       }
     } else {
       alert("No se encontro un link para esta tarea.");
