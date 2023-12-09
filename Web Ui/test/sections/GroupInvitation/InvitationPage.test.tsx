@@ -5,6 +5,13 @@ import { handleSignInWithGitHub } from "../../../src/modules/User-Authentication
 import { mockUserCredential } from "../../modules/__mocks__/Auth/mockedUserCredential";
 import { RegisterUserOnDb } from "../../../src/modules/User-Authentication/application/registerUserOnDb";
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLocation: () => ({
+    pathname: "localhost:5173/invitation?courseId=5",
+  }),
+}));
+
 jest.mock("firebase/auth", () => ({
   getAuth: jest.fn(),
   onAuthStateChanged: jest.fn((_, func) => {
@@ -13,22 +20,28 @@ jest.mock("firebase/auth", () => ({
   }),
   User: jest.fn(),
 }));
-jest.mock("../../../src/modules/User-Authentication/application/signInWithGithub", () => ({
-  handleSignInWithGitHub: jest.fn(),
-}));
+jest.mock(
+  "../../../src/modules/User-Authentication/application/signInWithGithub",
+  () => ({
+    handleSignInWithGitHub: jest.fn(),
+  })
+);
 jest.mock("../../../src/firebaseConfig", () => {
   return {
     __esModule: true,
     default: jest.fn(),
   };
 });
-jest.mock("../../../src/modules/User-Authentication/application/registerUserOnDb", () => {
-  return {
-    RegisterUserOnDb: jest.fn().mockImplementation(() => ({
-      register: jest.fn().mockResolvedValue(undefined),
-    })),
-  };
-});
+jest.mock(
+  "../../../src/modules/User-Authentication/application/registerUserOnDb",
+  () => {
+    return {
+      RegisterUserOnDb: jest.fn().mockImplementation(() => ({
+        register: jest.fn().mockResolvedValue(undefined),
+      })),
+    };
+  }
+);
 describe("InvitationPage component", () => {
   beforeEach(() => {
     const mockedUser = mockUserCredential.user;

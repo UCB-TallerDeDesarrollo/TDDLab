@@ -30,13 +30,13 @@ const navArrayLinks = [
     title: "Tareas",
     path: "/",
     icon: <DescriptionIcon />,
-    access: ["admin","student"],
+    access: ["admin", "student"],
   },
   {
     title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
-    access: ["admin","student"],
+    access: ["admin"],
   },
 ];
 
@@ -54,7 +54,7 @@ function App() {
       setGlobalState("authData", {
         userProfilePic: "",
         userEmail: "",
-        userCourse: "",
+        userCourse: -1,
         userRole: "",
       });
     }
@@ -62,13 +62,15 @@ function App() {
   const authData = useGlobalState("authData")[0];
   return (
     <Router>
-      {authData.userEmail != "" && authData.userRole !== undefined && <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />}
+      {authData.userEmail != "" && authData.userRole !== undefined && (
+        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+      )}
       <Routes>
         <Route
           path="/"
           element={
             <ProtectedRouteComponent>
-              <GestionTareas userRole={authData.userRole?? ""}/>
+              <GestionTareas userRole={authData.userRole ?? ""} />
             </ProtectedRouteComponent>
           }
         />

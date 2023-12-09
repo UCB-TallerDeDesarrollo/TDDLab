@@ -175,6 +175,7 @@ function Assignments({
                 handleClickDetail={handleClickDetail}
                 handleClickDelete={handleClickDelete}
                 handleRowHover={handleRowHover}
+                role={userRole}
               />
             ))}
           </TableBody>
@@ -200,7 +201,7 @@ function Assignments({
             open={validationDialogOpen}
             title="Tarea eliminada exitosamente"
             closeText="Cerrar"
-            onClose={() => setValidationDialogOpen(false)}
+            onClose={() => window.location.reload()}
           />
         )}
       </section>
