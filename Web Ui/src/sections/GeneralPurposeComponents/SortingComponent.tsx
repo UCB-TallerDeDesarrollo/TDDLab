@@ -17,7 +17,6 @@ const SortingComponent: React.FC<SortingProps> = ({
       displayEmpty
       style={{ fontSize: "14px", height: "36px" }}
     >
-      <MenuItem value="">Opciones</MenuItem>
       <MenuItem value="" disabled>
         Ordenar
       </MenuItem>
