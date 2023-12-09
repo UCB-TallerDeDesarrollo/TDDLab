@@ -11,7 +11,7 @@ import EditAssignmentForm from "./EditAssignmentForm"; // Import the new form
 import Tooltip from "@mui/material/Tooltip";
 
 function isAdmin(role: string): boolean {
-  return role === "admin";
+  return role === "admin" || role === "teacher";
 }
 
 const getStatusText = (status: string) => {
@@ -99,7 +99,14 @@ const Assignment: React.FC<AssignmentProps> = ({
               </IconButton>
             </Tooltip>
           )}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              whiteSpace: "nowrap",
+            }}
+          >
             <span>{statusText}</span>
           </div>
         </div>
