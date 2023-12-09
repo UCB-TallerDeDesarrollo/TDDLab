@@ -41,6 +41,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     const payload: GroupDataObject = {
       groupName: groupName,
       groupDetail: groupDescription,
+      creationDate: new Date(),
     };
     try {
       await createGroup.createGroup(payload);
