@@ -7,7 +7,7 @@ interface CycleReportViewProps {
   jobs: JobDataObject | null;
 }
 
-function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
+function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === "success") {
       return { backgroundColor: "green"};
@@ -56,7 +56,7 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
     <span>Cobertura:</span> {coverageText}
   </div>
   <div className="commit-stat-item">
-    <div className="circle coverage" data-testid="coverage"></div>
+    <div className="circle coverage" data-testid="test-count"></div>
     <span>Numero de Tests:</span> {testCountText}
   </div>
 </div>
