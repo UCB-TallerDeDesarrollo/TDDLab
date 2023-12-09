@@ -21,8 +21,8 @@ interface AssignmentDetailProps {
   role: string;
 }
 
-function isStudent(role: string): boolean {
-  return role === "student";
+function isNotTeacher(role: string): boolean {
+  return role !== "teacher";
 }
 
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
@@ -304,7 +304,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 </div>
               ) : null}
             </div>
-            {isStudent(role) && (
+            {isNotTeacher(role) && (
               <Button
                 variant="contained"
                 disabled={!isTaskPending}
@@ -336,7 +336,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
               onClose={handleCloseLinkDialog}
               onSend={handleSendGithubLink}
             />
-            {isStudent(role) && (
+            {isNotTeacher(role) && (
               <Button
                 variant="contained"
                 disabled={isTaskDeliveredOrPending}
