@@ -79,8 +79,14 @@ function Groups() {
         [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
       A_Down_Order: () =>
         [...groups].sort((a, b) => b.groupName.localeCompare(a.groupName)),
-      Time_Up: () => [...groups].sort((a, b) => 1), // Assuming timestamp is a property of groups for time comparison
-      Time_Down: () => [...groups].sort((a, b) => 1), // Assuming timestamp is a property of groups for time comparison
+      Time_Up: () =>
+        [...groups].sort(
+          (a, b) => a.creationDate.getTime() - b.creationDate.getTime()
+        ),
+      Time_Down: () =>
+        [...groups].sort(
+          (a, b) => b.creationDate.getTime() - a.creationDate.getTime()
+        ), // Assuming timestamp is a property of groups for time comparison
     };
 
     let sortedGroups = sortings[selectedSortingLocal]();

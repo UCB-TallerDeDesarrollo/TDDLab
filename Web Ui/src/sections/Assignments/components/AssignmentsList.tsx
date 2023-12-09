@@ -9,8 +9,6 @@ import {
   TableCell,
   Container,
   Button,
-  MenuItem,
-  Select,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
