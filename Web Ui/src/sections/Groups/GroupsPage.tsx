@@ -81,13 +81,18 @@ function Groups() {
         [...groups].sort((a, b) => b.groupName.localeCompare(a.groupName)),
       Time_Up: () =>
         [...groups].sort(
-          (a, b) => a.creationDate.getTime() - b.creationDate.getTime()
+          (a, b) =>
+            new Date(a.creationDate).getTime() -
+            new Date(b.creationDate).getTime()
         ),
       Time_Down: () =>
         [...groups].sort(
-          (a, b) => b.creationDate.getTime() - a.creationDate.getTime()
+          (a, b) =>
+            new Date(b.creationDate).getTime() -
+            new Date(a.creationDate).getTime()
         ), // Assuming timestamp is a property of groups for time comparison
     };
+    console.log(typeof groups[0].creationDate);
 
     let sortedGroups = sortings[selectedSortingLocal]();
     setGroups(sortedGroups);
