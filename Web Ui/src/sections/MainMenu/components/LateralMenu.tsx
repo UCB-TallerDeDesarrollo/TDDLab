@@ -15,9 +15,16 @@ interface NavItem {
   path: string;
   icon: ReactElement;
 }
+
+interface NavLinkProps {
+  to: string;
+  onClick?: () => void;
+  // Add other props as needed
+}
+
 interface NavLateralMenuProps {
   navArrayLinks: NavItem[];
-  NavLink: React.ComponentType<any>;
+  NavLink: React.ComponentType<NavLinkProps>;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
