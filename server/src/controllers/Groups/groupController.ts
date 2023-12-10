@@ -50,9 +50,11 @@ class GroupsController {
     try {
       const { groupName } = req.body;
       const { groupDetail } = req.body;
+      const { creationDate } = req.body;
       const newGroup = await this.createGroupUseCase.execute({
         groupName,
         groupDetail,
+        creationDate,
       });
       res.status(201).json(newGroup);
     } catch (error) {
@@ -77,11 +79,13 @@ class GroupsController {
       const groupId = req.params.id;
       const { groupDetail } = req.body;
       const { groupName } = req.body;
+      const { creationDate } = req.body;
 
       const updatedGroup = await this.updateGroupUseCase.execute(groupId, {
         id: groupId,
         groupName,
         groupDetail,
+        creationDate,
       });
 
       if (updatedGroup) {

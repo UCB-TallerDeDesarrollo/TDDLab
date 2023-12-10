@@ -11,6 +11,7 @@ export const mockCommitData: CommitDataObject = {
     comment_count: 2,
   },
   coverage: 80,
+  test_count:2
 };
 
 export const mockArrayCommitData: CommitDataObject[] = [
@@ -30,6 +31,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 36,
       deletions: 36,
     },
+    test_count:0
   },
   {
     commit: {
@@ -47,6 +49,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 23,
       deletions: 22,
     },
+    test_count:0
   },
   {
     commit: {
@@ -64,6 +67,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 32,
       deletions: 31,
     },
+    test_count:1
   },
   {
     commit: {
@@ -81,6 +85,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 0,
       deletions: 0,
     },
+    test_count:2
   },
   {
     commit: {
@@ -98,6 +103,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 40,
       deletions: 40,
     },
+    test_count:4
   },
   {
     commit: {
@@ -115,6 +121,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 1232,
       deletions: 31,
     },
+    test_count:10
   },
   {
     commit: {
@@ -132,6 +139,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 1,
       deletions: 1,
     },
+    test_count:12
   },
   {
     commit: {
@@ -149,6 +157,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 1,
       deletions: 1,
     },
+    test_count:20
   },
   {
     commit: {
@@ -166,6 +175,7 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 18134,
       deletions: 0,
     },
+    test_count:21
   },
   {
     commit: {
@@ -183,5 +193,6 @@ export const mockArrayCommitData: CommitDataObject[] = [
       additions: 12,
       deletions: 5,
     },
+    test_count:30
   },
 ];
