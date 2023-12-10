@@ -146,7 +146,7 @@ function Assignments({
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleOrdenarChange}
                   />
-                  {userRole === "admin" && (
+                  {userRole !== "student" && (
                     <Button
                       variant="contained"
                       color="primary"
