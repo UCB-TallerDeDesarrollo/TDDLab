@@ -28,6 +28,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const responseData:[]=response.data
+      console.log(response.data)
       const commits: CommitDataObject[] = responseData.map((commitData:any) => ({
         html_url: commitData.html_url,
         sha: commitData.sha,
