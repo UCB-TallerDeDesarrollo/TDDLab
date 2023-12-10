@@ -18,10 +18,10 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
-    null
+    null,
   );
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(
-    null
+    null,
   );
 
   const [showCycleList, setShowCycleList] = useState(true);
@@ -38,7 +38,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
       console.log("Fetching commits data...");
       const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(
         repoOwner,
-        repoName
+        repoName,
       );
       setJobsByCommit(jobsData);
     } catch (error) {
@@ -54,7 +54,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
 
       setCommitsInfo(commits);
       console.log("Página TDDChartPage: ");
-      console.log(commitsInfo)
+      console.log(commitsInfo);
     } catch (error) {
       console.error("Error obtaining commit information:", error);
     }
@@ -79,7 +79,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!loading && (!commitsInfo?.length) && (
+      {!loading && !commitsInfo?.length && (
         <div className=" error-message" data-testid="errorMessage">
           No se pudo cargar la Informacion
         </div>

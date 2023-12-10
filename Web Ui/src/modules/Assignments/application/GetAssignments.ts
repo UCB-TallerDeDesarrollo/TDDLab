@@ -1,6 +1,4 @@
-
-
-import  AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInterface";
+import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
 export class GetAssignments {
   constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}

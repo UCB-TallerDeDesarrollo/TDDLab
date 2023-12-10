@@ -30,7 +30,7 @@ describe('CycleCard component', () => {
     const { getByText } = render(
       <TDDCycleCard commit={mockCommitData} jobs={mockSuccessJobData} />
     );
-    const commitMessageElement = getByText("Acciones: success");
+    const commitMessageElement = getByText("Acciones: exito");
 
     expect(commitMessageElement).toBeInTheDocument();
   });
@@ -39,7 +39,7 @@ describe('CycleCard component', () => {
     const { getByText } = render(
       <TDDCycleCard commit={mockCommitData} jobs={mockFailedJobData} />
     );
-    const commitMessageElement = getByText("Acciones: failure");
+    const commitMessageElement = getByText("Acciones: fallido");
     expect(commitMessageElement).toBeInTheDocument();
   });
 

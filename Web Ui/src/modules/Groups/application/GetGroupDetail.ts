@@ -1,5 +1,5 @@
-import GroupsRepositoryInterface from '../domain/GroupsRepositoryInterface';
-import { GroupDataObject } from '../domain/GroupInterface';
+import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
+import { GroupDataObject } from "../domain/GroupInterface";
 
 export class GetGroupDetail {
   constructor(private groupsRepository: GroupsRepositoryInterface) {}
@@ -14,7 +14,7 @@ export class GetGroupDetail {
 
       return group;
     } catch (error) {
-      console.error('Error fetching group by ID:', error);
+      console.error("Error fetching group by ID:", error);
       throw error;
     }
   }

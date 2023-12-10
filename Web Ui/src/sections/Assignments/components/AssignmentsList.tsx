@@ -112,10 +112,10 @@ function Assignments({
       ) {
         console.log(
           "ID de la tarea a eliminar:",
-          assignments[selectedAssignmentIndex].id
+          assignments[selectedAssignmentIndex].id,
         );
         await deleteAssignment.deleteAssignment(
-          assignments[selectedAssignmentIndex].id
+          assignments[selectedAssignmentIndex].id,
         );
       }
       setConfirmationOpen(false);
@@ -146,7 +146,6 @@ function Assignments({
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleOrdenarChange}
                   />
-
                   {userRole !== "student" && (
                     <Button
                       variant="contained"

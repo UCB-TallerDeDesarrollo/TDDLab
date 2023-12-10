@@ -3,11 +3,9 @@ import Assignments from "./components/AssignmentsList";
 import { styled } from "@mui/system";
 import { useState } from "react";
 
-
-
-const AssignmentsContainer = styled('div')({
-    justifyContent: "center",
-   	alignItems: "center", 
+const AssignmentsContainer = styled("div")({
+  justifyContent: "center",
+  alignItems: "center",
 });
 
 const FormsContainer = styled("div")({
