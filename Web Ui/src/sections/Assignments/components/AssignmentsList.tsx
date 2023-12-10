@@ -62,36 +62,40 @@ function Assignments({
   const assignmentsRepository = new AssignmentsRepository();
   const getAssignments = new GetAssignments(assignmentsRepository);
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
+
+  const orderAssignments = (
+    assignmentsArray: AssignmentDataObject[],
+    selectedSorting: string
+  ) => {
+    if (assignmentsArray.length == 0) {
+      return;
+    }
+    if (selectedSorting === "A_Up_Order") {
+      assignmentsArray.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (selectedSorting === "A_Down_Order") {
+      assignmentsArray.sort((a, b) => b.title.localeCompare(a.title));
+    } else if (selectedSorting === "Time_Up") {
+      assignmentsArray.sort((a, b) => b.id - a.id);
+    } else if (selectedSorting === "Time_Down") {
+      assignmentsArray.sort((a, b) => a.id - b.id);
+    }
+    setAssignments(assignmentsArray);
+  };
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
         const data = await getAssignments.obtainAllAssignments();
-
-        // Sort assignments based on the selectedSorting option
-        const sortedAssignments = [...data];
-        if (selectedSorting === "A_Up_Order") {
-          sortedAssignments.sort((a, b) => a.title.localeCompare(b.title));
-        } else if (selectedSorting === "A_Down_Order") {
-          sortedAssignments.sort((a, b) => b.title.localeCompare(a.title));
-        } else if (selectedSorting === "Time_Up") {
-          sortedAssignments.sort((a, b) => b.id - a.id);
-        } else if (selectedSorting === "Time_Down") {
-          sortedAssignments.sort((a, b) => a.id - b.id);
-        } else {
-          setAssignments(data);
-        }
-        // Add more sorting options as needed
-
-        setAssignments(sortedAssignments);
+        orderAssignments([...data], selectedSorting);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
     fetchAssignments();
-  }, [selectedSorting]);
+  }, []);
 
-  const handleOrdenarChange = (event: { target: { value: string } }) => {
+  const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
+    orderAssignments([...assignments], event.target.value);
   };
 
   const handleClickDetail = (index: number) => {
@@ -144,7 +148,7 @@ function Assignments({
                 <ButtonContainer>
                   <SortingComponent
                     selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrdenarChange}
+                    onChangeHandler={handleOrderAssignments}
                   />
 
                   {userRole !== "student" && (
