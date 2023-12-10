@@ -39,7 +39,7 @@ const PasswordComponent: React.FC<PasswordComponentProps> = ({
       <DialogTitle>Ingrese la Contraseña</DialogTitle>
       <DialogContent>
         <TextField
-          label="*******"
+          label="contraseña"
           type="password"
           value={password}
           onChange={handlePasswordChange}
