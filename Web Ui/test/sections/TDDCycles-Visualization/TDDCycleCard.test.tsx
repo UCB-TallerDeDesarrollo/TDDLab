@@ -19,11 +19,14 @@ describe('CycleCard component', () => {
     const additionsText = getByTestId("adition");
     const deletionsText = getByTestId("deletion");
     const coverageText = getByTestId("coverage");
+    const testCount = getByTestId("test-count");
+    
 
   expect(totalText).toBeInTheDocument();
   expect(additionsText).toBeInTheDocument();
   expect(deletionsText).toBeInTheDocument();
   expect(coverageText).toBeInTheDocument();
+  expect(testCount).toBeInTheDocument();
   });
 
   it("renders the card as success", () => {
