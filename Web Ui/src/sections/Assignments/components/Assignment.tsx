@@ -99,7 +99,14 @@ const Assignment: React.FC<AssignmentProps> = ({
               </IconButton>
             </Tooltip>
           )}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              whiteSpace: "nowrap",
+            }}
+          >
             <span>{statusText}</span>
           </div>
         </div>

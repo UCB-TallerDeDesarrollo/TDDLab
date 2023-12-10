@@ -26,7 +26,10 @@ interface NavbarProps {
   userRole: string;
 }
 
-export default function MainMenu({ navArrayLinks, userRole }: Readonly<NavbarProps>) {
+export default function MainMenu({
+  navArrayLinks,
+  userRole,
+}: Readonly<NavbarProps>) {
   const [open, setOpen] = useState(false);
   const [activeButton, setActiveButton] = useState("Tareas");
 
@@ -51,23 +54,24 @@ export default function MainMenu({ navArrayLinks, userRole }: Readonly<NavbarPro
             TDDLab
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navArrayLinks.map((item) => (
-              item.access.includes(userRole) && (
-                <Button
-                  key={item.title}
-                  component={NavLink}
-                  to={item.path}
-                  onClick={() => handleButtonClick(item.title)}
-                  sx={{
-                    borderBottom:
-                      activeButton === item.title ? "2px solid #fff" : "none",
-                    color: activeButton === item.title ? "#fff" : "#A9A9A9",
-                  }}
-                >
-                  {item.title}
-                </Button>
-              )
-            ))}
+            {navArrayLinks.map(
+              (item) =>
+                item.access.includes(userRole) && (
+                  <Button
+                    key={item.title}
+                    component={NavLink}
+                    to={item.path}
+                    onClick={() => handleButtonClick(item.title)}
+                    sx={{
+                      borderBottom:
+                        activeButton === item.title ? "2px solid #fff" : "none",
+                      color: activeButton === item.title ? "#fff" : "#A9A9A9",
+                    }}
+                  >
+                    {item.title}
+                  </Button>
+                ),
+            )}
           </Box>
           <LoginComponent></LoginComponent>
         </Toolbar>

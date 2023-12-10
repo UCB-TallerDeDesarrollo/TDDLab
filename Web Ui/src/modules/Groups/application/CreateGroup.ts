@@ -1,12 +1,11 @@
-import { GroupDataObject } from '../domain/GroupInterface';
-import GroupsRepositoryInterface from '../domain/GroupsRepositoryInterface';
+import { GroupDataObject } from "../domain/GroupInterface";
+import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
 
 class CreateGroup {
   constructor(private groupsRepository: GroupsRepositoryInterface) {}
 
   async createGroup(groupData: GroupDataObject): Promise<void> {
-
-      return await this.groupsRepository.createGroup(groupData);
+    return await this.groupsRepository.createGroup(groupData);
   }
 }
 

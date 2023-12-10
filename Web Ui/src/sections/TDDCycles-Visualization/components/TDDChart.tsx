@@ -32,7 +32,7 @@ ChartJS.register(
   Legend,
   Filler,
   LineController,
-  LineElement
+  LineElement,
 );
 
 interface CycleReportViewProps {
@@ -46,7 +46,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
-        (commit) => commit.stats.total < maxLinesInGraph
+        (commit) => commit.stats.total < maxLinesInGraph,
       );
       return filteredCommitsObject;
     }
@@ -56,7 +56,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   function getDataLabels() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
-        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
+        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`,
       );
       return commitsArray;
     } else {
@@ -67,7 +67,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   function getCommitName() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
-        (commit) => commit.commit.message
+        (commit) => commit.commit.message,
       );
       return commitsArray.reverse();
     } else {
@@ -183,12 +183,12 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
               afterBodyContent.push(
                 `Líneas de Código Añadido: ${
                   getCommitStats()[0][context[0].dataIndex]
-                }`
+                }`,
               );
               afterBodyContent.push(
                 `Líneas de Código Eliminado: ${
                   getCommitStats()[1][context[0].dataIndex]
-                }`
+                }`,
               );
               return afterBodyContent;
             },
@@ -209,7 +209,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
       console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
       window.open(
         dataChart.datasets[dataSetIndexNum].links[dataPoint],
-        "_blank"
+        "_blank",
       );
     }
   };
@@ -248,7 +248,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           height="100"
           data={getDataChart(
             getCommitCoverage(),
-            "Porcentaje de Cobertura de Código"
+            "Porcentaje de Cobertura de Código",
           )}
           options={getOptionsChart("Cobertura de Código")}
           onClick={onClick}
@@ -260,7 +260,7 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           height="100"
           data={getDataChart(
             getCommitStats()[2],
-            "Total de Líneas de Código Modificadas"
+            "Total de Líneas de Código Modificadas",
           )}
           options={getOptionsChart("Líneas de Código Modificadas")}
           onClick={onClick}

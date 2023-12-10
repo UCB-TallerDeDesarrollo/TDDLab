@@ -3,7 +3,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import { dialogContentStyle, titleStyle2, primaryButtonStyle } from "../Styles/DialogBoxStyles";
+import {
+  dialogContentStyle,
+  titleStyle2,
+  primaryButtonStyle,
+} from "../Styles/DialogBoxStyles";
 
 interface ValidationDialogProps {
   open: boolean;
@@ -22,7 +26,11 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
     <Dialog open={open}>
       <DialogTitle style={titleStyle2}>{title}</DialogTitle>
       <DialogActions>
-        <Button onClick={onClose} color="primary" style={{ ...dialogContentStyle, ...primaryButtonStyle }}>
+        <Button
+          onClick={onClose}
+          color="primary"
+          style={{ ...dialogContentStyle, ...primaryButtonStyle }}
+        >
           {closeText}
         </Button>
       </DialogActions>

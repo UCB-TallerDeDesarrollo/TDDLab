@@ -19,7 +19,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
-    null
+    null,
   );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
@@ -47,7 +47,7 @@ const AssignmentDetail: React.FC = () => {
     assignment?.state === "delivered" || assignment?.state === "pending";
 
   const handleUpdateAssignment = async (
-    updatedAssignment: AssignmentDataObject
+    updatedAssignment: AssignmentDataObject,
   ) => {
     const assignmentsRepository = new AssignmentsRepository();
     const submitAssignment = new SubmitAssignment(assignmentsRepository);
@@ -56,7 +56,7 @@ const AssignmentDetail: React.FC = () => {
       await submitAssignment.submitAssignment(
         updatedAssignment.id,
         updatedAssignment.link,
-        updatedAssignment.comment
+        updatedAssignment.comment,
       );
     } catch (error) {
       console.error(error);
@@ -113,9 +113,7 @@ const AssignmentDetail: React.FC = () => {
           }).toString(),
         });
       } else {
-        alert(
-          "Link Invalido, por favor ingrese un link valido."
-        );
+        alert("Link Invalido, por favor ingrese un link valido.");
       }
     } else {
       alert("No se encontro un link para esta tarea.");

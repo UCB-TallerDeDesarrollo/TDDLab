@@ -10,14 +10,14 @@ export class PortGetTDDCycles {
 
   async obtainCommitsOfRepo(
     owner: string,
-    repoName: string
+    repoName: string,
   ): Promise<CommitDataObject[]> {
     return await this.adapter.obtainCommitsOfRepo(owner, repoName);
   }
 
   async obtainJobsData(
     owner: string,
-    repoName: string
+    repoName: string,
   ): Promise<JobDataObject[]> {
     return await this.adapter.obtainJobsOfRepo(owner, repoName);
   }

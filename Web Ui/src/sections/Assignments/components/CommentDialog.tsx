@@ -30,14 +30,14 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const { repo, validLink, handleLinkChange } = useGitHubLinkValidation(link!);
   const [edit, setEdit] = useState(false);
   const [originalLink, setOriginalLink] = useState(link);
-  
+
   useEffect(() => {
-    setOriginalLink(link); 
+    setOriginalLink(link);
   }, [link]);
 
   const handleCancel = () => {
     if (originalLink) {
-      handleLinkChange(originalLink); 
+      handleLinkChange(originalLink);
     }
     setComment("");
     onClose();
@@ -115,9 +115,10 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} 
-        color="primary"
-        style={{ textTransform: "none", color: "#555" }}
+        <Button
+          onClick={handleCancel}
+          color="primary"
+          style={{ textTransform: "none", color: "#555" }}
         >
           Cancelar
         </Button>

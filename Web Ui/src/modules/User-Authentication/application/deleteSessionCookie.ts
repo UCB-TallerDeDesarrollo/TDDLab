@@ -1,9 +1,9 @@
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 export const removeSessionCookie = () => {
   try {
-    Cookies.remove('userSession');
+    Cookies.remove("userSession");
   } catch (error) {
-    console.error('Error removing session cookie:', error);
+    console.error("Error removing session cookie:", error);
   }
 };

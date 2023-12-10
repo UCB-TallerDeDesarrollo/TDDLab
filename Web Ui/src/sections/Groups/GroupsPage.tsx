@@ -87,7 +87,7 @@ function Groups() {
 
   const handleHomeworksClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
@@ -95,7 +95,7 @@ function Groups() {
 
   const handleStudentsClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
@@ -103,7 +103,7 @@ function Groups() {
 
   const handleDeleteClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
@@ -112,7 +112,7 @@ function Groups() {
 
   const handleLinkClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     let group = groups[index];
