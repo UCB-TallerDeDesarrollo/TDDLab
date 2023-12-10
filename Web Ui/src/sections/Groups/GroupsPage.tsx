@@ -145,7 +145,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    let group = groups[index];
+    const group = groups[index];
     if (group.id) {
       getCourseLink(group.id);
     }
@@ -155,7 +155,7 @@ function Groups() {
     try {
       if (selectedRow !== null) {
         const itemFound = groups[selectedRow];
-        if (!!itemFound) {
+        if (itemFound) {
           const deleteGroup = new DeleteGroup(groupRepository);
           await deleteGroup.deleteGroup(itemFound.id || 0);
           setValidationDialogOpen(true);
