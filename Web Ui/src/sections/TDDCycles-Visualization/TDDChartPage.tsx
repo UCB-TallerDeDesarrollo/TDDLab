@@ -54,7 +54,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
 
       setCommitsInfo(commits);
       console.log("Página TDDChartPage: ");
-      console.log(commitsInfo)
+      console.log(commitsInfo);
     } catch (error) {
       console.error("Error obtaining commit information:", error);
     }

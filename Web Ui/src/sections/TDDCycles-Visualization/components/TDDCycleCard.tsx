@@ -46,27 +46,27 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
       : "no se encontraron tests";
     return (
       <div className="commit-stats">
-  <div className="commit-stat-item">
-    <div className="circle total" data-testid="total"></div>
-    <span>Total de modificaciones:</span> {commit.stats.total}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle additions" data-testid="adition"></div>
-    <span>Adiciones:</span> {commit.stats.additions}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle deletions" data-testid="deletion"></div>
-    <span>Sustracciones:</span> {commit.stats.deletions}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle coverage" data-testid="coverage"></div>
-    <span>Cobertura:</span> {coverageText}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle coverage" data-testid="test-count"></div>
-    <span>Numero de Tests:</span> {testCountText}
-  </div>
-</div>
+        <div className="commit-stat-item">
+          <div className="circle total" data-testid="total"></div>
+          <span>Total de modificaciones:</span> {commit.stats.total}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle additions" data-testid="adition"></div>
+          <span>Adiciones:</span> {commit.stats.additions}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle deletions" data-testid="deletion"></div>
+          <span>Sustracciones:</span> {commit.stats.deletions}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle coverage" data-testid="coverage"></div>
+          <span>Cobertura:</span> {coverageText}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle coverage" data-testid="test-count"></div>
+          <span>Numero de Tests:</span> {testCountText}
+        </div>
+      </div>
     );
   }
 
