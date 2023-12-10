@@ -18,14 +18,14 @@ import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 
 interface AssignmentDetailProps {
-  role: string;
+  userRole: string;
 }
 
-function isNotTeacher(role: string): boolean {
-  return role !== "teacher";
+function isNotTeacher(userRole: string): boolean {
+  return userRole !== "teacher";
 }
 
-const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
+const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ userRole }) => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
@@ -304,7 +304,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 </div>
               ) : null}
             </div>
-            {isNotTeacher(role) && (
+            {isNotTeacher(userRole) && (
               <Button
                 variant="contained"
                 disabled={!isTaskPending}
@@ -337,7 +337,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
               onClose={handleCloseLinkDialog}
               onSend={handleSendGithubLink}
             />
-            {isNotTeacher(role) && (
+            {isNotTeacher(userRole) && (
               <Button
                 variant="contained"
                 disabled={isTaskDeliveredOrPending}
