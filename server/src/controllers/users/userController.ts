@@ -12,19 +12,24 @@ export const registerUserController = (req: Request, res: Response): void => {
     });
     return;
   }
-
-  //have to encrypt password
-  if (role === "teacher") {
-    if (password === "contra") {
-      registerUser({ email: email, course: course, role: role });
-      res.status(201).json({ message: "Usuario registrado con éxito." });
+  try {
+    if (role === "teacher") {
+      //have to encrypt password
+      if (password === "contra") {
+        registerUser({ email: email, course: course, role: role });
+        res.status(201).json({ message: "Usuario registrado con éxito." });
+      } else {
+        res.status(401).json({ message: "wrong password" });
+      }
+      return;
     }
-    return;
+
+    registerUser({ email: email, course: course, role: role });
+    res.status(201).json({ message: "Usuario registrado con éxito." });
+  } catch (error) {
+    console.error("Error registering user", error);
+    res.status(500).json({ error: "Server error" });
   }
-
-  registerUser({ email: email, course: course, role: role });
-
-  res.status(201).json({ message: "Usuario registrado con éxito." });
 };
 export const getUserController = async (
   req: Request,
