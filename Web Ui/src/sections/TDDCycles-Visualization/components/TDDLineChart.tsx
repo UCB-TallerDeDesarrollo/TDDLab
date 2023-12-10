@@ -1,7 +1,7 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { getElementAtEvent, Line } from "react-chartjs-2";
-import { useRef} from "react";
+import { useRef } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,24 +26,27 @@ ChartJS.register(
   Legend,
   Filler,
   LineController,
-  LineElement
+  LineElement,
 );
 
 interface LineChartProps {
-  filteredCommitsObject: CommitDataObject[] | null,
-  jobsByCommit: JobDataObject[] | null,
-  optionSelected:string, 
+  filteredCommitsObject: CommitDataObject[] | null;
+  jobsByCommit: JobDataObject[] | null;
+  optionSelected: string;
 }
 
-function TDDLineCharts( {filteredCommitsObject, jobsByCommit, optionSelected}:LineChartProps) {
-
+function TDDLineCharts({
+  filteredCommitsObject,
+  jobsByCommit,
+  optionSelected,
+}: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
 
   function getDataLabels() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
-        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
+        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`,
       );
       return commitsArray;
     } else {
@@ -54,7 +57,7 @@ function TDDLineCharts( {filteredCommitsObject, jobsByCommit, optionSelected}:Li
   function getCommitName() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
-        (commit) => commit.commit.message
+        (commit) => commit.commit.message,
       );
       return commitsArray.reverse();
     } else {
@@ -179,12 +182,12 @@ function TDDLineCharts( {filteredCommitsObject, jobsByCommit, optionSelected}:Li
               afterBodyContent.push(
                 `Líneas de Código Añadido: ${
                   getCommitStats()[0][context[0].dataIndex]
-                }`
+                }`,
               );
               afterBodyContent.push(
                 `Líneas de Código Eliminado: ${
                   getCommitStats()[1][context[0].dataIndex]
-                }`
+                }`,
               );
               return afterBodyContent;
             },
@@ -203,20 +206,20 @@ function TDDLineCharts( {filteredCommitsObject, jobsByCommit, optionSelected}:Li
       console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
       window.open(
         dataChart.datasets[dataSetIndexNum].links[dataPoint],
-        "_blank"
+        "_blank",
       );
     }
   };
 
-  function getLineChart(){
-    let dataChart:any = null;
-    let optionsChart:any = null;
-    let dataTestid:string = "";
-    switch(optionSelected){
+  function getLineChart() {
+    let dataChart: any = null;
+    let optionsChart: any = null;
+    let dataTestid: string = "";
+    switch (optionSelected) {
       case "Cobertura de Código":
         dataChart = getDataChart(
           getCommitCoverage(),
-          "Porcentaje de Cobertura de Código"
+          "Porcentaje de Cobertura de Código",
         );
         optionsChart = getOptionsChart("Cobertura de Código");
         dataTestid = "graph-coverage";
@@ -224,29 +227,27 @@ function TDDLineCharts( {filteredCommitsObject, jobsByCommit, optionSelected}:Li
       case "Líneas de Código Modificadas":
         dataChart = getDataChart(
           getCommitStats()[2],
-          "Total de Líneas de Código Modificadas"
+          "Total de Líneas de Código Modificadas",
         );
         optionsChart = getOptionsChart("Líneas de Código Modificadas");
         dataTestid = "graph-linesModified";
         break;
       case "Total Número de Tests":
-        dataChart = getDataChart(
-          getTestsCount(),
-            "Total Número de Tests"
-        );
+        dataChart = getDataChart(getTestsCount(), "Total Número de Tests");
         optionsChart = getOptionsChart("Número de Tests");
         dataTestid = "graph-testCount";
         break;
     }
     return (
-    <Line
-      height="100"
-      data={dataChart}
-      options={optionsChart}
-      onClick={onClick}
-      ref={chartRef}
-      data-testid={dataTestid}
-    />);
+      <Line
+        height="100"
+        data={dataChart}
+        options={optionsChart}
+        onClick={onClick}
+        ref={chartRef}
+        data-testid={dataTestid}
+      />
+    );
   }
 
   return getLineChart();

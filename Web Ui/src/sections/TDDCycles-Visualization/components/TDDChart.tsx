@@ -56,8 +56,8 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           </Select>
         </FormControl>
       </Box>
-      <TDDLineCharts 
-        filteredCommitsObject={filteredCommitsObject} 
+      <TDDLineCharts
+        filteredCommitsObject={filteredCommitsObject}
         jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
       ></TDDLineCharts>

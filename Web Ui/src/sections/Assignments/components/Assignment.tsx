@@ -6,9 +6,9 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditAssignmentForm from "./EditAssignmentForm"; 
+import EditAssignmentForm from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { FaCheck } from "react-icons/fa6";
 import { TbRotateClockwise2 } from "react-icons/tb";
 
@@ -19,11 +19,13 @@ function isAdmin(role: string): boolean {
 const getStatusIcon = (status: string) => {
   switch (status) {
     case "pending":
-      return <PriorityHighIcon style={{ fontSize: 26 }}/>;
+      return <PriorityHighIcon style={{ fontSize: 26 }} />;
     case "in progress":
-      return <TbRotateClockwise2 size={27.4} style={{ strokeWidth: '2.7px' }}/>;
+      return (
+        <TbRotateClockwise2 size={27.4} style={{ strokeWidth: "2.7px" }} />
+      );
     case "delivered":
-      return <FaCheck size={24.4} style={{ strokeWidth: '9.5px' }} />;
+      return <FaCheck size={24.4} style={{ strokeWidth: "9.5px" }} />;
     default:
       return null;
   }
@@ -59,8 +61,6 @@ const Assignment: React.FC<AssignmentProps> = ({
   role,
 }) => {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-
-
 
   const handleEditClick = () => {
     setIsEditFormOpen(true);
@@ -113,15 +113,15 @@ const Assignment: React.FC<AssignmentProps> = ({
               </IconButton>
             </Tooltip>
           )}
-            <Tooltip title={getStatusTooltip(assignment.state)} arrow>
-              <IconButton
-                aria-label="status"
-                onMouseEnter={() => handleRowHover(index)}
-                onMouseLeave={() => handleRowHover(null)}
-              >
-                {statusIcon}
-              </IconButton>
-            </Tooltip>
+          <Tooltip title={getStatusTooltip(assignment.state)} arrow>
+            <IconButton
+              aria-label="status"
+              onMouseEnter={() => handleRowHover(index)}
+              onMouseLeave={() => handleRowHover(null)}
+            >
+              {statusIcon}
+            </IconButton>
+          </Tooltip>
         </div>
       </TableCell>
     </TableRow>
