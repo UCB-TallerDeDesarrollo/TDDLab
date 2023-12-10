@@ -24,19 +24,19 @@ const navArrayLinks = [
     title: "Grupos",
     path: "/groups",
     icon: <GroupsIcon />,
-    access: ["admin"],
+    access: ["admin", "teacher"],
   },
   {
     title: "Tareas",
     path: "/",
     icon: <DescriptionIcon />,
-    access: ["admin", "student"],
+    access: ["admin", "student", "teacher"],
   },
   {
     title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
-    access: ["admin", "student"],
+    access: ["admin", "teacher"],
   },
 ];
 
@@ -78,7 +78,7 @@ function App() {
           path="/assignment/:id"
           element={
             <ProtectedRouteComponent>
-              <AssignmentDetail />
+              <AssignmentDetail role={authData.userRole ?? ""} />
             </ProtectedRouteComponent>
           }
         />

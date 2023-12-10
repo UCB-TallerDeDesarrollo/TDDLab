@@ -11,4 +11,8 @@ export class RegisterUserOnDb {
   async register(user: UserOnDb) {
     await this.adapter.registerAccount(user);
   }
+
+  async verifyPass(pass: string): Promise<boolean> {
+    return await this.adapter.verifyPassword(pass);
+  }
 }

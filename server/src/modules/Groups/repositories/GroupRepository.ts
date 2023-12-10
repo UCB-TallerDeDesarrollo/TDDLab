@@ -6,6 +6,7 @@ const pool = new Pool(config);
 interface GroupCreationObject {
   groupName: string;
   groupDetail: string;
+  creationDate: Date;
 }
 
 class GroupRepository {
@@ -26,11 +27,12 @@ class GroupRepository {
       id: row.id,
       groupName: row.groupname,
       groupDetail: row.groupdetail,
+      creationDate: row.creationdate,
     };
   }
 
   async obtainGroups(): Promise<GroupDTO[]> {
-    const query = "SELECT id, groupname, groupdetail FROM Groups";
+    const query = "SELECT id, groupname, groupdetail,creationDate FROM Groups";
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToGroup(row));
   }
@@ -46,10 +48,10 @@ class GroupRepository {
   }
 
   async createGroup(group: GroupCreationObject): Promise<GroupDTO> {
-    const { groupName, groupDetail } = group; // Added groupName to the destructuring
+    const { groupName, groupDetail, creationDate } = group; // Added groupName to the destructuring
     const query =
-      "INSERT INTO Groups (groupName, groupDetail) VALUES ($1, $2) RETURNING *";
-    const values = [groupName, groupDetail];
+      "INSERT INTO Groups (groupName, groupDetail,creationdate) VALUES ($1, $2, $3) RETURNING *";
+    const values = [groupName, groupDetail, creationDate];
     const rows = await this.executeQuery(query, values);
     return this.mapRowToGroup(rows[0]);
   }

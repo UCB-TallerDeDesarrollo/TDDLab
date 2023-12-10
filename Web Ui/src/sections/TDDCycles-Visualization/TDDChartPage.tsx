@@ -53,6 +53,8 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
 
       setCommitsInfo(commits);
+      console.log("Página TDDChartPage: ");
+      console.log(commitsInfo)
     } catch (error) {
       console.error("Error obtaining commit information:", error);
     }
@@ -63,7 +65,6 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
       await Promise.all([obtainJobsData(), obtainCommitsData()]);
 
       setLoading(false);
-      console.log(commitsInfo, jobsByCommit);
     };
     fetchData();
   }, []);
@@ -78,13 +79,13 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!loading && (!commitsInfo?.length || !jobsByCommit?.length) && (
+      {!loading && (!commitsInfo?.length) && (
         <div className=" error-message" data-testid="errorMessage">
           No se pudo cargar la Informacion
         </div>
       )}
 
-      {!loading && commitsInfo?.length != 0 && jobsByCommit?.length != 0 && (
+      {!loading && commitsInfo?.length != 0 && (
         <React.Fragment>
           <div className="center-content">
             <button className="myButton" onClick={handleSwitchButtonClick}>
