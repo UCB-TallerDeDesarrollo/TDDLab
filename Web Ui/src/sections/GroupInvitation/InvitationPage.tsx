@@ -49,16 +49,17 @@ function InvitationPage() {
   };
 
   const handlePassVerification = async (password: string) => {
-    if (password === "logicaprueba") {
-      handleAcceptInvitation("teacher");
-    }
+    handleAcceptInvitation("teacher", password);
   };
 
   const handlePopPassword = async () => {
     setShowPasswordPopup(true);
   };
 
-  const handleAcceptInvitation = async (type: string) => {
+  const handleAcceptInvitation = async (
+    type: string,
+    password: string | null
+  ) => {
     console.log(user?.email);
     // Have to Solve courseId error
     if (user?.email) {
@@ -67,7 +68,7 @@ function InvitationPage() {
         course: 1,
         role: type,
       };
-      await dbAuthPort.register(userObj);
+      await dbAuthPort.register(userObj, password);
       setShowPopUp(true);
     }
   };
@@ -162,7 +163,7 @@ function InvitationPage() {
                     Israel Antezana te está invitando al curso
                   </Typography>
                   <Button
-                    onClick={() => handleAcceptInvitation("student")}
+                    onClick={() => handleAcceptInvitation("student", null)}
                     variant="contained"
                     color="primary"
                     sx={{ marginTop: 2 }}
