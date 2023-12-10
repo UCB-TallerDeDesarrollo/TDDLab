@@ -36,7 +36,7 @@ const PasswordComponent: React.FC<PasswordComponentProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Password Popup</DialogTitle>
+      <DialogTitle>Ingrese la Contraseña</DialogTitle>
       <DialogContent>
         <TextField
           label="Password"
@@ -47,10 +47,10 @@ const PasswordComponent: React.FC<PasswordComponentProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="primary">
-          Cancel
+          Cancelar
         </Button>
         <Button onClick={handleSendPassword} color="primary">
-          Send Password
+          Enviar
         </Button>
       </DialogActions>
     </Dialog>
