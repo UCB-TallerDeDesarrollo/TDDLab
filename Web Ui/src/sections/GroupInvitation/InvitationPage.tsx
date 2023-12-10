@@ -14,6 +14,7 @@ import { handleSignInWithGitHub } from "../../modules/User-Authentication/applic
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
+import PasswordComponent from "./components/PasswordPopUp";
 
 function InvitationPage() {
   const location = useLocation();
@@ -25,6 +26,7 @@ function InvitationPage() {
   const courseId = getQueryParam("courseId");
 
   const [user, setUser] = useState<User | null>(null);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
@@ -44,6 +46,11 @@ function InvitationPage() {
       setUser(userData);
     }
   };
+
+  const handlePopPassword = async () => {
+    setShowPasswordPopup(true);
+  };
+
   const handleAcceptInvitation = async (type: string) => {
     console.log(user?.email);
     // Have to Solve courseId error
@@ -157,7 +164,7 @@ function InvitationPage() {
                     Aceptar invitación al curso
                   </Button>
                   <Button
-                    onClick={() => handleAcceptInvitation("Teacher")}
+                    onClick={handlePopPassword}
                     variant="contained"
                     color="primary"
                     sx={{ marginTop: 2 }}
@@ -169,6 +176,13 @@ function InvitationPage() {
               </Card>
             </Grid>
           </Grid>
+          {showPasswordPopup && (
+            <PasswordComponent
+              open={showPasswordPopup}
+              onClose={() => setShowPasswordPopup(false)}
+              onSend={() => setShowPasswordPopup(false)}
+            />
+          )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
         </div>
       ) : (
