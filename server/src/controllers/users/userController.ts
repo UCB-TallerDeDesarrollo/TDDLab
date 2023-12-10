@@ -45,7 +45,7 @@ export const verifyPassword = async (
     if (password === "contra") {
       res.status(200).json({ success: true, message: "Password is correct." });
     } else {
-      res.status(401).json({ success: false, message: "Wrong password." });
+      res.status(201).json({ success: false, message: "Wrong password." });
     }
   } catch (error) {
     res.status(500).json({ success: false, error: "Server error" });
