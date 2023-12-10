@@ -13,7 +13,7 @@ import { FaCheck } from "react-icons/fa6";
 import { TbRotateClockwise2 } from "react-icons/tb";
 
 function isAdmin(role: string): boolean {
-  return role === "admin";
+  return role === "admin" || role === "teacher";
 }
 
 const getStatusIcon = (status: string) => {
@@ -113,6 +113,7 @@ const Assignment: React.FC<AssignmentProps> = ({
               </IconButton>
             </Tooltip>
           )}
+
           <Tooltip title={getStatusTooltip(assignment.state)} arrow>
             <IconButton
               aria-label="status"
