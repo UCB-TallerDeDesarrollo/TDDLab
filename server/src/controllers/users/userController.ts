@@ -34,3 +34,20 @@ export const getUserController = async (
     res.status(404).json({ message: "Usuario no encontrado" });
   else res.status(200).json(userData);
 };
+
+export const verifyPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { password } = req.body;
+    // Ecnrypt password next time
+    if (password === "TDDLabContraTemporal") {
+      res.status(200).json({ success: true, message: "Password is correct." });
+    } else {
+      res.status(201).json({ success: false, message: "Wrong password." });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};

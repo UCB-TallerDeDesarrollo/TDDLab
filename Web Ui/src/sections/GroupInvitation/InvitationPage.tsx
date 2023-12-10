@@ -14,6 +14,7 @@ import { handleSignInWithGitHub } from "../../modules/User-Authentication/applic
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
+import PasswordComponent from "./components/PasswordPopUp";
 
 function InvitationPage() {
   const location = useLocation();
@@ -25,6 +26,7 @@ function InvitationPage() {
   const courseId = getQueryParam("courseId");
 
   const [user, setUser] = useState<User | null>(null);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
@@ -44,14 +46,31 @@ function InvitationPage() {
       setUser(userData);
     }
   };
-  const handleAcceptInvitation = async () => {
-    console.log(user?.email);
 
-    if (user?.email && courseId) {
+  const handlePassVerification = async (password: string) => {
+    const result = await dbAuthPort.verifyPass(password);
+
+    if (result === true) {
+      handleAcceptInvitation("teacher");
+      return;
+    }
+    alert("Contraseña invalida");
+  };
+
+  const handlePopPassword = async () => {
+    setShowPasswordPopup(true);
+  };
+
+  const handleAcceptInvitation = async (type: string) => {
+    console.log(user?.email);
+    console.log(courseId);
+
+    // Have to Solve courseId error
+    if (user?.email) {
       const userObj: UserOnDb = {
         email: user.email,
-        course: Number(courseId),
-        role: "student",
+        course: 1,
+        role: type,
       };
       await dbAuthPort.register(userObj);
       setShowPopUp(true);
@@ -148,7 +167,7 @@ function InvitationPage() {
                     Israel Antezana te está invitando al curso
                   </Typography>
                   <Button
-                    onClick={handleAcceptInvitation}
+                    onClick={() => handleAcceptInvitation("student")}
                     variant="contained"
                     color="primary"
                     sx={{ marginTop: 2 }}
@@ -156,10 +175,26 @@ function InvitationPage() {
                   >
                     Aceptar invitación al curso
                   </Button>
+                  <Button
+                    onClick={handlePopPassword}
+                    variant="contained"
+                    color="primary"
+                    sx={{ marginTop: 2 }}
+                    fullWidth
+                  >
+                    Aceptar invitación al curso como Docente
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
+          {showPasswordPopup && (
+            <PasswordComponent
+              open={showPasswordPopup}
+              onClose={() => setShowPasswordPopup(false)}
+              onSend={handlePassVerification}
+            />
+          )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
         </div>
       ) : (
