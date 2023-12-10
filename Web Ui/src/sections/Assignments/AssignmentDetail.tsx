@@ -17,15 +17,7 @@ import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAs
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 
-interface AssignmentDetailProps {
-  role: string;
-}
-
-function isNotTeacher(role: string): boolean {
-  return role !== "teacher";
-}
-
-const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
+const AssignmentDetail: React.FC = () => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
@@ -304,20 +296,18 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 </div>
               ) : null}
             </div>
-            {isNotTeacher(role) && (
-              <Button
-                variant="contained"
-                disabled={!isTaskPending}
-                onClick={handleOpenLinkDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Iniciar tarea
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              disabled={!isTaskPending}
+              onClick={handleOpenLinkDialog}
+              style={{
+                textTransform: "none",
+                fontSize: "15px",
+                marginRight: "8px",
+              }}
+            >
+              Iniciar tarea
+            </Button>
             <Button
               variant="contained"
               disabled={!isTaskInProgressOrDelivered}
@@ -336,20 +326,18 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
               onClose={handleCloseLinkDialog}
               onSend={handleSendGithubLink}
             />
-            {isNotTeacher(role) && (
-              <Button
-                variant="contained"
-                disabled={isTaskDeliveredOrPending}
-                onClick={handleOpenCommentDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Finalizar tarea
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              disabled={isTaskDeliveredOrPending}
+              onClick={handleOpenCommentDialog}
+              style={{
+                textTransform: "none",
+                fontSize: "15px",
+                marginRight: "8px",
+              }}
+            >
+              Finalizar tarea
+            </Button>
             <CommentDialog
               open={isCommentDialogOpen}
               link={assignment?.link}
