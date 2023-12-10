@@ -30,26 +30,24 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       if (response.status != 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      const responseData: [] = response.data;
-      const commits: CommitDataObject[] = responseData.map(
-        (commitData: any) => ({
-          html_url: commitData.html_url,
-          sha: commitData.sha,
-          stats: {
-            total: commitData.total,
-            additions: commitData.additions,
-            deletions: commitData.deletions,
-          },
-          commit: {
-            date: new Date(commitData.commit_date), // Convert date string to Date object
-            message: commitData.message,
-            url: commitData.url,
-            comment_count: commitData.comment_count,
-          },
-          coverage: commitData.coverage,
-        }),
-      );
-
+      const responseData:[]=response.data
+      const commits: CommitDataObject[] = responseData.map((commitData:any) => ({
+        html_url: commitData.html_url,
+        sha: commitData.sha,
+        stats: {
+          total: commitData.total,
+          additions: commitData.additions,
+          deletions: commitData.deletions,
+        },
+        commit: {
+          date: new Date(commitData.commit_date), // Convert date string to Date object
+          message: commitData.message,
+          url: commitData.url,
+          comment_count: commitData.comment_count,
+        },
+        coverage: commitData.coverage,
+        test_count: commitData.test_count
+      }));
       return commits;
     } catch (error) {
       // Handle any errors here

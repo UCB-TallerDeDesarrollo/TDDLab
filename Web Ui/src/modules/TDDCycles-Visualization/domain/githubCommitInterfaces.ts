@@ -1,9 +1,10 @@
 export interface CommitDataObject {
-  html_url: string;
-  stats: Stats;
-  commit: Commit;
-  sha: string;
-  coverage: number;
+    html_url:string;
+    stats:Stats;
+    commit:Commit;
+    sha:string;
+    coverage:number;
+    test_count:number;
 }
 export interface Stats {
   total: number;
