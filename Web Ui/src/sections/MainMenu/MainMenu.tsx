@@ -1,90 +1,70 @@
 import {
-  Button,
   Box,
-  Drawer,
-  AppBar,
-  IconButton,
-  Toolbar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemButton,
+  ListItemText,
   Typography,
 } from "@mui/material";
-import NavLateralMenu from "./components/LateralMenu";
-import MenuIcon from "@mui/icons-material/Menu";
-import { ReactElement, useState } from "react";
-import { NavLink } from "react-router-dom";
-import WindowIcon from "@mui/icons-material/Window";
-import LoginComponent from "./components/loginComponent";
+import { ReactElement, Dispatch, SetStateAction } from "react";
+import LoginIcon from "@mui/icons-material/Login";
 
-type NavLink = {
+interface NavItem {
   title: string;
   path: string;
   icon: ReactElement;
-  access: string[];
-};
-
-interface NavbarProps {
-  navArrayLinks: NavLink[];
-  userRole: string;
 }
 
-export default function MainMenu({ navArrayLinks, userRole }: Readonly<NavbarProps>) {
-  const [open, setOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState("Tareas");
+interface NavLinkProps {
+  to: string;
+  onClick?: () => void;
+  // Add other props as needed
+}
 
-  const handleButtonClick = (title: string) => {
-    setActiveButton(title);
-  };
+interface NavLateralMenuProps {
+  navArrayLinks: NavItem[];
+  NavLink: React.ComponentType<NavLinkProps>;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}
 
+export default function NavLateralMenu({
+  navArrayLinks,
+  NavLink,
+  setOpen,
+}: Readonly<NavLateralMenuProps>) {
   return (
-    <div style={{ marginTop: "100px" }}>
-      <AppBar position="fixed" sx={{ background: "#052845" }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            size="large"
-            onClick={() => setOpen(true)}
-            sx={{ display: { xs: "flex", sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <WindowIcon sx={{ marginRight: "6px" }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            TDDLab
-          </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navArrayLinks.map((item) => (
-              item.access.includes(userRole) && (
-                <Button
-                  key={item.title}
-                  component={NavLink}
-                  to={item.path}
-                  onClick={() => handleButtonClick(item.title)}
-                  sx={{
-                    borderBottom:
-                      activeButton === item.title ? "2px solid #fff" : "none",
-                    color: activeButton === item.title ? "#fff" : "#A9A9A9",
-                  }}
-                >
-                  {item.title}
-                </Button>
-              )
-            ))}
-          </Box>
-          <LoginComponent></LoginComponent>
-        </Toolbar>
-      </AppBar>
+    <Box sx={{ width: 250 }}>
+      <nav>
+        <List>
+          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
 
-      <Drawer
-        open={open}
-        anchor="left"
-        onClose={() => setOpen(false)}
-        sx={{ display: { xs: "flex", sm: "none" } }}
-      >
-        <NavLateralMenu
-          navArrayLinks={navArrayLinks}
-          NavLink={NavLink}
-          setOpen={setOpen}
-        />
-      </Drawer>
-    </div>
+          {navArrayLinks.map((item) => (
+            <ListItem disablePadding key={item.title}>
+              <ListItemButton
+                component={NavLink}
+                to={item.path}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText>{item.title}</ListItemText>
+              </ListItemButton>
+            </ListItem>
+          ))}
+          <ListItem disablePadding>
+            <ListItemButton
+              component={NavLink}
+              to="/login"
+              onClick={() => setOpen(false)}
+            >
+              <ListItemIcon>
+                <LoginIcon />
+              </ListItemIcon>
+              <ListItemText>Iniciar sesión</ListItemText>
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </nav>
+    </Box>
   );
 }
