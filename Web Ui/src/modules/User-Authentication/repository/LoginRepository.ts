@@ -29,6 +29,20 @@ class AuthRepository implements AuthDBRepositoryInterface {
       throw error;
     }
   }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    try {
+      const response = await axios.post(API_URL + "/user/verifyPassword", {
+        password: password,
+      });
+
+      return response.data.success;
+    } catch (error) {
+      console.error("Server error:", error);
+      alert("Server error");
+      throw error;
+    }
+  }
 }
 
 export default AuthRepository;

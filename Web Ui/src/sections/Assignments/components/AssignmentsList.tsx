@@ -9,8 +9,6 @@ import {
   TableCell,
   Container,
   Button,
-  MenuItem,
-  Select,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -20,6 +18,7 @@ import { DeleteAssignment } from "../../../modules/Assignments/application/Delet
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import Assignment from "./Assignment";
+import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -143,26 +142,10 @@ function Assignments({
               </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                  <Select
-                    value={selectedSorting}
-                    onChange={handleOrdenarChange}
-                    inputProps={{ "aria-label": "Ordenar" }}
-                    displayEmpty
-                    style={{ fontSize: "14px", height: "36px" }}
-                  >
-                    <option value="">Opciones</option>
-                    <MenuItem value="" disabled>
-                      Ordenar
-                    </MenuItem>
-                    <MenuItem value="A_Up_Order">
-                      Orden alfabetico ascendiente
-                    </MenuItem>
-                    <MenuItem value="A_Down_Order">
-                      Orden alfabetico descendiente
-                    </MenuItem>
-                    <MenuItem value="Time_Up">Recientes</MenuItem>
-                    <MenuItem value="Time_Down">Antiguos</MenuItem>
-                  </Select>
+                  <SortingComponent
+                    selectedSorting={selectedSorting}
+                    onChangeHandler={handleOrdenarChange}
+                  />
                   {userRole === "admin" && (
                     <Button
                       variant="contained"
@@ -217,7 +200,7 @@ function Assignments({
             open={validationDialogOpen}
             title="Tarea eliminada exitosamente"
             closeText="Cerrar"
-            onClose={() => setValidationDialogOpen(false)}
+            onClose={() => window.location.reload()}
           />
         )}
       </section>

@@ -10,8 +10,8 @@ interface HandlePopUp {
   handleClose: () => void;
   open: boolean;
   dialogTitle: string;
-  dialogContent: any;
-  children?: React.ReactNode; // Agrega esta línea
+  dialogContent: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 function PopUp({

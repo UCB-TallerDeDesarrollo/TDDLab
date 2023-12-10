@@ -15,10 +15,10 @@ export default function LoginComponent() {
   const authData = useGlobalState("authData");
 
   const handleLogin = async () => {
-    let userData = await handleSignInWithGitHub();
+    const userData = await handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new CheckIfUserHasAccount();
-      let userAccount = await loginPort.userHasAnAcount(userData.email);
+      const userAccount = await loginPort.userHasAnAcount(userData.email);
       setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };

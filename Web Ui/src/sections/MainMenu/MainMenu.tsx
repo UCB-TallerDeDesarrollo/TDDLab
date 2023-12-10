@@ -70,7 +70,7 @@ export default function MainMenu({
                   >
                     {item.title}
                   </Button>
-                ),
+                )
             )}
           </Box>
           <LoginComponent></LoginComponent>
