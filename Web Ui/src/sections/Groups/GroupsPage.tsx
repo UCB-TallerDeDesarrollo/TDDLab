@@ -72,9 +72,9 @@ function Groups() {
 
   const handleGroupsOrder = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value);
-    let selectedSortingLocal = event.target.value as keyof typeof sortings;
+    const selectedSortingLocal = event.target.value as keyof typeof sortings;
 
-    let sortings = {
+    const sortings = {
       A_Up_Order: () =>
         [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
       A_Down_Order: () =>
@@ -94,7 +94,7 @@ function Groups() {
     };
     console.log(typeof groups[0].creationDate);
 
-    let sortedGroups = sortings[selectedSortingLocal]();
+    const sortedGroups = sortings[selectedSortingLocal]();
     setGroups(sortedGroups);
   };
 
@@ -145,7 +145,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    let group = groups[index];
+    const group = groups[index];
     if (group.id) {
       getCourseLink(group.id);
     }
@@ -155,11 +155,16 @@ function Groups() {
     try {
       if (selectedRow !== null) {
         const itemFound = groups[selectedRow];
-        if (!!itemFound) {
+        if (itemFound) {
           const deleteGroup = new DeleteGroup(groupRepository);
-          await deleteGroup.deleteGroup(itemFound.id || 0);
+          await deleteGroup.deleteGroup(itemFound.id ?? 0);
           setValidationDialogOpen(true);
-          delete groups[selectedRow];
+
+          // Create a new array without the item to be deleted
+          const updatedGroups = groups.filter(
+            (_group, index) => index !== selectedRow
+          );
+          setGroups(updatedGroups);
         }
       }
     } catch (error) {

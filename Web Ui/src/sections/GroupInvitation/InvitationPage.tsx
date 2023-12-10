@@ -39,7 +39,7 @@ function InvitationPage() {
   const [showPopUp, setShowPopUp] = useState(false);
 
   const handleSignUp = async () => {
-    let userData = await handleSignInWithGitHub();
+    const userData = await handleSignInWithGitHub();
     if (userData) {
       setUser(userData);
     }
