@@ -7,7 +7,7 @@ interface CycleReportViewProps {
   jobs: JobDataObject | null;
 }
 
-function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
+function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === "success") {
       return { backgroundColor: "green"};
@@ -34,7 +34,9 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
     const coverageText = commit.coverage
       ? `${commit.coverage}%`
       : "no se encontró cobertura"; // Establece un valor predeterminado
-
+    const testCountText = commit.test_count
+      ? `${commit.test_count}%`
+      : "no se encontraron tests";
     return (
       <div className="commit-stats">
   <div className="commit-stat-item">
@@ -52,6 +54,10 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
   <div className="commit-stat-item">
     <div className="circle coverage" data-testid="coverage"></div>
     <span>Cobertura:</span> {coverageText}
+  </div>
+  <div className="commit-stat-item">
+    <div className="circle coverage" data-testid="test-count"></div>
+    <span>Numero de Tests:</span> {testCountText}
   </div>
 </div>
     );
