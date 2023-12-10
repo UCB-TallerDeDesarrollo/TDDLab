@@ -21,15 +21,12 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
-        (commit) => commit.stats.total < maxLinesInGraph
+        (commit) => commit.stats.total < maxLinesInGraph,
       );
       return filteredCommitsObject;
     }
     return commits;
   })();
-
-
-
   const handleSelectChange = (event: SelectChangeEvent) => {
     setMetricSelected(event.target.value);
   };
@@ -59,9 +56,8 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
           </Select>
         </FormControl>
       </Box>
-
-      <TDDLineCharts 
-        filteredCommitsObject={filteredCommitsObject} 
+      <TDDLineCharts
+        filteredCommitsObject={filteredCommitsObject}
         jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
       ></TDDLineCharts>

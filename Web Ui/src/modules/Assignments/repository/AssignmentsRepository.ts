@@ -27,7 +27,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   // Define a function to fetch an assignment by its ID
   async getAssignmentById(
-    assignmentId: number
+    assignmentId: number,
   ): Promise<AssignmentDataObject | null> {
     try {
       // Send a GET request to fetch a specific assignment by ID
@@ -58,7 +58,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   async updateAssignment(
     assignmentId: number,
-    assignmentData: AssignmentDataObject
+    assignmentData: AssignmentDataObject,
   ): Promise<void> {
     await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
   }
@@ -85,7 +85,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   async deliverAssignment(
     assignmentId: number,
-    assignmentData: AssignmentDataObject
+    assignmentData: AssignmentDataObject,
   ): Promise<void> {
     console.log(assignmentData);
     console.log(assignmentId);
