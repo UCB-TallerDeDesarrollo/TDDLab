@@ -50,6 +50,8 @@ function InvitationPage() {
 
   const handlePassVerification = async (password: string) => {
     const result = await dbAuthPort.verifyPass(password);
+    console.log(result);
+
     if (result === true) {
       handleAcceptInvitation("teacher");
       return;

@@ -32,7 +32,12 @@ class AuthRepository implements AuthDBRepositoryInterface {
 
   async verifyPassword(password: string): Promise<boolean> {
     try {
-      const response = await axios.post(API_URL + "/verifyPassword", password);
+      console.log("sosmosm");
+
+      const response = await axios.post(API_URL + "/user/verifyPassword", {
+        password: password,
+      });
+      console.log(response);
 
       return response.data.success;
     } catch (error) {
