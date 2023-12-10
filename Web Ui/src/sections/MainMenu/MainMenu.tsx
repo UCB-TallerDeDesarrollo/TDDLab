@@ -1,63 +1,94 @@
 import {
+  Button,
   Box,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemButton,
-  ListItemText,
+  Drawer,
+  AppBar,
+  IconButton,
+  Toolbar,
   Typography,
 } from "@mui/material";
-import { ReactElement, Dispatch, SetStateAction } from "react";
-import LoginIcon from "@mui/icons-material/Login";
+import NavLateralMenu from "./components/LateralMenu";
+import MenuIcon from "@mui/icons-material/Menu";
+import { ReactElement, useState } from "react";
+import { NavLink } from "react-router-dom";
+import WindowIcon from "@mui/icons-material/Window";
+import LoginComponent from "./components/loginComponent";
 
-interface NavItem {
+type NavLink = {
   title: string;
   path: string;
   icon: ReactElement;
-}
-interface NavLateralMenuProps {
-  navArrayLinks: NavItem[];
-  NavLink: React.ComponentType<any>;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  access: string[];
+};
+
+interface NavbarProps {
+  navArrayLinks: NavLink[];
+  userRole: string;
 }
 
-export default function NavLateralMenu({
+export default function MainMenu({
   navArrayLinks,
-  NavLink,
-  setOpen,
-}: Readonly<NavLateralMenuProps>) {
-  return (
-    <Box sx={{ width: 250 }}>
-      <nav>
-        <List>
-          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
+  userRole,
+}: Readonly<NavbarProps>) {
+  const [open, setOpen] = useState(false);
+  const [activeButton, setActiveButton] = useState("Tareas");
 
-          {navArrayLinks.map((item) => (
-            <ListItem disablePadding key={item.title}>
-              <ListItemButton
-                component={NavLink}
-                to={item.path}
-                onClick={() => setOpen(false)}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText>{item.title}</ListItemText>
-              </ListItemButton>
-            </ListItem>
-          ))}
-          <ListItem disablePadding>
-            <ListItemButton
-              component={NavLink}
-              to="/login"
-              onClick={() => setOpen(false)}
-            >
-              <ListItemIcon>
-                <LoginIcon />
-              </ListItemIcon>
-              <ListItemText>Iniciar sesión</ListItemText>
-            </ListItemButton>
-          </ListItem>
-        </List>
-      </nav>
-    </Box>
+  const handleButtonClick = (title: string) => {
+    setActiveButton(title);
+  };
+
+  return (
+    <div style={{ marginTop: "100px" }}>
+      <AppBar position="fixed" sx={{ background: "#052845" }}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            size="large"
+            onClick={() => setOpen(true)}
+            sx={{ display: { xs: "flex", sm: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <WindowIcon sx={{ marginRight: "6px" }} />
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            TDDLab
+          </Typography>
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            {navArrayLinks.map(
+              (item) =>
+                item.access.includes(userRole) && (
+                  <Button
+                    key={item.title}
+                    component={NavLink}
+                    to={item.path}
+                    onClick={() => handleButtonClick(item.title)}
+                    sx={{
+                      borderBottom:
+                        activeButton === item.title ? "2px solid #fff" : "none",
+                      color: activeButton === item.title ? "#fff" : "#A9A9A9",
+                    }}
+                  >
+                    {item.title}
+                  </Button>
+                )
+            )}
+          </Box>
+          <LoginComponent></LoginComponent>
+        </Toolbar>
+      </AppBar>
+
+      <Drawer
+        open={open}
+        anchor="left"
+        onClose={() => setOpen(false)}
+        sx={{ display: { xs: "flex", sm: "none" } }}
+      >
+        <NavLateralMenu
+          navArrayLinks={navArrayLinks}
+          NavLink={NavLink}
+          setOpen={setOpen}
+        />
+      </Drawer>
+    </div>
   );
 }
