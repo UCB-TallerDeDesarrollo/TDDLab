@@ -24,13 +24,13 @@ const navArrayLinks = [
     title: "Grupos",
     path: "/groups",
     icon: <GroupsIcon />,
-    access: ["admin", "teacher"],
+    access: ["admin"],
   },
   {
     title: "Tareas",
     path: "/",
     icon: <DescriptionIcon />,
-    access: ["admin", "student", "teacher"],
+    access: ["admin", "student"],
   },
   {
     title: "Usuarios",
