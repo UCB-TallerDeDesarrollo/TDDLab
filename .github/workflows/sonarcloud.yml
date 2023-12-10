@@ -155,25 +155,25 @@ jobs:
         working-directory: Web Ui
         run: npm install
 
-      - name: Run Prettier
-        working-directory: Web Ui
-        run: npx prettier --write "src/**/*.{js,ts,tsx}"
+      # - name: Run Prettier
+      #   working-directory: Web Ui
+      #   run: npx prettier --write "src/**/*.{js,ts,tsx}"
 
-      - name: Check for Changes in TypeScript files
-        id: check-changes
-        working-directory: Web Ui
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          if [[ -n $(git status --porcelain "src/**/*.{ts,tsx}") ]]; then
-            echo "Changes detected in TypeScript files."
-            git add .
-            git commit -m "Auto-format code with Prettier"
-            git push
-          else
-            echo "No changes to commit in TypeScript files."
-            exit 0
-          fi
+      # - name: Check for Changes in TypeScript files
+      #   id: check-changes
+      #   working-directory: Web Ui
+      #   run: |
+      #     git config --global user.name "{{ github.actor }}"
+      #     git config --global user.email "{{ github.actor }}@users.noreply.github.com"
+      #     if [[ -n $(git status --porcelain "src/**/*.{ts,tsx}") ]]; then
+      #       echo "Changes detected in TypeScript files."
+      #       git add .
+      #       git commit -m "Auto-format code with Prettier"
+      #       git push
+      #     else
+      #       echo "No changes to commit in TypeScript files."
+      #       exit 0
+      #     fi
 
   deployment_vercel_Backend:
     runs-on: ubuntu-latest
