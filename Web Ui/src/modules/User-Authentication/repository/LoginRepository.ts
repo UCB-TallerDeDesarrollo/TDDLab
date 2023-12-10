@@ -21,14 +21,23 @@ class AuthRepository implements AuthDBRepositoryInterface {
       throw error;
     }
   }
-  async registerAccount(
-    user: UserOnDb,
-    password: string | null
-  ): Promise<void> {
+  async registerAccount(user: UserOnDb): Promise<void> {
     try {
       await axios.post(API_URL + "/user/register", user);
     } catch (error) {
       console.error("Error saving user", error);
+      throw error;
+    }
+  }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    try {
+      const response = await axios.post(API_URL + "/verifyPassword", password);
+
+      return response.data.success;
+    } catch (error) {
+      console.error("Server error:", error);
+      alert("Server error");
       throw error;
     }
   }
