@@ -78,7 +78,7 @@ function App() {
           path="/assignment/:id"
           element={
             <ProtectedRouteComponent>
-              <AssignmentDetail role={authData.userRole ?? ""} />
+              <AssignmentDetail role={authData.userRole ?? "student"} />
             </ProtectedRouteComponent>
           }
         />
