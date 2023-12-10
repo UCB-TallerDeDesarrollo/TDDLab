@@ -1,4 +1,3 @@
-
 import { CSSProperties } from "react";
 
 export const dialogContentStyle: CSSProperties = {
@@ -11,8 +10,8 @@ export const titleStyle: CSSProperties = {
 };
 
 export const titleStyle2: CSSProperties = {
-    fontSize: "15.5px",
-  };
+  fontSize: "15.5px",
+};
 
 export const primaryButtonStyle: CSSProperties = {
   textTransform: "none",
@@ -20,5 +19,5 @@ export const primaryButtonStyle: CSSProperties = {
 
 export const secondaryButtonStyle: CSSProperties = {
   textTransform: "none",
-  color: "#555", 
+  color: "#555",
 };

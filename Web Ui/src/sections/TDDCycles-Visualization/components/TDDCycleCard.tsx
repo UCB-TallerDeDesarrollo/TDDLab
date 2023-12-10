@@ -10,17 +10,17 @@ interface CycleReportViewProps {
 function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
   const getBoxStyle = (conclusion: string) => {
     if (conclusion === "success") {
-      return { backgroundColor: "green"};
+      return { backgroundColor: "green" };
     } else {
-      return { backgroundColor: "red"};
+      return { backgroundColor: "red" };
     }
   };
   const traduceConclusion = (conclusion: string) => {
-      if (conclusion === "success") {
-        return "exito";
-      } else {
-        return "fallido";
-      }
+    if (conclusion === "success") {
+      return "exito";
+    } else {
+      return "fallido";
+    }
   };
 
   function getCommitLink() {
@@ -44,23 +44,23 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
 
     return (
       <div className="commit-stats">
-  <div className="commit-stat-item">
-    <div className="circle total" data-testid="total"></div>
-    <span>Total de modificaciones:</span> {commit.stats.total}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle additions" data-testid="adition"></div>
-    <span>Adiciones:</span> {commit.stats.additions}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle deletions" data-testid="deletion"></div>
-    <span>Sustracciones:</span> {commit.stats.deletions}
-  </div>
-  <div className="commit-stat-item">
-    <div className="circle coverage" data-testid="coverage"></div>
-    <span>Cobertura:</span> {coverageText}
-  </div>
-</div>
+        <div className="commit-stat-item">
+          <div className="circle total" data-testid="total"></div>
+          <span>Total de modificaciones:</span> {commit.stats.total}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle additions" data-testid="adition"></div>
+          <span>Adiciones:</span> {commit.stats.additions}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle deletions" data-testid="deletion"></div>
+          <span>Sustracciones:</span> {commit.stats.deletions}
+        </div>
+        <div className="commit-stat-item">
+          <div className="circle coverage" data-testid="coverage"></div>
+          <span>Cobertura:</span> {coverageText}
+        </div>
+      </div>
     );
   }
 
@@ -85,8 +85,3 @@ function TDDCycleCard({ commit, jobs }: CycleReportViewProps) {
 }
 
 export default TDDCycleCard;
-
-
-
-
-

@@ -7,7 +7,7 @@ export class SubmitAssignment {
   async submitAssignment(
     assignmentId: number,
     link: string,
-    comment: string | null
+    comment: string | null,
   ) {
     try {
       const foundAssignment: AssignmentDataObject | null =
@@ -27,7 +27,7 @@ export class SubmitAssignment {
 
         return await this.assignmentsRepository.deliverAssignment(
           assignmentId,
-          foundAssignment
+          foundAssignment,
         );
       } else {
         throw new Error("No se encontró la tarea");

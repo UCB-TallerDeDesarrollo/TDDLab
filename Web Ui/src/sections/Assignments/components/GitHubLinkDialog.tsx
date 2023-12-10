@@ -32,7 +32,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleLinkChange(e.target.value);
   };
-  
 
   const dialogTitleStyle = {
     fontSize: "1rem",
@@ -70,9 +69,10 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} 
-        color="primary"
-        style={{ textTransform: "none" }}
+        <Button
+          onClick={onClose}
+          color="primary"
+          style={{ textTransform: "none" }}
         >
           Cerrar
         </Button>
