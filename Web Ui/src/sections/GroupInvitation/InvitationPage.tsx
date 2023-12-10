@@ -27,7 +27,6 @@ function InvitationPage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
-  const [password, setPassword] = useState("");
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
@@ -50,7 +49,6 @@ function InvitationPage() {
 
   const handlePassVerification = async (password: string) => {
     const result = await dbAuthPort.verifyPass(password);
-    console.log(result);
 
     if (result === true) {
       handleAcceptInvitation("teacher");
@@ -65,6 +63,8 @@ function InvitationPage() {
 
   const handleAcceptInvitation = async (type: string) => {
     console.log(user?.email);
+    console.log(courseId);
+
     // Have to Solve courseId error
     if (user?.email) {
       const userObj: UserOnDb = {
