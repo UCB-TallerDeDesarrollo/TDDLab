@@ -27,6 +27,7 @@ function InvitationPage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [password, setPassword] = useState("");
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
@@ -44,6 +45,12 @@ function InvitationPage() {
     let userData = await handleSignInWithGitHub();
     if (userData) {
       setUser(userData);
+    }
+  };
+
+  const handlePassVerification = async (password: string) => {
+    if (password === "logicaprueba") {
+      handleAcceptInvitation("teacher");
     }
   };
 
@@ -180,7 +187,7 @@ function InvitationPage() {
             <PasswordComponent
               open={showPasswordPopup}
               onClose={() => setShowPasswordPopup(false)}
-              onSend={() => setShowPasswordPopup(false)}
+              onSend={handlePassVerification}
             />
           )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
