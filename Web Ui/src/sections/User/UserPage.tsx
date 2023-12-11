@@ -1,3 +1,8 @@
 export default function User() {
-  return <h1> Página de los usuarios</h1>;
+  return (
+    <div>
+      <h1>Página de los usuarios</h1>
+      <p>aaaa</p>
+    </div>
+  );
 }
