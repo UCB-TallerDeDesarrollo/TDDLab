@@ -4,7 +4,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import { dialogContentStyle, titleStyle, primaryButtonStyle, secondaryButtonStyle } from "../Styles/DialogBoxStyles";
+import {
+  dialogContentStyle,
+  titleStyle,
+  primaryButtonStyle,
+  secondaryButtonStyle,
+} from "../Styles/DialogBoxStyles";
 
 interface ConfirmationDialogProps {
   open: boolean;

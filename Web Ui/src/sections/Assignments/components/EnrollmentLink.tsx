@@ -10,7 +10,7 @@ const InvitationComponent: React.FC = () => {
     setMostrarLink(true);
   };
 
-  const currentPage:string = (window.location.href)+"invitation";
+  const currentPage: string = window.location.href + "invitation";
 
   const copiarAlPortapapeles = () => {
     const inputLink = document.getElementById("linkText") as HTMLInputElement;
@@ -39,7 +39,6 @@ const InvitationComponent: React.FC = () => {
             color="primary"
             onClick={copiarAlPortapapeles}
           >
-            
             <FileCopyIcon />
           </Button>
         </div>

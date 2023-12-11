@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import Button from "@mui/material/Button";
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
@@ -13,7 +19,7 @@ interface CreateAssignmentPopupProps {
   handleClose: () => void;
 }
 
-function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
+function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
@@ -27,7 +33,7 @@ function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
     comment: "",
   });
   const isCreateButtonClicked = useRef(false);
-  
+
   const handleSaveClick = async () => {
     setSave(true);
     if (formInvalid()) {
@@ -44,7 +50,7 @@ function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
       await createAssignments.createAssignment(assignmentData);
     } catch (error) {
       console.error(error);
-    }finally {
+    } finally {
       setSave(false);
     }
     setValidationDialogOpen(true);
@@ -60,7 +66,7 @@ function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: string // 'title' or 'description'
+    field: string, // 'title' or 'description'
   ) => {
     const { value } = event.target;
 
@@ -69,7 +75,6 @@ function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
       [field]: value,
     }));
   };
-
 
   const handleCancel = () => {
     handleClose();
@@ -83,9 +88,7 @@ function Form({open,handleClose}:Readonly<CreateAssignmentPopupProps>) {
     setSave(false);
   }, [open]);
 
-
   return (
-
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
         <>

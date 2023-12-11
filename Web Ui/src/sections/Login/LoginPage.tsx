@@ -25,7 +25,7 @@ const Login = () => {
       setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
-        })
+        }),
       );
     } else {
       alert("Disculpa, tu usuario no esta registrado");

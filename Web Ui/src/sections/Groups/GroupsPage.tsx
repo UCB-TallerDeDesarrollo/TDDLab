@@ -83,13 +83,13 @@ function Groups() {
         [...groups].sort(
           (a, b) =>
             new Date(a.creationDate).getTime() -
-            new Date(b.creationDate).getTime()
+            new Date(b.creationDate).getTime(),
         ),
       Time_Down: () =>
         [...groups].sort(
           (a, b) =>
             new Date(b.creationDate).getTime() -
-            new Date(a.creationDate).getTime()
+            new Date(a.creationDate).getTime(),
         ), // Assuming timestamp is a property of groups for time comparison
     };
     console.log(typeof groups[0].creationDate);
@@ -117,7 +117,7 @@ function Groups() {
 
   const handleHomeworksClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
@@ -125,7 +125,7 @@ function Groups() {
 
   const handleStudentsClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
@@ -133,7 +133,7 @@ function Groups() {
 
   const handleDeleteClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
@@ -142,7 +142,7 @@ function Groups() {
 
   const handleLinkClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     event.stopPropagation();
     let group = groups[index];

@@ -6,12 +6,12 @@ interface AssignmentsRepositoryInterface {
   createAssignment(assignmentData: AssignmentDataObject): Promise<void>;
   updateAssignment(
     assignmentId: number,
-    assignmentData: AssignmentDataObject
+    assignmentData: AssignmentDataObject,
   ): Promise<void>;
   deleteAssignment(assignmentId: number): Promise<void>;
   deliverAssignment(
     assignmentId: number,
-    assignmentData: AssignmentDataObject
+    assignmentData: AssignmentDataObject,
   ): Promise<void>;
 }
 
