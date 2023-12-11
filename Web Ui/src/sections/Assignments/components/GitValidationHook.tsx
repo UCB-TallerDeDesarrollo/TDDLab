@@ -7,7 +7,7 @@ interface UseGitHubLinkValidation {
 }
 
 export const useGitHubLinkValidation = (
-  initialRepo: string
+  initialRepo: string,
 ): UseGitHubLinkValidation => {
   const [repo, setRepo] = useState(initialRepo);
   const [validLink, setValidLink] = useState(true);
@@ -17,8 +17,10 @@ export const useGitHubLinkValidation = (
     return regex.test(text);
   };
 
-  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>| string) => {
-    const newLink = typeof e === 'string' ? e : e.target.value;
+  const handleLinkChange = (
+    e: React.ChangeEvent<HTMLInputElement> | string,
+  ) => {
+    const newLink = typeof e === "string" ? e : e.target.value;
     setRepo(newLink);
     setValidLink(validateGitHubLink(newLink));
   };

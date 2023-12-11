@@ -27,7 +27,7 @@ function isNotTeacher(role: string) {
 
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
-    null
+    null,
   );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
@@ -55,7 +55,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
     assignment?.state === "delivered" || assignment?.state === "pending";
 
   const handleUpdateAssignment = async (
-    updatedAssignment: AssignmentDataObject
+    updatedAssignment: AssignmentDataObject,
   ) => {
     const assignmentsRepository = new AssignmentsRepository();
     const submitAssignment = new SubmitAssignment(assignmentsRepository);
@@ -64,7 +64,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
       await submitAssignment.submitAssignment(
         updatedAssignment.id,
         updatedAssignment.link,
-        updatedAssignment.comment
+        updatedAssignment.comment,
       );
     } catch (error) {
       console.error(error);

@@ -1,4 +1,4 @@
-import  AssignmentsRepositoryInterface  from "../domain/AssignmentsRepositoryInterface";
+import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
 export class DeleteAssignment {
   constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
@@ -6,9 +6,9 @@ export class DeleteAssignment {
   async deleteAssignment(assignmentId: number) {
     try {
       await this.assignmentsRepository.deleteAssignment(assignmentId);
-      return 'Succesful deletion';
+      return "Succesful deletion";
     } catch (error) {
-      console.error('Error deleting assignment by ID:', error);
+      console.error("Error deleting assignment by ID:", error);
       throw error;
     }
   }
