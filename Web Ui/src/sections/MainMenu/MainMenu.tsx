@@ -50,9 +50,11 @@ export default function MainMenu({
             <MenuIcon />
           </IconButton>
           <WindowIcon sx={{ marginRight: "6px" }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            TDDLab
-          </Typography>
+          <NavLink to="/" style={{ textDecoration: "none", color: "inherit", marginRight: "1170px" }}>
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              TDDLab
+            </Typography>
+          </NavLink>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navArrayLinks.map(
               (item) =>
