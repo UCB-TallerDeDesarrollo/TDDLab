@@ -113,6 +113,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
         );
     } catch (error) {
       console.error("Error updating the commit table in the database:", error);
+      throw error
     }
   }
 }
