@@ -94,6 +94,20 @@ describe("getCommitsNotSaved", () => {
         expect(clientCommitQueryMock).toHaveBeenNthCalledWith(1, 'SELECT * FROM commitstable WHERE owner = $1 AND reponame = $2 AND sha=$3', ["owner", "repoName", commitsFromGithub[0].sha]);
         expect(result).toEqual(unsavedCommits);
     });
+    it("should stop checking for commits if a commit already exists", async () => {
+        const owner = "owner";
+        const repoName = "repoName";
+
+        const nonExistingCommits: any[] = [];
+
+        // Mock the commitExists method to return true for the second commit
+        jest.spyOn(commitRepository, "commitExists")
+            .mockResolvedValueOnce(true);
+
+        const result = await commitRepository.getCommitsNotSaved(owner, repoName, commitsFromGithub);
+
+        expect(result).toEqual(nonExistingCommits);
+    });
 });
 describe("Commit Saving Commits List", () => {
     it('should save commits list', async () => {
