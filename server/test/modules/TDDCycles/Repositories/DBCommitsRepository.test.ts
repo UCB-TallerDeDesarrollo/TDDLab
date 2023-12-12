@@ -1,4 +1,3 @@
-
 import { Pool } from "pg";
 import { DBCommitsRepository } from "../../../../src/modules/TDDCycles/Repositories/DBCommitsRepository";
 import { commitsFromGithub, tddCycleDataObjectMock, unsavedCommits } from "../../../__mocks__/TDDCycles/dataTypeMocks/commitData";
