@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { registerUser } from "../../modules/Users/Application/registerUser";
 import { getUser } from "../../modules/Users/Application/getUser";
+import { getUsers } from "../../modules/Users/Application/getUsers";
 
 export const registerUserController = (req: Request, res: Response): void => {
   const { email, course, role } = req.body;
@@ -50,4 +51,12 @@ export const verifyPassword = async (
   } catch (error) {
     res.status(500).json({ success: false, error: "Server error" });
   }
+};
+
+export const getUsersController = async (_req: Request, res: Response): Promise<void> => {
+  let userData = await getUsers();
+  console.log('userData:' , userData)
+  if (userData == null)
+    res.status(404).json({ message: "Usuarios no encontrado" });
+  else res.status(200).json(userData);
 };
