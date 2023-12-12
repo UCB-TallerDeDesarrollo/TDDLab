@@ -40,4 +40,9 @@ export class UserRepository {
     }
     return null;
   }
+  async obtainUsers(): Promise<User[] | null> {
+    const query = "SELECT email, course, role FROM usersTable";
+    const rows = await this.executeQuery(query);
+    return rows.length > 0 ? rows : null;
+  }
 }
