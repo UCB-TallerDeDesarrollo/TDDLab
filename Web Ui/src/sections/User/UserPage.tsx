@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import GetUsers from "../../modules/Users/application/getUsers";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
