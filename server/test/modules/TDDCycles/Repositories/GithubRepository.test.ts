@@ -28,6 +28,21 @@ describe('GithubRepository', () => {
             expect(commits).toEqual(githubCommitData);
         });
 
+        it('should throw an error if there is an error obtaining commits', async () => {
+            const owner = 'owner';
+            const repoName = 'repoName';
+
+            // Create a mock Octokit instance
+            const mockOctokit = {
+                request: jest.fn().mockRejectedValueOnce(new Error('Failed to obtain commits')),
+            } as unknown as Octokit;
+
+            // Assign the mock Octokit instance to githubRepository.octokit
+            githubRepository.octokit = mockOctokit;
+
+            await expect(githubRepository.getCommits(owner, repoName)).rejects.toThrowError('Failed to obtain commits');
+        });
+
     });
     describe('getCommitInfoForTDDCycle', () => {
         it('should return commit information for a given TDD cycle', async () => {
@@ -261,11 +276,11 @@ describe('GithubRepository', () => {
 
 
             // Mock the obtainJobsOfACommit method to return the mock job data object
-            githubRepository.obtainJobsOfACommit = jest.fn().mockResolvedValueOnce({data:{ total_count : 10, jobs : 10}});
+            githubRepository.obtainJobsOfACommit = jest.fn().mockResolvedValueOnce({ data: { total_count: 10, jobs: 10 } });
 
             const jobsData = await githubRepository.getJobsDataFromGithub(owner, repoName, listOfCommitsWithActions);
 
-            expect(jobsData).toEqual({commit1: {data: {total_count : 10, jobs : 10}}});
+            expect(jobsData).toEqual({ commit1: { data: { total_count: 10, jobs: 10 } } });
         });
 
         it('should throw an error if there is an error obtaining job data for any commit', async () => {
