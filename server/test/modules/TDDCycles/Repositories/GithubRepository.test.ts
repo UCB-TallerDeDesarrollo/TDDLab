@@ -210,4 +210,44 @@ describe('GithubRepository', () => {
         });
     });
 
+
+    describe('getRunsOfGithubActionsIds', () => {
+        it('should return an array of commit IDs with their corresponding workflow run IDs', async () => {
+            const owner = 'owner';
+            const repoName = 'repoName';
+
+            // Create a mock response from the GitHub API
+            const mockResponse = {
+                data: {
+                    workflow_runs: [
+                        { head_commit: { id: 'commit1' }, id: 1 },
+                        { head_commit: { id: 'commit2' }, id: 2 },
+                    ],
+                },
+            };
+
+            // Mock the obtainRunsOfGithubActions method to return the mock response
+            githubRepository.obtainRunsOfGithubActions = jest.fn().mockResolvedValueOnce(mockResponse);
+
+            const runsWithCommitIds = await githubRepository.getRunsOfGithubActionsIds(owner, repoName);
+
+            expect(runsWithCommitIds).toEqual([
+                ['commit1', 1],
+                ['commit2', 2],
+            ]);
+        });
+
+        it('should throw an error if there is an error obtaining runs', async () => {
+            const owner = 'owner';
+            const repoName = 'repoName';
+
+            // Mock the obtainRunsOfGithubActions method to throw an error
+            githubRepository.obtainRunsOfGithubActions = jest.fn().mockRejectedValueOnce(new Error('Failed to obtain runs'));
+
+            await expect(githubRepository.getRunsOfGithubActionsIds(owner, repoName)).rejects.toThrowError(
+                'Failed to obtain runs'
+            );
+        });
+    });
+
 });
