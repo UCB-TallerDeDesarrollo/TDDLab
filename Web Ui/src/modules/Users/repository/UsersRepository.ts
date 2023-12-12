@@ -2,7 +2,7 @@ import axios from "axios";
 import { UserDataObject } from "../domain/UsersInterface";
 import UsersRepositoryInterface from "../domain/UsersRepositoryInterface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/userstable";
+const API_URL = "https://tdd-lab-api-gold.vercel.app/api/user/users";
 
 class UsersRepository implements UsersRepositoryInterface {
   async getUsers(): Promise<UserDataObject[]> {
