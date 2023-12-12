@@ -250,4 +250,39 @@ describe('GithubRepository', () => {
         });
     });
 
+
+    describe('getJobsDataFromGithub', () => {
+        it('should return a record of job data for each commit', async () => {
+            const owner = 'owner';
+            const repoName = 'repoName';
+            const listOfCommitsWithActions: [string, number][] = [
+                ['commit1', 1],
+            ];
+
+
+            // Mock the obtainJobsOfACommit method to return the mock job data object
+            githubRepository.obtainJobsOfACommit = jest.fn().mockResolvedValueOnce({data:{ total_count : 10, jobs : 10}});
+
+            const jobsData = await githubRepository.getJobsDataFromGithub(owner, repoName, listOfCommitsWithActions);
+
+            expect(jobsData).toEqual({commit1: {data: {total_count : 10, jobs : 10}}});
+        });
+
+        it('should throw an error if there is an error obtaining job data for any commit', async () => {
+            const owner = 'owner';
+            const repoName = 'repoName';
+            const listOfCommitsWithActions: [string, number][] = [
+                ['commit1', 1],
+                ['commit2', 2],
+            ];
+
+            // Mock the obtainJobsOfACommit method to throw an error
+            githubRepository.obtainJobsOfACommit = jest.fn().mockRejectedValueOnce(new Error('Failed to obtain job data'));
+
+            await expect(githubRepository.getJobsDataFromGithub(owner, repoName, listOfCommitsWithActions)).rejects.toThrowError(
+                'Failed to obtain job data'
+            );
+        });
+    });
+
 });
