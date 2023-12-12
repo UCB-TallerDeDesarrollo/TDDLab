@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getUserController,
+  getUsersController,
   registerUserController,
   verifyPassword,
 } from "../controllers/users/userController";
@@ -14,4 +15,10 @@ router.post(
   "/verifyPassword",
   async (req, res) => await verifyPassword(req, res)
 );
+
+router.get(
+  "/users",
+  async (req,res) => await getUsersController(req,res)
+);
+
 export default router;
