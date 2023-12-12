@@ -104,4 +104,20 @@ describe('GithubRepository', () => {
             );
         });
     });
+
+    describe('GithubRepository', () => {
+        let githubRepository: GithubRepository;
+
+        beforeEach(() => {
+            githubRepository = new GithubRepository();
+        });
+
+        describe('timeout', () => {
+            it('should reject with an error after the specified timeout', async () => {
+                const timeoutMs = 1000;
+
+                await expect(githubRepository.timeout(timeoutMs)).rejects.toThrowError('Request timed out');
+            });
+        });
+    });
 });
