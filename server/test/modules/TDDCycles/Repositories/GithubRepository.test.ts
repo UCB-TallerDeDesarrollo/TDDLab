@@ -120,4 +120,46 @@ describe('GithubRepository', () => {
             });
         });
     });
+
+    describe('GithubRepository', () => {
+        let githubRepository: GithubRepository;
+
+        beforeEach(() => {
+            githubRepository = new GithubRepository();
+        });
+
+        describe('obtainRunsOfGithubActions', () => {
+            it('should return the response from the GitHub API', async () => {
+                // Create a mock Octokit instance
+                const mockOctokit = {
+                    request: jest.fn().mockResolvedValueOnce({ data: 'response' }),
+                } as unknown as Octokit;
+
+                // Assign the mock Octokit instance to githubRepository.octokit
+                githubRepository.octokit = mockOctokit;
+
+                const owner = 'owner';
+                const repoName = 'repoName';
+
+                const response = await githubRepository.obtainRunsOfGithubActions(owner, repoName);
+
+                expect(response).toEqual({ data: 'response' });
+            });
+
+            it('should throw an error if there is an error obtaining runs', async () => {
+                // Create a mock Octokit instance
+                const mockOctokit = {
+                    request: jest.fn().mockRejectedValueOnce(new Error('Failed to obtain runs')),
+                } as unknown as Octokit;
+
+                // Assign the mock Octokit instance to githubRepository.octokit
+                githubRepository.octokit = mockOctokit;
+
+                const owner = 'owner';
+                const repoName = 'repoName';
+
+                await expect(githubRepository.obtainRunsOfGithubActions(owner, repoName)).rejects.toThrowError('Failed to obtain runs');
+            });
+        });
+    });
 });
