@@ -162,4 +162,52 @@ describe('GithubRepository', () => {
             });
         });
     });
+    describe('obtainJobsOfACommit', () => {
+        it('should return the job data for a given commit', async () => {
+            const owner = 'owner';
+            const repoName = 'repoName';
+            const jobId = 123;
+            const attempt = 1;
+
+            // Create a mock Octokit instance
+            const mockOctokit = {
+                request: jest.fn().mockResolvedValueOnce({
+                    data: {
+                        total_count: 2,
+                        jobs: [{ id: 1, name: 'Job 1' }, { id: 2, name: 'Job 2' }],
+                    },
+                }),
+            } as unknown as Octokit;
+
+            // Assign the mock Octokit instance to githubRepository.octokit
+            githubRepository.octokit = mockOctokit;
+
+            const jobData = await githubRepository.obtainJobsOfACommit(owner, repoName, jobId, attempt);
+
+            expect(jobData).toEqual({
+                total_count: 2,
+                jobs: [{ id: 1, name: 'Job 1' }, { id: 2, name: 'Job 2' }],
+            });
+        });
+
+        it('should throw an error if there is an error obtaining job data', async () => {
+            const owner = 'owner';
+            const repoName = 'repoName';
+            const jobId = 123;
+            const attempt = 1;
+
+            // Create a mock Octokit instance
+            const mockOctokit = {
+                request: jest.fn().mockRejectedValueOnce(new Error('Failed to obtain job data')),
+            } as unknown as Octokit;
+
+            // Assign the mock Octokit instance to githubRepository.octokit
+            githubRepository.octokit = mockOctokit;
+
+            await expect(githubRepository.obtainJobsOfACommit(owner, repoName, jobId, attempt)).rejects.toThrowError(
+                'Failed to obtain job data'
+            );
+        });
+    });
+
 });
