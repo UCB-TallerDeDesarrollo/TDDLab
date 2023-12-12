@@ -1,6 +1,6 @@
 import { GithubRepository } from "../../../../src/modules/TDDCycles/Repositories/GithubRepository";
 import { Octokit } from "octokit";
-import { commitInformationDataObjectMock, commitInformationMock, githubCommitData, githubResponseData, tddCycleDataObject } from "../../../__mocks__/TDDCycles/dataTypeMocks/githubResponseData";
+import { commitDataObjectMock, commitDataObjectMockNoAuthorNoCommiter, commitInformationDataObjectMock, commitInformationMock, githubResponse, githubResponseNoAuthorNoCommitter, tddCycleDataObject } from "../../../__mocks__/TDDCycles/dataTypeMocks/githubResponseData";
 import { commitsFromGithub } from "../../../__mocks__/TDDCycles/dataTypeMocks/commitData";
 
 describe('GithubRepository', () => {
@@ -14,7 +14,24 @@ describe('GithubRepository', () => {
         it('should return an array of commits', async () => {
             // Create a mock Octokit instance
             const mockOctokit = {
-                request: jest.fn().mockResolvedValueOnce(githubResponseData),
+                request: jest.fn().mockResolvedValueOnce(githubResponse),
+            } as unknown as Octokit;
+
+            // Assign the mock Octokit instance to githubRepository.octokit
+            githubRepository.octokit = mockOctokit;
+
+            const owner = 'owner';
+            const repoName = 'repoName';
+
+            const commit = await githubRepository.getCommits(owner, repoName);
+
+            expect(commit).toEqual(commitDataObjectMock);
+        });
+
+        it('should return an array of commits without author and committer', async () => {
+            // Create a mock Octokit instance
+            const mockOctokit = {
+                request: jest.fn().mockResolvedValueOnce(githubResponseNoAuthorNoCommitter),
             } as unknown as Octokit;
 
             // Assign the mock Octokit instance to githubRepository.octokit
@@ -25,7 +42,7 @@ describe('GithubRepository', () => {
 
             const commits = await githubRepository.getCommits(owner, repoName);
 
-            expect(commits).toEqual(githubCommitData);
+            expect(commits).toEqual(commitDataObjectMockNoAuthorNoCommiter);
         });
 
         it('should throw an error if there is an error obtaining commits', async () => {
