@@ -1,6 +1,6 @@
 import { GithubRepository } from "../../../../src/modules/TDDCycles/Repositories/GithubRepository";
 import { Octokit } from "octokit";
-import { githubCommitData, githubResponseData } from "../../../__mocks__/TDDCycles/dataTypeMocks/githubResponseData";
+import { commitInformationDataObjectMock, commitInformationMock, githubCommitData, githubResponseData } from "../../../__mocks__/TDDCycles/dataTypeMocks/githubResponseData";
 
 describe('GithubRepository', () => {
     let githubRepository: GithubRepository;
@@ -26,6 +26,43 @@ describe('GithubRepository', () => {
 
             expect(commits).toEqual(githubCommitData);
         });
-        
+
+    });
+    describe('getCommitInfoForTDDCycle', () => {
+        it('should return commit information for a given TDD cycle', async () => {
+            // Create a mock Octokit instance
+            const mockOctokit = {
+                request: jest.fn()
+                    .mockResolvedValueOnce({data: commitInformationDataObjectMock})
+                    .mockResolvedValueOnce({ data: [{ body:"Statements | 80% of 100 --- 10 tests passing" } ]}),
+            } as unknown as Octokit;
+            // Assign the mock Octokit instance to githubRepository.octokit
+            githubRepository.octokit = mockOctokit;
+
+            const owner = 'owner';
+            const repoName = 'repoName';
+            const sha = 'commitSha';
+
+            const commitInfo = await githubRepository.getCommitInfoForTDDCycle(owner, repoName, sha);
+            expect(commitInfo).toEqual(commitInformationMock);
+        });
+
+        it('should throw an error if there is an error obtaining commit information', async () => {
+            // Create a mock Octokit instance
+            const mockOctokit = {
+                request: jest.fn().mockRejectedValueOnce(new Error('Failed to obtain commit information')),
+            } as unknown as Octokit;
+
+            // Assign the mock Octokit instance to githubRepository.octokit
+            githubRepository.octokit = mockOctokit;
+
+            const owner = 'owner';
+            const repoName = 'repoName';
+            const sha = 'commitSha';
+
+            await expect(githubRepository.getCommitInfoForTDDCycle(owner, repoName, sha)).rejects.toThrowError(
+                'Failed to obtain commit information'
+            );
+        });
     });
 });

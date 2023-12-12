@@ -1,4 +1,4 @@
-import { CommitDataObject } from "../../../../src/modules/TDDCycles/Domain/CommitDataObject";
+import { CommitDataObject, CommitInformationDataObject } from "../../../../src/modules/TDDCycles/Domain/CommitDataObject";
 
 export const githubResponseData = {
     headers: {},
@@ -88,7 +88,7 @@ export const githubResponseData = {
     ],
 };
 
-export const githubCommitData : CommitDataObject[] = [
+export const githubCommitData: CommitDataObject[] = [
     {
         sha: 'commit1',
         node_id: 'node1',
@@ -170,3 +170,65 @@ export const githubCommitData : CommitDataObject[] = [
     },
     // Add assertions for more mock commits here if needed
 ];
+
+export const commitInformationDataObjectMock = {
+    sha: 'commitSha',
+    node_id: 'nodeId',
+    commit: {
+        author: {
+            name: 'Author Name',
+            email: 'author@example.com',
+            date: new Date(),
+        },
+        committer: {
+            name: 'Committer Name',
+            email: 'committer@example.com',
+            date: new Date(),
+        },
+        message: 'Commit message',
+        tree: {
+            sha: 'treeSha',
+            url: 'treeUrl',
+        },
+        url: 'commitUrl',
+        comment_count: 0,
+        verification: {
+            verified: true,
+            reason: 'valid',
+            signature: null,
+            payload: null,
+        },
+    },
+    url: 'commitUrl',
+    html_url: 'commitHtmlUrl',
+    comments_url: 'commentsUrl',
+    author: null,
+    committer: null,
+    parents: [],
+    stats: {
+        total: 10,
+        additions: 5,
+        deletions: 5,
+    },
+    files: [
+        {
+            sha: 'fileSha',
+            filename: 'file.txt',
+            status: 'modified',
+            additions: 2,
+            deletions: 1,
+            changes: 3,
+            blob_url: 'blobUrl',
+            raw_url: 'rawUrl',
+            contents_url: 'contentsUrl',
+            patch: 'filePatch',
+        },
+    ]
+};
+
+
+export const commitInformationMock: CommitInformationDataObject = {
+    ...commitInformationDataObjectMock,
+    coveragePercentage: '80',
+    test_count: '10',
+};
