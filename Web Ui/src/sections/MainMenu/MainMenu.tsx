@@ -7,10 +7,11 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+
 import NavLateralMenu from "./components/LateralMenu";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ReactElement, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
 
@@ -30,13 +31,15 @@ export default function MainMenu({
   navArrayLinks,
   userRole,
 }: Readonly<NavbarProps>) {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState("Tareas");
 
-  const handleButtonClick = (title: string) => {
-    setActiveButton(title);
-  };
+  const activeButton = navArrayLinks.find(
+    (navLink) => navLink.path === location.pathname
+  )?.title;
+ 
 
+  
   return (
     <div style={{ marginTop: "100px" }}>
       <AppBar position="fixed" sx={{ background: "#052845" }}>
@@ -61,7 +64,6 @@ export default function MainMenu({
                     key={item.title}
                     component={NavLink}
                     to={item.path}
-                    onClick={() => handleButtonClick(item.title)}
                     sx={{
                       borderBottom:
                         activeButton === item.title ? "2px solid #fff" : "none",
