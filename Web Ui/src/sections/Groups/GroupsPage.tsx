@@ -13,6 +13,7 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+import { useNavigate } from "react-router-dom";
 
 import {
   Table,
@@ -46,6 +47,7 @@ const StyledTable = styled(Table)({
 });
 
 function Groups() {
+  const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -121,7 +123,9 @@ function Groups() {
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
+    navigate("/");
   };
+
 
   const handleStudentsClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -129,7 +133,9 @@ function Groups() {
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
+    navigate("/user");
   };
+
 
   const handleDeleteClick = (
     event: React.MouseEvent<HTMLButtonElement>,
