@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev src/app.ts",
-    "test": "jest",
+    "test": "jest --coverage",
     "test:coverage": "jest --coverage",
     "tsc": "tsc",
     "start": "node build/app.js",
