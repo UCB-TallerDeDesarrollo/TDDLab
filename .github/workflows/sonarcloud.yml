@@ -203,6 +203,7 @@ jobs:
           echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
           echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
           echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
+          echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
 
       - name: Install Vercel CLI
         run: |
