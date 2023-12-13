@@ -72,7 +72,11 @@ const Assignment: React.FC<AssignmentProps> = ({
   const statusIcon = getStatusIcon(assignment.state);
 
   return (
-    <TableRow key={assignment.id}>
+    <TableRow 
+    key={assignment.id}
+    sx={{ 
+      borderBottom: "2px solid #E7E7E7" 
+    }}>
       <TableCell>{assignment.title}</TableCell>
       <TableCell>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
