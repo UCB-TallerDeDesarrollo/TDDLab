@@ -184,7 +184,11 @@ function Groups() {
       <section className="Grupos">
         <StyledTable>
           <TableHead>
-            <TableRow>
+            <TableRow
+            sx={{ 
+              borderBottom: "2px solid #E7E7E7" 
+            }}
+            >
               <TableCell
                 sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
               >

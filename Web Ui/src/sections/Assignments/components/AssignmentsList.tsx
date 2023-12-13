@@ -134,7 +134,11 @@ function Assignments({
       <section className="Tareas">
         <StyledTable>
           <TableHead>
-            <TableRow>
+            <TableRow 
+            sx={{ 
+              borderBottom: "2px solid #E7E7E7" 
+            }}
+            >
               <CustomTableCell1
                 sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
               >

@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import GetUsers from "../../modules/Users/application/getUsers";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
@@ -46,14 +46,29 @@ function UserPage() {
         <section className="Usuarios">
           <StyledTable>
             <TableHead>
-              <TableRow>
+              <TableRow
+              sx={{ 
+                borderBottom: "2px solid #E7E7E7" 
+              }}>
                 <TableCell
-                  sx={{ fontWeight: 560, color: "#333", fontSize: "1rem", width: "35%" }}
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "35%",
+                    lineHeight: "2.5"
+                  }}
                 >
                   Correo electrónico
                 </TableCell>
                 <TableCell
-                  sx={{ fontWeight: 560, color: "#333", fontSize: "1rem", width: "65%" }}
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "65%",
+                    lineHeight: "2"
+                  }}
                 >
                   Curso
                 </TableCell>
@@ -61,10 +76,12 @@ function UserPage() {
             </TableHead>
             <TableBody>
               {users.map((user) => (
-                <TableRow
-                  key={user.id}>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.course}</TableCell>
+                <TableRow key={user.id}
+                sx={{ 
+                  borderBottom: "2px solid #E7E7E7" 
+                }}>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.email}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.course}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
