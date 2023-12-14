@@ -1,4 +1,3 @@
-
 import { Pool } from "pg";
 import { DBCommitsRepository } from "../../../../src/modules/TDDCycles/Repositories/DBCommitsRepository";
 import { commitsFromGithub, tddCycleDataObjectMock, unsavedCommits } from "../../../__mocks__/TDDCycles/dataTypeMocks/commitData";
@@ -95,6 +94,20 @@ describe("getCommitsNotSaved", () => {
         expect(clientCommitQueryMock).toHaveBeenNthCalledWith(1, 'SELECT * FROM commitstable WHERE owner = $1 AND reponame = $2 AND sha=$3', ["owner", "repoName", commitsFromGithub[0].sha]);
         expect(result).toEqual(unsavedCommits);
     });
+    it("should stop checking for commits if a commit already exists", async () => {
+        const owner = "owner";
+        const repoName = "repoName";
+
+        const nonExistingCommits: any[] = [];
+
+        // Mock the commitExists method to return true for the second commit
+        jest.spyOn(commitRepository, "commitExists")
+            .mockResolvedValueOnce(true);
+
+        const result = await commitRepository.getCommitsNotSaved(owner, repoName, commitsFromGithub);
+
+        expect(result).toEqual(nonExistingCommits);
+    });
 });
 describe("Commit Saving Commits List", () => {
     it('should save commits list', async () => {
@@ -116,6 +129,16 @@ describe("Commit Saving Commits List", () => {
         ];
         expect(poolCommitConnectMock).toBeCalledTimes(1);
         expect(clientCommitQueryMock).toHaveBeenNthCalledWith(1, 'INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13)', values);
+    });
+
+    it("should handle errors while saving commits", async () => {
+        const owner = "owner";
+        const repoName = "repo";
+        const error = new Error("Failed to save commit");
+        
+        jest.spyOn(commitRepository, "saveCommit").mockRejectedValueOnce(error);
+
+        await expect(commitRepository.saveCommitsList(owner, repoName, [tddCycleDataObjectMock])).rejects.toThrowError(error);
     });
 });
 
