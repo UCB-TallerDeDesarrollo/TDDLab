@@ -89,6 +89,18 @@ describe("GetJobsNotSaved", () => {
         expect(clientJobQueryMock).toHaveBeenNthCalledWith(3, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ["owner", "repoName", commitsWithActions[2][1]]);
         expect(result).toEqual(jobsNotSaved);
     });
+    it("should stop checking for jobs if a job already exists", async () => {
+        const commitsWithActions: [string, number][] = [["commit1", 1], ["commit2", 2], ["commit3", 3]];
+        const jobsNotSaved: [string, number][] = [];
+
+        // Mock the jobExists method to return true for the first job
+        jest.spyOn(jobRepository, "jobExists")
+            .mockResolvedValueOnce(true);
+
+        const result = await jobRepository.getJobsNotSaved("owner", "repoName", commitsWithActions);
+
+        expect(result).toEqual(jobsNotSaved);
+    });
 });
 
 describe("SaveJobsList", () => {

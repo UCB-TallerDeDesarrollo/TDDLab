@@ -8,6 +8,7 @@ import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
   octokit: Octokit;
+    githubRepository: any;
   constructor() {
     const { REACT_APP_AUTH_TOKEN } = process.env;
     this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
@@ -17,17 +18,12 @@ export class GithubRepository implements IGithubRepository {
     repoName: string
   ): Promise<CommitDataObject[]> {
     try {
-      //Show the rate limit remaining for the token used to make the request
-      const rate_limit = await this.octokit.request("GET /rate_limit");
-      console.log("Rate Limit Remaining:", rate_limit.data.rate.remaining);
-
       const response: any = await Promise.race([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
           per_page: 100,
         }),
         this.timeout(10000),
       ]);
-
       const commits: CommitDataObject[] = response.data.map(
         (githubCommit: any) => {
           return {
