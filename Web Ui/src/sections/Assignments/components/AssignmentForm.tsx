@@ -6,6 +6,10 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -13,7 +17,9 @@ import Filter from "./DatePicker";
 import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
-
+import GetGroups from "../../../modules/Groups/application/GetGroups";
+import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
@@ -31,6 +37,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     state: "pending",
     link: "",
     comment: "",
+    groupId: "", // Nuevo campo para el ID del grupo
   });
   const isCreateButtonClicked = useRef(false);
 
@@ -76,18 +83,38 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     }));
   };
 
+  const handleGroupChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const groupId = event.target.value as string;
+
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      groupId,
+    }));
+  };
+
   const handleCancel = () => {
     handleClose();
   };
 
   const formInvalid = () => {
-    return assignmentData.title === "";
+    return assignmentData.title === "" || assignmentData.groupId === "";
   };
 
   useEffect(() => {
     setSave(false);
   }, [open]);
 
+  const groupRepository = new GroupsRepository();
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const getGroups = new GetGroups(groupRepository);
+      const allGroups = await getGroups.getGroups();
+      setGroups(allGroups);
+    };
+
+    fetchGroups();
+  }, []);
   return (
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
@@ -120,6 +147,24 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
               onChange={(e) => handleInputChange(e, "description")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
+            <section>
+              <FormControl fullWidth>
+                <InputLabel id="group-select-label">Grupo</InputLabel>
+                <Select
+                  labelId="group-select-label"
+                  id="group-select"
+                  value={assignmentData.groupId}
+                  onChange={handleGroupChange}
+                >
+                   <MenuItem value="">Selecciona un grupo</MenuItem>
+                   {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.groupName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </section>
             <section>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
@@ -156,3 +201,4 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
 }
 
 export default Form;
+
