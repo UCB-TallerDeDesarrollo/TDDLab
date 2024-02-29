@@ -121,6 +121,24 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
         <>
           <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear tarea</DialogTitle>
           <DialogContent>
+          <section>
+              <FormControl fullWidth>
+                <InputLabel id="group-select-label">Grupo</InputLabel>
+                <Select
+                  labelId="group-select-label"
+                  id="group-select"
+                  value={assignmentData.groupId}
+                  onChange={handleGroupChange}
+                >
+                   <MenuItem value="">Selecciona un grupo</MenuItem>
+                   {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.groupName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </section>
             <TextField
               error={formInvalid() && !!save}
               autoFocus
@@ -147,24 +165,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
               onChange={(e) => handleInputChange(e, "description")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
-            <section>
-              <FormControl fullWidth>
-                <InputLabel id="group-select-label">Grupo</InputLabel>
-                <Select
-                  labelId="group-select-label"
-                  id="group-select"
-                  value={assignmentData.groupId}
-                  onChange={handleGroupChange}
-                >
-                   <MenuItem value="">Selecciona un grupo</MenuItem>
-                   {groups.map((group) => (
-                    <MenuItem key={group.id} value={group.id}>
-                      {group.groupName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </section>
+            
             <section>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
