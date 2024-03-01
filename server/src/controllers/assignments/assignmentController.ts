@@ -52,7 +52,7 @@ class AssignmentController {
 
   async createAssignment(req: Request, res: Response): Promise<void> {
     try {
-      const { title, description, state, start_date, end_date, link, comment } =
+      const { title, description, state, start_date, end_date, link, comment,groupId } =
         req.body;
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
@@ -62,6 +62,7 @@ class AssignmentController {
         end_date,
         link,
         comment,
+        groupId,
       });
       res.status(201).json(newAssignment);
     } catch (error) {
@@ -84,12 +85,13 @@ class AssignmentController {
   async deliverAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
-      const { link, comment } = req.body; // Extract comment from the request body
+      const { link, comment, } = req.body; // Extract comment from the request body
 
       const deliveredAssignment = await this.deliverAssignmentUseCase.execute(
         assignmentId,
         link,
-        comment
+        comment,
+        // groupId,
       );
 
       if (deliveredAssignment) {
@@ -106,7 +108,7 @@ class AssignmentController {
   async updateAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
-      const { title, description, state, start_date, end_date, link, comment } =
+      const { title, description, state, start_date, end_date, link, comment, groupId } =
         req.body;
       const updatedAssignment = await this.updateAssignmentUseCase.execute(
         assignmentId,
@@ -118,6 +120,7 @@ class AssignmentController {
           end_date,
           link,
           comment,
+          groupId,
         }
       );
 

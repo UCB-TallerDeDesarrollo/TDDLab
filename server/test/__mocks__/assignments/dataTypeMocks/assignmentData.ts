@@ -9,6 +9,7 @@ export const assignmentPendingDataMock: AssignmentDataObject = {
   state: "pending",
   link: "Enlace",
   comment: "Comentario",
+  groupId : 1,
 };
 
 export const AssignmentInProgresDataMock: AssignmentDataObject = {
@@ -20,6 +21,7 @@ export const AssignmentInProgresDataMock: AssignmentDataObject = {
   state: "in progress",
   link: "Enlace",
   comment: "Comentario",
+  groupId : 1,
 };
 
 export function getAssignmentListMock(): AssignmentDataObject[] {
@@ -33,6 +35,7 @@ export function getAssignmentListMock(): AssignmentDataObject[] {
       state: "pending",
       link: "Enlace",
       comment: "Comentario",
+      groupId: 1,
     },
     {
       id: "2",
@@ -42,7 +45,8 @@ export function getAssignmentListMock(): AssignmentDataObject[] {
       end_date: new Date("2023-02-28"),
       state: "delivered",
       link: "Enlace",
-      comment: null,
+      comment: 'Comentario',
+      groupId: 1,
     },
   ];
 }

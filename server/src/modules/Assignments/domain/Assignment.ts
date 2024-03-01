@@ -7,6 +7,7 @@ export interface AssignmentDataObject {
   state: "pending" | "in progress" | "delivered";
   link: string | null;
   comment: string | null;
+  groupId: number | null;
 }
 
 export interface AssignmentCreationObject {
@@ -17,4 +18,5 @@ export interface AssignmentCreationObject {
   state: "pending" | "in progress" | "delivered";
   link: string | null;
   comment: string | null;
+  groupId: number | null;
 }
