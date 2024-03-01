@@ -12,7 +12,8 @@ describe("Deliver assignment", () => {
   const generateTestData = (
     assignmentId: string,
     link: string,
-    comment: string
+    comment: string,
+    groupId: number,
   ) => {
     return {
       assignmentId,
@@ -24,34 +25,39 @@ describe("Deliver assignment", () => {
       description: "Esta es una tarea en progreso",
       start_date: new Date("2023-01-01"),
       end_date: new Date("2023-01-10"),
+      groupId,
     };
   };
 
   const executeTest = async (
     assignmentId: string,
     link: string,
-    comment: string
+    comment: string,
+    // groupId: number
   ) => {
-    return await deliverAssignment.execute(assignmentId, link, comment);
+    return await deliverAssignment.execute(assignmentId, link, comment, );//groupId);
   };
 
   it("should deliver an assignment successfully", async () => {
-    const { assignmentId, link, comment, ...expectedData } = generateTestData(
+    const { assignmentId, link, comment, groupId, ...expectedData } = generateTestData(
       "id_assignment_in_progress",
       "Enlace de la tarea",
-      "Comentario"
+      "Comentario",
+      1
     );
-    const result = await executeTest(assignmentId, link, comment);
+    const result = await executeTest(assignmentId, link, comment, );//groupId);
     expect(result).toEqual(expect.objectContaining(expectedData));
   });
 
   it("should return null when the assignment does not exist", async () => {
-    const { assignmentId, link, comment } = generateTestData(
+    const { assignmentId, link, comment, } = generateTestData(
       "non_existing_id",
       "Enlace de la tarea",
-      "no pude probar una funcionalidad"
+      "no pude probar una funcionalidad", 
+      0
+
     );
-    const result = await executeTest(assignmentId, link, comment);
+    const result = await executeTest(assignmentId, link, comment,) ;//groupId);
     expect(result).toBeNull();
   });
 
