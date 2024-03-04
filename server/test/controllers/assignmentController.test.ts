@@ -122,6 +122,7 @@ describe("Deliver Assignment", () => {
       comment: "Comentario",
       description: "Esta es una tarea pendiente",
       end_date: new Date("2023-01-10T00:00:00.000Z"),
+      groupId: 1,
       id: "1",
       link: "https://example.com/assignment",
       start_date: new Date("2023-01-01T00:00:00.000Z"),
