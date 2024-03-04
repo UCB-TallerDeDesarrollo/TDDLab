@@ -9,7 +9,7 @@ class UpdateGroupUseCase {
   }
 
   async execute(
-    groupId: string,
+    groupId: number,
     updatedGroupData: GroupDTO
   ): Promise<GroupDTO | null> {
     try {

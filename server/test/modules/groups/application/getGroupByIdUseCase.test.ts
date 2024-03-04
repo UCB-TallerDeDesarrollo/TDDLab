@@ -7,7 +7,7 @@ const getGroupByIdUseCase = new GetGroupByIdUseCase(groupRepositoryMock);
 
 describe('GetGroupByIdUseCase', () => {
   it('should fetch a group by ID successfully', async () => {
-    const groupId = '1';
+    const groupId = 1;
     const groupData = getDataListOfGroupsMock.find(group => group.id === groupId);
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(groupData);
 
@@ -17,7 +17,7 @@ describe('GetGroupByIdUseCase', () => {
   });
 
   it('should handle errors during group fetch by ID', async () => {
-    const groupId = '2';
+    const groupId = 2;
     groupRepositoryMock.obtainGroupById.mockRejectedValueOnce(new Error());
 
     await expect(getGroupByIdUseCase.execute(groupId)).rejects.toThrowError(Error);
@@ -25,7 +25,7 @@ describe('GetGroupByIdUseCase', () => {
   });
 
   it('should return null for non-existing group ID', async () => {
-    const nonExistingGroupId = '3';
+    const nonExistingGroupId = 3;
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(null);
 
     const result = await getGroupByIdUseCase.execute(nonExistingGroupId);

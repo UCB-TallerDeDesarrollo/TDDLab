@@ -7,7 +7,7 @@ class DeleteGroupUseCase {
     this.groupRepository = groupRepository;
   }
 
-  async execute(groupId: string): Promise<void> {
+  async execute(groupId: number): Promise<void> {
     try {
       // Check if the group exists before attempting to delete
       const existingGroup = await this.groupRepository.obtainGroupById(groupId);
