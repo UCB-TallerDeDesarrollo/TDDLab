@@ -7,7 +7,7 @@ class GetGroupByIdUseCase {
     this.groupRepository = groupRepository;
   }
 
-  async execute(groupId: string): Promise<GroupDTO | null> {
+  async execute(groupId: number): Promise<GroupDTO | null> {
     try {
       // Call the repository method to get the group by ID
       const group = await this.groupRepository.obtainGroupById(groupId);

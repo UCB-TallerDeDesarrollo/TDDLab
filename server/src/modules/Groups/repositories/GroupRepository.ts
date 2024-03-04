@@ -37,7 +37,7 @@ class GroupRepository {
     return rows.map((row) => this.mapRowToGroup(row));
   }
 
-  async obtainGroupById(id: string): Promise<GroupDTO | null> {
+  async obtainGroupById(id: number): Promise<GroupDTO | null> {
     const query = "SELECT * FROM Groups WHERE id = $1";
     const values = [id];
     const rows = await this.executeQuery(query, values);
@@ -56,14 +56,14 @@ class GroupRepository {
     return this.mapRowToGroup(rows[0]);
   }
 
-  async deleteGroup(id: string): Promise<void> {
+  async deleteGroup(id: number): Promise<void> {
     const query = "DELETE FROM Groups WHERE id = $1";
     const values = [id];
     await this.executeQuery(query, values);
   }
 
   async updateGroup(
-    id: string,
+    id: number,
     updatedGroup: GroupCreationObject
   ): Promise<GroupDTO | null> {
     const { groupName, groupDetail } = updatedGroup; // Added groupName to the destructuring

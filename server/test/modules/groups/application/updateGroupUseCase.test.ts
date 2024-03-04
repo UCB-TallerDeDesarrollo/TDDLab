@@ -11,7 +11,7 @@ describe('UpdateGroupUseCase', () => {
   });
 
   it('should update an existing group successfully', async () => {
-    const groupId = '1';
+    const groupId = 1;
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(getDataGroupMock);
     groupRepositoryMock.updateGroup.mockResolvedValueOnce(true);
     const result = await updateGroupUseCase.execute(groupId, getModifiedGroupDataMock);
@@ -21,7 +21,7 @@ describe('UpdateGroupUseCase', () => {
   });
 
   it('should return null for non-existing group', async () => {
-    const nonExistingGroupId = 'nonExistingGroupId';
+    const nonExistingGroupId = 0;
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(null);
     const result = await updateGroupUseCase.execute(nonExistingGroupId, getModifiedGroupDataMock);
     expect(result).toBeNull();
@@ -30,7 +30,7 @@ describe('UpdateGroupUseCase', () => {
   });
 
   it('should handle errors during group update', async () => {
-    const groupId = '1';
+    const groupId = 1;
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(getDataGroupMock);
     groupRepositoryMock.updateGroup.mockRejectedValueOnce(new Error('Update Failed'));
     await expect(updateGroupUseCase.execute(groupId, getModifiedGroupDataMock)).rejects.toThrowError('Update Failed');
@@ -39,7 +39,7 @@ describe('UpdateGroupUseCase', () => {
   });
 
   it('should handle unsuccessful group update', async () => {
-    const groupId = '1';
+    const groupId = 1;
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(getDataGroupMock);
     groupRepositoryMock.updateGroup.mockResolvedValueOnce(false);
     const result = await updateGroupUseCase.execute(groupId, getModifiedGroupDataMock);

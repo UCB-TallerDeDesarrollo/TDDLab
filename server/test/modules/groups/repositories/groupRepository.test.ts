@@ -47,7 +47,7 @@ describe('Obtain groups', () => {
 describe('Obtain group by id', () => {
     it('should retrieve a group by existing ID', async () => {
         clientQueryMock.mockResolvedValue(getGroupTestData(1));
-        const group = await repository.obtainGroupById('1');
+        const group = await repository.obtainGroupById(1);
         expect(group).not.toBeNull();
     });
 
@@ -58,13 +58,13 @@ describe('Obtain group by id', () => {
         }),
         release: jest.fn(),
         });
-        const group = await repository.obtainGroupById('NonExistent_ID');
+        const group = await repository.obtainGroupById(0);//use to be NonExisting id
         expect(group).toBeNull();
     });
 
     it('should handle errors when obtaining a group by ID', async () => {
         poolConnectMock.mockRejectedValue(new Error());
-        await expect(repository.obtainGroupById('1')).rejects.toThrow();
+        await expect(repository.obtainGroupById(1)).rejects.toThrow();
     });
 });
 
@@ -88,19 +88,19 @@ describe('Create group', () => {
 describe('Delete group', () => {
     it('should delete a group', async () => {
         clientQueryMock.mockResolvedValue({ rowCount: 1 });
-        await repository.deleteGroup('1');
+        await repository.deleteGroup(1);
     });
 
     it('should handle errors when deleting a group', async () => {
         poolConnectMock.mockRejectedValue(new Error());
-        await expect(repository.deleteGroup('1')).rejects.toThrow();
+        await expect(repository.deleteGroup(1)).rejects.toThrow();
     });
 });
 
 describe('Update group', () => {
     it('should return null if no group was found', async () => {
         clientQueryMock.mockResolvedValue({ rows: [] });
-        const updatedGroup = await repository.updateGroup('1', getModifiedGroupDataMock);
+        const updatedGroup = await repository.updateGroup(1, getModifiedGroupDataMock);
         expect(updatedGroup).toBeNull();
     });
     it('should update a group', async () => {
@@ -110,7 +110,7 @@ describe('Update group', () => {
             id: undefined
         };
         clientQueryMock.mockResolvedValue({ rows: [updatedGroup] });
-        const result = await repository.updateGroup('1', getModifiedGroupDataMock);
+        const result = await repository.updateGroup(1, getModifiedGroupDataMock);
         expect(result).toEqual(updatedGroup);
     });
 });

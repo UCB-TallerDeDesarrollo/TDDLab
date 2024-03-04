@@ -33,7 +33,7 @@ class GroupsController {
 
   async getGroupById(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = req.params.id;
+      const groupId = parseInt(req.params.id, 10); 
       const group = await this.getGroupByIdUseCase.execute(groupId);
       if (group) {
         res.status(200).json(group);
@@ -65,7 +65,7 @@ class GroupsController {
 
   async deleteGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = req.params.id;
+      const groupId = parseInt(req.params.id, 10); 
       await this.deleteGroupUseCase.execute(groupId);
       res.status(204).send();
     } catch (error) {
@@ -76,7 +76,7 @@ class GroupsController {
 
   async updateGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = req.params.id;
+      const groupId = parseInt(req.params.id, 10); 
       const { groupDetail } = req.body;
       const { groupName } = req.body;
       const { creationDate } = req.body;

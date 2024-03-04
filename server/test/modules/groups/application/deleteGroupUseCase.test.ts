@@ -7,7 +7,7 @@ const deleteGroupUseCase = new DeleteGroupUseCase(groupRepositoryMock);
 
 describe('DeleteGroupUseCase', () => {
   it('should delete an existing group successfully', async () => {
-    const groupId = '1';
+    const groupId = 1;
     const existingGroup = getDataListOfGroupsMock.find(group => group.id === groupId);
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(existingGroup);
     await deleteGroupUseCase.execute(groupId);
@@ -16,7 +16,7 @@ describe('DeleteGroupUseCase', () => {
   });
 
   it('should throw an error for non-existing group ID', async () => {
-    const nonExistingGroupId = 'nonExistingGroupId';
+    const nonExistingGroupId = 0; //if theres no group, 0
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(null);
     await expect(deleteGroupUseCase.execute(nonExistingGroupId)).rejects.toThrowError(Error);
     expect(groupRepositoryMock.obtainGroupById).toHaveBeenCalledWith(nonExistingGroupId);
@@ -24,7 +24,7 @@ describe('DeleteGroupUseCase', () => {
   });
 
   it('should handle errors during group deletion', async () => {
-    const groupId = '3';
+    const groupId = 3;
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(getDataGroupMock);
     groupRepositoryMock.deleteGroup.mockRejectedValueOnce(new Error());
     await expect(deleteGroupUseCase.execute(groupId)).rejects.toThrowError(Error);

@@ -1,5 +1,5 @@
 interface GroupDTO {
-  id: string;
+  id: number;
   groupName: string;
   groupDetail: string;
   creationDate: Date;
