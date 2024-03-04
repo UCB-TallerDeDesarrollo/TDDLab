@@ -107,7 +107,7 @@ describe('Update group', () => {
         const updatedGroup = {
             groupName: undefined,
             groupDetail: undefined,
-            id: undefined
+            id: undefined,
         };
         clientQueryMock.mockResolvedValue({ rows: [updatedGroup] });
         const result = await repository.updateGroup(1, getModifiedGroupDataMock);
