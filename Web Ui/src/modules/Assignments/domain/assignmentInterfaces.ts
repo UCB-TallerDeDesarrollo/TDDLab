@@ -7,4 +7,5 @@ export interface AssignmentDataObject {
   state: string;
   link: string;
   comment: string | null;
+  groupId:string;
 }

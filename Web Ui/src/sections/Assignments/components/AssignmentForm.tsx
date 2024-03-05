@@ -20,6 +20,7 @@ import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
+import { SelectChangeEvent } from '@mui/material/Select';
 interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
@@ -83,14 +84,15 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     }));
   };
 
-  const handleGroupChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleGroupChange = (event: SelectChangeEvent) => {
     const groupId = event.target.value as string;
-
+  
     setAssignmentData((prevData) => ({
       ...prevData,
       groupId,
     }));
   };
+  
 
   const handleCancel = () => {
     handleClose();
@@ -114,7 +116,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     };
 
     fetchGroups();
-  }, []);
+  });
   return (
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
@@ -165,7 +167,6 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
               onChange={(e) => handleInputChange(e, "description")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
-            
             <section>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
