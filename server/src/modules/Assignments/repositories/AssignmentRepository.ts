@@ -8,6 +8,7 @@ import {
 const pool = new Pool(config);
 
 class AssignmentRepository {
+ 
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
     const client = await pool.connect();
     try {
@@ -38,7 +39,12 @@ class AssignmentRepository {
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToAssignment(row));
   }
-
+  async obtainAssignmentsByGroupId(groupId: number): Promise<AssignmentDataObject[]> {
+    const query = "SELECT * FROM assignments WHERE groupId = $1";
+    const values =[groupId];
+    const rows = await this.executeQuery(query,values)
+    return rows.map((row) => this.mapRowToAssignment(row)); 
+  }
   async obtainAssignmentById(id: string): Promise<AssignmentDataObject | null> {
     const query = "SELECT * FROM assignments WHERE id = $1";
     const values = [id];
