@@ -34,7 +34,7 @@ class AssignmentRepository {
 
   async obtainAssignments(): Promise<AssignmentDataObject[]> {
     const query =
-      "SELECT id, title, description, start_date, end_date, state, link, comment FROM assignments";
+      "SELECT id, title, description, start_date, end_date, state, link, comment, groupId FROM assignments";
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToAssignment(row));
   }
