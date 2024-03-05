@@ -54,7 +54,7 @@ class AssignmentRepository {
   ): Promise<AssignmentCreationObject> {
     const { title, description, start_date, end_date, state, groupId } = assignment;
     const query =
-      "INSERT INTO assignments (title, description, start_date, end_date, state) VALUES ($1, $2, $3, $4, $5) RETURNING *";
+      "INSERT INTO assignments (title, description, start_date, end_date, state, groupId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
     const values = [title, description, start_date, end_date, state, groupId];
     const rows = await this.executeQuery(query, values);
     return this.mapRowToAssignment(rows[0]);
