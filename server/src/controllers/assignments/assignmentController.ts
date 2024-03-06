@@ -6,7 +6,7 @@ import GetAssignmentsUseCase from "../../modules/Assignments/application/Assignm
 import UpdateAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/updateAssignmentUseCase";
 import AssignmentRepository from "../../modules/Assignments/repositories/AssignmentRepository";
 import DeliverAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/deliverAssignmentaUseCase";
-import GetAssignmentsByGroupIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentByGroupIdUseCase";
+import GetAssignmentsByGroupIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentsByGroupIdUseCase";
 class AssignmentController {
   private createAssignmentUseCase: CreateAssignmentUseCase;
   private deleteAssignmentUseCase: DeleteAssignmentUseCase;
