@@ -18,6 +18,7 @@ export function getAssignmentRepositoryMock() {
           throw new Error("Assignment not found");
       }
     }),
+    obtainAssignmentsByGroupId: jest.fn(),
     deleteAssignment: jest.fn(),
     updateAssignment: jest.fn(),
     deliverAssignment: jest.fn(),
