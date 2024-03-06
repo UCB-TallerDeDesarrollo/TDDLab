@@ -56,7 +56,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     }
     try {
       await createAssignments.createAssignment(assignmentData);
-      console.log('Assignment data submitted:', assignmentData);
+      
     } catch (error) {
       console.error(error);
     } finally {
