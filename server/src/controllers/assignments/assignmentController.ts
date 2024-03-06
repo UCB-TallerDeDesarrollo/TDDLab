@@ -6,10 +6,12 @@ import GetAssignmentsUseCase from "../../modules/Assignments/application/Assignm
 import UpdateAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/updateAssignmentUseCase";
 import AssignmentRepository from "../../modules/Assignments/repositories/AssignmentRepository";
 import DeliverAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/deliverAssignmentaUseCase";
+import GetAssignmentsByGroupIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentByGroupIdUseCase";
 class AssignmentController {
   private createAssignmentUseCase: CreateAssignmentUseCase;
   private deleteAssignmentUseCase: DeleteAssignmentUseCase;
   private getAssignmentByIdUseCase: GetAssignmentByIdUseCase;
+  private getAssignmentsByGroupIdUseCase: GetAssignmentsByGroupIdUseCase;
   private getAssignmentsUseCase: GetAssignmentsUseCase;
   private updateAssignmentUseCase: UpdateAssignmentUseCase;
   private deliverAssignmentUseCase: DeliverAssignmentUseCase;
@@ -18,6 +20,7 @@ class AssignmentController {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
     this.deleteAssignmentUseCase = new DeleteAssignmentUseCase(repository);
     this.getAssignmentByIdUseCase = new GetAssignmentByIdUseCase(repository);
+    this.getAssignmentsByGroupIdUseCase = new GetAssignmentsByGroupIdUseCase(repository)
     this.getAssignmentsUseCase = new GetAssignmentsUseCase(repository);
     this.updateAssignmentUseCase = new UpdateAssignmentUseCase(repository);
     this.deliverAssignmentUseCase = new DeliverAssignmentUseCase(repository);
@@ -33,6 +36,17 @@ class AssignmentController {
     }
   }
 
+  async getAssignmentsByGroupId(req: Request, res: Response): Promise<void> {
+    try {
+      const groupId = parseInt(req.params.groupId, 10); // Extract group ID from request parameters
+      const assignments = await this.getAssignmentsByGroupIdUseCase.execute(groupId);
+      res.status(200).json(assignments);
+    } catch (error) {
+      console.error("Error fetching assignments by group ID:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+  
   async getAssignmentById(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
@@ -42,10 +56,10 @@ class AssignmentController {
       if (assignment) {
         res.status(200).json(assignment);
       } else {
-        res.status(404).json({ error: "Assignment not found" });
+        res.status(404).json({ error: "Assignments not found" });
       }
     } catch (error) {
-      console.error("Error fetching assignment:", error);
+      console.error("Error fetching assignments:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
