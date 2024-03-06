@@ -81,6 +81,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
       state: assignment ? assignment.state : "",
       link: link,
       comment: assignment ? assignment.comment : "",
+      groupId: assignment ? assignment.groupId : 0,
     };
     return updatedAssignment;
   };
@@ -202,6 +203,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 >
                   <strong>Instrucciones:</strong> {assignment.description}
                 </Typography>
+                
               </div>
 
               <div

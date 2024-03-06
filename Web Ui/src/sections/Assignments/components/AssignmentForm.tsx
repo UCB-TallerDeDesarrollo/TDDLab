@@ -38,7 +38,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     state: "pending",
     link: "",
     comment: "",
-    groupId: "", // Nuevo campo para el ID del grupo
+    groupId: 0, // Nuevo campo para el ID del grupo
   });
   const isCreateButtonClicked = useRef(false);
 
@@ -56,6 +56,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     }
     try {
       await createAssignments.createAssignment(assignmentData);
+      
     } catch (error) {
       console.error(error);
     } finally {
@@ -84,14 +85,15 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     }));
   };
 
-  const handleGroupChange = (event: SelectChangeEvent) => {
-    const groupId = event.target.value as string;
-  
-    setAssignmentData((prevData) => ({
-      ...prevData,
-      groupId,
-    }));
-  };
+ 
+const handleGroupChange = (event: SelectChangeEvent<number>) => {
+  const groupId = event.target.value as number;
+
+  setAssignmentData((prevData) => ({
+    ...prevData,
+    groupId,
+  }));
+};
   
 
   const handleCancel = () => {
@@ -99,7 +101,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
   };
 
   const formInvalid = () => {
-    return assignmentData.title === "" || assignmentData.groupId === "";
+    return assignmentData.title === "" || assignmentData.groupId === 0;
   };
 
   useEffect(() => {
@@ -124,23 +126,28 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
           <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear tarea</DialogTitle>
           <DialogContent>
           <section>
-              <FormControl fullWidth>
-                <InputLabel id="group-select-label">Grupo</InputLabel>
-                <Select
-                  labelId="group-select-label"
-                  id="group-select"
-                  value={assignmentData.groupId}
-                  onChange={handleGroupChange}
-                >
-                   <MenuItem value="">Selecciona un grupo</MenuItem>
-                   {groups.map((group) => (
-                    <MenuItem key={group.id} value={group.id}>
-                      {group.groupName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </section>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel htmlFor="group-select" id="group-select-label">
+                Grupo
+              </InputLabel>
+              <Select
+                labelId="group-select-label"
+                id="group-select"
+                value={assignmentData.groupId}
+                onChange={handleGroupChange}
+                label="Grupo"
+                fullWidth
+                style={{ visibility: 'visible' }}  // Hacer visible el desplegable siempre
+              >
+                <MenuItem value={0}>Selecciona un grupo</MenuItem>
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.groupName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </section>
             <TextField
               error={formInvalid() && !!save}
               autoFocus
