@@ -75,6 +75,7 @@ class AssignmentController {
       const groupExists = await this.groupRepository.checkGroupExists(groupId);
         if (!groupExists) {
           res.status(400).json({ error: "Invalid groupId. Group does not exist." });
+          return;
         }
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
