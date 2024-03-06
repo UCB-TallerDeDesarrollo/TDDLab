@@ -45,7 +45,6 @@ class GroupsController {
       res.status(500).json({ error: "Server error" });
     }
   }
-
   async createGroup(req: Request, res: Response): Promise<void> {
     try {
       const { groupName } = req.body;

@@ -8,6 +8,9 @@ interface GroupCreationObject {
   groupDetail: string;
   creationDate: Date;
 }
+interface QueryResult{
+  exists: boolean;
+}
 
 class GroupRepository {
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
@@ -45,6 +48,12 @@ class GroupRepository {
       return this.mapRowToGroup(rows[0]);
     }
     return null;
+  }
+  
+  async checkGroupExists(groupId: number): Promise<boolean> {
+    const query = "SELECT EXISTS (SELECT 1 FROM groups WHERE id = $1)";
+    const result: QueryResult[] = await this.executeQuery(query, [groupId]);
+    return result[0].exists;
   }
 
   async createGroup(group: GroupCreationObject): Promise<GroupDTO> {
