@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
+import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import { formatDate } from "../../utils/dateUtils";
 import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
+import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
+import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { Button, Card, CardContent, Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
@@ -32,6 +36,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentId = Number(id);
+  const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +54,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
         console.error("Error fetching assignment:", error);
       });
   }, [assignmentId]);
+  useEffect(() => {
+    const groupsRepository = new GroupsRepository();
+    const getGroupDetail = new GetGroupDetail(groupsRepository);
+  
+    if (assignment && assignment.groupId) {
+      getGroupDetail
+        .obtainGroupDetail(assignment.groupId)
+        .then((fetchedGroupDetails) => {
+          setGroupDetails(fetchedGroupDetails);
+        })
+        .catch((error) => {
+          console.error("Error fetching group details:", error);
+        });
+    }
+  }, [assignment]);
+  
 
   const isTaskPending = assignment?.state === "pending";
   const isTaskInProgressOrDelivered =
@@ -186,6 +209,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
               >
                 {assignment.title}
               </Typography>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                }}
+              >
+                <ArchiveOutlinedIcon
+                  style={{ marginRight: "8px", color: "#666666" }}
+                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                >
+                  <strong>Grupo:</strong> {groupDetails?.groupName}
+                </Typography>
+                
+              </div>
               <div
                 style={{
                   display: "flex",
