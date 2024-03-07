@@ -29,18 +29,18 @@ class AssignmentRepository {
       state: row.state,
       link: row.link,
       comment: row.comment,
-      groupId: row.groupId
+      groupId: row.group_id
     };
   }
 
   async obtainAssignments(): Promise<AssignmentDataObject[]> {
     const query =
-      "SELECT id, title, description, start_date, end_date, state, link, comment, groupId FROM assignments";
+      "SELECT id, title, description, start_date, end_date, state, link, comment, group_id FROM assignments";
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToAssignment(row));
   }
   async obtainAssignmentsByGroupId(groupId: number): Promise<AssignmentDataObject[]> {
-    const query = "SELECT * FROM assignments WHERE groupId = $1";
+    const query = "SELECT * FROM assignments WHERE group_id = $1";
     const values =[groupId];
     const rows = await this.executeQuery(query,values)
     return rows.map((row) => this.mapRowToAssignment(row)); 
@@ -60,7 +60,7 @@ class AssignmentRepository {
   ): Promise<AssignmentCreationObject> {
     const { title, description, start_date, end_date, state, groupId } = assignment;
     const query =
-      "INSERT INTO assignments (title, description, start_date, end_date, state, groupId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+      "INSERT INTO assignments (title, description, start_date, end_date, state, group_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
     const values = [title, description, start_date, end_date, state, groupId];
     const rows = await this.executeQuery(query, values);
     return this.mapRowToAssignment(rows[0]);
