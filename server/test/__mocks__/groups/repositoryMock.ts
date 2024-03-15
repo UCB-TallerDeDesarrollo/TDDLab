@@ -7,5 +7,6 @@ export function getGroupsRepositoryMock() {
     obtainGroupById: jest.fn(),
     deleteGroup: jest.fn(),
     updateGroup: jest.fn(),
+    checkGroupExists:jest.fn(),
   };
 }
