@@ -1,4 +1,5 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
+//import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import React, { useState } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -52,6 +53,15 @@ interface AssignmentProps {
   role: string;
 }
 
+// interface GroupsProps {
+//   group: GroupDataObject;
+//   index: number;
+//   handleClickDetail: (index: number) => void;
+//   handleClickDelete: (index: number) => void;
+//   handleRowHover: (index: number | null) => void;
+//   role: string;
+// }
+
 const Assignment: React.FC<AssignmentProps> = ({
   assignment,
   index,
@@ -59,6 +69,7 @@ const Assignment: React.FC<AssignmentProps> = ({
   handleClickDelete,
   handleRowHover,
   role,
+  //group,
 }) => {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
@@ -93,6 +104,7 @@ const Assignment: React.FC<AssignmentProps> = ({
           {isAdmin(role) && isEditFormOpen ? (
             <EditAssignmentForm
               assignmentId={assignment.id}
+              currentGroupName={assignment.groupId}
               onClose={handleCloseEditForm}
             />
           ) : (
