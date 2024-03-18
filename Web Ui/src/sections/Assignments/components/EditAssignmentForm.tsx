@@ -10,7 +10,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
-  readonly currentGroupName: number; // Agrega una propiedad para el nombre del grupo actual
+  readonly currentGroupName: string; // Agrega una propiedad para el nombre del grupo actual
   //readonly assignmentGroupId: number;
   //readonly groups: { id: number; groupName: string }[];
   readonly onClose: () => void;
