@@ -31,3 +31,4 @@ If you are developing a production application, we recommend updating the config
 
 XD
 Fabio Crack
+Osber Rioja
