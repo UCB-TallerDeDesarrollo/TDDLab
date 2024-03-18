@@ -1,6 +1,6 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 //import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
@@ -12,7 +12,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { FaCheck } from "react-icons/fa6";
 import { TbRotateClockwise2 } from "react-icons/tb";
-
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
 }
@@ -71,6 +71,27 @@ const Assignment: React.FC<AssignmentProps> = ({
   role,
   //group,
 }) => {
+
+  const [groupName, setGroupName] = useState<string>("");
+
+  useEffect(() => {
+    if (assignment.groupId) {
+      fetchGroupName(assignment.groupId);
+    }
+  }, [assignment.groupId]);
+
+  const fetchGroupName = async (groupId: number) => {
+    try {
+      const groupsRepository = new GroupsRepository();
+      const group = await groupsRepository.getGroupById(groupId);
+      if (group) {
+        setGroupName(group.groupName);
+      }
+    } catch (error) {
+      console.error("Error fetching group name:", error);
+    }
+  };
+
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   const handleEditClick = () => {
@@ -104,7 +125,7 @@ const Assignment: React.FC<AssignmentProps> = ({
           {isAdmin(role) && isEditFormOpen ? (
             <EditAssignmentForm
               assignmentId={assignment.id}
-              currentGroupName={assignment.groupId}
+              currentGroupName={groupName}
               onClose={handleCloseEditForm}
             />
           ) : (
