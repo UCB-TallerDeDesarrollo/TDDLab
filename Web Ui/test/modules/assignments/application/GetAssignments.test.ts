@@ -22,6 +22,7 @@ describe("Get assignments", () => {
         state: "inProgress",
         link: "Enlace",
         comment: "Comentario",
+        groupId:3,
       };
       mockRepository.createAssignment(assignment);
       const obtainedAssignment = await getAssignment.obtainAllAssignments();
