@@ -20,6 +20,7 @@ describe("Delete Assignment", () => {
             state: "inProgress",
             link: "Enlace",
             comment: null,
+            groupId:3,
         };
         mockRepository.createAssignment(assignment);
         const obtainedAssignment = await deleteAssignment.deleteAssignment(1);
