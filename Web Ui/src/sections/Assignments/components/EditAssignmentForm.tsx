@@ -11,13 +11,13 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { useEffect } from "react";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
+import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
+import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
   readonly currentGroupName: string; // Agrega una propiedad para el nombre del grupo actual
-  //readonly currentGroupId: number;
-  //readonly assignmentGroupId: number;
-  //readonly groups: { id: number; groupName: string }[];
   readonly onClose: () => void;
 }
 
@@ -26,9 +26,10 @@ function EditAssignmentDialog({
   currentGroupName,
   onClose,
 }: EditAssignmentDialogProps) {
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
-
-  const handleGroupChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleGroupChange = (event: SelectChangeEvent<number>) => {
     setSelectedGroup(event.target.value as number);
   };
 
@@ -44,6 +45,54 @@ function EditAssignmentDialog({
     fetchGroups();
   });
 
+  const handleSaveChanges = async () => {
+    try {
+      // Obtener los detalles de la tarea actual
+      const currentAssignment = await getCurrentAssignment();
+  
+      // Verificar si la tarea actual existe
+      if (currentAssignment) {
+        // Construir los datos actualizados de la tarea
+        const updatedAssignmentData: AssignmentDataObject = {
+          title,
+          description,
+          groupId: selectedGroup,
+          // Mantener los valores actuales para los campos que no se están editando
+          id: currentAssignment.id,
+          start_date: currentAssignment.start_date,
+          end_date: currentAssignment.end_date,
+          state: currentAssignment.state,
+          link: currentAssignment.link,
+          comment: currentAssignment.comment,
+        };
+  
+        // Llamar al método de actualización de la tarea
+        const assignmentsRepository = new AssignmentsRepository();
+        const updateAssignment = new UpdateAssignment(assignmentsRepository);
+        await updateAssignment.updateAssignment(assignmentId, updatedAssignmentData);
+  
+        onClose(); // Cerrar el diálogo después de guardar los cambios
+      } else {
+        // Manejar el caso en el que la tarea actual no existe
+        console.error("La tarea actual no se encontró.");
+      }
+    } catch (error) {
+      console.error("Error al guardar los cambios:", error);
+    }
+  };
+  // Esta función se encarga de obtener los detalles de la tarea actual
+  const getCurrentAssignment = async () => {
+    const assignmentsRepository = new AssignmentsRepository();
+    try {
+      const assignment =
+        await assignmentsRepository.getAssignmentById(assignmentId);
+      return assignment;
+    } catch (error) {
+      console.error("Error obteniendo la tarea actual:", error);
+      throw error;
+    }
+  };
+
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Editar Tarea - ID: {assignmentId}</DialogTitle>
@@ -56,7 +105,7 @@ function EditAssignmentDialog({
             size="small"
             required
             value=""
-            onChange={() => {}}
+            onChange={(e) => setTitle(e.target.value)}
           />
           <TextField
             id="descripcion"
@@ -74,7 +123,7 @@ function EditAssignmentDialog({
                 },
               },
             }}
-            onChange={() => {}}
+            onChange={(e) => setDescription(e.target.value)}
             defaultValue=""
           />
           {
@@ -105,7 +154,7 @@ function EditAssignmentDialog({
           style={{
             textTransform: "none",
           }}
-          onClick={() => {}}
+          onClick={handleSaveChanges} // Asocia la función handleSaveChanges al evento onClick del botón
         >
           Guardar Cambios
         </Button>
