@@ -4,12 +4,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, TextField } from "@mui/material";
-import { useState } from 'react';
-import { MenuItem, Select } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material/Select';
-import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
+import { useState } from "react";
+import { MenuItem, Select } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 
 interface EditAssignmentDialogProps {
@@ -21,13 +21,9 @@ interface EditAssignmentDialogProps {
   readonly onClose: () => void;
 }
 
-
 function EditAssignmentDialog({
   assignmentId,
   currentGroupName,
-  //currentGroupId,
-  //assignmentGroupId,
-  //groups,
   onClose,
 }: EditAssignmentDialogProps) {
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
@@ -47,33 +43,6 @@ function EditAssignmentDialog({
 
     fetchGroups();
   });
-//const [selectedGroup, setSelectedGroup] = useState<number>(0);
-  //const [selectedGroup, setSelectedGroup] = useState<number>(currentGroupId);
-  // const [groups, setGroups] = useState<GroupDataObject[]>([]);
-
-  // useEffect(() => {
-  //   const fetchGroups = async () => {
-  //     try {
-  //       const groups = await GroupsRepository.getGroups();
-  //       setGroups(groups);
-  //     } catch (error) {
-  //       console.error('Error fetching groups:', error);
-  //     }
-  //   };
-
-  //   fetchGroups();
-  // }, []);
-
-  // const handleGroupChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-  //   setSelectedGroup(event.target.value as number);
-  // };
-
-  // const [selectedGroup, setSelectedGroup] = useState(assignmentGroupId);
-
-  // const handleGroupChange = (event: SelectChangeEvent<number>) => {
-  //   const selectedValue = parseInt(event.target.value as string, 10);
-  //   setSelectedGroup(selectedValue);
-  // };
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
@@ -110,43 +79,22 @@ function EditAssignmentDialog({
           />
           {
             <Select
-            label="Grupos"
-            value={selectedGroup}
-            onChange={handleGroupChange}
-            variant="outlined"
-            size="small"
-            required
-          >
-            <MenuItem value={0}>{currentGroupName}</MenuItem>
-            {groups.map((group) => (
-              <MenuItem key={group.id} value={group.id}>
-                {group.groupName}
-              </MenuItem>
-            ))}
-          </Select>
-          /* <section>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel htmlFor="group-select" id="group-select-label">
-                Grupo
-              </InputLabel>
-              <Select
-                id="group-select"
-                value={selectedGroup}
-                onChange={handleGroupChange} // Usa el manejador de eventos correcto
-                label="Grupo"
-                fullWidth
-                style={{ visibility: 'visible' }}
-              >
-                <MenuItem value={0}>Selecciona un grupo</MenuItem>
-                {groups.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.groupName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </section> */}
-          
+              label="Grupos"
+              value={selectedGroup}
+              onChange={handleGroupChange}
+              variant="outlined"
+              size="small"
+              required
+            >
+              <MenuItem value={0}>{currentGroupName}</MenuItem>
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.groupName}
+                </MenuItem>
+              ))}
+            </Select>
+          }
+
           <section>{/* The rest of your components go here */}</section>
         </Box>
       </DialogContent>
