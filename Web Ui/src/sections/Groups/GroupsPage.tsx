@@ -92,8 +92,9 @@ function Groups() {
           (a, b) =>
             new Date(b.creationDate).getTime() -
             new Date(a.creationDate).getTime(),
-        ), // Assuming timestamp is a property of groups for time comparison
-    };
+        ),// Assuming timestamp is a property of groups for time comparison
+            
+      };
     console.log(typeof groups[0].creationDate);
 
     let sortedGroups = sortings[selectedSortingLocal]();
