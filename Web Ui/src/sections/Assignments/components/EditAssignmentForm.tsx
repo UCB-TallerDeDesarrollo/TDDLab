@@ -104,7 +104,7 @@ function EditAssignmentDialog({
             variant="outlined"
             size="small"
             required
-            value=""
+            //value="ejemplo"
             onChange={(e) => setTitle(e.target.value)}
           />
           <TextField
