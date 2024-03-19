@@ -126,6 +126,7 @@ const Assignment: React.FC<AssignmentProps> = ({
             <EditAssignmentForm
               assignmentId={assignment.id}
               currentGroupName={groupName}
+              //currentGroupId={}
               onClose={handleCloseEditForm}
             />
           ) : (
