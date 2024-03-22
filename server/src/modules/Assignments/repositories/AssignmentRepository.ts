@@ -29,7 +29,7 @@ class AssignmentRepository {
       state: row.state,
       link: row.link,
       comment: row.comment,
-      groupId: row.groupid
+      groupId: row.groupId
     };
   }
 
