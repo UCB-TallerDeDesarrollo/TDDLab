@@ -13,7 +13,10 @@ const assignmentRepositoryMock = getAssignmentRepositoryMock();
 const groupRepositoryMock = getGroupsRepositoryMock();
 
 beforeEach(() => {
-  controller = new AssignmentController(assignmentRepositoryMock,groupRepositoryMock);
+  controller = new AssignmentController(
+    assignmentRepositoryMock,
+    groupRepositoryMock
+  );
 });
 
 describe("Get assignments", () => {
@@ -70,12 +73,15 @@ describe("Get assignment by id", () => {
 
 describe("Create Assignment", () => {
   it("should respond with a status 201 and return the created assignment", async () => {
-    const req = createRequest(undefined, assignmentPendingDataMock);
+    const req = createRequest("1", assignmentPendingDataMock);
+    console.log("AssignmentPendingDataMock: ", assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.createAssignment.mockResolvedValue(
       assignmentPendingDataMock
     );
     await controller.createAssignment(req, res);
+    console.log("REQUEST: ", req);
+    console.log("RESPONSE: ", res);
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
   });
@@ -111,7 +117,10 @@ describe("Delete Assignment", () => {
 describe("Deliver Assignment", () => {
   const assignmentRepositoryMock = getAssignmentRepositoryMock();
   const groupRepositoryMock = getGroupsRepositoryMock();
-  const controller = new AssignmentController(assignmentRepositoryMock,groupRepositoryMock);
+  const controller = new AssignmentController(
+    assignmentRepositoryMock,
+    groupRepositoryMock
+  );
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
       "id_assignment_pending",
@@ -125,7 +134,7 @@ describe("Deliver Assignment", () => {
       comment: "Comentario",
       description: "Esta es una tarea pendiente",
       end_date: new Date("2023-01-10T00:00:00.000Z"),
-      groupId: 1,
+      groupid: 1,
       id: "1",
       link: "https://example.com/assignment",
       start_date: new Date("2023-01-01T00:00:00.000Z"),

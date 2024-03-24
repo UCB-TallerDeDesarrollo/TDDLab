@@ -19,16 +19,20 @@ class AssignmentController {
   private deliverAssignmentUseCase: DeliverAssignmentUseCase;
   private groupRepository: GroupRepository;
 
-  constructor(repository: AssignmentRepository, 
-    groupRepository: GroupRepository) {
+  constructor(
+    repository: AssignmentRepository,
+    groupRepository: GroupRepository
+  ) {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
     this.deleteAssignmentUseCase = new DeleteAssignmentUseCase(repository);
     this.getAssignmentByIdUseCase = new GetAssignmentByIdUseCase(repository);
-    this.getAssignmentsByGroupIdUseCase = new GetAssignmentsByGroupIdUseCase(repository)
+    this.getAssignmentsByGroupIdUseCase = new GetAssignmentsByGroupIdUseCase(
+      repository
+    );
     this.getAssignmentsUseCase = new GetAssignmentsUseCase(repository);
     this.updateAssignmentUseCase = new UpdateAssignmentUseCase(repository);
     this.deliverAssignmentUseCase = new DeliverAssignmentUseCase(repository);
-    this.groupRepository =groupRepository;
+    this.groupRepository = groupRepository;
   }
 
   async getAssignments(_req: Request, res: Response): Promise<void> {
@@ -43,15 +47,17 @@ class AssignmentController {
 
   async getAssignmentsByGroupId(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.groupId, 10); // Extract group ID from request parameters
-      const assignments = await this.getAssignmentsByGroupIdUseCase.execute(groupId);
+      const groupid = parseInt(req.params.groupid, 10); // Extract group ID from request parameters
+      const assignments = await this.getAssignmentsByGroupIdUseCase.execute(
+        groupid
+      );
       res.status(200).json(assignments);
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
-  
+
   async getAssignmentById(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
@@ -71,12 +77,23 @@ class AssignmentController {
 
   async createAssignment(req: Request, res: Response): Promise<void> {
     try {
-      const { title, description, state, start_date, end_date, link, comment,groupId } = req.body;
-      const groupExists = await this.groupRepository.checkGroupExists(groupId);
-        if (!groupExists) {
-          res.status(400).json({ error: "Invalid groupId. Group does not exist." });
-          return;
-        }
+      const {
+        title,
+        description,
+        state,
+        start_date,
+        end_date,
+        link,
+        comment,
+        groupid,
+      } = req.body;
+      const groupExists = await this.groupRepository.checkGroupExists(groupid);
+      if (!groupExists) {
+        res
+          .status(400)
+          .json({ error: "Invalid groupId. Group does not exist." });
+        return;
+      }
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
         description,
@@ -85,7 +102,7 @@ class AssignmentController {
         end_date,
         link,
         comment,
-        groupId,
+        groupid,
       });
       res.status(201).json(newAssignment);
     } catch (error) {
@@ -108,12 +125,12 @@ class AssignmentController {
   async deliverAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
-      const { link, comment, } = req.body; // Extract comment from the request body
+      const { link, comment } = req.body; // Extract comment from the request body
 
       const deliveredAssignment = await this.deliverAssignmentUseCase.execute(
         assignmentId,
         link,
-        comment,
+        comment
         // groupId,
       );
 
@@ -131,8 +148,16 @@ class AssignmentController {
   async updateAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = req.params.id;
-      const { title, description, state, start_date, end_date, link, comment, groupId } =
-        req.body;
+      const {
+        title,
+        description,
+        state,
+        start_date,
+        end_date,
+        link,
+        comment,
+        groupid,
+      } = req.body;
       const updatedAssignment = await this.updateAssignmentUseCase.execute(
         assignmentId,
         {
@@ -143,7 +168,7 @@ class AssignmentController {
           end_date,
           link,
           comment,
-          groupId,
+          groupid,
         }
       );
 
