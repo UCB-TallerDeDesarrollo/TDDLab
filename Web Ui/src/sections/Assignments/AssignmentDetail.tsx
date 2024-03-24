@@ -10,7 +10,7 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { Button, Card, CardContent, Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
@@ -31,13 +31,14 @@ function isNotTeacher(role: string) {
 
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
-    null,
+    null
   );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentId = Number(id);
-  const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
-
+  const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(
+    null
+  );
 
   const navigate = useNavigate();
 
@@ -57,10 +58,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
   useEffect(() => {
     const groupsRepository = new GroupsRepository();
     const getGroupDetail = new GetGroupDetail(groupsRepository);
-  
-    if (assignment && assignment.groupId) {
+
+    if (assignment && assignment.groupid) {
       getGroupDetail
-        .obtainGroupDetail(assignment.groupId)
+        .obtainGroupDetail(assignment.groupid)
         .then((fetchedGroupDetails) => {
           setGroupDetails(fetchedGroupDetails);
         })
@@ -69,7 +70,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
         });
     }
   }, [assignment]);
-  
 
   const isTaskPending = assignment?.state === "pending";
   const isTaskInProgressOrDelivered =
@@ -78,7 +78,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
     assignment?.state === "delivered" || assignment?.state === "pending";
 
   const handleUpdateAssignment = async (
-    updatedAssignment: AssignmentDataObject,
+    updatedAssignment: AssignmentDataObject
   ) => {
     const assignmentsRepository = new AssignmentsRepository();
     const submitAssignment = new SubmitAssignment(assignmentsRepository);
@@ -87,7 +87,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
       await submitAssignment.submitAssignment(
         updatedAssignment.id,
         updatedAssignment.link,
-        updatedAssignment.comment,
+        updatedAssignment.comment
       );
     } catch (error) {
       console.error(error);
@@ -104,7 +104,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
       state: assignment ? assignment.state : "",
       link: link,
       comment: assignment ? assignment.comment : "",
-      groupId: assignment ? assignment.groupId : 0,
+      groupid: assignment ? assignment.groupid : 0,
     };
     return updatedAssignment;
   };
@@ -224,9 +224,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                   color="text.secondary"
                   style={{ fontSize: "16px", lineHeight: "1.8" }}
                 >
-                  <strong>Grupo:</strong> {groupDetails?.groupName}
+                  <strong>GrupoX:</strong> {groupDetails?.groupName}
                 </Typography>
-                
               </div>
               <div
                 style={{
@@ -245,7 +244,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 >
                   <strong>Instrucciones:</strong> {assignment.description}
                 </Typography>
-                
               </div>
 
               <div
