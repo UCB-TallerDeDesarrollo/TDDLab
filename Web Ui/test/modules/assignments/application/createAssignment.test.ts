@@ -21,7 +21,7 @@ describe("Create Assignment", () => {
       state: "inProgress",
       link: "Enlace",
       comment: null,
-      groupId: 3
+      groupid: 3,
     };
     mockRepository.createAssignment(assignment);
     await createAssignment.createAssignment(assignment);

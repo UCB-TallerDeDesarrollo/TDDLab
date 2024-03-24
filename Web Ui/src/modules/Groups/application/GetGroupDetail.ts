@@ -4,10 +4,9 @@ import { GroupDataObject } from "../domain/GroupInterface";
 export class GetGroupDetail {
   constructor(private groupsRepository: GroupsRepositoryInterface) {}
 
-  async obtainGroupDetail(groupId: number): Promise<GroupDataObject | null> {
+  async obtainGroupDetail(groupid: number): Promise<GroupDataObject | null> {
     try {
-      const group = await this.groupsRepository.getGroupById(groupId);
-
+      const group = await this.groupsRepository.getGroupById(groupid);
       if (group === null) {
         return null;
       }

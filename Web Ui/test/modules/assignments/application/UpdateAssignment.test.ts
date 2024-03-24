@@ -21,12 +21,17 @@ describe("Update an assignment", () => {
     state: "inProgress",
     link: "Enlace",
     comment: "Comentario",
-    groupId:3,
+    groupid: 3,
   };
 
-  const createAndExpectUpdatedAssignment = async (update: Partial<AssignmentDataObject>) => {
+  const createAndExpectUpdatedAssignment = async (
+    update: Partial<AssignmentDataObject>
+  ) => {
     mockRepository.createAssignment(baseAssignment);
-    await updateAssignment.updateAssignment(assignmentId, { ...baseAssignment, ...update });
+    await updateAssignment.updateAssignment(assignmentId, {
+      ...baseAssignment,
+      ...update,
+    });
     const obtainedAssignment = await mockRepository.getAssignmentById(1);
     expect(obtainedAssignment).toEqual({ ...baseAssignment, ...update });
   };
@@ -36,15 +41,21 @@ describe("Update an assignment", () => {
   });
 
   it("Should successfully update an assignment description", async () => {
-    await createAndExpectUpdatedAssignment({ description: "Esta descripción está actualizada" });
+    await createAndExpectUpdatedAssignment({
+      description: "Esta descripción está actualizada",
+    });
   });
 
   it("Should successfully update an assignment start date", async () => {
-    await createAndExpectUpdatedAssignment({ start_date: new Date("2023-01-02") });
+    await createAndExpectUpdatedAssignment({
+      start_date: new Date("2023-01-02"),
+    });
   });
 
   it("Should successfully update an assignment end date", async () => {
-    await createAndExpectUpdatedAssignment({ end_date: new Date("2023-01-09") });
+    await createAndExpectUpdatedAssignment({
+      end_date: new Date("2023-01-09"),
+    });
   });
 
   it("Should successfully update an assignment state", async () => {
@@ -60,8 +71,11 @@ describe("Update an assignment", () => {
   });
   it("Should handle error during assignment update", async () => {
     const errorMessage = "Update failed";
-    mockRepository.updateAssignment = jest.fn().mockRejectedValue(new Error(errorMessage));
-    await expect(updateAssignment.updateAssignment(assignmentId, baseAssignment)).rejects.toThrowError(errorMessage);
+    mockRepository.updateAssignment = jest
+      .fn()
+      .mockRejectedValue(new Error(errorMessage));
+    await expect(
+      updateAssignment.updateAssignment(assignmentId, baseAssignment)
+    ).rejects.toThrowError(errorMessage);
   });
 });
-
