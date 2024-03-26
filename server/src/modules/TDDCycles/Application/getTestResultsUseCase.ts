@@ -14,10 +14,8 @@ export class GetTestResultsUseCase {
   }
   async execute(owner: string, repoName: string) {
     try {
-      const githubActionsRunsList = await this.githubRepository.getRunsOfGithubActionsIds(
-        owner,
-        repoName
-      );
+      const githubActionsRunsList =
+        await this.githubRepository.getRunsOfGithubActionsIds(owner, repoName);
       let jobsToSave = githubActionsRunsList;
       if (await this.dbJobRepository.repositoryExists(owner, repoName)) {
         jobsToSave = await this.dbJobRepository.getJobsNotSaved(
@@ -35,7 +33,7 @@ export class GetTestResultsUseCase {
       const jobs = await this.dbJobRepository.getJobs(owner, repoName);
       return jobs;
     } catch (error) {
-      console.error("Error executing Test Results Use case:", error);
+      //console.error("Error executing Test Results Use case:", error);
       throw error;
     }
   }

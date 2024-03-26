@@ -26,14 +26,14 @@ class GroupsController {
       const groups = await this.getGroupsUseCase.execute();
       res.status(200).json(groups);
     } catch (error) {
-      console.error("Error fetching groups:", error);
+      //console.error("Error fetching groups:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
 
   async getGroupById(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10); 
+      const groupId = parseInt(req.params.id, 10);
       const group = await this.getGroupByIdUseCase.execute(groupId);
       if (group) {
         res.status(200).json(group);
@@ -41,7 +41,7 @@ class GroupsController {
         res.status(404).json({ error: "Group not found" });
       }
     } catch (error) {
-      console.error("Error fetching group:", error);
+      //console.error("Error fetching group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -57,25 +57,25 @@ class GroupsController {
       });
       res.status(201).json(newGroup);
     } catch (error) {
-      console.error("Error adding group:", error);
+      //console.error("Error adding group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
 
   async deleteGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10); 
+      const groupId = parseInt(req.params.id, 10);
       await this.deleteGroupUseCase.execute(groupId);
       res.status(204).send();
     } catch (error) {
-      console.error("Error deleting group:", error);
+      //console.error("Error deleting group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
 
   async updateGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10); 
+      const groupId = parseInt(req.params.id, 10);
       const { groupDetail } = req.body;
       const { groupName } = req.body;
       const { creationDate } = req.body;
@@ -93,7 +93,7 @@ class GroupsController {
         res.status(404).json({ error: "Group not found" });
       }
     } catch (error) {
-      console.error("Error updating group:", error);
+      //console.error("Error updating group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }

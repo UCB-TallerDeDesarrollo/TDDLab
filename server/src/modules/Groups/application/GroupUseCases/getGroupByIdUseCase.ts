@@ -16,7 +16,7 @@ class GetGroupByIdUseCase {
       return group;
     } catch (error: any) {
       // Handle errors, log, and potentially throw a custom error
-      console.error(`Failed to get group by ID: ${error.message}`);
+      //console.error(`Failed to get group by ID: ${error.message}`);
       throw new Error(`Failed to get group by ID: ${error.message}`);
     }
   }

@@ -15,7 +15,7 @@ class CreateAssignment {
       const newAssignment = await this.adapter.createAssignment(assignment);
       return newAssignment;
     } catch (error) {
-      console.error("Error creating assignment:", error);
+      //console.error("Error creating assignment:", error);
       throw error;
     }
   }
