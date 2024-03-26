@@ -74,14 +74,11 @@ describe("Get assignment by id", () => {
 describe("Create Assignment", () => {
   it("should respond with a status 201 and return the created assignment", async () => {
     const req = createRequest("1", assignmentPendingDataMock);
-    console.log("AssignmentPendingDataMock: ", assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.createAssignment.mockResolvedValue(
       assignmentPendingDataMock
     );
     await controller.createAssignment(req, res);
-    console.log("REQUEST: ", req);
-    console.log("RESPONSE: ", res);
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
   });

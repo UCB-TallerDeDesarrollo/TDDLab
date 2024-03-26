@@ -11,7 +11,7 @@ class DeleteAssignment {
     try {
       await this.adapter.deleteAssignment(assignmentId);
     } catch (error) {
-      console.error("Error in Delete Assignment", error);
+      //console.error("Error in Delete Assignment", error);
 
       throw error;
     }

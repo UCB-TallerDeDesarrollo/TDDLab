@@ -36,7 +36,7 @@ class TDDCyclesController {
       );
       return res.status(200).json(commits);
     } catch (error) {
-      console.error("Error getting TDD Cycles:", error);
+      //console.error("Error getting TDD Cycles:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }
@@ -54,7 +54,7 @@ class TDDCyclesController {
       );
       return res.status(200).json(testResults);
     } catch (error) {
-      console.error("Error getting test results:", error);
+      //console.error("Error getting test results:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }
