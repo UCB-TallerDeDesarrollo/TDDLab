@@ -34,6 +34,16 @@ describe("Get groups", () => {
         expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
 });
+describe("Check if the group exists", () => {
+    it("Should respond with status 200 and a true", async () => {
+        const req = createRequest("1");
+        const res = createResponse();
+        groupsRepositoryMock.checkGroupExists.mockResolvedValue(true);
+        await controller.checkGroupExists(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(true);
+    });
+});
 
 describe("Get group by id", () => {
     it("should respond with a status 200 and the group", async () => {
