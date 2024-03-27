@@ -5,6 +5,7 @@ import GetGroupByIdUseCase from "../../modules/Groups/application/GroupUseCases/
 import GetGroupsUseCase from "../../modules/Groups/application/GroupUseCases/getGroupsUseCase";
 import UpdateGroupUseCase from "../../modules/Groups/application/GroupUseCases/updateGroupUseCase";
 import GroupRepository from "../../modules/Groups/repositories/GroupRepository";
+import CheckGroupExistsUseCase from "../../modules/Groups/application/GroupUseCases/checkGroupUseCase";
 
 class GroupsController {
   private createGroupUseCase: CreateGroupUseCase;
@@ -12,6 +13,7 @@ class GroupsController {
   private getGroupByIdUseCase: GetGroupByIdUseCase;
   private getGroupsUseCase: GetGroupsUseCase;
   private updateGroupUseCase: UpdateGroupUseCase;
+  private checkGroupExistsUseCase: CheckGroupExistsUseCase;
 
   constructor(repository: GroupRepository) {
     this.createGroupUseCase = new CreateGroupUseCase(repository);
@@ -19,6 +21,7 @@ class GroupsController {
     this.getGroupByIdUseCase = new GetGroupByIdUseCase(repository);
     this.getGroupsUseCase = new GetGroupsUseCase(repository);
     this.updateGroupUseCase = new UpdateGroupUseCase(repository);
+    this.checkGroupExistsUseCase = new CheckGroupExistsUseCase(repository);
   }
 
   async getGroups(_req: Request, res: Response): Promise<void> {
@@ -43,6 +46,19 @@ class GroupsController {
     } catch (error) {
       //console.error("Error fetching group:", error);
       res.status(500).json({ error: "Server error" });
+    }
+  }
+  async checkGroupExists(req: Request, res : Response):Promise<void>{
+    try{
+      const groupid = parseInt(req.params.id, 10);
+      const exists = await this.checkGroupExistsUseCase.execute(groupid);
+      if(exists){
+        res.status(200).json(exists);
+      }else{
+        res.status(400).json({error: "Invalid groupId. Group does not exist."})
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Server error"});
     }
   }
   async createGroup(req: Request, res: Response): Promise<void> {
