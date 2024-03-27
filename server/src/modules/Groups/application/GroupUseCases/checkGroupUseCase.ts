@@ -13,7 +13,7 @@ class CheckGroupExistsUseCase{
             const exists = await this.groupRepository.checkGroupExists(groupid);
             return exists;
         }catch(error:any){
-            throw new Error(`Group does not exist: ${error.message}`)
+            throw new Error(`Error checking group existence: ${error.message}`)
         }
     }
 }
