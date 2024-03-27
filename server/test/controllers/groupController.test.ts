@@ -43,6 +43,23 @@ describe("Check if the group exists", () => {
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(true);
     });
+    it("Should respond with status 400 if the group does not exist", async () =>{
+        const req = createRequest("3");
+        const res = createResponse();
+        groupsRepositoryMock.checkGroupExists.mockResolvedValue(false);
+        await controller.checkGroupExists(req,res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ error: "Invalid groupId. Group does not exist." });
+    });
+
+    it("Should respond with status 500 if there is a server error", async () =>{
+        const req = createRequest("1");
+        const res = createResponse();
+        groupsRepositoryMock.checkGroupExists.mockRejectedValue(new Error());
+        await controller.checkGroupExists(req,res);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
 });
 
 describe("Get group by id", () => {
