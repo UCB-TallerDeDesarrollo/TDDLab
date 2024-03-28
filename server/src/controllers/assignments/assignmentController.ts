@@ -91,7 +91,7 @@ class AssignmentController {
   //     if (!groupExists) {
   //       res
   //         .status(400)
-  //         .json({ error: "Invalid groupId. Group does not exist." });
+  //         .json({ error: "Invalid groupid. Group does not exist." });
   //       return;
   //     }
   //     const newAssignment = await this.createAssignmentUseCase.execute({
@@ -114,6 +114,8 @@ class AssignmentController {
     try {
       const { title, description, state, start_date, end_date, link, comment, groupid } =
         req.body;
+        console.log("CONTROLLER REQUEST: ", req.body);
+        console.log("CONTROLLER REQUEST group id: ", groupid);
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
         description,
@@ -151,7 +153,6 @@ class AssignmentController {
         assignmentId,
         link,
         comment
-        // groupId,
       );
 
       if (deliveredAssignment) {

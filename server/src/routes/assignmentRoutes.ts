@@ -38,7 +38,7 @@ assignmentsRouter.delete(
   async (req, res) => await assignmentController.deleteAssignment(req, res)
 );
 assignmentsRouter.get(
-  "/groupId/:groupId",
+  "/groupid/:groupid",
   async (req,res) => await assignmentController.getAssignmentsByGroupId(req, res)
 );
 // Delivery assignment link

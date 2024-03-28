@@ -1,17 +1,17 @@
 import { AssignmentDataObject } from "../../domain/Assignment";
 import AssignmentRepository from "../../repositories/AssignmentRepository";
 
-class GetAssignmentsByGroupIdUseCase {
+class GetAssignmentsByGroupidUseCase {
   private adapter: AssignmentRepository;
 
   constructor(adapter: AssignmentRepository) {
     this.adapter = adapter;
   }
 
-  async execute(groupId: number): Promise<AssignmentDataObject[]> {
+  async execute(groupid: number): Promise<AssignmentDataObject[]> {
     try {
       const assignments = await this.adapter.obtainAssignmentsByGroupId(
-        groupId
+        groupid
       );
       return assignments;
     } catch (error) {
@@ -21,4 +21,4 @@ class GetAssignmentsByGroupIdUseCase {
   }
 }
 
-export default GetAssignmentsByGroupIdUseCase;
+export default GetAssignmentsByGroupidUseCase;

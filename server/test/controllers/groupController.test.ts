@@ -49,7 +49,7 @@ describe("Check if the group exists", () => {
         groupsRepositoryMock.checkGroupExists.mockResolvedValue(false);
         await controller.checkGroupExists(req,res);
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ error: "Invalid groupId. Group does not exist." });
+        expect(res.json).toHaveBeenCalledWith({ error: "Invalid groupid. Group does not exist." });
     });
 
     it("Should respond with status 500 if there is a server error", async () =>{
