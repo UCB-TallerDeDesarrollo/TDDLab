@@ -116,10 +116,8 @@ describe("Delete Assignment", () => {
 
 describe("Deliver Assignment", () => {
   const assignmentRepositoryMock = getAssignmentRepositoryMock();
-  // const groupRepositoryMock = getGroupsRepositoryMock();
   const controller = new AssignmentController(
     assignmentRepositoryMock,
-    // groupRepositoryMock
   );
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
