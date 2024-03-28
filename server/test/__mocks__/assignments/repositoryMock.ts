@@ -22,5 +22,6 @@ export function getAssignmentRepositoryMock() {
     deleteAssignment: jest.fn(),
     updateAssignment: jest.fn(),
     deliverAssignment: jest.fn(),
+    groupidExistsForAssigment: jest.fn()
   };
 }

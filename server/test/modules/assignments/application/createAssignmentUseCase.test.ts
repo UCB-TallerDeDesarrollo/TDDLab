@@ -13,6 +13,7 @@ describe("Create assignment", () => {
   it("should create an assignment", async () => {
     const assignmentData = assignmentPendingDataMock;
     assignmentRepositoryMock.createAssignment.mockResolvedValue(assignmentData);
+    assignmentRepositoryMock.groupidExistsForAssigment.mockResolvedValue(true);
     const newAssignment = await createAssignmentInstance.execute(assignmentData);
     expect(assignmentRepositoryMock.createAssignment).toHaveBeenCalledWith(assignmentData);
     expect(newAssignment).toEqual(assignmentData);

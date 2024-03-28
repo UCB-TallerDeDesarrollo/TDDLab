@@ -7,7 +7,7 @@ import UpdateAssignmentUseCase from "../../modules/Assignments/application/Assig
 import AssignmentRepository from "../../modules/Assignments/repositories/AssignmentRepository";
 import DeliverAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/deliverAssignmentaUseCase";
 import GetAssignmentsByGroupIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentsByGroupIdUseCase";
-// import GroupRepository from "../../modules/Groups/repositories/GroupRepository";
+// import CheckGroupExistsUseCase from "../../modules/Groups/application/GroupUseCases/checkGroupUseCase";
 
 class AssignmentController {
   private createAssignmentUseCase: CreateAssignmentUseCase;
@@ -17,11 +17,11 @@ class AssignmentController {
   private getAssignmentsUseCase: GetAssignmentsUseCase;
   private updateAssignmentUseCase: UpdateAssignmentUseCase;
   private deliverAssignmentUseCase: DeliverAssignmentUseCase;
-  // private groupRepository: GroupRepository;
+  // private checkGroupExistsUseCase: CheckGroupExistsUseCase;
+  
 
   constructor(
     repository: AssignmentRepository,
-    // groupRepository: GroupRepository
   ) {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
     this.deleteAssignmentUseCase = new DeleteAssignmentUseCase(repository);
@@ -32,7 +32,8 @@ class AssignmentController {
     this.getAssignmentsUseCase = new GetAssignmentsUseCase(repository);
     this.updateAssignmentUseCase = new UpdateAssignmentUseCase(repository);
     this.deliverAssignmentUseCase = new DeliverAssignmentUseCase(repository);
-    // this.groupRepository = groupRepository;
+    // this.checkGroupExistsUseCase = new CheckGroupExistsUseCase(repository);
+    
   }
 
   async getAssignments(_req: Request, res: Response): Promise<void> {
@@ -114,8 +115,6 @@ class AssignmentController {
     try {
       const { title, description, state, start_date, end_date, link, comment, groupid } =
         req.body;
-        console.log("CONTROLLER REQUEST: ", req.body);
-        console.log("CONTROLLER REQUEST group id: ", groupid);
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
         description,
@@ -128,7 +127,7 @@ class AssignmentController {
       });
       res.status(201).json(newAssignment);
     } catch (error) {
-      console.error("Error adding assignment:", error);
+      // console.error("Error adding assignment:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
