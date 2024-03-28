@@ -36,8 +36,8 @@ class GroupsController {
 
   async getGroupById(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10);
-      const group = await this.getGroupByIdUseCase.execute(groupId);
+      const groupid = parseInt(req.params.id, 10);
+      const group = await this.getGroupByIdUseCase.execute(groupid);
       if (group) {
         res.status(200).json(group);
       } else {
@@ -55,7 +55,7 @@ class GroupsController {
       if(exists){
         res.status(200).json(exists);
       }else{
-        res.status(400).json({error: "Invalid groupId. Group does not exist."})
+        res.status(400).json({error: "Invalid groupid. Group does not exist."})
       }
     } catch (error) {
       res.status(500).json({ error: "Server error"});
@@ -80,8 +80,8 @@ class GroupsController {
 
   async deleteGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10);
-      await this.deleteGroupUseCase.execute(groupId);
+      const groupid = parseInt(req.params.id, 10);
+      await this.deleteGroupUseCase.execute(groupid);
       res.status(204).send();
     } catch (error) {
       //console.error("Error deleting group:", error);
@@ -91,13 +91,13 @@ class GroupsController {
 
   async updateGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10);
+      const groupid = parseInt(req.params.id, 10);
       const { groupDetail } = req.body;
       const { groupName } = req.body;
       const { creationDate } = req.body;
 
-      const updatedGroup = await this.updateGroupUseCase.execute(groupId, {
-        id: groupId,
+      const updatedGroup = await this.updateGroupUseCase.execute(groupid, {
+        id: groupid,
         groupName,
         groupDetail,
         creationDate,

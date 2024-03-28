@@ -48,9 +48,9 @@ class GroupRepository {
     return null;
   }
 
-  async checkGroupExists(groupId: number): Promise<boolean> {
+  async checkGroupExists(groupid: number): Promise<boolean> {
     const query = "SELECT EXISTS (SELECT 1 FROM groups WHERE id = $1)";
-    const result: QueryResult[] = await this.executeQuery(query, [groupId]);
+    const result: QueryResult[] = await this.executeQuery(query, [groupid]);
     return result[0].exists;
   }
 

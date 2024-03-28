@@ -9,12 +9,12 @@ class UpdateGroupUseCase {
   }
 
   async execute(
-    groupId: number,
+    groupid: number,
     updatedGroupData: GroupDTO
   ): Promise<GroupDTO | null> {
     try {
       // Check if the group with the given ID exists
-      const existingGroup = await this.groupRepository.obtainGroupById(groupId);
+      const existingGroup = await this.groupRepository.obtainGroupById(groupid);
 
       if (!existingGroup) {
         // Return null if the group doesn't exist
@@ -31,7 +31,7 @@ class UpdateGroupUseCase {
 
       // Call the repository method to update the group
       const result = await this.groupRepository.updateGroup(
-        groupId,
+        groupid,
         updatedGroup
       );
 

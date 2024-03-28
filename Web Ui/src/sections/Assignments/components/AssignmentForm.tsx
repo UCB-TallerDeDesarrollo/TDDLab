@@ -38,7 +38,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     state: "pending",
     link: "",
     comment: "",
-    groupId: 0, // Nuevo campo para el ID del grupo
+    groupid: 0, // Nuevo campo para el ID del grupo
   });
   const isCreateButtonClicked = useRef(false);
 
@@ -87,11 +87,11 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
 
  
 const handleGroupChange = (event: SelectChangeEvent<number>) => {
-  const groupId = event.target.value as number;
+  const groupid = event.target.value as number;
 
   setAssignmentData((prevData) => ({
     ...prevData,
-    groupId,
+    groupid,
   }));
 };
   
@@ -101,7 +101,7 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
   };
 
   const formInvalid = () => {
-    return assignmentData.title === "" || assignmentData.groupId === 0;
+    return assignmentData.title === "" || assignmentData.groupid === 0;
   };
 
   useEffect(() => {
@@ -133,7 +133,7 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
               <Select
                 labelId="group-select-label"
                 id="group-select"
-                value={assignmentData.groupId}
+                value={assignmentData.groupid}
                 onChange={handleGroupChange}
                 label="Grupo"
                 fullWidth
