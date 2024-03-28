@@ -7,7 +7,6 @@ import UpdateAssignmentUseCase from "../../modules/Assignments/application/Assig
 import AssignmentRepository from "../../modules/Assignments/repositories/AssignmentRepository";
 import DeliverAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/deliverAssignmentaUseCase";
 import GetAssignmentsByGroupIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentsByGroupIdUseCase";
-// import CheckGroupExistsUseCase from "../../modules/Groups/application/GroupUseCases/checkGroupUseCase";
 
 class AssignmentController {
   private createAssignmentUseCase: CreateAssignmentUseCase;
@@ -17,7 +16,6 @@ class AssignmentController {
   private getAssignmentsUseCase: GetAssignmentsUseCase;
   private updateAssignmentUseCase: UpdateAssignmentUseCase;
   private deliverAssignmentUseCase: DeliverAssignmentUseCase;
-  // private checkGroupExistsUseCase: CheckGroupExistsUseCase;
   
 
   constructor(
@@ -32,7 +30,6 @@ class AssignmentController {
     this.getAssignmentsUseCase = new GetAssignmentsUseCase(repository);
     this.updateAssignmentUseCase = new UpdateAssignmentUseCase(repository);
     this.deliverAssignmentUseCase = new DeliverAssignmentUseCase(repository);
-    // this.checkGroupExistsUseCase = new CheckGroupExistsUseCase(repository);
     
   }
 
@@ -76,41 +73,6 @@ class AssignmentController {
     }
   }
 
-  // async createAssignment(req: Request, res: Response): Promise<void> {
-  //   try {
-  //     const {
-  //       title,
-  //       description,
-  //       state,
-  //       start_date,
-  //       end_date,
-  //       link,
-  //       comment,
-  //       groupid,
-  //     } = req.body;
-  //     const groupExists = await this.groupRepository.checkGroupExists(groupid);
-  //     if (!groupExists) {
-  //       res
-  //         .status(400)
-  //         .json({ error: "Invalid groupid. Group does not exist." });
-  //       return;
-  //     }
-  //     const newAssignment = await this.createAssignmentUseCase.execute({
-  //       title,
-  //       description,
-  //       state,
-  //       start_date,
-  //       end_date,
-  //       link,
-  //       comment,
-  //       groupid,
-  //     });
-  //     res.status(201).json(newAssignment);
-  //   } catch (error) {
-  //     //console.error("Error adding assignment:", error);
-  //     res.status(500).json({ error: "Server error" });
-  //   }
-  // }
   async createAssignment(req: Request, res: Response): Promise<void> {
     try {
       const { title, description, state, start_date, end_date, link, comment, groupid } =

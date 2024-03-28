@@ -38,7 +38,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     state: "pending",
     link: "",
     comment: "",
-    groupid: 0, // Nuevo campo para el ID del grupo
+    groupid: 0,
   });
   const isCreateButtonClicked = useRef(false);
 
@@ -75,7 +75,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: string, // 'title' or 'description'
+    field: string,
   ) => {
     const { value } = event.target;
 
@@ -137,7 +137,7 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
                 onChange={handleGroupChange}
                 label="Grupo"
                 fullWidth
-                style={{ visibility: 'visible' }}  // Hacer visible el desplegable siempre
+                style={{ visibility: 'visible' }} 
               >
                 <MenuItem value={0}>Selecciona un grupo</MenuItem>
                 {groups.map((group) => (
