@@ -12,10 +12,12 @@ class CreateAssignment {
     assignment: Omit<AssignmentCreationObject, "id">
   ): Promise<AssignmentCreationObject> {
     try {
-      console.log("*******Assignment: ", assignment);
+      if (!this.adapter.groupidExistsForAssigment(assignment.groupid)) {
+        throw new Error("Inexistent group ID");
+      }
       const newAssignment = await this.adapter.createAssignment(assignment);
-      console.log("*******New Assignment: ", newAssignment);
       return newAssignment;
+
     } catch (error) {
       //console.error("Error creating assignment:", error);
       throw error;

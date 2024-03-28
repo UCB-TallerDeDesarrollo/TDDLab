@@ -78,6 +78,9 @@ describe("Create Assignment", () => {
     assignmentRepositoryMock.createAssignment.mockResolvedValue(
       assignmentPendingDataMock
     );
+    assignmentRepositoryMock.groupidExistsForAssigment.mockResolvedValue(
+      true
+    );
     await controller.createAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
