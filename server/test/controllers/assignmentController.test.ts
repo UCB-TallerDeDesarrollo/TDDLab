@@ -6,16 +6,16 @@ import {
 } from "../__mocks__/assignments/dataTypeMocks/assignmentData";
 import { createRequest } from "../__mocks__/assignments/requestMocks";
 import { createResponse } from "../__mocks__/assignments/responseMoks";
-import { getGroupsRepositoryMock } from "../__mocks__/groups/repositoryMock";
+// import { getGroupsRepositoryMock } from "../__mocks__/groups/repositoryMock";
 
 let controller: AssignmentController;
 const assignmentRepositoryMock = getAssignmentRepositoryMock();
-const groupRepositoryMock = getGroupsRepositoryMock();
+// const groupRepositoryMock = getGroupsRepositoryMock();
 
 beforeEach(() => {
   controller = new AssignmentController(
     assignmentRepositoryMock,
-    groupRepositoryMock
+    // groupRepositoryMock
   );
 });
 
@@ -74,14 +74,14 @@ describe("Get assignment by id", () => {
 describe("Create Assignment", () => {
   it("should respond with a status 201 and return the created assignment", async () => {
     const req = createRequest("1", assignmentPendingDataMock);
-    console.log("AssignmentPendingDataMock: ", assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.createAssignment.mockResolvedValue(
       assignmentPendingDataMock
     );
+    assignmentRepositoryMock.groupidExistsForAssigment.mockResolvedValue(
+      true
+    );
     await controller.createAssignment(req, res);
-    console.log("REQUEST: ", req);
-    console.log("RESPONSE: ", res);
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
   });
@@ -116,10 +116,8 @@ describe("Delete Assignment", () => {
 
 describe("Deliver Assignment", () => {
   const assignmentRepositoryMock = getAssignmentRepositoryMock();
-  const groupRepositoryMock = getGroupsRepositoryMock();
   const controller = new AssignmentController(
     assignmentRepositoryMock,
-    groupRepositoryMock
   );
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(

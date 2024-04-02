@@ -7,10 +7,10 @@ class DeleteGroupUseCase {
     this.groupRepository = groupRepository;
   }
 
-  async execute(groupId: number): Promise<void> {
+  async execute(groupid: number): Promise<void> {
     try {
       // Check if the group exists before attempting to delete
-      const existingGroup = await this.groupRepository.obtainGroupById(groupId);
+      const existingGroup = await this.groupRepository.obtainGroupById(groupid);
 
       if (!existingGroup) {
         throw new Error("Group not found"); // You can create a custom error type
@@ -18,12 +18,12 @@ class DeleteGroupUseCase {
 
       // Additional business logic/validation can be added here
 
-      await this.groupRepository.deleteGroup(groupId);
+      await this.groupRepository.deleteGroup(groupid);
 
       // Additional logic can be added here, e.g., sending notifications, logging, etc.
     } catch (error: any) {
       // Handle errors, log, and potentially throw a custom error
-      console.error(`Failed to delete group: ${error.message}`);
+      //console.error(`Failed to delete group: ${error.message}`);
       throw new Error(`Failed to delete group: ${error.message}`);
     }
   }

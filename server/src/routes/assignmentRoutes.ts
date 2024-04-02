@@ -1,10 +1,10 @@
 import express from "express";
 import AssignmentController from "../controllers/assignments/assignmentController"; // Import your controller class
 import AssignmentRepository from "../modules/Assignments/repositories/AssignmentRepository";
-import GroupRepository from "../modules/Groups/repositories/GroupRepository";
-const groupRepository = new GroupRepository();
+// import GroupRepository from "../modules/Groups/repositories/GroupRepository";
+// const groupRepository = new GroupRepository();
 const repository = new AssignmentRepository(); // Create an instance of your repository
-const assignmentController = new AssignmentController(repository,groupRepository); // Pass the repository instance to the controller
+const assignmentController = new AssignmentController(repository); // Pass the repository instance to the controller
 
 const assignmentsRouter = express.Router();
 
@@ -38,7 +38,7 @@ assignmentsRouter.delete(
   async (req, res) => await assignmentController.deleteAssignment(req, res)
 );
 assignmentsRouter.get(
-  "/groupId/:groupId",
+  "/groupid/:groupid",
   async (req,res) => await assignmentController.getAssignmentsByGroupId(req, res)
 );
 // Delivery assignment link

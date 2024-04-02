@@ -7,12 +7,12 @@ const deleteGroupUseCase = new DeleteGroupUseCase(groupRepositoryMock);
 
 describe('DeleteGroupUseCase', () => {
   it('should delete an existing group successfully', async () => {
-    const groupId = 1;
-    const existingGroup = getDataListOfGroupsMock.find(group => group.id === groupId);
+    const groupid = 1;
+    const existingGroup = getDataListOfGroupsMock.find(group => group.id === groupid);
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(existingGroup);
-    await deleteGroupUseCase.execute(groupId);
-    expect(groupRepositoryMock.obtainGroupById).toHaveBeenCalledWith(groupId);
-    expect(groupRepositoryMock.deleteGroup).toHaveBeenCalledWith(groupId);
+    await deleteGroupUseCase.execute(groupid);
+    expect(groupRepositoryMock.obtainGroupById).toHaveBeenCalledWith(groupid);
+    expect(groupRepositoryMock.deleteGroup).toHaveBeenCalledWith(groupid);
   });
 
   it('should throw an error for non-existing group ID', async () => {
@@ -24,11 +24,11 @@ describe('DeleteGroupUseCase', () => {
   });
 
   it('should handle errors during group deletion', async () => {
-    const groupId = 3;
+    const groupid = 3;
     groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(getDataGroupMock);
     groupRepositoryMock.deleteGroup.mockRejectedValueOnce(new Error());
-    await expect(deleteGroupUseCase.execute(groupId)).rejects.toThrowError(Error);
-    expect(groupRepositoryMock.obtainGroupById).toHaveBeenCalledWith(groupId);
-    expect(groupRepositoryMock.deleteGroup).toHaveBeenCalledWith(groupId);
+    await expect(deleteGroupUseCase.execute(groupid)).rejects.toThrowError(Error);
+    expect(groupRepositoryMock.obtainGroupById).toHaveBeenCalledWith(groupid);
+    expect(groupRepositoryMock.deleteGroup).toHaveBeenCalledWith(groupid);
   });
 });

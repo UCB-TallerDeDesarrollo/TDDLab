@@ -5,6 +5,7 @@ import GetGroupByIdUseCase from "../../modules/Groups/application/GroupUseCases/
 import GetGroupsUseCase from "../../modules/Groups/application/GroupUseCases/getGroupsUseCase";
 import UpdateGroupUseCase from "../../modules/Groups/application/GroupUseCases/updateGroupUseCase";
 import GroupRepository from "../../modules/Groups/repositories/GroupRepository";
+import CheckGroupExistsUseCase from "../../modules/Groups/application/GroupUseCases/checkGroupUseCase";
 
 class GroupsController {
   private createGroupUseCase: CreateGroupUseCase;
@@ -12,6 +13,7 @@ class GroupsController {
   private getGroupByIdUseCase: GetGroupByIdUseCase;
   private getGroupsUseCase: GetGroupsUseCase;
   private updateGroupUseCase: UpdateGroupUseCase;
+  private checkGroupExistsUseCase: CheckGroupExistsUseCase;
 
   constructor(repository: GroupRepository) {
     this.createGroupUseCase = new CreateGroupUseCase(repository);
@@ -19,6 +21,7 @@ class GroupsController {
     this.getGroupByIdUseCase = new GetGroupByIdUseCase(repository);
     this.getGroupsUseCase = new GetGroupsUseCase(repository);
     this.updateGroupUseCase = new UpdateGroupUseCase(repository);
+    this.checkGroupExistsUseCase = new CheckGroupExistsUseCase(repository);
   }
 
   async getGroups(_req: Request, res: Response): Promise<void> {
@@ -26,23 +29,36 @@ class GroupsController {
       const groups = await this.getGroupsUseCase.execute();
       res.status(200).json(groups);
     } catch (error) {
-      console.error("Error fetching groups:", error);
+      //console.error("Error fetching groups:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
 
   async getGroupById(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10); 
-      const group = await this.getGroupByIdUseCase.execute(groupId);
+      const groupid = parseInt(req.params.id, 10);
+      const group = await this.getGroupByIdUseCase.execute(groupid);
       if (group) {
         res.status(200).json(group);
       } else {
         res.status(404).json({ error: "Group not found" });
       }
     } catch (error) {
-      console.error("Error fetching group:", error);
+      //console.error("Error fetching group:", error);
       res.status(500).json({ error: "Server error" });
+    }
+  }
+  async checkGroupExists(req: Request, res : Response):Promise<void>{
+    try{
+      const groupid = parseInt(req.params.id, 10);
+      const exists = await this.checkGroupExistsUseCase.execute(groupid);
+      if(exists){
+        res.status(200).json(exists);
+      }else{
+        res.status(400).json({error: "Invalid groupid. Group does not exist."})
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Server error"});
     }
   }
   async createGroup(req: Request, res: Response): Promise<void> {
@@ -57,31 +73,31 @@ class GroupsController {
       });
       res.status(201).json(newGroup);
     } catch (error) {
-      console.error("Error adding group:", error);
+      //console.error("Error adding group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
 
   async deleteGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10); 
-      await this.deleteGroupUseCase.execute(groupId);
+      const groupid = parseInt(req.params.id, 10);
+      await this.deleteGroupUseCase.execute(groupid);
       res.status(204).send();
     } catch (error) {
-      console.error("Error deleting group:", error);
+      //console.error("Error deleting group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
 
   async updateGroup(req: Request, res: Response): Promise<void> {
     try {
-      const groupId = parseInt(req.params.id, 10); 
+      const groupid = parseInt(req.params.id, 10);
       const { groupDetail } = req.body;
       const { groupName } = req.body;
       const { creationDate } = req.body;
 
-      const updatedGroup = await this.updateGroupUseCase.execute(groupId, {
-        id: groupId,
+      const updatedGroup = await this.updateGroupUseCase.execute(groupid, {
+        id: groupid,
         groupName,
         groupDetail,
         creationDate,
@@ -93,7 +109,7 @@ class GroupsController {
         res.status(404).json({ error: "Group not found" });
       }
     } catch (error) {
-      console.error("Error updating group:", error);
+      //console.error("Error updating group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
