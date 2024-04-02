@@ -224,7 +224,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                   color="text.secondary"
                   style={{ fontSize: "16px", lineHeight: "1.8" }}
                 >
-                  <strong>GrupoX:</strong> {groupDetails?.groupName}
+                  <strong>Grupo:</strong> {groupDetails?.groupName}
                 </Typography>
               </div>
               <div
