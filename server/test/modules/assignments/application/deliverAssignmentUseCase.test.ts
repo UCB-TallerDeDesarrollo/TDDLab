@@ -13,7 +13,7 @@ describe("Deliver assignment", () => {
     assignmentId: string,
     link: string,
     comment: string,
-    groupId: number,
+    groupid: number,
   ) => {
     return {
       assignmentId,
@@ -25,7 +25,7 @@ describe("Deliver assignment", () => {
       description: "Esta es una tarea en progreso",
       start_date: new Date("2023-01-01"),
       end_date: new Date("2023-01-10"),
-      groupId,
+      groupid,
     };
   };
 
@@ -33,19 +33,19 @@ describe("Deliver assignment", () => {
     assignmentId: string,
     link: string,
     comment: string,
-    // groupId: number
+    // groupid: number
   ) => {
-    return await deliverAssignment.execute(assignmentId, link, comment, );//groupId);
+    return await deliverAssignment.execute(assignmentId, link, comment, );
   };
 
   it("should deliver an assignment successfully", async () => {
-    const { assignmentId, link, comment, groupId, ...expectedData } = generateTestData(
+    const { assignmentId, link, comment, groupid, ...expectedData } = generateTestData(
       "id_assignment_in_progress",
       "Enlace de la tarea",
       "Comentario",
       1
     );
-    const result = await executeTest(assignmentId, link, comment, );//groupId);
+    const result = await executeTest(assignmentId, link, comment, );
     expect(result).toEqual(expect.objectContaining(expectedData));
   });
 
@@ -57,7 +57,7 @@ describe("Deliver assignment", () => {
       0
 
     );
-    const result = await executeTest(assignmentId, link, comment,) ;//groupId);
+    const result = await executeTest(assignmentId, link, comment,) ;
     expect(result).toBeNull();
   });
 

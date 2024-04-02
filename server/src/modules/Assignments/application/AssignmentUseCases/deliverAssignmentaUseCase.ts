@@ -11,8 +11,7 @@ class DeliverAssignmentUseCase {
   async execute(
     assignmentId: string,
     link: string,
-    comment: string,
-    // groupId: number, //Modified DeliverAssignment because of tests completions
+    comment: string
   ): Promise<AssignmentDataObject | null> {
     try {
       const assignment = await this.repository.obtainAssignmentById(
@@ -39,7 +38,7 @@ class DeliverAssignmentUseCase {
 
       return assignment;
     } catch (error) {
-      console.error("Error delivering assignment:", error);
+      //console.error("Error delivering assignment:", error);
       throw error;
     }
   }
