@@ -21,6 +21,7 @@ describe("Update an assignment", () => {
     state: "inProgress",
     link: "Enlace",
     comment: "Comentario",
+    groupId:3,
   };
 
   const createAndExpectUpdatedAssignment = async (update: Partial<AssignmentDataObject>) => {

@@ -7,7 +7,7 @@ const axiosPostSpy = jest.spyOn(axios, 'post');
 const axiosPutSpy = jest.spyOn(axios, 'put');
 const axiosDeleteSpy = jest.spyOn(axios, 'delete');
 
-let mockRepository = new AssignmentsRepository();
+const mockRepository = new AssignmentsRepository();
 
 describe('Get assignments', () => {
     it('should fetch assignments successfully', async () => {
