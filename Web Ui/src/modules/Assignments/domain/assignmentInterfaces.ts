@@ -13,5 +13,5 @@ export interface AssignmentDataObject {
 export interface AssignmentCreationObject {
   title: string;
   description: string;
-  groupId: number;
+  groupid: number;
 }
