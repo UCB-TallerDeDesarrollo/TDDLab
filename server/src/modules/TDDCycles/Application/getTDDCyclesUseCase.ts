@@ -13,17 +13,33 @@ export class GetTDDCyclesUseCase {
   }
   async execute(owner: string, repoName: string) {
     try {
-      const commitsFromGithub = await this.githubRepository.getCommits(owner, repoName);
+      const commitsFromGithub = await this.githubRepository.getCommits(
+        owner,
+        repoName
+      );
       let commitsToSave = commitsFromGithub;
-      if ((await this.dbCommitRepository.repositoryExists(owner, repoName))) {
-        commitsToSave = await this.dbCommitRepository.getCommitsNotSaved(owner, repoName, commitsFromGithub);
+      if (await this.dbCommitRepository.repositoryExists(owner, repoName)) {
+        commitsToSave = await this.dbCommitRepository.getCommitsNotSaved(
+          owner,
+          repoName,
+          commitsFromGithub
+        );
       }
-      const commitsInfoForTDDCycles = await this.githubRepository.getCommitsInforForTDDCycle(owner, repoName, commitsToSave);
-      await this.dbCommitRepository.saveCommitsList(owner, repoName, commitsInfoForTDDCycles);
+      const commitsInfoForTDDCycles =
+        await this.githubRepository.getCommitsInforForTDDCycle(
+          owner,
+          repoName,
+          commitsToSave
+        );
+      await this.dbCommitRepository.saveCommitsList(
+        owner,
+        repoName,
+        commitsInfoForTDDCycles
+      );
       const commits = await this.dbCommitRepository.getCommits(owner, repoName);
       return commits;
     } catch (error) {
-      console.error("Error executing TDDCycles Use case:", error);
+      //console.error("Error executing TDDCycles Use case:", error);
       throw error;
     }
   }

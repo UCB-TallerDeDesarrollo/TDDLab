@@ -9,11 +9,15 @@ export class DBCommitsRepository implements IDBCommitsRepository {
   constructor() {
     this.pool = new Pool(config);
   }
-  async saveCommit(owner: string, repoName: string, commit: TDDCycleDataObject) {
+  async saveCommit(
+    owner: string,
+    repoName: string,
+    commit: TDDCycleDataObject
+  ) {
     const client = await this.pool.connect();
     try {
       const query =
-      "INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13)";
+        "INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13)";
       const values = [
         owner,
         repoName,
@@ -27,11 +31,11 @@ export class DBCommitsRepository implements IDBCommitsRepository {
         commit.commit.comment_count,
         commit.commit.date,
         commit.coverage,
-        commit.test_count
+        commit.test_count,
       ];
       await client.query(query, values);
     } catch (error) {
-      console.error("Error saving commit to the database:", error);
+      //console.error("Error saving commit to the database:", error);
       throw error;
     } finally {
       client.release();
@@ -46,7 +50,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows;
     } catch (error) {
-      console.error("Error getting commits from the database:", error);
+      //console.error("Error getting commits from the database:", error);
       throw error;
     } finally {
       client.release();
@@ -61,7 +65,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows.length > 0;
     } catch (error) {
-      console.error("Error checking if commit exists in the database:", error);
+      //console.error("Error checking if commit exists in the database:", error);
       throw error;
     } finally {
       client.release();
@@ -76,7 +80,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows[0].count > 0;
     } catch (error) {
-      console.error("Error checking if repository exists in the database:", error);
+      //console.error( "Error checking if repository exists in the database:", error);
       throw error;
     } finally {
       client.release();
@@ -89,11 +93,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
   ) {
     let commitsToAdd = [];
     for (const currentCommit of commitsData) {
-      let exists = await this.commitExists(
-        owner,
-        repoName,
-        currentCommit.sha
-      );
+      let exists = await this.commitExists(owner, repoName, currentCommit.sha);
       if (exists) {
         break;
       } else {
@@ -108,12 +108,12 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     newCommits: TDDCycleDataObject[]
   ) {
     try {
-        await Promise.all(
-        newCommits.map(commit => this.saveCommit(owner, repoName, commit))
-        );
+      await Promise.all(
+        newCommits.map((commit) => this.saveCommit(owner, repoName, commit))
+      );
     } catch (error) {
-      console.error("Error updating the commit table in the database:", error);
-      throw error
+      //console.error("Error updating the commit table in the database:", error);
+      throw error;
     }
   }
 }
