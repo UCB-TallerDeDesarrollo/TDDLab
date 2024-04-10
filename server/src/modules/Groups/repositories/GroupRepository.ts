@@ -8,7 +8,7 @@ interface GroupCreationObject {
   groupDetail: string;
   creationDate: Date;
 }
-interface QueryResult{
+interface QueryResult {
   exists: boolean;
 }
 
@@ -24,8 +24,6 @@ class GroupRepository {
   }
 
   public mapRowToGroup(row: any): GroupDTO {
-    console.log("Row from database:", row);
-
     return {
       id: row.id,
       groupName: row.groupname,
@@ -49,10 +47,10 @@ class GroupRepository {
     }
     return null;
   }
-  
-  async checkGroupExists(groupId: number): Promise<boolean> {
+
+  async checkGroupExists(groupid: number): Promise<boolean> {
     const query = "SELECT EXISTS (SELECT 1 FROM groups WHERE id = $1)";
-    const result: QueryResult[] = await this.executeQuery(query, [groupId]);
+    const result: QueryResult[] = await this.executeQuery(query, [groupid]);
     return result[0].exists;
   }
 

@@ -22,7 +22,7 @@ describe("Get assignment detail", () => {
       state: "inProgress",
       link: "Enlace",
       comment: "Comentario",
-      groupId:3
+      groupid: 3,
     };
     mockRepository.createAssignment(assignment);
     const obtainedAssignment =

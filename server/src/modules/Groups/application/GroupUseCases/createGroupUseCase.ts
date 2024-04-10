@@ -24,7 +24,7 @@ class CreateGroupUseCase {
     } catch (error: any) {
       // Specify the type of the error variable
       // 'any' is used here for simplicity; you can use a more specific type if available
-      console.error(`Failed to create group: ${error.message}`);
+      //console.error(`Failed to create group: ${error.message}`);
 
       // Handle errors, log, and potentially throw a custom error
       throw new Error(`Failed to create group: ${error.message}`);

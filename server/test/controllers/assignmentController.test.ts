@@ -6,14 +6,17 @@ import {
 } from "../__mocks__/assignments/dataTypeMocks/assignmentData";
 import { createRequest } from "../__mocks__/assignments/requestMocks";
 import { createResponse } from "../__mocks__/assignments/responseMoks";
-import { getGroupsRepositoryMock } from "../__mocks__/groups/repositoryMock";
+// import { getGroupsRepositoryMock } from "../__mocks__/groups/repositoryMock";
 
 let controller: AssignmentController;
 const assignmentRepositoryMock = getAssignmentRepositoryMock();
-const groupRepositoryMock = getGroupsRepositoryMock();
+// const groupRepositoryMock = getGroupsRepositoryMock();
 
 beforeEach(() => {
-  controller = new AssignmentController(assignmentRepositoryMock,groupRepositoryMock);
+  controller = new AssignmentController(
+    assignmentRepositoryMock,
+    // groupRepositoryMock
+  );
 });
 
 describe("Get assignments", () => {
@@ -70,10 +73,13 @@ describe("Get assignment by id", () => {
 
 describe("Create Assignment", () => {
   it("should respond with a status 201 and return the created assignment", async () => {
-    const req = createRequest(undefined, assignmentPendingDataMock);
+    const req = createRequest("1", assignmentPendingDataMock);
     const res = createResponse();
     assignmentRepositoryMock.createAssignment.mockResolvedValue(
       assignmentPendingDataMock
+    );
+    assignmentRepositoryMock.groupidExistsForAssigment.mockResolvedValue(
+      true
     );
     await controller.createAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
@@ -110,8 +116,9 @@ describe("Delete Assignment", () => {
 
 describe("Deliver Assignment", () => {
   const assignmentRepositoryMock = getAssignmentRepositoryMock();
-  const groupRepositoryMock = getGroupsRepositoryMock();
-  const controller = new AssignmentController(assignmentRepositoryMock,groupRepositoryMock);
+  const controller = new AssignmentController(
+    assignmentRepositoryMock,
+  );
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
       "id_assignment_pending",
@@ -125,7 +132,7 @@ describe("Deliver Assignment", () => {
       comment: "Comentario",
       description: "Esta es una tarea pendiente",
       end_date: new Date("2023-01-10T00:00:00.000Z"),
-      groupId: 1,
+      groupid: 1,
       id: "1",
       link: "https://example.com/assignment",
       start_date: new Date("2023-01-01T00:00:00.000Z"),

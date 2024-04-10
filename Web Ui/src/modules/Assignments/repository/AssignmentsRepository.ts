@@ -2,7 +2,7 @@ import axios from "axios"; // Import Axios or your preferred HTTP library
 import { AssignmentDataObject } from "../domain/assignmentInterfaces"; // Import your assignment model
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
-const API_URL = "http://localhost:3000/api/assignments";//Modificar por: http://localhost:5173/api/assignments
+const API_URL = "http://localhost:3000/api/assignments"; //Modificar por: http://localhost:5173/api/assignments
 
 class AssignmentsRepository implements AssignmentsRepositoryInterface {
   async getAssignments(): Promise<AssignmentDataObject[]> {
@@ -27,12 +27,11 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   // Define a function to fetch an assignment by its ID
   async getAssignmentById(
-    assignmentId: number,
+    assignmentId: number
   ): Promise<AssignmentDataObject | null> {
     try {
       // Send a GET request to fetch a specific assignment by ID
       const response = await axios.get(`${API_URL}/${assignmentId}`);
-
       // Check if the response status is successful (e.g., 200 OK)
       if (response.status === 200) {
         // Return the assignment data from the response
@@ -58,7 +57,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   async updateAssignment(
     assignmentId: number,
-    assignmentData: AssignmentDataObject,
+    assignmentData: AssignmentDataObject
   ): Promise<void> {
     await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
   }
@@ -85,7 +84,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   async deliverAssignment(
     assignmentId: number,
-    assignmentData: AssignmentDataObject,
+    assignmentData: AssignmentDataObject
   ): Promise<void> {
     console.log(assignmentData);
     console.log(assignmentId);

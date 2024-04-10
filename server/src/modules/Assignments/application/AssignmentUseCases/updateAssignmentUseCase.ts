@@ -18,7 +18,7 @@ class UpdateAssignment {
       );
       return updatedAssignmentResult;
     } catch (error) {
-      console.error("Error updating assignments:", error);
+      //console.error("Error updating assignments:", error);
 
       throw error;
     }

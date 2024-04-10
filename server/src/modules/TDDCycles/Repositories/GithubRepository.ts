@@ -1,6 +1,9 @@
 import { Octokit } from "octokit";
 import { IGithubRepository } from "../Domain/IGithubRepository";
-import { CommitDataObject, CommitInformationDataObject } from "../Domain/CommitDataObject";
+import {
+  CommitDataObject,
+  CommitInformationDataObject,
+} from "../Domain/CommitDataObject";
 import dotenv from "dotenv";
 import { JobDataObject } from "../Domain/JobDataObject";
 import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
@@ -8,7 +11,7 @@ import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
   octokit: Octokit;
-    githubRepository: any;
+  githubRepository: any;
   constructor() {
     const { REACT_APP_AUTH_TOKEN } = process.env;
     this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
@@ -34,48 +37,48 @@ export class GithubRepository implements IGithubRepository {
             comments_url: githubCommit.comments_url,
             author: githubCommit.author
               ? {
-                login: githubCommit.author.login,
-                id: githubCommit.author.id,
-                node_id: githubCommit.author.node_id,
-                avatar_url: githubCommit.author.avatar_url,
-                gravatar_id: githubCommit.author.gravatar_id,
-                url: githubCommit.author.url,
-                html_url: githubCommit.author.html_url,
-                followers_url: githubCommit.author.followers_url,
-                following_url: githubCommit.author.following_url,
-                gists_url: githubCommit.author.gists_url,
-                starred_url: githubCommit.author.starred_url,
-                subscriptions_url: githubCommit.author.subscriptions_url,
-                organizations_url: githubCommit.author.organizations_url,
-                repos_url: githubCommit.author.repos_url,
-                events_url: githubCommit.author.events_url,
-                received_events_url: githubCommit.author.received_events_url,
-                type: githubCommit.author.type,
-                site_admin: githubCommit.author.site_admin,
-              }
+                  login: githubCommit.author.login,
+                  id: githubCommit.author.id,
+                  node_id: githubCommit.author.node_id,
+                  avatar_url: githubCommit.author.avatar_url,
+                  gravatar_id: githubCommit.author.gravatar_id,
+                  url: githubCommit.author.url,
+                  html_url: githubCommit.author.html_url,
+                  followers_url: githubCommit.author.followers_url,
+                  following_url: githubCommit.author.following_url,
+                  gists_url: githubCommit.author.gists_url,
+                  starred_url: githubCommit.author.starred_url,
+                  subscriptions_url: githubCommit.author.subscriptions_url,
+                  organizations_url: githubCommit.author.organizations_url,
+                  repos_url: githubCommit.author.repos_url,
+                  events_url: githubCommit.author.events_url,
+                  received_events_url: githubCommit.author.received_events_url,
+                  type: githubCommit.author.type,
+                  site_admin: githubCommit.author.site_admin,
+                }
               : null,
             committer: githubCommit.committer
               ? {
-                login: githubCommit.committer.login,
-                id: githubCommit.committer.id,
-                node_id: githubCommit.committer.node_id,
-                avatar_url: githubCommit.committer.avatar_url,
-                gravatar_id: githubCommit.committer.gravatar_id,
-                url: githubCommit.committer.url,
-                html_url: githubCommit.committer.html_url,
-                followers_url: githubCommit.committer.followers_url,
-                following_url: githubCommit.committer.following_url,
-                gists_url: githubCommit.committer.gists_url,
-                starred_url: githubCommit.committer.starred_url,
-                subscriptions_url: githubCommit.committer.subscriptions_url,
-                organizations_url: githubCommit.committer.organizations_url,
-                repos_url: githubCommit.committer.repos_url,
-                events_url: githubCommit.committer.events_url,
-                received_events_url:
-                  githubCommit.committer.received_events_url,
-                type: githubCommit.committer.type,
-                site_admin: githubCommit.committer.site_admin,
-              }
+                  login: githubCommit.committer.login,
+                  id: githubCommit.committer.id,
+                  node_id: githubCommit.committer.node_id,
+                  avatar_url: githubCommit.committer.avatar_url,
+                  gravatar_id: githubCommit.committer.gravatar_id,
+                  url: githubCommit.committer.url,
+                  html_url: githubCommit.committer.html_url,
+                  followers_url: githubCommit.committer.followers_url,
+                  following_url: githubCommit.committer.following_url,
+                  gists_url: githubCommit.committer.gists_url,
+                  starred_url: githubCommit.committer.starred_url,
+                  subscriptions_url: githubCommit.committer.subscriptions_url,
+                  organizations_url: githubCommit.committer.organizations_url,
+                  repos_url: githubCommit.committer.repos_url,
+                  events_url: githubCommit.committer.events_url,
+                  received_events_url:
+                    githubCommit.committer.received_events_url,
+                  type: githubCommit.committer.type,
+                  site_admin: githubCommit.committer.site_admin,
+                }
               : null,
             parents: githubCommit.parents.map((parent: any) => {
               return {
@@ -116,7 +119,7 @@ export class GithubRepository implements IGithubRepository {
       return commits;
     } catch (error) {
       // Handle any errors here
-      console.error("Error obtaining commits:", error);
+      //console.error("Error obtaining commits:", error);
       throw error;
     }
   }
@@ -129,13 +132,19 @@ export class GithubRepository implements IGithubRepository {
     try {
       const [response, coverageResponse] = await Promise.all([
         this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
-        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}/comments`)
+        this.octokit.request(
+          `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
+        ),
       ]);
       let percentageMatch = "";
       let testCount = "";
       if (coverageResponse.data.length > 0) {
-        const coverageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(coverageResponse.data[0].body); 
-        const testCountMatch = /(\d+)(?=\s*tests passing)/.exec(coverageResponse.data[0].body);
+        const coverageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
+          coverageResponse.data[0].body
+        );
+        const testCountMatch = /(\d+)(?=\s*tests passing)/.exec(
+          coverageResponse.data[0].body
+        );
         if (coverageMatch) {
           percentageMatch = String(coverageMatch[1]);
         }
@@ -150,7 +159,7 @@ export class GithubRepository implements IGithubRepository {
       };
       return commitInfo;
     } catch (error) {
-      console.error("Error obtaining commit Information for TDD Cycle:", error);
+      //console.error("Error obtaining commit Information for TDD Cycle:", error);
       throw error;
     }
   }
@@ -162,30 +171,34 @@ export class GithubRepository implements IGithubRepository {
   ) {
     try {
       const commitsFromSha = await Promise.all(
-        commits.map(commit => this.getCommitInfoForTDDCycle(owner, repoName, commit.sha))
+        commits.map((commit) =>
+          this.getCommitInfoForTDDCycle(owner, repoName, commit.sha)
+        )
       );
 
-      const commitsData: TDDCycleDataObject[]= commitsFromSha.map(({ html_url, stats, commit, sha, coveragePercentage, test_count }) => ({
-        html_url,
-        stats: {
-          total: stats.total,
-          additions: stats.additions,
-          deletions: stats.deletions,
-        },
-        commit: {
-          date: commit.author.date,
-          message: commit.message,
-          url: commit.url,
-          comment_count: commit.comment_count,
-        },
-        sha,
-        coverage: coveragePercentage,
-        test_count: test_count
-      }));
+      const commitsData: TDDCycleDataObject[] = commitsFromSha.map(
+        ({ html_url, stats, commit, sha, coveragePercentage, test_count }) => ({
+          html_url,
+          stats: {
+            total: stats.total,
+            additions: stats.additions,
+            deletions: stats.deletions,
+          },
+          commit: {
+            date: commit.author.date,
+            message: commit.message,
+            url: commit.url,
+            comment_count: commit.comment_count,
+          },
+          sha,
+          coverage: coveragePercentage,
+          test_count: test_count,
+        })
+      );
 
       return commitsData;
     } catch (error) {
-      console.error("Error getting commits from SHA:", error);
+      //console.error("Error getting commits from SHA:", error);
       throw new Error("Error getting commits from SHA");
     }
   }
@@ -205,7 +218,7 @@ export class GithubRepository implements IGithubRepository {
       ]);
       return response;
     } catch (error) {
-      console.error("Error obtaining runs:", error);
+      //console.error("Error obtaining runs:", error);
       throw error;
     }
   }
@@ -216,7 +229,9 @@ export class GithubRepository implements IGithubRepository {
     attempt: number
   ) {
     try {
-      const { data: { total_count, jobs } } = await this.octokit.request(
+      const {
+        data: { total_count, jobs },
+      } = await this.octokit.request(
         `GET /repos/${owner}/${repoName}/actions/runs/${jobId}/attempts/${attempt}/jobs`
       );
       const jobData = {
@@ -225,15 +240,12 @@ export class GithubRepository implements IGithubRepository {
       };
       return jobData;
     } catch (error) {
-      console.error("Error obtaining job:", error);
+      //console.error("Error obtaining job:", error);
       throw error;
     }
   }
   async getRunsOfGithubActionsIds(owner: string, repoName: string) {
-    const githubruns = await this.obtainRunsOfGithubActions(
-      owner,
-      repoName
-    );
+    const githubruns = await this.obtainRunsOfGithubActions(owner, repoName);
     const commitsWithActions: [string, number][] =
       githubruns.data.workflow_runs.map((workFlowRun: any) => {
         return [workFlowRun.head_commit.id, workFlowRun.id];
