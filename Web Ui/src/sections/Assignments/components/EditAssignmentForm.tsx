@@ -56,7 +56,7 @@ function EditAssignmentDialog({
         const updatedAssignmentData: AssignmentDataObject = {
           title,
           description,
-          groupId: selectedGroup,
+          groupid: selectedGroup,
           // Mantener los valores actuales para los campos que no se están editando
           id: currentAssignment.id,
           start_date: currentAssignment.start_date,
@@ -104,7 +104,7 @@ function EditAssignmentDialog({
             variant="outlined"
             size="small"
             required
-            //value="ejemplo"
+            // value="ejemplo"
             onChange={(e) => setTitle(e.target.value)}
           />
           <TextField
