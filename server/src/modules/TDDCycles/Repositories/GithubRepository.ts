@@ -118,8 +118,6 @@ export class GithubRepository implements IGithubRepository {
 
       return commits;
     } catch (error) {
-      // Handle any errors here
-      //console.error("Error obtaining commits:", error);
       throw error;
     }
   }
@@ -159,7 +157,6 @@ export class GithubRepository implements IGithubRepository {
       };
       return commitInfo;
     } catch (error) {
-      //console.error("Error obtaining commit Information for TDD Cycle:", error);
       throw error;
     }
   }
@@ -198,7 +195,6 @@ export class GithubRepository implements IGithubRepository {
 
       return commitsData;
     } catch (error) {
-      //console.error("Error getting commits from SHA:", error);
       throw new Error("Error getting commits from SHA");
     }
   }
@@ -218,7 +214,6 @@ export class GithubRepository implements IGithubRepository {
       ]);
       return response;
     } catch (error) {
-      //console.error("Error obtaining runs:", error);
       throw error;
     }
   }
@@ -240,7 +235,6 @@ export class GithubRepository implements IGithubRepository {
       };
       return jobData;
     } catch (error) {
-      //console.error("Error obtaining job:", error);
       throw error;
     }
   }

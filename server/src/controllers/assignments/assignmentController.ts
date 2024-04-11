@@ -38,7 +38,6 @@ class AssignmentController {
       const assignments = await this.getAssignmentsUseCase.execute();
       res.status(200).json(assignments);
     } catch (error) {
-      //console.error("Error fetching assignments:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -51,7 +50,6 @@ class AssignmentController {
       );
       res.status(200).json(assignments);
     } catch (error) {
-      //console.error("Error fetching assignments by group ID:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -68,7 +66,6 @@ class AssignmentController {
         res.status(404).json({ error: "Assignments not found" });
       }
     } catch (error) {
-      //console.error("Error fetching assignments:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -89,7 +86,6 @@ class AssignmentController {
       });
       res.status(201).json(newAssignment);
     } catch (error) {
-      // console.error("Error adding assignment:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -100,7 +96,6 @@ class AssignmentController {
       await this.deleteAssignmentUseCase.execute(assignmentId);
       res.status(204).send();
     } catch (error) {
-      //console.error("Error deleting assignment:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -122,7 +117,6 @@ class AssignmentController {
         res.status(404).json({ error: "Assignment not found" });
       }
     } catch (error) {
-      //console.error("Error delivering assignment:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -160,7 +154,6 @@ class AssignmentController {
         res.status(404).json({ error: "Assignment not found" });
       }
     } catch (error) {
-      //console.error("Error updating assignment:", error);
       res.status(500).json({ error: "Server error" });
     }
   }

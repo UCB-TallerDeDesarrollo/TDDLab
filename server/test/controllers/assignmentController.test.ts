@@ -6,16 +6,13 @@ import {
 } from "../__mocks__/assignments/dataTypeMocks/assignmentData";
 import { createRequest } from "../__mocks__/assignments/requestMocks";
 import { createResponse } from "../__mocks__/assignments/responseMoks";
-// import { getGroupsRepositoryMock } from "../__mocks__/groups/repositoryMock";
 
 let controller: AssignmentController;
 const assignmentRepositoryMock = getAssignmentRepositoryMock();
-// const groupRepositoryMock = getGroupsRepositoryMock();
 
 beforeEach(() => {
   controller = new AssignmentController(
     assignmentRepositoryMock,
-    // groupRepositoryMock
   );
 });
 

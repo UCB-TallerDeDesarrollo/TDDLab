@@ -39,7 +39,6 @@ export class GetTDDCyclesUseCase {
       const commits = await this.dbCommitRepository.getCommits(owner, repoName);
       return commits;
     } catch (error) {
-      //console.error("Error executing TDDCycles Use case:", error);
       throw error;
     }
   }

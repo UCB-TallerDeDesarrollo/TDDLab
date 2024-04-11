@@ -1,5 +1,4 @@
 import GroupRepository from "../../repositories/GroupRepository";
-// import GroupDTO from "../../domain/Group";
 
 class CheckGroupExistsUseCase{
     private groupRepository: GroupRepository;

@@ -13,7 +13,6 @@ class GetAssignmentById {
       const assignment = await this.adapter.obtainAssignmentById(assignmentId);
       return assignment;
     } catch (error) {
-      //console.error("Error fetching assignment:", error);
 
       throw error;
     }

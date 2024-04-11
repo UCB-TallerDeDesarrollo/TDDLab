@@ -1,16 +1,4 @@
 import { AssignmentDataObject } from "../../../../src/modules/Assignments/domain/Assignment";
-import { AssignmentCreationObject } from "../../../../src/modules/Assignments/domain/Assignment";
-
-export const assignmentCreationDataMock: AssignmentCreationObject = {
-  title: "Tarea pendiente",
-  description: "Esta es una nueva tarea",
-  start_date: new Date("2023-01-01"),
-  end_date: new Date("2023-01-10"),
-  state: "pending",
-  link: "Enlace",
-  comment: "Comentario",
-  groupid: 1,
-};
 
 export const assignmentPendingDataMock: AssignmentDataObject = {
   id: "1",

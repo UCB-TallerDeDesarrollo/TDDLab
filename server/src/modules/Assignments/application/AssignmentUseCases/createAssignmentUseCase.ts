@@ -19,7 +19,6 @@ class CreateAssignment {
       return newAssignment;
 
     } catch (error) {
-      //console.error("Error creating assignment:", error);
       throw error;
     }
   }

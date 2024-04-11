@@ -44,7 +44,6 @@ class UpdateGroupUseCase {
       }
     } catch (error: any) {
       // Handle errors, log, and potentially throw a custom error
-      //console.error(`Failed to update group: ${error.message}`);
       throw new Error(`Failed to update group: ${error.message}`);
     }
   }
