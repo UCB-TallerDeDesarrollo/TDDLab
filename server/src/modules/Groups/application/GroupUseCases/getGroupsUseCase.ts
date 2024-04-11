@@ -17,7 +17,6 @@ class GetGroupsUseCase {
       return groups;
     } catch (error: any) {
       // Log the error for internal debugging
-      //console.error(`Failed to get groups: ${error.message}`);
 
       // Rethrow the error so that the controller can handle it
       throw error;

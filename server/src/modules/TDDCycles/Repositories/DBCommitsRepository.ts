@@ -35,7 +35,6 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       ];
       await client.query(query, values);
     } catch (error) {
-      //console.error("Error saving commit to the database:", error);
       throw error;
     } finally {
       client.release();
@@ -50,7 +49,6 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows;
     } catch (error) {
-      //console.error("Error getting commits from the database:", error);
       throw error;
     } finally {
       client.release();
@@ -65,7 +63,6 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows.length > 0;
     } catch (error) {
-      //console.error("Error checking if commit exists in the database:", error);
       throw error;
     } finally {
       client.release();
@@ -80,7 +77,6 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows[0].count > 0;
     } catch (error) {
-      //console.error( "Error checking if repository exists in the database:", error);
       throw error;
     } finally {
       client.release();
@@ -112,7 +108,6 @@ export class DBCommitsRepository implements IDBCommitsRepository {
         newCommits.map((commit) => this.saveCommit(owner, repoName, commit))
       );
     } catch (error) {
-      //console.error("Error updating the commit table in the database:", error);
       throw error;
     }
   }

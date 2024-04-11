@@ -23,7 +23,6 @@ class DeleteGroupUseCase {
       // Additional logic can be added here, e.g., sending notifications, logging, etc.
     } catch (error: any) {
       // Handle errors, log, and potentially throw a custom error
-      //console.error(`Failed to delete group: ${error.message}`);
       throw new Error(`Failed to delete group: ${error.message}`);
     }
   }

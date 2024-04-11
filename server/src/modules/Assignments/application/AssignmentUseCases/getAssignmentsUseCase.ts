@@ -13,7 +13,6 @@ class GetAssignments {
       const assignments = await this.adapter.obtainAssignments();
       return assignments;
     } catch (error) {
-      //console.error("Error fetching assignments:", error);
       throw error;
     }
   }

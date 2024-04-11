@@ -29,7 +29,6 @@ class GroupsController {
       const groups = await this.getGroupsUseCase.execute();
       res.status(200).json(groups);
     } catch (error) {
-      //console.error("Error fetching groups:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -44,7 +43,6 @@ class GroupsController {
         res.status(404).json({ error: "Group not found" });
       }
     } catch (error) {
-      //console.error("Error fetching group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -73,7 +71,6 @@ class GroupsController {
       });
       res.status(201).json(newGroup);
     } catch (error) {
-      //console.error("Error adding group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -84,7 +81,6 @@ class GroupsController {
       await this.deleteGroupUseCase.execute(groupid);
       res.status(204).send();
     } catch (error) {
-      //console.error("Error deleting group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -109,7 +105,6 @@ class GroupsController {
         res.status(404).json({ error: "Group not found" });
       }
     } catch (error) {
-      //console.error("Error updating group:", error);
       res.status(500).json({ error: "Server error" });
     }
   }

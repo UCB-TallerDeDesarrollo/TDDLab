@@ -38,7 +38,6 @@ class DeliverAssignmentUseCase {
 
       return assignment;
     } catch (error) {
-      //console.error("Error delivering assignment:", error);
       throw error;
     }
   }

@@ -33,7 +33,6 @@ export class GetTestResultsUseCase {
       const jobs = await this.dbJobRepository.getJobs(owner, repoName);
       return jobs;
     } catch (error) {
-      //console.error("Error executing Test Results Use case:", error);
       throw error;
     }
   }

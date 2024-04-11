@@ -18,7 +18,6 @@ export class DBJobsRepository implements IDBJobsRepository {
       const values = [id, sha, owner, reponame, conclusion];
       await client.query(query, values);
     } catch (error) {
-      //console.error("Error inserting job:", error);
       throw new Error("Error inserting job");
     } finally {
       if (client) {
@@ -36,7 +35,6 @@ export class DBJobsRepository implements IDBJobsRepository {
       const result = await client.query(query, values);
       return result.rows;
     } catch (error) {
-      //console.error("Error en la consulta a la base de datos:", error);
       throw new Error("Error en la consulta a la base de datos");
     } finally {
       if (client) {
@@ -54,7 +52,6 @@ export class DBJobsRepository implements IDBJobsRepository {
       const result = await client.query(query, values);
       return result.rows.length > 0;
     } catch (error) {
-      //console.error('Error en la consulta a la base de datos:', error);
       throw new Error("Error en la consulta a la base de datos");
     } finally {
       if (client) {
