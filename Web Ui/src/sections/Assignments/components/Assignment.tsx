@@ -75,10 +75,10 @@ const Assignment: React.FC<AssignmentProps> = ({
   const [groupName, setGroupName] = useState<string>("");
 
   useEffect(() => {
-    if (assignment.groupId) {
-      fetchGroupName(assignment.groupId);
+    if (assignment.groupid) {
+      fetchGroupName(assignment.groupid);
     }
-  }, [assignment.groupId]);
+  }, [assignment.groupid]);
 
   const fetchGroupName = async (groupId: number) => {
     try {
