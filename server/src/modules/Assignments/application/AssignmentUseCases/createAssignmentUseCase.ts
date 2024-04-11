@@ -12,7 +12,8 @@ class CreateAssignment {
     assignment: Omit<AssignmentCreationObject, "id">
   ): Promise<AssignmentCreationObject> {
     try {
-      if (!this.adapter.groupidExistsForAssigment(assignment.groupid)) {
+      const groupExists = await this.adapter.groupidExistsForAssigment(assignment.groupid);
+      if (!groupExists) {
         throw new Error("Inexistent group ID");
       }
       const newAssignment = await this.adapter.createAssignment(assignment);
