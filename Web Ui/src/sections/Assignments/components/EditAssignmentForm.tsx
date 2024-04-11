@@ -72,6 +72,7 @@ function EditAssignmentDialog({
         await updateAssignment.updateAssignment(assignmentId, updatedAssignmentData);
   
         onClose(); // Cerrar el diálogo después de guardar los cambios
+        window.location.reload(); // Recargar la página
       } else {
         // Manejar el caso en el que la tarea actual no existe
         console.error("La tarea actual no se encontró.");
