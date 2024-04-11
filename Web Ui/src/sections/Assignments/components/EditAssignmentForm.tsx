@@ -30,7 +30,7 @@ function EditAssignmentDialog({
   const [description, setDescription] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
   const handleGroupChange = (event: SelectChangeEvent<number>) => {
-    setSelectedGroup(event.target.value as number);
+    setSelectedGroup(event.target.value as number); 
   };
 
   const groupRepository = new GroupsRepository();
@@ -104,7 +104,7 @@ function EditAssignmentDialog({
             variant="outlined"
             size="small"
             required
-            // value="ejemplo"
+            //value="ejemplo"
             onChange={(e) => setTitle(e.target.value)}
           />
           <TextField
