@@ -9,9 +9,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   backAPI: string;
   constructor() {
     this.octokit = new Octokit();
-    /*{
-      auth: 'coloca tu token github para mas requests'
-  }*/
+      //auth: 'coloca tu token github para mas requests'
     this.backAPI = "https://tdd-lab-api-gold.vercel.app/api/TDDCycles";
   }
 
