@@ -105,12 +105,13 @@ function EditAssignmentDialog({
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
             id="titulo"
-            label={currentTitle}
+            //label={currentTitle}
             variant="outlined"
             size="small"
+            value={title}
             required
-            //value="ejemplo"
             onChange={(e) => setTitle(e.target.value)}
+            defaultValue={currentTitle} // Establece el valor inicial del TextField con el título actual
           />
           <TextField
             id="descripcion"
