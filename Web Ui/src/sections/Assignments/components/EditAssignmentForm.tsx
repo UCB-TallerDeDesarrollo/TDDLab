@@ -18,12 +18,16 @@ import AssignmentsRepository from "../../../modules/Assignments/repository/Assig
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
   readonly currentGroupName: string; // Agrega una propiedad para el nombre del grupo actual
+  readonly currentTitle: string;
+  readonly currentDescription: string;
   readonly onClose: () => void;
 }
 
 function EditAssignmentDialog({
   assignmentId,
   currentGroupName,
+  currentTitle,
+  currentDescription,
   onClose,
 }: EditAssignmentDialogProps) {
   const [title, setTitle] = useState<string>("");
@@ -101,7 +105,7 @@ function EditAssignmentDialog({
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
             id="titulo"
-            label="Titulo"
+            label={currentTitle}
             variant="outlined"
             size="small"
             required
@@ -110,7 +114,7 @@ function EditAssignmentDialog({
           />
           <TextField
             id="descripcion"
-            label="Descripcion"
+            label={currentDescription}
             variant="outlined"
             size="small"
             required
