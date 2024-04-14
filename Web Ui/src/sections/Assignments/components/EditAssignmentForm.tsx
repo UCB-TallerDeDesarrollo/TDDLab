@@ -100,7 +100,7 @@ function EditAssignmentDialog({
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Tarea - ID: {assignmentId}</DialogTitle>
+      <DialogTitle>Editar Tarea : {currentTitle}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
