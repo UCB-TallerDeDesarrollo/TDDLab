@@ -23,6 +23,19 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
       throw error;
     }
   }
+  async getAssignmentsByGroupId(groupId: number): Promise<AssignmentDataObject[]> {
+    try {
+      const response = await axios.get(`${API_URL}/groupid/${groupId}`);
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error("Failed to fetch assignments by group ID");
+      }
+    } catch (error) {
+      console.error("Error fetching assignments by group ID:", error);
+      throw error;
+    }
+  }
 
   // Define a function to fetch an assignment by its ID
   async getAssignmentById(
