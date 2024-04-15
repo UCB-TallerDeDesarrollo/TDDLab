@@ -62,7 +62,7 @@ function Assignments({
   >(null);
   const navigate = useNavigate();
 
-  const [, setSelectedRow] = useState<number | null>(null);
+  // const [, setSelectedRow] = useState<number | null>(null);
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
@@ -72,6 +72,7 @@ function Assignments({
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
+  const [selectedFilteredAssignmentIndex, setSelectedFilteredAssignmentIndex] = useState<number>(0);
 
 
   const orderAssignments = (
@@ -113,8 +114,15 @@ function Assignments({
     orderAssignments([...assignments], event.target.value);
   };
 
-  const handleGroupChange = (event: SelectChangeEvent<number>) => {
-    setSelectedGroup(event.target.value as number);
+  const handleGroupChange = async (event: SelectChangeEvent<number>) => {
+    const groupId = event.target.value as number;
+    setSelectedGroup(groupId);
+    try {
+      const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
+      setAssignments(assignments);
+    } catch (error) {
+      console.error("Error fetching assignments by group ID:", error);
+    }
   };
 
  
@@ -123,15 +131,17 @@ function Assignments({
   : assignments;
 
   const handleClickDetail = (index: number) => {
-    setSelectedRow(index);
-    navigate(`/assignment/${assignments[index].id}`);
+    setSelectedFilteredAssignmentIndex(index);
+    navigate(`/assignment/${filteredAssignments[index].id}`);
   };
 
   const handleClickDelete = (index: number) => {
-    setSelectedAssignmentIndex(index);
+    const assignmentToDelete = filteredAssignments[index];
+    const originalIndex = assignments.indexOf(assignmentToDelete);
+    setSelectedAssignmentIndex(originalIndex);
     setConfirmationOpen(true);
   };
-
+  
   const handleConfirmDelete = async () => {
     try {
       if (
@@ -145,6 +155,11 @@ function Assignments({
         await deleteAssignment.deleteAssignment(
           assignments[selectedAssignmentIndex].id,
         );
+  
+        // Remove the deleted assignment from the assignments list
+        const updatedAssignments = [...assignments];
+        updatedAssignments.splice(selectedAssignmentIndex, 1);
+        setAssignments(updatedAssignments);
       }
       setConfirmationOpen(false);
     } catch (error) {
