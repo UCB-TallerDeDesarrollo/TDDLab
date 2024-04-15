@@ -13,6 +13,10 @@ export class MockAssignmentsRepository implements AssignmentsRepositoryInterface
     return foundAssignment ? { ...foundAssignment } : null;
   });
 
+  getAssignmentsByGroupId = jest.fn(async (groupId: number) => {
+    return this.assignments.filter(assignment => assignment.groupid === groupId);
+  });
+
   createAssignment = jest.fn(async (assignmentData: AssignmentDataObject) => {
     this.assignments.push(assignmentData);
   });
