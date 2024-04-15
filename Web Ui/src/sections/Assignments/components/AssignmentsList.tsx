@@ -56,7 +56,7 @@ function Assignments({
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
-  const [selectedGroup, setSelectedGroup] = useState<number>(0); // Initialize with null
+  const [selectedGroup, setSelectedGroup] = useState<number>(0);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -71,19 +71,8 @@ function Assignments({
 
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
-  useEffect(() => {
-    const fetchGroupList = async () => {
-      try {
-        // Fetch groupList from the database
-        const getGroups = new GetGroups(groupRepository);
-        const allGroups = await getGroups.getGroups();
-        setGroupList(allGroups);
-      } catch (error) {
-        console.error("Error fetching group list:", error);
-      }
-    };
-    fetchGroupList();
-  }, []);
+  const getGroups = new GetGroups(groupRepository);
+
 
   const orderAssignments = (
     assignmentsArray: AssignmentDataObject[],
@@ -104,8 +93,11 @@ function Assignments({
     setAssignments(assignmentsArray);
   };
   useEffect(() => {
-    const fetchAssignments = async () => {
+    const fetchData = async () => {
       try {
+        const allGroups = await getGroups.getGroups();
+        setGroupList(allGroups);
+        console.log("groups",allGroups)
         const data = await getAssignments.obtainAllAssignments();
         setAssignments(data);
         orderAssignments([...data], selectedSorting);
@@ -113,7 +105,7 @@ function Assignments({
         console.error("Error fetching assignments:", error);
       }
     };
-    fetchAssignments();
+    fetchData();
   }, []);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
@@ -125,18 +117,10 @@ function Assignments({
     setSelectedGroup(event.target.value as number);
   };
 
-  useEffect(() => {
-    if (selectedGroup !== null) {
-      // Filter assignments by the selected group
-      const filteredAssignments = selectedGroup
-        ? assignments.filter(
-            (assignment) => assignment.groupid === selectedGroup
-          )
-        : assignments;
-      setAssignments(filteredAssignments);
-    }
-  }, [selectedGroup, assignments]);
-
+ 
+  const filteredAssignments = selectedGroup
+  ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
+  : assignments;
 
   const handleClickDetail = (index: number) => {
     setSelectedRow(index);
@@ -190,11 +174,16 @@ function Assignments({
               </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                <GroupFilter
+                {groupList.length > 0 ? (
+                  <GroupFilter
                     selectedGroup={selectedGroup}
                     groupList={groupList}
                     onChangeHandler={handleGroupChange}
                   />
+                ) : (
+                  <span>No hay grupos disponibles</span>
+                )}
+
                   <SortingComponent
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleOrderAssignments}
@@ -219,7 +208,7 @@ function Assignments({
             </TableRow>
           </TableHead>
           <TableBody>
-            {assignments.map((assignment, index) => (
+            {filteredAssignments.map((assignment, index) => (
               <Assignment
                 key={assignment.id}
                 assignment={assignment}
