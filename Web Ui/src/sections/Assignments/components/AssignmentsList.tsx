@@ -19,6 +19,11 @@ import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import Assignment from "./Assignment";
 import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
+import GroupFilter from "./GroupFilter";
+import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+import { SelectChangeEvent } from "@mui/material";
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
+import GetGroups from "../../../modules/Groups/application/GetGroups";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -51,6 +56,7 @@ function Assignments({
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+  const [selectedGroup, setSelectedGroup] = useState<number>(0); // Initialize with null
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -62,6 +68,22 @@ function Assignments({
   const assignmentsRepository = new AssignmentsRepository();
   const getAssignments = new GetAssignments(assignmentsRepository);
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
+
+  const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
+  const groupRepository = new GroupsRepository();
+  useEffect(() => {
+    const fetchGroupList = async () => {
+      try {
+        // Fetch groupList from the database
+        const getGroups = new GetGroups(groupRepository);
+        const allGroups = await getGroups.getGroups();
+        setGroupList(allGroups);
+      } catch (error) {
+        console.error("Error fetching group list:", error);
+      }
+    };
+    fetchGroupList();
+  }, []);
 
   const orderAssignments = (
     assignmentsArray: AssignmentDataObject[],
@@ -85,6 +107,7 @@ function Assignments({
     const fetchAssignments = async () => {
       try {
         const data = await getAssignments.obtainAllAssignments();
+        setAssignments(data);
         orderAssignments([...data], selectedSorting);
       } catch (error) {
         console.error("Error fetching assignments:", error);
@@ -97,6 +120,23 @@ function Assignments({
     setSelectedSorting(event.target.value as string);
     orderAssignments([...assignments], event.target.value);
   };
+
+  const handleGroupChange = (event: SelectChangeEvent<number>) => {
+    setSelectedGroup(event.target.value as number);
+  };
+
+  useEffect(() => {
+    if (selectedGroup !== null) {
+      // Filter assignments by the selected group
+      const filteredAssignments = selectedGroup
+        ? assignments.filter(
+            (assignment) => assignment.groupid === selectedGroup
+          )
+        : assignments;
+      setAssignments(filteredAssignments);
+    }
+  }, [selectedGroup, assignments]);
+
 
   const handleClickDetail = (index: number) => {
     setSelectedRow(index);
@@ -150,6 +190,11 @@ function Assignments({
               </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
+                <GroupFilter
+                    selectedGroup={selectedGroup}
+                    groupList={groupList}
+                    onChangeHandler={handleGroupChange}
+                  />
                   <SortingComponent
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleOrderAssignments}

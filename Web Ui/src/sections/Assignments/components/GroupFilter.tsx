@@ -1,0 +1,34 @@
+import React from "react";
+import { MenuItem, SelectChangeEvent, Select } from "@mui/material";
+import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+
+interface GroupFilterProps{
+    selectedGroup: number;
+    groupList: GroupDataObject[];
+    onChangeHandler: (event: SelectChangeEvent<number>) => void;
+}
+const GroupFilter: React.FC<GroupFilterProps> = ({
+    selectedGroup,
+    groupList,
+    onChangeHandler,
+}) => {
+    return (
+        <Select
+            value={selectedGroup}
+            onChange={onChangeHandler}
+            displayEmpty
+            style={{ fontSize: "14px", height: "36px" }}
+        >
+            <MenuItem value={0} disabled>
+                Seleccione un grupo
+            </MenuItem>
+            {groupList.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                    {group.groupName}
+                </MenuItem>
+            ))}
+        </Select>
+    );
+};
+
+export default GroupFilter;
