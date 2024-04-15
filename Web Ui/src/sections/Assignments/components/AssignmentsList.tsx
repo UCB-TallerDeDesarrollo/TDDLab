@@ -72,7 +72,7 @@ function Assignments({
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
-  const [selectedFilteredAssignmentIndex, setSelectedFilteredAssignmentIndex] = useState<number>(0);
+  // const [selectedFilteredAssignmentIndex, setSelectedFilteredAssignmentIndex] = useState<number>(0);
 
 
   const orderAssignments = (
@@ -131,9 +131,8 @@ function Assignments({
   : assignments;
 
   const handleClickDetail = (index: number) => {
-    setSelectedFilteredAssignmentIndex(index);
     navigate(`/assignment/${filteredAssignments[index].id}`);
-  };
+};
 
   const handleClickDelete = (index: number) => {
     const assignmentToDelete = filteredAssignments[index];
