@@ -13,6 +13,7 @@ interface AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject,
   ): Promise<void>;
+  getAssignmentsByGroupId(groupId: number): Promise<AssignmentDataObject[]>;
 }
 
 export default AssignmentsRepositoryInterface;
