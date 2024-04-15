@@ -2,7 +2,7 @@ import axios from "axios";
 import { GroupDataObject } from "../domain/GroupInterface";
 import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
 
-const API_URL = "http://localhost:3000/api/assignments";
+const API_URL = "http://localhost:3000/api/groups";
 
 class GroupsRepository implements GroupsRepositoryInterface {
   async getGroups(): Promise<GroupDataObject[]> {
