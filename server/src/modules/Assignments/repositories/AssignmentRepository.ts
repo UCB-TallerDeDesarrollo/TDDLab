@@ -83,11 +83,11 @@ class AssignmentRepository {
   async updateAssignment(
     id: string,
     updatedAssignment: AssignmentCreationObject
-  ): Promise<AssignmentCreationObject | null> {
-    const { title, description, start_date, end_date, state, link, comment } =
+    ): Promise<AssignmentCreationObject | null> {
+    const { title, description, start_date, end_date, state, link, comment, groupid } =
       updatedAssignment;
     const query =
-      "UPDATE assignments SET title = $1, description = $2, start_date = $3, end_date = $4, state = $5, link = $6, comment = $7 WHERE id = $8 RETURNING *";
+      "UPDATE assignments SET title = $1, description = $2, start_date = $3, end_date = $4, state = $5, link = $6, comment = $7, groupid = $8 WHERE id = $9 RETURNING *";
     const values = [
       title,
       description,
@@ -96,6 +96,7 @@ class AssignmentRepository {
       state,
       link,
       comment,
+      groupid,
       id,
     ];
     const rows = await this.executeQuery(query, values);
@@ -112,5 +113,5 @@ class AssignmentRepository {
   }
 
 }
-
+  
 export default AssignmentRepository;

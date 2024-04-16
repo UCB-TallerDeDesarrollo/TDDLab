@@ -4,33 +4,118 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, TextField } from "@mui/material";
+import { useState } from "react";
+import { MenuItem, Select } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
+import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+import { useEffect } from "react";
+import GetGroups from "../../../modules/Groups/application/GetGroups";
+import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
+import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
+import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
+  readonly currentGroupName: string; // Agrega una propiedad para el nombre del grupo actual
+  readonly currentTitle: string;
+  readonly currentDescription: string;
   readonly onClose: () => void;
 }
 
 function EditAssignmentDialog({
   assignmentId,
+  currentGroupName,
+  currentTitle,
+  currentDescription,
   onClose,
 }: EditAssignmentDialogProps) {
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [selectedGroup, setSelectedGroup] = useState<number>(0);
+
+  const handleGroupChange = (event: SelectChangeEvent<number>) => {
+  setSelectedGroup(event.target.value as number); 
+};
+
+  const groupRepository = new GroupsRepository();
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const getGroups = new GetGroups(groupRepository);
+      const allGroups = await getGroups.getGroups();
+      setGroups(allGroups);
+    };
+
+    fetchGroups();
+  }, []);
+
+  const handleSaveChanges = async () => {
+    try {
+      // Obtener los detalles de la tarea actual
+      const currentAssignment = await getCurrentAssignment();
+  
+      // Verificar si la tarea actual existe
+      if (currentAssignment) {
+        // Construir los datos actualizados de la tarea
+        const updatedAssignmentData: AssignmentDataObject = {
+          title: title !== "" ? title : currentAssignment.title,
+          description: description !== "" ? description : currentAssignment.description,
+          groupid: selectedGroup !== 0 ? selectedGroup : currentAssignment.groupid,    
+          // Mantener los valores actuales para los campos que no se están editando
+          id: currentAssignment.id,
+          start_date: currentAssignment.start_date,
+          end_date: currentAssignment.end_date,
+          state: currentAssignment.state,
+          link: currentAssignment.link,
+          comment: currentAssignment.comment,
+        };
+  
+        // Llamar al método de actualización de la tarea
+        const assignmentsRepository = new AssignmentsRepository();
+        const updateAssignment = new UpdateAssignment(assignmentsRepository);
+        await updateAssignment.updateAssignment(assignmentId, updatedAssignmentData);
+  
+        onClose(); // Cerrar el diálogo después de guardar los cambios
+        window.location.reload(); // Recargar la página
+      } else {
+        // Manejar el caso en el que la tarea actual no existe
+        console.error("La tarea actual no se encontró.");
+      }
+    } catch (error) {
+      console.error("Error al guardar los cambios:", error);
+    }
+  };
+  // Esta función se encarga de obtener los detalles de la tarea actual
+  const getCurrentAssignment = async () => {
+    const assignmentsRepository = new AssignmentsRepository();
+    try {
+      const assignment =
+        await assignmentsRepository.getAssignmentById(assignmentId);
+      return assignment;
+    } catch (error) {
+      console.error("Error obteniendo la tarea actual:", error);
+      throw error;
+    }
+  };
+
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Tarea - ID: {assignmentId}</DialogTitle>
+      <DialogTitle>Editar Tarea : {currentTitle}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
             id="titulo"
-            label="Titulo"
+            label="Título"
             variant="outlined"
             size="small"
             required
-            value=""
-            onChange={() => {}}
+            onChange={(e) => setTitle(e.target.value)}
+            defaultValue={currentTitle}
           />
           <TextField
             id="descripcion"
-            label="Descripcion"
+            label="Descripción"
             variant="outlined"
             size="small"
             required
@@ -44,9 +129,27 @@ function EditAssignmentDialog({
                 },
               },
             }}
-            onChange={() => {}}
-            defaultValue=""
+            onChange={(e) => setDescription(e.target.value)}
+            defaultValue={currentDescription}
           />
+          {
+            <Select
+              label="Grupos"
+              value={selectedGroup}
+              onChange={handleGroupChange}
+              variant="outlined"
+              size="small"
+              required
+            >
+              <MenuItem value={0}>{currentGroupName}</MenuItem>
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.groupName}
+                </MenuItem>
+              ))}
+            </Select>
+          }
+
           <section>{/* The rest of your components go here */}</section>
         </Box>
       </DialogContent>
@@ -57,7 +160,7 @@ function EditAssignmentDialog({
           style={{
             textTransform: "none",
           }}
-          onClick={() => {}}
+          onClick={handleSaveChanges} // Asocia la función handleSaveChanges al evento onClick del botón
         >
           Guardar Cambios
         </Button>

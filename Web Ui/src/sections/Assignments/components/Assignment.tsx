@@ -1,5 +1,6 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-import React, { useState } from "react";
+//import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+import React, { useState, useEffect } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
@@ -11,7 +12,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { FaCheck } from "react-icons/fa6";
 import { TbRotateClockwise2 } from "react-icons/tb";
-
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
 }
@@ -52,6 +53,15 @@ interface AssignmentProps {
   role: string;
 }
 
+// interface GroupsProps {
+//   group: GroupDataObject;
+//   index: number;
+//   handleClickDetail: (index: number) => void;
+//   handleClickDelete: (index: number) => void;
+//   handleRowHover: (index: number | null) => void;
+//   role: string;
+// }
+
 const Assignment: React.FC<AssignmentProps> = ({
   assignment,
   index,
@@ -59,7 +69,29 @@ const Assignment: React.FC<AssignmentProps> = ({
   handleClickDelete,
   handleRowHover,
   role,
+  //group,
 }) => {
+
+  const [groupName, setGroupName] = useState<string>("");
+
+  useEffect(() => {
+    if (assignment.groupid) {
+      fetchGroupName(assignment.groupid);
+    }
+  }, [assignment.groupid]);
+
+  const fetchGroupName = async (groupId: number) => {
+    try {
+      const groupsRepository = new GroupsRepository();
+      const group = await groupsRepository.getGroupById(groupId);
+      if (group) {
+        setGroupName(group.groupName);
+      }
+    } catch (error) {
+      console.error("Error fetching group name:", error);
+    }
+  };
+
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   const handleEditClick = () => {
@@ -93,6 +125,10 @@ const Assignment: React.FC<AssignmentProps> = ({
           {isAdmin(role) && isEditFormOpen ? (
             <EditAssignmentForm
               assignmentId={assignment.id}
+              currentGroupName={groupName}
+              currentTitle={assignment.title}
+              currentDescription={assignment.description}
+              //currentGroupId={}
               onClose={handleCloseEditForm}
             />
           ) : (
