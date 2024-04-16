@@ -78,4 +78,7 @@ describe("Update an assignment", () => {
       updateAssignment.updateAssignment(assignmentId, baseAssignment)
     ).rejects.toThrowError(errorMessage);
   });
+  it("Should successfully update an assignment's group", async () => {
+    await createAndExpectUpdatedAssignment({ groupid: 5 });
+  });
 });

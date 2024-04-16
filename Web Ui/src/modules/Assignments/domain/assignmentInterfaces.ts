@@ -9,3 +9,9 @@ export interface AssignmentDataObject {
   comment: string | null;
   groupid: number;
 }
+
+export interface AssignmentCreationObject {
+  title: string;
+  description: string;
+  groupid: number;
+}
