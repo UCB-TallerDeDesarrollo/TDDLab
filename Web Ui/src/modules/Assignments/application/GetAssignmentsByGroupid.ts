@@ -10,6 +10,7 @@ export class GetAssignmentsByGroupId {
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);
       throw error;
-    }
+    } 
+    
   }
 }

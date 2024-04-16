@@ -13,7 +13,7 @@ import {
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AddIcon from "@mui/icons-material/Add";
-import { GetAssignments } from "../../../modules/Assignments/application/GetAssignments";
+import { GetAssignmentsByGroupId } from "../../../modules/Assignments/application/GetAssignmentsByGroupid";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
@@ -62,17 +62,17 @@ function Assignments({
   >(null);
   const navigate = useNavigate();
 
-  // const [, setSelectedRow] = useState<number | null>(null);
+
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
-  const getAssignments = new GetAssignments(assignmentsRepository);
+  const getAssignments = new GetAssignmentsByGroupId(assignmentsRepository);
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
 
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
-  // const [selectedFilteredAssignmentIndex, setSelectedFilteredAssignmentIndex] = useState<number>(0);
+
 
 
   const orderAssignments = (
@@ -99,7 +99,7 @@ function Assignments({
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
         console.log("groups",allGroups)
-        const data = await getAssignments.obtainAllAssignments();
+        const data = await getAssignments.obtainAssignmentsByGroupId(67);
         setAssignments(data);
         orderAssignments([...data], selectedSorting);
       } catch (error) {
@@ -193,6 +193,7 @@ function Assignments({
                     selectedGroup={selectedGroup}
                     groupList={groupList}
                     onChangeHandler={handleGroupChange}
+                    defaultName="IngSoftware2024-1"
                   />
                 ) : (
                   <span>No hay grupos disponibles</span>
