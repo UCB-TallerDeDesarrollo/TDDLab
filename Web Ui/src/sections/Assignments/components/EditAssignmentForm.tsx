@@ -33,9 +33,10 @@ function EditAssignmentDialog({
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
+
   const handleGroupChange = (event: SelectChangeEvent<number>) => {
-    setSelectedGroup(event.target.value as number); 
-  };
+  setSelectedGroup(event.target.value as number); 
+};
 
   const groupRepository = new GroupsRepository();
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
