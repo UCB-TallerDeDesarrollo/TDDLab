@@ -58,8 +58,8 @@ function EditAssignmentDialog({
       if (currentAssignment) {
         // Construir los datos actualizados de la tarea
         const updatedAssignmentData: AssignmentDataObject = {
-          title,
-          description,
+          title: title !== "" ? title : currentAssignment.title,
+          description: description !== "" ? description : currentAssignment.description,
           groupid: selectedGroup,
           // Mantener los valores actuales para los campos que no se están editando
           id: currentAssignment.id,
@@ -105,16 +105,16 @@ function EditAssignmentDialog({
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
             id="titulo"
-            label={currentTitle}
+            label="Título"
             variant="outlined"
             size="small"
-            value={title}
             required
             onChange={(e) => setTitle(e.target.value)}
+            defaultValue={currentTitle}
           />
           <TextField
             id="descripcion"
-            label={currentDescription}
+            label="Descripción"
             variant="outlined"
             size="small"
             required
@@ -129,7 +129,7 @@ function EditAssignmentDialog({
               },
             }}
             onChange={(e) => setDescription(e.target.value)}
-            defaultValue=""
+            defaultValue={currentDescription}
           />
           {
             <Select
