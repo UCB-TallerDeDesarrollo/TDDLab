@@ -49,7 +49,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "20"
 
       - name: Install dependencies for Jest
         working-directory: Web Ui
@@ -68,7 +68,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "20"
 
       - name: Install dependencies for Jest
         working-directory: server
@@ -88,7 +88,7 @@ jobs:
       - name: Set up Node.js for Cypress
         uses: actions/setup-node@v3
         with:
-          node-version: "14" # You can adjust the Node.js version as needed for Cypress
+          node-version: "20" # You can adjust the Node.js version as needed for Cypress
 
       - name: Install dependencies for Cypress
         working-directory: Web Ui
@@ -149,7 +149,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 20
 
       - name: Install Dependencies
         working-directory: Web Ui
