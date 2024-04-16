@@ -48,7 +48,7 @@ function EditAssignmentDialog({
     };
 
     fetchGroups();
-  });
+  }, []);
 
   const handleSaveChanges = async () => {
     try {
@@ -61,7 +61,7 @@ function EditAssignmentDialog({
         const updatedAssignmentData: AssignmentDataObject = {
           title: title !== "" ? title : currentAssignment.title,
           description: description !== "" ? description : currentAssignment.description,
-          groupid: selectedGroup,
+          groupid: selectedGroup !== 0 ? selectedGroup : currentAssignment.groupid,    
           // Mantener los valores actuales para los campos que no se están editando
           id: currentAssignment.id,
           start_date: currentAssignment.start_date,
