@@ -5,13 +5,16 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 interface GroupFilterProps {
   selectedGroup: number;
   groupList: GroupDataObject[];
+  
   onChangeHandler: (event: SelectChangeEvent<number>) => void;
+  defaultName: string;
 }
 
 const GroupFilter: React.FC<GroupFilterProps> = ({
   selectedGroup,
   groupList,
   onChangeHandler,
+  defaultName = "Prueba",
 }) => {
   return (
     <Select
@@ -21,7 +24,7 @@ const GroupFilter: React.FC<GroupFilterProps> = ({
       style={{ fontSize: "14px", height: "36px" }}
     >
       <MenuItem value={0} disabled>
-        Seleccione un grupo
+        {defaultName}
       </MenuItem>
       {groupList.length > 0 ? (
         groupList.map((group) => (
