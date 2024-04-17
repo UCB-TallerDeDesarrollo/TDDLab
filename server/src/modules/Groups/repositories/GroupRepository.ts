@@ -64,9 +64,23 @@ class GroupRepository {
   }
 
   async deleteGroup(id: number): Promise<void> {
-    const query = "DELETE FROM Groups WHERE id = $1";
-    const values = [id];
-    await this.executeQuery(query, values);
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      const deleteAssignmentsQuery = "DELETE FROM assignments WHERE groupid = $1";
+      await client.query(deleteAssignmentsQuery, [id]);
+
+      const deleteGroupQuery = "DELETE FROM groups WHERE id = $1";
+      await client.query(deleteGroupQuery, [id]); 
+
+      await client.query('COMMIT'); 
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async updateGroup(
