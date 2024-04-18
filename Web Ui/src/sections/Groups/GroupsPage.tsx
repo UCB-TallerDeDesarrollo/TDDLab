@@ -122,8 +122,8 @@ function Groups() {
         setSelectedRow(index);
       } else {
         
-        setSelectedGroup(null);
-        saveSelectedGroup(null);
+        setSelectedGroup(67);
+        saveSelectedGroup(67);
         setSelectedRow(index);
       }
     
