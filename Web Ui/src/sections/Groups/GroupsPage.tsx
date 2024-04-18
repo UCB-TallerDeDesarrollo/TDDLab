@@ -14,6 +14,7 @@ import GetGroups from "../../modules/Groups/application/GetGroups";
 import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
+import Checkbox from "@mui/material/Checkbox";
 
 import {
   Table,
@@ -57,7 +58,8 @@ function Groups() {
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
-
+  const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -74,9 +76,9 @@ function Groups() {
 
   const handleGroupsOrder = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value);
-    let selectedSortingLocal = event.target.value as keyof typeof sortings;
+    const selectedSortingLocal = event.target.value as keyof typeof sortings;
 
-    let sortings = {
+    const sortings = {
       A_Up_Order: () =>
         [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
       A_Down_Order: () =>
@@ -97,7 +99,7 @@ function Groups() {
       };
     console.log(typeof groups[0].creationDate);
 
-    let sortedGroups = sortings[selectedSortingLocal]();
+    const sortedGroups = sortings[selectedSortingLocal]();
     setGroups(sortedGroups);
   };
 
@@ -108,6 +110,7 @@ function Groups() {
       setExpandedRows([index]);
     }
     setSelectedRow(index);
+    setSelectedGroup(index);
   };
 
   const handleRowHover = (index: number | null) => {
@@ -152,7 +155,7 @@ function Groups() {
     index: number,
   ) => {
     event.stopPropagation();
-    let group = groups[index];
+    const group = groups[index];
     if (group.id) {
       getCourseLink(group.id);
     }
@@ -162,7 +165,7 @@ function Groups() {
     try {
       if (selectedRow !== null) {
         const itemFound = groups[selectedRow];
-        if (!!itemFound) {
+        if (itemFound) {
           const deleteGroup = new DeleteGroup(groupRepository);
           await deleteGroup.deleteGroup(itemFound.id || 0);
           setValidationDialogOpen(true);
@@ -227,6 +230,12 @@ function Groups() {
                   onMouseEnter={() => handleRowHover(index)}
                   onMouseLeave={() => handleRowHover(null)}
                 >
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedGroup == index}
+                      onChange={() => handleRowClick(index)}
+                    />
+                  </TableCell>
                   <TableCell>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
