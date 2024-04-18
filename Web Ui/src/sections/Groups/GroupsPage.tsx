@@ -329,7 +329,7 @@ function Groups() {
           content={
             <>
               Ten en cuenta que esta acción también eliminará <br /> todas las
-              tareas y estudiantes asociados.
+              tareas asociadas.
             </>
           }
           cancelText="Cancelar"

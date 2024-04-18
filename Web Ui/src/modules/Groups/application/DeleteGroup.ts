@@ -3,9 +3,9 @@ import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
 class DeleteGroup {
   constructor(private groupsRepository: GroupsRepositoryInterface) {}
 
-  async deleteGroup(groupid: number): Promise<void> {
+  async deleteGroup(id: number): Promise<void> {
     try {
-      await this.groupsRepository.deleteGroup(groupid);
+      await this.groupsRepository.deleteGroup(id);
     } catch (error) {
       console.error("Failed to delete group:", error);
       throw new Error("Failed to delete group");
