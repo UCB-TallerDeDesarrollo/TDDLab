@@ -15,7 +15,7 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
-
+import { saveSelectedGroup,loadSelectedGroup } from "../../utils/localStorageService";
 import {
   Table,
   TableHead,
@@ -68,6 +68,11 @@ function Groups() {
     };
 
     fetchGroups();
+
+    const savedSelectedGroup = loadSelectedGroup();
+    if(savedSelectedGroup !== null){
+      setSelectedGroup(savedSelectedGroup);
+    }
   }, []);
 
   const handleCreateGroupClick = () => {
@@ -109,8 +114,20 @@ function Groups() {
     } else {
       setExpandedRows([index]);
     }
-    setSelectedRow(index);
-    setSelectedGroup(index);
+    
+    const clickedGroup = groups.find((_group, i) => i === index);
+      if (clickedGroup && clickedGroup.id !== undefined) {
+        setSelectedGroup(clickedGroup.id);
+        saveSelectedGroup(clickedGroup.id);
+        setSelectedRow(index);
+      } else {
+        // Si no se encuentra el grupo o no tiene un ID válido, establecemos selectedGroup en null
+        setSelectedGroup(null);
+        // Además, limpiamos el grupo seleccionado almacenado en el almacenamiento local
+        saveSelectedGroup(null);
+        setSelectedRow(index);
+      }
+    
   };
 
   const handleRowHover = (index: number | null) => {
@@ -232,7 +249,7 @@ function Groups() {
                 >
                   <TableCell>
                     <Checkbox
-                      checked={selectedGroup == index}
+                      checked={selectedGroup == group.id}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
