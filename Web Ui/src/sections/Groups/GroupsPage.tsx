@@ -99,7 +99,7 @@ function Groups() {
           (a, b) =>
             new Date(b.creationDate).getTime() -
             new Date(a.creationDate).getTime(),
-        ),// Assuming timestamp is a property of groups for time comparison
+        ),
             
       };
     console.log(typeof groups[0].creationDate);
@@ -121,9 +121,8 @@ function Groups() {
         saveSelectedGroup(clickedGroup.id);
         setSelectedRow(index);
       } else {
-        // Si no se encuentra el grupo o no tiene un ID válido, establecemos selectedGroup en null
+        
         setSelectedGroup(null);
-        // Además, limpiamos el grupo seleccionado almacenado en el almacenamiento local
         saveSelectedGroup(null);
         setSelectedRow(index);
       }
