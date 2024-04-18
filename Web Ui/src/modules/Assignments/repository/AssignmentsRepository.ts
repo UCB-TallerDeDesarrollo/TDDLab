@@ -2,7 +2,7 @@ import axios from "axios"; // Import Axios or your preferred HTTP library
 import { AssignmentDataObject } from "../domain/assignmentInterfaces"; // Import your assignment model
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/assignments";
+const API_URL = "https://tdd-lab-api-gold.vercel.app/api/assignments"; //Modificar por: http://localhost:5173/api/assignments
 
 class AssignmentsRepository implements AssignmentsRepositoryInterface {
   async getAssignments(): Promise<AssignmentDataObject[]> {
