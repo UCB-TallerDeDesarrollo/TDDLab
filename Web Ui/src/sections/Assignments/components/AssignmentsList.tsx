@@ -24,6 +24,7 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
+import { loadSelectedGroup } from "../../../utils/localStorageService";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -98,10 +99,18 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-        console.log("groups",allGroups)
-        const data = await getAssignments.obtainAssignmentsByGroupId(67);
-        setAssignments(data);
-        orderAssignments([...data], selectedSorting);
+        console.log("groups",allGroups);
+
+        const savedSelectedGroup = loadSelectedGroup();
+        console.log("grupo seleccionado",savedSelectedGroup);
+        const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
+        if(selectedGroup && selectedGroup.id !== undefined){
+          setSelectedGroup(selectedGroup.id);
+          const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
+          setAssignments(data);
+          orderAssignments([...data], selectedSorting);
+        }
+        
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
@@ -193,7 +202,7 @@ function Assignments({
                     selectedGroup={selectedGroup}
                     groupList={groupList}
                     onChangeHandler={handleGroupChange}
-                    defaultName="IngSoftware2024-1"
+                    defaultName={"Selecciona un grupo"}
                   />
                 ) : (
                   <span>No hay grupos disponibles</span>
