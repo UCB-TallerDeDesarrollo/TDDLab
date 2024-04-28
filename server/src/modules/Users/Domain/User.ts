@@ -1,5 +1,5 @@
 export interface User {
   email: string;
-  course: number;
+  groupid: number;
   role: string;
 }

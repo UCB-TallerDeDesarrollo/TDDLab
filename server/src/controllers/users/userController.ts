@@ -4,16 +4,16 @@ import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 
 export const registerUserController = (req: Request, res: Response): void => {
-  const { email, course, role } = req.body;
+  const { email, groupid, role } = req.body;
 
-  if (!email || !course || !role) {
+  if (!email || !groupid || !role) {
     res.status(400).json({
       error: "Debes proporcionar un correo, curso y rol validos",
     });
     return;
   }
 
-  registerUser({ email: email, course: course, role: role });
+  registerUser({ email: email, groupid: groupid, role: role });
 
   res.status(201).json({ message: "Usuario registrado con éxito." });
 };
