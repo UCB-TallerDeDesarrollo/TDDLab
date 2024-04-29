@@ -2,6 +2,6 @@ import UserOnDb from "../../../../src/modules/User-Authentication/domain/userOnD
 
 export const dbUserMock: UserOnDb = {
   email: "test@gmail.com",
-  course: 1,
+  groupid: 1,
   role: "student",
 };
