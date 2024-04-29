@@ -20,7 +20,7 @@ describe("RegisterUserOnDb class", () => {
   it("should register a user successfully", async () => {
     const mockUser: UserOnDb = {
       email: "test@example.com",
-      course: 2,
+      groupid: 2,
       role: "student",
     };
 
