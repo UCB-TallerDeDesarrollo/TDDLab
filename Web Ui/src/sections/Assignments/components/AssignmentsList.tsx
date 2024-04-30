@@ -57,7 +57,7 @@ function Assignments({
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
-  const [selectedGroup, setSelectedGroup] = useState<number>(0);
+  const [, setSelectedGroup] = useState<number>(0);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -123,21 +123,27 @@ function Assignments({
     orderAssignments([...assignments], event.target.value);
   };
 
-  const handleGroupChange = async (event: SelectChangeEvent<number>) => {
-    const groupId = event.target.value as number;
-    setSelectedGroup(groupId);
-    try {
-      const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
-      setAssignments(assignments);
-    } catch (error) {
-      console.error("Error fetching assignments by group ID:", error);
-    }
-  };
+  // const handleGroupChange = async (event: SelectChangeEvent<number>) => {
+  //   const groupId = event.target.value as number;
+  //   setSelectedGroup(groupId);
+  //   try {
+  //     const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
+  //     setAssignments(assignments);
+  //   } catch (error) {
+  //     console.error("Error fetching assignments by group ID:", error);
+  //   }
+  // };
 
+  const [selectedGroupFilter, setSelectedGroupFilter] = useState<number | "">("");
+
+  const handleGroupFilterChange = (event: SelectChangeEvent<number>) => {
+    const groupId = event.target.value as number;
+    setSelectedGroupFilter(groupId);
+  };
  
-  const filteredAssignments = selectedGroup
-  ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-  : assignments;
+  const filteredAssignments = selectedGroupFilter
+  ? assignments.filter((assignment) => assignment.groupid === selectedGroupFilter)
+  : [];
 
   const handleClickDetail = (index: number) => {
     navigate(`/assignment/${filteredAssignments[index].id}`);
@@ -199,9 +205,9 @@ function Assignments({
                 <ButtonContainer>
                 {groupList.length > 0 ? (
                   <GroupFilter
-                    selectedGroup={selectedGroup}
+                    selectedGroup={selectedGroupFilter}
                     groupList={groupList}
-                    onChangeHandler={handleGroupChange}
+                    onChangeHandler={handleGroupFilterChange}
                     defaultName={"Selecciona un grupo"}
                   />
                 ) : (

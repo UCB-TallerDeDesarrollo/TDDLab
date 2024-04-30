@@ -3,7 +3,7 @@ import { MenuItem, SelectChangeEvent, Select } from "@mui/material";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 
 interface GroupFilterProps {
-  selectedGroup: number;
+  selectedGroup: number | "";
   groupList: GroupDataObject[];
   
   onChangeHandler: (event: SelectChangeEvent<number>) => void;
