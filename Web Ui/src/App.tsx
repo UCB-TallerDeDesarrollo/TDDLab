@@ -47,14 +47,14 @@ function App() {
       setGlobalState("authData", {
         userProfilePic: storedSession.userData.photoURL,
         userEmail: storedSession.userData.email,
-        userCourse: storedSession.course,
+        usergroupid: storedSession.course,
         userRole: storedSession.role,
       });
     } else {
       setGlobalState("authData", {
         userProfilePic: "",
         userEmail: "",
-        userCourse: -1,
+        usergroupid: -1,
         userRole: "",
       });
     }
