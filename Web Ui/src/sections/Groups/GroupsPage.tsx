@@ -29,6 +29,7 @@ import {
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
+// import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -59,6 +60,7 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  // const [, setGroupTasks] = useState<any[]>([]);
   
   useEffect(() => {
     const fetchGroups = async () => {
@@ -74,6 +76,15 @@ function Groups() {
       setSelectedGroup(savedSelectedGroup);
     }
   }, []);
+
+  // useEffect(() => {
+  //   const fetchGroupTasks = async () => {
+  //     const tasks:AssignmentDataObject[] = [];
+  //     setGroupTasks(tasks);
+  //   };
+
+  //   fetchGroupTasks();
+  // }, [selectedGroup]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
