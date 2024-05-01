@@ -101,6 +101,7 @@ function Assignments({
   //const [userGroupid, setUserGroupid] = useState<number | null>(null);
 
   useEffect(() => {
+    console.log("Valor de userGroupid:", userGroupid);
     const fetchData = async () => {
       try {
         const allGroups = await getGroups.getGroups();
@@ -206,16 +207,15 @@ function Assignments({
               </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                {userRole !== "student" && groupList.length > 0 ?(
-                  
+                {userRole !== "student" && groupList.length > 0 ?(  
                   <GroupFilter
                     selectedGroup={selectedGroup}
                     groupList={groupList}
                     onChangeHandler={handleGroupChange}
-                    defaultName={"Selecciona un grupo"}
+                    defaultName={groupList.find(group => group.id === userGroupid)?.groupName || "Selecciona un grupo"}
                   />
                 ):(
-                    <span>No hay grupos disponibles</span>
+                  <span>{groupList.find(group => group.id === userGroupid)?.groupName || "No hay grupos disponibles"}</span>
                   )}
 
                   <SortingComponent
