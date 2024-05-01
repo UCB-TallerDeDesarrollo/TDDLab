@@ -1,6 +1,6 @@
 export interface UserDataObject {
     id?: number;
     email: string;
-    course: string;
+    groupid: number;
     role: string;
   }

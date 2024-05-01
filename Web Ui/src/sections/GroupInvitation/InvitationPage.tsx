@@ -18,12 +18,13 @@ import PasswordComponent from "./components/PasswordPopUp";
 
 function InvitationPage() {
   const location = useLocation();
-  const getQueryParam = (param: string) => {
+  const getQueryParam = (param: string): number | undefined => {
     const searchParams = new URLSearchParams(location.search);
-    return searchParams.get(param);
+    const value = searchParams.get(param);
+    return value ? parseInt(value, 10) : undefined;
   };
 
-  const courseId = getQueryParam("courseId");
+  const groupid = getQueryParam("groupid");
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
@@ -63,13 +64,13 @@ function InvitationPage() {
 
   const handleAcceptInvitation = async (type: string) => {
     console.log(user?.email);
-    console.log(courseId);
+    console.log(groupid);
 
     // Have to Solve courseId error
     if (user?.email) {
       const userObj: UserOnDb = {
         email: user.email,
-        course: 1,
+        groupid: groupid ?? 1,
         role: type,
       };
       await dbAuthPort.register(userObj);
