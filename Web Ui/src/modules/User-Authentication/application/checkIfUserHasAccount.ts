@@ -9,7 +9,7 @@ export class CheckIfUserHasAccount {
 
   async userHasAnAcount(email: string) {
     let answerData: UserOnDb = await this.adapter.getAccountInfo(email);
-    if (answerData.course) {
+    if (answerData.groupid) {
       return answerData;
     }
     return null;

@@ -19,8 +19,8 @@ export class UserRepository {
   async registerUser(user: User) {
     const client = await this.pool.connect();
     try {
-      const query = "INSERT INTO usersTable (email,course,role) VALUES ($1, $2, $3)";
-      const values = [user.email, user.course, user.role];
+      const query = "INSERT INTO usersTable (email,groupid,role) VALUES ($1, $2, $3)";
+      const values = [user.email, user.groupid, user.role];
 
       await client.query(query, values);
     } catch (error) {
@@ -32,7 +32,7 @@ export class UserRepository {
     }
   }
   async obtainUser(email: string): Promise<User | null> {
-    const query = "SELECT email, course, role FROM usersTable WHERE email = $1";
+    const query = "SELECT email, groupid, role FROM usersTable WHERE email = $1";
     const values = [email];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
@@ -41,7 +41,7 @@ export class UserRepository {
     return null;
   }
   async obtainUsers(): Promise<User[] | null> {
-    const query = "SELECT email, course, role FROM usersTable";
+    const query = "SELECT email, groupid, role FROM usersTable";
     const rows = await this.executeQuery(query);
     return rows.length > 0 ? rows : null;
   }
