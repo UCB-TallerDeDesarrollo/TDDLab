@@ -1,6 +1,6 @@
 interface UserOnDb {
   email: string;
-  groupid: number;
+  course: number;
   role: string;
 }
 

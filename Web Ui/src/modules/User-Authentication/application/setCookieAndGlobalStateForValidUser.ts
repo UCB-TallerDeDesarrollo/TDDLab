@@ -5,20 +5,20 @@ import UserOnDb from "../domain/userOnDb.interface";
 
 export function setCookieAndGlobalStateForValidUser(
   userData: User,
-  usergroupid: UserOnDb | null,
+  userCourse: UserOnDb | null,
   positiveCallback = () => {},
 ) {
-  if (usergroupid && userData.photoURL && userData.email) {
+  if (userCourse && userData.photoURL && userData.email) {
     setGlobalState("authData", {
       userProfilePic: userData.photoURL,
       userEmail: userData.email,
-      usergroupid: usergroupid.groupid,
-      userRole: usergroupid.role,
+      userCourse: userCourse.course,
+      userRole: userCourse.role,
     });
     setSessionCookie({
       userData,
-      role: usergroupid.role,
-      course: usergroupid.groupid,
+      role: userCourse.role,
+      course: userCourse.course,
     });
     positiveCallback();
   } else {

@@ -4,14 +4,14 @@ const { setGlobalState, useGlobalState } = createGlobalState<{
   authData: {
     userProfilePic: string | undefined;
     userEmail: string | undefined;
-    usergroupid: number | undefined;
+    userCourse: number | undefined;
     userRole: string | undefined;
   };
 }>({
   authData: {
     userProfilePic: undefined,
     userEmail: undefined,
-    usergroupid: undefined,
+    userCourse: undefined,
     userRole: undefined,
   },
 });

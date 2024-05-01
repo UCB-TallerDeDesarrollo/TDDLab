@@ -81,7 +81,7 @@ function UserPage() {
                   borderBottom: "2px solid #E7E7E7" 
                 }}>
                   <TableCell sx={{ lineHeight: "3" }}>{user.email}</TableCell>
-                  <TableCell sx={{ lineHeight: "3" }}>{user.groupid}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.course}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
