@@ -106,13 +106,13 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-        console.log("groups",allGroups);
 
+        const savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
+
+        console.log("groups", allGroups);
+        console.log("user group id:", userGroupid);
+        console.log("grupo seleccionado", savedSelectedGroup);
         
-
-        setSelectedGroup(userGroupid);
-        const savedSelectedGroup = loadSelectedGroup();
-        console.log("grupo seleccionado",savedSelectedGroup);
         const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
         if(selectedGroup && selectedGroup.id !== undefined){
           setSelectedGroup(selectedGroup.id);
@@ -120,7 +120,7 @@ function Assignments({
           setAssignments(data);
           orderAssignments([...data], selectedSorting);
         }
-        
+        console.log("grupo_seleccionado: ", savedSelectedGroup);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
