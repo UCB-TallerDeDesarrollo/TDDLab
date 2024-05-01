@@ -26,6 +26,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { loadSelectedGroup } from "../../../utils/localStorageService";
 
+
 const StyledTable = styled(Table)({
   width: "82%",
   marginLeft: "auto",
@@ -48,11 +49,13 @@ const CustomTableCell2 = styled(TableCell)({
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
+  userGroupid: number;
 }
 
 function Assignments({
   ShowForm: showForm,
   userRole,
+  userGroupid,
 }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -94,6 +97,9 @@ function Assignments({
     }
     setAssignments(assignmentsArray);
   };
+
+  //const [userGroupid, setUserGroupid] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -101,6 +107,9 @@ function Assignments({
         setGroupList(allGroups);
         console.log("groups",allGroups);
 
+        
+
+        setSelectedGroup(userGroupid);
         const savedSelectedGroup = loadSelectedGroup();
         console.log("grupo seleccionado",savedSelectedGroup);
         const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
@@ -197,16 +206,17 @@ function Assignments({
               </CustomTableCell1>
               <CustomTableCell2>
                 <ButtonContainer>
-                {groupList.length > 0 ? (
+                {userRole !== "student" && groupList.length > 0 ?(
+                  
                   <GroupFilter
                     selectedGroup={selectedGroup}
                     groupList={groupList}
                     onChangeHandler={handleGroupChange}
                     defaultName={"Selecciona un grupo"}
                   />
-                ) : (
-                  <span>No hay grupos disponibles</span>
-                )}
+                ):(
+                    <span>No hay grupos disponibles</span>
+                  )}
 
                   <SortingComponent
                     selectedSorting={selectedSorting}
