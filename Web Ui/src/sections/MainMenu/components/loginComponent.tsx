@@ -27,7 +27,7 @@ export default function LoginComponent() {
     setGlobalState("authData", {
       userProfilePic: "",
       userEmail: "",
-      usergroupid: -1,
+      userCourse: -1,
       userRole: "",
     });
     removeSessionCookie();
