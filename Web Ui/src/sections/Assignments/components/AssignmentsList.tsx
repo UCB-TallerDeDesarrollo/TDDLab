@@ -97,8 +97,6 @@ function Assignments({
     }
     setAssignments(assignmentsArray);
   };
-
-  //const [userGroupid, setUserGroupid] = useState<number | null>(null);
   let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
 
   useEffect(() => {
