@@ -99,21 +99,15 @@ function Assignments({
   };
 
   //const [userGroupid, setUserGroupid] = useState<number | null>(null);
-  const savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
+  let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
 
   useEffect(() => {
-    console.log("Valor de userGroupid:", userGroupid);
     const fetchData = async () => {
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
 
         const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
-
-        console.log("groups", allGroups);
-        console.log("user group id:", userGroupid);
-        console.log("grupo seleccionado", selectedGroup);
-        
         
         if(selectedGroup && selectedGroup.id !== undefined){
           setSelectedGroup(selectedGroup.id);
