@@ -60,3 +60,5 @@ export const getUsersController = async (_req: Request, res: Response): Promise<
     res.status(404).json({ message: "Usuarios no encontrado" });
   else res.status(200).json(userData);
 };
+
+
