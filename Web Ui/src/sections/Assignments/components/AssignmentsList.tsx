@@ -99,6 +99,7 @@ function Assignments({
   };
 
   //const [userGroupid, setUserGroupid] = useState<number | null>(null);
+  const savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
 
   useEffect(() => {
     console.log("Valor de userGroupid:", userGroupid);
@@ -107,26 +108,26 @@ function Assignments({
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
 
-        const savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
+        const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
 
         console.log("groups", allGroups);
         console.log("user group id:", userGroupid);
-        console.log("grupo seleccionado", savedSelectedGroup);
+        console.log("grupo seleccionado", selectedGroup);
         
-        const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
+        
         if(selectedGroup && selectedGroup.id !== undefined){
           setSelectedGroup(selectedGroup.id);
           const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
           setAssignments(data);
           orderAssignments([...data], selectedSorting);
         }
-        console.log("grupo_seleccionado: ", savedSelectedGroup);
+        console.log("grupo_seleccionado: ", selectedGroup);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [userGroupid]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
