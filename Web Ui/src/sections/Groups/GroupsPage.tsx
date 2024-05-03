@@ -15,7 +15,7 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
-import { saveSelectedGroup,loadSelectedGroup } from "../../utils/localStorageService";
+
 import {
   Table,
   TableHead,
@@ -29,6 +29,8 @@ import {
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
+import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
+import { saveSelectedGroup } from "../../utils/localStorageService";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -57,9 +59,12 @@ function Groups() {
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
-  
+
+  const [authData, setAuthData] = useGlobalState("authData");
+
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -69,11 +74,13 @@ function Groups() {
 
     fetchGroups();
 
-    const savedSelectedGroup = loadSelectedGroup();
-    if(savedSelectedGroup !== null){
+    const savedSelectedGroup = authData.usergroupid;
+    if(typeof savedSelectedGroup === 'number'){
       setSelectedGroup(savedSelectedGroup);
+    }else{
+      setSelectedGroup(null);
     }
-  }, []);
+  }, [authData]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -109,6 +116,7 @@ function Groups() {
   };
 
   const handleRowClick = (index: number) => {
+    
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
@@ -117,13 +125,10 @@ function Groups() {
     
     const clickedGroup = groups.find((_group, i) => i === index);
       if (clickedGroup && clickedGroup.id !== undefined) {
-        setSelectedGroup(clickedGroup.id);
-        saveSelectedGroup(clickedGroup.id);
+        const uptdatedAuthData = {...authData,selectedGroupId: clickedGroup.id}
+        setAuthData(uptdatedAuthData);
         setSelectedRow(index);
       } else {
-        
-        setSelectedGroup(67);
-        saveSelectedGroup(67);
         setSelectedRow(index);
       }
     
@@ -248,7 +253,7 @@ function Groups() {
                 >
                   <TableCell>
                     <Checkbox
-                      checked={selectedGroup == group.id}
+                      checked={authData.usergroupid == group.id}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
