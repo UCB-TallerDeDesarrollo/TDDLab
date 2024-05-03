@@ -22,7 +22,21 @@ class UsersRepository implements UsersRepositoryInterface {
       console.error("Error fetching users by group ID:", error);
       throw error
     }
-
+  }
+  async getUserByEmail(email: string): Promise<UserDataObject | null> {
+    try {
+      const response = await axios.get(`${API_URL}/${email}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user by ID:", error);
+      throw error;
+    }
+  }
+  async updateUser(
+    email: string,
+    userData: UserDataObject
+  ): Promise<void> {
+    await axios.put(`${API_URL}/${email}`, userData);
   }
 }
 
