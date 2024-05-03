@@ -30,6 +30,9 @@ import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
+import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
+
+
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
@@ -58,11 +61,15 @@ function Groups() {
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
   const userRepository = new UsersRepository();  // Assuming UsersRepository is imported
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
+
+  const [authData, setAuthData] = useGlobalState("authData");
+
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -81,9 +88,15 @@ function Groups() {
         setSelectedGroup(groupId);
       }
     };
-  
+    const savedSelectedGroup = authData.usergroupid;
+    if(typeof savedSelectedGroup === 'number'){
+      setSelectedGroup(savedSelectedGroup);
+    }else{
+      setSelectedGroup(null);
+    }
     fetchGroups();
-  }, [location.search, defaultGroup]);
+  }, [location.search, defaultGroup, authData.usergroupid, groupRepository]);
+
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -119,18 +132,21 @@ function Groups() {
   };
 
   const handleRowClick = (index: number) => {
+    
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
       setExpandedRows([index]);
     }
     
-    const clickedGroup = groups[index];
-    if (clickedGroup && clickedGroup.id !== undefined) {
-      setSelectedGroup(clickedGroup.id);
-      setDefaultGroup(clickedGroup.id);
-      setSelectedRow(index);
-    }
+    const clickedGroup = groups.find((_group, i) => i === index);
+      if (clickedGroup && clickedGroup.id !== undefined) {
+        const uptdatedAuthData = {...authData,selectedGroupId: clickedGroup.id}
+        setAuthData(uptdatedAuthData);
+        setSelectedRow(index);
+      } else {
+        setSelectedRow(index);
+      }
     
   };
 
@@ -267,7 +283,7 @@ function Groups() {
                 >
                   <TableCell>
                     <Checkbox
-                      checked={selectedGroup == group.id}
+                      checked={authData.usergroupid == group.id}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
