@@ -7,6 +7,13 @@ export class UserRepository {
   constructor() {
     this.pool = new Pool(config);
   }
+  public mapRowToUser(row: any): User{
+    return{
+      email:row.email,
+      role:row.role,
+      groupid:row.groupid,
+    };
+  }
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
     const client = await this.pool.connect();
     try {
@@ -44,5 +51,12 @@ export class UserRepository {
     const query = "SELECT email, groupid, role FROM usersTable";
     const rows = await this.executeQuery(query);
     return rows.length > 0 ? rows : null;
+  }
+
+  async getUsersByGroupid(groupid: number): Promise<User[]> {
+    const query = "SELECT * FROM userstable WHERE groupid = $1";
+    const values = [groupid];
+    const rows = await this.executeQuery(query,values);
+    return rows.map((row) => this.mapRowToUser(row));
   }
 }
