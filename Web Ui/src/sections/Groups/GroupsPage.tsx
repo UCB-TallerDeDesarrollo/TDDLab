@@ -15,7 +15,7 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
-import { saveSelectedGroup,loadSelectedGroup } from "../../utils/localStorageService";
+// import { saveSelectedGroup } from "../../utils/localStorageService";
 import {
   Table,
   TableHead,
@@ -60,20 +60,37 @@ function Groups() {
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
   
+  // useEffect(() => {
+  //   const fetchGroups = async () => {
+  //     const getGroups = new GetGroups(groupRepository);
+  //     const allGroups = await getGroups.getGroups();
+  //     setGroups(allGroups);
+  //   };
+
+  //   fetchGroups();
+
+  //   const savedSelectedGroup = loadSelectedGroup();
+  //   if(savedSelectedGroup !== null){
+  //     setSelectedGroup(savedSelectedGroup);
+  //   }
+  // }, []);
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
+  
+      const params = new URLSearchParams(location.search);
+      const groupIdParam = params.get("groupId");
+  
+      if (groupIdParam !== null) {
+        const groupId = parseInt(groupIdParam, 10);
+        setSelectedGroup(groupId);
+      }
     };
-
+  
     fetchGroups();
-
-    const savedSelectedGroup = loadSelectedGroup();
-    if(savedSelectedGroup !== null){
-      setSelectedGroup(savedSelectedGroup);
-    }
-  }, []);
+  }, [location.search]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -109,23 +126,35 @@ function Groups() {
   };
 
   const handleRowClick = (index: number) => {
+    // if (expandedRows.includes(index)) {
+    //   setExpandedRows(expandedRows.filter((row) => row !== index));
+    // } else {
+    //   setExpandedRows([index]);
+    // }
+    
+    // const clickedGroup = groups.find((_group, i) => i === index);
+    //   if (clickedGroup && clickedGroup.id !== undefined) {
+    //     setSelectedGroup(clickedGroup.id);
+    //     saveSelectedGroup(clickedGroup.id);
+    //     setSelectedRow(index);
+    //   } else {
+        
+    //     setSelectedGroup(67);
+    //     saveSelectedGroup(67);
+    //     setSelectedRow(index);
+    //   }
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
       setExpandedRows([index]);
     }
     
-    const clickedGroup = groups.find((_group, i) => i === index);
-      if (clickedGroup && clickedGroup.id !== undefined) {
-        setSelectedGroup(clickedGroup.id);
-        saveSelectedGroup(clickedGroup.id);
-        setSelectedRow(index);
-      } else {
-        
-        setSelectedGroup(67);
-        saveSelectedGroup(67);
-        setSelectedRow(index);
-      }
+    const clickedGroup = groups[index];
+    if (clickedGroup && clickedGroup.id !== undefined) {
+      setSelectedGroup(clickedGroup.id);
+      setSelectedRow(index);
+      // navigate(`/?groupId=${clickedGroup.id}`);
+    }
     
   };
 
@@ -142,8 +171,14 @@ function Groups() {
     index: number,
   ) => {
     event.stopPropagation();
-    setSelectedRow(index);
-    navigate("/");
+    // setSelectedRow(index);
+    // navigate("/");
+    const clickedGroup = groups[index];
+    if (clickedGroup && clickedGroup.id !== undefined) {
+      // setSelectedGroup(clickedGroup.id);
+      setSelectedRow(index);
+      navigate(`/?groupId=${clickedGroup.id}`);
+    }
   };
 
 
