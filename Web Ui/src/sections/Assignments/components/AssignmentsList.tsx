@@ -24,7 +24,8 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
-import { loadSelectedGroup } from "../../../utils/localStorageService";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -73,7 +74,7 @@ function Assignments({
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
-
+  const [authData, setAuthData] = useGlobalState("authData");
 
 
   const orderAssignments = (
@@ -101,7 +102,7 @@ function Assignments({
         setGroupList(allGroups);
         console.log("groups",allGroups);
 
-        const savedSelectedGroup = loadSelectedGroup();
+        const savedSelectedGroup = authData.usergroupid;
         console.log("grupo seleccionado",savedSelectedGroup);
         const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
         if(selectedGroup && selectedGroup.id !== undefined){
@@ -126,9 +127,18 @@ function Assignments({
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
     const groupId = event.target.value as number;
     setSelectedGroup(groupId);
+    const uptdatedAuthData = {...authData,usergroupid: groupId};
+    setAuthData(uptdatedAuthData);
     try {
-      const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
-      setAssignments(assignments);
+      if (authData && authData.usergroupid !== undefined){
+        const assignments = await assignmentsRepository.getAssignmentsByGroupId(authData.usergroupid);
+        setAssignments(assignments);
+      }
+      else{
+        const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
+        setAssignments(assignments);
+      }
+      
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);
     }
