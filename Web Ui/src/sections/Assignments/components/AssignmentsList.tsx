@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import {
   Table,
@@ -24,7 +24,7 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
-import { loadSelectedGroup } from "../../../utils/localStorageService";
+// import { loadSelectedGroup } from "../../../utils/localStorageService";
 
 
 const StyledTable = styled(Table)({
@@ -65,7 +65,7 @@ function Assignments({
     number | null
   >(null);
   const navigate = useNavigate();
-
+  const location = useLocation();
 
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
@@ -97,29 +97,69 @@ function Assignments({
     }
     setAssignments(assignmentsArray);
   };
-  let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
+  // let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-
-        const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
         
-        if(selectedGroup && selectedGroup.id !== undefined){
-          setSelectedGroup(selectedGroup.id);
-          const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
-          setAssignments(data);
-          orderAssignments([...data], selectedSorting);
+        // const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
+        
+        // if(selectedGroup && selectedGroup.id !== undefined){
+        //   setSelectedGroup(selectedGroup.id);
+        //   const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
+        //   setAssignments(data);
+        //   orderAssignments([...data], selectedSorting);
+        // }
+        // console.log("grupo_seleccionado: ", selectedGroup);
+        // Nueva idea
+
+        // // Obtener el groupId de la URL si está presente
+        // const params = new URLSearchParams(location.search);
+        // let groupId = parseInt(params.get("groupId") ?? "", 10); // Usar el operador de coalescencia nula para evitar 'undefined'
+
+        // if (!groupId && allGroups.length > 0) {
+        //   // Si no hay groupId seleccionado y hay grupos disponibles, seleccionar el más reciente
+        //   groupId = allGroups[0].id;
+        // }
+
+        // setSelectedGroup(groupId);
+        // const data = await getAssignments.obtainAssignmentsByGroupId(groupId);
+        // setAssignments(data);
+        // orderAssignments([...data], selectedSorting);
+
+        const params = new URLSearchParams(location.search);
+        const groupIdParam = params.get("groupId");
+  
+        let selectedGroupId: number | null = null;
+  
+        if (groupIdParam) {
+          selectedGroupId = parseInt(groupIdParam, 10);
+        } else {
+          // Si no hay grupo seleccionado en los parámetros de la URL,
+          // seleccionar el último grupo creado
+          if (allGroups.length > 0) {
+            selectedGroupId = allGroups[allGroups.length - 1].id;
+            setSelectedGroup(selectedGroupId);
+            navigate(`?groupId=${selectedGroupId}`);
+          }
         }
-        console.log("grupo_seleccionado: ", selectedGroup);
+  
+        // Obtener las tareas del grupo seleccionado o de todos los grupos si no hay ninguno seleccionado
+        const tasks = selectedGroupId
+          ? await getAssignments.obtainAssignmentsByGroupId(selectedGroupId)
+          : await assignmentsRepository.getAssignments();
+  
+        setAssignments(tasks);
+        orderAssignments([...tasks], selectedSorting);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
     fetchData();
-  }, [userGroupid]);
+  }, [location.search, userGroupid]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
@@ -129,6 +169,9 @@ function Assignments({
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
     const groupId = event.target.value as number;
     setSelectedGroup(groupId);
+    // Actualizar la URL con el nuevo groupId
+    navigate(`/?groupId=${groupId}`);
+
     try {
       const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
       setAssignments(assignments);
