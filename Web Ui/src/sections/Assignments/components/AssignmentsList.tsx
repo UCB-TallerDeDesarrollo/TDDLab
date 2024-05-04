@@ -13,7 +13,6 @@ import {
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AddIcon from "@mui/icons-material/Add";
-import { GetAssignmentsByGroupId } from "../../../modules/Assignments/application/GetAssignmentsByGroupid";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
@@ -24,6 +23,8 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -59,7 +60,7 @@ function Assignments({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
-  const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
+ 
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -69,13 +70,13 @@ function Assignments({
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
-  const getAssignments = new GetAssignmentsByGroupId(assignmentsRepository);
+
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
 
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
-
+  const [authData, setAuthData] = useGlobalState("authData");
 
 
   const orderAssignments = (
@@ -102,28 +103,12 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-        const params = new URLSearchParams(location.search);
-        const groupIdParam = params.get("groupId");
-  
-        let selectedGroupId: number | null = null;
-  
-        if (groupIdParam) {
-          selectedGroupId = parseInt(groupIdParam, 10);
-        } else {
-          if (allGroups.length > 0) {
-            selectedGroupId = allGroups[0].id;
-            setDefaultGroup(selectedGroupId)
-            setSelectedGroup(selectedGroupId);
-            navigate(`/?groupId=${selectedGroupId}`);
-          }
-        }
-      
-        const assignments = selectedGroupId
-          ? await getAssignments.obtainAssignmentsByGroupId(selectedGroupId)
-          : await assignmentsRepository.getAssignments();
-          
-        const selectedGroup = allGroups.find((group) => group.id === selectedGroupId);
-        if (selectedGroup) {
+        console.log("groups",allGroups);
+
+        const savedSelectedGroup = authData.usergroupid;
+        console.log("grupo seleccionado",savedSelectedGroup);
+        const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
+        if(selectedGroup && selectedGroup.id !== undefined){
           setSelectedGroup(selectedGroup.id);
         }
         setAssignments(assignments);
@@ -141,10 +126,12 @@ function Assignments({
   };
 
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
-    const groupid = event.target.value as number;
-    setSelectedGroup(groupid);
+    const groupId = event.target.value as number;
+    setSelectedGroup(groupId);
+    const uptdatedAuthData = {...authData,usergroupid: groupId};
+    setAuthData(uptdatedAuthData);
     try {
-      const assignments = await assignmentsRepository.getAssignmentsByGroupid(groupid);
+      const assignments = await assignmentsRepository.getAssignmentsByGroupid(groupId);
       setAssignments(assignments);
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);

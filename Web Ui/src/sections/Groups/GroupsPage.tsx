@@ -140,13 +140,19 @@ function Groups() {
     }
     
     const clickedGroup = groups.find((_group, i) => i === index);
+    console.log("grupo encontrado",clickedGroup);
       if (clickedGroup && clickedGroup.id !== undefined) {
-        const uptdatedAuthData = {...authData,selectedGroupId: clickedGroup.id}
+        setSelectedGroup(clickedGroup.id);
+        const uptdatedAuthData = {...authData,usergroupid: clickedGroup.id}
+        console.log("grupo actualizado:", uptdatedAuthData);
         setAuthData(uptdatedAuthData);
         setSelectedRow(index);
-      } else {
-        setSelectedRow(index);
+        console.log("guardado en user",selectedGroup);
+  
       }
+      setSelectedRow(index);
+      console.log("guardado en user: ",selectedGroup);
+
     
   };
 
