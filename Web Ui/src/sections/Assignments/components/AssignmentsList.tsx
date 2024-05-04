@@ -114,21 +114,8 @@ function Assignments({
         //   orderAssignments([...data], selectedSorting);
         // }
         // console.log("grupo_seleccionado: ", selectedGroup);
+        
         // Nueva idea
-
-        // // Obtener el groupId de la URL si está presente
-        // const params = new URLSearchParams(location.search);
-        // let groupId = parseInt(params.get("groupId") ?? "", 10); // Usar el operador de coalescencia nula para evitar 'undefined'
-
-        // if (!groupId && allGroups.length > 0) {
-        //   // Si no hay groupId seleccionado y hay grupos disponibles, seleccionar el más reciente
-        //   groupId = allGroups[0].id;
-        // }
-
-        // setSelectedGroup(groupId);
-        // const data = await getAssignments.obtainAssignmentsByGroupId(groupId);
-        // setAssignments(data);
-        // orderAssignments([...data], selectedSorting);
 
         const params = new URLSearchParams(location.search);
         const groupIdParam = params.get("groupId");
@@ -138,22 +125,24 @@ function Assignments({
         if (groupIdParam) {
           selectedGroupId = parseInt(groupIdParam, 10);
         } else {
-          // Si no hay grupo seleccionado en los parámetros de la URL,
-          // seleccionar el último grupo creado
           if (allGroups.length > 0) {
-            selectedGroupId = allGroups[allGroups.length - 1].id;
+            // selectedGroupId = allGroups[allGroups.length - 1].id;
+            selectedGroupId = allGroups[0].id;
             setSelectedGroup(selectedGroupId);
-            navigate(`?groupId=${selectedGroupId}`);
+            navigate(`/?groupId=${selectedGroupId}`);
           }
         }
-  
-        // Obtener las tareas del grupo seleccionado o de todos los grupos si no hay ninguno seleccionado
-        const tasks = selectedGroupId
+      
+        const assignments = selectedGroupId
           ? await getAssignments.obtainAssignmentsByGroupId(selectedGroupId)
           : await assignmentsRepository.getAssignments();
-  
-        setAssignments(tasks);
-        orderAssignments([...tasks], selectedSorting);
+          
+        const selectedGroup = allGroups.find((group) => group.id === selectedGroupId);
+        if (selectedGroup) {
+          setSelectedGroup(selectedGroup.id);
+        }
+        setAssignments(assignments);
+        orderAssignments([...assignments], selectedSorting);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
@@ -169,8 +158,6 @@ function Assignments({
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
     const groupId = event.target.value as number;
     setSelectedGroup(groupId);
-    // Actualizar la URL con el nuevo groupId
-    navigate(`/?groupId=${groupId}`);
 
     try {
       const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
