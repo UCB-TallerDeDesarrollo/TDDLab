@@ -30,7 +30,8 @@ import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
-import { saveSelectedGroup } from "../../utils/localStorageService";
+
+
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -61,7 +62,7 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
   const groupRepository = new GroupsRepository();
-  const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const [selectedGroup,setSelectedGroup] = useState<number | null>(null);
 
   const [authData, setAuthData] = useGlobalState("authData");
 
@@ -71,16 +72,16 @@ function Groups() {
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
     };
-
+  
     fetchGroups();
+    const savedSelectedGroup = authData?.usergroupid ?? 67;
+    setSelectedGroup(savedSelectedGroup);
+    console.log("guardado en user: ",selectedGroup);
 
-    const savedSelectedGroup = authData.usergroupid;
-    if(typeof savedSelectedGroup === 'number'){
-      setSelectedGroup(savedSelectedGroup);
-    }else{
-      setSelectedGroup(null);
-    }
-  }, [authData]);
+    
+    
+  }, []);
+  
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -124,13 +125,19 @@ function Groups() {
     }
     
     const clickedGroup = groups.find((_group, i) => i === index);
+    console.log("grupo encontrado",clickedGroup);
       if (clickedGroup && clickedGroup.id !== undefined) {
-        const uptdatedAuthData = {...authData,selectedGroupId: clickedGroup.id}
+        setSelectedGroup(clickedGroup.id);
+        const uptdatedAuthData = {...authData,usergroupid: clickedGroup.id}
+        console.log("grupo actualizado:", uptdatedAuthData);
         setAuthData(uptdatedAuthData);
         setSelectedRow(index);
-      } else {
-        setSelectedRow(index);
+        console.log("guardado en user",selectedGroup);
+  
       }
+      setSelectedRow(index);
+      console.log("guardado en user: ",selectedGroup);
+
     
   };
 
@@ -253,7 +260,7 @@ function Groups() {
                 >
                   <TableCell>
                     <Checkbox
-                      checked={authData.usergroupid == group.id}
+                      checked={selectedGroup == group.id}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
