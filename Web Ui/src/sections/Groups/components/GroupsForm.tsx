@@ -23,6 +23,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 }) => {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [groupId] = useState(Number);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const groupRepository = new GroupsRepository();
@@ -39,6 +40,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
     const createGroup = new CreateGroup(groupRepository);
     const payload: GroupDataObject = {
+      id: groupId,
       groupName: groupName,
       groupDetail: groupDescription,
       creationDate: new Date(),
