@@ -61,3 +61,154 @@ describe("getUsersByGroupId", () => {
     expect(clientQueryMock).not.toHaveBeenCalled();
   });
 });
+describe('executeQuery', () => {
+  it('should execute the query and return the rows', async () => {
+    const mockRows = [{ email: 'user1@example.com', groupid: 70, role: 'admin' }];
+    clientQueryMock.mockResolvedValue({ rows: mockRows });
+
+    const query = 'SELECT * FROM userstable';
+    const rows = await repository.executeQuery(query);
+
+    expect(rows).toEqual(mockRows);
+    expect(clientQueryMock).toHaveBeenCalledWith(query, undefined);
+  });
+
+  it('should execute the query with values and return the rows', async () => {
+    const mockRows = [{ email: 'user1@example.com', groupid: 70, role: 'admin' }];
+    clientQueryMock.mockResolvedValue({ rows: mockRows });
+
+    const query = 'SELECT * FROM userstable WHERE groupid = $1';
+    const values = [70];
+    const rows = await repository.executeQuery(query, values);
+
+    expect(rows).toEqual(mockRows);
+    expect(clientQueryMock).toHaveBeenCalledWith(query, values);
+  });
+
+  it('should handle errors when executing the query', async () => {
+    const error = new Error('Database error');
+    poolConnectMock.mockRejectedValue(error);
+
+    const query = 'SELECT * FROM userstable';
+
+    await expect(repository.executeQuery(query)).rejects.toThrow('Database error');
+    expect(clientQueryMock).not.toHaveBeenCalled();
+  });
+});
+describe('executeQuery', () => {
+    it('should execute the query and return the rows', async () => {
+      const mockRows = [{ email: 'user1@example.com', groupid: 70, role: 'admin' }];
+      clientQueryMock.mockResolvedValue({ rows: mockRows });
+  
+      const query = 'SELECT * FROM userstable';
+      const rows = await repository.executeQuery(query);
+  
+      expect(rows).toEqual(mockRows);
+      expect(clientQueryMock).toHaveBeenCalledWith(query, undefined);
+    });
+  
+    it('should execute the query with values and return the rows', async () => {
+      const mockRows = [{ email: 'user1@example.com', groupid: 70, role: 'admin' }];
+      clientQueryMock.mockResolvedValue({ rows: mockRows });
+  
+      const query = 'SELECT * FROM userstable WHERE groupid = $1';
+      const values = [70];
+      const rows = await repository.executeQuery(query, values);
+  
+      expect(rows).toEqual(mockRows);
+      expect(clientQueryMock).toHaveBeenCalledWith(query, values);
+    });
+  
+    it('should handle errors when executing the query', async () => {
+      const error = new Error('Database error');
+      poolConnectMock.mockRejectedValue(error);
+  
+      const query = 'SELECT * FROM userstable';
+  
+      await expect(repository.executeQuery(query)).rejects.toThrow('Database error');
+      expect(clientQueryMock).not.toHaveBeenCalled();
+    });
+  });
+  describe('mapRowToUser', () => {
+    it('should map a row to a User object correctly', () => {
+      const row = { email: 'user1@example.com', groupid: 70, role: 'admin' };
+      const user = repository.mapRowToUser(row);
+  
+      expect(user).toEqual({ email: 'user1@example.com', groupid: 70, role: 'admin' });
+    });
+  
+    it('should handle an empty row object', () => {
+      const user = repository.mapRowToUser({});
+  
+      expect(user).toEqual({ email: undefined, groupid: undefined, role: undefined });
+    });
+  });
+  describe('registerUser', () => {
+    it('should insert a new user into the database', async () => {
+      const newUser = { email: 'newuser@example.com', groupid: 70, role: 'user' };
+      clientQueryMock.mockResolvedValue({ rowCount: 1 });
+  
+      await repository.registerUser(newUser);
+  
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        'INSERT INTO usersTable (email,groupid,role) VALUES ($1, $2, $3)',
+        [newUser.email, newUser.groupid, newUser.role]
+      );
+    });
+  
+    it('should handle errors when inserting a new user', async () => {
+      const newUser = { email: 'newuser@example.com', groupid: 70, role: 'user' };
+      const error = new Error('Database error');
+      poolConnectMock.mockRejectedValue(error);
+  
+      await expect(repository.registerUser(newUser)).rejects.toThrow('Database error');
+      expect(clientQueryMock).not.toHaveBeenCalled();
+    });
+  });
+  
+  describe('obtainUser', () => {
+    it('should return a user when found by email', async () => {
+      const email = 'user1@example.com';
+      const expectedUser = { email: 'user1@example.com', groupid: 70, role: 'admin' };
+      clientQueryMock.mockResolvedValue({ rows: [expectedUser] });
+  
+      const user = await repository.obtainUser(email);
+  
+      expect(user).toEqual(expectedUser);
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable WHERE email = $1', [email]);
+    });
+  
+    it('should return null when no user is found by email', async () => {
+      const email = 'nonexistent@example.com';
+      clientQueryMock.mockResolvedValue({ rows: [] });
+  
+      const user = await repository.obtainUser(email);
+  
+      expect(user).toBeNull();
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable WHERE email = $1', [email]);
+    });
+  });
+  
+  describe('obtainUsers', () => {
+    it('should return all users when found', async () => {
+      const expectedUsers = [
+        { email: 'user1@example.com', groupid: 70, role: 'admin' },
+        { email: 'user2@example.com', groupid: 70, role: 'user' },
+      ];
+      clientQueryMock.mockResolvedValue({ rows: expectedUsers });
+  
+      const users = await repository.obtainUsers();
+  
+      expect(users).toEqual(expectedUsers);
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable', undefined);
+    });
+  
+    it('should return null when no users are found', async () => {
+      clientQueryMock.mockResolvedValue({ rows: [] });
+  
+      const users = await repository.obtainUsers();
+  
+      expect(users).toBeNull();
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable', undefined);
+    });
+  });
