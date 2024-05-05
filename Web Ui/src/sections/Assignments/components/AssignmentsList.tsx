@@ -24,8 +24,6 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
-// import { loadSelectedGroup } from "../../../utils/localStorageService";
-
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -98,26 +96,12 @@ function Assignments({
     }
     setAssignments(assignmentsArray);
   };
-  // let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-        
-        // const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
-        
-        // if(selectedGroup && selectedGroup.id !== undefined){
-        //   setSelectedGroup(selectedGroup.id);
-        //   const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
-        //   setAssignments(data);
-        //   orderAssignments([...data], selectedSorting);
-        // }
-        // console.log("grupo_seleccionado: ", selectedGroup);
-        
-        // Nueva idea
-
         const params = new URLSearchParams(location.search);
         const groupIdParam = params.get("groupId");
   
@@ -127,20 +111,11 @@ function Assignments({
           selectedGroupId = parseInt(groupIdParam, 10);
         } else {
           if (allGroups.length > 0) {
-            // selectedGroupId = allGroups[allGroups.length - 1].id;
             selectedGroupId = allGroups[0].id;
             setDefaultGroup(selectedGroupId)
             setSelectedGroup(selectedGroupId);
             navigate(`/?groupId=${selectedGroupId}`);
           }
-          // if(selectedGroupId && setDefaultGroup !== null){
-          //       setDefaultGroup(selectedGroupId)
-          //       setSelectedGroup(selectedGroupId);
-          //       navigate(`/?groupId=${selectedGroupId}`);
-          //       // const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
-          //       // setAssignments(data);
-          //       // orderAssignments([...data], selectedSorting);
-          // }
         }
       
         const assignments = selectedGroupId
@@ -206,8 +181,6 @@ function Assignments({
         await deleteAssignment.deleteAssignment(
           assignments[selectedAssignmentIndex].id,
         );
-  
-        // Remove the deleted assignment from the assignments list
         const updatedAssignments = [...assignments];
         updatedAssignments.splice(selectedAssignmentIndex, 1);
         setAssignments(updatedAssignments);

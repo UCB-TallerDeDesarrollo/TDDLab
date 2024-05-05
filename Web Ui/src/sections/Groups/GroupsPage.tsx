@@ -15,7 +15,6 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate, useLocation } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
-// import { saveSelectedGroup } from "../../utils/localStorageService";
 import {
   Table,
   TableHead,
@@ -61,21 +60,6 @@ function Groups() {
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
   const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
-  
-  // useEffect(() => {
-  //   const fetchGroups = async () => {
-  //     const getGroups = new GetGroups(groupRepository);
-  //     const allGroups = await getGroups.getGroups();
-  //     setGroups(allGroups);
-  //   };
-
-  //   fetchGroups();
-
-  //   const savedSelectedGroup = loadSelectedGroup();
-  //   if(savedSelectedGroup !== null){
-  //     setSelectedGroup(savedSelectedGroup);
-  //   }
-  // }, []);
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -132,23 +116,6 @@ function Groups() {
   };
 
   const handleRowClick = (index: number) => {
-    // if (expandedRows.includes(index)) {
-    //   setExpandedRows(expandedRows.filter((row) => row !== index));
-    // } else {
-    //   setExpandedRows([index]);
-    // }
-    
-    // const clickedGroup = groups.find((_group, i) => i === index);
-    //   if (clickedGroup && clickedGroup.id !== undefined) {
-    //     setSelectedGroup(clickedGroup.id);
-    //     saveSelectedGroup(clickedGroup.id);
-    //     setSelectedRow(index);
-    //   } else {
-        
-    //     setSelectedGroup(67);
-    //     saveSelectedGroup(67);
-    //     setSelectedRow(index);
-    //   }
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
@@ -160,8 +127,6 @@ function Groups() {
       setSelectedGroup(clickedGroup.id);
       setDefaultGroup(clickedGroup.id);
       setSelectedRow(index);
-      // navigate(`/?groupId=${clickedGroup.id}`);
-      // setDefaultGroup(clickedGroup.id);
     }
     
   };
@@ -179,16 +144,13 @@ function Groups() {
     index: number,
   ) => {
     event.stopPropagation();
-    // setSelectedRow(index);
-    // navigate("/");
     const clickedGroup = groups[index];
     if (clickedGroup && clickedGroup.id !== undefined) {
-      // setSelectedGroup(clickedGroup.id);
+      setSelectedGroup(clickedGroup.id);
       setSelectedRow(index);
       navigate(`/?groupId=${clickedGroup.id}`);
     }
   };
-
 
   const handleStudentsClick = (
     event: React.MouseEvent<HTMLButtonElement>,
