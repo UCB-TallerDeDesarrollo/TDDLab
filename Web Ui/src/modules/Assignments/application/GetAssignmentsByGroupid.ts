@@ -6,7 +6,7 @@ export class GetAssignmentsByGroupId {
 
   async obtainAssignmentsByGroupId(groupId: number): Promise<AssignmentDataObject[]> {
     try {
-      return await this.assignmentsRepository.getAssignmentsByGroupId(groupId);
+      return await this.assignmentsRepository.getAssignmentsByGroupid(groupId);
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);
       throw error;
