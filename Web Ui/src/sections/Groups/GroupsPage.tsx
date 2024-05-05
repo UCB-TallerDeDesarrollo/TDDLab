@@ -59,28 +59,35 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
-  const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
+  // const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
       
-      if (allGroups.length > 0 && defaultGroup === null) {
-        const lastGroup = allGroups[0];
-        setDefaultGroup(lastGroup.id);
-      }
       const params = new URLSearchParams(location.search);
       const groupIdParam = params.get("groupId");
-  
+
+      // Obtener el grupo seleccionado de localStorage si está disponible
+      const savedGroup = localStorage.getItem("selectedGroup");
+      const savedGroupId = savedGroup ? parseInt(savedGroup, 10) : null;
+
       if (groupIdParam !== null) {
         const groupId = parseInt(groupIdParam, 10);
         setSelectedGroup(groupId);
+        localStorage.setItem("selectedGroup", groupId.toString());
+      } else if (savedGroupId !== null) {
+        setSelectedGroup(savedGroupId);
+      } else if (allGroups.length > 0) {
+        const lastGroup = allGroups[0];
+        setSelectedGroup(lastGroup.id);
+        localStorage.setItem("selectedGroup", lastGroup.id.toString());
       }
     };
   
     fetchGroups();
-  }, [location.search, defaultGroup]);
+  }, [location.search]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -125,7 +132,7 @@ function Groups() {
     const clickedGroup = groups[index];
     if (clickedGroup && clickedGroup.id !== undefined) {
       setSelectedGroup(clickedGroup.id);
-      setDefaultGroup(clickedGroup.id);
+      // setDefaultGroup(clickedGroup.id);
       setSelectedRow(index);
     }
     
