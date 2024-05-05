@@ -161,12 +161,12 @@ function Groups() {
     index: number,
   ) => {
     event.stopPropagation();
-    const groupId = groups[index].id;
-    if (groupId) {
+    const groupid = groups[index].id;
+    if (groupid) {
       try {
-        const usersBygroup = await getUsersByGroupId.execute(groupId);
+        const usersBygroup = await getUsersByGroupId.execute(groupid);
         console.log(usersBygroup); // Optionally log the users or set them in state
-        navigate(`/users/group/${groupId}`); // Assuming you want to navigate
+        navigate(`/users/group/${groupid}`); // Assuming you want to navigate
       } catch (error) {
         console.error("Failed to fetch users for group:", error);
         // Optionally handle the error, e.g., showing an error message
