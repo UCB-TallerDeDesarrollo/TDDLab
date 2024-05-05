@@ -127,10 +127,10 @@ function Assignments({
   };
 
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
-    const groupId = event.target.value as number;
-    setSelectedGroup(groupId);
+    const groupid = event.target.value as number;
+    setSelectedGroup(groupid);
     try {
-      const assignments = await assignmentsRepository.getAssignmentsByGroupId(groupId);
+      const assignments = await assignmentsRepository.getAssignmentsByGroupid(groupid);
       setAssignments(assignments);
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);

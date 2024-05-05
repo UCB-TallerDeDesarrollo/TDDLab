@@ -2,7 +2,8 @@ import axios from "axios"; // Import Axios or your preferred HTTP library
 import { AssignmentDataObject } from "../domain/assignmentInterfaces"; // Import your assignment model
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/assignments"; //Modificar por: https://localhost:3000/api/assignments
+const API_URL = "http://localhost:3000/api/assignments"; //Modificar por: http://localhost:3000/api/assignments
+
 
 class AssignmentsRepository implements AssignmentsRepositoryInterface {
   async getAssignments(): Promise<AssignmentDataObject[]> {
@@ -24,9 +25,9 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
       throw error;
     }
   }
-  async getAssignmentsByGroupId(groupId: number): Promise<AssignmentDataObject[]> {
+  async getAssignmentsByGroupid(groupid: number): Promise<AssignmentDataObject[]> {
     try {
-      const response = await axios.get(`${API_URL}/groupid/${groupId}`);
+      const response = await axios.get(`${API_URL}/groupid/${groupid}`);
       if (response.status === 200) {
         return response.data;
       } else {
