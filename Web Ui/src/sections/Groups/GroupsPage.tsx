@@ -60,6 +60,7 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
   
   // useEffect(() => {
   //   const fetchGroups = async () => {
@@ -80,7 +81,11 @@ function Groups() {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
-  
+      
+      if (allGroups.length > 0 && defaultGroup === null) {
+        const lastGroup = allGroups[0];
+        setDefaultGroup(lastGroup.id);
+      }
       const params = new URLSearchParams(location.search);
       const groupIdParam = params.get("groupId");
   
@@ -91,7 +96,7 @@ function Groups() {
     };
   
     fetchGroups();
-  }, [location.search]);
+  }, [location.search, defaultGroup]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -153,8 +158,10 @@ function Groups() {
     const clickedGroup = groups[index];
     if (clickedGroup && clickedGroup.id !== undefined) {
       setSelectedGroup(clickedGroup.id);
+      setDefaultGroup(clickedGroup.id);
       setSelectedRow(index);
       // navigate(`/?groupId=${clickedGroup.id}`);
+      // setDefaultGroup(clickedGroup.id);
     }
     
   };

@@ -61,6 +61,7 @@ function Assignments({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
+  const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -128,9 +129,18 @@ function Assignments({
           if (allGroups.length > 0) {
             // selectedGroupId = allGroups[allGroups.length - 1].id;
             selectedGroupId = allGroups[0].id;
+            setDefaultGroup(selectedGroupId)
             setSelectedGroup(selectedGroupId);
             navigate(`/?groupId=${selectedGroupId}`);
           }
+          // if(selectedGroupId && setDefaultGroup !== null){
+          //       setDefaultGroup(selectedGroupId)
+          //       setSelectedGroup(selectedGroupId);
+          //       navigate(`/?groupId=${selectedGroupId}`);
+          //       // const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
+          //       // setAssignments(data);
+          //       // orderAssignments([...data], selectedSorting);
+          // }
         }
       
         const assignments = selectedGroupId
@@ -148,7 +158,7 @@ function Assignments({
       }
     };
     fetchData();
-  }, [location.search, userGroupid]);
+  }, [location.search, userGroupid, defaultGroup]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
@@ -170,7 +180,7 @@ function Assignments({
  
   const filteredAssignments = selectedGroup
   ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-  : assignments;
+  : assignments.filter((assignment) => assignment.groupid === defaultGroup);
 
   const handleClickDetail = (index: number) => {
     navigate(`/assignment/${filteredAssignments[index].id}`);
