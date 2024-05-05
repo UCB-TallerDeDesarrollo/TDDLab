@@ -1,24 +1,16 @@
 import express from "express";
-import {
-  getUserController,
-  getUsersController,
-  registerUserController,
-  verifyPassword,
-} from "../controllers/users/userController";
+import { UserRepository } from "../modules/Users/Repositories/UserRepository";
+import UserController from "../controllers/users/userController";
+
+const userRepository = new UserRepository();
+const userController = new UserController(userRepository);
 
 const router = express.Router();
 
-// Ruta de registro de usuario
-router.post("/register", registerUserController);
-router.post("/login", async (req, res) => await getUserController(req, res));
-router.post(
-  "/verifyPassword",
-  async (req, res) => await verifyPassword(req, res)
-);
-
-router.get(
-  "/users",
-  async (req,res) => await getUsersController(req,res)
-);
+router.post("/register", (req, res) => userController.registerUserController(req, res));
+router.post("/login", (req, res) => userController.getUserController(req, res));
+router.post("/verifyPassword", (req, res) => userController.verifyPassword(req, res));
+router.get("/users", (req, res) => userController.getUsersController(req, res));
+router.get("/users/groupid/:groupid", (req, res) => userController.getUsersByGroupid(req, res));
 
 export default router;
