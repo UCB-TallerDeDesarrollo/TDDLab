@@ -28,7 +28,8 @@ import {
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-
+import UsersRepository from "../../modules/Users/repository/UsersRepository";
+import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
@@ -59,6 +60,8 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const userRepository = new UsersRepository();  // Assuming UsersRepository is imported
+  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
   useEffect(() => {
     const fetchGroups = async () => {
@@ -152,13 +155,24 @@ function Groups() {
     }
   };
 
-  const handleStudentsClick = (
+
+  const handleStudentsClick = async (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
     event.stopPropagation();
+    const groupId = groups[index].id;
+    if (groupId) {
+      try {
+        const usersBygroup = await getUsersByGroupId.execute(groupId);
+        console.log(usersBygroup); // Optionally log the users or set them in state
+        navigate(`/users/group/${groupId}`); // Assuming you want to navigate
+      } catch (error) {
+        console.error("Failed to fetch users for group:", error);
+        // Optionally handle the error, e.g., showing an error message
+      }
+    }
     setSelectedRow(index);
-    navigate("/user");
   };
 
 
