@@ -1,5 +1,4 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-//import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import React, { useState, useEffect } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -52,15 +51,6 @@ interface AssignmentProps {
   handleRowHover: (index: number | null) => void;
   role: string;
 }
-
-// interface GroupsProps {
-//   group: GroupDataObject;
-//   index: number;
-//   handleClickDetail: (index: number) => void;
-//   handleClickDelete: (index: number) => void;
-//   handleRowHover: (index: number | null) => void;
-//   role: string;
-// }
 
 const Assignment: React.FC<AssignmentProps> = ({
   assignment,
