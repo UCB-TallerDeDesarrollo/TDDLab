@@ -19,6 +19,7 @@ import {
 import { getSessionCookie } from "./modules/User-Authentication/application/getSessionCookie";
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
+import UsersByGroupPage from "./sections/User/UserBygroupPage";
 const navArrayLinks = [
   {
     title: "Grupos",
@@ -110,6 +111,11 @@ function App() {
           }
         />
         <Route path="/invitation" element={<InvitationPage />} />
+        <Route path="/users/group/:groupid" element={
+          <ProtectedRouteComponent>
+            <UsersByGroupPage />
+          </ProtectedRouteComponent>
+        } />
       </Routes>
     </Router>
   );
