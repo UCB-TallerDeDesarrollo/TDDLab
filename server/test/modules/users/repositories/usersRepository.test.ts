@@ -97,7 +97,7 @@ describe('executeQuery', () => {
 });
 describe('executeQuery', () => {
     it('should execute the query and return the rows', async () => {
-      const mockRows = [{ email: 'user1@example.com', groupid: 70, role: 'admin' }];
+      const mockRows = [{ id: 51, email: 'user1@example.com', groupid: 70, role: 'admin' }];
       clientQueryMock.mockResolvedValue({ rows: mockRows });
   
       const query = 'SELECT * FROM userstable';
@@ -177,7 +177,7 @@ describe('executeQuery', () => {
       const users = await repository.obtainUsers();
   
       expect(users).toEqual(expectedUsers);
-      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable', undefined);
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT id, email, groupid, role FROM usersTable', undefined);
     });
   
     it('should return null when no users are found', async () => {
@@ -186,7 +186,7 @@ describe('executeQuery', () => {
       const users = await repository.obtainUsers();
   
       expect(users).toBeNull();
-      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable', undefined);
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT id, email, groupid, role FROM usersTable', undefined);
     });
     
   });

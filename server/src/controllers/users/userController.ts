@@ -28,11 +28,11 @@ class UserController{
     }
   }
   async getUserController(req: Request, res: Response): Promise<void> {
-    const { id } = req.body;
+    const  id  = parseInt(req.params.id);
 
     if (!id) {
       res.status(400).json({
-        error: "Debes proporcionar un id valido",
+        error: "Debes proporcionar un id valido:"
       });
       return;
     }
