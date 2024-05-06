@@ -1,8 +1,8 @@
-import { User } from "../Domain/User";
+import { UserCreationObect } from "../Domain/User";
 import { UserRepository } from "../Repositories/UserRepository";
 
 export const registerUser = async (
-  user: User,
+  user: UserCreationObect,
   Adapter: UserRepository = new UserRepository()
 ) => {
   try {
