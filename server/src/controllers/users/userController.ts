@@ -15,7 +15,7 @@ class UserController{
 
     if (!email || !groupid || !role) {
       res.status(400).json({
-        error: "Debes proporcionar un correo, curso y rol validos",
+        error: "Debes proporcionar un email, grupo y rol validos",
       });
       return;
     }
@@ -28,17 +28,17 @@ class UserController{
     }
   }
   async getUserController(req: Request, res: Response): Promise<void> {
-    const { email } = req.body;
+    const { id } = req.body;
 
-    if (!email) {
+    if (!id) {
       res.status(400).json({
-        error: "Debes proporcionar un correo valido",
+        error: "Debes proporcionar un id valido",
       });
       return;
     }
 
     try {
-      let userData = await getUser(email);
+      let userData = await getUser(id);
       if (userData == null)
         res.status(404).json({ message: "Usuario no encontrado" });
       else 
