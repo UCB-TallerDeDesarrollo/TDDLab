@@ -1,12 +1,15 @@
 import _React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // to fetch groupId from URL if applicable
+import { useParams } from "react-router-dom";
+import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
 import {
-  Table, TableHead, TableBody, TableRow, TableCell, Container
+  Typography,Table, TableHead, TableBody, TableRow, TableCell, Container
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
+import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -22,45 +25,47 @@ const StyledTable = styled(Table)({
 function UsersByGroupPage() {
   const [users, setUsers] = useState<UserDataObject[]>([]);
   const { groupid } = useParams<{ groupid?: string }>();
-
+  const[group, setGroup] =useState<GroupDataObject|null>(null);
   useEffect(() => {
-    if (groupid) {  // Check if groupId is not undefined
+    if (groupid) {  // Checks if groupId is not undefined
       const userRepository = new UsersRepository();
       const getUsersByGroupId = new GetUsersByGroupId(userRepository);
-
-      const fetchUsers = async () => {
+      const groupsRepository = new GroupsRepository();
+      const getGroupDetail = new GetGroupDetail(groupsRepository);
+      const fetchGroupAndUsers = async () => {
         try {
+          const groupDetail = await getGroupDetail.obtainGroupDetail(parseInt(groupid))
+          setGroup(groupDetail);
           const userData = await getUsersByGroupId.execute(parseInt(groupid));
           setUsers(userData);
         } catch (error) {
           console.error("Error fetching users:", error);
-          // Optionally handle the error state here
         }
       };
 
-      fetchUsers();
+      fetchGroupAndUsers();
     } else {
       console.error("Group ID is undefined");
-      // Handle the scenario where groupId is undefined (perhaps display a message or redirect)
     }
-  }, [groupid]);  // Dependency on groupId ensures this effect runs when groupId changes
+  }, [groupid]);
 
 
   return (
     <CenteredContainer>
+      <Typography variant="h4" component="h1" gutterBottom style={{ textAlign: 'center', marginTop: '20px' }}>
+        {group? group.groupName : 'Loading...'}
+      </Typography>
       <section className="UsersByGroup">
         <StyledTable>
           <TableHead>
             <TableRow>
               <TableCell>Email</TableCell>
-              <TableCell>Groups ID</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.groupid}</TableCell>
               </TableRow>
             ))}
           </TableBody>
