@@ -1,4 +1,4 @@
-import UserOnDb from "../domain/userOnDb.interface";
+import { UserOnDb } from "../domain/userOnDb.interface";
 import AuthRepository from "../repository/LoginRepository";
 
 export class RegisterUserOnDb {
