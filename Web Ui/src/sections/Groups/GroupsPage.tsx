@@ -75,6 +75,7 @@ function Groups() {
   
     fetchGroups();
     const savedSelectedGroup = authData?.usergroupid ?? 67;
+    console.log("grupo que se recupera", authData.usergroupid);
     setSelectedGroup(savedSelectedGroup);
     console.log("guardado en user: ",selectedGroup);
 
