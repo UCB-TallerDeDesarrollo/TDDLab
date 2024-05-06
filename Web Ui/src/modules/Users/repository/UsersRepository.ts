@@ -5,6 +5,16 @@ import UsersRepositoryInterface from "../domain/UsersRepositoryInterface";
 const API_URL = "https://tdd-lab-api-gold.vercel.app/api/user/users"; //tdd-lab-api-gold.vercel.app
 
 class UsersRepository implements UsersRepositoryInterface {
+
+  async getUserById(id: number): Promise<UserDataObject> {
+    try {
+      const response = await axios.get(`${API_URL}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user by ID:", error);
+      throw error;
+    }
+  }
   async getUsers(): Promise<UserDataObject[]> {
     try {
       const response = await axios.get(API_URL);
