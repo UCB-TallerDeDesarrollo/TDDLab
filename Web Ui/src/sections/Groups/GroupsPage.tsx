@@ -60,7 +60,7 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
-  const userRepository = new UsersRepository();  // Assuming UsersRepository is imported
+  const userRepository = new UsersRepository(); 
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
   useEffect(() => {
@@ -165,11 +165,10 @@ function Groups() {
     if (groupid) {
       try {
         const usersBygroup = await getUsersByGroupId.execute(groupid);
-        console.log(usersBygroup); // Optionally log the users or set them in state
-        navigate(`/users/group/${groupid}`); // Assuming you want to navigate
+        console.log(usersBygroup); 
+        navigate(`/users/group/${groupid}`);
       } catch (error) {
         console.error("Failed to fetch users for group:", error);
-        // Optionally handle the error, e.g., showing an error message
       }
     }
     setSelectedRow(index);
