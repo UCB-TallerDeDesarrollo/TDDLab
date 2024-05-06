@@ -32,11 +32,26 @@ class UsersRepository implements UsersRepositoryInterface {
       throw error;
     }
   }
-  async updateUser(
-    email: string,
-    userData: UserDataObject
-  ): Promise<void> {
-    await axios.put(`${API_URL}/${email}`, userData);
+  async updateUser(email: string, userData: UserDataObject): Promise<void> {
+    try {
+      // Primero, obtenemos todos los usuarios
+      const response = await axios.get(API_URL);
+      const allUsers = response.data;
+  
+      // Buscamos el usuario con el correo electrónico proporcionado
+      const userToUpdate = allUsers.find((user: UserDataObject) => user.email === email);
+      console.log("encontre a este usuario",userToUpdate);
+      // Verificamos si se encontró al usuario
+      if (!userToUpdate) {
+        throw new Error(`Usuario con correo electrónico ${email} no encontrado`);
+      }
+  
+      // Si se encontró al usuario, realizamos la actualización
+      await axios.put(`${API_URL}/${email}`, userData);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
   }
 }
 
