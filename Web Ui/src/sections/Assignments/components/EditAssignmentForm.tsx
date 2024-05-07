@@ -3,13 +3,19 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, TextField } from "@mui/material";
-import { useState } from "react";
-import { MenuItem, Select } from "@mui/material";
+import {
+   Box,
+   TextField,
+   MenuItem,
+   Select,
+  } from "@mui/material";
+import {
+   useState,
+   useEffect,
+  } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
-import { useEffect } from "react";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";

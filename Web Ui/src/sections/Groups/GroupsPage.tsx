@@ -126,11 +126,8 @@ function Groups() {
       const uptdatedAuthData = { ...authData, usergroupid: clickedGroup.id };
       console.log("grupo actualizado:", uptdatedAuthData);
       setAuthData(uptdatedAuthData);
-      // setSelectedRow(index);
       console.log("guardado en user", selectedGroup);
     }
-    // setSelectedRow(index);
-    // console.log("guardado en user: ",selectedGroup);
   };
 
   const handleRowHover = (index: number | null) => {
@@ -261,7 +258,7 @@ function Groups() {
           </TableHead>
           <TableBody>
             {groups.map((group, index) => (
-              <React.Fragment key={index}>
+              <React.Fragment key={group.id}>
                 <TableRow
                   selected={isRowSelected(index)}
                   onClick={() => handleRowClick(index)}

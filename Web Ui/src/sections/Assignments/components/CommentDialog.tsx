@@ -27,7 +27,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   onSend,
 }) => {
   const [comment, setComment] = useState("");
-  const { repo, validLink, handleLinkChange } = useGitHubLinkValidation(link!);
+  const { repo, validLink, handleLinkChange } = useGitHubLinkValidation(link);
   const [edit, setEdit] = useState(false);
   const [originalLink, setOriginalLink] = useState(link);
 
@@ -71,6 +71,16 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     </InputAdornment>
   );
 
+  const getInputColor = () => {
+    if (repo === "") {
+      return "primary";
+    } else if (!validLink) {
+      return "error";
+    } else {
+      return "success";
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
@@ -83,9 +93,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
           value={repo}
           onChange={handleInputChange}
           disabled={!edit}
-          color={
-            repo === "" ? "primary" : validLink === false ? "error" : "success"
-          }
+          color={ getInputColor() }
           InputProps={{
             endAdornment: renderEndAdornmentEdit(),
           }}

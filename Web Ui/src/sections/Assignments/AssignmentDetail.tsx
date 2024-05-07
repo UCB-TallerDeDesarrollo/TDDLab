@@ -59,7 +59,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
     const groupsRepository = new GroupsRepository();
     const getGroupDetail = new GetGroupDetail(groupsRepository);
 
-    if (assignment && assignment.groupid) {
+    if (assignment?.groupid) {
       getGroupDetail
         .obtainGroupDetail(assignment.groupid)
         .then((fetchedGroupDetails) => {
@@ -153,7 +153,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-  const [, setComment] = useState("");
+  const [_, setComment] = useState("");
 
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);
