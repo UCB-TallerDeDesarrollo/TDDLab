@@ -1,5 +1,4 @@
 import { render, waitFor } from "@testing-library/react";
-
 import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 import AssignmentDetail from "../../src/sections/Assignments/AssignmentDetail";

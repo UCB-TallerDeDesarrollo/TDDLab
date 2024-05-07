@@ -1,5 +1,5 @@
 import { RegisterUserOnDb } from "../../../../src/modules/User-Authentication/application/registerUserOnDb";
-import UserOnDb from "../../../../src/modules/User-Authentication/domain/userOnDb.interface";
+import { UserOnDb } from "../../../../src/modules/User-Authentication/domain/userOnDb.interface";
 import AuthRepository from "../../../../src/modules/User-Authentication/repository/LoginRepository";
 
 // Mock the AuthRepository

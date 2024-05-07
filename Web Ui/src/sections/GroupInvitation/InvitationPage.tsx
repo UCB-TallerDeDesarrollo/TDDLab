@@ -4,7 +4,7 @@ import firebase from "../../firebaseConfig";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import UserOnDb from "../../modules/User-Authentication/domain/userOnDb.interface";
+import { UserOnDb } from "../../modules/User-Authentication/domain/userOnDb.interface";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
