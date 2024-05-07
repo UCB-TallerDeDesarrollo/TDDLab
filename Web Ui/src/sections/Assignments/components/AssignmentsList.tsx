@@ -24,6 +24,7 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
+import { saveSelectedGroup, loadSelectedGroup } from "../../../utils/localStorageService"
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -59,7 +60,7 @@ function Assignments({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
-  const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
+  // const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -102,38 +103,31 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-        const params = new URLSearchParams(location.search);
-        const groupIdParam = params.get("groupId");
-  
-        let selectedGroupId: number | null = null;
-  
-        if (groupIdParam) {
-          selectedGroupId = parseInt(groupIdParam, 10);
+
+        const savedGroupId = loadSelectedGroup();
+        const groupIdParam = new URLSearchParams(location.search).get("groupId");
+        const selectedGroupId = groupIdParam ? parseInt(groupIdParam, 10) : savedGroupId;
+
+        if (selectedGroupId !== null) {
+          setSelectedGroup(selectedGroupId);
+          saveSelectedGroup(selectedGroupId); // Guardar el grupo seleccionado
+          const assignments = await getAssignments.obtainAssignmentsByGroupId(selectedGroupId);
+          setAssignments(assignments);
+          orderAssignments([...assignments], selectedSorting);
         } else {
-          if (allGroups.length > 0) {
-            selectedGroupId = allGroups[0].id;
-            setDefaultGroup(selectedGroupId)
-            setSelectedGroup(selectedGroupId);
-            navigate(`/?groupId=${selectedGroupId}`);
-          }
+          setSelectedGroup(allGroups[0]?.id || 0);
+          saveSelectedGroup(allGroups[0]?.id || 0); // Guardar el primer grupo si no hay ninguno guardado
         }
-      
-        const assignments = selectedGroupId
-          ? await getAssignments.obtainAssignmentsByGroupId(selectedGroupId)
-          : await assignmentsRepository.getAssignments();
-          
-        const selectedGroup = allGroups.find((group) => group.id === selectedGroupId);
-        if (selectedGroup) {
-          setSelectedGroup(selectedGroup.id);
-        }
-        setAssignments(assignments);
-        orderAssignments([...assignments], selectedSorting);
+        
+        // const assignments = await getAssignments.obtainAssignmentsByGroupId(selectedGroupId);
+        // setAssignments(assignments);
+        // orderAssignments([...assignments], selectedSorting);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
     fetchData();
-  }, [location.search, userGroupid, defaultGroup]);
+  }, [location.search]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
@@ -154,7 +148,7 @@ function Assignments({
  
   const filteredAssignments = selectedGroup
   ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-  : assignments.filter((assignment) => assignment.groupid === defaultGroup);
+  : assignments;
 
   const handleClickDetail = (index: number) => {
     navigate(`/assignment/${filteredAssignments[index].id}`);
