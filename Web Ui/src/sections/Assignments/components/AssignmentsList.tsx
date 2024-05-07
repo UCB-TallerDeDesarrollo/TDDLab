@@ -133,6 +133,7 @@ function Assignments({
     const groupId = event.target.value as number;
     console.log("Obtengo el id del filtro", groupId);
     setSelectedGroup(groupId);
+    console.log("Asi esta inicialmente mi auth",authData);
     const updatedAuthData = { ...authData, usergroupid: groupId };
     console.log("guardo en auth", updatedAuthData.id);
     setAuthData(updatedAuthData); // Actualiza el estado de authData

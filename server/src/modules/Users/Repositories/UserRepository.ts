@@ -56,7 +56,7 @@ export class UserRepository {
     return null;
   }
   async obtainUsers(): Promise<User[] | null> {
-    const query = "SELECT email, groupid, role FROM usersTable";
+    const query = "SELECT id,email, groupid, role FROM usersTable";
     const rows = await this.executeQuery(query);
     return rows.length > 0 ? rows : null;
   }

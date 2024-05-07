@@ -3,7 +3,7 @@ import AuthRepository from "../repository/LoginRepository";
 
 export class RegisterUserOnDb {
   adapter: AuthRepository;
-  static mock: any;
+  static mock: unknown;
   constructor(loginRepository: AuthRepository = new AuthRepository()) {
     this.adapter = loginRepository;
   }
