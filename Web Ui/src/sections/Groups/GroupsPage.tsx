@@ -13,8 +13,9 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
+import { saveSelectedGroup,loadSelectedGroup } from "../../utils/localStorageService";
 import {
   Table,
   TableHead,
@@ -49,7 +50,7 @@ const StyledTable = styled(Table)({
 
 function Groups() {
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -68,29 +69,15 @@ function Groups() {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
-      
-      const params = new URLSearchParams(location.search);
-      const groupIdParam = params.get("groupId");
-
-      // Obtener el grupo seleccionado de localStorage si está disponible
-      const savedGroup = localStorage.getItem("selectedGroup");
-      const savedGroupId = savedGroup ? parseInt(savedGroup, 10) : null;
-
-      if (groupIdParam !== null) {
-        const groupId = parseInt(groupIdParam, 10);
-        setSelectedGroup(groupId);
-        localStorage.setItem("selectedGroup", groupId.toString());
-      } else if (savedGroupId !== null) {
-        setSelectedGroup(savedGroupId);
-      } else if (allGroups.length > 0) {
-        const lastGroup = allGroups[0];
-        setSelectedGroup(lastGroup.id);
-        localStorage.setItem("selectedGroup", lastGroup.id.toString());
-      }
     };
-  
+
     fetchGroups();
-  }, [location.search]);
+
+    const savedSelectedGroup = loadSelectedGroup();
+    if(savedSelectedGroup !== null){
+      setSelectedGroup(savedSelectedGroup);
+    }
+  }, []);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -131,14 +118,18 @@ function Groups() {
     } else {
       setExpandedRows([index]);
     }
-    
-    const clickedGroup = groups[index];
-    if (clickedGroup && clickedGroup.id !== undefined) {
-      setSelectedGroup(clickedGroup.id);
-      // setDefaultGroup(clickedGroup.id);
-      setSelectedRow(index);
-    }
-    
+
+    const clickedGroup = groups.find((_group, i) => i === index);
+      if (clickedGroup && clickedGroup.id !== undefined) {
+        setSelectedGroup(clickedGroup.id);
+        saveSelectedGroup(clickedGroup.id);
+        setSelectedRow(index);
+      } else {
+
+        setSelectedGroup(67);
+        saveSelectedGroup(67);
+        setSelectedRow(index);
+      }
   };
 
   const handleRowHover = (index: number | null) => {
@@ -153,6 +144,10 @@ function Groups() {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
+    // const clickedGroup = groups[index];
+    // event.stopPropagation();
+    // setSelectedRow(index);
+    // navigate(`/?groupId=${clickedGroup.id}`)
     event.stopPropagation();
     const clickedGroup = groups[index];
     if (clickedGroup) {
