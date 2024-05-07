@@ -1,5 +1,5 @@
 import { RegisterUserOnDb } from "../../../../src/modules/User-Authentication/application/registerUserOnDb";
-import UserOnDb from "../../../../src/modules/User-Authentication/domain/userOnDb.interface";
+import { UserOnDb } from "../../../../src/modules/User-Authentication/domain/userOnDb.interface";
 import AuthRepository from "../../../../src/modules/User-Authentication/repository/LoginRepository";
 
 // Mock the AuthRepository
@@ -19,6 +19,7 @@ describe("RegisterUserOnDb class", () => {
 
   it("should register a user successfully", async () => {
     const mockUser: UserOnDb = {
+      id: 1,
       email: "test@example.com",
       groupid: 2,
       role: "student",

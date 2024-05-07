@@ -1,7 +1,7 @@
 import { User } from "firebase/auth";
 import { setGlobalState } from "../domain/authStates";
 import { setSessionCookie } from "./setSessionCookie";
-import UserOnDb from "../domain/userOnDb.interface";
+import { UserOnDb } from "../domain/userOnDb.interface";
 
 export function setCookieAndGlobalStateForValidUser(
   userData: User,
@@ -10,6 +10,7 @@ export function setCookieAndGlobalStateForValidUser(
 ) {
   if (usergroupid && userData.photoURL && userData.email) {
     setGlobalState("authData", {
+      userid: usergroupid.id,
       userProfilePic: userData.photoURL,
       userEmail: userData.email,
       usergroupid: usergroupid.groupid,
@@ -17,6 +18,7 @@ export function setCookieAndGlobalStateForValidUser(
     });
     setSessionCookie({
       userData,
+      id: usergroupid.id,
       role: usergroupid.role,
       groupid: usergroupid.groupid,
     });
