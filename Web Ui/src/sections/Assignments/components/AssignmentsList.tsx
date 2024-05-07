@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import {
   Table,
@@ -13,7 +13,6 @@ import {
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AddIcon from "@mui/icons-material/Add";
-import { GetAssignmentsByGroupId } from "../../../modules/Assignments/application/GetAssignmentsByGroupid";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
@@ -24,8 +23,10 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
-import { loadSelectedGroup } from "../../../utils/localStorageService";
-// import { saveSelectedGroup, loadSelectedGroup } from "../../../utils/localStorageService"
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+/*import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
+import { adaptarDatos } from "../../../utils/adaptarDatos";*/
+
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -61,23 +62,22 @@ function Assignments({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
-  // const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
+ 
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
   const navigate = useNavigate();
-  // const location = useLocation();
 
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
-  const getAssignments = new GetAssignmentsByGroupId(assignmentsRepository);
+
   const deleteAssignment = new DeleteAssignment(assignmentsRepository);
 
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
-
+  const [authData, setAuthData] = useGlobalState("authData");
 
 
   const orderAssignments = (
@@ -105,40 +105,24 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-
+        console.log("groups", allGroups);
+        console.log("Asi inicia mi factor de authenticacion", authData);
+        const savedSelectedGroup = authData?.usergroupid; // Usar el operador de opcionalidad (?)
+        console.log("grupos seleccionados de grupo seleccionado no filtro", savedSelectedGroup);
         const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
-
-        if(selectedGroup && selectedGroup.id !== null){
+        if (selectedGroup && selectedGroup.id !== undefined) {
           setSelectedGroup(selectedGroup.id);
-          const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
+          const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup.id);
           setAssignments(data);
           orderAssignments([...data], selectedSorting);
         }
-        console.log("grupo_seleccionado: ", selectedGroup);
-        // const savedGroupId = loadSelectedGroup();
-        // const groupIdParam = new URLSearchParams(location.search).get("groupId");
-        // const selectedGroupId = groupIdParam ? parseInt(groupIdParam, 10) : savedGroupId;
-
-        // if (selectedGroupId !== null) {
-        //   setSelectedGroup(selectedGroupId);
-        //   saveSelectedGroup(selectedGroupId); // Guardar el grupo seleccionado
-        //   const assignments = await getAssignments.obtainAssignmentsByGroupId(selectedGroupId);
-        //   setAssignments(assignments);
-        //   orderAssignments([...assignments], selectedSorting);
-        // } else {
-        //   setSelectedGroup(allGroups[0]?.id || 0);
-        //   saveSelectedGroup(allGroups[0]?.id || 0); // Guardar el primer grupo si no hay ninguno guardado
-        // }
-        
-        // const assignments = await getAssignments.obtainAssignmentsByGroupId(selectedGroupId);
-        // setAssignments(assignments);
-        // orderAssignments([...assignments], selectedSorting);
+      //setAssignments(assignments);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
     fetchData();
-  }, [userGroupid]);
+  },[authData]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
@@ -146,18 +130,41 @@ function Assignments({
   };
 
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
-    const groupid = event.target.value as number;
-    setSelectedGroup(groupid);
+    console.log("entra al handler");
+    const groupId = event.target.value as number;
+    console.log("Obtengo el id del filtro", groupId);
+    console.log("Obtengo el id del filtro", groupId);
+    setSelectedGroup(groupId);
+    const updatedAuthData = { ...authData, usergroupid: groupId };
+    console.log("guardo en auth", updatedAuthData);
+    setAuthData(updatedAuthData); // Actualiza el estado de authData
+    /*const datosParaGuardar = adaptarDatos(updatedAuthData);
+     updateGroupOnDb(datosParaGuardar);*/
+    console.log("en user actualizando", updatedAuthData); // Muestra el valor actualizado de authData
+    
     try {
-      const assignments = await assignmentsRepository.getAssignmentsByGroupid(groupid);
-      setAssignments(assignments);
+      console.log("Entro al try");
+      const updatedGroupId = updatedAuthData.usergroupid;
+      console.log("mostrar updateGroupID antes de recuperar",updatedGroupId);
+      if (updatedGroupId !== undefined) {
+        const assignments = await assignmentsRepository.getAssignmentsByGroupid(updatedGroupId);
+        console.log("mis tareas recuperadas", assignments);
+        setAssignments(assignments);
+      } else {
+        console.log("Entro al else");
+        const assignments = await assignmentsRepository.getAssignments();
+        setAssignments(assignments);
+      }
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);
     }
   };
+  
 
  
   const filteredAssignments = selectedGroup
+
+
   ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
   : assignments;
 

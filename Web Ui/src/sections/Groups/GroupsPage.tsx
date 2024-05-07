@@ -29,8 +29,11 @@ import {
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-import UsersRepository from "../../modules/Users/repository/UsersRepository";
-import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
+
+
+import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
+
+
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
@@ -50,7 +53,6 @@ const StyledTable = styled(Table)({
 
 function Groups() {
   const navigate = useNavigate();
-  // const location = useLocation();
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -59,20 +61,25 @@ function Groups() {
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+
   const groupRepository = new GroupsRepository();
-  const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
-  const userRepository = new UsersRepository(); 
-  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
-  // const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
+  const [selectedGroup,setSelectedGroup] = useState<number | null>(null);
+
+  const [authData, setAuthData] = useGlobalState("authData");
+
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
     };
-  
+      const savedSelectedGroup = authData?.usergroupid ?? 67;
+      console.log("grupo que se recupera", authData.usergroupid);
+      setSelectedGroup(savedSelectedGroup);
+      console.log("guardado en user: ",selectedGroup);
     fetchGroups();
-  }, [location.search, defaultGroup]);
+  },[]);
+
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -108,18 +115,27 @@ function Groups() {
   };
 
   const handleRowClick = (index: number) => {
+    
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
       setExpandedRows([index]);
     }
     
-    const clickedGroup = groups[index];
-    if (clickedGroup && clickedGroup.id !== undefined) {
-      setSelectedGroup(clickedGroup.id);
-      setDefaultGroup(clickedGroup.id);
+    const clickedGroup = groups.find((_group, i) => i === index);
+    console.log("grupo encontrado",clickedGroup);
+      if (clickedGroup && clickedGroup.id !== undefined) {
+        setSelectedGroup(clickedGroup.id);
+        const uptdatedAuthData = {...authData,usergroupid: clickedGroup.id}
+        console.log("grupo actualizado:", uptdatedAuthData);
+        setAuthData(uptdatedAuthData);
+        setSelectedRow(index);
+        console.log("guardado en user",selectedGroup);
+  
+      }
       setSelectedRow(index);
-    }
+      console.log("guardado en user: ",selectedGroup);
+
     
   };
 
@@ -256,7 +272,7 @@ function Groups() {
                 >
                   <TableCell>
                     <Checkbox
-                      checked={selectedGroup == group.id}
+                      checked={authData.usergroupid == group.id}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
