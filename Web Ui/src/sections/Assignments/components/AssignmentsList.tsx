@@ -24,8 +24,8 @@ import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-/*import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
-import { adaptarDatos } from "../../../utils/adaptarDatos";*/
+import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
+import { adaptarDatos } from "../../../utils/adaptarDatos";
 
 
 const StyledTable = styled(Table)({
@@ -132,13 +132,12 @@ function Assignments({
     console.log("entra al handler");
     const groupId = event.target.value as number;
     console.log("Obtengo el id del filtro", groupId);
-    console.log("Obtengo el id del filtro", groupId);
     setSelectedGroup(groupId);
     const updatedAuthData = { ...authData, usergroupid: groupId };
-    console.log("guardo en auth", updatedAuthData);
+    console.log("guardo en auth", updatedAuthData.id);
     setAuthData(updatedAuthData); // Actualiza el estado de authData
-    /*const datosParaGuardar = adaptarDatos(updatedAuthData);
-     updateGroupOnDb(datosParaGuardar);*/
+    const datosParaGuardar = adaptarDatos(updatedAuthData);
+     updateGroupOnDb(datosParaGuardar);
     console.log("en user actualizando", updatedAuthData); // Muestra el valor actualizado de authData
     
     try {

@@ -3,11 +3,7 @@ import config from "../../../config/db";
 import { User } from "../Domain/User";
 
 interface UserCreationObject {
-  email: string;
-  groupid: number;
-  role: string;
-}
-interface UserCreationObject {
+  id: number
   email: string;
   groupid: number;
   role: string;
@@ -20,6 +16,7 @@ export class UserRepository {
 
   public mapRowToUser(row: any): User {
     return {
+      id: row.id,
       email: row.email,
       groupid: row.groupid,
       role: row.role
@@ -71,14 +68,14 @@ export class UserRepository {
     return rows.map((row) => this.mapRowToUser(row));
   }
   async updateGroup(
-    email: string,
+    id: string,
     updatedGroup: UserCreationObject
   ): Promise<void> {
     const { groupid } = updatedGroup;
     console.log("LLegue aca con esta info", updatedGroup); 
     const query =
-      "UPDATE Users SET groupid = $1 WHERE email = $2 RETURNING *"; // Actualizado para modificar solo el ID del grupo
-    const values = [groupid, email]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
+      "UPDATE Users SET groupid = $1 WHERE id = $2 RETURNING *"; // Actualizado para modificar solo el ID del grupo
+    const values = [groupid, id]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
       this.mapRowToUser(rows[0]); // Actualizado para reflejar el mapeo de usuario

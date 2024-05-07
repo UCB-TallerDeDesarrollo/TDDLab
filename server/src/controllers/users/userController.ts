@@ -11,7 +11,7 @@ class UserController{
     this.userRepository = userRepository;
   }
   async registerUserController(req: Request, res: Response): Promise<void> {
-    const { email, groupid, role } = req.body;
+    const { id,email, groupid, role } = req.body;
 
     if (!email || !groupid || !role) {
       res.status(400).json({
@@ -21,7 +21,7 @@ class UserController{
     }
 
     try {
-      await registerUser({ email, groupid, role });
+      await registerUser({ id,email, groupid, role });
       res.status(201).json({ message: "Usuario registrado con éxito." });
     } catch (error) {
       res.status(500).json({ error: "Server error while registering user" });

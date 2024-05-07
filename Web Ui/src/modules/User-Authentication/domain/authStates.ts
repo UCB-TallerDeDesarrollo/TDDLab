@@ -2,6 +2,7 @@ import { createGlobalState } from "react-hooks-global-state";
 
 const { setGlobalState, useGlobalState } = createGlobalState<{
   authData: {
+    id: number,
     userProfilePic: string | undefined;
     userEmail: string | undefined;
     usergroupid: number | undefined;
@@ -9,6 +10,7 @@ const { setGlobalState, useGlobalState } = createGlobalState<{
   };
 }>({
   authData: {
+    id: 0,
     userProfilePic: undefined,
     userEmail: undefined,
     usergroupid: undefined,
