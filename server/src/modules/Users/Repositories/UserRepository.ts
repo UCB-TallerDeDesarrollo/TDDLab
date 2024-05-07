@@ -25,14 +25,6 @@ export class UserRepository {
       role: row.role
     };
   }
-
-  public mapRowToUser(row: any): User {
-    return {
-      email: row.email,
-      groupid: row.groupid,
-      role: row.role
-    };
-  }
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
     const client = await this.pool.connect();
     try {
