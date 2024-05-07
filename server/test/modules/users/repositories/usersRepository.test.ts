@@ -97,7 +97,7 @@ describe('executeQuery', () => {
 });
 describe('executeQuery', () => {
     it('should execute the query and return the rows', async () => {
-      const mockRows = [{ email: 'user1@example.com', groupid: 70, role: 'admin' }];
+      const mockRows = [{ id: 51, email: 'user1@example.com', groupid: 70, role: 'admin' }];
       clientQueryMock.mockResolvedValue({ rows: mockRows });
   
       const query = 'SELECT * FROM userstable';
@@ -166,29 +166,6 @@ describe('executeQuery', () => {
     });
   });
   
-  describe('obtainUser', () => {
-    it('should return a user when found by email', async () => {
-      const email = 'user1@example.com';
-      const expectedUser = { email: 'user1@example.com', groupid: 70, role: 'admin' };
-      clientQueryMock.mockResolvedValue({ rows: [expectedUser] });
-  
-      const user = await repository.obtainUser(email);
-  
-      expect(user).toEqual(expectedUser);
-      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable WHERE email = $1', [email]);
-    });
-  
-    it('should return null when no user is found by email', async () => {
-      const email = 'nonexistent@example.com';
-      clientQueryMock.mockResolvedValue({ rows: [] });
-  
-      const user = await repository.obtainUser(email);
-  
-      expect(user).toBeNull();
-      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable WHERE email = $1', [email]);
-    });
-  });
-  
   describe('obtainUsers', () => {
     it('should return all users when found', async () => {
       const expectedUsers = [
@@ -200,7 +177,7 @@ describe('executeQuery', () => {
       const users = await repository.obtainUsers();
   
       expect(users).toEqual(expectedUsers);
-      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable', undefined);
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT id, email, groupid, role FROM usersTable', undefined);
     });
   
     it('should return null when no users are found', async () => {
@@ -209,6 +186,36 @@ describe('executeQuery', () => {
       const users = await repository.obtainUsers();
   
       expect(users).toBeNull();
-      expect(clientQueryMock).toHaveBeenCalledWith('SELECT email, groupid, role FROM usersTable', undefined);
+      expect(clientQueryMock).toHaveBeenCalledWith('SELECT id, email, groupid, role FROM usersTable', undefined);
+    });
+    
+  });
+
+  describe("obtainUserById", () => {
+    it("should return a user when found by id", async () => {
+      const id = 1; // ID del usuario a obtener
+      const expectedUser = { id: 1, email: "user1@example.com", groupid: 70, role: "admin" };
+      clientQueryMock.mockResolvedValue({ rows: [expectedUser] });
+  
+      const user = await repository.obtainUser(id);
+  
+      expect(user).toEqual(expectedUser);
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "SELECT id, email, groupid, role FROM usersTable WHERE id = $1",
+        [id]
+      );
+    });
+  
+    it("should return null when no user is found by id", async () => {
+      const id = 999; // ID que no existe en la base de datos
+      clientQueryMock.mockResolvedValue({ rows: [] });
+  
+      const user = await repository.obtainUser(id);
+  
+      expect(user).toBeNull();
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "SELECT id, email, groupid, role FROM usersTable WHERE id = $1",
+        [id]
+      );
     });
   });

@@ -1,6 +1,6 @@
 import { Pool } from "pg"; // Import the Pool from 'pg'
 import config from "../../../config/db";
-import { User } from "../Domain/User";
+import { User, UserCreationObect } from "../Domain/User";
 
 export class UserRepository {
   pool: Pool;
@@ -9,6 +9,7 @@ export class UserRepository {
   }
   public mapRowToUser(row: any): User{
     return{
+      id:row.id,
       email:row.email,
       role:row.role,
       groupid:row.groupid,
@@ -23,7 +24,7 @@ export class UserRepository {
       client.release();
     }
   }
-  async registerUser(user: User) {
+  async registerUser(user: UserCreationObect) {
     const client = await this.pool.connect();
     try {
       const query = "INSERT INTO usersTable (email,groupid,role) VALUES ($1, $2, $3)";
@@ -38,9 +39,9 @@ export class UserRepository {
       }
     }
   }
-  async obtainUser(email: string): Promise<User | null> {
-    const query = "SELECT email, groupid, role FROM usersTable WHERE email = $1";
-    const values = [email];
+  async obtainUser(id: number): Promise<User | null> {
+    const query = "SELECT id, email, groupid, role FROM usersTable WHERE id = $1";
+    const values = [id];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
       return rows[0];
@@ -48,7 +49,7 @@ export class UserRepository {
     return null;
   }
   async obtainUsers(): Promise<User[] | null> {
-    const query = "SELECT email, groupid, role FROM usersTable";
+    const query = "SELECT id, email, groupid, role FROM usersTable";
     const rows = await this.executeQuery(query);
     return rows.length > 0 ? rows : null;
   }
