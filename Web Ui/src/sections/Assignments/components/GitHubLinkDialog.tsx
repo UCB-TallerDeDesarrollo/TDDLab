@@ -46,6 +46,16 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     padding: "20px",
   };
 
+  const getInputColor = () => {
+    if (link === "") {
+      return "primary";
+    } else if (!validLink) {
+      return "error";
+    } else {
+      return "success";
+    }
+  };
+
   return (
     <Dialog fullWidth={true} open={open} onClose={onClose}>
       <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
@@ -53,9 +63,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <TextField
           label="Enlace de Github"
           variant="outlined"
-          color={
-            link === "" ? "primary" : validLink === false ? "error" : "success"
-          }
+          color={ getInputColor() }
           value={link}
           onChange={handleInputChange}
           fullWidth

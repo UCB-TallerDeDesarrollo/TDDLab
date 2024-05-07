@@ -9,7 +9,9 @@ import {
   TableCell,
   Container,
   Button,
+  SelectChangeEvent,
 } from "@mui/material";
+
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,13 +22,9 @@ import Assignment from "./Assignment";
 import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
 import GroupFilter from "./GroupFilter";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
-import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-// import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
-// import { adaptarDatos } from "../../../utils/adaptarDatos";
-
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -123,7 +121,7 @@ function Assignments({
         // Filtrar las tareas según el groupIdToUse
         if (groupIdToUse) {
           const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
-          if (selectedGroup && selectedGroup.id !== undefined) {
+          if (selectedGroup?.id) {
             setSelectedGroup(selectedGroup.id);
             const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup.id);
             setAssignments(data);
@@ -139,7 +137,7 @@ function Assignments({
   
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
-    setSelectedSorting(event.target.value as string);
+    setSelectedSorting(event.target.value);
     orderAssignments([...assignments], event.target.value);
   };
 
@@ -151,8 +149,6 @@ function Assignments({
     const updatedAuthData = { ...authData, usergroupid: groupId };
     console.log("guardo en auth", updatedAuthData);
     setAuthData(updatedAuthData); // Actualiza el estado de authData
-    /*const datosParaGuardar = adaptarDatos(updatedAuthData);
-     updateGroupOnDb(datosParaGuardar);*/
     console.log("en user actualizando", updatedAuthData); // Muestra el valor actualizado de authData
     
     try {
