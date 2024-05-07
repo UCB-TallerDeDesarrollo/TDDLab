@@ -1,4 +1,4 @@
-import UserOnDb from "../modules/User-Authentication/domain/userOnDb.interface";
+import { UserOnDb } from "../modules/User-Authentication/domain/userOnDb.interface";
 
 export function adaptarDatos(authData: {
     usergroupid: number;

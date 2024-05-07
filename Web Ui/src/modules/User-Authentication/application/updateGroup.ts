@@ -1,8 +1,8 @@
 import UsersRepository from "../../Users/repository/UsersRepository";
-import UserOnDb from "../domain/userOnDb.interface";
+import { UserDataObject } from "../../Users/domain/UsersInterface";
 
 
-export async function updateGroupOnDb(user: UserOnDb) {
+export async function updateGroupOnDb(user: UserDataObject) {
   
     const userRepo = new UsersRepository();
     userRepo.updateUser(user.email,user);
