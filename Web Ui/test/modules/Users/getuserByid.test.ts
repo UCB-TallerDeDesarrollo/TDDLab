@@ -6,6 +6,8 @@ const mockRepository: UsersRepositoryInterface = {
   getUserById: jest.fn(),
   getUsers: jest.fn(),
   getUsersByGroupid: jest.fn(),
+  getUserByEmail: jest.fn(),
+  updateUser: jest.fn(),
 };
 
 describe('GetUserById', () => {
