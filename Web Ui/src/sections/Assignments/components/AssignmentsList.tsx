@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import {
   Table,
@@ -24,7 +24,8 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
-import { saveSelectedGroup, loadSelectedGroup } from "../../../utils/localStorageService"
+import { loadSelectedGroup } from "../../../utils/localStorageService";
+// import { saveSelectedGroup, loadSelectedGroup } from "../../../utils/localStorageService"
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -65,7 +66,7 @@ function Assignments({
     number | null
   >(null);
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
@@ -97,6 +98,7 @@ function Assignments({
     }
     setAssignments(assignmentsArray);
   };
+  let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,20 +106,29 @@ function Assignments({
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
 
-        const savedGroupId = loadSelectedGroup();
-        const groupIdParam = new URLSearchParams(location.search).get("groupId");
-        const selectedGroupId = groupIdParam ? parseInt(groupIdParam, 10) : savedGroupId;
+        const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
 
-        if (selectedGroupId !== null) {
-          setSelectedGroup(selectedGroupId);
-          saveSelectedGroup(selectedGroupId); // Guardar el grupo seleccionado
-          const assignments = await getAssignments.obtainAssignmentsByGroupId(selectedGroupId);
-          setAssignments(assignments);
-          orderAssignments([...assignments], selectedSorting);
-        } else {
-          setSelectedGroup(allGroups[0]?.id || 0);
-          saveSelectedGroup(allGroups[0]?.id || 0); // Guardar el primer grupo si no hay ninguno guardado
+        if(selectedGroup && selectedGroup.id !== null){
+          setSelectedGroup(selectedGroup.id);
+          const data = await getAssignments.obtainAssignmentsByGroupId(selectedGroup.id);
+          setAssignments(data);
+          orderAssignments([...data], selectedSorting);
         }
+        console.log("grupo_seleccionado: ", selectedGroup);
+        // const savedGroupId = loadSelectedGroup();
+        // const groupIdParam = new URLSearchParams(location.search).get("groupId");
+        // const selectedGroupId = groupIdParam ? parseInt(groupIdParam, 10) : savedGroupId;
+
+        // if (selectedGroupId !== null) {
+        //   setSelectedGroup(selectedGroupId);
+        //   saveSelectedGroup(selectedGroupId); // Guardar el grupo seleccionado
+        //   const assignments = await getAssignments.obtainAssignmentsByGroupId(selectedGroupId);
+        //   setAssignments(assignments);
+        //   orderAssignments([...assignments], selectedSorting);
+        // } else {
+        //   setSelectedGroup(allGroups[0]?.id || 0);
+        //   saveSelectedGroup(allGroups[0]?.id || 0); // Guardar el primer grupo si no hay ninguno guardado
+        // }
         
         // const assignments = await getAssignments.obtainAssignmentsByGroupId(selectedGroupId);
         // setAssignments(assignments);
@@ -127,7 +138,7 @@ function Assignments({
       }
     };
     fetchData();
-  }, [location.search]);
+  }, [userGroupid]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
