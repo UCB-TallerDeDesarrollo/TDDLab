@@ -98,7 +98,7 @@ function Assignments({
     }
     setAssignments(assignmentsArray);
   };
-  let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
+  // let savedSelectedGroup = userRole === "student" ? userGroupid : loadSelectedGroup();
 
   useEffect(() => {
     const fetchData = async () => {
