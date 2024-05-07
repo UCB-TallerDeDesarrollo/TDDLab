@@ -2,6 +2,16 @@ import { Pool } from "pg"; // Import the Pool from 'pg'
 import config from "../../../config/db";
 import { User, UserCreationObect } from "../Domain/User";
 
+interface UserCreationObject {
+  email: string;
+  groupid: number;
+  role: string;
+}
+interface UserCreationObject {
+  email: string;
+  groupid: number;
+  role: string;
+}
 export class UserRepository {
   pool: Pool;
   constructor() {
@@ -60,4 +70,20 @@ export class UserRepository {
     const rows = await this.executeQuery(query,values);
     return rows.map((row) => this.mapRowToUser(row));
   }
+  async updateGroup(
+    email: string,
+    updatedGroup: UserCreationObject
+  ): Promise<void> {
+    const { groupid } = updatedGroup;
+    console.log("LLegue aca con esta info", updatedGroup); 
+    const query =
+      "UPDATE Users SET groupid = $1 WHERE email = $2 RETURNING *"; // Actualizado para modificar solo el ID del grupo
+    const values = [groupid, email]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
+    const rows = await this.executeQuery(query, values);
+    if (rows.length === 1) {
+      this.mapRowToUser(rows[0]); // Actualizado para reflejar el mapeo de usuario
+    }
+    
+  }
+  
 }
