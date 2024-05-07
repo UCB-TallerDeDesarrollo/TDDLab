@@ -69,6 +69,7 @@ function InvitationPage() {
     // Have to Solve courseId error
     if (user?.email) {
       const userObj: UserOnDb = {
+        id: user.userid,
         email: user.email,
         groupid: groupid ?? 1,
         role: type,
