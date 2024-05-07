@@ -132,6 +132,7 @@ function Assignments({
     console.log("entra al handler");
     const groupId = event.target.value as number;
     console.log("Obtengo el id del filtro", groupId);
+    console.log("Obtengo el id del filtro", groupId);
     setSelectedGroup(groupId);
     const updatedAuthData = { ...authData, usergroupid: groupId };
     console.log("guardo en auth", updatedAuthData);
@@ -161,6 +162,7 @@ function Assignments({
 
  
   const filteredAssignments = selectedGroup
+
 
   ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
   : assignments;

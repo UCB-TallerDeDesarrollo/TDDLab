@@ -28,8 +28,8 @@ import {
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-import UsersRepository from "../../modules/Users/repository/UsersRepository";
-import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
+
+
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 
 
@@ -52,7 +52,6 @@ const StyledTable = styled(Table)({
 
 function Groups() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -63,10 +62,7 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
   const groupRepository = new GroupsRepository();
-  const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
-  const userRepository = new UsersRepository();  // Assuming UsersRepository is imported
-  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
-  const [defaultGroup, setDefaultGroup] = useState<number | null>(null);
+  const [selectedGroup,setSelectedGroup] = useState<number | null>(null);
 
   const [authData, setAuthData] = useGlobalState("authData");
 
@@ -75,27 +71,13 @@ function Groups() {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
-      
-      if (allGroups.length > 0 && defaultGroup === null) {
-        const lastGroup = allGroups[0];
-        setDefaultGroup(lastGroup.id);
-      }
-      const params = new URLSearchParams(location.search);
-      const groupIdParam = params.get("groupId");
-  
-      if (groupIdParam !== null) {
-        const groupId = parseInt(groupIdParam, 10);
-        setSelectedGroup(groupId);
-      }
     };
-    const savedSelectedGroup = authData.usergroupid;
-    if(typeof savedSelectedGroup === 'number'){
+      const savedSelectedGroup = authData?.usergroupid ?? 67;
+      console.log("grupo que se recupera", authData.usergroupid);
       setSelectedGroup(savedSelectedGroup);
-    }else{
-      setSelectedGroup(null);
-    }
+      console.log("guardado en user: ",selectedGroup);
     fetchGroups();
-  }, [location.search, defaultGroup, authData.usergroupid, groupRepository]);
+  },[]);
 
 
   const handleCreateGroupClick = () => {
