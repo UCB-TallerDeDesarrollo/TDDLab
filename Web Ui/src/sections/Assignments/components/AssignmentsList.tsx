@@ -111,7 +111,7 @@ function Assignments({
         // groupId de authData -> Seleccionados
         const savedSelectedGroup = authData?.usergroupid;
   
-        let groupIdToUse;
+        let groupIdToUse: number | undefined;
         if (groupIdFromURL) {
           groupIdToUse = parseInt(groupIdFromURL);
         } else {
