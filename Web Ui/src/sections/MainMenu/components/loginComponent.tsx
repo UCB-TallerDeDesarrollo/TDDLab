@@ -11,6 +11,7 @@ import { handleSignInWithGitHub } from "../../../modules/User-Authentication/app
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 
+
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
 
@@ -25,6 +26,7 @@ export default function LoginComponent() {
   const handleLogout = async () => {
     await handleGithubSignOut();
     setGlobalState("authData", {
+      userid: -1,
       userProfilePic: "",
       userEmail: "",
       usergroupid: -1,
