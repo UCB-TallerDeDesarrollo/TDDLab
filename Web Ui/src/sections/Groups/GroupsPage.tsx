@@ -70,14 +70,9 @@ function Groups() {
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
     };
-
+  
     fetchGroups();
-
-    const savedSelectedGroup = loadSelectedGroup();
-    if(savedSelectedGroup !== null){
-      setSelectedGroup(savedSelectedGroup);
-    }
-  }, []);
+  }, [location.search, defaultGroup]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -118,18 +113,14 @@ function Groups() {
     } else {
       setExpandedRows([index]);
     }
-
-    const clickedGroup = groups.find((_group, i) => i === index);
-      if (clickedGroup && clickedGroup.id !== undefined) {
-        setSelectedGroup(clickedGroup.id);
-        saveSelectedGroup(clickedGroup.id);
-        setSelectedRow(index);
-      } else {
-
-        setSelectedGroup(67);
-        saveSelectedGroup(67);
-        setSelectedRow(index);
-      }
+    
+    const clickedGroup = groups[index];
+    if (clickedGroup && clickedGroup.id !== undefined) {
+      setSelectedGroup(clickedGroup.id);
+      setDefaultGroup(clickedGroup.id);
+      setSelectedRow(index);
+    }
+    
   };
 
   const handleRowHover = (index: number | null) => {
@@ -144,10 +135,6 @@ function Groups() {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    // const clickedGroup = groups[index];
-    // event.stopPropagation();
-    // setSelectedRow(index);
-    // navigate(`/?groupId=${clickedGroup.id}`)
     event.stopPropagation();
     const clickedGroup = groups[index];
     if (clickedGroup) {
