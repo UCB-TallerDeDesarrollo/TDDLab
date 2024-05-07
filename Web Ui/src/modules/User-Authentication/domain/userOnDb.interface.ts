@@ -1,5 +1,5 @@
 export interface UserOnDb {
-  id: number
+  id?: number;
   email: string;
   groupid: number;
   role: string;
