@@ -7,10 +7,23 @@ interface UserCreationObject {
   groupid: number;
   role: string;
 }
+interface UserCreationObject {
+  email: string;
+  groupid: number;
+  role: string;
+}
 export class UserRepository {
   pool: Pool;
   constructor() {
     this.pool = new Pool(config);
+  }
+
+  public mapRowToUser(row: any): User {
+    return {
+      email: row.email,
+      groupid: row.groupid,
+      role: row.role
+    };
   }
 
   public mapRowToUser(row: any): User {
