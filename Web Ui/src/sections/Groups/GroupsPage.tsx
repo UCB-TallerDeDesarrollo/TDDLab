@@ -15,7 +15,6 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
-// import { saveSelectedGroup,loadSelectedGroup } from "../../utils/localStorageService";
 import {
   Table,
   TableHead,
@@ -32,8 +31,6 @@ import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
-import { adaptarDatos } from "../../utils/adaptarDatos";
-import { updateGroupOnDb } from "../../modules/User-Authentication/application/updateGroup";
 
 
 const CenteredContainer = styled(Container)({
@@ -153,11 +150,10 @@ function Groups() {
     console.log("Boton de Tareas Iniciado");
     if (clickedGroup) {
       try {
-        // No necesitamos actualizar authData aquí
-        // Simplemente navegamos con el grupo seleccionado temporalmente en la URL
+        // Navegacion con el grupo seleccionado temporalmente en la URL
         const groupId = clickedGroup.id;
         console.log("El click de Group: ", groupId);
-        navigate(`/?groupId=${groupId}`); // Navegar a la ruta de las tareas del grupo
+        navigate(`/?groupId=${groupId}`);
       } catch (error) {
         console.error("Hay un problema en el botón de Tareas", error);
       }
