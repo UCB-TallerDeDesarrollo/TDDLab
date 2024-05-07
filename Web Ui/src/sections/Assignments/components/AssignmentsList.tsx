@@ -24,8 +24,8 @@ import { SelectChangeEvent } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
-import { adaptarDatos } from "../../../utils/adaptarDatos";
+/*import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
+import { adaptarDatos } from "../../../utils/adaptarDatos";*/
 
 
 const StyledTable = styled(Table)({
@@ -111,15 +111,17 @@ function Assignments({
         const selectedGroup = allGroups.find((group) => group.id === savedSelectedGroup);
         if (selectedGroup && selectedGroup.id !== undefined) {
           setSelectedGroup(selectedGroup.id);
+          const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup.id);
+          setAssignments(data);
+          orderAssignments([...data], selectedSorting);
         }
-  setAssignments(assignments);
-        orderAssignments([...assignments], selectedSorting);
+      //setAssignments(assignments);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
     fetchData();
-  },);
+  },[authData]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as string);
@@ -127,23 +129,27 @@ function Assignments({
   };
 
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
+    console.log("entra al handler");
     const groupId = event.target.value as number;
     console.log("Obtengo el id del filtro", groupId);
     setSelectedGroup(groupId);
     const updatedAuthData = { ...authData, usergroupid: groupId };
     console.log("guardo en auth", updatedAuthData);
     setAuthData(updatedAuthData); // Actualiza el estado de authData
-    const datosParaGuardar = adaptarDatos(updatedAuthData);
-    updateGroupOnDb(datosParaGuardar);
+    /*const datosParaGuardar = adaptarDatos(updatedAuthData);
+     updateGroupOnDb(datosParaGuardar);*/
     console.log("en user actualizando", updatedAuthData); // Muestra el valor actualizado de authData
-  
+    
     try {
-      const updatedGroupId = updatedAuthData.usergroupid; // Usa el valor actualizado de usergroupid
+      console.log("Entro al try");
+      const updatedGroupId = updatedAuthData.usergroupid;
+      console.log("mostrar updateGroupID antes de recuperar",updatedGroupId);
       if (updatedGroupId !== undefined) {
         const assignments = await assignmentsRepository.getAssignmentsByGroupid(updatedGroupId);
         console.log("mis tareas recuperadas", assignments);
         setAssignments(assignments);
       } else {
+        console.log("Entro al else");
         const assignments = await assignmentsRepository.getAssignments();
         setAssignments(assignments);
       }
