@@ -15,7 +15,7 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
-import { saveSelectedGroup,loadSelectedGroup } from "../../utils/localStorageService";
+// import { saveSelectedGroup,loadSelectedGroup } from "../../utils/localStorageService";
 import {
   Table,
   TableHead,
@@ -29,9 +29,11 @@ import {
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-
-
+import UsersRepository from "../../modules/Users/repository/UsersRepository";
+import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
+import { adaptarDatos } from "../../utils/adaptarDatos";
+import { updateGroupOnDb } from "../../modules/User-Authentication/application/updateGroup";
 
 
 const CenteredContainer = styled(Container)({
@@ -63,8 +65,9 @@ function Groups() {
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
   const groupRepository = new GroupsRepository();
-  const [selectedGroup,setSelectedGroup] = useState<number | null>(null);
-
+  const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const userRepository = new UsersRepository();
+  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
   useEffect(() => {
@@ -73,13 +76,12 @@ function Groups() {
       const allGroups = await getGroups.getGroups();
       setGroups(allGroups);
     };
-      const savedSelectedGroup = authData?.usergroupid ?? 67;
-      console.log("grupo que se recupera", authData.usergroupid);
-      setSelectedGroup(savedSelectedGroup);
-      console.log("guardado en user: ",selectedGroup);
+    const savedSelectedGroup = authData?.usergroupid ?? 67;
+    console.log("grupo que se recupera", authData.usergroupid);
+    setSelectedGroup(savedSelectedGroup);
+    console.log("guardado en user: ", selectedGroup);
     fetchGroups();
-  },[]);
-
+  }, []);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -98,16 +100,15 @@ function Groups() {
         [...groups].sort(
           (a, b) =>
             new Date(a.creationDate).getTime() -
-            new Date(b.creationDate).getTime(),
+            new Date(b.creationDate).getTime()
         ),
       Time_Down: () =>
         [...groups].sort(
           (a, b) =>
             new Date(b.creationDate).getTime() -
-            new Date(a.creationDate).getTime(),
+            new Date(a.creationDate).getTime()
         ),
-            
-      };
+    };
     console.log(typeof groups[0].creationDate);
 
     const sortedGroups = sortings[selectedSortingLocal]();
@@ -115,28 +116,24 @@ function Groups() {
   };
 
   const handleRowClick = (index: number) => {
-    
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
       setExpandedRows([index]);
     }
-    
-    const clickedGroup = groups.find((_group, i) => i === index);
-    console.log("grupo encontrado",clickedGroup);
-      if (clickedGroup && clickedGroup.id !== undefined) {
-        setSelectedGroup(clickedGroup.id);
-        const uptdatedAuthData = {...authData,usergroupid: clickedGroup.id}
-        console.log("grupo actualizado:", uptdatedAuthData);
-        setAuthData(uptdatedAuthData);
-        setSelectedRow(index);
-        console.log("guardado en user",selectedGroup);
-  
-      }
-      setSelectedRow(index);
-      console.log("guardado en user: ",selectedGroup);
 
-    
+    const clickedGroup = groups.find((_group, i) => i === index);
+    console.log("grupo encontrado", clickedGroup);
+    if (clickedGroup && clickedGroup.id !== undefined) {
+      setSelectedGroup(clickedGroup.id);
+      const uptdatedAuthData = { ...authData, usergroupid: clickedGroup.id };
+      console.log("grupo actualizado:", uptdatedAuthData);
+      setAuthData(uptdatedAuthData);
+      // setSelectedRow(index);
+      console.log("guardado en user", selectedGroup);
+    }
+    // setSelectedRow(index);
+    // console.log("guardado en user: ",selectedGroup);
   };
 
   const handleRowHover = (index: number | null) => {
@@ -149,29 +146,35 @@ function Groups() {
 
   const handleHomeworksClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
+    index: number
   ) => {
     event.stopPropagation();
     const clickedGroup = groups[index];
+    console.log("Boton de Tareas Iniciado");
     if (clickedGroup) {
-      console.log("El clickedGroup: ", clickedGroup)
-      // setSelectedGroup(clickedGroup.id);
-      setSelectedRow(index);
-      navigate(`/?groupId=${clickedGroup.id}`);
+      try {
+        // No necesitamos actualizar authData aquí
+        // Simplemente navegamos con el grupo seleccionado temporalmente en la URL
+        const groupId = clickedGroup.id;
+        console.log("El click de Group: ", groupId);
+        navigate(`/?groupId=${groupId}`); // Navegar a la ruta de las tareas del grupo
+      } catch (error) {
+        console.error("Hay un problema en el botón de Tareas", error);
+      }
     }
   };
 
 
   const handleStudentsClick = async (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
+    index: number
   ) => {
     event.stopPropagation();
     const groupid = groups[index].id;
     if (groupid) {
       try {
         const usersBygroup = await getUsersByGroupId.execute(groupid);
-        console.log(usersBygroup); 
+        console.log(usersBygroup);
         navigate(`/users/group/${groupid}`);
       } catch (error) {
         console.error("Failed to fetch users for group:", error);
@@ -180,10 +183,9 @@ function Groups() {
     setSelectedRow(index);
   };
 
-
   const handleDeleteClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
+    index: number
   ) => {
     event.stopPropagation();
     setSelectedRow(index);
@@ -192,7 +194,7 @@ function Groups() {
 
   const handleLinkClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
+    index: number
   ) => {
     event.stopPropagation();
     const group = groups[index];
@@ -229,9 +231,9 @@ function Groups() {
         <StyledTable>
           <TableHead>
             <TableRow
-            sx={{ 
-              borderBottom: "2px solid #E7E7E7" 
-            }}
+              sx={{
+                borderBottom: "2px solid #E7E7E7",
+              }}
             >
               <TableCell
                 sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
