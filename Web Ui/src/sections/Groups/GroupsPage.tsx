@@ -31,7 +31,9 @@ import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
-
+import { adaptarDatos } from "../../utils/adaptarDatos";
+import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
+import { UpdateUser } from "../../modules/Users/application/updateUser";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -60,7 +62,6 @@ function Groups() {
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
-
   const groupRepository = new GroupsRepository();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
   const userRepository = new UsersRepository();
@@ -111,8 +112,22 @@ function Groups() {
     const sortedGroups = sortings[selectedSortingLocal]();
     setGroups(sortedGroups);
   };
+  const handleUpdateUser = async (
+    updatedUser: UserDataObject
+  ) => {
+    const userRepository = new UsersRepository();
+    const submitUser = new UpdateUser(userRepository);
 
-  const handleRowClick = (index: number) => {
+    try {
+      await submitUser.updateUser(
+        updatedUser.id,
+        updatedUser
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleRowClick = async(index: number) => {
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
@@ -127,6 +142,9 @@ function Groups() {
       console.log("grupo actualizado:", uptdatedAuthData);
       setAuthData(uptdatedAuthData);
       console.log("guardado en user", selectedGroup);
+      const datosParaGuardar = adaptarDatos(uptdatedAuthData);
+      console.log("Ahora guardare esto en base de datos",datosParaGuardar);
+        await handleUpdateUser(datosParaGuardar);
     }
   };
 

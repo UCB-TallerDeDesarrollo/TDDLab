@@ -6,19 +6,19 @@ export class UpdateUser {
   constructor(private userRepository: UsersRepositoryInterface) {}
 
   async updateUser(
-    email: string,
+    id: number,
     userData: UserDataObject,
   ) {
     try {
       // Ensure the assignment ID is included in the assignment data
       const updatedUserData: UserDataObject = {
         ...userData,
-        email: email,
+        id: id,
       };
 
       // Call the updateAssignment method from the repository
       await this.userRepository.updateUser(
-        email,
+        id,
         updatedUserData,
       );
     } catch (error) {
