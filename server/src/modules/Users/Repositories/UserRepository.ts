@@ -80,19 +80,19 @@ export class UserRepository {
     return rows.map((row) => this.mapRowToUser(row));
   }
   async updateGroup(
-    email: string,
+    id: number,
     updatedGroup: UserCreationObject
-  ): Promise<void> {
+  ): Promise<UserCreationObject | null> {
     const { groupid } = updatedGroup;
     console.log("LLegue aca con esta info", updatedGroup); 
     const query =
-      "UPDATE Users SET groupid = $1 WHERE email = $2 RETURNING *"; // Actualizado para modificar solo el ID del grupo
-    const values = [groupid, email]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
+      "UPDATE Users SET groupid = $1 WHERE id = $2 RETURNING *"; // Actualizado para modificar solo el ID del grupo
+    const values = [groupid, id]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
-      this.mapRowToUser(rows[0]); // Actualizado para reflejar el mapeo de usuario
+      return this.mapRowToUser(rows[0]); // Actualizado para reflejar el mapeo de usuario
     }
-    
+    return null;
   }
   
 }
