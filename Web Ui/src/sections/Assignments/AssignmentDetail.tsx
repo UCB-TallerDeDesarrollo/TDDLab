@@ -153,6 +153,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+
   const [_, setComment] = useState("");
 
   const handleOpenCommentDialog = () => {
