@@ -25,6 +25,8 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { adaptarDatos } from "../../../utils/adaptarDatos";
+import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -102,7 +104,7 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-        console.log("groups", allGroups);
+        
   
         // groupId de la URL -> Para los grupos no seleccionados
         const urlParams = new URLSearchParams(window.location.search);
@@ -142,13 +144,16 @@ function Assignments({
   };
 
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
-    console.log("entra al handler");
+    console.log("entra al handler con estos valores",authData);
     const groupId = event.target.value as number;
     console.log("Obtengo el id del filtro", groupId);
     setSelectedGroup(groupId);
     const updatedAuthData = { ...authData, usergroupid: groupId };
     console.log("guardo en auth", updatedAuthData);
     setAuthData(updatedAuthData); // Actualiza el estado de authData
+    const datosParaGuardar = adaptarDatos(updatedAuthData);
+    console.log("Esto debo guardar en la base de datos",datosParaGuardar);
+    updateGroupOnDb(datosParaGuardar);
     console.log("en user actualizando", updatedAuthData); // Muestra el valor actualizado de authData
     
     try {
