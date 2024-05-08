@@ -57,6 +57,7 @@ class UsersRepository implements UsersRepositoryInterface {
       }
   
       // Si se encontró al usuario, realizamos la actualización
+      console.log("Esto estara en base de datos",userData);
       await axios.put(`${API_URL}/${id}`, userData);
     } catch (error) {
       console.error("Error updating user:", error);
