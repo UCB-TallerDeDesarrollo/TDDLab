@@ -49,6 +49,15 @@ export class UserRepository {
       }
     }
   }
+  async obtainUserByemail(email: string): Promise<User | null> {
+    const query = "SELECT id, email, groupid, role FROM usersTable WHERE email = $1";
+    const values = [email];
+    const rows = await this.executeQuery(query, values);
+    if (rows.length === 1) {
+      return rows[0];
+    }
+    return null;
+  }
   async obtainUser(id: number): Promise<User | null> {
     const query = "SELECT id, email, groupid, role FROM usersTable WHERE id = $1";
     const values = [id];

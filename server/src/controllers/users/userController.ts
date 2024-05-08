@@ -3,6 +3,7 @@ import { registerUser } from "../../modules/Users/Application/registerUser";
 import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
+import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 
 class UserController{
   private userRepository: UserRepository;
@@ -28,9 +29,9 @@ class UserController{
     }
   }
   async getUserController(req: Request, res: Response): Promise<void> {
-    const  id  = parseInt(req.params.id);
+    const { email } = req.body;
 
-    if (!id) {
+    if (!email) {
       res.status(400).json({
         error: "Debes proporcionar un id valido:"
       });
@@ -38,7 +39,7 @@ class UserController{
     }
 
     try {
-      let userData = await getUser(id);
+      let userData = await getUserByemail(email);
       if (userData == null)
         res.status(404).json({ message: "Usuario no encontrado" });
       else 
@@ -78,6 +79,27 @@ class UserController{
         res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching users" });
+    }
+  }
+
+  async getUserbyid(req: Request, res: Response): Promise<void> {
+    const  id  = parseInt(req.params.id);
+
+    if (!id) {
+      res.status(400).json({
+        error: "Debes proporcionar un id valido:"
+      });
+      return;
+    }
+
+    try {
+      let userData = await getUser(id);
+      if (userData == null)
+        res.status(404).json({ message: "Usuario no encontrado" });
+      else 
+        res.status(200).json(userData);
+    } catch (error) {
+      res.status(500).json({ error: "Server error while fetching user" });
     }
   }
 
