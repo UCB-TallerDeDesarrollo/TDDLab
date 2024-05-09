@@ -63,7 +63,8 @@ function Groups() {
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const groupRepository = new GroupsRepository();
-  const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  let [selectedGroup] = useState<number | null>(null);
+
   const userRepository = new UsersRepository();
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
@@ -72,10 +73,11 @@ function Groups() {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
+      console.log(selectedGroup);
       setGroups(allGroups);
     };
-    const savedSelectedGroup = authData?.usergroupid ?? 67;
-    setSelectedGroup(savedSelectedGroup);
+    const savedSelectedGroup = authData?.usergroupid ?? 67; // Asegúrate de que esto no sea null
+    selectedGroup = savedSelectedGroup;
     fetchGroups();
   }, [authData]);
 
@@ -134,7 +136,7 @@ function Groups() {
 
     const clickedGroup = groups.find((_group, i) => i === index);
     if (clickedGroup && clickedGroup.id !== undefined) {
-      setSelectedGroup(clickedGroup.id);
+      selectedGroup = clickedGroup.id;
       const uptdatedAuthData = { ...authData, usergroupid: clickedGroup.id };
       
       setAuthData(uptdatedAuthData);
