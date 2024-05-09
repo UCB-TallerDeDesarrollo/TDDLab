@@ -2,7 +2,7 @@ import axios from "axios";
 import { UserDataObject } from "../domain/UsersInterface";
 import UsersRepositoryInterface from "../domain/UsersRepositoryInterface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/user/users"; //tdd-lab-api-gold.vercel.app
+const API_URL = "http://localhost:3000/api/user/users"; //tdd-lab-api-gold.vercel.app
 
 class UsersRepository implements UsersRepositoryInterface {
 
@@ -42,23 +42,9 @@ class UsersRepository implements UsersRepositoryInterface {
       throw error;
     }
   }
-  async updateUser(id: number, userData: UserDataObject): Promise<void> {
+  async updateUser(id: number, groupid: number): Promise<void> {
     try {
-      // Primero, obtenemos todos los usuarios
-      const response = await axios.get(API_URL);
-      const allUsers = response.data;
-  
-      // Buscamos el usuario con el correo electrónico proporcionado
-      const userToUpdate = allUsers.find((user: UserDataObject) => user.id === id);
-      console.log("encontre a este usuario",userToUpdate);
-      // Verificamos si se encontró al usuario
-      if (!userToUpdate) {
-        throw new Error(`Usuario con correo electrónico ${id} no encontrado`);
-      }
-  
-      // Si se encontró al usuario, realizamos la actualización
-      console.log("Esto estara en base de datos",userData);
-      await axios.put(`${API_URL}/${id}`, userData);
+      await axios.put(`${API_URL}/${id}`, groupid);
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;
