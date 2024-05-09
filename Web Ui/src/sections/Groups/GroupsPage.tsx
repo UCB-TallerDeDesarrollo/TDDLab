@@ -75,9 +75,7 @@ function Groups() {
       setGroups(allGroups);
     };
     const savedSelectedGroup = authData?.usergroupid ?? 67;
-    console.log("grupo que se recupera", authData.usergroupid);
     setSelectedGroup(savedSelectedGroup);
-    console.log("guardado en user: ", selectedGroup);
     fetchGroups();
   }, [authData]);
 
@@ -135,15 +133,13 @@ function Groups() {
     }
 
     const clickedGroup = groups.find((_group, i) => i === index);
-    console.log("grupo encontrado", clickedGroup);
     if (clickedGroup && clickedGroup.id !== undefined) {
       setSelectedGroup(clickedGroup.id);
       const uptdatedAuthData = { ...authData, usergroupid: clickedGroup.id };
-      console.log("grupo actualizado:", uptdatedAuthData);
+      
       setAuthData(uptdatedAuthData);
-      console.log("guardado en user", selectedGroup);
+      
       const datosParaGuardar = adaptarDatos(uptdatedAuthData);
-      console.log("Ahora guardare esto en base de datos",datosParaGuardar);
         await handleUpdateUser(datosParaGuardar);
     }
   };
