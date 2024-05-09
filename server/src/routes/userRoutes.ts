@@ -13,5 +13,5 @@ router.post("/verifyPassword", (req, res) => userController.verifyPassword(req, 
 router.get("/users", (req, res) => userController.getUsersController(req, res));
 router.get("/users/groupid/:groupid", (req, res) => userController.getUsersByGroupid(req, res));
 router.get("/users/:id", (req, res) => userController.getUserbyid(req, res));
-
+router.put("/users/:id", (req, res) => userController.updateUser(req, res));
 export default router;

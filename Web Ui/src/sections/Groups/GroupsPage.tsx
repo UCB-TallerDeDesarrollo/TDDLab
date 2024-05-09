@@ -79,7 +79,7 @@ function Groups() {
     setSelectedGroup(savedSelectedGroup);
     console.log("guardado en user: ", selectedGroup);
     fetchGroups();
-  }, []);
+  }, [authData]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -121,7 +121,7 @@ function Groups() {
     try {
       await submitUser.updateUser(
         updatedUser.id,
-        updatedUser
+        updatedUser.groupid
       );
     } catch (error) {
       console.error(error);
