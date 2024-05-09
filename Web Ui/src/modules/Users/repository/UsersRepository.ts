@@ -43,8 +43,9 @@ class UsersRepository implements UsersRepositoryInterface {
     }
   }
   async updateUser(id: number, groupid: number): Promise<void> {
+    console.log("Mi group id",groupid);
     try {
-      await axios.put(`${API_URL}/${id}`, groupid);
+      await axios.put(`${API_URL}/${id}`,{groupid});
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;

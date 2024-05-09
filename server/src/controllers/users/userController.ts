@@ -105,6 +105,7 @@ class UserController{
   }
 
   async updateUser(req: Request, res: Response): Promise<void> {
+    console.log("esto recibi",req.params, req.body);
     const id = parseInt(req.params.id);
     const {groupid} = req.body;
     if (!id){
