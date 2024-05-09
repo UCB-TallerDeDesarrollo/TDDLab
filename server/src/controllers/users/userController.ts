@@ -4,6 +4,7 @@ import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
+import { updateUserById } from "../../modules/Users/Application/updateUser";
 
 class UserController{
   private userRepository: UserRepository;
@@ -100,6 +101,27 @@ class UserController{
         res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching user" });
+    }
+  }
+
+  async updateUser(req: Request, res: Response): Promise<void> {
+    const id = parseInt(req.params.id);
+    const {groupid} = req.body;
+    if (!id){
+      res.status(400).json({
+        error: "Debes proporcionar un id de usuario valido:"
+      });
+      return;
+    }
+    try {
+  
+      const userData = await updateUserById(id,groupid);
+      if (userData == null)
+        res.status(404).json({ message: "Usuario no encontrado" });
+      else 
+        res.status(200).json(userData);
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
     }
   }
 

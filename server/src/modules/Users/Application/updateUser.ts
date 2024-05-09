@@ -1,28 +1,14 @@
-import { UserCreationObect } from "../Domain/User";
 import { UserRepository } from "../Repositories/UserRepository";
 
-class UpdateUser{
-  private repository: UserRepository;
-
-  constructor(repository: UserRepository) {
-    this.repository = repository;
+export const updateUserById = async (
+  id: number,
+  groupid:number,
+  Adapter: UserRepository = new UserRepository()
+) => {
+  try {
+    return await Adapter.updateUser(id,groupid);
+  } catch (error) {
+    console.error("Error obtaining User:", error);
+    return { error: "Error obtaining User" };
   }
-
-  async execute(
-    userId: number,
-    updatedUser: UserCreationObect
-  ): Promise<UserCreationObect | null> {
-    try {
-      const updatedUserResult = await this.repository.updateGroup(
-        userId,
-        updatedUser
-      );
-      return updatedUserResult;
-    } catch (error) {
-
-      throw error;
-    }
-  }
-}
-
-export default UpdateUser;
+};
