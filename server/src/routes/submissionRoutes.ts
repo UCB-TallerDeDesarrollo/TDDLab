@@ -24,4 +24,11 @@ submissionsRouter.put(
   "/:id",
   async (req, res) => await submissionController.updateSubmission(req, res)
 );
+
+// Delete an assignment by ID
+submissionsRouter.delete(
+  "/:id",
+  async (req, res) => await submissionController.deleteSubmission(req, res)
+);
+
 export default submissionsRouter;
