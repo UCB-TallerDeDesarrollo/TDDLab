@@ -3,17 +3,20 @@ import SubmissionRepository from "../../modules/Submissions/Repository/Submissio
 import CreateSubmission from "../../modules/Submissions/Aplication/CreateSubmissionUseCase";
 import GetSubmissionsUseCase from "../../modules/Submissions/Aplication/getSubmissionsUseCase";
 import UpdateSubmission from "../../modules/Submissions/Aplication/updateSubmissionUSeCase";
+import DeleteSubmission from "../../modules/Submissions/Aplication/DeleteSubmissionUseCase";
 
 
 class SubmissionController{
     private createSubmissionUseCase: CreateSubmission;
     private getSubmissionsUseCase: GetSubmissionsUseCase;
     private updateSubmissionUseCase: UpdateSubmission;
+    private deleteSubmissionUSeCase: DeleteSubmission;
 
     constructor (repository: SubmissionRepository) {
         this.createSubmissionUseCase = new CreateSubmission(repository);
         this.getSubmissionsUseCase = new GetSubmissionsUseCase(repository);
         this.updateSubmissionUseCase = new UpdateSubmission(repository);
+        this.deleteSubmissionUSeCase = new DeleteSubmission(repository);
     }
 
     async CreateSubmission(req: Request, res: Response): Promise<void>{
@@ -72,6 +75,16 @@ class SubmissionController{
             res.status(500).json({ error: "Server error" });
         }
     }
+
+    async deleteSubmission(req: Request, res: Response): Promise<void> {
+        try {
+          const submissionid = parseInt(req.params.id);
+          await this.deleteSubmissionUSeCase.execute(submissionid);
+          res.status(204).send();
+        } catch (error) {
+          res.status(500).json({ error: "Server error" });
+        }
+      }
 }
 
 export default SubmissionController;

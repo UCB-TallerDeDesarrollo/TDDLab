@@ -60,6 +60,12 @@ class SubmissionRepository{
         return null;
     }
 
+    async deleteSubmission(id: number): Promise<void> {
+        const query = "DELETE FROM submissions WHERE id = $1";
+        const values = [id];
+        await this.executeQuery(query, values);
+    }
+
     async assignmentidExistsForSubmission(assignmentid: number): Promise<boolean> {
         const query = "SELECT EXISTS (SELECT 1 FROM assignments WHERE id = $1)";
         const result: QueryResult[] = await this.executeQuery(query, [assignmentid]);

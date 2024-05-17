@@ -35,10 +35,12 @@ assignmentsRouter.delete(
   "/:id",
   async (req, res) => await assignmentController.deleteAssignment(req, res)
 );
+
 assignmentsRouter.get(
   "/groupid/:groupid",
   async (req,res) => await assignmentController.getAssignmentsByGroupId(req, res)
 );
+
 // Delivery assignment link
 assignmentsRouter.put(
   "/:id/deliver",
