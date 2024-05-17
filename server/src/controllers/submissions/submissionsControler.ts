@@ -21,15 +21,13 @@ class SubmissionController{
 
     async CreateSubmission(req: Request, res: Response): Promise<void>{
         try{
-            const { assignmentid, userid, state, link, start_date, end_date, comment } = req.body;
+            const { assignmentid, userid, status, repository_link, start_date} = req.body;
             const newSubmission = await this.createSubmissionUseCase.execute({
                 assignmentid,
                 userid,
-                state,
-                link,
-                start_date,
-                end_date,
-                comment
+                status,
+                repository_link,
+                start_date
             });
             res.status(201).json(newSubmission);
         } catch (error){
@@ -50,8 +48,8 @@ class SubmissionController{
         try{
             const submissionid = parseInt(req.params.id);
             const {
-                state,
-                link,
+                status,
+                repository_link,
                 start_date,
                 end_date,
                 comment
@@ -59,8 +57,8 @@ class SubmissionController{
             const updatedSubmission = await this.updateSubmissionUseCase.execute(
                 submissionid,
                 {
-                    state,
-                    link,
+                    status,
+                    repository_link,
                     start_date,
                     end_date,
                     comment                    

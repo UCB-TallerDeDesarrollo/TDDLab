@@ -1,27 +1,25 @@
 export interface SubmissionCreationObect{
     assignmentid: number;
     userid: number;
-    state: "pending" | "in progress" | "delivered";
-    link: string | null;
+    status: "pending" | "in progress" | "delivered";
+    repository_link: string;
     start_date: Date | null;
-    end_date: Date | null;
-    comment: string | null;
 }
 
 export interface SubmissionDataObect{
     id: number
     assignmentid: number;
     userid: number;
-    state: "pending" | "in progress" | "delivered";
-    link: string;
+    status: "pending" | "in progress" | "delivered";
+    repository_link: string;
     start_date: Date | null;
     end_date: Date | null;
     comment: string | null;
 }
 
 export interface SubmissionUpdateObject{
-    state: "pending" | "in progress" | "delivered";
-    link: string;
+    status: "pending" | "in progress" | "delivered";
+    repository_link: string;
     start_date: Date | null;
     end_date: Date | null;
     comment: string | null;
