@@ -49,8 +49,6 @@ class SubmissionController{
             const submissionid = parseInt(req.params.id);
             const {
                 status,
-                repository_link,
-                start_date,
                 end_date,
                 comment
             } = req.body;
@@ -58,8 +56,6 @@ class SubmissionController{
                 submissionid,
                 {
                     status,
-                    repository_link,
-                    start_date,
                     end_date,
                     comment                    
                 }

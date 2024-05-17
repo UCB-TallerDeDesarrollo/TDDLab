@@ -43,12 +43,10 @@ class SubmissionRepository{
     }
 
     async UpdateSubmission(id: number, updatedSubmission: SubmissionUpdateObject): Promise<SubmissionUpdateObject | null> {
-        const { status, repository_link, start_date, end_date, comment } = updatedSubmission;
-        const query = "UPDATE submissions SET status = $1, repository_link = $2, start_date = $3, end_date = $4, comment = $5 WHERE id = $6 RETURNING *";
+        const { status, end_date, comment } = updatedSubmission;
+        const query = "UPDATE submissions SET status = $1, end_date = $2, comment = $3 WHERE id = $4 RETURNING *";
         const values = [
             status,
-            repository_link,
-            start_date,
             end_date,
             comment,
             id

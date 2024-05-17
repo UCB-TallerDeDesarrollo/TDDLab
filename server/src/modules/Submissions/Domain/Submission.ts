@@ -19,8 +19,6 @@ export interface SubmissionDataObect{
 
 export interface SubmissionUpdateObject{
     status: "pending" | "in progress" | "delivered";
-    repository_link: string;
-    start_date: Date | null;
     end_date: Date | null;
     comment: string | null;
 }
