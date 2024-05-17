@@ -6,6 +6,7 @@ import router from "./routes/userRoutes";
 import assignmentsRouter from "./routes/assignmentRoutes";
 import TDDCyclesRouter from "./routes/TDDCyclesRoutes";
 import groupsRouter from "./routes/groupsRouter";
+import submissionsRouter from "./routes/submissionRoutes";
 
 const app = express();
 const port = 3000;
@@ -17,6 +18,7 @@ app.use("/api/user", router);
 app.use("/api/assignments", assignmentsRouter);
 app.use("/api/TDDCycles", TDDCyclesRouter);
 app.use("/api/groups", groupsRouter);
+app.use("/api/submissions", submissionsRouter);
 
 server(app, port);
 export default app;
