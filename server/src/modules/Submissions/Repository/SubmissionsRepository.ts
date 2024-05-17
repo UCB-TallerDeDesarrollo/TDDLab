@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { SubmissionCreationObect, SubmissionDataObect } from "../Domain/Submission";
+import { SubmissionCreationObect, SubmissionDataObect, SubmissionUpdateObject } from "../Domain/Submission";
 
 interface QueryResult {
     exists: boolean;
@@ -40,6 +40,24 @@ class SubmissionRepository{
         const query = "SELECT * FROM submissions";
         const rows =await this.executeQuery(query);
         return rows.map((row) => this.mapRowToSubmissions(row));
+    }
+
+    async UpdateSubmission(id: number, updatedSubmission: SubmissionUpdateObject): Promise<SubmissionUpdateObject | null> {
+        const { state, link, start_date, end_date, comment } = updatedSubmission;
+        const query = "UPDATE submissions SET state = $1, link = $2, start_date = $3, end_date = $4, comment = $5 WHERE id = $6 RETURNING *";
+        const values = [
+            state,
+            link,
+            start_date,
+            end_date,
+            comment,
+            id
+        ];
+        const rows = await this.executeQuery(query, values);
+        if (rows.length === 1) {
+            return this.mapRowToSubmissions(rows[0]);
+        }
+        return null;
     }
 
     async assignmentidExistsForSubmission(assignmentid: number): Promise<boolean> {
