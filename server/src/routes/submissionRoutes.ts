@@ -13,4 +13,9 @@ submissionsRouter.post(
     async (req, res) => await submissionController.CreateSubmission(req, res)
   );
 
+// Retrieve all assignments
+submissionsRouter.get(
+  "/",
+  async (req, res) => await submissionController.getSubmissions(req, res)
+);
 export default submissionsRouter;
