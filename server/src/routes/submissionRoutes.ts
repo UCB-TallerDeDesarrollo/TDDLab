@@ -18,4 +18,10 @@ submissionsRouter.get(
   "/",
   async (req, res) => await submissionController.getSubmissions(req, res)
 );
+
+// Update an assignment by ID
+submissionsRouter.put(
+  "/:id",
+  async (req, res) => await submissionController.updateSubmission(req, res)
+);
 export default submissionsRouter;
