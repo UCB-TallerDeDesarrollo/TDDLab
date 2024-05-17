@@ -23,16 +23,16 @@ class SubmissionRepository{
             id: row.id,
             assignmentid: row.assignmentid,
             userid: row.userid,
-            state: row.state,
-            link: row.link,
+            status: row.status,
+            repository_link: row.repository_link,
             start_date: row.start_date,
             end_date: row.end_date,
             comment: row.comment,
         }
     }
     async CreateSubmission(Submission: SubmissionCreationObect): Promise<SubmissionCreationObect> {
-        const query = "INSERT INTO submissions (assignmentid,userid,state,link,start_date,end_date,comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
-        const values = [Submission.assignmentid, Submission.userid, Submission.state, Submission.link, Submission.start_date, Submission.end_date, Submission.comment];
+        const query = "INSERT INTO submissions (assignmentid,userid,status,repository_link,start_date) VALUES ($1, $2, $3, $4, $5) RETURNING *";
+        const values = [Submission.assignmentid, Submission.userid, Submission.status, Submission.repository_link, Submission.start_date];
         const rows = await this.executeQuery(query, values);
         return this.mapRowToSubmissions(rows[0]);
     }
@@ -43,11 +43,11 @@ class SubmissionRepository{
     }
 
     async UpdateSubmission(id: number, updatedSubmission: SubmissionUpdateObject): Promise<SubmissionUpdateObject | null> {
-        const { state, link, start_date, end_date, comment } = updatedSubmission;
-        const query = "UPDATE submissions SET state = $1, link = $2, start_date = $3, end_date = $4, comment = $5 WHERE id = $6 RETURNING *";
+        const { status, repository_link, start_date, end_date, comment } = updatedSubmission;
+        const query = "UPDATE submissions SET status = $1, repository_link = $2, start_date = $3, end_date = $4, comment = $5 WHERE id = $6 RETURNING *";
         const values = [
-            state,
-            link,
+            status,
+            repository_link,
             start_date,
             end_date,
             comment,
