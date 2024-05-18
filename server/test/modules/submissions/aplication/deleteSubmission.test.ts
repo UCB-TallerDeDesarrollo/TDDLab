@@ -16,6 +16,13 @@ describe("Delete assignment", () => {
       await expect(deleteSubmisison.execute(submissionId)).resolves.toBeUndefined();
       expect(submissionRepositoryMock.deleteSubmission).toHaveBeenCalledWith(submissionId);
     });
+
+    it("should handle errors when deleting an assignment", async () => {
+        const submissionId = 54321;
+        submissionRepositoryMock.deleteSubmission.mockRejectedValueOnce(new Error);
+        await expect(deleteSubmisison.execute(submissionId)).rejects.toThrow();
+        expect(submissionRepositoryMock.deleteSubmission).toHaveBeenCalledWith(submissionId);
+      });
 });
   
   
