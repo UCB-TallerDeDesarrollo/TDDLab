@@ -15,12 +15,15 @@ const mockAssignment = {
   groupid: 123, // ID del grupo
 };
 
-jest.mock("../../../src/modules/Assignments/application/GetAssignmentDetail", () => ({
-  // Mock de la función para obtener detalles de la tarea
-  GetAssignmentDetail: jest.fn().mockImplementation(() => ({
-    obtainAssignmentDetail: jest.fn().mockResolvedValue(mockAssignment),
-  })),
-}));
+jest.mock(
+  "../../../src/modules/Assignments/application/GetAssignmentDetail",
+  () => ({
+    // Mock de la función para obtener detalles de la tarea
+    GetAssignmentDetail: jest.fn().mockImplementation(() => ({
+      obtainAssignmentDetail: jest.fn().mockResolvedValue(mockAssignment),
+    })),
+  })
+);
 
 jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
   // Mock de la función para obtener detalles del grupo
@@ -78,6 +81,39 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       const enlace = queryByText("Enlace:");
       expect(enlace).not.toBeInTheDocument();
+    });
+  });
+
+  it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
+    const { getByText } = render(
+      <BrowserRouter>
+        <AssignmentDetail role="student" />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(getByText("Iniciar tarea")).toBeInTheDocument();
+      expect(getByText("Ver gráfica")).toBeInTheDocument();
+      expect(getByText("Finalizar tarea")).toBeInTheDocument();
+    });
+
+  });
+
+  it("does not display 'Iniciar tarea', 'Ver gráfica', or 'Finalizar tarea' buttons for non-student roles", async () => {
+    const { queryByText } = render(
+      <BrowserRouter>
+        <AssignmentDetail role="teacher" />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      const iniciarTareaButton = queryByText("Iniciar tarea");
+      const verGraficaButton = queryByText("Ver gráfica");
+      const finalizarTareaButton = queryByText("Finalizar tarea");
+
+      expect(iniciarTareaButton).not.toBeInTheDocument();
+      expect(verGraficaButton).not.toBeInTheDocument();
+      expect(finalizarTareaButton).not.toBeInTheDocument();
     });
   });
 });
