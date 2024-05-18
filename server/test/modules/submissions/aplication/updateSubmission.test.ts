@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 describe("Update submission", () => {
-    it("should update an submission successfully", async () => {
+    it("should update a submission successfully", async () => {
       const submissionId = 1;
       submissionRepositoryMock.UpdateSubmission.mockResolvedValueOnce(SubmissionInProgresDataMock);
       const result = await updateSubmission.execute(submissionId, SubmissionInProgresDataMock);
@@ -21,4 +21,14 @@ describe("Update submission", () => {
         SubmissionInProgresDataMock
       );
     });
+
+    it("should handle errors when updating a submission", async () => {
+        const submissionId = 2;
+        submissionRepositoryMock.UpdateSubmission.mockRejectedValueOnce(new Error());
+        await expect(updateSubmission.execute(submissionId, SubmissionInProgresDataMock)).rejects.toThrow();
+        expect(submissionRepositoryMock.UpdateSubmission).toHaveBeenCalledWith(
+          submissionId,
+          SubmissionInProgresDataMock
+        );
+      });
 });
