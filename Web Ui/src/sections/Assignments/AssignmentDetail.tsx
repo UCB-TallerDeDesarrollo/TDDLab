@@ -333,26 +333,27 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 </div>
               )}
 
-              {assignment.comment ? (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <CommentIcon
-                    style={{ marginRight: "8px", color: "#666666" }}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ fontSize: "16px", lineHeight: "1.8" }}
+              {isStudent(role) &&
+                (assignment.comment ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "8px",
+                    }}
                   >
-                    <strong>Comentario:</strong> {assignment.comment}
-                  </Typography>
-                </div>
-              ) : null}
+                    <CommentIcon
+                      style={{ marginRight: "8px", color: "#666666" }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      style={{ fontSize: "16px", lineHeight: "1.8" }}
+                    >
+                      <strong>Comentario:</strong> {assignment.comment}
+                    </Typography>
+                  </div>
+                ) : null)}
             </div>
             {isStudent(role) && (
               <Button
@@ -384,19 +385,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 Ver gráfica
               </Button>
             )}
-            {/* <Button
-              variant="contained"
-              disabled={!isTaskInProgressOrDelivered}
-              onClick={handleRedirect}
-              color="primary"
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
-            >
-              Ver gráfica
-            </Button> */}
             <GitLinkDialog
               open={linkDialogOpen}
               onClose={handleCloseLinkDialog}
