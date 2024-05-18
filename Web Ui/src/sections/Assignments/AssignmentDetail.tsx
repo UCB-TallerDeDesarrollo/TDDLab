@@ -25,8 +25,8 @@ interface AssignmentDetailProps {
   role: string;
 }
 
-function isNotTeacher(role: string) {
-  return role !== "teacher";
+function isStudent(role: string) {
+  return role === "student";
 }
 
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
@@ -285,47 +285,54 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                   {formatDate(assignment.end_date.toString())}
                 </Typography>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <AccessTimeIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+              {isStudent(role) && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
                 >
-                  <strong>Estado:</strong> {getDisplayStatus(assignment.state)}
-                </Typography>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
-                  <strong>Enlace:</strong>
-                  <a
-                    href={assignment.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <AccessTimeIcon
+                    style={{ marginRight: "8px", color: "#666666" }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ fontSize: "16px", lineHeight: "1.8" }}
                   >
-                    {assignment.link}
-                  </a>
-                </Typography>
-              </div>
+                    <strong>Estado:</strong>{" "}
+                    {getDisplayStatus(assignment.state)}
+                  </Typography>
+                </div>
+              )}
+
+              {isStudent(role) && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  >
+                    <strong>Enlace:</strong>
+                    <a
+                      href={assignment.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {assignment.link}
+                    </a>
+                  </Typography>
+                </div>
+              )}
+
               {assignment.comment ? (
                 <div
                   style={{
@@ -347,7 +354,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
                 </div>
               ) : null}
             </div>
-            {isNotTeacher(role) && (
+            {isStudent(role) && (
               <Button
                 variant="contained"
                 disabled={!isTaskPending}
@@ -362,7 +369,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
               </Button>
             )}
 
-            <Button
+            {isStudent(role) && (
+              <Button
+                variant="contained"
+                disabled={!isTaskInProgressOrDelivered}
+                onClick={handleRedirect}
+                color="primary"
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Ver gráfica
+              </Button>
+            )}
+            {/* <Button
               variant="contained"
               disabled={!isTaskInProgressOrDelivered}
               onClick={handleRedirect}
@@ -374,14 +396,14 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
               }}
             >
               Ver gráfica
-            </Button>
+            </Button> */}
             <GitLinkDialog
               open={linkDialogOpen}
               onClose={handleCloseLinkDialog}
               onSend={handleSendGithubLink}
             />
 
-            {isNotTeacher(role) && (
+            {isStudent(role) && (
               <Button
                 variant="contained"
                 disabled={isTaskDeliveredOrPending}
