@@ -37,7 +37,7 @@ describe("AssignmentDetail Component", () => {
     // Renderizar el componente con el role de estudiante
     const { getByText } = render(
       <BrowserRouter>
-        <AssignmentDetail role="student" />
+        <AssignmentDetail role="student" userid={123}/>
       </BrowserRouter>
     );
 
@@ -51,7 +51,7 @@ describe("AssignmentDetail Component", () => {
   it("displays the Estado and Enlace sections for student role", async () => {
     const { getByText } = render(
       <BrowserRouter>
-        <AssignmentDetail role="student" />
+        <AssignmentDetail role="student" userid={123} />
       </BrowserRouter>
     );
 
@@ -69,7 +69,7 @@ describe("AssignmentDetail Component", () => {
   it("does not display the Estado and Enlace sections for teacher roles", async () => {
     const { queryByText } = render(
       <BrowserRouter>
-        <AssignmentDetail role="teacher" />
+        <AssignmentDetail role="teacher" userid={123}/>
       </BrowserRouter>
     );
 
@@ -87,7 +87,7 @@ describe("AssignmentDetail Component", () => {
   it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
     const { getByText } = render(
       <BrowserRouter>
-        <AssignmentDetail role="student" />
+        <AssignmentDetail role="student" userid={123}/>
       </BrowserRouter>
     );
 
@@ -102,7 +102,7 @@ describe("AssignmentDetail Component", () => {
   it("does not display 'Iniciar tarea', 'Ver gráfica', or 'Finalizar tarea' buttons for non-student roles", async () => {
     const { queryByText } = render(
       <BrowserRouter>
-        <AssignmentDetail role="teacher" />
+        <AssignmentDetail role="teacher" userid={123}/>
       </BrowserRouter>
     );
 
