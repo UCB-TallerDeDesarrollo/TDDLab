@@ -16,5 +16,10 @@ describe("Get Submissions", () => {
       expect(result).toEqual(getSubmissionListMock());
       expect(submissionRepositoryMock.ObtainSubmissions).toHaveBeenCalledTimes(1);
     });
+
+    it("should handle errors when obtaining submission", async () => {
+        submissionRepositoryMock.ObtainSubmissions.mockRejectedValue(new Error);
+      await expect(getSubmissions.execute()).rejects.toThrow();
+    });
 });
   
