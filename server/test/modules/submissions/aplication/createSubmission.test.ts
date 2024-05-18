@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 
 describe("Create submission", () => {
-    it("should create an submission", async () => {
+    it("should create a submission", async () => {
       const assignmentData = SubmissionInProgresDataMock;
       submissionRepositoryMock.CreateSubmission.mockResolvedValue(assignmentData);
       submissionRepositoryMock.assignmentidExistsForSubmission.mockResolvedValue(true);
@@ -18,6 +18,11 @@ describe("Create submission", () => {
       const newAssignment = await createSubmissionInstance.execute(assignmentData);
       expect(submissionRepositoryMock.CreateSubmission).toHaveBeenCalledWith(assignmentData);
       expect(newAssignment).toEqual(assignmentData);
+    });
+
+    it("should handle errors when creating a submission", async () => {
+        submissionRepositoryMock.CreateSubmission.mockRejectedValue(new Error);
+        await expect(createSubmissionInstance.execute(SubmissionInProgresDataMock)).rejects.toThrow();
     });
 });
   
