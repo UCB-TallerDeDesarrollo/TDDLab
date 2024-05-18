@@ -20,16 +20,19 @@ import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
+import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
+import { SubmissionCreationObject } from "../../modules/Submissions/Domain/submissionInterfaces";
 interface AssignmentDetailProps {
   role: string;
+  userid: number;
 }
 
 function isNotTeacher(role: string) {
   return role !== "teacher";
 }
 
-const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
+const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
@@ -71,7 +74,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
     }
   }, [assignment]);
 
-  const isTaskPending = assignment?.state === "pending";
+  
+  //const isTaskPending = assignment?.state === "pending";
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
   const isTaskDeliveredOrPending =
@@ -109,15 +113,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
     return updatedAssignment;
   };
 
-  const handleSendGithubLink = async (link: string) => {
+  const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentId) {
-      const updatedAssignment = await handleFindAssignment(assignmentId, link);
-
-      await handleUpdateAssignment(updatedAssignment);
-
-      setAssignment(updatedAssignment);
-      handleCloseLinkDialog();
-      window.location.reload();
+      const submissionsRepository = new SubmissionRepository();
+      const createSubmission = new CreateSubmission(submissionsRepository);
+      const startDate = new Date();
+      const start_date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const submissionData: SubmissionCreationObject = {
+        assignmentid: assignmentId,
+        userid: userid,
+        status: 'in progress',
+        repository_link: repository_link,
+        start_date: start_date
+      };
+      try{
+        await createSubmission.createSubmission(submissionData);
+        handleCloseLinkDialog();
+      } catch (error){
+        console.error(error);
+      }
     }
   };
 
@@ -350,7 +364,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role }) => {
             {isNotTeacher(role) && (
               <Button
                 variant="contained"
-                disabled={!isTaskPending}
+                //disabled={!isTaskPending}
                 onClick={handleOpenLinkDialog}
                 style={{
                   textTransform: "none",
