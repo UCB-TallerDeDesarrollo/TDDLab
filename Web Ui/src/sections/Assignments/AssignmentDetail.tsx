@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState} from "react";
 import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
 import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import { formatDate } from "../../utils/dateUtils";
@@ -163,6 +163,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
+    window.location.reload()
   };
 
   const handleRedirect = () => {
