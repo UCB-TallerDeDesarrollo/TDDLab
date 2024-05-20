@@ -1,4 +1,3 @@
-//import { SubmissionDataObject } from "./submissionInterfaces";
 import { SubmissionCreationObject } from "./submissionInterfaces";
 
 interface SubmissionRepositoryInterface {
