@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState} from "react";
 import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
 import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import { formatDate } from "../../utils/dateUtils";
@@ -24,7 +24,6 @@ import SubmissionRepository from "../../modules/Submissions/Repository/Submissio
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import { SubmissionCreationObject } from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
-import { reload } from "firebase/auth";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
