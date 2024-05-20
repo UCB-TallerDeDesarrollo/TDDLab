@@ -8,6 +8,7 @@ export function getSubmissionRepositoryMock() {
         UpdateSubmission: jest.fn(),
         deleteSubmission: jest.fn(),
         assignmentidExistsForSubmission: jest.fn(),
-        useridExistsForSubmission: jest.fn()
+        useridExistsForSubmission: jest.fn(),
+        getSubmissionByAssignmentAndUser : jest.fn()
     }
 }
