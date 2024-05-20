@@ -48,6 +48,18 @@ describe("Obtain submissions", () => {
   });
 });
 
+describe("Obtain submission by assignmentid and userid", () => {
+  it("should retrieve an assignment by existing ids", async () => {
+    clientQueryMock.mockResolvedValue(getSubmissionTestData(1));
+    const submissions = await repository.getSubmissionByAssignmentAndUser(25,4);
+    expect(submissions).not.toBeNull();
+  });
+  it("should handle errors when obtaining a submission by ids", async () => {
+    poolConnectMock.mockRejectedValue(new Error());
+    await expect(repository.getSubmissionByAssignmentAndUser(0,0)).rejects.toThrow();
+  });
+});
+
 describe("Create submission", () => {
   it("should create a submission", async () => {
     clientQueryMock.mockResolvedValue({ rows: [SubmissionInProgresDataMock] });

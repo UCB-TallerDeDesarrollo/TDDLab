@@ -4,17 +4,19 @@ import CreateSubmission from "../../modules/Submissions/Aplication/CreateSubmiss
 import GetSubmissionsUseCase from "../../modules/Submissions/Aplication/getSubmissionsUseCase";
 import UpdateSubmission from "../../modules/Submissions/Aplication/updateSubmissionUSeCase";
 import DeleteSubmission from "../../modules/Submissions/Aplication/DeleteSubmissionUseCase";
-
+import getSubmissionUseCase from "../../modules/Submissions/Aplication/getSubmissionUseCase";
 
 class SubmissionController{
     private createSubmissionUseCase: CreateSubmission;
     private getSubmissionsUseCase: GetSubmissionsUseCase;
     private updateSubmissionUseCase: UpdateSubmission;
     private deleteSubmissionUSeCase: DeleteSubmission;
+    private getSubmissionUseCase: getSubmissionUseCase;
 
     constructor (repository: SubmissionRepository) {
         this.createSubmissionUseCase = new CreateSubmission(repository);
         this.getSubmissionsUseCase = new GetSubmissionsUseCase(repository);
+        this.getSubmissionUseCase = new getSubmissionUseCase(repository)
         this.updateSubmissionUseCase = new UpdateSubmission(repository);
         this.deleteSubmissionUSeCase = new DeleteSubmission(repository);
     }
@@ -41,6 +43,20 @@ class SubmissionController{
           res.status(200).json(assignments);
         } catch (error) {
           res.status(500).json({ error: "Server error" });
+        }
+    }
+    async getSubmissionByAssignmentAndUser(req: Request, res: Response): Promise<void> {
+        try {
+            const assignmentid = parseInt(req.params.assignmentid);
+            const userid = parseInt(req.params.userid);
+            const submission = await this.getSubmissionUseCase.execute(assignmentid, userid);
+            if (submission) {
+                res.status(200).json(submission);
+            } else {
+                res.status(404).json({ message: "Submission not found" });
+            }
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
         }
     }
 

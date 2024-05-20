@@ -9,6 +9,19 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
     async createSubmission(submissionData: SubmissionCreationObject): Promise<void> {
         await axios.post(API_URL, submissionData);
     }
+    async checkSubmissionExists(assignmentid: number, userid: number): Promise<{ hasStarted: boolean }> {
+        try {
+            const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`);
+            if (response.status === 200) {
+                return response.data;
+            } else {
+                throw new Error("Failed to check assignment start status");
+            }
+        } catch (error) {
+            console.error("Error checking assignment start status:", error);
+            throw error;
+        }
+    }
 }
 
 

@@ -23,6 +23,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import { SubmissionCreationObject } from "../../modules/Submissions/Domain/submissionInterfaces";
+import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -38,7 +39,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
   );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
-  const assignmentId = Number(id);
+  const assignmentid = Number(id);
+  const [submissionStatus, setSubmissionStatus] = useState<{ [key: string]: boolean }>({});
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(
     null
   );
@@ -50,14 +52,14 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
 
     getAssignmentDetail
-      .obtainAssignmentDetail(assignmentId)
+      .obtainAssignmentDetail(assignmentid)
       .then((fetchedAssignment) => {
         setAssignment(fetchedAssignment);
       })
       .catch((error) => {
         console.error("Error fetching assignment:", error);
       });
-  }, [assignmentId]);
+  }, [assignmentid]);
   useEffect(() => {
     const groupsRepository = new GroupsRepository();
     const getGroupDetail = new GetGroupDetail(groupsRepository);
@@ -74,6 +76,27 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     }
   }, [assignment]);
 
+  useEffect(() => {
+    const checkIfStarted = async () => {
+      if (assignmentid && userid && userid !== -1) {
+        try {
+          console.log("the user id is ", userid)
+          const submissionRepository = new SubmissionRepository();
+          const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
+          const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
+          console.log("The response is ", response)
+          setSubmissionStatus((prevStatus) => ({
+            ...prevStatus,
+            [userid]: !!response,
+          }));
+        } catch (error) {
+          console.error("Error checking submission status:", error);
+        }
+      }
+    };
+  
+    checkIfStarted();
+  }, [assignmentid, userid]);
   
   //const isTaskPending = assignment?.state === "pending";
   const isTaskInProgressOrDelivered =
@@ -114,13 +137,13 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
   };
 
   const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentId) {
+    if (assignmentid) {
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
       const start_date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
       const submissionData: SubmissionCreationObject = {
-        assignmentid: assignmentId,
+        assignmentid: assignmentid,
         userid: userid,
         status: 'in progress',
         repository_link: repository_link,
@@ -182,8 +205,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     setComment(comment);
     handleCloseCommentDialog();
 
-    if (assignmentId) {
-      const updatedAssignment = await handleFindAssignment(assignmentId, link);
+    if (assignmentid) {
+      const updatedAssignment = await handleFindAssignment(assignmentid, link);
       updatedAssignment.comment = comment;
 
       await handleUpdateAssignment(updatedAssignment);
@@ -371,17 +394,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             </div>
             {isStudent(role) && (
               <Button
-                variant="contained"
-                //disabled={!isTaskPending}
-                onClick={handleOpenLinkDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Iniciar tarea
-              </Button>
+              variant="contained"
+              disabled={submissionStatus[userid.toString()]||false}
+              onClick={handleOpenLinkDialog}
+              style={{
+                textTransform: "none",
+                fontSize: "15px",
+                marginRight: "8px",
+              }}
+            >
+              Iniciar tarea
+            </Button>
             )}
 
             {isStudent(role) && (
