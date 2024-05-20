@@ -98,7 +98,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     checkIfStarted();
   }, [assignmentid, userid]);
   
-  //const isTaskPending = assignment?.state === "pending";
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
   const isTaskDeliveredOrPending =

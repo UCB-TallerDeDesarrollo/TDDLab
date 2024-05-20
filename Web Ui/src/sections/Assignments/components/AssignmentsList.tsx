@@ -26,7 +26,6 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { adaptarDatos } from "../../../utils/adaptarDatos";
-//import { updateGroupOnDb } from "../../../modules/User-Authentication/application/updateGroup";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -153,7 +152,6 @@ function Assignments({
     setAuthData(updatedAuthData); // Actualiza el estado de authData
     const datosParaGuardar = adaptarDatos(updatedAuthData);
     console.log("Esto debo guardar en la base de datos",datosParaGuardar);
-    //updateGroupOnDb(datosParaGuardar);
     console.log("en user actualizando", updatedAuthData); // Muestra el valor actualizado de authData
     
     try {
