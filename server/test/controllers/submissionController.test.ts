@@ -1,4 +1,4 @@
-import SubmissionController from "../../src/controllers/submissions/submissionsControler";
+import SubmissionController from "../../src/controllers/submissions/submissionsController";
 import { getSubmissionRepositoryMock } from "../__mocks__/submissions/repositoryMock";
 import { getSubmissionListMock, SubmissionInProgresDataMock } from "../__mocks__/submissions/dataTypeMocks/submissionData";
 import { createRequest } from "../__mocks__/submissions/requestMock";
