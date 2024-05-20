@@ -24,6 +24,7 @@ import SubmissionRepository from "../../modules/Submissions/Repository/Submissio
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import { SubmissionCreationObject } from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
+import { reload } from "firebase/auth";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -163,6 +164,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
+    window.location.reload()
   };
 
   const handleRedirect = () => {
