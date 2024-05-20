@@ -1,6 +1,6 @@
 import express from "express";
 import SubmissionRepository from "../modules/Submissions/Repository/SubmissionsRepository";
-import SubmissionController from "../controllers/submissions/submissionsControler";
+import SubmissionController from "../controllers/submissions/submissionsController";
 
 const repository = new SubmissionRepository();
 const submissionController = new SubmissionController(repository);
