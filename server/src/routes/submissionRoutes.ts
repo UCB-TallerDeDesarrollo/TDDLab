@@ -25,6 +25,12 @@ submissionsRouter.get(
   async (req, res) => await submissionController.getSubmissionByAssignmentAndUser(req, res)
 );
 
+// Get a submission by assignmentid
+submissionsRouter.get(
+  "/:assignmentid",
+  async (req, res) => await submissionController.getSubmissionsByAssignmentId(req, res)
+);
+
 // Update an assignment by ID
 submissionsRouter.put(
   "/:id",

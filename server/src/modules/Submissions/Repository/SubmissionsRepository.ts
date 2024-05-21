@@ -84,6 +84,16 @@ class SubmissionRepository{
         }
         return null;
     }
+
+    public async getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObect[] | null> {
+        const query = "SELECT * FROM submissions WHERE assignmentid = $1";
+        const values = [assignmentid];
+        const rows = await this.executeQuery(query, values);
+        if (rows.length > 0) {
+            return rows.map((row) => this.mapRowToSubmissions(row));
+        }
+        return null;
+    }
 }
 
 export default SubmissionRepository;

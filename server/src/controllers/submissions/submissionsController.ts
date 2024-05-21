@@ -5,6 +5,7 @@ import GetSubmissionsUseCase from "../../modules/Submissions/Aplication/getSubmi
 import UpdateSubmission from "../../modules/Submissions/Aplication/updateSubmissionUSeCase";
 import DeleteSubmission from "../../modules/Submissions/Aplication/DeleteSubmissionUseCase";
 import getSubmissionUseCase from "../../modules/Submissions/Aplication/getSubmissionUseCase";
+import GetSubmissionsByAssignmentIdUseCase from '../../modules/Submissions/Aplication/getSubmissionsByAssignmentIdUseCase';
 
 class SubmissionController{
     private createSubmissionUseCase: CreateSubmission;
@@ -12,6 +13,7 @@ class SubmissionController{
     private updateSubmissionUseCase: UpdateSubmission;
     private deleteSubmissionUSeCase: DeleteSubmission;
     private getSubmissionUseCase: getSubmissionUseCase;
+    private getSubmissionsByAssignmentIdUseCase: GetSubmissionsByAssignmentIdUseCase;
 
     constructor (repository: SubmissionRepository) {
         this.createSubmissionUseCase = new CreateSubmission(repository);
@@ -19,6 +21,7 @@ class SubmissionController{
         this.getSubmissionUseCase = new getSubmissionUseCase(repository)
         this.updateSubmissionUseCase = new UpdateSubmission(repository);
         this.deleteSubmissionUSeCase = new DeleteSubmission(repository);
+        this.getSubmissionsByAssignmentIdUseCase = new GetSubmissionsByAssignmentIdUseCase(repository);
     }
 
     async CreateSubmission(req: Request, res: Response): Promise<void>{
@@ -95,6 +98,16 @@ class SubmissionController{
           res.status(500).json({ error: "Server error" });
         }
       }
+
+    async getSubmissionsByAssignmentId(req: Request, res: Response): Promise<void> {
+        try {
+            const assignmentid = parseInt(req.params.assignmentid);
+            const assignments = await this.getSubmissionsByAssignmentIdUseCase.execute(assignmentid);
+            res.status(200).json(assignments);
+          } catch (error) {
+            res.status(500).json({ error: "Error getSubmissionsByAssignmentId" });
+          }
+    }
 }
 
 export default SubmissionController;
