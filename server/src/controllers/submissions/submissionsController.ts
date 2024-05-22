@@ -101,7 +101,7 @@ class SubmissionController{
 
     async getSubmissionsByAssignmentId(req: Request, res: Response): Promise<void> {
         try {
-            const assignmentid = parseInt(req.params.assignmentid);
+            const assignmentid = parseInt(req.params.assignmentid, 10);
             const assignments = await this.getSubmissionsByAssignmentIdUseCase.execute(assignmentid);
             res.status(200).json(assignments);
           } catch (error) {
