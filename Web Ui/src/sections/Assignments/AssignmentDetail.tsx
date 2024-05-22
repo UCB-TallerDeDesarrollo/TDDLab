@@ -231,10 +231,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const handleRedirect = () => {
-    if (assignment?.link) {
+  const handleRedirect = (link: string) => {
+    if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(assignment.link);
+      const match = regex.exec(link);
 
       if (match) {
         const [, user, repo] = match;
@@ -478,7 +478,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={!isTaskInProgressOrDelivered}
-                onClick={handleRedirect}
+                onClick={() => handleRedirect(assignment.description)} // Corregir para despues
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -598,7 +598,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                       <Button
                         variant="contained"
                         disabled={submissionStatus[userid.toString()] || false}
-                        onClick={handleRedirect}
+                        onClick={() => handleRedirect(submission.repository_link)}
                         color="primary"
                         style={{
                           textTransform: "none",
