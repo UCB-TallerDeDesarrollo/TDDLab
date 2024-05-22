@@ -566,6 +566,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     <TableCell>Fecha de inicio</TableCell>
                     <TableCell>Fecha de finalización</TableCell>
                     <TableCell>Comentario</TableCell>
+                    <TableCell>Gráfica</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -593,6 +594,21 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                           : "N/A"}
                       </TableCell>
                       <TableCell>{submission.comment || "N/A"}</TableCell>
+                      <TableCell>
+                      <Button
+                        variant="contained"
+                        disabled={submissionStatus[userid.toString()] || false}
+                        onClick={handleRedirect}
+                        color="primary"
+                        style={{
+                          textTransform: "none",
+                          fontSize: "15px",
+                          marginRight: "8px",
+                        }}
+                      >
+                        Ver gráfica
+                      </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
