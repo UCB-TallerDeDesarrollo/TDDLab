@@ -1,8 +1,8 @@
 import axios from "axios";
-import { SubmissionCreationObject } from "../Domain/submissionInterfaces";
+import { SubmissionCreationObject, SubmissionDataObject } from "../Domain/submissionInterfaces";
 import SubmissionRepositoryInterface from "../Domain/SubmissionRepositoryInterface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/submissions"; //https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+const API_URL = "http://localhost:3000/api/submissions"; //https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
 
 class SubmissionRepository implements SubmissionRepositoryInterface {
 
@@ -19,6 +19,20 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
             }
         } catch (error) {
             console.error("Error checking assignment start status:", error);
+            throw error;
+        }
+    }
+
+    async getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObject[]> {
+        try {
+            const response = await axios.get(`${API_URL}/${assignmentid}`);
+            if (response.status === 200) {
+                return response.data;
+            } else {
+                throw new Error("Failed to get submissions by assignment ID");
+            }
+        } catch (error) {
+            console.error("Error getting submissions by assignment ID:", error);
             throw error;
         }
     }

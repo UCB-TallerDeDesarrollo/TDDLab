@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
 import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import { formatDate } from "../../utils/dateUtils";
@@ -7,7 +7,17 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-import { Button, Card, CardContent, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
@@ -22,8 +32,12 @@ import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
-import { SubmissionCreationObject } from "../../modules/Submissions/Domain/submissionInterfaces";
+import {
+  SubmissionCreationObject,
+  SubmissionDataObject,
+} from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
+import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -33,17 +47,25 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => {
+const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
+  role,
+  userid,
+}) => {
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [submissionStatus, setSubmissionStatus] = useState<{ [key: string]: boolean }>({});
+  const [submissionStatus, setSubmissionStatus] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(
     null
   );
+  const [loadingSubmissions, setLoadingSubmissions] = useState(true);
+  const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
+  const [submissionsError, setSubmissionsError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -78,26 +100,64 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
   useEffect(() => {
     const checkIfStarted = async () => {
-      if (assignmentid && userid && userid !== -1) {
-        try {
-          console.log("the user id is ", userid)
-          const submissionRepository = new SubmissionRepository();
-          const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
-          const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
-          console.log("The response is ", response)
-          setSubmissionStatus((prevStatus) => ({
-            ...prevStatus,
-            [userid]: !!response,
-          }));
-        } catch (error) {
-          console.error("Error checking submission status:", error);
+      if (isStudent(role)) {
+        if (assignmentid && userid && userid !== -1) {
+          try {
+            console.log("the user id is ", userid);
+            const submissionRepository = new SubmissionRepository();
+            const checkSubmissionExists = new CheckSubmissionExists(
+              submissionRepository
+            );
+            const response = await checkSubmissionExists.checkSubmissionExists(
+              assignmentid,
+              userid
+            );
+            console.log("The response is ", response);
+            setSubmissionStatus((prevStatus) => ({
+              ...prevStatus,
+              [userid]: !!response,
+            }));
+          } catch (error) {
+            console.error("Error checking submission status:", error);
+          }
         }
       }
     };
-  
+
     checkIfStarted();
   }, [assignmentid, userid]);
-  
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      if (!isStudent(role)) {
+        setLoadingSubmissions(true);
+        setSubmissionsError(null);
+        console.log("Entrando a ver la lista de Submissions");
+        try {
+          const submissionRepository = new SubmissionRepository();
+          const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(
+            submissionRepository
+          );
+          const fetchedSubmissions =
+            await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(
+              assignmentid
+            );
+          setSubmissions(fetchedSubmissions);
+          console.log("Lista de submissions: ", fetchedSubmissions);
+        } catch (error) {
+          setSubmissionsError(
+            "Error fetching submissions. Please try again later."
+          );
+          console.error("Error fetching SubmissionByAssignmentAndUser:", error);
+        } finally {
+          setLoadingSubmissions(false);
+        }
+      }
+    };
+
+    fetchSubmissions();
+  }, [assignmentid, role]);
+
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
   const isTaskDeliveredOrPending =
@@ -140,18 +200,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
-      const start_date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const start_date = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
       const submissionData: SubmissionCreationObject = {
         assignmentid: assignmentid,
         userid: userid,
-        status: 'in progress',
+        status: "in progress",
         repository_link: repository_link,
-        start_date: start_date
+        start_date: start_date,
       };
-      try{
+      try {
         await createSubmission.createSubmission(submissionData);
         handleCloseLinkDialog();
-      } catch (error){
+      } catch (error) {
         console.error(error);
       }
     }
@@ -163,7 +227,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
-    window.location.reload()
+    window.location.reload();
   };
 
   const handleRedirect = () => {
@@ -394,17 +458,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             </div>
             {isStudent(role) && (
               <Button
-              variant="contained"
-              disabled={submissionStatus[userid.toString()]||false}
-              onClick={handleOpenLinkDialog}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
-            >
-              Iniciar tarea
-            </Button>
+                variant="contained"
+                disabled={submissionStatus[userid.toString()] || false}
+                onClick={handleOpenLinkDialog}
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Iniciar tarea
+              </Button>
             )}
 
             {isStudent(role) && (
@@ -462,6 +526,76 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
         >
           <CircularProgress size={60} thickness={5} />
         </div>
+      )}
+      {!isStudent(role) && (
+        <Card variant="elevation" elevation={0}>
+          <CardContent>
+            <Typography
+              variant="h6"
+              component="div"
+              style={{ fontSize: "24px", lineHeight: "3.8" }}
+            >
+              Lista de Estudiantes
+            </Typography>
+            {loadingSubmissions ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "150px",
+                }}
+              >
+                <CircularProgress size={40} thickness={4} />
+              </div>
+            ) : submissionsError ? (
+              <Typography variant="body2" color="error">
+                {submissionsError}
+              </Typography>
+            ) : (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {/* <TableCell>Email del estudiante</TableCell> */}
+                    <TableCell>Estado</TableCell>
+                    <TableCell>Enlace</TableCell>
+                    <TableCell>Fecha de inicio</TableCell>
+                    <TableCell>Fecha de finalización</TableCell>
+                    <TableCell>Comentario</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {submissions.map((submission) => (
+                    <TableRow key={submission.userid}>
+                      {/* <TableCell>{submission.email}</TableCell> */}
+                      <TableCell>
+                        {getDisplayStatus(submission.status)}
+                      </TableCell>
+                      <TableCell>
+                        <a
+                          href={submission.repository_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {submission.repository_link}
+                        </a>
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(submission.start_date.toString())}
+                      </TableCell>
+                      <TableCell>
+                        {submission.end_date
+                          ? formatDate(submission.end_date.toString())
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>{submission.comment || "N/A"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   );
