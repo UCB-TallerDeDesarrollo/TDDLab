@@ -38,6 +38,7 @@ import {
 } from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
+import { v4 as uuidv4 } from "uuid";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -296,8 +297,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     <div
       style={{
         display: "flex",
+        flexDirection: 'column',
         justifyContent: "center",
         alignItems: "center",
+        gap: '10px',
       }}
     >
       {assignment ? (
@@ -533,6 +536,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             <Typography
               variant="h6"
               component="div"
+              align="center"
               style={{ fontSize: "24px", lineHeight: "3.8" }}
             >
               Lista de Estudiantes
@@ -566,7 +570,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 </TableHead>
                 <TableBody>
                   {submissions.map((submission) => (
-                    <TableRow key={submission.userid}>
+                    <TableRow key={uuidv4()}>
                       {/* <TableCell>{submission.email}</TableCell> */}
                       <TableCell>
                         {getDisplayStatus(submission.status)}
