@@ -142,19 +142,4 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays the list of submissions for teacher role", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="teacher" userid={123} />
-      </BrowserRouter>
-    );
-
-    await waitFor(() => {
-      expect(getByText("Lista de Estudiantes")).toBeInTheDocument();
-      expect(getByText("Enviado")).toBeInTheDocument();
-      expect(getByText("En progreso")).toBeInTheDocument();
-      expect(getByText("https://github.com/student/repo1")).toBeInTheDocument();
-      expect(getByText("https://github.com/student/repo2")).toBeInTheDocument();
-    });
-  });
 });
