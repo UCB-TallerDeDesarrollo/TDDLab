@@ -9,5 +9,5 @@ export class MockSubmissionRepository implements SubmissionRepositoryInterface{
         this.submissions.push(submissionData);
       });
     checkSubmissionExists = jest.fn()
-
+    getSubmissionsByAssignmentId = jest.fn()
 }
