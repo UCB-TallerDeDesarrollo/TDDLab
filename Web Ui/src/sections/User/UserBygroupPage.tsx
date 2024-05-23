@@ -1,4 +1,4 @@
-import _React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
