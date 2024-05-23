@@ -32,6 +32,31 @@ jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
   })),
 }));
 
+jest.mock("../../../src/modules/Submissions/Aplication/getSubmissionsByAssignmentId", () => ({
+  GetSubmissionsByAssignmentId: jest.fn().mockImplementation(() => ({
+    getSubmissionsByAssignmentId: jest.fn().mockResolvedValue([
+      {
+        assignmentid: 1,
+        userid: 123,
+        status: "delivered",
+        repository_link: "https://github.com/student/repo1",
+        start_date: new Date(),
+        end_date: new Date(),
+        comment: "Good job",
+      },
+      {
+        assignmentid: 1,
+        userid: 124,
+        status: "in progress",
+        repository_link: "https://github.com/student/repo2",
+        start_date: new Date(),
+        end_date: null,
+        comment: null,
+      },
+    ]),
+  })),
+}));
+
 describe("AssignmentDetail Component", () => {
   it("displays the group name", async () => {
     // Renderizar el componente con el role de estudiante
@@ -114,6 +139,22 @@ describe("AssignmentDetail Component", () => {
       expect(iniciarTareaButton).not.toBeInTheDocument();
       expect(verGraficaButton).not.toBeInTheDocument();
       expect(finalizarTareaButton).not.toBeInTheDocument();
+    });
+  });
+
+  it("displays the list of submissions for teacher role", async () => {
+    const { getByText } = render(
+      <BrowserRouter>
+        <AssignmentDetail role="teacher" userid={123} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(getByText("Lista de Estudiantes")).toBeInTheDocument();
+      expect(getByText("Enviado")).toBeInTheDocument();
+      expect(getByText("En progreso")).toBeInTheDocument();
+      expect(getByText("https://github.com/student/repo1")).toBeInTheDocument();
+      expect(getByText("https://github.com/student/repo2")).toBeInTheDocument();
     });
   });
 });
