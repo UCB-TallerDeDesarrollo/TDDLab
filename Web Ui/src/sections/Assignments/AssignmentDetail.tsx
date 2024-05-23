@@ -186,10 +186,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     fetchStudentSubmission();
   }, [assignmentid, userid, role]);
 
-  const isTaskInProgressOrDelivered = 
-  studentSubmission?.status === "in progress" || studentSubmission?.status === "delivered";
-  
-    
+ 
   const isTaskDeliveredOrPending =
     assignment?.state === "delivered" || assignment?.state === "pending";
 
