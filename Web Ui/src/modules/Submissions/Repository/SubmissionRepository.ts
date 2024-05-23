@@ -43,6 +43,20 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
         console.log(`${API_URL}/${submissionid}`);
         await axios.put(`${API_URL}/${submissionid}`, submissionData);
     }
+
+    async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject> {
+        try {
+            const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`);
+            if (response.status === 200) {
+                return response.data;
+            } else {
+                throw new Error("Failed to get submission");
+            }
+        } catch (error) {
+            console.error("Error getting submission status:", error);
+            throw error;
+        }
+    }
 }
 
 

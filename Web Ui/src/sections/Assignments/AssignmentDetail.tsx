@@ -39,6 +39,8 @@ import {
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
+import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
+import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -74,9 +76,19 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
   const [, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
-
+  const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
+
+  useEffect(()=>{
+    const submissionRepository = new SubmissionRepository();
+    const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
+    submissionData.getSubmisssionByUserandSubmissionId(assignmentid,userid).then((fetchedSubmission) =>{
+      setSubmission(fetchedSubmission);
+    }).catch((error) => {
+      console.error("Error fetching submission:", error);
+    });
+  }, [assignmentid, userid]);
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
@@ -568,7 +580,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
             <CommentDialog
               open={isCommentDialogOpen}
-              link={assignment?.link}
+              link={submission?.repository_link}
               onSend={handleSendComment}
               onClose={handleCloseCommentDialog}
             />
