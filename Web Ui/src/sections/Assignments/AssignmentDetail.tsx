@@ -186,9 +186,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     fetchStudentSubmission();
   }, [assignmentid, userid, role]);
 
-  const isTaskInProgressOrDelivered = (state: string) =>{
-    state === "in progress" || state === "delivered";
-  };
+  const isTaskInProgressOrDelivered = 
+  studentSubmission?.status === "in progress" || studentSubmission?.status === "delivered";
+  
     
   const isTaskDeliveredOrPending =
     assignment?.state === "delivered" || assignment?.state === "pending";
@@ -506,8 +506,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                disabled={!isTaskInProgressOrDelivered }
-                onClick={() => studentSubmission && studentSubmission.repository_link && handleRedirect(studentSubmission.repository_link)} // Corregir para despues
+                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
+                onClick={() => studentSubmission && studentSubmission.repository_link && handleRedirect(studentSubmission.repository_link)}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -626,7 +626,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                       <TableCell>
                       <Button
                         variant="contained"
-                        disabled={submissionStatus[userid.toString()] || false}
+                        disabled={submission.repository_link === ""}
                         onClick={() => handleRedirect(submission.repository_link)}
                         color="primary"
                         style={{
