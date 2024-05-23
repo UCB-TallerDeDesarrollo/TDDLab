@@ -72,7 +72,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   );
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
-  const [submissionsError, setSubmissionsError] = useState<string | null>(null);
+  const [, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
 
   const navigate = useNavigate();
@@ -349,10 +349,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     setStudentRows(rows);
   };
 
-  // useEffect(() => {
-  //   renderStudentRows();
-  // }, [submissions]);
-
   return (
     <div
       style={{
@@ -612,10 +608,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               >
                 <CircularProgress size={40} thickness={4} />
               </div>
-            ) : submissionsError ? (
-              <Typography variant="body2" color="error">
-                {submissionsError}
-              </Typography>
             ) : (
               <Table>
                 <TableHead>
