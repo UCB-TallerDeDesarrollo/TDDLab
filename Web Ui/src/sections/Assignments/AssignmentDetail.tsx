@@ -66,6 +66,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   );
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
+  const [studentSubmission, setStudentSubmission] = useState<SubmissionDataObject>();
   const [submissionsError, setSubmissionsError] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -159,8 +160,36 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     fetchSubmissions();
   }, [assignmentid, role]);
 
-  const isTaskInProgressOrDelivered =
-    assignment?.state === "in progress" || assignment?.state === "delivered";
+  useEffect(() => {
+    const fetchStudentSubmission = async () => {
+      if (isStudent(role)) {
+        if (assignmentid && userid && userid !== -1) {
+          try {
+            const submissionRepository = new SubmissionRepository();
+            const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
+            const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
+            const userSubmission = allSubmissions.find(submission => submission.userid === userid);
+            setSubmissionStatus((prevStatus) => ({
+              ...prevStatus,
+              [userid]: !!userSubmission,
+            }));
+            if (userSubmission) {
+              setStudentSubmission(userSubmission);
+            }
+          } catch (error) {
+            console.error("Error fetching student submission:", error);
+          }
+        }
+      }
+    };
+
+    fetchStudentSubmission();
+  }, [assignmentid, userid, role]);
+
+  const isTaskInProgressOrDelivered = (state: string) =>{
+    state === "in progress" || state === "delivered";
+  };
+    
   const isTaskDeliveredOrPending =
     assignment?.state === "delivered" || assignment?.state === "pending";
 
@@ -477,8 +506,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                disabled={!isTaskInProgressOrDelivered}
-                onClick={() => handleRedirect(assignment.description)} // Corregir para despues
+                disabled={!isTaskInProgressOrDelivered }
+                onClick={() => studentSubmission && studentSubmission.repository_link && handleRedirect(studentSubmission.repository_link)} // Corregir para despues
                 color="primary"
                 style={{
                   textTransform: "none",
