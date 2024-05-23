@@ -173,8 +173,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
-  const isTaskDeliveredOrPending =
-    assignment?.state === "delivered" || assignment?.state === "pending";
+  // const isTaskDeliveredOrPending =
+  //   assignment?.state === "delivered" || assignment?.state === "pending";
 
   const handleUpdateAssignment = async (
     updatedAssignment: AssignmentDataObject
@@ -554,7 +554,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                disabled={isTaskDeliveredOrPending}
+                //disabled={isTaskDeliveredOrPending}
                 onClick={handleOpenCommentDialog}
                 style={{
                   textTransform: "none",
