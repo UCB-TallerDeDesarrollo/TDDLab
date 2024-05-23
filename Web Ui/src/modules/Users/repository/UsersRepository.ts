@@ -50,6 +50,15 @@ class UsersRepository implements UsersRepositoryInterface {
       throw error;
     }
   }
+  async getUserEmailById(id: number): Promise<string> {
+    try {
+      const response = await axios.get(`${API_URL}/${id}`);
+      return response.data.email;
+    } catch (error) {
+      console.error("Error fetching user email by ID:", error);
+      throw error;
+    }
+  }
 }
 
 export default UsersRepository;

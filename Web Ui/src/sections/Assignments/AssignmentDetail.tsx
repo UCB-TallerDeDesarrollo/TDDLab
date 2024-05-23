@@ -38,6 +38,7 @@ import {
 } from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
+import UsersRepository from "../../modules/Users/repository/UsersRepository";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -72,8 +73,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
   const [submissionsError, setSubmissionsError] = useState<string | null>(null);
+  const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
 
   const navigate = useNavigate();
+  const usersRepository = new UsersRepository();
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
@@ -163,6 +166,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
     fetchSubmissions();
   }, [assignmentid, role]);
+
+  useEffect(() => {
+    renderStudentRows();
+  }, [submissions]);
 
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
@@ -297,6 +304,54 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         return status;
     }
   };
+
+  const getStudentEmailById = async (studentId: number): Promise<string> => {
+    try {
+      const student = await usersRepository.getUserById(studentId);
+      return student.email;
+    } catch (error) {
+      console.error("Error fetching student email:", error);
+      return "";
+    }
+  };
+
+  const renderStudentRows = async () => {
+    const rows = await Promise.all(
+      submissions.map(async (submission) => {
+        const studentEmail = await getStudentEmailById(submission.userid);
+        return (
+          <TableRow key={generateUniqueId()}>
+            <TableCell>{studentEmail}</TableCell>
+            <TableCell>{getDisplayStatus(submission.status)}</TableCell>
+            <TableCell>
+              <a
+                href={submission.repository_link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {submission.repository_link}
+              </a>
+            </TableCell>
+            <TableCell>
+              {formatDate(submission.start_date.toString())}
+            </TableCell>
+            <TableCell>
+              {submission.end_date
+                ? formatDate(submission.end_date.toString())
+                : "N/A"}
+            </TableCell>
+            <TableCell>{submission.comment || "N/A"}</TableCell>
+          </TableRow>
+        );
+      })
+    );
+
+    setStudentRows(rows);
+  };
+
+  // useEffect(() => {
+  //   renderStudentRows();
+  // }, [submissions]);
 
   return (
     <div
@@ -565,7 +620,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Table>
                 <TableHead>
                   <TableRow>
-                    {/* <TableCell>Email del estudiante</TableCell> */}
+                    <TableCell>Email</TableCell>
                     <TableCell>Estado</TableCell>
                     <TableCell>Enlace</TableCell>
                     <TableCell>Fecha de inicio</TableCell>
@@ -574,32 +629,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {submissions.map((submission) => (
-                    <TableRow key={generateUniqueId()}>
-                      {/* <TableCell>{submission.email}</TableCell> */}
-                      <TableCell>
-                        {getDisplayStatus(submission.status)}
-                      </TableCell>
-                      <TableCell>
-                        <a
-                          href={submission.repository_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {submission.repository_link}
-                        </a>
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(submission.start_date.toString())}
-                      </TableCell>
-                      <TableCell>
-                        {submission.end_date
-                          ? formatDate(submission.end_date.toString())
-                          : "N/A"}
-                      </TableCell>
-                      <TableCell>{submission.comment || "N/A"}</TableCell>
-                    </TableRow>
-                  ))}
+                  {studentRows}
                 </TableBody>
               </Table>
             )}
