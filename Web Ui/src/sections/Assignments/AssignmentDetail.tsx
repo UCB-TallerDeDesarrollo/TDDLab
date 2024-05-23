@@ -573,7 +573,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => studentSubmission && studentSubmission.repository_link && handleRedirect(studentSubmission.repository_link)}
+                onClick={() =>studentSubmission?.repository_link && handleRedirect(studentSubmission.repository_link)}
                 color="primary"
                 style={{
                   textTransform: "none",
