@@ -38,7 +38,7 @@ import {
 } from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -46,6 +46,12 @@ interface AssignmentDetailProps {
 
 function isStudent(role: string) {
   return role === "student";
+}
+
+function generateUniqueId() {
+  const timestamp = Date.now().toString(36);
+  const randomChars = Math.random().toString(36).substring(2, 8);
+  return timestamp + randomChars;
 }
 
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
@@ -570,7 +576,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 </TableHead>
                 <TableBody>
                   {submissions.map((submission) => (
-                    <TableRow key={uuidv4()}>
+                    <TableRow key={generateUniqueId()}>
                       {/* <TableCell>{submission.email}</TableCell> */}
                       <TableCell>
                         {getDisplayStatus(submission.status)}
