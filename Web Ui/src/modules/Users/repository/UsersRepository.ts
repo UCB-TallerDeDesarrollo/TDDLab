@@ -2,7 +2,7 @@ import axios from "axios";
 import { UserDataObject } from "../domain/UsersInterface";
 import UsersRepositoryInterface from "../domain/UsersRepositoryInterface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api"; //http://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+const API_URL = "https://tdd-lab-api-gold.vercel.app/api/user/users"; //http://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
 
 class UsersRepository implements UsersRepositoryInterface {
 
@@ -47,6 +47,15 @@ class UsersRepository implements UsersRepositoryInterface {
       await axios.put(`${API_URL}/${id}`,{groupid});
     } catch (error) {
       console.error("Error updating user:", error);
+      throw error;
+    }
+  }
+  async getUserEmailById(id: number): Promise<string> {
+    try {
+      const response = await axios.get(`${API_URL}/${id}`);
+      return response.data.email;
+    } catch (error) {
+      console.error("Error fetching user email by ID:", error);
       throw error;
     }
   }

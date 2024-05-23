@@ -1,6 +1,6 @@
 import SubmissionRepository from "../../../../src/modules/Submissions/Repository/SubmissionsRepository";
 import { Pool } from "pg";
-import { SubmissionInProgresDataMock } from "../../../__mocks__/submissions/dataTypeMocks/submissionData";
+import { getSubmissionListMock, SubmissionInProgresDataMock } from "../../../__mocks__/submissions/dataTypeMocks/submissionData";
 
 let repository: SubmissionRepository;
 let poolConnectMock: jest.Mock;
@@ -109,5 +109,30 @@ describe("Delete submission", () => {
   it("should handle errors when deleting a submission", async () => {
     poolConnectMock.mockRejectedValue(new Error());
     await expect(repository.deleteSubmission(1)).rejects.toThrow();
+  });
+});
+
+describe("Get submissions by assignmentId", () => {
+  it("should retrieve submissions for a specific assignmentId", async () => {
+    const mockSubmissions = getSubmissionListMock();
+    clientQueryMock.mockResolvedValue({ rows: mockSubmissions });
+    const assignmentId = 25;
+    const submissions = await repository.getSubmissionsByAssignmentId(assignmentId);
+    expect(submissions).toHaveLength(mockSubmissions.length);
+    submissions.forEach(submission => {
+      expect(submission.assignmentid).toBe(assignmentId);
+    });
+  });
+
+  it("should handle errors when retrieving submissions by assignmentId", async () => {
+    poolConnectMock.mockRejectedValue(new Error());
+    await expect(repository.getSubmissionsByAssignmentId(25)).rejects.toThrow();
+  });
+
+  it("should return an empty array if no submissions are found for the given assignmentId", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [] });
+    const assignmentId = 25;
+    const submissions = await repository.getSubmissionsByAssignmentId(assignmentId);
+    expect(submissions).toHaveLength(0);
   });
 });
