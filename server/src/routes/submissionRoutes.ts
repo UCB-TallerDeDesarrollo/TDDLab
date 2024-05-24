@@ -31,13 +31,13 @@ submissionsRouter.get(
   async (req, res) => await submissionController.getSubmissionsByAssignmentId(req, res)
 );
 
-// Update an assignment by ID
+// Update a Submission by ID
 submissionsRouter.put(
   "/:id",
   async (req, res) => await submissionController.updateSubmission(req, res)
 );
 
-// Delete an assignment by ID
+// Delete a submissiom by ID
 submissionsRouter.delete(
   "/:id",
   async (req, res) => await submissionController.deleteSubmission(req, res)
