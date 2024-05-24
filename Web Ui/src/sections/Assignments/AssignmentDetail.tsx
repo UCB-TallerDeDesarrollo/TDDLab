@@ -184,42 +184,13 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     renderStudentRows();
   }, [submissions]);
 
+  const isTaskInProgress = submission?.status !== "in progress";
+
   const isTaskInProgressOrDelivered =
     assignment?.state === "in progress" || assignment?.state === "delivered";
+
   // const isTaskDeliveredOrPending =
-  //   assignment?.state === "delivered" || assignment?.state === "pending";
-
-  // const handleUpdateAssignment = async (
-  //   updatedAssignment: AssignmentDataObject
-  // ) => {
-  //   const assignmentsRepository = new AssignmentsRepository();
-  //   const submitAssignment = new SubmitAssignment(assignmentsRepository);
-
-  //   try {
-  //     await submitAssignment.submitAssignment(
-  //       updatedAssignment.id,
-  //       updatedAssignment.link,
-  //       updatedAssignment.comment
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // const handleFindAssignment = async (assignmentId: number, link: string) => {
-  //   const updatedAssignment = {
-  //     id: assignmentId,
-  //     title: assignment ? assignment.title : "",
-  //     description: assignment ? assignment.description : "",
-  //     start_date: assignment ? assignment.start_date : new Date(),
-  //     end_date: assignment ? assignment.end_date : new Date(),
-  //     state: assignment ? assignment.state : "",
-  //     link: link,
-  //     comment: assignment ? assignment.comment : "",
-  //     groupid: assignment ? assignment.groupid : 0,
-  //   };
-  //   return updatedAssignment;
-  // };
+  //   submission?.status === "delivered" || submission?.status === "pending";
 
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) {
@@ -581,7 +552,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                //disabled={isTaskDeliveredOrPending}
+                disabled={isTaskInProgress}
                 onClick={handleOpenCommentDialog}
                 style={{
                   textTransform: "none",
