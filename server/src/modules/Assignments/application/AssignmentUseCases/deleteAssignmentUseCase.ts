@@ -12,6 +12,7 @@ class DeleteAssignment {
       await this.adapter.deleteAssignment(assignmentId);
     } catch (error) {
       console.error("Ocurrió un error al eliminar la tarea:", error);
+      throw error;
     }
   }
 }
