@@ -2,7 +2,7 @@ import axios from "axios"; // Import Axios or your preferred HTTP library
 import AuthDBRepositoryInterface from "../domain/LoginRepositoryInterface";
 import { UserOnDb } from "../domain/userOnDb.interface";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api"; //https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+const API_URL = "https://tdd-lab-api-gold.vercel.app/api"; //http://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
 
 class AuthRepository implements AuthDBRepositoryInterface {
   async getAccountInfo(email: string): Promise<UserOnDb> {

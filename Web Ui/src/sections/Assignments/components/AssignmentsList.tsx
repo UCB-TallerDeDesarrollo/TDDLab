@@ -61,7 +61,6 @@ function Assignments({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
- 
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
     number | null
   >(null);
@@ -244,7 +243,7 @@ function Assignments({
                     defaultName={groupList.find(group => group.id === userGroupid)?.groupName || "Selecciona un grupo"}
                   />
                 ):(
-                  <span>{groupList.find(group => group.id === userGroupid)?.groupName || "No hay grupos disponibles"}</span>
+                  <span>{groupList.find(group => group.id === userGroupid)?.groupName || ""}</span>
                   )}
 
                   <SortingComponent

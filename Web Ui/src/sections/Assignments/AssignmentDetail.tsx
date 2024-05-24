@@ -27,7 +27,7 @@ import {
   Comment as CommentIcon,
 } from "@mui/icons-material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
-import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
+//import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
@@ -35,10 +35,13 @@ import { CreateSubmission } from "../../modules/Submissions/Aplication/createSub
 import {
   SubmissionCreationObject,
   SubmissionDataObject,
+  SubmissionUpdateObject,
 } from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
+import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
+import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -75,9 +78,19 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [studentSubmission,setStudentSubmission] = useState<SubmissionDataObject>();
   const [, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
-
+  const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
+
+  useEffect(()=>{
+    const submissionRepository = new SubmissionRepository();
+    const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
+    submissionData.getSubmisssionByUserandSubmissionId(assignmentid,userid).then((fetchedSubmission) =>{
+      setSubmission(fetchedSubmission);
+    }).catch((error) => {
+      console.error("Error fetching submission:", error);
+    });
+  }, [assignmentid, userid]);
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
@@ -171,6 +184,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   useEffect(() => {
     renderStudentRows();
   }, [submissions]);
+
+  const isTaskInProgress = submission?.status !== "in progress";
   useEffect(() => {
     const fetchStudentSubmission = async () => {
       if (isStudent(role)) {
@@ -197,40 +212,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     fetchStudentSubmission();
   }, [assignmentid, userid, role]);
 
-  const isTaskDeliveredOrPending =
-    assignment?.state === "delivered" || assignment?.state === "pending";
 
-  const handleUpdateAssignment = async (
-    updatedAssignment: AssignmentDataObject
-  ) => {
-    const assignmentsRepository = new AssignmentsRepository();
-    const submitAssignment = new SubmitAssignment(assignmentsRepository);
-
-    try {
-      await submitAssignment.submitAssignment(
-        updatedAssignment.id,
-        updatedAssignment.link,
-        updatedAssignment.comment
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleFindAssignment = async (assignmentId: number, link: string) => {
-    const updatedAssignment = {
-      id: assignmentId,
-      title: assignment ? assignment.title : "",
-      description: assignment ? assignment.description : "",
-      start_date: assignment ? assignment.start_date : new Date(),
-      end_date: assignment ? assignment.end_date : new Date(),
-      state: assignment ? assignment.state : "",
-      link: link,
-      comment: assignment ? assignment.comment : "",
-      groupid: assignment ? assignment.groupid : 0,
-    };
-    return updatedAssignment;
-  };
+  // const isTaskDeliveredOrPending =
+  //   submission?.status === "delivered" || submission?.status === "pending";
 
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) {
@@ -302,18 +286,32 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     setIsCommentDialogOpen(false);
   };
 
-  const handleSendComment = async (comment: string, link: string) => {
-    setComment(comment);
-    handleCloseCommentDialog();
-
-    if (assignmentid) {
-      const updatedAssignment = await handleFindAssignment(assignmentid, link);
-      updatedAssignment.comment = comment;
-
-      await handleUpdateAssignment(updatedAssignment);
-
-      window.location.reload();
+  const handleSendComment = async (comment: string) => {
+    if (submission){
+      setComment(comment);
+      const submissionRepository = new SubmissionRepository();
+      const finishSubmission = new FinishSubmission(submissionRepository);
+      const endDate = new Date();
+      const end_date = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      const submissionData: SubmissionUpdateObject = {
+        id: submission?.id,
+        status: "delivered",
+        end_date: end_date,
+        comment: comment
+       };
+      try {
+        await finishSubmission.finishSubmission(submission.id, submissionData);
+      handleCloseLinkDialog();
+      } catch (error) {
+        console.error(error);
+      }
     }
+    handleCloseCommentDialog();
+    window.location.reload();
   };
 
   const getDisplayStatus = (status: string) => {
@@ -593,7 +591,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                disabled={isTaskDeliveredOrPending}
+                disabled={isTaskInProgress}
                 onClick={handleOpenCommentDialog}
                 style={{
                   textTransform: "none",
@@ -607,7 +605,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
             <CommentDialog
               open={isCommentDialogOpen}
-              link={assignment?.link}
+              link={submission?.repository_link}
               onSend={handleSendComment}
               onClose={handleCloseCommentDialog}
             />
