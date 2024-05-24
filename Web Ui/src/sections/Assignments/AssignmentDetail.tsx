@@ -27,7 +27,6 @@ import {
   Comment as CommentIcon,
 } from "@mui/icons-material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
-//import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
@@ -211,10 +210,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
     fetchStudentSubmission();
   }, [assignmentid, userid, role]);
-
-
-  // const isTaskDeliveredOrPending =
-  //   submission?.status === "delivered" || submission?.status === "pending";
 
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) {
