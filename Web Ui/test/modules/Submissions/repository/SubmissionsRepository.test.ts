@@ -27,4 +27,19 @@ describe('getSubmissionsByAssignmentId', () => {
         axiosGetSpy.mockRejectedValue(new Error('Failed to get submissions by assignment ID'));
         await expect(mockRepository.getSubmissionsByAssignmentId(25)).rejects.toThrowError('Failed to get submissions by assignment ID');
     });
+
+    describe('checkSubmissionExists', () => {
+        it('should return a response object with hasStarted property when the request is successful', async () => {
+          const mockResponse = { data: { hasStarted: true }, status: 200 };
+          axiosGetSpy.mockResolvedValue(mockResponse);
+      
+          const result = await mockRepository.checkSubmissionExists(25, 1);
+          expect(result).toEqual({ hasStarted: true });
+        });
+      
+        it('should throw an error if checking submission exists fails', async () => {
+          axiosGetSpy.mockRejectedValue(new Error('Failed to check assignment start status'));
+          await expect(mockRepository.checkSubmissionExists(25, 1)).rejects.toThrowError('Failed to check assignment start status');
+        });
+    });
 });

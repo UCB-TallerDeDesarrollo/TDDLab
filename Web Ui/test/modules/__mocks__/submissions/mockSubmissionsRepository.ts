@@ -1,5 +1,5 @@
 import SubmissionRepositoryInterface from "../../../../src/modules/Submissions/Domain/SubmissionRepositoryInterface";
-import { SubmissionDataObject } from "../../../../src/modules/Submissions/Domain/submissionInterfaces";
+import { SubmissionDataObject} from "../../../../src/modules/Submissions/Domain/submissionInterfaces";
 
 export class MockSubmissionRepository implements SubmissionRepositoryInterface{
     private submissions: SubmissionDataObject[] = [];
@@ -9,5 +9,7 @@ export class MockSubmissionRepository implements SubmissionRepositoryInterface{
       });
     checkSubmissionExists = jest.fn();
     getSubmissionsByAssignmentId = jest.fn();
+    getSubmissionbyUserandSubmissionId = jest.fn();
+    finishSubmission = jest.fn();
 
 }
