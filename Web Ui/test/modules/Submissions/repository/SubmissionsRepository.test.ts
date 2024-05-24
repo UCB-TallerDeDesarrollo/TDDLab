@@ -42,6 +42,12 @@ describe('getSubmissionsByAssignmentId', () => {
           axiosGetSpy.mockRejectedValue(new Error('Failed to check assignment start status'));
           await expect(mockRepository.checkSubmissionExists(25, 1)).rejects.toThrowError('Failed to check assignment start status');
         });
+        it('should throw an error if the response status is not 200', async () => {
+            const mockResponse = { status: 400 };
+            axiosGetSpy.mockResolvedValue(mockResponse);
+          
+            await expect(mockRepository.checkSubmissionExists(25, 1)).rejects.toThrowError('Failed to check assignment start status');
+        });
     });
     describe('finishSubmission', () => {
         const axiosPutSpy = jest.spyOn(axios, 'put');
