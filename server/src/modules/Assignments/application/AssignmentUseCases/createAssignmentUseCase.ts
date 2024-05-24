@@ -20,6 +20,7 @@ class CreateAssignment {
       return newAssignment;
 
     } catch (error) {
+      console.error("Ocurrió un error al crear la tarea:", error);
       throw error;
     }
   }

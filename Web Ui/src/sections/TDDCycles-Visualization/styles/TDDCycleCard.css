@@ -69,14 +69,6 @@
   background-color: rgb(102, 102, 102);
 }
 
-.commit-stats {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-right: auto;
-  padding: 12px;
-}
-
 .commit-stat-item {
   display: flex;
   align-items: center;

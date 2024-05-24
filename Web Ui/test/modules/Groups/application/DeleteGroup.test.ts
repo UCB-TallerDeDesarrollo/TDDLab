@@ -17,7 +17,7 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
     try {
       await this.groupsRepository.deleteGroup(id);
     } catch (error) {
-      throw error; // Lanza el error original recibido de this.groupsRepository.deleteGroup(id)
+      console.error("Ocurrió un error al eliminar el grupo:", error);
     }
   }
 }

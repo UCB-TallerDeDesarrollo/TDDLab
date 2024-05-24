@@ -48,8 +48,7 @@ describe('GetUserById', () => {
 
   it('should return null when an invalid userId is provided', async () => {
     // Configuramos el mock para que devuelva una promesa resuelta con un objeto de usuario no encontrado cuando se llame a getUserById
-    (mockRepository.getUserById as jest.MockedFunction<typeof mockRepository.getUserById>).mockResolvedValue(new Promise<UserDataObject>((resolve) => resolve(notFoundUser)));
-
+    (mockRepository.getUserById as jest.MockedFunction<typeof mockRepository.getUserById>).mockResolvedValue(Promise.resolve(notFoundUser));
     const result = await getUserById.getUserById(userid);
 
     expect(mockRepository.getUserById).toHaveBeenCalledWith(userid);

@@ -9,7 +9,7 @@ interface UseGitHubLinkValidation {
 export const useGitHubLinkValidation = (
   initialRepo: string | undefined
 ): UseGitHubLinkValidation => {
-  const [repo, setRepo] = useState(initialRepo || "");
+  const [repo, setRepo] = useState(initialRepo ?? "");
   const [validLink, setValidLink] = useState(true);
 
   const validateGitHubLink = (text: string): boolean => {
