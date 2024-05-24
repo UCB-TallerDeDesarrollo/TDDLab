@@ -27,7 +27,7 @@ import {
   Comment as CommentIcon,
 } from "@mui/icons-material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
-import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
+//import { SubmitAssignment } from "../../modules/Assignments/application/SubmitAssignment";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
@@ -35,6 +35,7 @@ import { CreateSubmission } from "../../modules/Submissions/Aplication/createSub
 import {
   SubmissionCreationObject,
   SubmissionDataObject,
+  SubmissionUpdateObject,
 } from "../../modules/Submissions/Domain/submissionInterfaces";
 import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
@@ -188,37 +189,37 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   // const isTaskDeliveredOrPending =
   //   assignment?.state === "delivered" || assignment?.state === "pending";
 
-  const handleUpdateAssignment = async (
-    updatedAssignment: AssignmentDataObject
-  ) => {
-    const assignmentsRepository = new AssignmentsRepository();
-    const submitAssignment = new SubmitAssignment(assignmentsRepository);
+  // const handleUpdateAssignment = async (
+  //   updatedAssignment: AssignmentDataObject
+  // ) => {
+  //   const assignmentsRepository = new AssignmentsRepository();
+  //   const submitAssignment = new SubmitAssignment(assignmentsRepository);
 
-    try {
-      await submitAssignment.submitAssignment(
-        updatedAssignment.id,
-        updatedAssignment.link,
-        updatedAssignment.comment
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //   try {
+  //     await submitAssignment.submitAssignment(
+  //       updatedAssignment.id,
+  //       updatedAssignment.link,
+  //       updatedAssignment.comment
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const handleFindAssignment = async (assignmentId: number, link: string) => {
-    const updatedAssignment = {
-      id: assignmentId,
-      title: assignment ? assignment.title : "",
-      description: assignment ? assignment.description : "",
-      start_date: assignment ? assignment.start_date : new Date(),
-      end_date: assignment ? assignment.end_date : new Date(),
-      state: assignment ? assignment.state : "",
-      link: link,
-      comment: assignment ? assignment.comment : "",
-      groupid: assignment ? assignment.groupid : 0,
-    };
-    return updatedAssignment;
-  };
+  // const handleFindAssignment = async (assignmentId: number, link: string) => {
+  //   const updatedAssignment = {
+  //     id: assignmentId,
+  //     title: assignment ? assignment.title : "",
+  //     description: assignment ? assignment.description : "",
+  //     start_date: assignment ? assignment.start_date : new Date(),
+  //     end_date: assignment ? assignment.end_date : new Date(),
+  //     state: assignment ? assignment.state : "",
+  //     link: link,
+  //     comment: assignment ? assignment.comment : "",
+  //     groupid: assignment ? assignment.groupid : 0,
+  //   };
+  //   return updatedAssignment;
+  // };
 
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) {
@@ -290,18 +291,32 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     setIsCommentDialogOpen(false);
   };
 
-  const handleSendComment = async (comment: string, link: string) => {
-    setComment(comment);
-    handleCloseCommentDialog();
-
-    if (assignmentid) {
-      const updatedAssignment = await handleFindAssignment(assignmentid, link);
-      updatedAssignment.comment = comment;
-
-      await handleUpdateAssignment(updatedAssignment);
-
-      window.location.reload();
+  const handleSendComment = async (comment: string) => {
+    if (submission){
+      setComment(comment);
+      const submissionRepository = new SubmissionRepository();
+      const finishSubmission = new FinishSubmission(submissionRepository);
+      const endDate = new Date();
+      const end_date = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      const submissionData: SubmissionUpdateObject = {
+        id: submission?.id,
+        status: "delivered",
+        end_date: end_date,
+        comment: comment
+       };
+      try {
+        await finishSubmission.finishSubmission(submission.id, submissionData);
+      handleCloseLinkDialog();
+      } catch (error) {
+        console.error(error);
+      }
     }
+    handleCloseCommentDialog();
+    window.location.reload();
   };
 
   const getDisplayStatus = (status: string) => {

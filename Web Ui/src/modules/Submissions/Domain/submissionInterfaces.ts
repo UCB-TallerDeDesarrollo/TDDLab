@@ -18,7 +18,7 @@ export interface SubmissionCreationObject {
 }
 
 export interface SubmissionUpdateObject{
-    id: number;
+    id?: number;
     status: string;
     end_date: Date;
     comment: string;
