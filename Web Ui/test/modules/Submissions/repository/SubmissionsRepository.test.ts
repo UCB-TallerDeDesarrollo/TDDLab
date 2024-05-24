@@ -97,5 +97,11 @@ describe('getSubmissionsByAssignmentId', () => {
           
             await expect(mockRepository.getSubmissionsByAssignmentId(25)).rejects.toThrowError('Failed to get submissions by assignment ID');
         });
+        it('should throw an error if the response status is not 200', async () => {
+            const mockResponse = { status: 400 };
+            axiosGetSpy.mockResolvedValue(mockResponse);
+          
+            await expect(mockRepository.getSubmissionbyUserandSubmissionId(25, 1)).rejects.toThrowError('Failed to get submission');
+        });
     });
 });
