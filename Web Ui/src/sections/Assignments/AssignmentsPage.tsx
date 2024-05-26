@@ -25,6 +25,7 @@
   }: Readonly<AssignmentManagerProps>) {
     const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
       useState(false);
+    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
     const handleCreateAssignmentClick = () => {
       setCreateAssignmentPopupOpen(true);
@@ -37,6 +38,7 @@
             ShowForm={handleCreateAssignmentClick}
             userRole={userRole}
             userGroupid={userGroupid}
+            onGroupChange={setSelectedGroupId} 
           />
         </AssignmentsContainer>
         <FormsContainer>
@@ -45,6 +47,7 @@
               data-testid="form-container"
               open={createAssignmentPopupOpen}
               handleClose={() => setCreateAssignmentPopupOpen(false)}
+              groupid={selectedGroupId || userGroupid}
             />
           )}
         </FormsContainer>

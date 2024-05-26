@@ -24,9 +24,10 @@ import { SelectChangeEvent } from '@mui/material/Select';
 interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
+  groupid: number;
 }
 
-function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
+function Form({ open, handleClose,groupid }: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
@@ -38,7 +39,7 @@ function Form({ open, handleClose }: Readonly<CreateAssignmentPopupProps>) {
     state: "pending",
     link: "",
     comment: "",
-    groupid: 0,
+    groupid: groupid,
   });
   const isCreateButtonClicked = useRef(false);
 
