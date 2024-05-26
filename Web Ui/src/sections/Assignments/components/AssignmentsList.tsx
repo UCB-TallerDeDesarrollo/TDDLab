@@ -50,12 +50,14 @@ interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
   userGroupid: number;
+  onGroupChange: (groupId: number) => void;
 }
 
 function Assignments({
   ShowForm: showForm,
   userRole,
   userGroupid,
+  onGroupChange,
 }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -146,6 +148,7 @@ function Assignments({
     const groupId = event.target.value as number;
     console.log("Obtengo el id del filtro", groupId);
     setSelectedGroup(groupId);
+    onGroupChange(groupId);
     const updatedAuthData = { ...authData, usergroupid: groupId };
     console.log("guardo en auth", updatedAuthData);
     setAuthData(updatedAuthData); // Actualiza el estado de authData
