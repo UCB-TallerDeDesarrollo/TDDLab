@@ -22,6 +22,7 @@ class CreateSubmission{
             const newSubmission = await this.adapter.CreateSubmission(submission);
             return newSubmission;
         } catch (error){
+            console.error("Submission Creation Unsuccessful.", error)
             throw error;
         }
     }

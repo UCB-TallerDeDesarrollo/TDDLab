@@ -16,6 +16,7 @@ class UpdateSubmission{
             const updatedSubmissionResult = await this.repository.UpdateSubmission(submissionid,updatedSubmission);
             return updatedSubmissionResult;
         }catch (error) {
+            console.error('Error updating Submission', error)
             throw error;
         }
     }
