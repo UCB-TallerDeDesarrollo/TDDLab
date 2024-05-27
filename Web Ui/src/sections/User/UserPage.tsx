@@ -72,6 +72,17 @@ function UserPage() {
                 >
                   Curso
                 </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "65%",
+                    lineHeight: "2"
+                  }}
+                >
+                  Rol
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -82,6 +93,7 @@ function UserPage() {
                 }}>
                   <TableCell sx={{ lineHeight: "3" }}>{user.email}</TableCell>
                   <TableCell sx={{ lineHeight: "3" }}>{user.groupid}</TableCell>
+                  <TableCell sx={{lineHeight: "3"}}>{user.role}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
