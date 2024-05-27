@@ -1,7 +1,7 @@
 import { SubmissionDataObect } from "../Domain/Submission";
 import SubmissionRepository from "../Repository/SubmissionsRepository";
 
-class getSubmissionUseCase{
+class GetSubmissionUseCase{
     private adapter: SubmissionRepository;
     constructor(adapter: SubmissionRepository) {
         this.adapter = adapter;
@@ -16,4 +16,4 @@ class getSubmissionUseCase{
         }
       }
 }
-export default getSubmissionUseCase;
+export default GetSubmissionUseCase;

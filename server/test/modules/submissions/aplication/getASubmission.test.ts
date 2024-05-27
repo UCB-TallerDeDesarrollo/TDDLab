@@ -1,12 +1,12 @@
-import getSubmissionUseCase from "../../../../src/modules/Submissions/Aplication/getSubmissionUseCase";
+import GetSubmissionUseCase from "../../../../src/modules/Submissions/Aplication/getSubmissionUseCase";
 import { getSubmissionListMock } from "../../../__mocks__/submissions/dataTypeMocks/submissionData";
 import { getSubmissionRepositoryMock } from "../../../__mocks__/submissions/repositoryMock";
 
 const submissionRepositoryMock = getSubmissionRepositoryMock();
-let getSubmission : getSubmissionUseCase
+let getSubmission : GetSubmissionUseCase
 
 beforeEach(() => {
-    getSubmission = new getSubmissionUseCase(submissionRepositoryMock);
+    getSubmission = new GetSubmissionUseCase(submissionRepositoryMock);
 });
 
 describe("Get a Submission by an assigmentid and userid", () => {

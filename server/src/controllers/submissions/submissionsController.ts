@@ -4,7 +4,7 @@ import CreateSubmission from "../../modules/Submissions/Aplication/CreateSubmiss
 import GetSubmissionsUseCase from "../../modules/Submissions/Aplication/getSubmissionsUseCase";
 import UpdateSubmission from "../../modules/Submissions/Aplication/updateSubmissionUSeCase";
 import DeleteSubmission from "../../modules/Submissions/Aplication/DeleteSubmissionUseCase";
-import getSubmissionUseCase from "../../modules/Submissions/Aplication/getSubmissionUseCase";
+import GetSubmissionUseCase from "../../modules/Submissions/Aplication/getSubmissionUseCase";
 import GetSubmissionsByAssignmentIdUseCase from '../../modules/Submissions/Aplication/getSubmissionsByAssignmentIdUseCase';
 
 class SubmissionController{
@@ -12,13 +12,13 @@ class SubmissionController{
     private getSubmissionsUseCase: GetSubmissionsUseCase;
     private updateSubmissionUseCase: UpdateSubmission;
     private deleteSubmissionUSeCase: DeleteSubmission;
-    private getSubmissionUseCase: getSubmissionUseCase;
+    private getSubmissionUseCase: GetSubmissionUseCase;
     private getSubmissionsByAssignmentIdUseCase: GetSubmissionsByAssignmentIdUseCase;
 
     constructor (repository: SubmissionRepository) {
         this.createSubmissionUseCase = new CreateSubmission(repository);
         this.getSubmissionsUseCase = new GetSubmissionsUseCase(repository);
-        this.getSubmissionUseCase = new getSubmissionUseCase(repository)
+        this.getSubmissionUseCase = new GetSubmissionUseCase(repository)
         this.updateSubmissionUseCase = new UpdateSubmission(repository);
         this.deleteSubmissionUSeCase = new DeleteSubmission(repository);
         this.getSubmissionsByAssignmentIdUseCase = new GetSubmissionsByAssignmentIdUseCase(repository);
