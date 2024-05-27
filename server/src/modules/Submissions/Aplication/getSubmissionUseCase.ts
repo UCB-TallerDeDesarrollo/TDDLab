@@ -9,8 +9,9 @@ class getSubmissionUseCase{
     async execute(assignmentid: number, userid: number): Promise<SubmissionDataObect | null> {
         try {
           const submission = await this.adapter.getSubmissionByAssignmentAndUser(assignmentid, userid);
-          return submission ? submission : null;
+          return submission;
         } catch (error) {
+          console.error('Error Obtaining Submission', error)
           throw error;
         }
       }
