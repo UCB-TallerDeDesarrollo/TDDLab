@@ -83,7 +83,7 @@ function UserPage() {
                     fontWeight: 560,
                     color: "#333",
                     fontSize: "1rem",
-                    width: "65%",
+                    width: "35%",
                     lineHeight: "2"
                   }}
                 >
@@ -94,7 +94,7 @@ function UserPage() {
                     fontWeight: 560,
                     color: "#333",
                     fontSize: "1rem",
-                    width: "65%",
+                    width: "20%",
                     lineHeight: "2"
                   }}
                 >
