@@ -515,7 +515,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   >
                     <strong>Enlace:</strong>
                     <a
-                      href={assignment.link}
+                      href={studentSubmission?.repository_link}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -542,7 +542,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                       color="text.secondary"
                       style={{ fontSize: "16px", lineHeight: "1.8" }}
                     >
-                      <strong>Comentario:</strong> {assignment.comment}
+                      <strong>Comentario:</strong> {studentSubmission?.comment}
                     </Typography>
                   </div>
                 ) : null)}
