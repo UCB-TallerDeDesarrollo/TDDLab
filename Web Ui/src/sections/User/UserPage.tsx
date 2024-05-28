@@ -24,12 +24,22 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
+  marginTop: "20px",
 });
 
 const StyledTable = styled(Table)({
   width: "82%",
   marginLeft: "auto",
   marginRight: "auto",
+  marginTop: "20px",
+});
+
+const FilterContainer = styled('div')({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: "20px",
+  marginBottom: "20px",
 });
 
 function UserPage() {
@@ -64,26 +74,33 @@ function UserPage() {
     return acc;
   }, {});
 
-  // Manejar la selección de grupo
   const handleGroupChange = (event: SelectChangeEvent<number | string>) => {
     setSelectedGroup(event.target.value as number);
   };
 
-  // Filtrar usuarios en función del grupo seleccionado
   const filteredUsers = selectedGroup === "all" ? users : users.filter(user => user.groupid === selectedGroup);
 
   return (
     <div>
       <CenteredContainer>
-        <FormControl sx={{ minWidth: 200, marginBottom: 2 }}>
-          <InputLabel>Grupo</InputLabel>
-          <Select value={selectedGroup} onChange={handleGroupChange}>
+
+        <FilterContainer>
+          <FormControl sx={{ minWidth: 200, marginBottom: 2 }}>
+          <InputLabel id="group-filter-label">Grupo</InputLabel>
+          <Select
+          labelId="group-filter-label"
+          value={selectedGroup}
+          onChange={handleGroupChange}
+          label="Grupo" 
+          >
             <MenuItem value="all">Todos los grupos</MenuItem>
             {groups.map((group) => (
               <MenuItem key={group.id} value={group.id}>{group.groupName}</MenuItem>
             ))}
           </Select>
         </FormControl>
+        </FilterContainer>
+        
         <section className="Usuarios">
           <StyledTable>
             <TableHead>
