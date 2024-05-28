@@ -21,7 +21,7 @@ const Login = () => {
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAcount(userData.email);
+      const userCourse = await loginPort.userHasAnAccount(userData.email);
       setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
