@@ -309,7 +309,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const getDisplayStatus = (status: string) => {
+  const getDisplayStatus = (status: string | undefined) => {
     switch (status) {
       case "pending":
         return "Pendiente";
@@ -317,6 +317,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         return "En progreso";
       case "delivered":
         return "Enviado";
+      case undefined:
+        return "Pendiente";
       default:
         return status;
     }
@@ -494,7 +496,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     style={{ fontSize: "16px", lineHeight: "1.8" }}
                   >
                     <strong>Estado:</strong>{" "}
-                    {getDisplayStatus(studentSubmission!.status)}
+                    {getDisplayStatus(studentSubmission?.status)}
                   </Typography>
                 </div>
               )}
