@@ -10,6 +10,11 @@ import {
   TableRow,
   TableCell,
   Container,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent
 } from "@mui/material";
 import { styled } from "@mui/system";
 import GetGroups from "../../modules/Groups/application/GetGroups";
@@ -32,6 +37,7 @@ function UserPage() {
   const getUsers = new GetUsers(new UsersRepository());
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const getGroups = new GetGroups(new GroupsRepository());
+  const [selectedGroup, setSelectedGroup] = useState<number | string>("all");
 
   useEffect(() => {
     const fetchUsersAndGroups = async () => {
@@ -50,67 +56,55 @@ function UserPage() {
 
     fetchUsersAndGroups();
   }, [getUsers, getGroups]);
-  type GroupMap = {[key: number]: string}
+
+  type GroupMap = { [key: number]: string }
 
   const groupMap: GroupMap = groups.reduce((acc: GroupMap, group) => {
     acc[group.id] = group.groupName;
     return acc;
   }, {});
 
+  // Manejar la selección de grupo
+  const handleGroupChange = (event: SelectChangeEvent<number | string>) => {
+    setSelectedGroup(event.target.value as number);
+  };
+
+  // Filtrar usuarios en función del grupo seleccionado
+  const filteredUsers = selectedGroup === "all" ? users : users.filter(user => user.groupid === selectedGroup);
+
   return (
     <div>
       <CenteredContainer>
+        <FormControl sx={{ minWidth: 200, marginBottom: 2 }}>
+          <InputLabel>Grupo</InputLabel>
+          <Select value={selectedGroup} onChange={handleGroupChange}>
+            <MenuItem value="all">Todos los grupos</MenuItem>
+            {groups.map((group) => (
+              <MenuItem key={group.id} value={group.id}>{group.groupName}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <section className="Usuarios">
           <StyledTable>
             <TableHead>
-              <TableRow
-              sx={{ 
-                borderBottom: "2px solid #E7E7E7" 
-              }}>
-                <TableCell
-                  sx={{
-                    fontWeight: 560,
-                    color: "#333",
-                    fontSize: "1rem",
-                    width: "35%",
-                    lineHeight: "2.5"
-                  }}
-                >
+              <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
+                <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem", width: "35%", lineHeight: "2.5" }}>
                   Correo electrónico
                 </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: 560,
-                    color: "#333",
-                    fontSize: "1rem",
-                    width: "35%",
-                    lineHeight: "2"
-                  }}
-                >
+                <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem", width: "35%", lineHeight: "2" }}>
                   Curso
                 </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: 560,
-                    color: "#333",
-                    fontSize: "1rem",
-                    width: "20%",
-                    lineHeight: "2"
-                  }}
-                >
+                <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem", width: "20%", lineHeight: "2" }}>
                   Rol
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}
-                sx={{ 
-                  borderBottom: "2px solid #E7E7E7" 
-                }}>
+              {filteredUsers.map((user) => (
+                <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
                   <TableCell sx={{ lineHeight: "3" }}>{user.email}</TableCell>
-                  <TableCell sx={{ lineHeight: "3" }}>{groupMap[user.groupid]|| "Unknown Group"}</TableCell>
-                  <TableCell sx={{lineHeight: "3"}}>{user.role}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>{groupMap[user.groupid] || "Unknown Group"}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.role}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
