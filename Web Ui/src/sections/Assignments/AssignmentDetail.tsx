@@ -494,7 +494,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     style={{ fontSize: "16px", lineHeight: "1.8" }}
                   >
                     <strong>Estado:</strong>{" "}
-                    {getDisplayStatus(assignment.state)}
+                    {getDisplayStatus(studentSubmission!.status)}
                   </Typography>
                 </div>
               )}
@@ -519,7 +519,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {assignment.link}
+                      {studentSubmission?.repository_link}
                     </a>
                   </Typography>
                 </div>
@@ -542,7 +542,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                       color="text.secondary"
                       style={{ fontSize: "16px", lineHeight: "1.8" }}
                     >
-                      <strong>Comentario:</strong> {studentSubmission?.comment}
+                      <strong>Comentario:</strong> {studentSubmission?.repository_link === "" || studentSubmission == null}
                     </Typography>
                   </div>
                 ) : null)}
