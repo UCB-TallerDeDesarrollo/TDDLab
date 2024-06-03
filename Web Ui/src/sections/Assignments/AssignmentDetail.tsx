@@ -338,6 +338,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     const rows = await Promise.all(
       submissions.map(async (submission) => {
         const studentEmail = await getStudentEmailById(submission.userid);
+        const formattedStartDate = formatDate(submission.start_date.toString());
+        const formattedEndDate = submission.end_date
+          ? formatDate(submission.end_date.toString())
+          : "N/A";
+  
         return (
           <TableRow key={generateUniqueId()}>
             <TableCell>{studentEmail}</TableCell>
@@ -351,37 +356,32 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 {submission.repository_link}
               </a>
             </TableCell>
-            <TableCell>
-              {formatDate(submission.start_date.toString())}
-            </TableCell>
-            <TableCell>
-              {submission.end_date
-                ? formatDate(submission.end_date.toString())
-                : "N/A"}
-            </TableCell>
+            <TableCell>{formattedStartDate}</TableCell>
+            <TableCell>{formattedEndDate}</TableCell>
             <TableCell>{submission.comment || "N/A"}</TableCell>
             <TableCell>
-                      <Button
-                        variant="contained"
-                        disabled={submission.repository_link === ""}
-                        onClick={() => handleRedirect(submission.repository_link)}
-                        color="primary"
-                        style={{
-                          textTransform: "none",
-                          fontSize: "15px",
-                          marginRight: "8px",
-                        }}
-                      >
-                        Ver gráfica
-                      </Button>
-                      </TableCell>
+              <Button
+                variant="contained"
+                disabled={submission.repository_link === ""}
+                onClick={() => handleRedirect(submission.repository_link)}
+                color="primary"
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Ver gráfica
+              </Button>
+            </TableCell>
           </TableRow>
         );
       })
     );
-
+  
     setStudentRows(rows);
   };
+  
 
   return (
     <div
