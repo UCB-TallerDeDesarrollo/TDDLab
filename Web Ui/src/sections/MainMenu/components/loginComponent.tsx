@@ -19,7 +19,7 @@ export default function LoginComponent() {
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
       const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAcount(userData.email);
+      const userAccount = await loginPort.userHasAnAccount(userData.email);
       setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };
