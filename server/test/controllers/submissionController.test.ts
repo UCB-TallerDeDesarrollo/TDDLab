@@ -128,6 +128,14 @@ describe("Update Assignment", () => {
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: "Submission not found" });
     });
+    it("should respond with a 500 status and error message when update fails", async () => {
+      const req = createRequest("existing_id", SubmissionInProgresDataMock);
+      const res = createResponse();
+      submissionRepositoryMock.UpdateSubmission.mockRejectedValue(new Error());
+      await controller.updateSubmission(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
   });
   
 describe("Get Submissions By Assignment Id", () => {
