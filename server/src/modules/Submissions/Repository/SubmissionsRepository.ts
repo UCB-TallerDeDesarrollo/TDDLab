@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { SubmissionCreationObect, SubmissionDataObect, SubmissionUpdateObject } from "../Domain/Submission";
+import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "../Domain/Submission";
 
 interface QueryResult {
     exists: boolean;
@@ -18,7 +18,7 @@ class SubmissionRepository{
           client.release();
         }
     }
-    public mapRowToSubmissions(row: any): SubmissionDataObect{
+    public mapRowToSubmissions(row: any): SubmissionDataObject{
         return{
             id: row.id,
             assignmentid: row.assignmentid,
@@ -30,13 +30,13 @@ class SubmissionRepository{
             comment: row.comment,
         }
     }
-    async CreateSubmission(Submission: SubmissionCreationObect): Promise<SubmissionCreationObect> {
+    async CreateSubmission(Submission: SubmissionCreationObject): Promise<SubmissionCreationObject> {
         const query = "INSERT INTO submissions (assignmentid,userid,status,repository_link,start_date) VALUES ($1, $2, $3, $4, $5) RETURNING *";
         const values = [Submission.assignmentid, Submission.userid, Submission.status, Submission.repository_link, Submission.start_date];
         const rows = await this.executeQuery(query, values);
         return this.mapRowToSubmissions(rows[0]);
     }
-    async ObtainSubmissions(): Promise<SubmissionDataObect[]> {
+    async ObtainSubmissions(): Promise<SubmissionDataObject[]> {
         const query = "SELECT * FROM submissions";
         const rows =await this.executeQuery(query);
         return rows.map((row) => this.mapRowToSubmissions(row));
@@ -75,7 +75,7 @@ class SubmissionRepository{
         const result: QueryResult[] = await this.executeQuery(query, [userid]);
         return result[0].exists;
     }
-    public async getSubmissionByAssignmentAndUser(assignmentid: number, userid: number): Promise<SubmissionDataObect | null> {
+    public async getSubmissionByAssignmentAndUser(assignmentid: number, userid: number): Promise<SubmissionDataObject | null> {
         const query = "SELECT * FROM submissions WHERE assignmentid = $1 AND userid = $2";
         const values = [assignmentid, userid];
         const rows = await this.executeQuery(query, values);
@@ -85,7 +85,7 @@ class SubmissionRepository{
         return null;
     }
 
-    public async getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObect[]> {
+    public async getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObject[]> {
         const query = "SELECT * FROM submissions WHERE assignmentid = $1";
         const values = [assignmentid];
         const rows = await this.executeQuery(query, values);

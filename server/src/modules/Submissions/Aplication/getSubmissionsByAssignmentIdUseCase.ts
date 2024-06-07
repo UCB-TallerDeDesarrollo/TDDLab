@@ -1,5 +1,5 @@
 import SubmissionRepository from "../Repository/SubmissionsRepository";
-import { SubmissionDataObect } from "../Domain/Submission";
+import { SubmissionDataObject } from "../Domain/Submission";
 
 class GetSubmissionsByAssignmentIdUseCase {
     private adapter: SubmissionRepository;
@@ -8,7 +8,7 @@ class GetSubmissionsByAssignmentIdUseCase {
         this.adapter = adapter;
     }
 
-    async execute(assignmentid: number): Promise<SubmissionDataObect[] | null> {
+    async execute(assignmentid: number): Promise<SubmissionDataObject[] | null> {
         try {
           const submissions = await this.adapter.getSubmissionsByAssignmentId(assignmentid);
           return submissions;

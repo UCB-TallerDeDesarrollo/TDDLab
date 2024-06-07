@@ -1,5 +1,5 @@
 type SubmissionStatus =  "pending" | "in progress" | "delivered";
-export interface SubmissionCreationObect{
+export interface SubmissionCreationObject{
     assignmentid: number;
     userid: number;
     status: SubmissionStatus;
@@ -7,7 +7,7 @@ export interface SubmissionCreationObect{
     start_date: Date | null;
 }
 
-export interface SubmissionDataObect{
+export interface SubmissionDataObject{
     id: number
     assignmentid: number;
     userid: number;
