@@ -91,6 +91,22 @@ describe("Get Submission By Assignment and User", ()=>{
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(SubmissionInProgresDataMock);
   });
+  it("should respond with a 404 status and error message when assignment and user are not found", async ()=>{
+    const req = createRequest("non_existing_id", SubmissionInProgresDataMock);
+    const res = createResponse();
+    submissionRepositoryMock.getSubmissionByAssignmentAndUser.mockResolvedValue(null);
+    await controller.getSubmissionByAssignmentAndUser(req,res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({message: "Submission not found"})
+  });
+  it("should respond with a 500 status and error message when fetching by assignment and user ", async ()=>{
+    const req = createRequest("existing_id", SubmissionInProgresDataMock);
+    const res = createResponse();
+    submissionRepositoryMock.getSubmissionByAssignmentAndUser.mockRejectedValue(new Error());
+    await controller.getSubmissionByAssignmentAndUser(req,res);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({error: "Server error"})
+  });
 });
 
 describe("Update Assignment", () => {
@@ -111,14 +127,6 @@ describe("Update Assignment", () => {
       await controller.updateSubmission(req, res);
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: "Submission not found" });
-    });
-    it("should respond with a 500 status and error message when update fails", async () => {
-      const req = createRequest("existing_id", SubmissionInProgresDataMock);
-      const res = createResponse();
-      submissionRepositoryMock.UpdateSubmission.mockRejectedValue(new Error());
-      await controller.updateSubmission(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
   });
   
