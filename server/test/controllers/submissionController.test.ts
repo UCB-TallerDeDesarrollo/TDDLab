@@ -80,6 +80,18 @@ describe("Delete Submission", () => {
     });
 });
 
+describe("Get Submission By Assignment and User", ()=>{
+  it("should respond with status code 400", async() => {
+    const req = createRequest("existing_id", SubmissionInProgresDataMock);
+    const res = createResponse();
+    submissionRepositoryMock.getSubmissionByAssignmentAndUser.mockResolvedValue(
+      SubmissionInProgresDataMock
+    );
+    await controller.getSubmissionByAssignmentAndUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(SubmissionInProgresDataMock);
+  });
+});
 
 describe("Update Assignment", () => {
     it("should respond with a status 200 and updated assignment when update is successful", async () => {
