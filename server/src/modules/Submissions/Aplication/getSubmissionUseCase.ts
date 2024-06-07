@@ -1,4 +1,4 @@
-import { SubmissionDataObect } from "../Domain/Submission";
+import { SubmissionDataObject } from "../Domain/Submission";
 import SubmissionRepository from "../Repository/SubmissionsRepository";
 
 class GetSubmissionUseCase{
@@ -6,7 +6,7 @@ class GetSubmissionUseCase{
     constructor(adapter: SubmissionRepository) {
         this.adapter = adapter;
     }
-    async execute(assignmentid: number, userid: number): Promise<SubmissionDataObect | null> {
+    async execute(assignmentid: number, userid: number): Promise<SubmissionDataObject | null> {
         try {
           const submission = await this.adapter.getSubmissionByAssignmentAndUser(assignmentid, userid);
           return submission;

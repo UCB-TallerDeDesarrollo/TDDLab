@@ -1,5 +1,5 @@
 import SubmissionRepository from "../Repository/SubmissionsRepository"
-import { SubmissionCreationObect } from "../Domain/Submission"
+import { SubmissionCreationObject } from "../Domain/Submission"
 
 
 class CreateSubmission{
@@ -9,7 +9,7 @@ class CreateSubmission{
         this.adapter=adapter;
     }
 
-    async execute(submission: SubmissionCreationObect): Promise<SubmissionCreationObect>{
+    async execute(submission: SubmissionCreationObject): Promise<SubmissionCreationObject>{
         try{
             const assignmentExist = await this.adapter.assignmentidExistsForSubmission(submission.assignmentid);
             const useridExist = await this.adapter.useridExistsForSubmission(submission.userid);

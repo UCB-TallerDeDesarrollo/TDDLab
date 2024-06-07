@@ -1,7 +1,7 @@
-import { SubmissionDataObect } from "../../../../src/modules/Submissions/Domain/Submission";
+import { SubmissionDataObject } from "../../../../src/modules/Submissions/Domain/Submission";
 
   
-export const SubmissionInProgresDataMock: SubmissionDataObect = {
+export const SubmissionInProgresDataMock: SubmissionDataObject = {
 id: 2,
 assignmentid: 25,
 userid: 4,
@@ -12,7 +12,7 @@ end_date: new Date("2023-01-10"),
 comment: "Comentario",
 };
   
-export function getSubmissionListMock(): SubmissionDataObect[] {
+export function getSubmissionListMock(): SubmissionDataObject[] {
     return [
         {
 
