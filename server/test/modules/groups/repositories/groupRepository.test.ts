@@ -95,6 +95,14 @@ describe('Delete group', () => {
         poolConnectMock.mockRejectedValue(new Error());
         await expect(repository.deleteGroup(1)).rejects.toThrow();
     });
+    it('should handle errors when deleting assignments for a group', async () => {
+        clientQueryMock
+            .mockResolvedValueOnce({ rowCount: 1 }) // Simulate successful assignment deletion
+            .mockRejectedValueOnce(new Error('Error deleting group')); // Simulate group deletion error
+        await expect(repository.deleteGroup(1)).rejects.toThrow('Error deleting group');
+        expect(clientQueryMock).toHaveBeenCalledWith('DELETE FROM assignments WHERE groupid = $1', [1]);
+        expect(clientQueryMock).toHaveBeenCalledWith('ROLLBACK');
+    });
 });
 
 describe('Update group', () => {
