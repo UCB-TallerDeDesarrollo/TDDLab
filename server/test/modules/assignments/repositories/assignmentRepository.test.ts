@@ -52,6 +52,11 @@ describe("Obtain assignments by group ID", () => {
     const assignments = await repository.obtainAssignmentsByGroupId(1);
     expect(assignments).toHaveLength(2);
   });
+  it("should return an empty array for a group ID with no assignments", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [] });
+    const assignments = await repository.obtainAssignmentsByGroupId(999);
+    expect(assignments).toHaveLength(0);
+  });
 });
 
 describe("Obtain assignment by id", () => {
