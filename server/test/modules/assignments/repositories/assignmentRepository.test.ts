@@ -125,4 +125,9 @@ describe("Check if group ID exists for assignment", () => {
     const exists = await repository.groupidExistsForAssigment(1);
     expect(exists).toBe(true);
   });
+  it("should return false if group ID does not exist", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [{ exists: false }] });
+    const exists = await repository.groupidExistsForAssigment(999);
+    expect(exists).toBe(false);
+  });
 });
