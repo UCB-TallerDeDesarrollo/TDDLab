@@ -119,3 +119,10 @@ describe("Update assignment", () => {
     ).rejects.toThrow();
   });
 });
+describe("Check if group ID exists for assignment", () => {
+  it("should return true if group ID exists", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [{ exists: true }] });
+    const exists = await repository.groupidExistsForAssigment(1);
+    expect(exists).toBe(true);
+  });
+});
