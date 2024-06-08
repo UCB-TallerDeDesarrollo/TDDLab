@@ -84,7 +84,18 @@ describe('Create group', () => {
         expect(createdGroup).toEqual(newGroup);
     });
 });
-
+describe('Check group exists', () => {
+    it('should return true if group exists', async () => {
+        clientQueryMock.mockResolvedValue({ rows: [{ exists: true }] });
+        const exists = await repository.checkGroupExists(1);
+        expect(exists).toBe(true);
+    });
+    it('should return false if group does not exist', async () => {
+        clientQueryMock.mockResolvedValue({ rows: [{ exists: false }] });
+        const exists = await repository.checkGroupExists(999);
+        expect(exists).toBe(false);
+    });
+});
 describe('Delete group', () => {
     it('should delete a group', async () => {
         clientQueryMock.mockResolvedValue({ rowCount: 1 });
