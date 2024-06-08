@@ -24,5 +24,10 @@ describe("Create submission", () => {
         submissionRepositoryMock.CreateSubmission.mockRejectedValue(new Error);
         await expect(createSubmissionInstance.execute(SubmissionInProgresDataMock)).rejects.toThrow();
     });
+    it("should throw an error if the assignment ID does not exist", async () => {
+        submissionRepositoryMock.assignmentidExistsForSubmission.mockResolvedValue(false);
+        submissionRepositoryMock.useridExistsForSubmission.mockResolvedValue(true);
+        await expect(createSubmissionInstance.execute(SubmissionInProgresDataMock)).rejects.toThrow("Inexistent assignment ID");
+    });
 });
   
