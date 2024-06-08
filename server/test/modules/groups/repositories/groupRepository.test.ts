@@ -95,6 +95,10 @@ describe('Check group exists', () => {
         const exists = await repository.checkGroupExists(999);
         expect(exists).toBe(false);
     });
+    it('should handle errors when checking if a group exists', async () => {
+        poolConnectMock.mockRejectedValue(new Error());
+        await expect(repository.checkGroupExists(1)).rejects.toThrow();
+    });
 });
 describe('Delete group', () => {
     it('should delete a group', async () => {
