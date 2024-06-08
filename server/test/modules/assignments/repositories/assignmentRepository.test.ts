@@ -130,4 +130,8 @@ describe("Check if group ID exists for assignment", () => {
     const exists = await repository.groupidExistsForAssigment(999);
     expect(exists).toBe(false);
   });
+  it("should handle errors when checking if group ID exists", async () => {
+    poolConnectMock.mockRejectedValue(new Error());
+    await expect(repository.groupidExistsForAssigment(1)).rejects.toThrow();
+  });
 });
