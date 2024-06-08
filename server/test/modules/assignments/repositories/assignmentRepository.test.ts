@@ -46,6 +46,14 @@ describe("Obtain assignments", () => {
   });
 });
 
+describe("Obtain assignments by group ID", () => {
+  it("should retrieve assignments for a valid group ID", async () => {
+    clientQueryMock.mockResolvedValue(getAssignmentTestData(2));
+    const assignments = await repository.obtainAssignmentsByGroupId(1);
+    expect(assignments).toHaveLength(2);
+  });
+});
+
 describe("Obtain assignment by id", () => {
   it("should retrieve an assignment by existing ID", async () => {
     clientQueryMock.mockResolvedValue(getAssignmentTestData(1));
