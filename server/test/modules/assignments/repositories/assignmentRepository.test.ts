@@ -57,6 +57,10 @@ describe("Obtain assignments by group ID", () => {
     const assignments = await repository.obtainAssignmentsByGroupId(999);
     expect(assignments).toHaveLength(0);
   });
+  it("should handle errors when obtaining assignments by group ID", async () => {
+    poolConnectMock.mockRejectedValue(new Error());
+    await expect(repository.obtainAssignmentsByGroupId(1)).rejects.toThrow();
+  });
 });
 
 describe("Obtain assignment by id", () => {
