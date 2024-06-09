@@ -109,15 +109,25 @@ describe("Create Group", () => {
 });
 
 describe("Delete Group", () => {
-    it("should respond with a status 500 and error message when group deletion fails", async () => {
-        const req = createRequest("non_existing_id");
+    it("should respond with a status 204 when group deletion is successful", async () => {
+        const req = createRequest("existing_id");
         const res = createResponse();
-        groupsRepositoryMock.deleteGroup.mockRejectedValue(new Error());
+        groupsRepositoryMock.obtainGroupById.mockResolvedValue({ id: 1, name: "Group 1" });
+        groupsRepositoryMock.deleteGroup.mockResolvedValue(undefined);
         await controller.deleteGroup(req, res);
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+        expect(res.status).toHaveBeenCalledWith(204);
+        expect(res.send).toHaveBeenCalled();
+      });
+  
+    it("should respond with a status 500 and error message when group deletion fails", async () => {
+      const req = createRequest("non_existing_id");
+      const res = createResponse();
+      groupsRepositoryMock.deleteGroup.mockRejectedValue(new Error());
+      await controller.deleteGroup(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
-});
+  });
 
 describe("Update Group", () => {
     it("should respond with a 500 status and error message when update fails", async () => {
