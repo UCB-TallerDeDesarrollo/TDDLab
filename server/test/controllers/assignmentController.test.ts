@@ -18,7 +18,7 @@ beforeEach(() => {
 
 describe("Get assignments by group ID", () => {
   it("should respond with status 200 and list of assignments for a valid group ID", async () => {
-    const req = createRequest();
+    const req = createRequest("1");
     const res = createResponse();
     assignmentRepositoryMock.obtainAssignmentsByGroupId.mockResolvedValue(getAssignmentListMock());
 
