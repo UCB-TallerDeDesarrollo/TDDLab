@@ -16,6 +16,19 @@ beforeEach(() => {
   );
 });
 
+describe("Get assignments by group ID", () => {
+  it("should respond with status 200 and list of assignments for a valid group ID", async () => {
+    const req = createRequest();
+    const res = createResponse();
+    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockResolvedValue(getAssignmentListMock());
+
+    await controller.getAssignmentsByGroupId(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(getAssignmentListMock());
+  });
+});
+
 describe("Get assignments", () => {
   it("should respond with a status 200 and a list of assignments", async () => {
     const req = createRequest();
