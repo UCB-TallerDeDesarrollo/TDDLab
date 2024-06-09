@@ -27,6 +27,17 @@ describe("Get assignments by group ID", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(getAssignmentListMock());
   });
+  it("should respond with status 500 and error message when obtaining assignments fails", async () => {
+    const req = createRequest("1");
+    const res = createResponse();
+    const error = new Error("Failed to obtain assignments");
+    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockRejectedValue(error);
+
+    await controller.getAssignmentsByGroupId(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+  });
 });
 
 describe("Get assignments", () => {
