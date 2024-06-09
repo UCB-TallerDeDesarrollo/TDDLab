@@ -138,4 +138,12 @@ describe("Update Group", () => {
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
+    it("should respond with a 404 status and error message when group is not found", async () => {
+        const req = createRequest("non_existing_id", { groupName: "Updated Group", groupDetail: "Updated detail", creationDate: new Date() });
+        const res = createResponse();
+        groupsRepositoryMock.updateGroup.mockResolvedValue(null);
+        await controller.updateGroup(req, res);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ error: "Group not found" });
+      });
 });
