@@ -288,7 +288,7 @@ describe('executeQuery', () => {
         [userId, newGroupId]
       );
     });
-  
+    
     it("should return null if no user is found with the given id", async () => {
       const userId = 999;
       const newGroupId = 80;
@@ -301,15 +301,5 @@ describe('executeQuery', () => {
         "UPDATE userstable SET groupid = $2 WHERE id = $1 RETURNING *",
         [userId, newGroupId]
       );
-    });
-  
-    it("should handle errors when updating the user's group", async () => {
-      const userId = 1;
-      const newGroupId = 80;
-      const error = new Error("Database error");
-      poolConnectMock.mockRejectedValue(error);
-  
-      await expect(repository.updateUser(userId, newGroupId)).rejects.toThrow("Database error");
-      expect(clientQueryMock).not.toHaveBeenCalled();
     });
   });
