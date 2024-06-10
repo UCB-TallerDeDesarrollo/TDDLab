@@ -23,5 +23,10 @@ describe("Create assignment", () => {
     assignmentRepositoryMock.createAssignment.mockRejectedValue(new Error);
     await expect(createAssignmentInstance.execute(assignmentPendingDataMock)).rejects.toThrow();
   });
+
+  it("should throw an error if group ID does not exist", async () => {
+    assignmentRepositoryMock.groupidExistsForAssigment.mockResolvedValue(false);
+    await expect(createAssignmentInstance.execute(assignmentPendingDataMock)).rejects.toThrow("Inexistent group ID");
+  });
 });
 
