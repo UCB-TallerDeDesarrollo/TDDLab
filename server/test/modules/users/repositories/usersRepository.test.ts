@@ -159,10 +159,19 @@ describe('executeQuery', () => {
     it('should handle errors when inserting a new user', async () => {
       const newUser = { email: 'newuser@example.com', groupid: 70, role: 'user' };
       const error = new Error('Database error');
-      poolConnectMock.mockRejectedValue(error);
+      clientQueryMock.mockRejectedValue(error);
   
-      await expect(repository.registerUser(newUser)).rejects.toThrow('Database error');
-      expect(clientQueryMock).not.toHaveBeenCalled();
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+  
+      await repository.registerUser(newUser);
+  
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error inserting records:', error);
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        'INSERT INTO usersTable (email,groupid,role) VALUES ($1, $2, $3)',
+        [newUser.email, newUser.groupid, newUser.role]
+      );
+  
+      consoleErrorSpy.mockRestore();
     });
   });
   
