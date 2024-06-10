@@ -302,4 +302,14 @@ describe('executeQuery', () => {
         [userId, newGroupId]
       );
     });
+
+    it("should handle errors when updating the user's group", async () => {
+      const userId = 1;
+      const newGroupId = 80;
+      const error = new Error("Database error");
+      poolConnectMock.mockRejectedValue(error);
+  
+      await expect(repository.updateUser(userId, newGroupId)).rejects.toThrow("Database error");
+      expect(clientQueryMock).not.toHaveBeenCalled();
+    });
   });
