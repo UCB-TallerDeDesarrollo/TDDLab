@@ -146,5 +146,18 @@ describe("Get submissions by assignmentId", () => {
       const exists = await repository.assignmentidExistsForSubmission(1);
       expect(exists).toBe(false);
     });
+    it("should handle errors when checking if assignment ID exists", async () => {
+      poolConnectMock.mockRejectedValue(new Error());
+      await expect(repository.assignmentidExistsForSubmission(1)).rejects.toThrow();
+    });
   });
+
+  describe("User ID exists for submission", () => {
+    it("should return true if user ID exists", async () => {
+      clientQueryMock.mockResolvedValue({ rows: [{ exists: true }] });
+      const exists = await repository.useridExistsForSubmission(1);
+      expect(exists).toBe(true);
+    });
+  });
+  
 });
