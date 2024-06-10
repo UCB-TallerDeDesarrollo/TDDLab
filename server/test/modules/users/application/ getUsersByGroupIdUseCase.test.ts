@@ -21,5 +21,9 @@ describe('GetUsersByGroupIdUseCase', () => {
       expect(result).toEqual(expectedUsers);
       expect(userRepositoryMock.getUsersByGroupid).toHaveBeenCalledWith(groupId);
     });
+    it("should throw an error when repository throws an error", async () => {
+      userRepositoryMock.getUsersByGroupid.mockRejectedValue(new Error("Failed to retrieve users by group"));
+      await expect(getUsersByGroupid.execute(1)).rejects.toThrow("Failed to retrieve users by group");
+    });
   
   });
