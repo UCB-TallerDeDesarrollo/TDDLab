@@ -164,5 +164,8 @@ describe("Get submissions by assignmentId", () => {
     const exists = await repository.useridExistsForSubmission(1);
     expect(exists).toBe(false);
   });
-  
+  it("should handle errors when checking if user ID exists", async () => {
+    poolConnectMock.mockRejectedValue(new Error());
+    await expect(repository.useridExistsForSubmission(1)).rejects.toThrow();
+  });
 });
