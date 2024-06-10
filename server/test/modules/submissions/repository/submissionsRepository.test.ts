@@ -159,5 +159,10 @@ describe("Get submissions by assignmentId", () => {
       expect(exists).toBe(true);
     });
   });
+  it("should return false if user ID does not exist", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [{ exists: false }] });
+    const exists = await repository.useridExistsForSubmission(1);
+    expect(exists).toBe(false);
+  });
   
 });
