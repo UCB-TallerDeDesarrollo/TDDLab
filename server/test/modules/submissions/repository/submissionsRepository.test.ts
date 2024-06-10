@@ -58,6 +58,11 @@ describe("Obtain submission by assignmentid and userid", () => {
     poolConnectMock.mockRejectedValue(new Error());
     await expect(repository.getSubmissionByAssignmentAndUser(0,0)).rejects.toThrow();
   });
+  it("should return null if no submission is found for the given assignmentid and userid", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [] });
+    const submission = await repository.getSubmissionByAssignmentAndUser(25, 4);
+    expect(submission).toBeNull();
+  });
 });
 
 describe("Create submission", () => {
