@@ -243,5 +243,17 @@ describe('executeQuery', () => {
         [email]
       );
     });
-    
+    it("should return null when no user is found by email", async () => {
+      const email = "nonexistent@example.com";
+      clientQueryMock.mockResolvedValue({ rows: [] });
+  
+      const user = await repository.obtainUserByemail(email);
+  
+      expect(user).toBeNull();
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "SELECT id, email, groupid, role FROM usersTable WHERE email = $1",
+        [email]
+      );
+    });
+
   });
