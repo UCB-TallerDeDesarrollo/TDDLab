@@ -255,5 +255,21 @@ describe('executeQuery', () => {
         [email]
       );
     });
+    it("should handle multiple users with the same email (edge case)", async () => {
+      const email = "duplicate@example.com";
+      const duplicateUsers = [
+        { id: 2, email: "duplicate@example.com", groupid: 70, role: "user" },
+        { id: 3, email: "duplicate@example.com", groupid: 71, role: "admin" },
+      ];
+      clientQueryMock.mockResolvedValue({ rows: duplicateUsers });
+  
+      const user = await repository.obtainUserByemail(email);
+  
+      expect(user).toBeNull();
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "SELECT id, email, groupid, role FROM usersTable WHERE email = $1",
+        [email]
+      );
+    });
 
   });
