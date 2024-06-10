@@ -228,3 +228,20 @@ describe('executeQuery', () => {
       );
     });
   });
+
+  describe("obtainUserByEmail", () => {
+    it("should return a user when found by email", async () => {
+      const email = "user1@example.com";
+      const expectedUser = { id: 1, email: "user1@example.com", groupid: 70, role: "admin" };
+      clientQueryMock.mockResolvedValue({ rows: [expectedUser] });
+  
+      const user = await repository.obtainUserByemail(email);
+  
+      expect(user).toEqual(expectedUser);
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "SELECT id, email, groupid, role FROM usersTable WHERE email = $1",
+        [email]
+      );
+    });
+    
+  });
