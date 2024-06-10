@@ -26,6 +26,7 @@ class UpdateGroupUseCase {
         ...existingGroup,
         groupName: updatedGroupData.groupName || existingGroup.groupName,
         groupDetail: updatedGroupData.groupDetail || existingGroup.groupDetail,
+        creationDate: updatedGroupData.creationDate || existingGroup.creationDate,
         // Add other fields as needed
       };
 

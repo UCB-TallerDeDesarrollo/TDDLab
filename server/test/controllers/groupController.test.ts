@@ -130,6 +130,14 @@ describe("Delete Group", () => {
   });
 
 describe("Update Group", () => {
+    it("should respond with a 200 status and the updated group when update is successful", async () => {
+        const req = createRequest("existing_id", getModifiedGroupDataMock);
+        const res = createResponse();
+        groupsRepositoryMock.updateGroup.mockResolvedValue(getModifiedGroupDataMock);
+        await controller.updateGroup(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(getModifiedGroupDataMock);
+      });
     it("should respond with a 500 status and error message when update fails", async () => {
         const req = createRequest("existing_id", getModifiedGroupDataMock);
         const res = createResponse();
