@@ -141,16 +141,10 @@ describe("Get submissions by assignmentId", () => {
       const exists = await repository.assignmentidExistsForSubmission(1);
       expect(exists).toBe(true);
     });
-  
-    // it("should return false if assignment ID does not exist", async () => {
-    //   clientQueryMock.mockResolvedValue({ rows: [{ exists: false }] });
-    //   const exists = await repository.assignmentidExistsForSubmission(1);
-    //   expect(exists).toBe(false);
-    // });
-  
-    // it("should handle errors when checking if assignment ID exists", async () => {
-    //   poolConnectMock.mockRejectedValue(new Error());
-    //   await expect(repository.assignmentidExistsForSubmission(1)).rejects.toThrow();
-    // });
+    it("should return false if assignment ID does not exist", async () => {
+      clientQueryMock.mockResolvedValue({ rows: [{ exists: false }] });
+      const exists = await repository.assignmentidExistsForSubmission(1);
+      expect(exists).toBe(false);
+    });
   });
 });
