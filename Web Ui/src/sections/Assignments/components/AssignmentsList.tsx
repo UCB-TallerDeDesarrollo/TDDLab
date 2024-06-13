@@ -104,22 +104,21 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
-        
-  
+
         // groupId de la URL -> Para los grupos no seleccionados
         const urlParams = new URLSearchParams(window.location.search);
         const groupIdFromURL = urlParams.get('groupId');
-  
+
         // groupId de authData -> Seleccionados
         const savedSelectedGroup = authData?.usergroupid;
-  
+
         let groupIdToUse: number | undefined;
         if (groupIdFromURL) {
           groupIdToUse = parseInt(groupIdFromURL);
         } else {
           groupIdToUse = savedSelectedGroup;
         }
-  
+
         // Filtrar las tareas según el groupIdToUse
         if (groupIdToUse) {
           const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
@@ -135,7 +134,22 @@ function Assignments({
       }
     };
     fetchData();
-  }, [assignments]);
+  }, []);
+  useEffect(() => {
+    const fetchAssignmentsByGroup = async () => {
+      try {
+        const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup);
+        setAssignments(data);
+        orderAssignments([...data], selectedSorting);
+      } catch (error) {
+        console.error("Error fetching assignments by group ID:", error);
+      }
+    };
+
+    if (selectedGroup !== 0) {
+      fetchAssignmentsByGroup();
+    }
+  }, [selectedGroup, selectedSorting]);
   
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
