@@ -135,7 +135,7 @@ function Assignments({
       }
     };
     fetchData();
-  }, []);
+  }, [assignments]);
   
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
