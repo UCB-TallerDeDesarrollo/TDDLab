@@ -52,5 +52,10 @@ describe('GroupsRepository', () => {
       await expect(repository.createGroup(mockGroup)).resolves.not.toThrowError();
       expect(axiosPostSpy).toHaveBeenCalledWith(API_URL, mockGroup);
     });
+    it('should handle creation error', async () => {
+        axiosPostSpy.mockRejectedValue(new Error('Network Error'));
+        const mockGroup: GroupDataObject = { id: 1, groupName: 'Group1', groupDetail: 'Detail1', creationDate: new Date() };
+        await expect(repository.createGroup(mockGroup)).rejects.toThrowError('Network Error');
+      });
   });
 });
