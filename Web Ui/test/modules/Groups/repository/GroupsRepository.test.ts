@@ -37,7 +37,10 @@ describe('GroupsRepository', () => {
         expect(result).toEqual(mockGroup);
         expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`);
       });
-    
+      it('should handle fetch error', async () => {
+        axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+        await expect(repository.getGroupById(1)).rejects.toThrowError('Network Error');
+      });
     });
   });
 
