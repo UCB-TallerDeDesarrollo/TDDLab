@@ -33,19 +33,12 @@ describe('GetUsers', () => {
       expect(result).toEqual(mockUsers);
     });
   
-    // it('should return an empty array if no users are found', async () => {
-    //   (mockRepository.getUsers as jest.MockedFunction<typeof mockRepository.getUsers>).mockResolvedValue([]);
+    it('should return an empty array if no users are found', async () => {
+      (mockRepository.getUsers as jest.MockedFunction<typeof mockRepository.getUsers>).mockResolvedValue([]);
   
-    //   const result = await getUsers.getUsers();
+      const result = await getUsers.getUsers();
   
-    //   expect(mockRepository.getUsers).toHaveBeenCalled();
-    //   expect(result).toEqual([]);
-    // });
-  
-    // it('should handle errors when fetching users', async () => {
-    //   const error = new Error('Error fetching users');
-    //   (mockRepository.getUsers as jest.MockedFunction<typeof mockRepository.getUsers>).mockRejectedValue(error);
-  
-    //   await expect(getUsers.getUsers()).rejects.toThrow('Error fetching users');
-    // });
+      expect(mockRepository.getUsers).toHaveBeenCalled();
+      expect(result).toEqual([]);
+    });
   });
