@@ -8,7 +8,7 @@ const axiosPutSpy = jest.spyOn(axios, 'put');
 const axiosDeleteSpy = jest.spyOn(axios, 'delete');
 
 const mockRepository = new AssignmentsRepository();
-
+const API_URL = 'https://tdd-lab-api-gold.vercel.app/api/assignments'
 describe('Get assignments', () => {
     it('should fetch assignments successfully', async () => {
         axiosGetSpy.mockResolvedValue({ status: 200, data: assignmentInProgresDataMock });
@@ -27,6 +27,19 @@ describe('Get assignments', () => {
     });
 });
 
+describe('Get assignments by group ID', () => {
+    it('should fetch assignments by group ID successfully', async () => {
+        const mockAssignments = [
+            { id: 1, title: 'Assignment 1', groupId: 1 },
+            { id: 2, title: 'Assignment 2', groupId: 1 },
+        ];
+        axiosGetSpy.mockResolvedValue({ status: 200, data: mockAssignments });
+
+        const result = await mockRepository.getAssignmentsByGroupid(1);
+        expect(result).toEqual(mockAssignments);
+        expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/groupid/1`);
+    });
+});
 describe('Get assignment by ID', () => {
     it('should fetch an assignment by ID successfully', async () => {
         axiosGetSpy.mockResolvedValue({ status: 200, data: assignmentInProgresDataMock });
