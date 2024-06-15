@@ -91,4 +91,19 @@ describe('UsersRepository', () => {
         await expect(repository.updateUser(1, 70)).rejects.toThrowError('Network Error');
     });
   });
+  describe('getUserEmailById', () => {
+    it('should fetch user email by ID successfully', async () => {
+      const mockUser = { id: 1, email: 'john@example.com' };
+      axiosGetSpy.mockResolvedValue({ status: 200, data: mockUser });
+
+      const result = await repository.getUserEmailById(1);
+      expect(result).toEqual('john@example.com');
+      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`);
+    });
+
+    it('should handle fetch error', async () => {
+      axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+      await expect(repository.getUserEmailById(1)).rejects.toThrowError('Network Error');
+    });
+  });
 });
