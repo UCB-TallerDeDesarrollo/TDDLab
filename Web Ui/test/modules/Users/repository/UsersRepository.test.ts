@@ -5,6 +5,7 @@ import { UserDataObject } from '../../../../src/modules/Users/domain/UsersInterf
 const axiosGetSpy = jest.spyOn(axios, 'get');
 
 const repository = new UsersRepository();
+const axiosPutSpy = jest.spyOn(axios, 'put');
 const API_URL = 'https://tdd-lab-api-gold.vercel.app/api/user/users';
 
 describe('UsersRepository', () => {
@@ -76,5 +77,13 @@ describe('UsersRepository', () => {
         axiosGetSpy.mockRejectedValue(new Error('Network Error'));
         await expect(repository.getUserByEmail('john@example.com')).rejects.toThrowError('Network Error');
       });
+  });
+  describe('updateUser', () => {
+    it('should update user group ID successfully', async () => {
+      axiosPutSpy.mockResolvedValue({ status: 200 });
+
+      await expect(repository.updateUser(1, 70)).resolves.not.toThrowError();
+      expect(axiosPutSpy).toHaveBeenCalledWith(`${API_URL}/1`, { groupid: 70 });
+    });
   });
 });
