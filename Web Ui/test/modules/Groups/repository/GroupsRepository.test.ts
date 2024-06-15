@@ -4,6 +4,7 @@ import { GroupDataObject } from '../../../../src/modules/Groups/domain/GroupInte
 
 const axiosGetSpy = jest.spyOn(axios, 'get');
 const axiosPostSpy = jest.spyOn(axios, 'post');
+const axiosDeleteSpy = jest.spyOn(axios, 'delete');
 
 const repository = new GroupsRepository();
 const API_URL = 'https://tdd-lab-api-gold.vercel.app/api/groups';
@@ -57,5 +58,13 @@ describe('GroupsRepository', () => {
         const mockGroup: GroupDataObject = { id: 1, groupName: 'Group1', groupDetail: 'Detail1', creationDate: new Date() };
         await expect(repository.createGroup(mockGroup)).rejects.toThrowError('Network Error');
       });
+  });
+  describe('deleteGroup', () => {
+    it('should delete a group successfully', async () => {
+      axiosDeleteSpy.mockResolvedValue({ status: 200 });
+
+      await expect(repository.deleteGroup(1)).resolves.not.toThrowError();
+      expect(axiosDeleteSpy).toHaveBeenCalledWith(`${API_URL}/1`);
+    });
   });
 });
