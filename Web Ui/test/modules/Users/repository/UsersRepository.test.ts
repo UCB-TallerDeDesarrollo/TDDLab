@@ -100,10 +100,9 @@ describe('UsersRepository', () => {
       expect(result).toEqual('john@example.com');
       expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`);
     });
-
     it('should handle fetch error', async () => {
-      axiosGetSpy.mockRejectedValue(new Error('Network Error'));
-      await expect(repository.getUserEmailById(1)).rejects.toThrowError('Network Error');
-    });
+        axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+        await expect(repository.getUserEmailById(1)).rejects.toThrowError('Network Error');
+      });
   });
 });
