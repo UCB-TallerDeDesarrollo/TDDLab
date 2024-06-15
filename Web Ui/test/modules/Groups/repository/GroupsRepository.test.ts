@@ -66,5 +66,9 @@ describe('GroupsRepository', () => {
       await expect(repository.deleteGroup(1)).resolves.not.toThrowError();
       expect(axiosDeleteSpy).toHaveBeenCalledWith(`${API_URL}/1`);
     });
+    it('should handle deletion error', async () => {
+        axiosDeleteSpy.mockRejectedValue(new Error('Network Error'));
+        await expect(repository.deleteGroup(1)).rejects.toThrowError('Network Error');
+    });
   });
 });
