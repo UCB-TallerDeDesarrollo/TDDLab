@@ -72,5 +72,9 @@ describe('UsersRepository', () => {
       expect(result).toEqual(mockUser);
       expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/john@example.com`);
     });
+    it('should handle fetch error', async () => {
+        axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+        await expect(repository.getUserByEmail('john@example.com')).rejects.toThrowError('Network Error');
+      });
   });
 });
