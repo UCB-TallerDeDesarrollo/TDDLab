@@ -3,6 +3,7 @@ import GroupsRepository from '../../../../src/modules/Groups/repository/GroupsRe
 import { GroupDataObject } from '../../../../src/modules/Groups/domain/GroupInterface';
 
 const axiosGetSpy = jest.spyOn(axios, 'get');
+const axiosPostSpy = jest.spyOn(axios, 'post');
 
 const repository = new GroupsRepository();
 const API_URL = 'https://tdd-lab-api-gold.vercel.app/api/groups';
@@ -43,5 +44,13 @@ describe('GroupsRepository', () => {
       });
     });
   });
+  describe('createGroup', () => {
+    it('should create a group successfully', async () => {
+      const mockGroup: GroupDataObject = { id: 1, groupName: 'Group1', groupDetail: 'Detail1', creationDate: new Date() };
+      axiosPostSpy.mockResolvedValue({ status: 201 });
 
+      await expect(repository.createGroup(mockGroup)).resolves.not.toThrowError();
+      expect(axiosPostSpy).toHaveBeenCalledWith(API_URL, mockGroup);
+    });
+  });
 });
