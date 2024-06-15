@@ -24,4 +24,9 @@ describe("CheckSubmissionExists", () => {
         expect(result).toEqual({ hasStarted: false });
         expect(mockRepository.checkSubmissionExists).toHaveBeenCalledWith(1, 1);
     });
+    it("Should handle error when checking submission existence", async () => {
+        jest.spyOn(mockRepository, 'checkSubmissionExists').mockRejectedValue(new Error('Error checking submission'));
+
+        await expect(checkSubmission.checkSubmissionExists(1, 1)).rejects.toThrow('Error checking submission');
+    });
 });
