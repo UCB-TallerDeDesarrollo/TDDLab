@@ -85,5 +85,10 @@ describe('UsersRepository', () => {
       await expect(repository.updateUser(1, 70)).resolves.not.toThrowError();
       expect(axiosPutSpy).toHaveBeenCalledWith(`${API_URL}/1`, { groupid: 70 });
     });
+  
+    it('should handle update error', async () => {
+        axiosPutSpy.mockRejectedValue(new Error('Network Error'));
+        await expect(repository.updateUser(1, 70)).rejects.toThrowError('Network Error');
+    });
   });
 });
