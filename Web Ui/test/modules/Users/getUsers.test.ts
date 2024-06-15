@@ -41,4 +41,9 @@ describe('GetUsers', () => {
       expect(mockRepository.getUsers).toHaveBeenCalled();
       expect(result).toEqual([]);
     });
+    it('should handle errors when fetching users', async () => {
+      const error = new Error('Error fetching users');
+      (mockRepository.getUsers as jest.MockedFunction<typeof mockRepository.getUsers>).mockRejectedValue(error);
+      await expect(getUsers.getUsers()).rejects.toThrow('Error fetching users');
+    });
   });
