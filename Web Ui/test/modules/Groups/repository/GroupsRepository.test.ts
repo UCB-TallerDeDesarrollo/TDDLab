@@ -28,7 +28,17 @@ describe('GroupsRepository', () => {
         axiosGetSpy.mockRejectedValue(new Error('Network Error'));
         await expect(repository.getGroups()).rejects.toThrowError('Network Error');
     });
-
+  describe('getGroupById', () => {
+      it('should fetch group by ID successfully', async () => {
+        const mockGroup: GroupDataObject = { id: 1, groupName: 'Group1', groupDetail: 'Detail1', creationDate: new Date() };
+        axiosGetSpy.mockResolvedValue({ status: 200, data: mockGroup });
+    
+        const result = await repository.getGroupById(1);
+        expect(result).toEqual(mockGroup);
+        expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`);
+      });
+    
+    });
   });
 
 });
