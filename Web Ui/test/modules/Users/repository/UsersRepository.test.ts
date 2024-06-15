@@ -27,5 +27,17 @@ describe('UsersRepository', () => {
       await expect(repository.getUserById(1)).rejects.toThrowError('Network Error');
     });
   });
-  
+  describe('getUsers', () => {
+    it('should fetch all users successfully', async () => {
+      const mockUsers: UserDataObject[] = [
+        { id: 1, email: 'john@example.com', role: 'admin', groupid: 70 },
+        { id: 2, email: 'jane@example.com', role: 'user', groupid: 70 },
+      ];
+      axiosGetSpy.mockResolvedValue({ status: 200, data: mockUsers });
+
+      const result = await repository.getUsers();
+      expect(result).toEqual(mockUsers);
+      expect(axiosGetSpy).toHaveBeenCalledWith(API_URL);
+    });
+  });
 });
