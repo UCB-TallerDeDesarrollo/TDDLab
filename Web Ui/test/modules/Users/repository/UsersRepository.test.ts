@@ -58,6 +58,10 @@ describe('UsersRepository', () => {
       expect(result).toEqual(mockUsers);
       expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/groupid/70`);
     });
+    it('should handle fetch error', async () => {
+        axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+        await expect(repository.getUsersByGroupid(70)).rejects.toThrowError('Network Error');
+      });
   });
 
 });
