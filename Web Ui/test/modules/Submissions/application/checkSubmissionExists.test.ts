@@ -17,4 +17,11 @@ describe("CheckSubmissionExists", () => {
         expect(result).toEqual({ hasStarted: true });
         expect(mockRepository.checkSubmissionExists).toHaveBeenCalledWith(1, 1);
     });
+    it("Should return hasStarted as false if submission does not exist", async () => {
+        jest.spyOn(mockRepository, 'checkSubmissionExists').mockResolvedValue({ hasStarted: false });
+        
+        const result = await checkSubmission.checkSubmissionExists(1, 1);
+        expect(result).toEqual({ hasStarted: false });
+        expect(mockRepository.checkSubmissionExists).toHaveBeenCalledWith(1, 1);
+    });
 });
