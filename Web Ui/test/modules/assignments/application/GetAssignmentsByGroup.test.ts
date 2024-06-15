@@ -35,4 +35,8 @@ describe("Get assignments by group id", () => {
     console.log(obtainedAssignments);
     expect(obtainedAssignments).toEqual([]);
   });
+  it("Should handle error when fetching assignments by group id", async () => {
+    jest.spyOn(mockRepository, 'getAssignmentsByGroupid').mockRejectedValue(new Error('Error fetching assignments'));
+    await expect(getAssignment.obtainAssignmentsByGroupId(67)).rejects.toThrow('Error fetching assignments');
+  });
 });
