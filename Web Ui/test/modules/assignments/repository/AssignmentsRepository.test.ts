@@ -43,7 +43,10 @@ describe('Get assignments by group ID', () => {
         axiosGetSpy.mockResolvedValue({ status: 404 });
         await expect(mockRepository.getAssignmentsByGroupid(1)).rejects.toThrowError("Failed to fetch assignments by group ID");
     });
-
+    it('should handle fetch error for group ID', async () => {
+        axiosGetSpy.mockRejectedValue(new Error("Network Error"));
+        await expect(mockRepository.getAssignmentsByGroupid(1)).rejects.toThrowError("Network Error");
+    });
 });
 describe('Get assignment by ID', () => {
     it('should fetch an assignment by ID successfully', async () => {
