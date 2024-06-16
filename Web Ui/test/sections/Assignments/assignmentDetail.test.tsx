@@ -1,7 +1,8 @@
-import { render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/sections/Assignments/AssignmentDetail";
+import { GitLinkDialog } from "../../../src/sections/Assignments/components/GitHubLinkDialog"
 
 // Mock del estado de assignment
 const mockAssignment = {
@@ -139,6 +140,91 @@ describe("AssignmentDetail Component", () => {
       expect(iniciarTareaButton).not.toBeInTheDocument();
       expect(verGraficaButton).not.toBeInTheDocument();
       expect(finalizarTareaButton).not.toBeInTheDocument();
+    });
+  });
+
+  it("displays the list of submissions for teacher role", async () => {
+    render(
+      <BrowserRouter>
+        <AssignmentDetail role="teacher" userid={123} />
+      </BrowserRouter>
+    );
+
+    // await waitFor(() => {
+    //   expect(getByText("Lista de Estudiantes")).toBeInTheDocument();
+    //   expect(getByText("Enviado")).toBeInTheDocument();
+    //   expect(getByText("En progreso")).toBeInTheDocument();
+    //   expect(getByText("https://github.com/student/repo1")).toBeInTheDocument();
+    //   expect(getByText("https://github.com/student/repo2")).toBeInTheDocument();
+    // });
+    await waitFor(() => {
+      expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
+      const enviado = screen.queryByText("Enviado");
+      const enProgreso = screen.queryByText("En progreso");
+      expect(enviado).toBeInTheDocument();
+      expect(enProgreso).toBeInTheDocument();
+    });
+  });
+
+  it("shows loading indicator while fetching assignment details", async () => {
+    const { getByTestId } = render(
+      <BrowserRouter>
+        <AssignmentDetail role="student" userid={123} />
+      </BrowserRouter>
+    );
+
+    const loadingIndicator = getByTestId("loading-indicator");
+    expect(loadingIndicator).toBeInTheDocument();
+  });
+
+  it('opens and closes the GitLinkDialog', async () => {
+    // Simular las funciones onClose y onSend
+    const handleClose = jest.fn();
+    const handleSend = jest.fn();
+
+    // Renderizar el componente con el diálogo abierto
+    const { getByText, getByRole } = render(
+        <GitLinkDialog
+            open={true}
+            onClose={handleClose}
+            onSend={handleSend}
+        />
+    );
+
+    // Verificar que el diálogo esté en el DOM
+    await waitFor(() => {
+        expect(getByText(/Enviar/i)).toBeInTheDocument();
+    });
+
+    // Simular el cierre del diálogo
+    const closeButton = getByRole('button', { name: /Cerrar/i });
+    fireEvent.click(closeButton);
+
+    // Verificar que handleClose haya sido llamado
+    await waitFor(() => {
+        expect(handleClose).toHaveBeenCalledTimes(1);
+    });
+
+    // Simular el envío del enlace de GitHub
+    const sendButton = getByRole('button', { name: /Enviar/i });
+    fireEvent.click(sendButton);
+
+    // Verificar que handleSend no se haya llamado debido a que el link es vacío
+    await waitFor(() => {
+        expect(handleSend).not.toHaveBeenCalled();
+    });
+
+    // Simular la entrada de un enlace válido
+    const input = getByRole('textbox', { name: /Enlace de Github/i });
+    fireEvent.change(input, { target: { value: 'https://github.com/test/repo' } });
+
+    // Volver a intentar el envío del enlace de GitHub
+    fireEvent.click(sendButton);
+
+    // Verificar que handleSend haya sido llamado esta vez
+    await waitFor(() => {
+        expect(handleSend).toHaveBeenCalledTimes(1);
+        expect(handleSend).toHaveBeenCalledWith('https://github.com/test/repo');
     });
   });
 
