@@ -617,7 +617,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             height: "250px",
           }}
         >
-          <CircularProgress size={60} thickness={5} />
+          <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
         </div>
       )}
       {!isStudent(role) && (
