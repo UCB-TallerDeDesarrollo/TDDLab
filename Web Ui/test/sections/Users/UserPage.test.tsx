@@ -6,7 +6,6 @@ import GetGroups from "../../../src/modules/Groups/application/GetGroups";
 import { UserDataObject } from "../../../src/modules/Users/domain/UsersInterface";
 import { GroupDataObject } from "../../../src/modules/Groups/domain/GroupInterface";
 
-// Mock implementations
 jest.mock("../../../src/modules/Users/application/getUsers");
 jest.mock("../../../src/modules/Groups/application/GetGroups");
 
@@ -32,7 +31,6 @@ const mockGroups: GroupDataObject[] = [
 
 describe("UserPage component", () => {
   beforeEach(() => {
-    // Mocking the getUsers and getGroups methods
     (GetUsers.prototype.getUsers as jest.Mock).mockResolvedValue(mockUsers);
     (GetGroups.prototype.getGroups as jest.Mock).mockResolvedValue(mockGroups);
   });
@@ -43,11 +41,8 @@ describe("UserPage component", () => {
 
   it("renders users table after successful data fetch", async () => {
     render(<UserPage />);
-
-    // Verify loading indicator is displayed
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
 
-    // Wait for data fetching to complete
     await waitFor(() => {
       expect(screen.getByText("user1@example.com")).toBeInTheDocument();
       expect(screen.getByText("Group1")).toBeInTheDocument();
@@ -60,33 +55,25 @@ describe("UserPage component", () => {
 
   it("filters users when selecting a group", async () => {
     render(<UserPage />);
-
-    // Espera a que se complete la carga inicial de datos
     await waitFor(() => {
       expect(screen.getByText("user1@example.com")).toBeInTheDocument();
       expect(screen.getByText("user2@example.com")).toBeInTheDocument();
     });
 
-    // Abrimos el menú desplegable
     const selectElement = screen.getByLabelText(/Grupo/i);
     fireEvent.mouseDown(selectElement);
 
-    // Seleccionamos el grupo deseado
-    const menuItem = await screen.findAllByRole("option"); // Obtenemos todos los elementos del menú
-    fireEvent.click(menuItem[1]); // Aquí seleccionamos el segundo elemento, que es "Group1"
+    const menuItem = await screen.findAllByRole("option");
+    fireEvent.click(menuItem[1]);
 
-    // Verificamos que solo se muestren usuarios del grupo seleccionado
     await waitFor(() => {
       expect(screen.getByText("user1@example.com")).toBeInTheDocument();
       expect(screen.queryByText("user2@example.com")).not.toBeInTheDocument();
     });
 
-    // Seleccionamos "Todos los grupos" para mostrar todos los usuarios nuevamente
-    fireEvent.mouseDown(selectElement); // Abrimos el menú desplegable
+    fireEvent.mouseDown(selectElement);
     const allGroupsItem = await screen.findByText("Todos los grupos");
     fireEvent.click(allGroupsItem);
-
-    // Verificamos que todos los usuarios estén visibles nuevamente
     await waitFor(() => {
       expect(screen.getByText("user1@example.com")).toBeInTheDocument();
       expect(screen.getByText("user2@example.com")).toBeInTheDocument();
@@ -101,7 +88,6 @@ describe("UserPage component", () => {
 
     render(<UserPage />);
 
-    // Wait for error message to be displayed
     await waitFor(() => {
       expect(
         screen.getByText(/Error: Failed to fetch users/i)

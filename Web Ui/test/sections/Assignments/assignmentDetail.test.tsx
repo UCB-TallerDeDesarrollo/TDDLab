@@ -55,14 +55,12 @@ jest.mock(
 
 describe("AssignmentDetail Component", () => {
   it("displays the group name", async () => {
-    // Renderizar el componente con el role de estudiante
     const { getByText } = render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123}/>
       </BrowserRouter>
     );
 
-    // Esperar a que se muestre el nombre del grupo
     await waitFor(() => {
       const groupName = getByText("Test Group");
       expect(groupName).toBeInTheDocument();
@@ -145,7 +143,6 @@ describe("AssignmentDetail Component", () => {
       </BrowserRouter>
     );
 
-    // Use waitFor to ensure the table is rendered with the expected data
     await waitFor(() => {
       expect(screen.getByText('Lista de Estudiantes')).toBeInTheDocument();
       expect(screen.getByText('Enviado')).toBeInTheDocument();
@@ -167,11 +164,9 @@ describe("AssignmentDetail Component", () => {
   });
 
   it('opens and closes the GitLinkDialog', async () => {
-    // Simular las funciones onClose y onSend
     const handleClose = jest.fn();
     const handleSend = jest.fn();
 
-    // Renderizar el componente con el diálogo abierto
     const { getByText, getByRole } = render(
         <GitLinkDialog
             open={true}
@@ -180,37 +175,29 @@ describe("AssignmentDetail Component", () => {
         />
     );
 
-    // Verificar que el diálogo esté en el DOM
     await waitFor(() => {
         expect(getByText(/Enviar/i)).toBeInTheDocument();
     });
 
-    // Simular el cierre del diálogo
     const closeButton = getByRole('button', { name: /Cerrar/i });
     fireEvent.click(closeButton);
 
-    // Verificar que handleClose haya sido llamado
     await waitFor(() => {
         expect(handleClose).toHaveBeenCalledTimes(1);
     });
 
-    // Simular el envío del enlace de GitHub
     const sendButton = getByRole('button', { name: /Enviar/i });
     fireEvent.click(sendButton);
 
-    // Verificar que handleSend no se haya llamado debido a que el link es vacío
     await waitFor(() => {
         expect(handleSend).not.toHaveBeenCalled();
     });
 
-    // Simular la entrada de un enlace válido
     const input = getByRole('textbox', { name: /Enlace de Github/i });
     fireEvent.change(input, { target: { value: 'https://github.com/test/repo' } });
 
-    // Volver a intentar el envío del enlace de GitHub
     fireEvent.click(sendButton);
 
-    // Verificar que handleSend haya sido llamado esta vez
     await waitFor(() => {
         expect(handleSend).toHaveBeenCalledTimes(1);
         expect(handleSend).toHaveBeenCalledWith('https://github.com/test/repo');
