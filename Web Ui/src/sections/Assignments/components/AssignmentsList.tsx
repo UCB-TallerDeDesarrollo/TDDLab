@@ -104,24 +104,24 @@ function Assignments({
       try {
         const allGroups = await getGroups.getGroups();
         setGroupList(allGroups);
+
+        // Recuperar el groupId de la URL
+        const groupIdFromURL = new URLSearchParams(window.location.search).get('groupId');
+        // Recuperar el groupId de authData
+        const authGroupId = authData?.usergroupid;
+        // Recuperar el groupId de localStorage
+        const savedSelectedGroup = localStorage.getItem("selectedGroup");
         
-  
-        // groupId de la URL -> Para los grupos no seleccionados
-        const urlParams = new URLSearchParams(window.location.search);
-        const groupIdFromURL = urlParams.get('groupId');
-  
-        // groupId de authData -> Seleccionados
-        const savedSelectedGroup = authData?.usergroupid;
-  
-        let groupIdToUse: number | undefined;
+        let groupIdToUse: number | null = null;
         if (groupIdFromURL) {
-          groupIdToUse = parseInt(groupIdFromURL);
-        } else {
-          groupIdToUse = savedSelectedGroup;
+          groupIdToUse = parseInt(groupIdFromURL, 10);
+        } else if (authGroupId) {
+          groupIdToUse = authGroupId;
+        } else if (savedSelectedGroup) {
+          groupIdToUse = parseInt(savedSelectedGroup, 10);
         }
-  
-        // Filtrar las tareas según el groupIdToUse
-        if (groupIdToUse) {
+
+        if (groupIdToUse !== undefined && groupIdToUse !== null) {
           const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
           if (selectedGroup?.id) {
             setSelectedGroup(selectedGroup.id);
@@ -134,8 +134,26 @@ function Assignments({
         console.error("Error fetching assignments:", error);
       }
     };
+
     fetchData();
   }, []);
+  
+  useEffect(() => {
+    const fetchAssignmentsByGroup = async () => {
+      try {
+        console.log("Estoy aqui en el segundo");
+        const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup);
+        setAssignments(data);
+        orderAssignments([...data], selectedSorting);
+      } catch (error) {
+        console.error("Error fetching assignments by group ID:", error);
+      }
+    };
+
+    if (selectedGroup !== 0) {
+      fetchAssignmentsByGroup();
+    }
+  }, [selectedGroup, selectedSorting]);
   
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
@@ -144,28 +162,25 @@ function Assignments({
   };
 
   const handleGroupChange = async (event: SelectChangeEvent<number>) => {
-    console.log("entra al handler con estos valores",authData);
     const groupId = event.target.value as number;
-    console.log("Obtengo el id del filtro", groupId);
     setSelectedGroup(groupId);
     onGroupChange(groupId);
+
+    // Guardar en localStorage
+    localStorage.setItem("selectedGroup", groupId.toString());
+
+    // Actualizar y guardar en authData
     const updatedAuthData = { ...authData, usergroupid: groupId };
-    console.log("guardo en auth", updatedAuthData);
-    setAuthData(updatedAuthData); // Actualiza el estado de authData
+    setAuthData(updatedAuthData);
     const datosParaGuardar = adaptarDatos(updatedAuthData);
-    console.log("Esto debo guardar en la base de datos",datosParaGuardar);
-    console.log("en user actualizando", updatedAuthData); // Muestra el valor actualizado de authData
-    
+    console.log("Esto debo guardar en la base de datos", datosParaGuardar);
+
     try {
-      console.log("Entro al try");
       const updatedGroupId = updatedAuthData.usergroupid;
-      console.log("mostrar updateGroupID antes de recuperar",updatedGroupId);
       if (updatedGroupId !== undefined) {
         const assignments = await assignmentsRepository.getAssignmentsByGroupid(updatedGroupId);
-        console.log("mis tareas recuperadas", assignments);
         setAssignments(assignments);
       } else {
-        console.log("Entro al else");
         const assignments = await assignmentsRepository.getAssignments();
         setAssignments(assignments);
       }
@@ -173,6 +188,7 @@ function Assignments({
       console.error("Error fetching assignments by group ID:", error);
     }
   };
+
   
 
  
