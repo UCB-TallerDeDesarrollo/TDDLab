@@ -4,59 +4,54 @@ import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/sections/Assignments/AssignmentDetail";
 import { GitLinkDialog } from "../../../src/sections/Assignments/components/GitHubLinkDialog"
 
-// Mock del estado de assignment
-const mockAssignment = {
-  title: "Test Assignment",
-  description: "Test description",
-  start_date: new Date(),
-  end_date: new Date(),
-  state: "pending",
-  link: "https://github.com/test/test-repo",
-  comment: "Test comment",
-  groupid: 123, // ID del grupo
-};
+jest.mock('../../../src/modules/Assignments/application/GetAssignmentDetail', () => ({
+  GetAssignmentDetail: jest.fn().mockImplementation(() => ({
+    obtainAssignmentDetail: jest.fn().mockResolvedValue({
+      title: 'Test Assignment',
+      description: 'Test description',
+      start_date: new Date(),
+      end_date: new Date(),
+      state: 'pending',
+      link: 'https://github.com/test/test-repo',
+      comment: 'Test comment',
+      groupid: 123,
+    }),
+  })),
+}));
+
+jest.mock('../../../src/modules/Groups/application/GetGroupDetail', () => ({
+  GetGroupDetail: jest.fn().mockImplementation(() => ({
+    obtainGroupDetail: jest.fn().mockResolvedValue({ groupName: 'Test Group' }),
+  })),
+}));
 
 jest.mock(
-  "../../../src/modules/Assignments/application/GetAssignmentDetail",
+  '../../../src/modules/Submissions/Aplication/getSubmissionsByAssignmentId',
   () => ({
-    // Mock de la función para obtener detalles de la tarea
-    GetAssignmentDetail: jest.fn().mockImplementation(() => ({
-      obtainAssignmentDetail: jest.fn().mockResolvedValue(mockAssignment),
+    GetSubmissionsByAssignmentId: jest.fn().mockImplementation(() => ({
+      getSubmissionsByAssignmentId: jest.fn().mockResolvedValue([
+        {
+          assignmentid: 1,
+          userid: 123,
+          status: 'delivered',
+          repository_link: 'https://github.com/student/repo1',
+          start_date: new Date(),
+          end_date: new Date(),
+          comment: 'Good job',
+        },
+        {
+          assignmentid: 1,
+          userid: 124,
+          status: 'in progress',
+          repository_link: 'https://github.com/student/repo2',
+          start_date: new Date(),
+          end_date: null,
+          comment: null,
+        },
+      ]),
     })),
   })
 );
-
-jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
-  // Mock de la función para obtener detalles del grupo
-  GetGroupDetail: jest.fn().mockImplementation(() => ({
-    obtainGroupDetail: jest.fn().mockResolvedValue({ groupName: "Test Group" }),
-  })),
-}));
-
-jest.mock("../../../src/modules/Submissions/Aplication/getSubmissionsByAssignmentId", () => ({
-  GetSubmissionsByAssignmentId: jest.fn().mockImplementation(() => ({
-    getSubmissionsByAssignmentId: jest.fn().mockResolvedValue([
-      {
-        assignmentid: 1,
-        userid: 123,
-        status: "delivered",
-        repository_link: "https://github.com/student/repo1",
-        start_date: new Date(),
-        end_date: new Date(),
-        comment: "Good job",
-      },
-      {
-        assignmentid: 1,
-        userid: 124,
-        status: "in progress",
-        repository_link: "https://github.com/student/repo2",
-        start_date: new Date(),
-        end_date: null,
-        comment: null,
-      },
-    ]),
-  })),
-}));
 
 describe("AssignmentDetail Component", () => {
   it("displays the group name", async () => {
@@ -143,26 +138,20 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays the list of submissions for teacher role", async () => {
+  it('displays the list of submissions for teacher role', async () => {
     render(
       <BrowserRouter>
         <AssignmentDetail role="teacher" userid={123} />
       </BrowserRouter>
     );
 
-    // await waitFor(() => {
-    //   expect(getByText("Lista de Estudiantes")).toBeInTheDocument();
-    //   expect(getByText("Enviado")).toBeInTheDocument();
-    //   expect(getByText("En progreso")).toBeInTheDocument();
-    //   expect(getByText("https://github.com/student/repo1")).toBeInTheDocument();
-    //   expect(getByText("https://github.com/student/repo2")).toBeInTheDocument();
-    // });
+    // Use waitFor to ensure the table is rendered with the expected data
     await waitFor(() => {
-      expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
-      const enviado = screen.queryByText("Enviado");
-      const enProgreso = screen.queryByText("En progreso");
-      expect(enviado).toBeInTheDocument();
-      expect(enProgreso).toBeInTheDocument();
+      expect(screen.getByText('Lista de Estudiantes')).toBeInTheDocument();
+      expect(screen.getByText('Enviado')).toBeInTheDocument();
+      expect(screen.getByText('En progreso')).toBeInTheDocument();
+      expect(screen.getByText('https://github.com/student/repo1')).toBeInTheDocument();
+      expect(screen.getByText('https://github.com/student/repo2')).toBeInTheDocument();
     });
   });
 
