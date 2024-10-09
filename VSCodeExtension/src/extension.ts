@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -38,23 +40,28 @@ class TimelineViewProvider implements vscode.WebviewViewProvider {
     }
 
     showTimeline(webview: vscode.Webview): void {
-        var jsonData = [
-            { color: "rojo", time: "2024-09-17" },
-            { color: "verde", time: "2024-09-18" },
-            { color: "rojo", time: "2024-09-19" },
-            { color: "verde", time: "2024-09-22" },
-            { color: "rojo", time: "2024-09-21" },
-            { color: "verde", time: "2024-09-22" }
-        ];
-        webview.html = getWebviewContent(jsonData);
+        const jsonFilePath = path.join(this.context.extensionPath, 'src', 'data.json');
+
+        fs.readFile(jsonFilePath, 'utf8', (err, data) => {
+            if (err) {
+                vscode.window.showErrorMessage(`Error al leer el archivo JSON: ${err.message}`);
+                return;
+            }
+            try {
+                const jsonData = JSON.parse(data);
+                webview.html = getWebviewContent(jsonData);
+            } catch (parseError) {
+                vscode.window.showErrorMessage(`Error al parsear el archivo JSON`);
+            }
+        });
     }
 }
 
-function getWebviewContent(jsonData: { color: string; time: string }[]): string {
+function getWebviewContent(jsonData: { fecha: string; hora: string; resultado: string; prueba: string }[]): string {
     vscode.window.showInformationMessage('Vista web recargada correctamente.');
     const timelineHtml = jsonData.map(item => {
-        const color = item.color === "rojo" ? "red" : "green";
-        return `<div style="margin: 10px; background-color: ${color}; width: 30px; height: 30px;"></div>`;
+        const color = item.resultado === "fallida" ? "red" : "green";
+        return `<div style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px";></div>`;
     }).join('');
 
     return `
@@ -66,8 +73,8 @@ function getWebviewContent(jsonData: { color: string; time: string }[]): string 
             <title>Línea de Tiempo</title>
         </head>
         <body>
-            <h1>Línea de Tiempo</h1>
-            <div style="display:flex;">
+            <h2 style="margin-bottom: 1px">Línea de Tiempo</h2>
+            <div style="display:flex; flex-wrap: wrap; margin-top: 0px">
                 ${timelineHtml}
             </div>
         </body>

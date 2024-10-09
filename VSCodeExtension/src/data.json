@@ -1,0 +1,27 @@
+[
+    {
+      "fecha": "2024-09-22",
+      "hora": "14:30",
+      "resultado": "aprobada",
+      "prueba": "Prueba 1"
+    },
+    {
+      "fecha": "2024-09-22",
+      "hora": "15:00",
+      "resultado": "fallida",
+      "prueba": "Prueba 2"
+    },
+    {
+      "fecha": "2024-09-22",
+      "hora": "16:00",
+      "resultado": "aprobada",
+      "prueba": "Prueba 3"
+    },
+    {
+      "fecha": "2024-09-23",
+      "hora": "16:00",
+      "resultado": "aprobada",
+      "prueba": "Prueba 4"
+    }
+  ]
+  
