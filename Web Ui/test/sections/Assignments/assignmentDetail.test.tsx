@@ -145,17 +145,20 @@ describe("AssignmentDetail Component", () => {
       </BrowserRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
-      //expect(screen.getByText('Enviado')).toBeInTheDocument(); WIP: Verificar si deberia cumplir este expect
-      expect(screen.getByText("En progreso")).toBeInTheDocument();
-      expect(
-        screen.getByText("https://github.com/student/repo1")
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("https://github.com/student/repo2")
-      ).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
+        expect(screen.getByText("Enviado")).toBeInTheDocument();
+        expect(screen.getByText("En progreso")).toBeInTheDocument();
+        expect(
+          screen.getByText("https://github.com/student/repo1")
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("https://github.com/student/repo2")
+        ).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it("shows loading indicator while fetching assignment details", async () => {
