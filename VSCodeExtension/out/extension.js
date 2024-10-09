@@ -36,11 +36,14 @@ function activate(context) {
     context.subscriptions.push(vscode.window.registerWebviewViewProvider('timelineView', timelineViewProvider));
     vscode.commands.registerCommand('extension.showTimeline', () => {
         vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-        vscode.window.showInformationMessage('Vista web recargada correctamente.');
+        if (timelineViewProvider.currentWebview) {
+            timelineViewProvider.showTimeline(timelineViewProvider.currentWebview);
+        }
     });
 }
 class TimelineViewProvider {
     context;
+    currentWebview = null;
     constructor(context) {
         this.context = context;
     }
@@ -48,10 +51,11 @@ class TimelineViewProvider {
         webviewView.webview.options = {
             enableScripts: true
         };
+        this.currentWebview = webviewView.webview;
         this.showTimeline(webviewView.webview);
     }
     showTimeline(webview) {
-        const jsonData = [
+        var jsonData = [
             { color: "rojo", time: "2024-09-17" },
             { color: "verde", time: "2024-09-18" },
             { color: "rojo", time: "2024-09-19" },
@@ -63,6 +67,7 @@ class TimelineViewProvider {
     }
 }
 function getWebviewContent(jsonData) {
+    vscode.window.showInformationMessage('Vista web recargada correctamente.');
     const timelineHtml = jsonData.map(item => {
         const color = item.color === "rojo" ? "red" : "green";
         return `<div style="margin: 10px; background-color: ${color}; width: 30px; height: 30px;"></div>`;
