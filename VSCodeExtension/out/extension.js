@@ -1,37 +1,56 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.activate = activate;
+exports.deactivate = deactivate;
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
-
+const vscode = __importStar(require("vscode"));
 /**
  * @param {vscode.ExtensionContext} context
  */
-export function activate(context: vscode.ExtensionContext) {
+function activate(context) {
     const timelineViewProvider = new TimelineViewProvider(context);
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider('timelineView', timelineViewProvider)
-    );
-
+    context.subscriptions.push(vscode.window.registerWebviewViewProvider('timelineView', timelineViewProvider));
     vscode.commands.registerCommand('extension.showTimeline', () => {
         vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
         vscode.window.showInformationMessage('Vista web recargada correctamente.');
     });
 }
-
-class TimelineViewProvider implements vscode.WebviewViewProvider {
-    private context: vscode.ExtensionContext;
-
-    constructor(context: vscode.ExtensionContext) {
+class TimelineViewProvider {
+    context;
+    constructor(context) {
         this.context = context;
     }
-
-    resolveWebviewView(webviewView: vscode.WebviewView): void {
+    resolveWebviewView(webviewView) {
         webviewView.webview.options = {
             enableScripts: true
         };
         this.showTimeline(webviewView.webview);
     }
-
-    private showTimeline(webview: vscode.Webview): void {
+    showTimeline(webview) {
         const jsonData = [
             { color: "rojo", time: "2024-09-17" },
             { color: "verde", time: "2024-09-18" },
@@ -43,13 +62,11 @@ class TimelineViewProvider implements vscode.WebviewViewProvider {
         webview.html = getWebviewContent(jsonData);
     }
 }
-
-function getWebviewContent(jsonData: { color: string; time: string }[]): string {
+function getWebviewContent(jsonData) {
     const timelineHtml = jsonData.map(item => {
         const color = item.color === "rojo" ? "red" : "green";
         return `<div style="margin: 10px; background-color: ${color}; width: 30px; height: 30px;"></div>`;
     }).join('');
-
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -67,6 +84,6 @@ function getWebviewContent(jsonData: { color: string; time: string }[]): string 
         </html>
     `;
 }
-
 // This method is called when your extension is deactivated
-export function deactivate() {}
+function deactivate() { }
+//# sourceMappingURL=extension.js.map
