@@ -1,27 +1,32 @@
 [
-    {
-      "fecha": "2024-09-22",
-      "hora": "14:30",
-      "resultado": "aprobada",
-      "prueba": "Prueba 1"
-    },
-    {
-      "fecha": "2024-09-22",
-      "hora": "15:00",
-      "resultado": "fallida",
-      "prueba": "Prueba 2"
-    },
-    {
-      "fecha": "2024-09-22",
-      "hora": "16:00",
-      "resultado": "aprobada",
-      "prueba": "Prueba 3"
-    },
-    {
-      "fecha": "2024-09-23",
-      "hora": "16:00",
-      "resultado": "aprobada",
-      "prueba": "Prueba 4"
-    }
-  ]
-  
+  {
+    "numPassedTests": 1,
+    "numTotalTests": 1,
+    "timestamp": 1727320601826
+  },
+  {
+    "numPassedTests": 1,
+    "numTotalTests": 2,
+    "timestamp": 1727320703916
+  },
+  {
+    "numPassedTests": 2,
+    "numTotalTests": 2,
+    "timestamp": 1727320903916
+  },
+  {
+    "numPassedTests": 2,
+    "numTotalTests": 3,
+    "timestamp": 1728320903916
+  },
+  {
+    "numPassedTests": 3,
+    "numTotalTests": 3,
+    "timestamp": 1729320903916
+  },
+  {
+    "numPassedTests": 3,
+    "numTotalTests": 4,
+    "timestamp": 1729323903916
+  }
+]

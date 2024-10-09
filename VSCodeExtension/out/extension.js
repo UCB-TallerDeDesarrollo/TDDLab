@@ -76,7 +76,8 @@ class TimelineViewProvider {
 function getWebviewContent(jsonData) {
     vscode.window.showInformationMessage('Vista web recargada correctamente.');
     const timelineHtml = jsonData.map(item => {
-        const color = item.resultado === "fallida" ? "red" : "green";
+        const color = item.numPassedTests === item.numTotalTests ? "green" : "red";
+        // const color = item.resultado === "fallida" ? "red" : "green";
         return `<div style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px";></div>`;
     }).join('');
     return `
