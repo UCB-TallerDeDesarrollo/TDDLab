@@ -2,9 +2,17 @@ import SubmissionRepositoryInterface from "../Domain/SubmissionRepositoryInterfa
 import { SubmissionDataObject } from "../Domain/submissionInterfaces";
 
 export class GetSubmissionByUserandAssignmentId {
-    constructor(private submissionRepository: SubmissionRepositoryInterface) {}
+  constructor(
+    private readonly submissionRepository: SubmissionRepositoryInterface
+  ) {}
 
-    async getSubmisssionByUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject> {
-        return await this.submissionRepository.getSubmissionbyUserandSubmissionId(assignmentid, userid);
-    }
+  async getSubmisssionByUserandSubmissionId(
+    assignmentid: number,
+    userid: number
+  ): Promise<SubmissionDataObject> {
+    return await this.submissionRepository.getSubmissionbyUserandSubmissionId(
+      assignmentid,
+      userid
+    );
+  }
 }
