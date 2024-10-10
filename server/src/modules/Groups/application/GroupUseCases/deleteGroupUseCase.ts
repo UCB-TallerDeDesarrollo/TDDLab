@@ -1,7 +1,7 @@
 import GroupRepository from "../../repositories/GroupRepository";
 
 class DeleteGroupUseCase {
-  private groupRepository: GroupRepository;
+  private readonly groupRepository: GroupRepository;
 
   constructor(groupRepository: GroupRepository) {
     this.groupRepository = groupRepository;
