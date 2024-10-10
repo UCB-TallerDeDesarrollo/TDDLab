@@ -2,21 +2,21 @@ import SubmissionRepository from "../Repository/SubmissionsRepository";
 import { SubmissionDataObject } from "../Domain/Submission";
 
 class GetSubmissionsUseCase {
-    private adapter: SubmissionRepository;
+  private readonly adapter: SubmissionRepository;
 
-    constructor(adapter: SubmissionRepository) {
-        this.adapter = adapter;
+  constructor(adapter: SubmissionRepository) {
+    this.adapter = adapter;
+  }
+
+  async execute(): Promise<SubmissionDataObject[]> {
+    try {
+      const assignments = await this.adapter.ObtainSubmissions();
+      return assignments;
+    } catch (error) {
+      console.error("Error Obtaining Submissions", error);
+      throw error;
     }
-
-    async execute(): Promise<SubmissionDataObject[]> {
-        try {
-          const assignments = await this.adapter.ObtainSubmissions();
-          return assignments;
-        } catch (error) {
-          console.error('Error Obtaining Submissions', error)
-          throw error;
-        }
-      }
+  }
 }
 
 export default GetSubmissionsUseCase;

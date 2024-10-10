@@ -2,8 +2,8 @@ import { IDBJobsRepository } from "../Domain/IDBJobsRepository";
 import { IGithubRepository } from "../Domain/IGithubRepository";
 
 export class GetTestResultsUseCase {
-  private dbJobRepository: IDBJobsRepository;
-  private githubRepository: IGithubRepository;
+  private readonly dbJobRepository: IDBJobsRepository;
+  private readonly githubRepository: IGithubRepository;
 
   constructor(
     dbJobRepository: IDBJobsRepository,

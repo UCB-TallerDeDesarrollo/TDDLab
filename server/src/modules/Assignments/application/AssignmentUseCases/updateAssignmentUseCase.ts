@@ -1,7 +1,7 @@
 import AssignmentRepository from "../../repositories/AssignmentRepository";
 import { AssignmentCreationObject } from "../../domain/Assignment";
 class UpdateAssignment {
-  private repository: AssignmentRepository;
+  private readonly repository: AssignmentRepository;
 
   constructor(repository: AssignmentRepository) {
     this.repository = repository;
@@ -18,7 +18,6 @@ class UpdateAssignment {
       );
       return updatedAssignmentResult;
     } catch (error) {
-
       throw error;
     }
   }
