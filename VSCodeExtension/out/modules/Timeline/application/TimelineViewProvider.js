@@ -23,23 +23,32 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activate = activate;
-exports.deactivate = deactivate;
+exports.TimelineViewProvider = void 0;
 const vscode = __importStar(require("vscode"));
-const TimelineViewProvider_1 = require("./modules/Timeline/application/TimelineViewProvider ");
-/**
- * @param {vscode.ExtensionContext} context
- */
-function activate(context) {
-    const timelineViewProvider = new TimelineViewProvider_1.TimelineViewProvider(context);
-    context.subscriptions.push(vscode.window.registerWebviewViewProvider('timelineView', timelineViewProvider));
-    vscode.commands.registerCommand('extension.showTimeline', () => {
-        vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-        if (timelineViewProvider.currentWebview) {
-            timelineViewProvider.showTimeline(timelineViewProvider.currentWebview);
+class TimelineViewProvider {
+    context;
+    currentWebview = null;
+    timelineRepository;
+    timelineService;
+    constructor(context) {
+        this.context = context;
+        this.timelineRepository = new TimelineRepository(context.extensionPath);
+        this.timelineService = new TimelineService();
+    }
+    resolveWebviewView(webviewView) {
+        webviewView.webview.options = { enableScripts: true };
+        this.currentWebview = webviewView.webview;
+        this.showTimeline(webviewView.webview);
+    }
+    async showTimeline(webview) {
+        try {
+            const timelines = await this.timelineRepository.getTimelines();
+            webview.html = this.timelineService.generateHtml(timelines);
         }
-    });
+        catch (err) {
+            vscode.window.showErrorMessage(`Error al mostrar la línea de tiempo: ${err}`);
+        }
+    }
 }
-// This method is called when your extension is deactivated
-function deactivate() { }
-//# sourceMappingURL=extension.js.map
+exports.TimelineViewProvider = TimelineViewProvider;
+//# sourceMappingURL=TimelineViewProvider.js.map

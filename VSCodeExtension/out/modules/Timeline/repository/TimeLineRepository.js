@@ -23,23 +23,32 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activate = activate;
-exports.deactivate = deactivate;
-const vscode = __importStar(require("vscode"));
-const TimelineViewProvider_1 = require("./modules/Timeline/application/TimelineViewProvider ");
-/**
- * @param {vscode.ExtensionContext} context
- */
-function activate(context) {
-    const timelineViewProvider = new TimelineViewProvider_1.TimelineViewProvider(context);
-    context.subscriptions.push(vscode.window.registerWebviewViewProvider('timelineView', timelineViewProvider));
-    vscode.commands.registerCommand('extension.showTimeline', () => {
-        vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-        if (timelineViewProvider.currentWebview) {
-            timelineViewProvider.showTimeline(timelineViewProvider.currentWebview);
-        }
-    });
+exports.TimelineRepository = void 0;
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const Timeline_1 = require("../domain/Timeline");
+class TimelineRepository {
+    filePath;
+    constructor(extensionPath) {
+        this.filePath = path.join(extensionPath, 'src', 'data.json');
+    }
+    async getTimelines() {
+        return new Promise((resolve, reject) => {
+            fs.readFile(this.filePath, 'utf8', (err, data) => {
+                if (err) {
+                    return reject(err);
+                }
+                try {
+                    const jsonData = JSON.parse(data);
+                    const timelines = jsonData.map((item) => new Timeline_1.Timeline(item.numPassedTests, item.numTotalTests, new Date(item.timestamp)));
+                    resolve(timelines);
+                }
+                catch (error) {
+                    reject(new Error('Error al parsear el archivo JSON'));
+                }
+            });
+        });
+    }
 }
-// This method is called when your extension is deactivated
-function deactivate() { }
-//# sourceMappingURL=extension.js.map
+exports.TimelineRepository = TimelineRepository;
+//# sourceMappingURL=TimeLineRepository.js.map
