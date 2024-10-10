@@ -1,7 +1,9 @@
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
 export class DeleteAssignment {
-  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
+  constructor(
+    private readonly assignmentsRepository: AssignmentsRepositoryInterface
+  ) {}
 
   async deleteAssignment(assignmentId: number) {
     try {

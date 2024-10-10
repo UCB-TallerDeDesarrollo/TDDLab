@@ -2,12 +2,14 @@ import { AssignmentDataObject } from "../domain/assignmentInterfaces";
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
 export class SubmitAssignment {
-  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
+  constructor(
+    private readonly assignmentsRepository: AssignmentsRepositoryInterface
+  ) {}
 
   async submitAssignment(
     assignmentId: number,
     link: string,
-    comment: string | null,
+    comment: string | null
   ) {
     try {
       const foundAssignment: AssignmentDataObject | null =
@@ -27,7 +29,7 @@ export class SubmitAssignment {
 
         return await this.assignmentsRepository.deliverAssignment(
           assignmentId,
-          foundAssignment,
+          foundAssignment
         );
       } else {
         throw new Error("No se encontró la tarea");

@@ -2,7 +2,7 @@ import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
 import { GroupDataObject } from "../domain/GroupInterface";
 
 export class GetGroupDetail {
-  constructor(private groupsRepository: GroupsRepositoryInterface) {}
+  constructor(private readonly groupsRepository: GroupsRepositoryInterface) {}
 
   async obtainGroupDetail(groupid: number): Promise<GroupDataObject | null> {
     try {
