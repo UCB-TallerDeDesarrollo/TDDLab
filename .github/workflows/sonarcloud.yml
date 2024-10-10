@@ -242,10 +242,20 @@ jobs:
         working-directory: Web Ui
         run: npm run build
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          entryPoint: Web Ui
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}"
-          channelId: live
-          projectId: tddlab-hosting-firebase
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase Staging
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          firebase deploy --project ${{ secrets.FIREBASE_PROJECT_ID }}
+
+        # - uses: FirebaseExtended/action-hosting-deploy@v0
+        # with:
+        #   entryPoint: Web Ui
+        #   repoToken: "${{ secrets.GITHUB_TOKEN }}"
+        #   firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}"
+        #   channelId: live
+        #   projectId: tddlab-hosting-firebase
