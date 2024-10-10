@@ -1,34 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
-import TDDCharts from "./components/TDDChart";
-import TDDCycleList from "./components/TDDCycleList";
-import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
-import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import "./styles/TDDChartPageStyles.css";
 import { useSearchParams } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
-import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
+import { PortGetTDDCycles } from "../../../modules/TDDCycles-Visualization/application/GetTDDCycles";
+import TDDCycleList from "./TDDCycleList";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
 }
 
-function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
+function TDDList({ port }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
-    null,
+    null
   );
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(
-    null,
+    null
   );
 
-  const [showCycleList, setShowCycleList] = useState(true);
-
-  const handleSwitchButtonClick = () => {
-    setShowCycleList(!showCycleList);
-  };
   const [loading, setLoading] = useState(true);
 
   const getTDDCycles = new PortGetTDDCycles(port);
@@ -38,7 +31,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
       console.log("Fetching commits data...");
       const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(
         repoOwner,
-        repoName,
+        repoName
       );
       setJobsByCommit(jobsData);
     } catch (error) {
@@ -53,7 +46,7 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
         await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
 
       setCommitsInfo(commits);
-      console.log("Página TDDChartPage: ");
+      console.log("Página TDDList: ");
       console.log(commitsInfo);
     } catch (error) {
       console.error("Error obtaining commit information:", error);
@@ -70,9 +63,12 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
   }, []);
 
   return (
-    <div className="container">
-      <h1 data-testid="repoTitle">Repositorio: {repoName}</h1>
-
+    <div
+      style={{
+        marginTop: "20px",
+        marginRight: "30px",
+      }}
+    >
       {loading && (
         <div className="mainInfoContainer">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
@@ -86,21 +82,15 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
       )}
 
       {!loading && commitsInfo?.length != 0 && (
-        <React.Fragment>
-      
-          <div className="mainInfoContainer">
-          
-              <TDDCharts
-                data-testId="cycle-chart"
-                commits={commitsInfo}
-                jobsByCommit={jobsByCommit}
-              />
-            
-          </div>
-        </React.Fragment>
+        <div style={{ width: "100%" }}>
+          <TDDCycleList
+            commitsInfo={commitsInfo}
+            jobsByCommit={jobsByCommit}
+          ></TDDCycleList>
+        </div>
       )}
     </div>
   );
 }
 
-export default TDDChartPage;
+export default TDDList;

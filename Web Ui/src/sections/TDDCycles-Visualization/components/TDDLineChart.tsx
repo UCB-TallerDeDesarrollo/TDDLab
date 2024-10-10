@@ -15,6 +15,8 @@ import {
   LineController,
   LineElement,
 } from "chart.js";
+import TDDList from "./TDDList";
+import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 
 ChartJS.register(
   CategoryScale,
@@ -26,7 +28,7 @@ ChartJS.register(
   Legend,
   Filler,
   LineController,
-  LineElement,
+  LineElement
 );
 
 interface LineChartProps {
@@ -46,7 +48,7 @@ function TDDLineCharts({
   function getDataLabels() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
-        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`,
+        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
       );
       return commitsArray;
     } else {
@@ -57,7 +59,7 @@ function TDDLineCharts({
   function getCommitName() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
-        (commit) => commit.commit.message,
+        (commit) => commit.commit.message
       );
       return commitsArray.reverse();
     } else {
@@ -68,7 +70,7 @@ function TDDLineCharts({
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
       const conclusions = filteredCommitsObject.map((commit) => {
-        let job = jobsByCommit.find((job) => job.sha === commit.sha);
+        let job = jobsByCommit?.find((job) => job.sha === commit.sha);
         if (job != null && job.conclusion === "success") return "green";
         else if (job === undefined) return "black";
         else return "red";
@@ -90,16 +92,16 @@ function TDDLineCharts({
       const total = filteredCommitsObject
         .map((commit) => commit.stats.total)
         .reverse();
-      return [additions, deletions, total];
+      return [additions, deletions, total ];
     } else {
-      return [[], [], []];
+      return [[], [], [], []];
     }
   }
 
   function getCommitCoverage() {
     if (filteredCommitsObject != null) {
       const coverage = filteredCommitsObject
-        .map((commit) => commit.coverage)
+        .map((commit) => (commit.coverage != 0 ? commit.coverage : 0)) // Asegúrate de que no sea null o undefined
         .reverse();
       return coverage;
     } else {
@@ -182,12 +184,29 @@ function TDDLineCharts({
               afterBodyContent.push(
                 `Líneas de Código Añadido: ${
                   getCommitStats()[0][context[0].dataIndex]
-                }`,
+                }`
               );
+
               afterBodyContent.push(
                 `Líneas de Código Eliminado: ${
                   getCommitStats()[1][context[0].dataIndex]
-                }`,
+                }`
+              );
+              afterBodyContent.push(
+                `Total de Cambios: ${getCommitStats()[2][context[0].dataIndex]}`
+              );
+
+              afterBodyContent.push(
+                `Fecha: ${getCommitStats()[3][context[0].dataIndex]}`
+              );
+
+              const coverageValue = getCommitCoverage()[context[0].dataIndex];
+              const formattedCoverage =
+                coverageValue !== undefined && coverageValue !== null
+                  ? `${coverageValue}%`
+                  : "0%";
+              afterBodyContent.push(
+                `Cobertura: ${coverageValue === 0 ? "0%" : formattedCoverage}`
               );
               return afterBodyContent;
             },
@@ -206,7 +225,7 @@ function TDDLineCharts({
       console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
       window.open(
         dataChart.datasets[dataSetIndexNum].links[dataPoint],
-        "_blank",
+        "_blank"
       );
     }
   };
@@ -219,7 +238,7 @@ function TDDLineCharts({
       case "Cobertura de Código":
         dataChart = getDataChart(
           getCommitCoverage(),
-          "Porcentaje de Cobertura de Código",
+          "Porcentaje de Cobertura de Código"
         );
         optionsChart = getOptionsChart("Cobertura de Código");
         dataTestid = "graph-coverage";
@@ -227,7 +246,7 @@ function TDDLineCharts({
       case "Líneas de Código Modificadas":
         dataChart = getDataChart(
           getCommitStats()[2],
-          "Total de Líneas de Código Modificadas",
+          "Total de Líneas de Código Modificadas"
         );
         optionsChart = getOptionsChart("Líneas de Código Modificadas");
         dataTestid = "graph-linesModified";
@@ -237,6 +256,8 @@ function TDDLineCharts({
         optionsChart = getOptionsChart("Número de Tests");
         dataTestid = "graph-testCount";
         break;
+      case "Lista":
+        return <TDDList port={new GithubAPIAdapter()}></TDDList>;
     }
     return (
       <Line
