@@ -14,7 +14,7 @@ export const useGitHubLinkValidation = (
 
   const validateGitHubLink = (text: string): boolean => {
     const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-    return regex.test(text);
+    return regex.test(text) && !text.endsWith(".git");
   };
 
   const handleLinkChange = (
