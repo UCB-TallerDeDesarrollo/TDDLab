@@ -189,6 +189,11 @@ function TDDLineCharts({
                   getCommitStats()[1][context[0].dataIndex]
                 }`,
               );
+              afterBodyContent.push(
+                `Total de Cambios: ${
+                  getCommitStats()[2][context[0].dataIndex]
+                }`,
+              );
               return afterBodyContent;
             },
           },
