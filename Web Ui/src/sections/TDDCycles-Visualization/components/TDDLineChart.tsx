@@ -199,15 +199,6 @@ function TDDLineCharts({
               afterBodyContent.push(
                 `Fecha: ${getCommitStats()[3][context[0].dataIndex]}`
               );
-
-              const coverageValue = getCommitCoverage()[context[0].dataIndex];
-              const formattedCoverage =
-                coverageValue !== undefined && coverageValue !== null
-                  ? `${coverageValue}%`
-                  : "0%";
-              afterBodyContent.push(
-                `Cobertura: ${coverageValue === 0 ? "0%" : formattedCoverage}`
-              );
               afterBodyContent.push(
                 `Total de Cambios: ${
                   getCommitStats()[2][context[0].dataIndex]
