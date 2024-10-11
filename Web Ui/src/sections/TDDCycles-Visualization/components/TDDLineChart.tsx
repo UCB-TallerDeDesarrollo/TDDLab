@@ -101,7 +101,7 @@ function TDDLineCharts({
   function getCommitCoverage() {
     if (filteredCommitsObject != null) {
       const coverage = filteredCommitsObject
-        .map((commit) => (commit.coverage != 0 ? commit.coverage : 0)) // Asegúrate de que no sea null o undefined
+        .map((commit) => (commit.coverage != 0 ? commit.coverage : 0)) 
         .reverse();
       return coverage;
     } else {
@@ -207,6 +207,16 @@ function TDDLineCharts({
                   : "0%";
               afterBodyContent.push(
                 `Cobertura: ${coverageValue === 0 ? "0%" : formattedCoverage}`
+              );
+              afterBodyContent.push(
+                `Total de Cambios: ${
+                  getCommitStats()[2][context[0].dataIndex]
+                }`,
+              );
+              const coverageValue = getCommitCoverage()[context[0].dataIndex];
+              const formattedCoverage = coverageValue !== undefined && coverageValue !== null ? `${coverageValue}%` : '0%';
+              afterBodyContent.push(
+                `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
               );
               return afterBodyContent;
             },

@@ -2,7 +2,7 @@ import { AssignmentDataObject } from "../../domain/Assignment";
 import AssignmentRepository from "../../repositories/AssignmentRepository";
 
 class GetAssignmentById {
-  private adapter: AssignmentRepository;
+  private readonly adapter: AssignmentRepository;
 
   constructor(adapter: AssignmentRepository) {
     this.adapter = adapter;
@@ -13,7 +13,6 @@ class GetAssignmentById {
       const assignment = await this.adapter.obtainAssignmentById(assignmentId);
       return assignment;
     } catch (error) {
-
       throw error;
     }
   }
