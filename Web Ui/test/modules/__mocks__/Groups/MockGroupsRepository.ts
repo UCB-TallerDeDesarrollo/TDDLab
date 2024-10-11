@@ -2,7 +2,7 @@ import { GroupDataObject } from "../../../../src/modules/Groups/domain/GroupInte
 import GroupsRepositoryInterface from "../../../../src/modules/Groups/domain/GroupsRepositoryInterface";
 
 class MockGroupsRepository implements GroupsRepositoryInterface {
-  private groups: GroupDataObject[];
+  private readonly groups: GroupDataObject[];
 
   constructor(groups: GroupDataObject[] = []) {
     this.groups = groups;

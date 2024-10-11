@@ -1,8 +1,8 @@
 import { IDBCommitsRepository } from "../Domain/IDBCommitsRepository";
 import { IGithubRepository } from "../Domain/IGithubRepository";
 export class GetTDDCyclesUseCase {
-  private dbCommitRepository: IDBCommitsRepository;
-  private githubRepository: IGithubRepository;
+  private readonly dbCommitRepository: IDBCommitsRepository;
+  private readonly githubRepository: IGithubRepository;
 
   constructor(
     dbCommitRepository: IDBCommitsRepository,
