@@ -24,11 +24,6 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
     null,
   );
 
-  const [showCycleList, setShowCycleList] = useState(true);
-
-  const handleSwitchButtonClick = () => {
-    setShowCycleList(!showCycleList);
-  };
   const [loading, setLoading] = useState(true);
 
   const getTDDCycles = new PortGetTDDCycles(port);
