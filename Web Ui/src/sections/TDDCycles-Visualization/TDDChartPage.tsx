@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
 import TDDCharts from "./components/TDDChart";
-import TDDCycleList from "./components/TDDCycleList";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css";
