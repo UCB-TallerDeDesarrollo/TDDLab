@@ -15,79 +15,51 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
-  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(
-    null
-  );
-  const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(
-    null
-  );
-
+  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[]>([]);
+  const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[]>([]);
   const [loading, setLoading] = useState(true);
 
   const getTDDCycles = new PortGetTDDCycles(port);
 
-  const obtainJobsData = async () => {
+  const fetchData = async () => {
     try {
       console.log("Fetching commits data...");
-      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(
-        repoOwner,
-        repoName
-      );
+      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       setJobsByCommit(jobsData);
-    } catch (error) {
-      console.error("Error obtaining jobs:", error);
-    }
-  };
 
-  const obtainCommitsData = async () => {
-    console.log("Fetching commit information...");
-    try {
-      const commits: CommitDataObject[] =
-        await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
-
+      console.log("Fetching commit information...");
+      const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       setCommitsInfo(commits);
-      console.log("Página TDDList: ");
-      console.log(commitsInfo);
+      console.log("Página TDDList: ", commits);
     } catch (error) {
-      console.error("Error obtaining commit information:", error);
+      console.error("Error obtaining data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      await Promise.all([obtainJobsData(), obtainCommitsData()]);
-
-      setLoading(false);
-    };
     fetchData();
   }, []);
 
   return (
-    <div
-      style={{
-        marginTop: "20px",
-        marginRight: "30px",
-      }}
-    >
-      {loading && (
+    <div style={{ marginTop: "20px", marginRight: "30px" }}>
+      {loading ? (
         <div className="mainInfoContainer">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
         </div>
-      )}
-
-      {!loading && !commitsInfo?.length && (
-        <div className=" error-message" data-testid="errorMessage">
-          No se pudo cargar la Informacion
-        </div>
-      )}
-
-      {!loading && commitsInfo?.length != 0 && (
-        <div style={{ width: "100%" }}>
-          <TDDCycleList
-            commitsInfo={commitsInfo}
-            jobsByCommit={jobsByCommit}
-          ></TDDCycleList>
-        </div>
+      ) : (
+        <>
+          {commitsInfo.length === 0 ? (
+            <div className="error-message" data-testid="errorMessage">
+              No se pudo cargar la información
+            </div>
+          ) : (
+            <div style={{ width: "100%" }}>
+              <TDDCycleList commitsInfo={commitsInfo} jobsByCommit={jobsByCommit} />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
