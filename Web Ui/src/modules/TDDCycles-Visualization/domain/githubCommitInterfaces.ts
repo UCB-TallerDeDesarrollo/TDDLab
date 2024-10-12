@@ -10,6 +10,7 @@ export interface Stats {
   total: number;
   additions: number;
   deletions: number;
+  creation_date: Date;
 }
 export interface Commit {
   date: Date;
