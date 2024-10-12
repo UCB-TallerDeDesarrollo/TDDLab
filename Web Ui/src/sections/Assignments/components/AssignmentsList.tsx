@@ -141,19 +141,30 @@ function Assignments({
   useEffect(() => {
     const fetchAssignmentsByGroup = async () => {
       try {
-        console.log("Estoy aqui en el segundo");
-        const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup);
-        setAssignments(data);
-        orderAssignments([...data], selectedSorting);
+        if (!authData || authData.usergroupid === undefined) {
+          console.warn("authData aún no está disponible. Esperando a que se cargue...");
+          return;
+        }
+  
+        const authGroupId = authData.usergroupid;
+  
+        if (authGroupId !== undefined && authGroupId !== null) {  
+          const data = await assignmentsRepository.getAssignmentsByGroupid(authGroupId);
+          setAssignments(data);
+          orderAssignments([...data], selectedSorting);
+  
+        } else {
+          console.warn("No se encontró un groupId válido para utilizar.");
+        }
       } catch (error) {
-        console.error("Error fetching assignments by group ID:", error);
+        console.error("Error fetching assignments:", error);
       }
     };
-
-    if (selectedGroup !== 0) {
+  
+    if (authData && authData.usergroupid !== undefined) {
       fetchAssignmentsByGroup();
     }
-  }, [selectedGroup, selectedSorting]);
+  }, [authData, selectedSorting]);
   
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
