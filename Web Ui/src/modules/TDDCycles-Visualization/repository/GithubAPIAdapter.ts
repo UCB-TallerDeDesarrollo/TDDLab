@@ -2,6 +2,7 @@ import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { JobDataObject } from "../domain/jobInterfaces";
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
+import { formatDate } from '../application/GetTDDCycles';
 import axios from "axios";
 
 export class GithubAPIAdapter implements GithubAPIRepository {
@@ -37,6 +38,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
             total: commitData.total,
             additions: commitData.additions,
             deletions: commitData.deletions,
+            date: formatDate(new Date(commitData.commit_date))
           },
           commit: {
             date: new Date(commitData.commit_date), // Convert date string to Date object
