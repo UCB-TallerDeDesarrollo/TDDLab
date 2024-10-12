@@ -94,7 +94,7 @@ function TDDLineCharts({
         .reverse();
       
       const creation_date = filteredCommitsObject
-        .map((commit) => commit.stats.creation_date)
+        .map((commit) => commit.commit.date)
         .reverse();
       
       return [additions, deletions, total, creation_date];
