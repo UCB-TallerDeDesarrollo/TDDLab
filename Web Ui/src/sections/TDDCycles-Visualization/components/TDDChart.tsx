@@ -53,6 +53,9 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             <MenuItem value={"Total Número de Tests"}>
               Total Número de Tests
             </MenuItem>
+            <MenuItem value={"Lista"}>
+              Lista de Commits
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>

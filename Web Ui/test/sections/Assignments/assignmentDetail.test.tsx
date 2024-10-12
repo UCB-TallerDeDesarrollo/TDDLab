@@ -139,6 +139,16 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the list of submissions for teacher role", async () => {
+    jest.mock('react-router-dom', () => ({
+      ...jest.requireActual('react-router-dom'),
+      useSearchParams: () => [
+        new URLSearchParams({
+          repoOwner: 'testOwner',
+          repoName: 'testRepo'
+        })
+      ]
+    }));
+  
     render(
       <BrowserRouter>
         <AssignmentDetail role="teacher" userid={123} />
@@ -150,12 +160,9 @@ describe("AssignmentDetail Component", () => {
         expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
         expect(screen.getByText("Enviado")).toBeInTheDocument();
         expect(screen.getByText("En progreso")).toBeInTheDocument();
-        expect(
-          screen.getByText("https://github.com/student/repo1")
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText("https://github.com/student/repo2")
-        ).toBeInTheDocument();
+        
+        expect(screen.getByText("https://github.com/student/repo1")).toBeInTheDocument();
+        expect(screen.getByText("https://github.com/student/repo2")).toBeInTheDocument();
       },
       { timeout: 3000 }
     );
