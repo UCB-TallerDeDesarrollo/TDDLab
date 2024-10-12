@@ -37,7 +37,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
             total: commitData.total,
             additions: commitData.additions,
             deletions: commitData.deletions,
-            creation_date: commitData.commit_date,
+            creation_date: new Date(commitData.commit_date),
           },
           commit: {
             date: new Date(commitData.commit_date), // Convert date string to Date object
