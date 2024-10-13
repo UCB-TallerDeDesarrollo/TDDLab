@@ -2,7 +2,7 @@ import GroupRepository from "../../repositories/GroupRepository";
 import GroupDTO from "../../domain/Group";
 
 class GetGroupsUseCase {
-  private groupRepository: GroupRepository;
+  private readonly groupRepository: GroupRepository;
 
   constructor(groupRepository: GroupRepository) {
     this.groupRepository = groupRepository;

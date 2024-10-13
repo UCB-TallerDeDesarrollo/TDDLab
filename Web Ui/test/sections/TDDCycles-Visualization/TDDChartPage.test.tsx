@@ -1,5 +1,5 @@
 import TDDChartPage from "../../../src/sections/TDDCycles-Visualization/TDDChartPage";
-import { render, waitFor, fireEvent, act } from "@testing-library/react";
+import { render, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import {
   MockGithubAPI,
@@ -42,13 +42,6 @@ describe("TDDChartPage", () => {
     await waitFor(() => {
       const repoName = getByTestId("repoTitle");
       expect(repoName).toBeInTheDocument();
-    });
-  });
-  it("click on Cambiar Grafico button", async () => {
-    const { getByText } = render(<TDDChartPage port={new MockGithubAPI()} />);
-    await waitFor(() => {
-      fireEvent.click(getByText("Cambiar vista grafica"));
-      expect(getByText("Métricas")).toBeInTheDocument();
     });
   });
 

@@ -6,8 +6,8 @@ import { UserRepository } from "../../modules/Users/Repositories/UserRepository"
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 
-class UserController{
-  private userRepository: UserRepository;
+class UserController {
+  private readonly userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
@@ -34,7 +34,7 @@ class UserController{
 
     if (!email) {
       res.status(400).json({
-        error: "Debes proporcionar un id valido:"
+        error: "Debes proporcionar un id valido:",
       });
       return;
     }
@@ -43,8 +43,7 @@ class UserController{
       let userData = await getUserByemail(email);
       if (userData == null)
         res.status(404).json({ message: "Usuario no encontrado" });
-      else 
-        res.status(200).json(userData);
+      else res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching user" });
     }
@@ -53,7 +52,9 @@ class UserController{
     try {
       const { password } = req.body;
       if (password === "TDDLabContraTemporal") {
-        res.status(200).json({ success: true, message: "Password is correct." });
+        res
+          .status(200)
+          .json({ success: true, message: "Password is correct." });
       } else {
         res.status(401).json({ success: false, message: "Wrong password." });
       }
@@ -65,10 +66,14 @@ class UserController{
     const { groupid } = req.params;
 
     try {
-      const users = await this.userRepository.getUsersByGroupid(parseInt(groupid));
+      const users = await this.userRepository.getUsersByGroupid(
+        parseInt(groupid)
+      );
       res.json(users);
     } catch (error) {
-      res.status(404).json({ error: "No se encontraron usuarios con ese grupo" });
+      res
+        .status(404)
+        .json({ error: "No se encontraron usuarios con ese grupo" });
     }
   }
   async getUsersController(_req: Request, res: Response): Promise<void> {
@@ -76,19 +81,18 @@ class UserController{
       let userData = await getUsers();
       if (userData == null)
         res.status(404).json({ message: "Usuarios no encontrado" });
-      else 
-        res.status(200).json(userData);
+      else res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching users" });
     }
   }
 
   async getUserbyid(req: Request, res: Response): Promise<void> {
-    const  id  = parseInt(req.params.id);
+    const id = parseInt(req.params.id);
 
     if (!id) {
       res.status(400).json({
-        error: "Debes proporcionar un id valido:"
+        error: "Debes proporcionar un id valido:",
       });
       return;
     }
@@ -97,8 +101,7 @@ class UserController{
       let userData = await getUser(id);
       if (userData == null)
         res.status(404).json({ message: "Usuario no encontrado" });
-      else 
-        res.status(200).json(userData);
+      else res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching user" });
     }
@@ -106,27 +109,21 @@ class UserController{
 
   async updateUser(req: Request, res: Response): Promise<void> {
     const id = parseInt(req.params.id);
-    const {groupid} = req.body;
-    if (!id){
+    const { groupid } = req.body;
+    if (!id) {
       res.status(400).json({
-        error: "Debes proporcionar un id de usuario valido:"
+        error: "Debes proporcionar un id de usuario valido:",
       });
       return;
     }
     try {
-  
-      const userData = await updateUserById(id,groupid);
+      const userData = await updateUserById(id, groupid);
       if (userData == null)
         res.status(404).json({ message: "Usuario no encontrado" });
-      else 
-        res.status(200).json(userData);
+      else res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }
   }
-
 }
-export default UserController
-
-
-
+export default UserController;

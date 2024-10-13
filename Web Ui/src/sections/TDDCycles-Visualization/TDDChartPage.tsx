@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
 import TDDCharts from "./components/TDDChart";
-import TDDCycleList from "./components/TDDCycleList";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css";
@@ -24,11 +23,6 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
     null,
   );
 
-  const [showCycleList, setShowCycleList] = useState(true);
-
-  const handleSwitchButtonClick = () => {
-    setShowCycleList(!showCycleList);
-  };
   const [loading, setLoading] = useState(true);
 
   const getTDDCycles = new PortGetTDDCycles(port);
@@ -87,24 +81,15 @@ function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
 
       {!loading && commitsInfo?.length != 0 && (
         <React.Fragment>
-          <div className="center-content">
-            <button className="myButton" onClick={handleSwitchButtonClick}>
-              Cambiar vista grafica
-            </button>
-          </div>
+      
           <div className="mainInfoContainer">
-            {showCycleList ? (
-              <TDDCycleList
-                commitsInfo={commitsInfo}
-                jobsByCommit={jobsByCommit}
-              />
-            ) : (
+          
               <TDDCharts
                 data-testId="cycle-chart"
                 commits={commitsInfo}
                 jobsByCommit={jobsByCommit}
               />
-            )}
+            
           </div>
         </React.Fragment>
       )}
