@@ -14,10 +14,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
+        "command": "extension.showTimeline",
+        "title": "Show Timeline"
+      }
+    ],
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "timelineContainer",
+          "title": "Timeline",
+          "icon": ""
+        }
+      ]
+    },
+    "views": {
+      "timelineContainer": [
+      {
+        "id": "timelineView",
+        "name": "Timeline",
+        "type": "webview"
       }
     ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
