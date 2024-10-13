@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
-const TimelineViewProvider_1 = require("./modules/Timeline/application/TimelineViewProvider ");
+const TimelineViewProvider_1 = require("./modules/Timeline/application/TimelineViewProvider");
 /**
  * @param {vscode.ExtensionContext} context
  */

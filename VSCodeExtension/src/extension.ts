@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { TimelineViewProvider } from './modules/Timeline/application/TimelineViewProvider ';
+import { TimelineViewProvider } from './modules/Timeline/application/TimelineViewProvider';
 
 /**
  * @param {vscode.ExtensionContext} context

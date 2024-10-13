@@ -25,15 +25,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TimelineViewProvider = void 0;
 const vscode = __importStar(require("vscode"));
+const TimelineRepository_1 = require("../repository/TimelineRepository");
 class TimelineViewProvider {
     context;
     currentWebview = null;
     timelineRepository;
-    timelineService;
     constructor(context) {
         this.context = context;
-        this.timelineRepository = new TimelineRepository(context.extensionPath);
-        this.timelineService = new TimelineService();
+        this.timelineRepository = new TimelineRepository_1.TimelineRepository(context.extensionPath);
     }
     resolveWebviewView(webviewView) {
         webviewView.webview.options = { enableScripts: true };
@@ -43,11 +42,38 @@ class TimelineViewProvider {
     async showTimeline(webview) {
         try {
             const timelines = await this.timelineRepository.getTimelines();
-            webview.html = this.timelineService.generateHtml(timelines);
+            webview.html = this.generateHtml(timelines);
         }
         catch (err) {
-            vscode.window.showErrorMessage(`Error al mostrar la línea de tiempo: ${err}`);
+            if (err instanceof Error) {
+                vscode.window.showErrorMessage(`Error al mostrar la línea de tiempo: ${err.message}`);
+            }
+            else {
+                vscode.window.showErrorMessage(`Error desconocido al mostrar la línea de tiempo`);
+            }
         }
+    }
+    generateHtml(timelines) {
+        const timelineHtml = timelines.map(item => {
+            const color = item.isSuccessful() ? "green" : "red";
+            return `<div style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;"></div>`;
+        }).join('');
+        return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Línea de Tiempo</title>
+            </head>
+            <body>
+                <h2>Línea de Tiempo</h2>
+                <div style="display: flex; flex-wrap: wrap;">
+                    ${timelineHtml}
+                </div>
+            </body>
+            </html>
+        `;
     }
 }
 exports.TimelineViewProvider = TimelineViewProvider;
