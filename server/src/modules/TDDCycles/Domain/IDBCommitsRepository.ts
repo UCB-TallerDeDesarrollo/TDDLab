@@ -10,4 +10,5 @@ export interface IDBCommitsRepository {
   repositoryExists(owner: string, repoName: string): Promise<boolean>;
   getCommitsNotSaved(owner: string, repoName: string, commitsData: CommitDataObject[]): Promise<CommitDataObject[]>;
   saveCommitsList(owner: string, repoName: string, newCommits: TDDCycleDataObject[]): Promise<void>;
+  updateCommitCoverageAndTestCount(owner: string, repoName: string, sha: string, coverage: string, test_count: string) : Promise<any>;
 }
