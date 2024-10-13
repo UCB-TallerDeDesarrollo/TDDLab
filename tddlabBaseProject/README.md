@@ -1,3 +1,11 @@
+#### Proyeto base para proyectos tddlab:
+
+#### Creado a partir de proyecto usado en IngSoftware: parcel-jest-base
+
+https://github.com/israelantezana/parcel-jest-base
+
+#### Comandos creados en package json:
+
 #### Para instalar las dependencias:
 
 npm install
