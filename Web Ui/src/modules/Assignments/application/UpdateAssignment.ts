@@ -2,11 +2,13 @@ import { AssignmentDataObject } from "../domain/assignmentInterfaces";
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
 
 export class UpdateAssignment {
-  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
+  constructor(
+    private readonly assignmentsRepository: AssignmentsRepositoryInterface
+  ) {}
 
   async updateAssignment(
     assignmentId: number,
-    assignmentData: AssignmentDataObject,
+    assignmentData: AssignmentDataObject
   ) {
     try {
       // Ensure the assignment ID is included in the assignment data
@@ -18,7 +20,7 @@ export class UpdateAssignment {
       // Call the updateAssignment method from the repository
       await this.assignmentsRepository.updateAssignment(
         assignmentId,
-        updatedAssignmentData,
+        updatedAssignmentData
       );
     } catch (error) {
       // Handle any errors that may occur during the update process

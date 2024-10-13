@@ -8,12 +8,12 @@ import GroupRepository from "../../modules/Groups/repositories/GroupRepository";
 import CheckGroupExistsUseCase from "../../modules/Groups/application/GroupUseCases/checkGroupUseCase";
 
 class GroupsController {
-  private createGroupUseCase: CreateGroupUseCase;
-  private deleteGroupUseCase: DeleteGroupUseCase;
-  private getGroupByIdUseCase: GetGroupByIdUseCase;
-  private getGroupsUseCase: GetGroupsUseCase;
-  private updateGroupUseCase: UpdateGroupUseCase;
-  private checkGroupExistsUseCase: CheckGroupExistsUseCase;
+  private readonly createGroupUseCase: CreateGroupUseCase;
+  private readonly deleteGroupUseCase: DeleteGroupUseCase;
+  private readonly getGroupByIdUseCase: GetGroupByIdUseCase;
+  private readonly getGroupsUseCase: GetGroupsUseCase;
+  private readonly updateGroupUseCase: UpdateGroupUseCase;
+  private readonly checkGroupExistsUseCase: CheckGroupExistsUseCase;
 
   constructor(repository: GroupRepository) {
     this.createGroupUseCase = new CreateGroupUseCase(repository);
@@ -46,17 +46,19 @@ class GroupsController {
       res.status(500).json({ error: "Server error" });
     }
   }
-  async checkGroupExists(req: Request, res : Response):Promise<void>{
-    try{
+  async checkGroupExists(req: Request, res: Response): Promise<void> {
+    try {
       const groupid = parseInt(req.params.id, 10);
       const exists = await this.checkGroupExistsUseCase.execute(groupid);
-      if(exists){
+      if (exists) {
         res.status(200).json(exists);
-      }else{
-        res.status(400).json({error: "Invalid groupid. Group does not exist."})
+      } else {
+        res
+          .status(400)
+          .json({ error: "Invalid groupid. Group does not exist." });
       }
     } catch (error) {
-      res.status(500).json({ error: "Server error"});
+      res.status(500).json({ error: "Server error" });
     }
   }
   async createGroup(req: Request, res: Response): Promise<void> {

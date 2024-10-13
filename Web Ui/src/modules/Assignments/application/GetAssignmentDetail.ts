@@ -2,7 +2,9 @@ import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInter
 import { AssignmentDataObject } from "../domain/assignmentInterfaces";
 
 export class GetAssignmentDetail {
-  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
+  constructor(
+    private readonly assignmentsRepository: AssignmentsRepositoryInterface
+  ) {}
 
   async obtainAssignmentDetail(
     assignmentId: number

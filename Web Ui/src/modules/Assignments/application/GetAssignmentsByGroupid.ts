@@ -2,15 +2,18 @@ import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInter
 import { AssignmentDataObject } from "../domain/assignmentInterfaces";
 
 export class GetAssignmentsByGroupId {
-  constructor(private assignmentsRepository: AssignmentsRepositoryInterface) {}
+  constructor(
+    private readonly assignmentsRepository: AssignmentsRepositoryInterface
+  ) {}
 
-  async obtainAssignmentsByGroupId(groupId: number): Promise<AssignmentDataObject[]> {
+  async obtainAssignmentsByGroupId(
+    groupId: number
+  ): Promise<AssignmentDataObject[]> {
     try {
       return await this.assignmentsRepository.getAssignmentsByGroupid(groupId);
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);
       throw error;
-    } 
-    
+    }
   }
 }
