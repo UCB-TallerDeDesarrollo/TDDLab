@@ -6,10 +6,14 @@ export const registerUser = async (
   Adapter: UserRepository = new UserRepository()
 ) => {
   try {
+    const existingUser = await Adapter.obtainUserByemail(user.email);
+    if (existingUser) {
+      throw new Error("UserAlreadyExists");
+    }
     await Adapter.registerUser(user);
     return;
   } catch (error) {
     console.error("Error in the registration process:", error);
-    return { error: "Error in the registration process" };
+    throw error;
   }
 };
