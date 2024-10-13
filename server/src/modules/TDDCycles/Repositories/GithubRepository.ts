@@ -161,6 +161,31 @@ export class GithubRepository implements IGithubRepository {
     }
   }
 
+  async fetchCoverageDataForCommit(owner: string, repoName: string, sha: string){
+    try{
+      const coverageResponse = await this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}/comments`);
+      let percentageMatch = "";
+      let testCount = "";
+      if(coverageResponse.data.length > 0){
+        const body = coverageResponse.data[0].body;
+        const coverageMatch = /\|\s*🟢\s*\|\s*Statements\s*\|\s*([\d.]+)%\s*\|/.exec(body);
+        const testCountMatch = /(\d+)(?=\s*tests passing)/.exec(body);
+        if(coverageMatch){
+          percentageMatch = String(coverageMatch[1]);
+        }
+        if(testCountMatch){
+          testCount = String(testCountMatch[1]);
+        }
+      }
+      else{
+        console.log(`No comments were found for commit with sha ${sha}`);
+      }
+      return {coveragePercentage: percentageMatch, test_count: testCount};
+    } catch (error){
+      throw error;
+    }
+  }
+
   async getCommitsInforForTDDCycle(
     owner: string,
     repoName: string,
