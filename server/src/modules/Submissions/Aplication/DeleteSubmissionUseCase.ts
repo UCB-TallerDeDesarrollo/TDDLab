@@ -1,8 +1,7 @@
 import SubmissionRepository from "../Repository/SubmissionsRepository";
 
-
-class DeleteSubmission{
-    private adapter: SubmissionRepository;
+class DeleteSubmission {
+  private readonly adapter: SubmissionRepository;
 
   constructor(adapter: SubmissionRepository) {
     this.adapter = adapter;
@@ -12,7 +11,7 @@ class DeleteSubmission{
     try {
       await this.adapter.deleteSubmission(submissionid);
     } catch (error) {
-      console.error("Submission Deletion Unsuccessful.", error)
+      console.error("Submission Deletion Unsuccessful.", error);
       throw error;
     }
   }

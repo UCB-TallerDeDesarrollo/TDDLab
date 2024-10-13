@@ -6,7 +6,7 @@ interface CreateGroupDTO {
 }
 
 class CreateGroupUseCase {
-  private groupRepository: GroupRepository;
+  private readonly groupRepository: GroupRepository;
 
   constructor(groupRepository: GroupRepository) {
     this.groupRepository = groupRepository;

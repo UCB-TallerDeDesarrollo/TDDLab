@@ -2,7 +2,7 @@ import AssignmentRepository from "../../repositories/AssignmentRepository";
 import { AssignmentDataObject } from "../../domain/Assignment";
 
 class DeliverAssignmentUseCase {
-  private repository: AssignmentRepository;
+  private readonly repository: AssignmentRepository;
 
   constructor(repository: AssignmentRepository) {
     this.repository = repository;

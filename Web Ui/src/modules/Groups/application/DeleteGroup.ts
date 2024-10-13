@@ -1,7 +1,7 @@
 import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
 
 class DeleteGroup {
-  constructor(private groupsRepository: GroupsRepositoryInterface) {}
+  constructor(private readonly groupsRepository: GroupsRepositoryInterface) {}
 
   async deleteGroup(id: number): Promise<void> {
     try {

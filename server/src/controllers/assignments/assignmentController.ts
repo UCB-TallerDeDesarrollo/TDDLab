@@ -9,18 +9,15 @@ import DeliverAssignmentUseCase from "../../modules/Assignments/application/Assi
 import GetAssignmentsByGroupIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentsByGroupIdUseCase";
 
 class AssignmentController {
-  private createAssignmentUseCase: CreateAssignmentUseCase;
-  private deleteAssignmentUseCase: DeleteAssignmentUseCase;
-  private getAssignmentByIdUseCase: GetAssignmentByIdUseCase;
-  private getAssignmentsByGroupIdUseCase: GetAssignmentsByGroupIdUseCase;
-  private getAssignmentsUseCase: GetAssignmentsUseCase;
-  private updateAssignmentUseCase: UpdateAssignmentUseCase;
-  private deliverAssignmentUseCase: DeliverAssignmentUseCase;
-  
+  private readonly createAssignmentUseCase: CreateAssignmentUseCase;
+  private readonly deleteAssignmentUseCase: DeleteAssignmentUseCase;
+  private readonly getAssignmentByIdUseCase: GetAssignmentByIdUseCase;
+  private readonly getAssignmentsByGroupIdUseCase: GetAssignmentsByGroupIdUseCase;
+  private readonly getAssignmentsUseCase: GetAssignmentsUseCase;
+  private readonly updateAssignmentUseCase: UpdateAssignmentUseCase;
+  private readonly deliverAssignmentUseCase: DeliverAssignmentUseCase;
 
-  constructor(
-    repository: AssignmentRepository,
-  ) {
+  constructor(repository: AssignmentRepository) {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
     this.deleteAssignmentUseCase = new DeleteAssignmentUseCase(repository);
     this.getAssignmentByIdUseCase = new GetAssignmentByIdUseCase(repository);
@@ -30,7 +27,6 @@ class AssignmentController {
     this.getAssignmentsUseCase = new GetAssignmentsUseCase(repository);
     this.updateAssignmentUseCase = new UpdateAssignmentUseCase(repository);
     this.deliverAssignmentUseCase = new DeliverAssignmentUseCase(repository);
-    
   }
 
   async getAssignments(_req: Request, res: Response): Promise<void> {
@@ -72,8 +68,16 @@ class AssignmentController {
 
   async createAssignment(req: Request, res: Response): Promise<void> {
     try {
-      const { title, description, state, start_date, end_date, link, comment, groupid } =
-        req.body;
+      const {
+        title,
+        description,
+        state,
+        start_date,
+        end_date,
+        link,
+        comment,
+        groupid,
+      } = req.body;
       const newAssignment = await this.createAssignmentUseCase.execute({
         title,
         description,
@@ -82,7 +86,7 @@ class AssignmentController {
         end_date,
         link,
         comment,
-        groupid
+        groupid,
       });
       res.status(201).json(newAssignment);
     } catch (error) {

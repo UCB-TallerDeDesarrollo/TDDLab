@@ -2,7 +2,7 @@ import GroupRepository from "../../repositories/GroupRepository";
 import GroupDTO from "../../domain/Group";
 
 class UpdateGroupUseCase {
-  private groupRepository: GroupRepository;
+  private readonly groupRepository: GroupRepository;
 
   constructor(groupRepository: GroupRepository) {
     this.groupRepository = groupRepository;
@@ -26,7 +26,8 @@ class UpdateGroupUseCase {
         ...existingGroup,
         groupName: updatedGroupData.groupName || existingGroup.groupName,
         groupDetail: updatedGroupData.groupDetail || existingGroup.groupDetail,
-        creationDate: updatedGroupData.creationDate || existingGroup.creationDate,
+        creationDate:
+          updatedGroupData.creationDate || existingGroup.creationDate,
         // Add other fields as needed
       };
 
