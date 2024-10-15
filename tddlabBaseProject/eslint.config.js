@@ -3,6 +3,17 @@ export default [
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
+      sourceType: 'module', // Si usas módulos de ES6
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        cy: 'readonly',
+        expect: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+      },
     },
     rules: {
       // Reglas relacionadas con el estilo de código
