@@ -10,9 +10,10 @@ export interface Stats {
   total: number;
   additions: number;
   deletions: number;
+  date: string
 }
 export interface Commit {
-  date: Date;
+  date: string;
   message: string;
   url: string;
   comment_count: number;

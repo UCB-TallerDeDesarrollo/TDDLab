@@ -41,7 +41,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
             date: formatDate(new Date(commitData.commit_date))
           },
           commit: {
-            date: new Date(commitData.commit_date), // Convert date string to Date object
+            date: formatDate(new Date(commitData.commit_date)), // Convert date string to Date object
             message: commitData.message,
             url: commitData.url,
             comment_count: commitData.comment_count,
