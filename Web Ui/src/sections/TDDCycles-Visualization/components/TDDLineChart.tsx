@@ -2,6 +2,8 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { getElementAtEvent, Line } from "react-chartjs-2";
 import { useRef } from "react";
+import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -81,7 +83,7 @@ function TDDLineCharts({
     }
   }
 
-  function getCommitStats() {
+  function getCommitStats(): [number[], number[], number[], Date[]] {
     if (filteredCommitsObject != null) {
       const additions = filteredCommitsObject
         .map((commit) => commit.stats.additions)
@@ -94,7 +96,7 @@ function TDDLineCharts({
         .reverse();
       
       const creation_date = filteredCommitsObject
-        .map((commit) => commit.commit.date)
+        .map((commit) => new Date(commit.commit.date))
         .reverse();
       
       return [additions, deletions, total, creation_date];
@@ -202,8 +204,9 @@ function TDDLineCharts({
               );
 
               afterBodyContent.push(
-                `Fecha: ${getCommitStats()[3][context[0].dataIndex]}`
+                `Fecha: ${formatDate(getCommitStats()[3][context[0].dataIndex])}`,
               );
+              
               const coverageValue = getCommitCoverage()[context[0].dataIndex];
               const formattedCoverage = coverageValue !== undefined && coverageValue !== null ? `${coverageValue}%` : '0%';
               afterBodyContent.push(
@@ -273,6 +276,6 @@ function TDDLineCharts({
   }
 
   return getLineChart();
-}
+} 
 
 export default TDDLineCharts;
