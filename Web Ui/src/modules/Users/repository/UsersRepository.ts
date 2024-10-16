@@ -1,8 +1,9 @@
 import axios from "axios";
 import { UserDataObject } from "../domain/UsersInterface";
 import UsersRepositoryInterface from "../domain/UsersRepositoryInterface";
+import {VITE_API} from "../../../../config.ts";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/user/users"; //http://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+const API_URL = VITE_API + "/user/users";
 
 class UsersRepository implements UsersRepositoryInterface {
 
