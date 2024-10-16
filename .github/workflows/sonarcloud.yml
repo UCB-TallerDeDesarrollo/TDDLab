@@ -229,6 +229,7 @@ jobs:
         working-directory: Web Ui
         run: |
           echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
+          echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
 
       - name: Install Dependencies
         working-directory: Web Ui
