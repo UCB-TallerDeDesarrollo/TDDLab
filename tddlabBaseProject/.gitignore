@@ -4,3 +4,4 @@ dist
 .parcel-cache
 /coverage
 .DS_Store
+./script/report.json

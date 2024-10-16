@@ -49,12 +49,12 @@
         }
       ],
       "timelineContainer": [
-      {
-        "id": "timelineView",
-        "name": "Timeline",
-        "type": "webview"
-      }
-    ]
+        {
+          "id": "timelineView",
+          "name": "Timeline",
+          "type": "webview"
+        }
+      ]
     }
   },
   "scripts": {
