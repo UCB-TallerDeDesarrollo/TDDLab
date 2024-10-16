@@ -1,13 +1,15 @@
 import axios from 'axios';
 import GroupsRepository from '../../../../src/modules/Groups/repository/GroupsRepository';
 import { GroupDataObject } from '../../../../src/modules/Groups/domain/GroupInterface';
+import dotenv from "dotenv";
+dotenv.config();
 
 const axiosGetSpy = jest.spyOn(axios, 'get');
 const axiosPostSpy = jest.spyOn(axios, 'post');
 const axiosDeleteSpy = jest.spyOn(axios, 'delete');
 
 const repository = new GroupsRepository();
-const API_URL = 'https://tdd-lab-api-gold.vercel.app/api/groups';
+const API_URL = process.env.VITE_API_URL + '/groups';
 
 describe('GroupsRepository', () => {
   afterEach(() => {

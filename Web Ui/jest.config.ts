@@ -10,5 +10,6 @@ export default {
     "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/test/__ mocks __/fileMock.js",
     "^.+\\.(css|less)$": "<rootDir>/CSSStub.js",
   },
+  setupFiles: ['<rootDir>/jest.setup.js'],
   silent: true,
 };
