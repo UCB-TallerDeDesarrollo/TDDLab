@@ -4,6 +4,7 @@ import { JobDataObject } from "../domain/jobInterfaces";
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { formatDate } from '../application/GetTDDCycles';
 import axios from "axios";
+import {VITE_API} from "../../../../config.ts";
 
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
@@ -11,7 +12,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   constructor() {
     this.octokit = new Octokit();
       //auth: 'coloca tu token github para mas requests'
-    this.backAPI = "https://tdd-lab-api-gold.vercel.app/api/TDDCycles"; //https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+    this.backAPI = VITE_API + "/TDDCycles"; //https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
   }
 
   async obtainCommitsOfRepo(

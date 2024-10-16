@@ -1,8 +1,9 @@
 import axios from "axios";
 import { GroupDataObject } from "../domain/GroupInterface";
 import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
+import {VITE_API} from "../../../../config.ts";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/groups"; //http://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+const API_URL = VITE_API + "/groups";
 
 class GroupsRepository implements GroupsRepositoryInterface {
   async getGroups(): Promise<GroupDataObject[]> {
