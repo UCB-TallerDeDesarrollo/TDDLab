@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 import { TimelineViewProvider } from './modules/Timeline/application/TimelineViewProvider';
+import { CommandService } from './modules/Button/application/commands';
+import { TerminalRepository } from './modules/Button/repository/Buttonrepository';
+import { MyTreeItem } from './modules/Button/domain/treeItem';
+import * as path from 'path';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -18,7 +22,30 @@ export function activate(context: vscode.ExtensionContext) {
             timelineViewProvider.showTimeline(timelineViewProvider.currentWebview);
         }
     });
-}
-
-// This method is called when your extension is deactivated
-// export function deactivate() {}
+    const terminalRepository = new TerminalRepository();
+    const commandService = new CommandService(terminalRepository);
+    
+    let runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
+      await commandService.runTestCommand();
+    });
+  
+    context.subscriptions.push(runTestCommand);
+  
+    const myView = vscode.window.createTreeView('myView', {
+      treeDataProvider: {
+        getTreeItem: (element: MyTreeItem) => element,
+        getChildren: () => [
+          new MyTreeItem(
+            'Run Test', 
+            vscode.TreeItemCollapsibleState.None, 
+            { command: 'TDD.runTest', title: 'Run Test' },
+            '',
+            new vscode.ThemeIcon('play', new vscode.ThemeColor('charts.green')),
+            ''
+          )
+        ]
+      }
+    });
+  
+    context.subscriptions.push(myView);
+  }

@@ -9,16 +9,30 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:myView",
+    "onCommand:TDD.runTest"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "extension.showTimeline",
+        "command": "TDD.runTest",
+        "title": "Run Test"
+      },
+      {
+        "command": "extension.showTimeline", 
         "title": "Show Timeline"
       }
     ],
     "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "myExtension",
+          "title": "TDD Lab",  
+          "icon": "./src/modules/Button/resources/icon.svg"
+        }
+      ],
       "panel": [
         {
           "id": "timelineContainer",
@@ -28,6 +42,12 @@
       ]
     },
     "views": {
+      "myExtension": [
+        {
+          "id": "myView",
+          "name": "My Tests" 
+        }
+      ],
       "timelineContainer": [
       {
         "id": "timelineView",
