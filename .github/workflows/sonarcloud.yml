@@ -2,7 +2,7 @@
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
-# osos
+
 # This workflow helps you trigger a SonarCloud analysis of your code and populates
 # GitHub Code Scanning alerts with the vulnerabilities found.
 # Free for open source project.
@@ -30,6 +30,7 @@ name: Combined Workflow
 
 on:
   push:
+    branches: ["main"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -39,9 +40,8 @@ permissions:
 
 jobs:
   # Add a job for running Jest tests
-  jest-tests-frontend: #OK
+  jest-tests-frontend:
     runs-on: ubuntu-latest
-    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,9 +59,8 @@ jobs:
         working-directory: Web Ui
         run: npm test
 
-  jest-tests-backend: #OK
+  jest-tests-backend:
     runs-on: ubuntu-latest
-    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -80,9 +79,8 @@ jobs:
         run: npm test
 
   # Add a job for running Cypress tests
-  cypress-tests: #OK
+  cypress-tests:
     runs-on: ubuntu-latest
-    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -107,46 +105,42 @@ jobs:
         run: pkill -f "vite" # Use pkill to stop the development server
 
   sonarcloud:
-   name: SonarCloud
-   needs: [cypress-tests, jest-tests-backend, jest-tests-frontend]
-   runs-on: ubuntu-latest
-   environment: staging
-   steps:
-     - uses: actions/checkout@v4
-       with:
-         fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+    name: SonarCloud
+    needs: [cypress-tests, jest-tests-frontend, jest-tests-backend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
-     - name: SonarCloud Scan
-       uses: SonarSource/sonarcloud-github-action@master
-       env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-         SONAR_SCANNER_OPTS: -Dsonar.pullrequest.github.summary_comment=true
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_SCANNER_OPTS: -Dsonar.pullrequest.github.summary_comment=true
 
-     - name: Wait for the quality gate result
-       run: sleep 5
+      - name: Wait for the quality gate result
+        run: sleep 5
 
-     - name: SonarQube Quality Gate check
-       id: sonarqube-quality-gate-check
-       uses: sonarsource/sonarqube-quality-gate-action@master
-       # Force to fail step after specific time.
-       timeout-minutes: 5
-       env:
-         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-       with:
-         scanMetadataReportFile: .scannerwork/report-task.txt
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        # Force to fail step after specific time.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          scanMetadataReportFile: .scannerwork/report-task.txt
 
-       #continue-on-error: true  # Esta opción permite que el workflow siga ejecutándose aunque falle la Quality Gate
-
-     - name: "SonarQube Quality Gate Status value"
-       run: |
-         echo "${{ steps.sonarqube-quality-gate-check.outputs.project-status }}"
-         echo "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-result }}"
+      - name: "SonarQube Quality Gate Status value"
+        run: |
+          echo "${{ steps.sonarqube-quality-gate-check.outputs.project-status }}"
+          echo "${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-result }}"
 
   # Jobs for prettier
   prettier:
     runs-on: ubuntu-latest
-    environment: staging
     needs: sonarcloud
     steps:
       - name: Checkout Code
@@ -161,34 +155,69 @@ jobs:
         working-directory: Web Ui
         run: npm install
 
-      - name: Run Prettier
-        working-directory: Web Ui
-        run: npx prettier --write "src/**/*.{js,ts,tsx}"
+      # - name: Run Prettier
+      #   working-directory: Web Ui
+      #   run: npx prettier --write "src/**/*.{js,ts,tsx}"
 
-      - name: Check for Changes in TypeScript files
-        id: check-changes
-        working-directory: Web Ui
-        run: |
-          git config --global user.name "{{ github.actor }}"
-          git config --global user.email "{{ github.actor }}@users.noreply.github.com"
-          if [[ -n $(git status --porcelain "src/**/*.{ts,tsx}") ]]; then
-            echo "Changes detected in TypeScript files."
-            git add .
-            git commit -m "Auto-format code with Prettier"
-            git push
-          else
-            echo "No changes to commit in TypeScript files."
-            exit 0
-          fi
+      # - name: Check for Changes in TypeScript files
+      #   id: check-changes
+      #   working-directory: Web Ui
+      #   run: |
+      #     git config --global user.name "{{ github.actor }}"
+      #     git config --global user.email "{{ github.actor }}@users.noreply.github.com"
+      #     if [[ -n $(git status --porcelain "src/**/*.{ts,tsx}") ]]; then
+      #       echo "Changes detected in TypeScript files."
+      #       git add .
+      #       git commit -m "Auto-format code with Prettier"
+      #       git push
+      #     else
+      #       echo "No changes to commit in TypeScript files."
+      #       exit 0
+      #     fi
 
-  deploy_firebase_staging:
+  deployment_vercel_Backend:
     runs-on: ubuntu-latest
-    environment:
-      name: staging
     needs: prettier
-    #Ejecutar solo si es la rama staging #
-    if: github.event.ref == 'refs/heads/main'
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
 
+    steps:
+      - name: "Echo values"
+        run: |
+          echo $VERCEL_PROJECT_ID
+          echo $VERCEL_ORG_ID
+          echo $VERCEL_TOKEN
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
+      - name: Set Environment Variables
+        run: |
+          echo "PGHOST=${{ secrets.PGHOST }}" > ./server/.env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
+          echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
+
+      - name: Install Vercel CLI
+        run: |
+          cd ./server
+          npm install vercel
+
+      - name: Deploy to Vercel
+        run: |
+          cd ./server
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+
+  deployment_build_Frontend:
+    runs-on: ubuntu-latest
+    needs: prettier
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -200,12 +229,6 @@ jobs:
         working-directory: Web Ui
         run: |
           echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
-          echo "VITE_API_URL=${{ secrets.API_URL }}" > ./.env
-          echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> ./.env
-          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./.env
-          echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> ./.env
-          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> ./.env
-          echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> ./.env
           echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
 
       - name: Install Dependencies
@@ -216,15 +239,12 @@ jobs:
         working-directory: Web Ui
         run: npm ci
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
-
-      - name: Enable webframeworks
-        run: firebase experiments:enable webframeworks
-
       - name: Npm run build
         working-directory: Web Ui
         run: npm run build
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
 
       - name: Deploy to Firebase Staging
         working-directory: Web Ui
@@ -234,140 +254,10 @@ jobs:
         run: |
           firebase deploy --project ${{ secrets.FIREBASE_PROJECT_ID }}
 
-  deploy_firebase_production:
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-    needs: [deploy_firebase_staging]
-    #Ejecutar solo si es la rama main
-    # if: github.event.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-
-      - name: Set Environment Variables
-        working-directory: Web Ui
-        run: |
-          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
-          echo "VITE_API_URL=${{ secrets.API_URL }}" > ./.env
-          echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> ./.env
-          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./.env
-          echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> ./.env
-          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> ./.env
-          echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> ./.env
-          echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
-
-      - name: Install Dependencies
-        working-directory: Web Ui
-        run: npm install
-
-      - name: Npm ci
-        working-directory: Web Ui
-        run: npm ci
-
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
-
-      - name: Enable webframeworks
-        run: firebase experiments:enable webframeworks
-
-      - name: Npm run build
-        working-directory: Web Ui
-        run: npm run build
-
-      - name: Deploy to Firebase Production
-        working-directory: Web Ui
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-        run: |
-          firebase deploy --project ${{ secrets.FIREBASE_PROJECT_ID }}
-
-
-  deploy_vercel_staging:
-      runs-on: ubuntu-latest
-      environment:
-        name: staging
-      needs: prettier
-      #Ejecutar solo si es la rama staging 
-      if: github.event.ref == 'refs/heads/main'
-      steps:
-        - name: "Echo values"
-          run: |
-            echo $VERCEL_PROJECT_ID
-            echo $VERCEL_ORG_ID 
-            echo $VERCEL_TOKEN 
-
-        - name: Checkout repo
-          uses: actions/checkout@v4
-
-        - name: Setup Node
-          uses: actions/setup-node@v4
-
-        - name: Set Environment Variables
-          run: |
-            echo "PGHOST=${{ secrets.PGHOST }}" >> ./server/.env
-            echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
-            echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
-            echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
-            echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
-            echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
-
-        - name: Install Vercel CLI
-          run: |
-            cd ./server
-            npm install vercel
-
-        - name: Deploy to Vercel
-          run: |
-            cd ./server
-            vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
-
-  deploy_vercel_production:
-      runs-on: ubuntu-latest
-      environment:
-        name: production
-      needs: [deploy_vercel_staging]
-      #Ejecutar solo si es la rama main
-
-  #   env:
-  #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
-      
-      steps:
-        - name: "Echo values"
-          run: |
-            echo $VERCEL_PROJECT_ID
-            echo $VERCEL_ORG_ID 
-            echo $VERCEL_TOKEN 
-            
-
-        - name: Checkout repo
-          uses: actions/checkout@v4
-
-        - name: Setup Node
-          uses: actions/setup-node@v4
-
-        - name: Set Environment Variables
-          run: |
-            echo "PGHOST=${{ secrets.PGHOST }}" >> ./server/.env
-            echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
-            echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
-            echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
-            echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
-            echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
-
-        - name: Install Vercel CLI
-          run: |
-            cd ./server
-            npm install vercel
-
-        - name: Deploy to Vercel
-          run: |
-            cd ./server
-            vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+        # - uses: FirebaseExtended/action-hosting-deploy@v0
+        # with:
+        #   entryPoint: Web Ui
+        #   repoToken: "${{ secrets.GITHUB_TOKEN }}"
+        #   firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TDDLAB_HOSTING_FIREBASE }}"
+        #   channelId: live
+        #   projectId: tddlab-hosting-firebase
