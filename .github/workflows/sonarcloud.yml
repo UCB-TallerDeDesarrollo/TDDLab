@@ -52,11 +52,11 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies for Jest
-        working-directory: Web Ui #ERROR
+        working-directory: Web Ui
         run: npm install
 
       - name: Run Jest tests
-        working-directory: Web Ui #ERROR
+        working-directory: Web Ui
         run: npm test
 
   jest-tests-backend: #OK
@@ -136,6 +136,8 @@ jobs:
        with:
          scanMetadataReportFile: .scannerwork/report-task.txt
 
+       #continue-on-error: true  # Esta opción permite que el workflow siga ejecutándose aunque falle la Quality Gate
+
      - name: "SonarQube Quality Gate Status value"
        run: |
          echo "${{ steps.sonarqube-quality-gate-check.outputs.project-status }}"
@@ -145,7 +147,7 @@ jobs:
   prettier:
     runs-on: ubuntu-latest
     environment: staging
-    needs: [sonarcloud]
+    needs: sonarcloud
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -184,6 +186,7 @@ jobs:
     environment:
       name: staging
     needs: prettier
+    #Ejecutar solo si es la rama staging #
     if: github.event.ref == 'refs/heads/main'
 
     steps:
@@ -197,12 +200,13 @@ jobs:
         working-directory: Web Ui
         run: |
           echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
-          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
+          echo "VITE_API_URL=${{ secrets.API_URL }}" > ./.env
           echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> ./.env
           echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./.env
           echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> ./.env
           echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> ./.env
           echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> ./.env
+          echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
 
       - name: Install Dependencies
         working-directory: Web Ui
@@ -235,6 +239,8 @@ jobs:
     environment:
       name: production
     needs: [deploy_firebase_staging]
+    #Ejecutar solo si es la rama main
+    # if: github.event.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repo
@@ -247,14 +253,13 @@ jobs:
         working-directory: Web Ui
         run: |
           echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
-          echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
-          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
+          echo "VITE_API_URL=${{ secrets.API_URL }}" > ./.env
           echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> ./.env
           echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./.env
           echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> ./.env
           echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> ./.env
           echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> ./.env
-
+          echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
 
       - name: Install Dependencies
         working-directory: Web Ui
@@ -288,6 +293,7 @@ jobs:
       environment:
         name: staging
       needs: prettier
+      #Ejecutar solo si es la rama staging 
       if: github.event.ref == 'refs/heads/main'
       steps:
         - name: "Echo values"
@@ -310,7 +316,6 @@ jobs:
             echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
             echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
             echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
-            echo "API_URL=${{ secrets.API_URL }}" >> ./Web Ui/.env
 
         - name: Install Vercel CLI
           run: |
@@ -327,6 +332,12 @@ jobs:
       environment:
         name: production
       needs: [deploy_vercel_staging]
+      #Ejecutar solo si es la rama main
+
+  #   env:
+  #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
       
       steps:
         - name: "Echo values"
@@ -350,7 +361,6 @@ jobs:
             echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
             echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
             echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
-            echo "API_URL=${{ secrets.API_URL }}" >> ./Web Ui/.env
 
         - name: Install Vercel CLI
           run: |
