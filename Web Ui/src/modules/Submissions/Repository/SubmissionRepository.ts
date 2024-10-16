@@ -1,8 +1,9 @@
 import axios from "axios";
 import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "../Domain/submissionInterfaces";
 import SubmissionRepositoryInterface from "../Domain/SubmissionRepositoryInterface";
+import {VITE_API} from "../../../../config.ts";
 
-const API_URL = "https://tdd-lab-api-gold.vercel.app/api/submissions"; //https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+const API_URL = VITE_API + "/submissions";
 
 class SubmissionRepository implements SubmissionRepositoryInterface {
 
