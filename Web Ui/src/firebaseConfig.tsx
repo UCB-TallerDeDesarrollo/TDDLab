@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "tddlab-hosting-firebase.firebaseapp.com",
-  projectId: "tddlab-hosting-firebase",
-  storageBucket: "tddlab-hosting-firebase.appspot.com",
-  messagingSenderId: "333240761636",
-  appId: "1:333240761636:web:0e6129804aa05b7e8907b1",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket:  import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const firebase: any = initializeApp(firebaseConfig);
