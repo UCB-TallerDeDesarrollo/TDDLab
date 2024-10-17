@@ -12,10 +12,6 @@ export class TimelineRepository {
 
     async getTimelines(): Promise<Timeline[]> {
         return new Promise((resolve, reject) => {
-            if(vscode.workspace.rootPath) {
-                this.filePath = path.join(vscode.workspace.rootPath, 'script', 'tdd_log.json');
-                vscode.window.showInformationMessage(this.filePath);
-            }
             fs.readFile(this.filePath, 'utf8', (err, data) => {
                 if (err) {
                     return reject(err);
