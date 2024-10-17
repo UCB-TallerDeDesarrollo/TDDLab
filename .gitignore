@@ -71,3 +71,6 @@ node_modules/
 
 # archivo out generado al correr la extension
 /VSCodeExtension/out
+
+# archivo de reporte generado a la hora de correr los tests en tddlabBaseProject
+/tddlabBaseProject/script/report.json
