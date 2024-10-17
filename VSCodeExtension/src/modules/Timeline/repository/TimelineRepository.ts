@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Timeline } from '../domain/Timeline';
+import * as vscode from 'vscode';
 
 export class TimelineRepository {
     private filePath: string;
 
     constructor(extensionPath: string) {
-        this.filePath = path.join(extensionPath, 'src', 'data.json');
+        this.filePath = path.join(extensionPath, 'script', 'tdd_log.json');
     }
 
     async getTimelines(): Promise<Timeline[]> {
