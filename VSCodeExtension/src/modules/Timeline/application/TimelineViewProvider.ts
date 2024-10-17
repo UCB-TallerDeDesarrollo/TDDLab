@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Timeline } from '../domain/Timeline';
 import { TimelineRepository } from '../repository/TimelineRepository';
+import * as path from 'path';
 
 export class TimelineViewProvider implements vscode.WebviewViewProvider {
     private context: vscode.ExtensionContext;
@@ -10,7 +11,8 @@ export class TimelineViewProvider implements vscode.WebviewViewProvider {
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
-        this.timelineRepository = new TimelineRepository(context.extensionPath);
+        const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
+        this.timelineRepository = new TimelineRepository(rootPath);
         
     }
 
