@@ -1,7 +1,8 @@
 {
-  "name": "extension",
-  "displayName": "extension",
+  "name": "tdd-extension-taller",
+  "displayName": "TDD Lab",
   "description": "Plugin de VSCode para la aplicación TDDLab",
+  "publisher": "TDDLab-TallerDesarrollo",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.94.0"
@@ -21,7 +22,7 @@
         "title": "Run Test"
       },
       {
-        "command": "extension.showTimeline", 
+        "command": "extension.showTimeline",
         "title": "Show Timeline"
       }
     ],
@@ -29,7 +30,7 @@
       "activitybar": [
         {
           "id": "myExtension",
-          "title": "TDD Lab",  
+          "title": "TDD Lab",
           "icon": "./src/modules/Button/resources/icon.svg"
         }
       ],
@@ -45,7 +46,7 @@
       "myExtension": [
         {
           "id": "myView",
-          "name": "My Tests" 
+          "name": "My Tests"
         }
       ],
       "timelineContainer": [
@@ -77,6 +78,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "extension": "file:"
+    "extension": "file:",
+    "tdd-extension-taller": "file:"
   }
 }
