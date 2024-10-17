@@ -27,6 +27,12 @@ export function activate(context: vscode.ExtensionContext) {
     
     let runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
       await commandService.runTestCommand();
+
+      vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
+
+        if (timelineViewProvider.currentWebview) {
+            timelineViewProvider.showTimeline(timelineViewProvider.currentWebview);
+        }
     });
   
     context.subscriptions.push(runTestCommand);
