@@ -16,7 +16,7 @@ describe('CycleCard component', () => {
     const { getByTestId } = render(<TDDCycleCard commit={mockCommitData} jobs={mockSuccessJobData} />);
   
     const totalText = getByTestId("total");
-    const additionsText = getByTestId("adition");
+    const additionsText = getByTestId("addition");
     const deletionsText = getByTestId("deletion");
     const coverageText = getByTestId("coverage");
     const testCount = getByTestId("test-count");
