@@ -1,7 +1,10 @@
+import { formatDate } from "../../../modules/TDDCycles-Visualization/application/GetTDDCycles";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
+
 import "../styles/TDDCycleCard.css";
 import "../styles/fonts.css";
+
 interface CycleReportViewProps {
   commit: CommitDataObject;
   jobs: JobDataObject | null;
@@ -9,41 +12,26 @@ interface CycleReportViewProps {
 
 function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
   const getBoxStyle = (conclusion: string) => {
-    if (conclusion === "success") {
-      return { backgroundColor: "green" };
-    } else {
-      return { backgroundColor: "red" };
-    }
+    return conclusion === "success" ? { backgroundColor: "green" } : { backgroundColor: "red" };
   };
+
   const traduceConclusion = (conclusion: string) => {
-    if (conclusion === "success") {
-      return "exito";
-    } else {
-      return "fallido";
-    }
+    return conclusion === "success" ? "exito" : "fallido";
   };
 
   function getCommitLink() {
-    const htmlUrl = commit.html_url;
     return (
-      <a
-        href={htmlUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="commit-link"
-      >
+      <a href={commit.html_url} target="_blank" rel="noopener noreferrer" className="commit-link">
         Ver commit
       </a>
     );
   }
 
   function getCommitStats() {
-    const coverageText = commit.coverage
-      ? `${commit.coverage}%`
-      : "no se encontró cobertura"; // Establece un valor predeterminado
-    const testCountText = commit.test_count
-      ? `${commit.test_count}`
-      : "no se encontraron tests";
+    const coverageText = commit.coverage ? `${commit.coverage}%` : "no se encontró cobertura";
+    const testCountText = commit.test_count ? `${commit.test_count}` : "no se encontraron tests";
+    const date = commit.commit.date;
+
     return (
       <div className="commit-stats">
         <div className="commit-stat-item">
@@ -51,7 +39,7 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
           <span>Total de modificaciones:</span> {commit.stats.total}
         </div>
         <div className="commit-stat-item">
-          <div className="circle additions" data-testid="adition"></div>
+          <div className="circle additions" data-testid="addition"></div>
           <span>Adiciones:</span> {commit.stats.additions}
         </div>
         <div className="commit-stat-item">
@@ -63,8 +51,11 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
           <span>Cobertura:</span> {coverageText}
         </div>
         <div className="commit-stat-item">
-          <div className="circle coverage" data-testid="test-count"></div>
-          <span>Numero de Tests:</span> {testCountText}
+          <div className="circle test-count" data-testid="test-count"></div>
+          <span>Número de Tests:</span> {testCountText}
+        </div>
+        <div className="commit-date-item">
+          <span>{formatDate(date)}</span>
         </div>
       </div>
     );
@@ -74,18 +65,16 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
     <div className="cycleCardContainer">
       <span className="title">Commit {commit.commit.message}</span>
       {getCommitStats()}
-      {jobs != null && (
-        <div className={"conclusionBox"} style={getBoxStyle(jobs.conclusion)}>
+      {jobs ? (
+        <div className="conclusionBox" style={getBoxStyle(jobs.conclusion)}>
           Acciones: {traduceConclusion(jobs.conclusion)}
         </div>
-      )}
-      {jobs == null && (
-        <div className={"conclusionBox noActionsBox"}>
+      ) : (
+        <div className="conclusionBox noActionsBox">
           No se encontraron acciones
         </div>
       )}
       {getCommitLink()}
-      <br />
     </div>
   );
 }
