@@ -24,7 +24,11 @@
   margin-right: auto;
   padding: 12px;
 }
-
+.commit-date-item{
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
 .conclusionBox {
   width: calc(5vw + 100px);
   display: flex;
