@@ -19,40 +19,58 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("TDDChartPage", () => {
-  it("renders loading spinner when loading is true", async () => {
-    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} />);
-
+  test.each([
+    ["admin"],
+    ["student"]
+  ])("renders loading spinner when loading is true for role %s", async (role) => {
+    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} role={role} />);
+  
     await waitFor(() => {
       const loadingSpinner = getByTestId("loading-spinner");
       expect(loadingSpinner).toBeInTheDocument();
     });
   });
-  it("displays an error message when no data is available", async () => {
+  
+  test.each([
+    ["admin"],
+    ["student"]
+  ])("displays an error message when no data is available for role %s", async (role) => {
     const { getByTestId } = render(
-      <TDDChartPage port={new MockGithubAPIEmpty()} />
+      <TDDChartPage port={new MockGithubAPIEmpty()} role={role} />
     );
+  
     await waitFor(() => {
       const error = getByTestId("errorMessage");
       expect(error).toBeInTheDocument();
     });
-  });
-
-  it("displays the repository name", async () => {
-    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} />);
+  }); 
+  
+  test.each([
+    ["admin"],
+    ["student"]
+  ])("displays the repository name for role %s", async (role) => {
+    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} role={role} />);
+  
     await waitFor(() => {
-      const repoName = getByTestId("repoTitle");
+      const repoName = getByTestId("repoNameTitle");
       expect(repoName).toBeInTheDocument();
+  
+      if (role === "admin") {
+        const repoOwner = getByTestId("repoOwnerTitle");
+        expect(repoOwner).toBeInTheDocument();
+      }
     });
   });
+  
 
-  it("tests the catch event for both, obtainJobsData and obtainCommits Data", async () => {
+  it("tests the catch event for both, obtainJobsData and obtainCommitsData", async () => {
     const spyConsoleError = jest.spyOn(console, "error");
     spyConsoleError.mockImplementation(() => {});
-
+  
     await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} />);
+      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" />);
     });
-
+  
     expect(spyConsoleError).toHaveBeenCalledWith(
       "Error obtaining jobs:",
       expect.any(Error)
@@ -61,7 +79,7 @@ describe("TDDChartPage", () => {
       "Error obtaining commit information:",
       expect.any(Error)
     );
-
+  
     spyConsoleError.mockRestore();
   });
 });
