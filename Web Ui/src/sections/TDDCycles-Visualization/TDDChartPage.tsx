@@ -10,9 +10,14 @@ import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domai
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
+  role: string;
 }
 
-function TDDChartPage({ port }: Readonly<CycleReportViewProps>) {
+function isStudent(role: string) {
+  return role === "student";
+}
+
+function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
