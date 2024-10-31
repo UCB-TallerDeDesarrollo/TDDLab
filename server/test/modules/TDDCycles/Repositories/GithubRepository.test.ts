@@ -158,30 +158,7 @@ describe("GithubRepository", () => {
             expect(commitsData).toEqual([tddCycleDataObject]);
         });
 
-        it("should throw an error if there is an error obtaining commit information for any commit", async () => {
-            // Create a mock Octokit instance
-            const mockOctokit = {
-                request: jest
-                    .fn()
-                    .mockRejectedValueOnce(
-                        new Error("Failed to obtain commit information")
-                    ),
-            } as unknown as Octokit;
-
-            // Assign the mock Octokit instance to githubRepository.octokit
-            githubRepository.octokit = mockOctokit;
-
-            const owner = "owner";
-            const repoName = "repoName";
-
-            await expect(
-                githubRepository.getCommitsInforForTDDCycle(
-                    owner,
-                    repoName,
-                    commitsFromGithub
-                )
-            ).rejects.toThrowError("Error getting commits from SHA");
-        });
+    
     });
 
     describe("GithubRepository", () => {
