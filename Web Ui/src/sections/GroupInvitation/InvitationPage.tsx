@@ -14,7 +14,6 @@ import { handleSignInWithGitHub } from "../../modules/User-Authentication/applic
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
-import PasswordComponent from "./components/PasswordPopUp";
 
 function InvitationPage() {
   const location = useLocation();
@@ -27,7 +26,6 @@ function InvitationPage() {
   const groupid = getQueryParam("groupid");
 
   const [user, setUser] = useState<User | null>(null);
-  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
@@ -48,30 +46,12 @@ function InvitationPage() {
     }
   };
 
-  const handlePassVerification = async (password: string) => {
-    const result = await dbAuthPort.verifyPass(password);
-
-    if (result === true) {
-      handleAcceptInvitation("teacher");
-      return;
-    }
-    alert("Contraseña invalida");
-  };
-
-  const handlePopPassword = async () => {
-    setShowPasswordPopup(true);
-  };
-
-  const handleAcceptInvitation = async (type: string) => {
-    console.log(user?.email);
-    console.log(groupid);
-
-    // Have to Solve courseId error
+  const handleAcceptInvitation = async () => {
     if (user?.email) {
       const userObj: UserOnDb = {
         email: user.email,
         groupid: groupid ?? 1,
-        role: type,
+        role: "student",
       };
       await dbAuthPort.register(userObj);
       setShowPopUp(true);
@@ -84,16 +64,16 @@ function InvitationPage() {
         <div>
           <Grid
             container
-            spacing={2} // Agrega la separación deseada entre los Card
-            justifyContent="center" // Centra los elementos horizontalmente
-            alignItems="center" // Centra los elementos verticalmente
-            style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
-            direction="column" // Alinea los elementos en una sola columna
+            spacing={2}
+            justifyContent="center"
+            alignItems="center"
+            style={{ minHeight: "100vh" }}
+            direction="column"
           >
             <Grid item>
               <Card
                 sx={{
-                  width: 400, // Establece un ancho fijo para el primer Card
+                  width: 400,
                   "&:hover": {
                     boxShadow: "md",
                     borderColor: "neutral.outlinedHoverBorder",
@@ -124,7 +104,7 @@ function InvitationPage() {
                             alt="Imagen"
                             height="100%"
                             width="100%"
-                            image={user.photoURL ?? "URL_POR_DEFECTO"} // Reemplaza con la ruta de tu imagen.
+                            image={user.photoURL ?? "URL_POR_DEFECTO"}
                           />
                         </div>
                       </div>
@@ -160,15 +140,15 @@ function InvitationPage() {
                 <CardMedia
                   component="img"
                   alt="Imagen de portada"
-                  height="50%" // La mitad superior del card
-                  image="https://media.istockphoto.com/id/1400563511/es/foto/concepto-de-trabajo-en-equipo-y-asociaci%C3%B3n-las-manos-unen-piezas-del-rompecabezas-en-la.jpg?s=2048x2048&w=is&k=20&c=sCOTFRETLMg41khoit5_znVZidVevaoYnsJDRQpXGoE=" // Reemplaza con la ruta de tu imagen
+                  height="50%"
+                  image="https://media.istockphoto.com/id/1400563511/es/foto/concepto-de-trabajo-en-equipo-y-asociaci%C3%B3n-las-manos-unen-piezas-del-rompecabezas-en-la.jpg?s=2048x2048&w=is&k=20&c=sCOTFRETLMg41khoit5_znVZidVevaoYnsJDRQpXGoE="
                 />
                 <CardContent>
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
                     Israel Antezana te está invitando al curso
                   </Typography>
                   <Button
-                    onClick={() => handleAcceptInvitation("student")}
+                    onClick={handleAcceptInvitation}
                     variant="contained"
                     color="primary"
                     sx={{ marginTop: 2 }}
@@ -176,26 +156,10 @@ function InvitationPage() {
                   >
                     Aceptar invitación al curso
                   </Button>
-                  <Button
-                    onClick={handlePopPassword}
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                    fullWidth
-                  >
-                    Aceptar invitación al curso como Docente
-                  </Button>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
-          {showPasswordPopup && (
-            <PasswordComponent
-              open={showPasswordPopup}
-              onClose={() => setShowPasswordPopup(false)}
-              onSend={handlePassVerification}
-            />
-          )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
         </div>
       ) : (
