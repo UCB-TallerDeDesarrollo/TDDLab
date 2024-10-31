@@ -86,8 +86,8 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   return (
     <div className="container">
       <h1 data-testid="repoNameTitle">Tarea: {repoName}</h1>
-      {!isStudent(role) && (
-        <h1 data-testid="repoOwnerTitle">Autor: {ownerName}</h1>
+      {!isStudent(role) && ( 
+        <h1 data-testid="repoOwnerTitle">Autor: {repoOwner}</h1>
       )}
 
       {loading && (
