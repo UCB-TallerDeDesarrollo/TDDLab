@@ -4,15 +4,32 @@ import { JobDataObject } from "../domain/jobInterfaces";
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { formatDate } from '../application/GetTDDCycles';
 import axios from "axios";
-import {VITE_API} from "../../../../config.ts";
+import { VITE_API } from "../../../../config.ts";
 
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
   backAPI: string;
+  
   constructor() {
     this.octokit = new Octokit();
-      //auth: 'coloca tu token github para mas requests'
-    this.backAPI = VITE_API + "/TDDCycles"; //https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+    //auth: 'coloca tu token github para mas requests'
+    this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+  }
+
+  async obtainUserName(owner: string): Promise<string> {
+    try {
+      const response = await this.octokit.request(`GET /users/${owner}`);
+      
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const userName = response.data.name;
+      return userName || owner; // Retorna el nombre o un mensaje si no está disponible
+    } catch (error) {
+      console.error("Error obtaining user name:", error);
+      throw error;
+    }
   }
 
   async obtainCommitsOfRepo(
