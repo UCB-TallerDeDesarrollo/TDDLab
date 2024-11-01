@@ -27,6 +27,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState<string>("");
 
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
@@ -81,13 +82,27 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
     fetchData();
   }, []);
 
-  console.log(role);
+  const handleFeedbackChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFeedback(event.target.value);
+  };
 
   return (
     <div className="container">
       <h1 data-testid="repoNameTitle">Tarea: {repoName}</h1>
       {!isStudent(role) && (
         <h1 data-testid="repoOwnerTitle">Autor: {ownerName}</h1>
+      )}
+
+      {role === "admin" && (
+        <div className="feedback-container">
+          <label htmlFor="feedback">Retroalimentación para la tarea:</label>
+          <textarea
+            id="feedback"
+            value={feedback}
+            onChange={handleFeedbackChange}
+            placeholder="Ingrese su retroalimentación aquí"
+          />
+        </div>
       )}
 
       {loading && (
@@ -102,7 +117,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!loading && commitsInfo?.length != 0 && (
+      {!loading && commitsInfo?.length !== 0 && (
         <React.Fragment>
           <div className="mainInfoContainer">
             <TDDCharts
