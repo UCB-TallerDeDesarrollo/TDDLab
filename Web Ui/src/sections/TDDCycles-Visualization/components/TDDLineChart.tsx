@@ -64,7 +64,7 @@ function TDDLineCharts({
       const commitsArray = filteredCommitsObject.map(
         (commit) => commit.commit.message
       );
-      return commitsArray;
+      return commitsArray.reverse();
     } else {
       return [];
     }
