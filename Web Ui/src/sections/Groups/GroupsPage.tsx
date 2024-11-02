@@ -6,6 +6,7 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
+import PersonIcon from '@mui/icons-material/Person';
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
@@ -211,6 +212,16 @@ function Groups() {
       getCourseLink(group.id);
     }
   };
+  const handleLinkClickTeacher = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    const group = groups[index];
+    if (group.id) {
+      getCourseLink(group.id);
+    }
+  };
 
   const handleConfirmDelete = async () => {
     try {
@@ -309,12 +320,20 @@ function Groups() {
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Copiar enlace de invitacion" arrow>
+                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
                         <IconButton
                           aria-label="enlace"
                           onClick={(event) => handleLinkClick(event, index)}
                         >
                           <LinkIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+                        <IconButton
+                          aria-label="enlace"
+                          onClick={(event) => handleLinkClickTeacher(event, index)}
+                        >
+                          <PersonIcon  />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Eliminar grupo" arrow>

@@ -8,7 +8,7 @@
     "build": "parcel build index.html",
     "test": "jest --watch",
     "test-once": "jest --verbose --coverage",
-    "test-export-json": "jest --json --outputFile=./script/report.json", 
+    "test-export-json": "jest --json --outputFile=./script/report.json",
     "tdd-script": "node ./script/tddScript.js",
     "cypress": "cypress open",
     "cypress-run": "cypress run"
