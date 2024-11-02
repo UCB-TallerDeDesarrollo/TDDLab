@@ -7,12 +7,17 @@ export class TimelineViewProvider implements vscode.WebviewViewProvider {
     private context: vscode.ExtensionContext;
     public currentWebview: vscode.Webview | null = null;
     private timelineRepository: TimelineRepository;
+    private statusBarItem: vscode.StatusBarItem;
     
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
         this.timelineRepository = new TimelineRepository(rootPath);
+
+        this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1000);
+        this.statusBarItem.show();
+        this.context.subscriptions.push(this.statusBarItem);
         
     }
 
@@ -35,11 +40,25 @@ export class TimelineViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    mostrarPunto(status_point: string) {
+        let point = '🔴';
+        let text = 'Último test fallido';
+        if(status_point === 'green') {
+            point = '🟢';
+            text = 'Último test pasado';
+        }
+        this.statusBarItem.text = point;
+        this.statusBarItem.tooltip = text;
+        this.statusBarItem.show();
+    }
+
     generateHtml(timelines: Timeline[]): string {
         const timelineHtml = timelines.map(item => {
-            const color = item.isSuccessful() ? "green" : "red";
+            const color = item.getColor();
             return `<div style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;"></div>`;
         }).join('');
+
+        this.mostrarPunto(timelines[timelines.length - 1].getColor());
 
         return `
             <!DOCTYPE html>
