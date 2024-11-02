@@ -17,9 +17,13 @@ import { useLocation } from "react-router-dom";
 
 function InvitationPage() {
   const location = useLocation();
-  const getQueryParam = (param: string): number | undefined => {
+  const getQueryParam = (param: string): string | number | undefined => {
     const searchParams = new URLSearchParams(location.search);
-    return searchParams.get(param) ?? undefined;
+    const value = searchParams.get(param);
+    if (param === "groupid") {
+      return value ? parseInt(value, 10) : undefined;
+    }
+    return value ?? undefined;
   };
 
   const groupid = getQueryParam("groupid");
@@ -54,7 +58,7 @@ function InvitationPage() {
     if (user?.email) {
       const userObj: UserOnDb = {
         email: user.email,
-        groupid: groupid ?? 1,
+        groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1, 
         role: type,
       };
       await dbAuthPort.register(userObj);

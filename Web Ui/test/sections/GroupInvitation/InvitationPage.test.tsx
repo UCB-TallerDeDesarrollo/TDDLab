@@ -8,7 +8,8 @@ import { RegisterUserOnDb } from "../../../src/modules/User-Authentication/appli
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useLocation: () => ({
-    pathname: "localhost:5173/invitation?courseId=5",
+    pathname: "localhost:5173/invitation",
+    search: "?groupid=93&type=student",
   }),
 }));
 
