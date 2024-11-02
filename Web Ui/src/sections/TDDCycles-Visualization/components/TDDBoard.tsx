@@ -47,18 +47,30 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
 
   const mainOptions: any = {
     scales: {
-      x: { title: { display: true, text: "Commits" }, ticks: { callback: (value: any) => `Commit ${value}` } },
-      y: { title: { display: true, text: "Cobertura de Pruebas (%)" }, min: 70, max: 110, suggestedMax: 120 }
+      x: { 
+        title: { display: true, text: "Commits" },
+        ticks: { 
+          callback: (value: any) => `Commit ${value}` 
+        }
+      },
+      y: { 
+        title: { display: true, text: "Cobertura de Pruebas (%)" }, 
+        min: 70, 
+        max: 110, 
+        suggestedMax: 120 
+      }
     },
     plugins: {
       legend: { display: false },
       tooltip: {
         callbacks: {
           label: (tooltipItem: any) => {
-            const dataIndex = tooltipItem.dataIndex;
-            const commit = commits[dataIndex];
+            const index = tooltipItem.raw.x - 1; 
+            const commit = commits[index];
+            const commitNumber = index + 1;
+  
             return [
-              `Commit: ${commit.commit.message}`,
+              `Commit ${commitNumber}, ${commit.commit.message}`, 
               `Líneas Modificadas: ${commit.stats.additions}`,
               `Líneas Eliminadas: ${commit.stats.deletions}`,
               `Cobertura: ${commit.coverage}%`,
@@ -69,7 +81,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
       }
     }
   };
-
+  
   // Datos para los gráficos de líneas
   const lineOptions: any = {
     scales: {
