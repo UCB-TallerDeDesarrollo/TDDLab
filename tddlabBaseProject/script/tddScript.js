@@ -1,12 +1,20 @@
-const { exec } = require('child_process');
-const fs = require('fs');
+import { exec } from 'child_process';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
 
 const COMMAND = 'npm run test-export-json';
 
 function runCommand(command) {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
-      resolve();
+      if (error) {
+        console.error(`Error executing command: ${stderr}`);
+        reject(error);
+      } else {
+        console.log(`Command output: ${stdout}`);
+        resolve();
+      }
     });
   });
 }
@@ -23,7 +31,7 @@ const writeJSONFile = (filePath, data) => {
 
 const extractAndAddObject = async (reportFile, tddLogFile) => {
   try {
-    await runCommand(COMMAND);  
+    await runCommand(COMMAND);
 
     const jsonData = readJSONFile(reportFile);
 
@@ -48,9 +56,12 @@ const extractAndAddObject = async (reportFile, tddLogFile) => {
   }
 };
 
-const inputFilePath = __dirname.concat('/report.json');
-const outputFilePath = __dirname.concat('/tdd_log.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const inputFilePath = path.join(__dirname, 'report.json');
+const outputFilePath = path.join(__dirname, 'tdd_log.json');
 
 extractAndAddObject(inputFilePath, outputFilePath);
 
-module.exports = { extractAndAddObject };
+export { extractAndAddObject };
