@@ -209,7 +209,7 @@ function Groups() {
     event.stopPropagation();
     const group = groups[index];
     if (group.id) {
-      getCourseLink(group.id);
+      getCourseLink(group.id, "student");
     }
   };
   const handleLinkClickTeacher = (
@@ -219,7 +219,7 @@ function Groups() {
     event.stopPropagation();
     const group = groups[index];
     if (group.id) {
-      getCourseLink(group.id);
+      getCourseLink(group.id, "teacher");
     }
   };
 

@@ -19,11 +19,11 @@ function InvitationPage() {
   const location = useLocation();
   const getQueryParam = (param: string): number | undefined => {
     const searchParams = new URLSearchParams(location.search);
-    const value = searchParams.get(param);
-    return value ? parseInt(value, 10) : undefined;
+    return searchParams.get(param) ?? undefined;
   };
 
   const groupid = getQueryParam("groupid");
+  const userType = getQueryParam("type");
 
   const [user, setUser] = useState<User | null>(null);
   const dbAuthPort = new RegisterUserOnDb();
@@ -46,12 +46,16 @@ function InvitationPage() {
     }
   };
 
-  const handleAcceptInvitation = async () => {
+  
+  const handleAcceptInvitation = async (type: string) => {
+    console.log(user?.email);
+    console.log(groupid);
+    console.log(type);
     if (user?.email) {
       const userObj: UserOnDb = {
         email: user.email,
         groupid: groupid ?? 1,
-        role: "student",
+        role: type,
       };
       await dbAuthPort.register(userObj);
       setShowPopUp(true);
@@ -147,15 +151,28 @@ function InvitationPage() {
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
                     Israel Antezana te está invitando al curso
                   </Typography>
-                  <Button
-                    onClick={handleAcceptInvitation}
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                    fullWidth
-                  >
-                    Aceptar invitación al curso
-                  </Button>
+                  {userType === "student" && (
+                    <Button
+                      onClick={() => handleAcceptInvitation("student")}
+                      variant="contained"
+                      color="primary"
+                      sx={{ marginTop: 2 }}
+                      fullWidth
+                    >
+                      Aceptar invitación al curso
+                    </Button>
+                  )}
+                  {userType === "teacher" && (
+                    <Button
+                      onClick={() => handleAcceptInvitation("teacher")}
+                      variant="contained"
+                      color="primary"
+                      sx={{ marginTop: 2 }}
+                      fullWidth
+                    >
+                      Aceptar invitación al curso como Docente
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
