@@ -61,12 +61,21 @@ class SubmissionController {
         assignmentid,
         userid
       );
+      console.log("------------------------------------------------x")
+      console.log("getSubmissionByAssignmentAndUser")
+      console.log("assigmentid", assignmentid);
+      console.log("userid", userid);
+      console.log("submissionnnnnnnnnnnnn")
+      console.log(submission)
+      console.log("------------------------------------------------y")
       if (submission) {
+        console.log("submission", submission)
         res.status(200).json(submission);
       } else {
         res.status(404).json({ message: "Submission not found" });
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -111,6 +120,8 @@ class SubmissionController {
       const assignmentid = parseInt(req.params.assignmentid, 10);
       const assignments =
         await this.getSubmissionsByAssignmentIdUseCase.execute(assignmentid);
+      console.log("assigments");
+      console.log(assignments);
       res.status(200).json(assignments);
     } catch (error) {
       res.status(500).json({ error: "Error getSubmissionsByAssignmentId" });
