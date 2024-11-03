@@ -95,7 +95,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
         <h1 data-testid="repoOwnerTitle">Autor: {ownerName}</h1>
       )}
 
-      {role === "admin" && (
+      {role != "student" && (
         <div className="feedback-container">
           <label htmlFor="feedback">Retroalimentación de la tarea:</label>
           <textarea
