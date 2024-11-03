@@ -13,7 +13,6 @@ interface CycleReportViewProps {
 }
 
 const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => {
-  // Configuración para el gráfico principal de métricas generales
   const testCounts = commits.map(commit => commit.test_count);
   const minTestCount = Math.min(...testCounts);
   const maxTestCount = Math.max(...testCounts);
@@ -70,7 +69,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
             const commitNumber = index + 1;
   
             return [
-              `Commit ${commitNumber}, ${commit.commit.message}`, 
+              `Commit ${commitNumber}: ${commit.commit.message}`, 
               `Líneas Modificadas: ${commit.stats.additions}`,
               `Líneas Eliminadas: ${commit.stats.deletions}`,
               `Cobertura: ${commit.coverage}%`,
@@ -81,7 +80,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
       }
     }
   };
-  
+
   // Datos para los gráficos de líneas
   const lineOptions: any = {
     scales: {
@@ -142,25 +141,64 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
   };
 
   return (
-    <div>
-      <h2>Métricas de Commits con Cobertura de Código</h2>
-      <Bubble data={mainData} options={mainOptions} />
-      <div style={{ display: "flex", justifyContent: "space-around", marginTop: "20px" }}>
-        <div style={{ width: "30%" }}>
-          <h3>Cobertura de Código</h3>
-          <Line data={coverageData} options={{ ...lineOptions, scales: { ...lineOptions.scales, y: { title: { text: "Cobertura (%)" } } } }} />
+    <div style={{ display: "flex" }}>
+      <div style={{ flex: 1 }}>
+        <h2>Métricas de Commits con Cobertura de Código</h2>
+        <Bubble data={mainData} options={mainOptions} />
+        <div style={{ display: "flex", justifyContent: "space-around", marginTop: "20px" }}>
+          <div style={{ width: "30%" }}>
+            <h3>Cobertura de Código</h3>
+            <Line data={coverageData} options={{ ...lineOptions, scales: { ...lineOptions.scales, y: { title: { text: "Cobertura (%)" } } } }} />
+          </div>
+          <div style={{ width: "30%" }}>
+            <h3>Líneas de Código Modificadas</h3>
+            <Line data={modifiedLinesData} options={{ ...lineOptions, scales: { ...lineOptions.scales, y: { title: { text: "Líneas Modificadas" } } } }} />
+          </div>
+          <div style={{ width: "30%" }}>
+            <h3>Total Número de Tests</h3>
+            <Line data={testCountData} options={{ ...lineOptions, scales: { ...lineOptions.scales, y: { title: { text: "Número de Tests" } } } }} />
+          </div>
         </div>
-        <div style={{ width: "30%" }}>
-          <h3>Líneas de Código Modificadas</h3>
-          <Line data={modifiedLinesData} options={{ ...lineOptions, scales: { ...lineOptions.scales, y: { title: { text: "Líneas Modificadas" } } } }} />
+      </div>
+  
+      {/* Barra de color con escala numérica */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        marginBottom: "200px",
+        marginLeft: "50px"
+      }}>
+        {/* Barra de color con degradado */}
+        <div style={{
+          width: "40px",
+          height: "400px",
+          background: "linear-gradient(to bottom, rgba(0,255,0,1), rgba(0,255,0,0))",
+          textAlign: "center",
+          position: "relative"
+        }}>
+          {/* Etiqueta de título */}
+          <p style={{ marginTop: '-60px', color: "#000", fontWeight: "bold", textAlign: "left"}}> Tests por Commit</p>
         </div>
-        <div style={{ width: "30%" }}>
-          <h3>Total Número de Tests</h3>
-          <Line data={testCountData} options={{ ...lineOptions, scales: { ...lineOptions.scales, y: { title: { text: "Número de Tests" } } } }} />
+  
+        {/* Escala numérica al lado derecho de la barra */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: "300px",
+          marginLeft: "10px",
+          fontSize: "12px",
+          color: "#000"
+        }}>
+          <p style={{ margin: 0 }}>12</p>
+          <p style={{ margin: 0 }}>10</p>
+          <p style={{ margin: 0 }}>8</p>
+          <p style={{ margin: 0 }}>6</p>
+          <p style={{ margin: 0 }}>5</p>
         </div>
       </div>
     </div>
   );
-};
+};  
 
 export default TDDBoard;
