@@ -4,7 +4,6 @@ import { Chart as ChartJS, Tooltip, Legend, CategoryScale, LinearScale, PointEle
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 
-// Registrar los componentes de ChartJS necesarios para el gráfico
 ChartJS.register(Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
 interface CycleReportViewProps {
@@ -16,31 +15,40 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
   const testCounts = commits.map(commit => commit.test_count);
   const minTestCount = Math.min(...testCounts);
   const maxTestCount = Math.max(...testCounts);
+  const numberOfLabels = 5;
+  const step = Math.ceil(maxTestCount / (numberOfLabels ));
+  const labels = Array.from({ length: numberOfLabels }, (_, i) => maxTestCount - i * step);
 
   const getColorByTestCountAndConclusion = (testCount: number, conclusion: string) => {
     const intensity = (testCount - minTestCount) / (maxTestCount - minTestCount);
-    return conclusion === "success"
-      ? `rgba(0, ${Math.floor(255 * intensity)}, 0, 0.7)`
-      : `rgba(${Math.floor(255 * intensity)}, 0, 0, 0.7)`;
+    const adjustedIntensity = Math.max(0, Math.min(intensity, 1)); 
+
+    if (conclusion === "success") {
+        const greenValue = Math.floor(200 + (55 * adjustedIntensity)); 
+        const alpha = adjustedIntensity < 0.3 ? 0.3 : 0.6; 
+        return `rgba(0, ${greenValue}, 0, ${alpha})`; 
+    } else {
+        return `rgba(255, 0, 0, 0.7)`; 
+    }
   };
 
   const mainData = {
     datasets: commits.map((commit, index) => {
-      const job = jobsByCommit.find(job => job.sha === commit.sha);
-      const backgroundColor = getColorByTestCountAndConclusion(commit.test_count, job?.conclusion || "failed");
+        const job = jobsByCommit.find(job => job.sha === commit.sha);
+        const backgroundColor = getColorByTestCountAndConclusion(commit.test_count, job?.conclusion || "failed");
 
-      return {
-        label: `Commit ${index + 1}`,
-        data: [{
-          x: index + 1,
-          y: commit.coverage,
-          r: Math.max(10, commit.stats.total / 5),
-        }],
-        backgroundColor,
-        borderColor: `rgba(0,0,0,0.2)`,
-        hoverBackgroundColor: "rgba(0,0,0,0.3)",
-        hoverBorderColor: "rgba(0,0,0,0.1)"
-      };
+        return {
+            label: `Commit ${index + 1}`,
+            data: [{
+                x: index + 1,
+                y: commit.coverage,
+                r: Math.max(10, commit.stats.total / 5),
+            }],
+            backgroundColor,
+            borderColor: `rgba(0,0,0,0.2)`,
+            hoverBackgroundColor: "rgba(0,0,0,0.3)",
+            hoverBorderColor: "rgba(0,0,0,0.1)"
+        };
     })
   };
 
@@ -81,7 +89,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
     }
   };
 
-  // Datos para los gráficos de líneas
   const lineOptions: any = {
     scales: {
       x: { title: { display: true, text: "Commits" } },
@@ -161,14 +168,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
         </div>
       </div>
   
-      {/* Barra de color con escala numérica */}
       <div style={{
         display: "flex",
         alignItems: "center",
         marginBottom: "200px",
         marginLeft: "50px"
       }}>
-        {/* Barra de color con degradado */}
+
         <div style={{
           width: "40px",
           height: "400px",
@@ -176,11 +182,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
           textAlign: "center",
           position: "relative"
         }}>
-          {/* Etiqueta de título */}
           <p style={{ marginTop: '-60px', color: "#000", fontWeight: "bold", textAlign: "left"}}> Tests por Commit</p>
         </div>
   
-        {/* Escala numérica al lado derecho de la barra */}
         <div style={{
           display: "flex",
           flexDirection: "column",
@@ -190,11 +194,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
           fontSize: "12px",
           color: "#000"
         }}>
-          <p style={{ margin: 0 }}>12</p>
-          <p style={{ margin: 0 }}>10</p>
-          <p style={{ margin: 0 }}>8</p>
-          <p style={{ margin: 0 }}>6</p>
-          <p style={{ margin: 0 }}>5</p>
+          {labels.map(label => (
+            <p key={label} style={{ margin: 0 }}>{label}</p>
+          ))}
         </div>
       </div>
     </div>
