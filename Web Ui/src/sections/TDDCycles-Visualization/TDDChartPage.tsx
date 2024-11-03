@@ -122,7 +122,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
           border: "none",
           borderRadius: "5px",
           cursor: "pointer",
-          marginBottom: "20px" // Este margen agrega espacio debajo del botón
+          marginBottom: "20px"
         }}
       >
         Enviar Retroalimentación
