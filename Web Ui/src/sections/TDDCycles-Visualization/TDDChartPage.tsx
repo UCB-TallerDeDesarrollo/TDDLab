@@ -85,7 +85,9 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const handleFeedbackChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFeedback(event.target.value);
   };
-
+  const handleSubmitFeedback = () => {
+    console.log("Retroalimentación enviada:", feedback);
+  };
   return (
     <div className="container">
       <h1 data-testid="repoNameTitle">Tarea: {repoName}</h1>
@@ -95,13 +97,35 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
 
       {role === "admin" && (
         <div className="feedback-container">
-          <label htmlFor="feedback">Retroalimentación para la tarea:</label>
+          <label htmlFor="feedback">Retroalimentación de la tarea:</label>
           <textarea
             id="feedback"
             value={feedback}
             onChange={handleFeedbackChange}
             placeholder="Ingrese su retroalimentación aquí"
+            style={{
+              width: "100%",
+              height: "100px",
+              padding: "10px",
+              marginTop: "5px",
+              borderRadius: "5px",
+              border: "1px solid #ccc"
+            }}
           />
+          <button
+            onClick={handleSubmitFeedback}
+            style={{
+              marginTop: "10px",
+              padding: "10px 20px",
+              backgroundColor: "#36d7b7",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Enviar Retroalimentación
+          </button>
         </div>
       )}
 
