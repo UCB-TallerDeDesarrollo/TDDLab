@@ -8,19 +8,20 @@ import { useSearchParams } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
-import { CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
+import { CommentDataObject,CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
   commentsRepo: TeacherCommentsRepository;
   role: string;
+  teacher_id: number;
 }
 
 function isStudent(role: string) {
   return role === "student";
 }
-function TDDChartPage({ port, commentsRepo, role }: Readonly<CycleReportViewProps>) {
+function TDDChartPage({ port, commentsRepo, role, teacher_id }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
@@ -28,7 +29,7 @@ function TDDChartPage({ port, commentsRepo, role }: Readonly<CycleReportViewProp
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
-  const [comments, setComments] = useState<CommentsCreationObject[] | null>(null);
+  const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<string>("");
 
@@ -65,7 +66,7 @@ function TDDChartPage({ port, commentsRepo, role }: Readonly<CycleReportViewProp
   };
   const obtainComments = async () => {
     try {
-      const commentsData: CommentsCreationObject[] = await commentsRepo.getCommentsBySubmissionId(submissionId);
+      const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionId);
       setComments(commentsData);
     } catch (error) {
       console.error("Error obtaining comments:", error);
@@ -99,9 +100,31 @@ function TDDChartPage({ port, commentsRepo, role }: Readonly<CycleReportViewProp
   const handleFeedbackChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFeedback(event.target.value);
   };
-  const handleSubmitFeedback = () => {
-    console.log("Retroalimentación enviada:", feedback);
+  const handleSubmitFeedback = async () => {
+    if (!feedback.trim()) {
+      console.log("El feedback está vacío.");
+      return;
+    }
+
+    try {
+      const commentData: CommentsCreationObject = {
+        submission_id: submissionId,
+        teacher_id,
+        content: feedback,
+      };
+  
+      console.log("Datos del comentario a enviar:", commentData); 
+  
+      await commentsRepo.createComment(commentData);
+      console.log("Retroalimentación enviada:", feedback);
+  
+      setFeedback("");
+      obtainComments();
+    } catch (error) {
+      console.error("Error al enviar la retroalimentación:", error);
+    }
   };
+
   return (
     <div className="container">
       <h1 data-testid="repoNameTitle">Tarea: {repoName}</h1>

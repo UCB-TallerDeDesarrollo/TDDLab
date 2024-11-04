@@ -1,4 +1,4 @@
-export interface CommentsCreationObject {
+export interface CommentDataObject {
     id: number;
     submission_id: number;
     teacher_id: number;
