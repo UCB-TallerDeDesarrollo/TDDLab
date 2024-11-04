@@ -1,9 +1,13 @@
 import axios from "axios";
-import { VITE_API } from "../../../../config";
+//import { VITE_API } from "../../../../config";
 import TeacherCommentsRepositoryInterface from "../domain/CommentsRepositoryInterface";
 import { CommentsCreationObject } from "../domain/CommentsInterface";
 
-const API_URL = `${VITE_API}/commentsSubmission`;
+//Por el momento funciona con este enlace 
+const API_URL = "http://localhost:3000/api/commentsSubmission";
+
+//const API_URL = VITE_API + "/commentsSubmission";
+
 
 class TeacherCommentsRepository implements TeacherCommentsRepositoryInterface {
   

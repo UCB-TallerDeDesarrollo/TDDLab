@@ -20,6 +20,7 @@ import { getSessionCookie } from "./modules/User-Authentication/application/getS
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import UsersByGroupPage from "./sections/User/UserBygroupPage";
+import TeacherCommentsRepository from "./modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 const navArrayLinks = [
   {
     title: "Grupos",
@@ -63,6 +64,8 @@ function App() {
     }
   }, []);
   const authData = useGlobalState("authData")[0];
+  const teacherCommentsRepo = new TeacherCommentsRepository();
+
   return (
     <Router>
       {authData.userEmail != "" && authData.userRole !== undefined && (
@@ -108,7 +111,7 @@ function App() {
           path="/graph"
           element={
             <ProtectedRouteComponent>
-              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} />
+              <TDDChartPage port={new GithubAPIAdapter()} commentsRepo={teacherCommentsRepo} role={authData.userRole ?? ""} />
             </ProtectedRouteComponent>
           }
         />

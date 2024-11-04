@@ -6,6 +6,7 @@ import {
   MockGithubAPIEmpty,
   MockGithubAPIError,
 } from "./__mocks__/MocksGithubAPI";
+import TeacherCommentsRepository from "../../../src/modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 
 jest.mock("react-router-dom", () => ({
   useSearchParams: jest.fn(() => {
@@ -23,7 +24,7 @@ describe("TDDChartPage", () => {
     ["admin"],
     ["student"]
   ])("renders loading spinner when loading is true for role %s", async (role) => {
-    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} role={role} />);
+    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} role={role} commentsRepo={new TeacherCommentsRepository} />);
   
     await waitFor(() => {
       const loadingSpinner = getByTestId("loading-spinner");
@@ -36,7 +37,7 @@ describe("TDDChartPage", () => {
     ["student"]
   ])("displays an error message when no data is available for role %s", async (role) => {
     const { getByTestId } = render(
-      <TDDChartPage port={new MockGithubAPIEmpty()} role={role} />
+      <TDDChartPage port={new MockGithubAPIEmpty()} role={role} commentsRepo={new TeacherCommentsRepository} />
     );
   
     await waitFor(() => {
@@ -49,7 +50,7 @@ describe("TDDChartPage", () => {
     ["admin"],
     ["student"]
   ])("displays the repository name for role %s", async (role) => {
-    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} role={role} />);
+    const { getByTestId } = render(<TDDChartPage port={new MockGithubAPI()} role={role} commentsRepo={new TeacherCommentsRepository} />);
   
     await waitFor(() => {
       const repoName = getByTestId("repoNameTitle");
@@ -68,7 +69,7 @@ describe("TDDChartPage", () => {
     spyConsoleError.mockImplementation(() => {});
   
     await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" />);
+      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" commentsRepo={new TeacherCommentsRepository} />);
     });
   
     expect(spyConsoleError).toHaveBeenCalledWith(
