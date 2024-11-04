@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Timeline } from '../domain/Timeline';
-import * as vscode from 'vscode';
 
 export class TimelineRepository {
     private filePath: string;
