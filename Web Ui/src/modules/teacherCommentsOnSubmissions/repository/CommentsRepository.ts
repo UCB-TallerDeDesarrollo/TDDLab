@@ -20,6 +20,20 @@ class TeacherCommentsRepository implements TeacherCommentsRepositoryInterface {
       throw error;
     }
   }
+  async createComment(commentData: CommentsCreationObject): Promise<CommentsCreationObject> {
+    try {
+      const response = await axios.post<CommentsCreationObject>(API_URL, commentData);
+      if (response.status === 201) { // Suponiendo que 201 Created es el código de éxito
+        return response.data;
+      } else {
+        throw new Error("Failed to create comment");
+      }
+    } catch (error) {
+      console.error("Error creating comment:", error);
+      throw error;
+    }
+  }
 }
+
 
 export default TeacherCommentsRepository;
