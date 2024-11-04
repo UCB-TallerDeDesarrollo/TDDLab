@@ -16,6 +16,16 @@ class GroupsRepository implements GroupsRepositoryInterface {
     }
   }
 
+  async getGroupsByUserId(id: number): Promise<number[]>{
+    try {
+      const response = await axios.get(`${VITE_API}/user/groups/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching groups by user email:", error);
+      throw error;
+    }
+  }
+
   async getGroupById(id: number): Promise<GroupDataObject | null> {
     try {
       const response = await axios.get(`${API_URL}/${id}`);
