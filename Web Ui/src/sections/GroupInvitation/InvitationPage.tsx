@@ -14,6 +14,7 @@ import { handleSignInWithGitHub } from "../../modules/User-Authentication/applic
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
+import PasswordComponent from "./components/PasswordPopUp";
 
 function InvitationPage() {
   const location = useLocation();
@@ -30,6 +31,7 @@ function InvitationPage() {
   const userType = getQueryParam("type");
 
   const [user, setUser] = useState<User | null>(null);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
@@ -50,6 +52,19 @@ function InvitationPage() {
     }
   };
 
+  const handlePassVerification = async (password: string) => {
+    const result = await dbAuthPort.verifyPass(password);
+
+    if (result === true) {
+      handleAcceptInvitation("teacher");
+      return;
+    }
+    alert("Contraseña invalida");
+  };
+
+  const handlePopPassword = async () => {
+    setShowPasswordPopup(true);
+  };
   
   const handleAcceptInvitation = async (type: string) => {
     console.log(user?.email);
@@ -168,7 +183,7 @@ function InvitationPage() {
                   )}
                   {userType === "teacher" && (
                     <Button
-                      onClick={() => handleAcceptInvitation("teacher")}
+                      onClick={handlePopPassword}
                       variant="contained"
                       color="primary"
                       sx={{ marginTop: 2 }}
@@ -181,6 +196,13 @@ function InvitationPage() {
               </Card>
             </Grid>
           </Grid>
+          {showPasswordPopup && (
+            <PasswordComponent
+              open={showPasswordPopup}
+              onClose={() => setShowPasswordPopup(false)}
+              onSend={handlePassVerification}
+            />
+          )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
         </div>
       ) : (
