@@ -8,24 +8,27 @@ import { useSearchParams } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
+import { CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
+import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
+  commentsRepo: TeacherCommentsRepository;
   role: string;
 }
 
 function isStudent(role: string) {
   return role === "student";
 }
-
-function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
+function TDDChartPage({ port, commentsRepo, role }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
-  
+  const submissionId = parseInt(searchParams.get("submissionId") || "0");
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
+  const [comments, setComments] = useState<CommentsCreationObject[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<string>("");
 
@@ -60,6 +63,17 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
       console.error("Error obtaining commit information:", error);
     }
   };
+  const obtainComments = async () => {
+    try {
+      const commentsData: CommentsCreationObject[] = await commentsRepo.getCommentsBySubmissionId(submissionId);
+      setComments(commentsData);
+    } catch (error) {
+      console.error("Error obtaining comments:", error);
+    }
+  };
+  useEffect(() => {
+    obtainComments();
+  }, [submissionId]);
 
   useEffect(() => {
     const fetchOwnerName = async () => {
@@ -153,6 +167,20 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
             />
           </div>
         </React.Fragment>
+      )}
+      {!loading && comments && comments.length > 0 && (
+        <div className="comments-section">
+          <h2>Comentarios</h2>
+          <ul>
+            {comments.map((comment, index) => (
+              <li key={index} style={{ marginBottom: "10px", borderBottom: "1px solid #ddd" }}>
+                <p><strong>Autor:</strong> {comment.teacher_id}</p>
+                <p><strong>Comentario:</strong> {comment.content}</p>
+                <p><strong>Fecha:</strong> {new Date(comment.created_at).toLocaleDateString()}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
