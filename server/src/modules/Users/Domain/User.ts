@@ -1,12 +1,12 @@
 export interface User {
   id: number;
   email: string;
-  groupid: number;
+  groupid: number[];
   role: string;
 }
 
 export interface UserCreationObect{
   email: string;
-  groupid: number;
+  groupid: number[];
   role: string;
 }

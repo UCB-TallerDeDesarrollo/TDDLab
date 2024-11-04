@@ -20,6 +20,9 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
       console.error("Ocurrió un error al eliminar el grupo:", error);
     }
   }
+  getGroupsByUserId(_id: number): Promise<number[]>{
+    throw new Error("Method not implemented.");
+  }
 }
 
 describe("DeleteGroup", () => {
