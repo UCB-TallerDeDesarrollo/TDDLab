@@ -4,7 +4,7 @@ import TDDCharts from "./components/TDDChart";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
@@ -14,15 +14,27 @@ interface CycleReportViewProps {
   role: string;
 }
 
+interface Submission {
+  id: number;
+  assignmentid: number;
+  userid: number;
+  status: string;
+  repository_link: string;
+}
+
 function isStudent(role: string) {
   return role === "student";
 }
 
 function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
-  
+
+  const fetchedSubmissions: Submission[] = JSON.parse(searchParams.get("fetchedSubmissions") || "[]");
+  const submissionId = Number(searchParams.get("submissionId"));
+
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
@@ -31,32 +43,23 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
 
-  const obtainJobsData = async () => {
+  const [currentIndex, setCurrentIndex] = useState(
+    fetchedSubmissions.findIndex(submission => submission.id === submissionId)
+  );
+
+  const loadGraphData = async (repoOwner: string, repoName: string) => {
+    setLoading(true);
     try {
-      console.log("Fetching commits data...");
-      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(
-        repoOwner,
-        repoName,
-      );
+      const [jobsData, commits] = await Promise.all([
+        getTDDCycles.obtainJobsData(repoOwner, repoName),
+        getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName)
+      ]);
       setJobsByCommit(jobsData);
-    } catch (error) {
-      console.error("Error obtaining jobs:", error);
-    }
-  };
-
-  const obtainCommitsData = async () => {
-    console.log("Fetching commit information...");
-    try {
-      const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(
-        repoOwner,
-        repoName
-      );
-
       setCommitsInfo(commits);
-      console.log("Página TDDChartPage: ");
-      console.log(commitsInfo);
     } catch (error) {
-      console.error("Error obtaining commit information:", error);
+      console.error("Error loading graph data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,14 +77,34 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   }, [repoOwner]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await Promise.all([obtainJobsData(), obtainCommitsData()]);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+    const currentSubmission = fetchedSubmissions[currentIndex];
+    if (currentSubmission) {
+      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+      const match = regex.exec(currentSubmission.repository_link);
+      if (match) {
+        const [, user, repo] = match;
+        loadGraphData(user, repo);
+      }
+    }
+  }, [currentIndex]);
 
-  console.log(role);
+  const goToPreviousStudent = () => {
+    if (currentIndex > 0) {
+      const previousIndex = currentIndex - 1;
+      const previousSubmission = fetchedSubmissions[previousIndex];
+      navigate(`?repoOwner=${previousSubmission.repository_link.split('/')[3]}&repoName=${previousSubmission.repository_link.split('/')[4]}&submissionId=${previousSubmission.id}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`);
+      setCurrentIndex(previousIndex);
+    }
+  };
+
+  const goToNextStudent = () => {
+    if (currentIndex < fetchedSubmissions.length - 1) {
+      const nextIndex = currentIndex + 1;
+      const nextSubmission = fetchedSubmissions[nextIndex];
+      navigate(`?repoOwner=${nextSubmission.repository_link.split('/')[3]}&repoName=${nextSubmission.repository_link.split('/')[4]}&submissionId=${nextSubmission.id}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`);
+      setCurrentIndex(nextIndex);
+    }
+  };
 
   return (
     <div className="container">
@@ -102,8 +125,35 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!loading && commitsInfo?.length != 0 && (
+      {!loading && commitsInfo?.length !== 0 && (
         <React.Fragment>
+          <div className="navigation-buttons">
+            <button
+              data-testid="previous-student"
+              className="nav-button"
+              onClick={goToPreviousStudent}
+              disabled={currentIndex === 0}
+              style={{
+                backgroundColor: currentIndex === 0 ? "#B0B0B0" : "#052845",
+              }}
+            >
+              Anterior
+            </button>
+            <button
+              data-testid="next-student"
+              className="nav-button"
+              onClick={goToNextStudent}
+              disabled={currentIndex === fetchedSubmissions.length - 1}
+              style={{
+                backgroundColor:
+                  currentIndex === fetchedSubmissions.length - 1
+                    ? "#B0B0B0"
+                    : "#052845",
+              }}
+            >
+              Siguiente
+            </button>
+          </div>
           <div className="mainInfoContainer">
             <TDDCharts
               data-testId="cycle-chart"
