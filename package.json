@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "chart.js": "^4.4.6",
+    "chartjs-plugin-zoom": "^2.0.1",
     "check-node-version": "^4.2.1"
   },
   "devDependencies": {
