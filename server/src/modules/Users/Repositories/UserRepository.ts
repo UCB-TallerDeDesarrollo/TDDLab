@@ -43,8 +43,13 @@ export class UserRepository {
     const query = "SELECT id, email, groupid, role FROM usersTable WHERE email = $1";
     const values = [email];
     const rows = await this.executeQuery(query, values);
-    if (rows.length === 1) {
-      return rows[0];
+    if (rows.length >= 1) {
+      return {
+        id: rows[0].id,
+        email: rows[0].email,
+        groupid: rows.map((row) => row.groupid),
+        role: rows[0].role,
+      };
     }
     return null;
   }

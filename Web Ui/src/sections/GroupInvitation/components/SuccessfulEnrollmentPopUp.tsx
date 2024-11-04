@@ -8,6 +8,7 @@ function SuccessfulEnrollmentPopUp() {
   const handleClose = () => {
     setOpen(false);
     window.location.href = "/";
+    localStorage.clear();
     console.log(open);
   };
 
