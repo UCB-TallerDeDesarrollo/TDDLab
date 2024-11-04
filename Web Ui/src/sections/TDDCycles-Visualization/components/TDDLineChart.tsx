@@ -263,7 +263,7 @@ function TDDLineCharts({
         break;
       case "Lista":
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
-      case "Board":
+      case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []}/>;
     }
     return (

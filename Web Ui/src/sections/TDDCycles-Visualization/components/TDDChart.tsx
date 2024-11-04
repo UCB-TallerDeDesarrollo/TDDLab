@@ -56,8 +56,8 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             <MenuItem value={"Lista"}>
               Lista de Commits
             </MenuItem>
-            <MenuItem value={"Board"}>
-              Board
+            <MenuItem value={"Dashboard"}>
+            Dashboard
             </MenuItem>
           </Select>
         </FormControl>
