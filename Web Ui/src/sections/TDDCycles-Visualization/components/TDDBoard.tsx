@@ -14,7 +14,6 @@ interface CycleReportViewProps {
   jobsByCommit: JobDataObject[];
 }
 
-type ZoomKey = "coverage" | "linesModified" | "testCount";
 
 const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => {
   const [zoomedChart, setZoomedChart] = useState<"coverage" | "linesModified" | "testCount" | null>(null);
@@ -53,7 +52,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
             display: true,
             text: "Commits Realizados",
             font: {
-              size: 20,
+              size: 16,
               lineHeight: 1.2,
             },
           },
@@ -63,7 +62,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
             display: true,
             text: yAxisText,
             font: {
-              size: 20,
+              size: 16,
               lineHeight: 1.2,
               padding: { top: 20 }
             },
@@ -137,7 +136,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
   const closeModal = () => setZoomedChart(null);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent:"center" }}>
       <h2>Métricas de Commits con Cobertura de Código</h2>
       <div style={{ width: "80%", marginBottom: "20px" }}>
         <Bubble data={{
@@ -200,7 +199,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
       {zoomedChart && (
         <div className="zoom-modal" onClick={closeModal} style={{
           position: "fixed", top: 0, left: 0, width: "100%", height: "100vh", 
-          backgroundColor: "rgba(0, 0, 0, 0.5)", display: "flex", justifyContent: "center", alignItems: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.5)", display: "flex", alignItems: "center",
           zIndex: 1000
         }}>
           <div style={{ width: "80%", backgroundColor: "white", padding: "20px", borderRadius: "8px" }}>
@@ -214,40 +213,40 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
         </div>
       )}
       
-      <div style={{ opacity: zoomedChart ? 0.3 : 1, display: "flex", flexWrap: "wrap", gap: "25px" }}>
-        <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("coverage")}>
-          <h3>Cobertura de Código</h3>
-          <Line
-            data={getLineChartData("Porcentaje de Cobertura de Código", commits.map(commit => commit.coverage))}
-            options={getChartOptions("Cobertura de Código")}
-            onClick={onClick(chartRefCoverage)}
-            ref={chartRefCoverage}
-          />
-        </div>
-        <div style={{ width: "30%" }} onDoubleClick={() => handleDoubleClick("linesModified")}>
-          <h3>Líneas de Código Modificadas</h3>
-          <Line
-            data={getLineChartData("Total de Líneas de Código Modificadas", commits.map(commit => commit.stats.total))}
-            options={getChartOptions("Líneas de Código Modificadas")}
-            onClick={onClick(chartRefModifiedLines)}
-            ref={chartRefModifiedLines}
-          />
-        </div>
-        <div style={{ width: "30%" }} onDoubleClick={() => handleDoubleClick("testCount")}>
-          <h3>Total Número de Tests</h3>
-          <Line
-            data={getLineChartData("Total Número de Tests", commits.map(commit => commit.test_count))}
-            options={getChartOptions("Número de Tests")}
-            onClick={onClick(chartRefTestCount)}
-            ref={chartRefTestCount}
-          />
-        </div>
-      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "35px", justifyContent: "space-between", marginBottom:"30px" }}>
+  <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("coverage")}>
+    <h3>Cobertura de Código</h3>
+    <Line
+      data={getLineChartData("Porcentaje de Cobertura de Código", commits.map(commit => commit.coverage))}
+      options={getChartOptions("Cobertura de Código")}
+      onClick={onClick(chartRefCoverage)}
+      ref={chartRefCoverage}
+    />
+  </div>
+  <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("linesModified")}>
+    <h3>Líneas de Código Modificadas</h3>
+    <Line
+      data={getLineChartData("Total de Líneas de Código Modificadas", commits.map(commit => commit.stats.total))}
+      options={getChartOptions("Líneas de Código Modificadas")}
+      onClick={onClick(chartRefModifiedLines)}
+      ref={chartRefModifiedLines}
+    />
+  </div>
+  <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("testCount")}>
+    <h3>Total Número de Tests</h3>
+    <Line
+      data={getLineChartData("Total Número de Tests", commits.map(commit => commit.test_count))}
+      options={getChartOptions("Número de Tests")}
+      onClick={onClick(chartRefTestCount)}
+      ref={chartRefTestCount}
+    />
+  </div>
+</div>
       </div>
       <div style={{
         display: "flex",
         alignItems: "center",
-        marginTop: "-650px",
+        marginTop: "-740px",
         marginLeft: "1200px"
       }}>
         <div style={{
