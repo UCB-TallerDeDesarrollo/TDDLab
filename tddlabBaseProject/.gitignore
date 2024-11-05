@@ -5,3 +5,4 @@ dist
 /coverage
 .DS_Store
 ./script/report.json
+./.husky/_
