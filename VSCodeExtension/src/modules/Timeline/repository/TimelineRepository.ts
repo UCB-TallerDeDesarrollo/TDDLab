@@ -17,12 +17,13 @@ export class TimelineRepository {
                 }
                 try {
                     const jsonData = JSON.parse(data);
-                    const timelines = jsonData.map((item: any) => new Timeline(
-                        item.numPassedTests, 
-                        item.numTotalTests, 
-                        new Date(item.timestamp)
-                    ));
-                    resolve(timelines);
+                    const timeline = jsonData
+                        .map((item: any) => new Timeline(
+                            item.numPassedTests, 
+                            item.numTotalTests, 
+                            new Date(item.timestamp)
+                        ));
+                    resolve(timeline);
                 } catch (error) {
                     reject(new Error('Error al parsear el archivo JSON'));
                 }

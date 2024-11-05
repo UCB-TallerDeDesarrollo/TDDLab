@@ -15,17 +15,15 @@ export class TimelineView implements vscode.WebviewViewProvider {
         const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
         this.getTimeline = new GetTimeline(rootPath);
         this.getLastPoint = new GetLastPoint(context);
-        
     }
 
     resolveWebviewView(webviewView: vscode.WebviewView): void {
         webviewView.webview.options = { enableScripts: true };
         this.currentWebview = webviewView.webview;
-        this.getTimeline.execute();
+        this.showTimeline(this.currentWebview);
     }
 
     async showTimeline(webview: vscode.Webview): Promise<void> {
-        
         try {
             const timeline = await this.getTimeline.execute();
             webview.html = this.generateHtml(timeline);
@@ -38,13 +36,13 @@ export class TimelineView implements vscode.WebviewViewProvider {
         }
     }
 
-    generateHtml(timelines: Timeline[]): string {
-        const timelineHtml = timelines.map(item => {
-            const color = item.getColor();
+    generateHtml(timeline: Timeline[]): string {
+        const timelineHtml = timeline.map(point => {
+            const color = point.getColor();
             return `<div style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;"></div>`;
         }).join('');
 
-        this.getLastPoint.execute(timelines[timelines.length - 1].getColor());
+        this.getLastPoint.execute(timeline[timeline.length - 1].getColor());
 
         return `
             <!DOCTYPE html>
