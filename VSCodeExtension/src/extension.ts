@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import { TimelineView } from './sections/Timeline/TimelineView';
-import { CommandService } from './modules/Button/application/commands';
-import { TerminalRepository } from './modules/Button/repository/Buttonrepository';
-import { MyTreeItem } from './modules/Button/domain/treeItem';
 import * as path from 'path';
 import * as fs from 'fs';
+import { ExecuteTestCommand } from './modules/RunTestButton/application/ExecuteTestCommand';
+import { VSCodeTerminalRepository } from './modules/RunTestButton/repository/VSCodeTerminalRepository';
+import { TestExecutionTreeView } from './sections/TestExecution/TestExecutionTreeView';
+
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -43,32 +44,16 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
 
-    const terminalRepository = new TerminalRepository();
-    const commandService = new CommandService(terminalRepository);
-    
-    let runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
-      await commandService.runTestCommand();
-
-      
+    const terminalRepository = new VSCodeTerminalRepository();
+    const executeTestCommand = new ExecuteTestCommand(terminalRepository);
+  
+    const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
+      await executeTestCommand.execute();
     });
   
     context.subscriptions.push(runTestCommand);
   
-    const myView = vscode.window.createTreeView('myView', {
-      treeDataProvider: {
-        getTreeItem: (element: MyTreeItem) => element,
-        getChildren: () => [
-          new MyTreeItem(
-            'Run Test', 
-            vscode.TreeItemCollapsibleState.None, 
-            { command: 'TDD.runTest', title: 'Run Test' },
-            '',
-            new vscode.ThemeIcon('play', new vscode.ThemeColor('charts.green')),
-            ''
-          )
-        ]
-      }
-    });
+    const testExecutionTreeView = new TestExecutionTreeView(context);
+    testExecutionTreeView.initialize();
   
-    context.subscriptions.push(myView);
   }
