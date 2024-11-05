@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import {
   Table,
@@ -25,7 +25,6 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-import { adaptarDatos } from "../../../utils/adaptarDatos";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -49,24 +48,25 @@ const CustomTableCell2 = styled(TableCell)({
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number;
+  userGroupid: number[];
   onGroupChange: (groupId: number) => void;
 }
 
 function Assignments({
-  ShowForm: showForm,
-  userRole,
-  userGroupid,
-  onGroupChange,
-}: Readonly<AssignmentsProps>) {
+                       ShowForm: showForm,
+                       userRole,
+                       userGroupid,
+                       onGroupChange,
+                     }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-    number | null
+      number | null
   >(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
@@ -79,10 +79,9 @@ function Assignments({
   const getGroups = new GetGroups(groupRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
-
   const orderAssignments = (
-    assignmentsArray: AssignmentDataObject[],
-    selectedSorting: string
+      assignmentsArray: AssignmentDataObject[],
+      selectedSorting: string
   ) => {
     if (assignmentsArray.length == 0) {
       return;
@@ -99,45 +98,63 @@ function Assignments({
     setAssignments(assignmentsArray);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const allGroups = await getGroups.getGroups();
-        setGroupList(allGroups);
-
-        // Recuperar el groupId de la URL
-        const groupIdFromURL = new URLSearchParams(window.location.search).get('groupId');
-        // Recuperar el groupId de authData
-        const authGroupId = authData?.usergroupid;
-        // Recuperar el groupId de localStorage
-        const savedSelectedGroup = localStorage.getItem("selectedGroup");
-        
-        let groupIdToUse: number | null = null;
-        if (groupIdFromURL) {
-          groupIdToUse = parseInt(groupIdFromURL, 10);
-        } else if (authGroupId) {
-          groupIdToUse = authGroupId;
-        } else if (savedSelectedGroup) {
-          groupIdToUse = parseInt(savedSelectedGroup, 10);
+  async function getUserGroups() {
+    let allGroups: GroupDataObject[] = [];
+    if (userRole === "student") {
+        if (localStorage.getItem('userGroups') === null) {
+          const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
+          localStorage.setItem('userGroups', JSON.stringify(studentGroups));
+          allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
+        } else {
+          const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') || '[]');
+          allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
         }
+    } else if(userRole === "teacher" || userRole === "admin") {
+      allGroups = await getGroups.getGroups();
+    }
+    return allGroups;
+  }
 
-        if (groupIdToUse !== undefined && groupIdToUse !== null) {
-          const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
-          if (selectedGroup?.id) {
-            setSelectedGroup(selectedGroup.id);
-            const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup.id);
-            setAssignments(data);
-            orderAssignments([...data], selectedSorting);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching assignments:", error);
+  const fetchData = async () => {
+    console.log("Fetching data...", authData);
+    try {
+      const allGroups = await getUserGroups();
+      setGroupList(allGroups);
+
+      // Recuperar el groupId de la URL
+      const groupIdFromURL = new URLSearchParams(window.location.search).get('groupId');
+      // Recuperar el groupId de authData
+      const authGroupId = authData?.usergroupid;
+      // Recuperar el groupId de localStorage
+      const savedSelectedGroup = localStorage.getItem("selectedGroup");
+
+      let groupIdToUse: number | null = null;
+      if (groupIdFromURL) {
+        groupIdToUse = parseInt(groupIdFromURL, 10);
+      } else if (authGroupId) {
+        groupIdToUse = authGroupId; // Seleccionamos el primer grupo por defecto
+      } else if (savedSelectedGroup) {
+        groupIdToUse = parseInt(savedSelectedGroup, 10);
       }
-    };
 
+      if (groupIdToUse !== undefined && groupIdToUse !== null) {
+        const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
+        if (selectedGroup?.id) {
+          setSelectedGroup(selectedGroup.id);
+          const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup.id);
+          setAssignments(data);
+          orderAssignments([...data], selectedSorting);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching assignments:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, []);
-  
+  }, [location, authData]);
+
   useEffect(() => {
     const fetchAssignmentsByGroup = async () => {
       try {
@@ -145,14 +162,14 @@ function Assignments({
           console.warn("authData aún no está disponible. Esperando a que se cargue...");
           return;
         }
-  
+
         const authGroupId = authData.usergroupid;
-  
-        if (authGroupId !== undefined && authGroupId !== null) {  
+
+        if (authGroupId !== undefined && authGroupId !== null) {
           const data = await assignmentsRepository.getAssignmentsByGroupid(authGroupId);
           setAssignments(data);
           orderAssignments([...data], selectedSorting);
-  
+
         } else {
           console.warn("No se encontró un groupId válido para utilizar.");
         }
@@ -160,12 +177,11 @@ function Assignments({
         console.error("Error fetching assignments:", error);
       }
     };
-  
+
     if (authData && authData.usergroupid !== undefined) {
       fetchAssignmentsByGroup();
     }
   }, [authData, selectedSorting]);
-  
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value);
@@ -183,8 +199,6 @@ function Assignments({
     // Actualizar y guardar en authData
     const updatedAuthData = { ...authData, usergroupid: groupId };
     setAuthData(updatedAuthData);
-    const datosParaGuardar = adaptarDatos(updatedAuthData);
-    console.log("Esto debo guardar en la base de datos", datosParaGuardar);
 
     try {
       const updatedGroupId = updatedAuthData.usergroupid;
@@ -200,18 +214,13 @@ function Assignments({
     }
   };
 
-  
-
- 
   const filteredAssignments = selectedGroup
-
-
-  ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-  : assignments;
+      ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
+      : assignments;
 
   const handleClickDetail = (index: number) => {
     navigate(`/assignment/${filteredAssignments[index].id}`);
-};
+  };
 
   const handleClickDelete = (index: number) => {
     const assignmentToDelete = filteredAssignments[index];
@@ -219,19 +228,19 @@ function Assignments({
     setSelectedAssignmentIndex(originalIndex);
     setConfirmationOpen(true);
   };
-  
+
   const handleConfirmDelete = async () => {
     try {
       if (
-        selectedAssignmentIndex !== null &&
-        assignments[selectedAssignmentIndex]
+          selectedAssignmentIndex !== null &&
+          assignments[selectedAssignmentIndex]
       ) {
         console.log(
-          "ID de la tarea a eliminar:",
-          assignments[selectedAssignmentIndex].id,
+            "ID de la tarea a eliminar:",
+            assignments[selectedAssignmentIndex].id,
         );
         await deleteAssignment.deleteAssignment(
-          assignments[selectedAssignmentIndex].id,
+            assignments[selectedAssignmentIndex].id,
         );
         const updatedAssignments = [...assignments];
         updatedAssignments.splice(selectedAssignmentIndex, 1);
@@ -249,96 +258,91 @@ function Assignments({
   };
 
   return (
-    <Container>
-      <section className="Tareas">
-        <StyledTable>
-          <TableHead>
-            <TableRow 
-            sx={{ 
-              borderBottom: "2px solid #E7E7E7" 
-            }}
-            >
-              <CustomTableCell1
-                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+      <Container>
+        <section className="Tareas">
+          <StyledTable>
+            <TableHead>
+              <TableRow
+                  sx={{
+                    borderBottom: "2px solid #E7E7E7"
+                  }}
               >
-                Tareas
-              </CustomTableCell1>
-              <CustomTableCell2>
-                <ButtonContainer>
-                {userRole !== "student" && groupList.length > 0 ?(  
-                  <GroupFilter
-                    selectedGroup={selectedGroup}
-                    groupList={groupList}
-                    onChangeHandler={handleGroupChange}
-                    defaultName={groupList.find(group => group.id === userGroupid)?.groupName || "Selecciona un grupo"}
+                <CustomTableCell1
+                    sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+                >
+                  Tareas
+                </CustomTableCell1>
+                <CustomTableCell2>
+                  <ButtonContainer>
+                      <GroupFilter
+                          selectedGroup={selectedGroup}
+                          groupList={groupList}
+                          onChangeHandler={handleGroupChange}
+                          defaultName={groupList.find(group => group.id === userGroupid[0])?.groupName || "Selecciona un grupo"}
+                      />
+                    <SortingComponent
+                        selectedSorting={selectedSorting}
+                        onChangeHandler={handleOrderAssignments}
+                    />
+                    {userRole !== "student" && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddIcon />}
+                            sx={{
+                              borderRadius: "17px",
+                              textTransform: "none",
+                              fontSize: "0.95rem",
+                            }}
+                            onClick={showForm}
+                        >
+                          Crear
+                        </Button>
+                    )}
+                  </ButtonContainer>
+                </CustomTableCell2>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredAssignments.map((assignment, index) => (
+                  <Assignment
+                      key={assignment.id}
+                      assignment={assignment}
+                      index={index}
+                      handleClickDetail={handleClickDetail}
+                      handleClickDelete={handleClickDelete}
+                      handleRowHover={handleRowHover}
+                      role={userRole}
                   />
-                ):(
-                  <span>{groupList.find(group => group.id === userGroupid)?.groupName || ""}</span>
-                  )}
-
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderAssignments}
-                  />
-                  {userRole !== "student" && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<AddIcon />}
-                      sx={{
-                        borderRadius: "17px",
-                        textTransform: "none",
-                        fontSize: "0.95rem",
-                      }}
-                      onClick={showForm}
-                    >
-                      Crear
-                    </Button>
-                  )}
-                </ButtonContainer>
-              </CustomTableCell2>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredAssignments.map((assignment, index) => (
-              <Assignment
-                key={assignment.id}
-                assignment={assignment}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-                role={userRole}
+              ))}
+            </TableBody>
+          </StyledTable>
+          {confirmationOpen && (
+              <ConfirmationDialog
+                  open={confirmationOpen}
+                  title="¿Eliminar la tarea?"
+                  content={
+                    <>
+                      Ten en cuenta que esta acción tambien eliminará <br /> todas las
+                      entregas asociadas.
+                    </>
+                  }
+                  cancelText="Cancelar"
+                  deleteText="Eliminar"
+                  onCancel={() => setConfirmationOpen(false)}
+                  onDelete={handleConfirmDelete}
               />
-            ))}
-          </TableBody>
-        </StyledTable>
-        {confirmationOpen && (
-          <ConfirmationDialog
-            open={confirmationOpen}
-            title="¿Eliminar la tarea?"
-            content={
-              <>
-                Ten en cuenta que esta acción tambien eliminará <br /> todas las
-                entregas asociadas.
-              </>
-            }
-            cancelText="Cancelar"
-            deleteText="Eliminar"
-            onCancel={() => setConfirmationOpen(false)}
-            onDelete={handleConfirmDelete}
-          />
-        )}
-        {validationDialogOpen && (
-          <ValidationDialog
-            open={validationDialogOpen}
-            title="Tarea eliminada exitosamente"
-            closeText="Cerrar"
-            onClose={() => window.location.reload()}
-          />
-        )}
-      </section>
-    </Container>
+          )}
+          {validationDialogOpen && (
+              <ValidationDialog
+                  open={validationDialogOpen}
+                  title="Tarea eliminada exitosamente"
+                  closeText="Cerrar"
+                  onClose={() => window.location.reload()}
+              />
+          )}
+        </section>
+      </Container>
   );
 }
 

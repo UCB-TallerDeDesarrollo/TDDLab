@@ -24,7 +24,7 @@ afterEach(() => {
 describe("getUsersByGroupId", () => {
   it("should retrieve users by group ID", async () => {
     const groupId = 70;
-    const expectedUsers = mockUsers.filter((user) => user.groupid === groupId);
+    const expectedUsers = mockUsers.filter((user) => user.groupid.includes(groupId));
 
     clientQueryMock.mockResolvedValue({ rows: expectedUsers });
 
@@ -145,7 +145,7 @@ describe('executeQuery', () => {
   });
   describe('registerUser', () => {
     it('should insert a new user into the database', async () => {
-      const newUser = { email: 'newuser@example.com', groupid: 70, role: 'user' };
+      const newUser = { email: 'newuser@example.com', groupid: [70], role: 'user' };
       clientQueryMock.mockResolvedValue({ rowCount: 1 });
   
       await repository.registerUser(newUser);
@@ -157,7 +157,7 @@ describe('executeQuery', () => {
     });
   
     it('should handle errors when inserting a new user', async () => {
-      const newUser = { email: 'newuser@example.com', groupid: 70, role: 'user' };
+      const newUser = { email: 'newuser@example.com', groupid: [70], role: 'user' };
       const error = new Error('Database error');
       clientQueryMock.mockRejectedValue(error);
   
@@ -237,7 +237,7 @@ describe('executeQuery', () => {
   
       const user = await repository.obtainUserByemail(email);
   
-      expect(user).toEqual(expectedUser);
+      expect(user).toEqual({ id: 1, email: "user1@example.com", groupid: [70], role: "admin" });
       expect(clientQueryMock).toHaveBeenCalledWith(
         "SELECT id, email, groupid, role FROM usersTable WHERE email = $1",
         [email]
@@ -265,7 +265,7 @@ describe('executeQuery', () => {
   
       const user = await repository.obtainUserByemail(email);
   
-      expect(user).toBeNull();
+      expect(user).toEqual( {"email": "duplicate@example.com", "groupid": [70, 71], "id": 2, "role": "user"});
       expect(clientQueryMock).toHaveBeenCalledWith(
         "SELECT id, email, groupid, role FROM usersTable WHERE email = $1",
         [email]
