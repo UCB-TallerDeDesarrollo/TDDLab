@@ -149,7 +149,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
               label: `Commit ${index + 1}`,
               data: [{
                 x: index + 1,
-                y: commit.coverage,
+                y: commit.test_count,
                 r: Math.max(10, commit.stats.total / 1.5),
               }],
               backgroundColor,
@@ -167,9 +167,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
               }
             },
             y: { 
-              title: { display: true, text: "Cobertura de Pruebas (%)" }, 
-              min: 70, 
-              max: 110, 
+              title: { display: true, text: "Total numero de tests" }, 
+              min: 0, 
+              max: maxTestCount+5, 
               suggestedMax: 120 
             }
           },
@@ -247,7 +247,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
       <div style={{
         display: "flex",
         alignItems: "center",
-        marginTop: "-740px",
+        marginTop: "-700px",
         marginLeft: "1200px"
       }}>
         <div style={{
@@ -257,7 +257,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
           textAlign: "center",
           position: "relative"
         }}>
-          <p style={{ marginTop: '-60px', color: "#000", fontWeight: "bold", textAlign: "left"}}> Tests por Commit</p>
+          <p style={{ marginTop: '-30px', color: "#000", fontWeight: "bold", justifyContent:"center"}}> Cobertura</p>
         </div>
 
         <div style={{
