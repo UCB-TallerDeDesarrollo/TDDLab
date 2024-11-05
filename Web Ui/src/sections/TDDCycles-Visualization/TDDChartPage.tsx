@@ -16,9 +16,6 @@ interface CycleReportViewProps {
 
 interface Submission {
   id: number;
-  assignmentid: number;
-  userid: number;
-  status: string;
   repository_link: string;
 }
 
@@ -29,11 +26,22 @@ function isStudent(role: string) {
 function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const repoOwner: string = String(searchParams.get("repoOwner"));
-  const repoName: string = String(searchParams.get("repoName"));
 
-  const fetchedSubmissions: Submission[] = JSON.parse(searchParams.get("fetchedSubmissions") || "[]");
-  const submissionId = Number(searchParams.get("submissionId"));
+  const repoOwner: string = String(searchParams.get("repoOwner")) || "defaultOwner";
+  const repoName: string = String(searchParams.get("repoName")) || "defaultRepo";
+
+  const fetchedSubmissions: Submission[] = !isStudent(role)
+    ? JSON.parse(searchParams.get("fetchedSubmissions") || "[]")
+    : [];
+  const submissionId = !isStudent(role)
+    ? Number(searchParams.get("submissionId"))
+    : 0;
+
+  const [currentIndex, setCurrentIndex] = useState(
+    !isStudent(role)
+      ? fetchedSubmissions.findIndex((submission) => submission.id === submissionId)
+      : 0
+  );
 
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
@@ -43,21 +51,15 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
 
-  const [currentIndex, setCurrentIndex] = useState(
-    fetchedSubmissions.findIndex(submission => submission.id === submissionId)
-  );
-
-  const loadGraphData = async (repoOwner: string, repoName: string) => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const [jobsData, commits] = await Promise.all([
-        getTDDCycles.obtainJobsData(repoOwner, repoName),
-        getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName)
-      ]);
+      const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
+      const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       setJobsByCommit(jobsData);
       setCommitsInfo(commits);
     } catch (error) {
-      console.error("Error loading graph data:", error);
+      console.error("Error obtaining data:", error);
     } finally {
       setLoading(false);
     }
@@ -72,27 +74,20 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
         console.error("Error obtaining owner name:", error);
       }
     };
-
     fetchOwnerName();
   }, [repoOwner]);
 
   useEffect(() => {
-    const currentSubmission = fetchedSubmissions[currentIndex];
-    if (currentSubmission) {
-      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(currentSubmission.repository_link);
-      if (match) {
-        const [, user, repo] = match;
-        loadGraphData(user, repo);
-      }
-    }
-  }, [currentIndex]);
+    fetchData();
+  }, [repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
       const previousIndex = currentIndex - 1;
-      const previousSubmission = fetchedSubmissions[previousIndex];
-      navigate(`?repoOwner=${previousSubmission.repository_link.split('/')[3]}&repoName=${previousSubmission.repository_link.split('/')[4]}&submissionId=${previousSubmission.id}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`);
+      const previousSubmission: Submission = fetchedSubmissions[previousIndex];
+      navigate(
+        `?repoOwner=${previousSubmission.repository_link.split('/')[3]}&repoName=${previousSubmission.repository_link.split('/')[4]}&submissionId=${previousSubmission.id}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`
+      );
       setCurrentIndex(previousIndex);
     }
   };
@@ -100,8 +95,10 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const goToNextStudent = () => {
     if (currentIndex < fetchedSubmissions.length - 1) {
       const nextIndex = currentIndex + 1;
-      const nextSubmission = fetchedSubmissions[nextIndex];
-      navigate(`?repoOwner=${nextSubmission.repository_link.split('/')[3]}&repoName=${nextSubmission.repository_link.split('/')[4]}&submissionId=${nextSubmission.id}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`);
+      const nextSubmission: Submission = fetchedSubmissions[nextIndex];
+      navigate(
+        `?repoOwner=${nextSubmission.repository_link.split('/')[3]}&repoName=${nextSubmission.repository_link.split('/')[4]}&submissionId=${nextSubmission.id}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`
+      );
       setCurrentIndex(nextIndex);
     }
   };
@@ -127,33 +124,36 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
 
       {!loading && commitsInfo?.length !== 0 && (
         <React.Fragment>
-          <div className="navigation-buttons">
-            <button
-              data-testid="previous-student"
-              className="nav-button"
-              onClick={goToPreviousStudent}
-              disabled={currentIndex === 0}
-              style={{
-                backgroundColor: currentIndex === 0 ? "#B0B0B0" : "#052845",
-              }}
-            >
-              Anterior
-            </button>
-            <button
-              data-testid="next-student"
-              className="nav-button"
-              onClick={goToNextStudent}
-              disabled={currentIndex === fetchedSubmissions.length - 1}
-              style={{
-                backgroundColor:
-                  currentIndex === fetchedSubmissions.length - 1
-                    ? "#B0B0B0"
-                    : "#052845",
-              }}
-            >
-              Siguiente
-            </button>
-          </div>
+          {!isStudent(role) && (
+            <div className="navigation-buttons">
+              <button
+                data-testid="previous-student"
+                className="nav-button"
+                onClick={goToPreviousStudent}
+                disabled={currentIndex === 0}
+                style={{
+                  backgroundColor: currentIndex === 0 ? "#B0B0B0" : "#052845",
+                }}
+              >
+                Anterior
+              </button>
+              <button
+                data-testid="next-student"
+                className="nav-button"
+                onClick={goToNextStudent}
+                disabled={currentIndex === fetchedSubmissions.length - 1}
+                style={{
+                  backgroundColor:
+                    currentIndex === fetchedSubmissions.length - 1
+                      ? "#B0B0B0"
+                      : "#052845",
+                }}
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
+          
           <div className="mainInfoContainer">
             <TDDCharts
               data-testId="cycle-chart"
