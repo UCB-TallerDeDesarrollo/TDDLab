@@ -44,7 +44,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
   const getChartOptions = (yAxisText: string) => {
     return {
       responsive: true,
-      pointRadius: 12,
+      pointRadius: 8,
       pointHoverRadius: 15,
       scales: {
         x: {
@@ -52,7 +52,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
             display: true,
             text: "Commits Realizados",
             font: {
-              size: 16,
+              size: 13,
               lineHeight: 1.2,
             },
           },
@@ -62,7 +62,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
             display: true,
             text: yAxisText,
             font: {
-              size: 16,
+              size: 10,
               lineHeight: 1.2,
               padding: { top: 20 }
             },
@@ -75,6 +75,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
             title: function (context: any) {
               return `Commit ${context[0].dataIndex + 1}: ${commits[commits.length - 1 - context[0].dataIndex].commit.message}`;
             },
+            
             afterBody: function (context: any) {
               const commit = commits[commits.length - 1 - context[0].dataIndex];
               const afterBodyContent: any = [];
@@ -214,34 +215,34 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
       )}
       
       <div style={{ display: "flex", flexWrap: "wrap", gap: "35px", justifyContent: "space-between", marginBottom:"30px" }}>
-  <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("coverage")}>
-    <h3>Cobertura de Código</h3>
-    <Line
-      data={getLineChartData("Porcentaje de Cobertura de Código", commits.map(commit => commit.coverage))}
-      options={getChartOptions("Cobertura de Código")}
-      onClick={onClick(chartRefCoverage)}
-      ref={chartRefCoverage}
-    />
-  </div>
-  <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("linesModified")}>
-    <h3>Líneas de Código Modificadas</h3>
-    <Line
-      data={getLineChartData("Total de Líneas de Código Modificadas", commits.map(commit => commit.stats.total))}
-      options={getChartOptions("Líneas de Código Modificadas")}
-      onClick={onClick(chartRefModifiedLines)}
-      ref={chartRefModifiedLines}
-    />
-  </div>
-  <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("testCount")}>
-    <h3>Total Número de Tests</h3>
-    <Line
-      data={getLineChartData("Total Número de Tests", commits.map(commit => commit.test_count))}
-      options={getChartOptions("Número de Tests")}
-      onClick={onClick(chartRefTestCount)}
-      ref={chartRefTestCount}
-    />
-  </div>
-</div>
+        <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("coverage")}>
+          <h3>Cobertura de Código</h3>
+          <Line
+            data={getLineChartData("Porcentaje de Cobertura de Código", commits.map(commit => commit.coverage))}
+            options={getChartOptions("Cobertura de Código")}
+            onClick={onClick(chartRefCoverage)}
+            ref={chartRefCoverage}
+          />
+        </div>
+        <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("linesModified")}>
+          <h3>Líneas de Código Modificadas</h3>
+          <Line
+            data={getLineChartData("Total de Líneas de Código Modificadas", commits.map(commit => commit.stats.total))}
+            options={getChartOptions("Líneas de Código Modificadas")}
+            onClick={onClick(chartRefModifiedLines)}
+            ref={chartRefModifiedLines}
+          />
+        </div>
+        <div style={{ width: "30%"}} onDoubleClick={() => handleDoubleClick("testCount")}>
+          <h3>Total Número de Tests</h3>
+          <Line
+            data={getLineChartData("Total Número de Tests", commits.map(commit => commit.test_count))}
+            options={getChartOptions("Número de Tests")}
+            onClick={onClick(chartRefTestCount)}
+            ref={chartRefTestCount}
+          />
+        </div>
+      </div>
       </div>
       <div style={{
         display: "flex",
