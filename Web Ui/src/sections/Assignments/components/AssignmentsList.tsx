@@ -48,7 +48,7 @@ const CustomTableCell2 = styled(TableCell)({
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number[];
+  userGroupid: number;
   onGroupChange: (groupId: number) => void;
 }
 
@@ -132,7 +132,7 @@ function Assignments({
       if (groupIdFromURL) {
         groupIdToUse = parseInt(groupIdFromURL, 10);
       } else if (authGroupId) {
-        groupIdToUse = authGroupId; // Seleccionamos el primer grupo por defecto
+        groupIdToUse = authGroupId;
       } else if (savedSelectedGroup) {
         groupIdToUse = parseInt(savedSelectedGroup, 10);
       }
@@ -278,7 +278,7 @@ function Assignments({
                           selectedGroup={selectedGroup}
                           groupList={groupList}
                           onChangeHandler={handleGroupChange}
-                          defaultName={groupList.find(group => group.id === userGroupid[0])?.groupName || "Selecciona un grupo"}
+                          defaultName={groupList.find(group => group.id === userGroupid)?.groupName || "Selecciona un grupo"}
                       />
                     <SortingComponent
                         selectedSorting={selectedSorting}
