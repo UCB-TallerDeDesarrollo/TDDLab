@@ -246,7 +246,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const handleRedirect = (link: string) => {
+  const handleRedirectStudent = (link: string) => {
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
@@ -259,6 +259,32 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           search: createSearchParams({
             repoOwner: user,
             repoName: repo,
+          }).toString(),
+        });
+      } else {
+        alert("Link Invalido, por favor ingrese un link valido.");
+      }
+    } else {
+      alert("No se encontro un link para esta tarea.");
+    }
+  };
+
+  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number) => {
+    if (link) {
+      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+      const match = regex.exec(link);
+  
+      if (match) {
+        const [, user, repo] = match;
+        console.log(user, repo);
+  
+        navigate({
+          pathname: "/graph",
+          search: createSearchParams({
+            repoOwner: user,
+            repoName: repo,
+            fetchedSubmissions: JSON.stringify(fetchedSubmissions),
+            submissionId: submissionId.toString(),  // Convertimos submissionId a cadena para pasarlo como parámetro
           }).toString(),
         });
       } else {
@@ -363,7 +389,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
-                onClick={() => handleRedirect(submission.repository_link)}
+                onClick={() => handleRedirectAdmin(submission.repository_link, submissions, submission.id)}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -568,7 +594,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() =>studentSubmission?.repository_link && handleRedirect(studentSubmission.repository_link)}
+                onClick={() =>studentSubmission?.repository_link && handleRedirectStudent(studentSubmission.repository_link)}
                 color="primary"
                 style={{
                   textTransform: "none",
