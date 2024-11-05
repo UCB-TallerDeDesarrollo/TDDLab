@@ -76,6 +76,9 @@ class UserController {
               res.status(200).json(userGroups.groupid);
             }
           }
+          else{
+            res.status(404).json({ message: "Usuario no encontrado" });
+          }
       }
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching user" });
