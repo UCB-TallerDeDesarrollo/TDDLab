@@ -16,6 +16,7 @@ jest.mock("react-router-dom", () => ({
     params.get = getMock; // Assign the mock get method to the URLSearchParams object
     return [params];
   }),
+  useNavigate: jest.fn(), // Agrega un mock de useNavigate
 }));
 
 describe("TDDChartPage", () => {
