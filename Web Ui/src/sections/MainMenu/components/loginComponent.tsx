@@ -33,6 +33,7 @@ export default function LoginComponent() {
       userRole: "",
     });
     removeSessionCookie();
+    localStorage.clear();
   };
 
   return (
