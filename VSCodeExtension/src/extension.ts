@@ -16,9 +16,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.registerWebviewViewProvider('timelineView', timelineView)
     );
 
+    if (timelineView.currentWebview) {
+      vscode.window.showInformationMessage('entra aqui');
+      timelineView.showTimeline(timelineView.currentWebview);
+  }
+
     vscode.commands.registerCommand('extension.showTimeline', () => {
         vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-
         if (timelineView.currentWebview) {
           timelineView.showTimeline(timelineView.currentWebview);
         }
