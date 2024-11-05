@@ -106,7 +106,7 @@ function Assignments({
           localStorage.setItem('userGroups', JSON.stringify(studentGroups));
           allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
         } else {
-          const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') || '[]');
+          const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') ?? '[]');
           allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
         }
     } else if(userRole === "teacher" || userRole === "admin") {
