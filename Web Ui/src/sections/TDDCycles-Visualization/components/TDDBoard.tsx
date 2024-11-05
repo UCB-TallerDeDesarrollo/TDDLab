@@ -21,20 +21,23 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
   const chartRefTestCount = useRef<any>();
 
   const testCounts = commits.map(commit => commit.test_count);
-  const minTestCount = Math.min(...testCounts);
-  const maxTestCount = Math.max(...testCounts);
-  const numberOfLabels = 5;
-  const step = Math.ceil(maxTestCount / (numberOfLabels));
+  const testCountsColor = commits.map(commit => commit.coverage);
+  const minTestCount = Math.min(...testCountsColor);
+  const maxTestCount = Math.max(...testCountsColor);
+  const maxTest = Math.max(...testCounts);
+  const numberOfLabels = 3;
+  const step = Math.ceil((maxTestCount - minTestCount) / numberOfLabels);
   const labels = Array.from({ length: numberOfLabels }, (_, i) => maxTestCount - i * step);
+
 
   const getColorByTestCountAndConclusion = (testCount: number, conclusion: string) => {
     const intensity = (testCount - minTestCount) / (maxTestCount - minTestCount);
-    const adjustedIntensity = Math.max(0.5, Math.min(intensity, 1)); 
+    const adjustedIntensity = Math.max(0.7, Math.min(intensity, 3)); 
   
     if (conclusion === "success") {
-      const greenValue = Math.floor(200 + (55 * adjustedIntensity)); 
+      const greenValue = Math.floor(100 + (55 * adjustedIntensity)); 
       const alpha = adjustedIntensity;
-      return `rgba(0, ${greenValue}, 0, ${alpha})`; 
+      return `rgba(0,${greenValue}, 0, ${alpha})`; 
     } else {
       return `rgba(255, 0, 0, ${adjustedIntensity})`;
     }
@@ -168,8 +171,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
             y: { 
               title: { display: true, text: "Total numero de tests" }, 
               min: 0, 
-              max: maxTestCount+5, 
-              suggestedMax: 120 
+              max: maxTest+6, 
+              suggestedMax: 80 
             }
           },
           plugins: {
@@ -252,7 +255,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit }) => 
         <div style={{
           width: "40px",
           height: "400px",
-          background: "linear-gradient(to bottom, rgba(0,255,0,1), rgba(0,255,0,0))",
+          background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
           textAlign: "center",
           position: "relative"
         }}>
