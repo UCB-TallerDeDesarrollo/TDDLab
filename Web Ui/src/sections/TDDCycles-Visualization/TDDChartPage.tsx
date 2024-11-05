@@ -12,13 +12,14 @@ import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/reposito
 interface CycleReportViewProps {
   port: GithubAPIRepository;
   role: string;
+  metricSe:string | null;
 }
 
 function isStudent(role: string) {
   return role === "student";
 }
 
-function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
+function TDDChartPage({ port, role,metricSe}: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));
@@ -27,61 +28,45 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [metric, setMetric] = useState<string | null>(null); // Estado para manejar la métrica seleccionada
 
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
 
-  const obtainJobsData = async () => {
+  const fetchOwnerName = async () => {
     try {
-      console.log("Fetching commits data...");
-      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(
-        repoOwner,
-        repoName,
-      );
+      const name = await githubAPIAdapter.obtainUserName(repoOwner);
+      setOwnerName(name);
+    } catch (error) {
+      console.error("Error obtaining owner name:", error);
+    }
+  };
+
+  const fetchJobsData = async () => {
+    try {
+      const jobsData: JobDataObject[] = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       setJobsByCommit(jobsData);
     } catch (error) {
       console.error("Error obtaining jobs:", error);
     }
   };
 
-  const obtainCommitsData = async () => {
-    console.log("Fetching commit information...");
+  const fetchCommitsData = async () => {
     try {
-      const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(
-        repoOwner,
-        repoName
-      );
-
+      const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       setCommitsInfo(commits);
-      console.log("Página TDDChartPage: ");
-      console.log(commitsInfo);
     } catch (error) {
       console.error("Error obtaining commit information:", error);
     }
   };
 
   useEffect(() => {
-    const fetchOwnerName = async () => {
-      try {
-        const name = await githubAPIAdapter.obtainUserName(repoOwner);
-        setOwnerName(name);
-      } catch (error) {
-        console.error("Error obtaining owner name:", error);
-      }
-    };
-
-    fetchOwnerName();
-  }, [repoOwner]);
-
-  useEffect(() => {
     const fetchData = async () => {
-      await Promise.all([obtainJobsData(), obtainCommitsData()]);
+      await Promise.all([fetchOwnerName(), fetchJobsData(), fetchCommitsData()]);
       setLoading(false);
     };
     fetchData();
-  }, []);
-
-  console.log(role);
+  }, [repoOwner, repoName]);
 
   return (
     <div className="container">
@@ -102,16 +87,19 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!loading && commitsInfo?.length != 0 && (
-        <React.Fragment>
-          <div className="mainInfoContainer">
-            <TDDCharts
-              data-testId="cycle-chart"
-              commits={commitsInfo}
-              jobsByCommit={jobsByCommit}
-            />
-          </div>
-        </React.Fragment>
+      {!loading && commitsInfo?.length !== 0 && (
+        <div className="mainInfoContainer">
+          <TDDCharts
+            data-testId="cycle-chart"
+            commits={commitsInfo}
+            jobsByCommit={jobsByCommit}
+            metric={metric} // Pasamos el estado metric
+            setMetric={setMetric}
+            port={port}
+            role={role}
+             // Pasamos la función para actualizar la métrica
+          />
+        </div>
       )}
     </div>
   );
