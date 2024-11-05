@@ -1,20 +1,16 @@
-import { exec } from 'child_process';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import path from 'path';
+import { spawn } from 'cross-spawn';
 
-const COMMAND = 'npm run test-export-json';
+const COMMAND = 'npm';
+const args = ['run', 'test-export-json'];
 
-function runCommand(command) {
+function runCommand(command, args) {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error executing command: ${stderr}`);
-        reject(error);
-      } else {
-        console.log(`Command output: ${stdout}`);
-        resolve();
-      }
+    const process = spawn(command, args, { stdio: 'inherit' });
+    process.on('close', (code) => {
+      resolve();
     });
   });
 }
@@ -31,10 +27,9 @@ const writeJSONFile = (filePath, data) => {
 
 const extractAndAddObject = async (reportFile, tddLogFile) => {
   try {
-    await runCommand(COMMAND);
+    await runCommand(COMMAND, args);
 
     const jsonData = readJSONFile(reportFile);
-
     const passedTests = jsonData.numPassedTests;
     const totalTests = jsonData.numTotalTests;
     const startTime = jsonData.startTime;
@@ -46,13 +41,12 @@ const extractAndAddObject = async (reportFile, tddLogFile) => {
     };
 
     const tddLog = readJSONFile(tddLogFile);
-
     tddLog.push(newReport);
 
     writeJSONFile(tddLogFile, tddLog);
     console.log("Tdd log has been updated");
   } catch (error) {
-    console.error(error);
+    console.error("Error en la ejecución:", error);
   }
 };
 
