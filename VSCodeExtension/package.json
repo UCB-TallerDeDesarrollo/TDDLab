@@ -31,7 +31,7 @@
         {
           "id": "myExtension",
           "title": "TDD Lab",
-          "icon": "./src/modules/Button/resources/icon.svg"
+          "icon": "./src/modules/RunTestButton/resources/icon.svg"
         }
       ],
       "panel": [
@@ -45,8 +45,8 @@
     "views": {
       "myExtension": [
         {
-          "id": "myView",
-          "name": "My Tests"
+          "id": "tddTestExecution",
+          "name": "TDD test execution"
         }
       ],
       "timelineContainer": [
