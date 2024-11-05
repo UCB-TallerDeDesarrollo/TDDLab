@@ -5,7 +5,6 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { getElementAtEvent } from 'react-chartjs-2';
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
-import { Padding } from "@mui/icons-material";
 
 ChartJS.register(Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 

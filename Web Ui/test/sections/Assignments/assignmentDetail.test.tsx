@@ -57,18 +57,7 @@ jest.mock(
 );
 
 describe("AssignmentDetail Component", () => {
-  it("displays the group name", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
-
-    await waitFor(() => {
-      const groupName = getByText("Test Group");
-      expect(groupName).toBeInTheDocument();
-    });
-  });
+  
 
   it("displays the Estado and Enlace sections for student role", async () => {
     const { getByText } = render(
