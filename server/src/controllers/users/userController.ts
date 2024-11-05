@@ -69,8 +69,7 @@ class UserController {
 
       if (userData == null)
         res.status(404).json({ message: "Usuario no encontrado" });
-      else {
-          if ("email" in userData) {
+      else if ("email" in userData) {
             let userGroups = await getUserByemail(userData.email);
             if (userGroups != null && "groupid" in userGroups) {
               res.status(200).json(userGroups.groupid);
@@ -79,7 +78,6 @@ class UserController {
           else{
             res.status(404).json({ message: "Usuario no encontrado" });
           }
-      }
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching user" });
     }
