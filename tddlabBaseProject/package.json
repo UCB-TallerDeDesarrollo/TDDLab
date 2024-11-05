@@ -17,11 +17,6 @@
     "lint": "eslint .",
     "postinstall": "git init && npx husky install"
   },
-  "husky": {
-    "hooks": {
-      "post-commit": "npm run post-commit"
-    }
-  },
   "author": "Israel Antezana R.",
   "license": "ISC",
   "devDependencies": {
