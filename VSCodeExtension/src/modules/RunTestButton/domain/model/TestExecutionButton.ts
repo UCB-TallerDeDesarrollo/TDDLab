@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 
-export class MyTreeItem extends vscode.TreeItem {
+export class TestExecutionButton extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly command?: vscode.Command,
     public readonly description?: string,
     public readonly iconPath?: vscode.ThemeIcon,
-    public readonly tooltip?: string // Tooltip para el item
+    public readonly tooltip?: string
   ) {
     super(label, collapsibleState);
     if (command) {
@@ -20,7 +20,7 @@ export class MyTreeItem extends vscode.TreeItem {
       this.iconPath = iconPath;
     }
     if (tooltip) {
-      this.tooltip = tooltip; 
+      this.tooltip = tooltip;
     }
   }
 }
