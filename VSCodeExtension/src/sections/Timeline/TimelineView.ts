@@ -36,12 +36,13 @@ export class TimelineView implements vscode.WebviewViewProvider {
         }
     }
 
-    lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline {
-        if (timeline[0] instanceof Timeline && timeline[0] !== undefined) {
-            return timeline[0];
+    lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline | undefined {
+        for (let i = timeline.length - 1; i >= 0; i--) {
+            if (timeline[i] instanceof Timeline && timeline[i] !== undefined) {
+                return timeline[i] as Timeline;
+            }
         }
-        const f: Timeline = new Timeline(12, 12, new Date(3817298738917));
-        return f;
+        return undefined;
     }
 
     generateHtml(timeline: Array<Timeline | CommitPoint>, webview: vscode.Webview): string {
@@ -58,7 +59,10 @@ export class TimelineView implements vscode.WebviewViewProvider {
             }
         }).join('');
 
-        this.getLastPoint.execute(this.lastTestPoint(timeline).getColor());
+        let lastPoint = this.lastTestPoint(timeline);
+        if (lastPoint !== undefined) {
+            this.getLastPoint.execute(lastPoint.getColor());
+        }
 
         return `
             <!DOCTYPE html>
