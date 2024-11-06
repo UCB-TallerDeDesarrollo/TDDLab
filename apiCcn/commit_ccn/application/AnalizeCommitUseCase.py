@@ -16,7 +16,6 @@ class AnalyzeCommitUseCase:
  
     def analyze_repo(self, repo_url: str) -> List[CommitMetrics]:
         download_url = self._build_download_url(repo_url)
-        print(f"Descargando el repositorio desde: {download_url}")
         response = requests.get(download_url)
         if response.status_code != 200:
             raise Exception(f"Error al descargar el repositorio desde: {download_url}")
@@ -104,4 +103,27 @@ class AnalyzeCommitUseCase:
                         ))
  
         return results
+    
+    def get_commits(self, repo_url: str) -> List[str]:
+        repo_base, ref = self._parse_repo_url(repo_url)
+        partes_url = repo_base.rstrip("/").split("/")
+        usuario = partes_url[-2]
+        repositorio = partes_url[-1]
+        commits_url = f"https://api.github.com/repos/{usuario}/{repositorio}/commits?per_page=100"
+        response = requests.get(commits_url)
+        
+        return [commit for commit in response.json()]
+    
+    def get_commit_url(self, repo_url, commit):
+        return f"{repo_url}/commit/{commit['sha']}"
+
+    def calculate_average_ccn(self, repo_url, commit: str) -> float:
+        commit_url = self.get_commit_url(repo_url, commit)
+        metrics = self.analyze_commit(commit_url)
+        if metrics:
+            return sum(m.cyclomatic_complexity for m in metrics) / len(metrics)
+        return 0.0
+
+    def analyze_commit(self, commit_url: str) -> List[CommitMetrics]:
+        return self.analyze_repo(commit_url)
    
