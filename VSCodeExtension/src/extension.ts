@@ -3,9 +3,9 @@ import { TimelineView } from './sections/Timeline/TimelineView';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ExecuteTestCommand } from './modules/RunTestButton/application/ExecuteTestCommand';
-import { VSCodeTerminalRepository } from './modules/RunTestButton/repository/VSCodeTerminalRepository';
-import { TestExecutionTreeView } from './sections/TestExecution/TestExecutionTreeView';
-
+import { VSCodeTerminalRepository } from './repository/VSCodeTerminalRepository';
+import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
+import { ExecuteCloneCommand } from './modules/CloneButton/application/ExecuteCloneCommand';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -28,7 +28,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-
     const jsonFilePath = path.join(vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '', 'script', 'tdd_log.json');
 
     // Observa el archivo JSON para detectar cambios
@@ -42,17 +41,23 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-
     const terminalRepository = new VSCodeTerminalRepository();
     const executeTestCommand = new ExecuteTestCommand(terminalRepository);
-  
+
+    const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
+    
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
       await executeTestCommand.execute();
     });
+
+    const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
+      await executeCloneCommand.execute();
+    });
   
     context.subscriptions.push(runTestCommand);
-  
-    const testExecutionTreeView = new TestExecutionTreeView(context);
+    context.subscriptions.push(runCloneCommand);
+
+    const testExecutionTreeView = new ExecutionTreeView(context);
     testExecutionTreeView.initialize();
   
   }
