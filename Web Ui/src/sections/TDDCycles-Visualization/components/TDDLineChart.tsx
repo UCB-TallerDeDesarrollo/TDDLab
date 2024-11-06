@@ -70,12 +70,19 @@ function TDDLineCharts({
     }
   }
 
+  function containsRefactor(commitMessage: string): boolean {
+    const regex = /\brefactor(\w*)\b/i;
+    return regex.test(commitMessage);
+  }
+
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
       const conclusions = filteredCommitsObject.map((commit) => {
+        console.log(commit.commit.message)
         let job = jobsByCommit?.find((job) => job.sha === commit.sha);
         if (job != null && job.conclusion === "success") return "green";
         else if (job === undefined) return "black";
+        else if (containsRefactor(commit.commit.message)) return "blue";
         else return "red";
       });
       return conclusions.reverse();
