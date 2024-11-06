@@ -1,10 +1,10 @@
-export function getCourseLink(groupid: number) {
+export function getCourseLink(groupid: number, userType: string) {
   const isLocalhost = window.location.hostname === "localhost";
   let baseUrl = window.location.protocol + "//" + window.location.hostname;
   if (isLocalhost) {
     baseUrl += ":" + window.location.port;
   }
-  let invitationUrl = baseUrl + `/invitation?groupid=${groupid}`;
+  let invitationUrl = baseUrl + `/invitation?groupid=${groupid}&type=${userType}`;
   navigator.clipboard
     .writeText(invitationUrl)
     .then(() => {
