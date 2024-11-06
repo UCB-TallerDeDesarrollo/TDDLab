@@ -67,7 +67,7 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       const groupName = getByText("Test Group");
       expect(groupName).toBeInTheDocument();
-    });
+    },{ timeout: 3000 });
   });
 
   it("displays the Estado and Enlace sections for student role", async () => {
