@@ -32,14 +32,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit,role,p
   const step = Math.ceil((maxTestCount - minTestCount) / numberOfLabels);
   const labels = Array.from({ length: numberOfLabels }, (_, i) => maxTestCount - i * step);
   
-  const getColorByCoverage = (testCountsColor: number) => {
+  const getColorByCoverage = (coverage: number) => {
     let greenValue;
     let opacity = 1; 
   
-    if (testCountsColor < 90) {
+    if (coverage< 90) {
       greenValue = 155;  
       opacity = 0.4; 
-    } else if (testCountsColor < 95) {
+    } else if (coverage < 95) {
       greenValue = 180;  
       opacity = 0.7;
     } else {
@@ -52,14 +52,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit,role,p
   
   const getColorByConclusion = (conclusion: string, coverage: number) => {
     if (conclusion === "success") {
-      // Si el commit es exitoso, aplica el color basado en la cobertura
       return getColorByCoverage(coverage);
     } else {
-      // Si el commit falló, usa un rojo sólido sin ajuste de opacidad
-      return `rgba(255, 0, 0, 1)`;  // Rojo sólido
+      return `rgba(255, 0, 0, 1)`;  
     }
   };
-  
   
 
   const changeGraph = (graphText: string) => {
