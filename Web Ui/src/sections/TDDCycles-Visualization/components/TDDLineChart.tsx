@@ -20,6 +20,7 @@ import {
 import TDDList from "./TDDList";
 import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TDDBoard from "./TDDBoard";
+import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 
 ChartJS.register(
   CategoryScale,
@@ -38,12 +39,16 @@ interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
   jobsByCommit: JobDataObject[] | null;
   optionSelected: string;
+  port:GithubAPIRepository;
+  role:string;
 }
 
 function TDDLineCharts({
   filteredCommitsObject,
   jobsByCommit,
   optionSelected,
+  port,
+  role
 }: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
@@ -270,8 +275,8 @@ function TDDLineCharts({
         break;
       case "Lista":
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
-      case "Board":
-          return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []}/>;
+      case "Dashboard":
+          return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
     }
     return (
       <Line

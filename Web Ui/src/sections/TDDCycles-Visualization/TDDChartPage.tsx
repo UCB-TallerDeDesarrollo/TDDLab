@@ -102,7 +102,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
       setCurrentIndex(nextIndex);
     }
   };
-
+  const [metric, setMetric] = useState<string | null>(null); 
   return (
     <div className="container">
       <h1 data-testid="repoNameTitle">Tarea: {repoName}</h1>
@@ -159,6 +159,10 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
               data-testId="cycle-chart"
               commits={commitsInfo}
               jobsByCommit={jobsByCommit}
+              port={port}
+              role={role}
+              metric={metric}
+              setMetric={setMetric}
             />
           </div>
         </React.Fragment>
