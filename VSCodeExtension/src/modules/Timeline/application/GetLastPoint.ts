@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
 export class GetLastPoint {
-    private context: vscode.ExtensionContext;
-    private statusBarItem: vscode.StatusBarItem;
+    private readonly context: vscode.ExtensionContext;
+    private readonly statusBarItem: vscode.StatusBarItem;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
