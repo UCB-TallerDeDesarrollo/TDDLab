@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Timeline } from '../domain/Timeline';
+import { CommitPoint } from '../domain/CommitPoint';
 import { TimelineRepository } from '../repository/TimelineRepository';
 
 export class GetTimeline  {
@@ -9,8 +10,8 @@ export class GetTimeline  {
         this.timelineRepository = new TimelineRepository(rootPath);        
     }
 
-    async execute(): Promise<Timeline[]> {
-        let response: Timeline[] = [];
+    async execute(): Promise<Array<Timeline | CommitPoint>> {
+        let response: Array<Timeline | CommitPoint> = [];
         try {
             const timeline = await this.timelineRepository.getTimelines();
             response = timeline;

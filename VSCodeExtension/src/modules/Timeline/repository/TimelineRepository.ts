@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Timeline } from '../domain/Timeline';
+import { CommitPoint } from '../domain/CommitPoint';
 
 export class TimelineRepository {
     private filePath: string;
@@ -9,7 +10,7 @@ export class TimelineRepository {
         this.filePath = path.join(extensionPath, 'script', 'tdd_log.json');
     }
 
-    async getTimelines(): Promise<Timeline[]> {
+    async getTimelines(): Promise<Array<Timeline | CommitPoint>> {
         return new Promise((resolve, reject) => {
             fs.readFile(this.filePath, 'utf8', (err, data) => {
                 if (err) {
@@ -17,12 +18,21 @@ export class TimelineRepository {
                 }
                 try {
                     const jsonData = JSON.parse(data);
-                    const timeline = jsonData
-                        .map((item: any) => new Timeline(
-                            item.numPassedTests, 
-                            item.numTotalTests, 
-                            new Date(item.timestamp)
-                        ));
+                    const timeline: Array<Timeline | CommitPoint> = [];
+                    jsonData.forEach((item: any) => {
+                        if (item.numPassedTests !== undefined && item.numTotalTests !== undefined) {
+                            timeline.push(new Timeline(
+                                item.numPassedTests, 
+                                item.numTotalTests, 
+                                new Date(item.timestamp)
+                            ));
+                        } else if (item.commitId && item.commitTimestamp) {
+                            timeline.push(new CommitPoint(
+                                item.commitId,
+                                new Date(item.commitTimestamp)
+                            ));
+                        }
+                    });
                     resolve(timeline);
                 } catch (error) {
                     reject(new Error('Error al parsear el archivo JSON'));

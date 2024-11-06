@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { GetTimeline } from '../../modules/Timeline/application/GetTimeline';
 import { GetLastPoint } from '../../modules/Timeline/application/GetLastPoint';
 import { Timeline } from '../../modules/Timeline/domain/Timeline';
+import { CommitPoint } from '../../modules/Timeline/domain/CommitPoint';
 import { time } from 'console';
 
 export class TimelineView implements vscode.WebviewViewProvider {
@@ -26,7 +27,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
     async showTimeline(webview: vscode.Webview): Promise<void> {
         try {
             const timeline = await this.getTimeline.execute();
-            webview.html = this.generateHtml(timeline);
+            webview.html = this.generateHtml(timeline, webview);
         } catch (err) {
             if (err instanceof Error) {
                 vscode.window.showErrorMessage(`Error al mostrar la línea de tiempo: ${err.message}`);
@@ -36,13 +37,29 @@ export class TimelineView implements vscode.WebviewViewProvider {
         }
     }
 
-    generateHtml(timeline: Timeline[]): string {
+    lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline {
+        if (timeline[0] instanceof Timeline && timeline[0] !== undefined) {
+            return timeline[0];
+        }
+        const f: Timeline = new Timeline(12, 12, new Date(3817298738917));
+        return f;
+    }
+
+    generateHtml(timeline: Array<Timeline | CommitPoint>, webview: vscode.Webview): string {
+        const githubLogoUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, 'images', 'github-color.png')
+        );
         const timelineHtml = timeline.map(point => {
-            const color = point.getColor();
-            return `<div style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;"></div>`;
+            if (point instanceof Timeline) {
+                const color = point.getColor();
+                return `<div style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;"></div>`;
+            }
+            else if (point instanceof CommitPoint) {
+                return `<img src="${githubLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">`;
+            }
         }).join('');
 
-        this.getLastPoint.execute(timeline[timeline.length - 1].getColor());
+        this.getLastPoint.execute(this.lastTestPoint(timeline).getColor());
 
         return `
             <!DOCTYPE html>
