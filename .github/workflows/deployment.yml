@@ -357,3 +357,34 @@ jobs:
         run: |
           cd ./server
           vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+  deploy_vercel_api-ccn:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    #Ejecutar solo si es la rama main
+
+    #   env:
+    #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+    #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
+
+    steps:
+      - name: "Echo values"
+        run: |
+          echo $VERCEL_PROJECT_ID
+          echo $VERCEL_ORG_ID 
+          echo $VERCEL_TOKEN 
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+      - name: Install Vercel CLI
+        run: |
+          cd ./apiCcn
+          npm install vercel
+      - name: Deploy to Vercel
+        run: |
+          cd ./apiCcn
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
