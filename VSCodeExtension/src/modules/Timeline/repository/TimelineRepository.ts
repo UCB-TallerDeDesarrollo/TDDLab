@@ -4,7 +4,7 @@ import { Timeline } from '../domain/Timeline';
 import { CommitPoint } from '../domain/CommitPoint';
 
 export class TimelineRepository {
-    private filePath: string;
+    private readonly filePath: string;
 
     constructor(extensionPath: string) {
         this.filePath = path.join(extensionPath, 'script', 'tdd_log.json');
@@ -14,7 +14,7 @@ export class TimelineRepository {
         return new Promise((resolve, reject) => {
             fs.readFile(this.filePath, 'utf8', (err, data) => {
                 if (err) {
-                    return reject(err);
+                    return reject(new Error(JSON.stringify(err)));
                 }
                 try {
                     const jsonData = JSON.parse(data);
