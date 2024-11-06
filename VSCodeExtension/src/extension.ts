@@ -18,7 +18,6 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     if (timelineView.currentWebview) {
-      vscode.window.showInformationMessage('entra aqui');
       timelineView.showTimeline(timelineView.currentWebview);
   }
 
