@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
 import TDDCharts from "./components/TDDChart";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
@@ -12,14 +12,13 @@ import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/reposito
 interface CycleReportViewProps {
   port: GithubAPIRepository;
   role: string;
-  metricSe:string | null;
 }
 
 function isStudent(role: string) {
   return role === "student";
 }
 
-function TDDChartPage({ port, role,metricSe}: Readonly<CycleReportViewProps>) {
+function TDDChartPage({ port, role}: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner: string = String(searchParams.get("repoOwner"));
   const repoName: string = String(searchParams.get("repoName"));

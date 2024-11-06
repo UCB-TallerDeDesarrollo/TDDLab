@@ -11,9 +11,7 @@ import {
 } from "chart.js";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
-import TDDCharts from "./TDDChart";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
-import TDDChartPage from "../TDDChartPage";
 import TDDLineCharts from "./TDDLineChart";
 
 ChartJS.register(
