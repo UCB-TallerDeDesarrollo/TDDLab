@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { TestExecutionButton } from '../../modules/RunTestButton/domain/model/TestExecutionButton';
+import { CloneExecutionButton } from '../../modules/CloneButton/domain/model/CloneExecutionButton';
 
 export class TestExecutionTreeDataProvider implements vscode.TreeDataProvider<TestExecutionButton> {
   getTreeItem(element: TestExecutionButton): vscode.TreeItem {
@@ -15,6 +16,14 @@ export class TestExecutionTreeDataProvider implements vscode.TreeDataProvider<Te
         '',
         new vscode.ThemeIcon('play', new vscode.ThemeColor('charts.green')),
         'Execute TDD Tests'
+      ),
+      new CloneExecutionButton(
+        'Open New Project',
+        vscode.TreeItemCollapsibleState.None,
+        { command: 'TDD.cloneCommand', title: 'Open New Project'},
+        '',
+        new vscode.ThemeIcon('window', new vscode.ThemeColor('charts.white')),
+        ''
       )
     ]);
   }
