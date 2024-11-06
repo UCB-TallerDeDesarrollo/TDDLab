@@ -16,6 +16,13 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "keybindings":[
+      {
+        "command": "TDD.runTest",
+        "key": "ctrl+t",
+        "when": "editorTextFocus"
+      }
+    ],
     "commands": [
       {
         "command": "TDD.runTest",
