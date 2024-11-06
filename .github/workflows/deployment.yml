@@ -378,12 +378,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-      - name: Install Vercel CLI
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+
+      - name: Install Python dependencies
         run: |
           cd ./apiCcn
-          npm install vercel
+          pip install -r requirements.txt
+
       - name: Deploy to Vercel
         run: |
           cd ./apiCcn
