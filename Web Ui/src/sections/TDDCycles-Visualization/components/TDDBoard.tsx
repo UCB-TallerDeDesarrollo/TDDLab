@@ -53,18 +53,20 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
-  const getColorByCoverage = (coverage: number) => {
+  const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
     let opacity = 1;
 
-    if (coverage < 90) {
-      greenValue = 155;
-      opacity = 0.4;
-    } else if (coverage < 95) {
-      greenValue = 180;
+    if (testCountsColor >= 95) {
+      greenValue = 150;
       opacity = 0.7;
+    } else if (testCountsColor >= 90) {
+      
+      greenValue = 100;
+      opacity = 0.5;
+    
     } else {
-      greenValue = 155;
+      greenValue = 110;
     }
 
     return `rgba(0, ${greenValue}, 0, ${opacity})`;
@@ -305,13 +307,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             style={{
               display: "flex",
               alignItems: "center",
-              marginTop: "-900px",
-              marginLeft: "1500px",
+              position: "absolute", // Posiciona de forma absoluta respecto a su contenedor
+              top: "50%", // Ajusta según tu preferencia de ubicación vertical
+              right: "7%",
             }}
           >
             <div
               style={{
-                width: "40px",
+                width: "30px",
                 height: "400px",
                 background:
                   "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
@@ -325,6 +328,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   color: "#000",
                   fontWeight: "bold",
                   justifyContent: "center",
+                  alignContent:"center",
                 }}
               >
                 {" "}
