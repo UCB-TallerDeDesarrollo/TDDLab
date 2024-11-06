@@ -271,7 +271,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
-  const [_, setComment] = useState("");
+  const [, setComment] = useState("");
 
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);

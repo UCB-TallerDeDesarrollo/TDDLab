@@ -14,12 +14,12 @@ import {
   InputLabel,
   FormControl,
   CircularProgress,
+  SelectChangeEvent
 } from "@mui/material";
 import { styled } from "@mui/system";
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-import { SelectChangeEvent } from "@mui/material";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
