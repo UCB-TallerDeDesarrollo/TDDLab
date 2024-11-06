@@ -4,7 +4,7 @@ import { CommitPoint } from '../domain/CommitPoint';
 import { TimelineRepository } from '../repository/TimelineRepository';
 
 export class GetTimeline  {
-    private timelineRepository: TimelineRepository;
+    private readonly timelineRepository: TimelineRepository;
 
     constructor(rootPath: string) {
         this.timelineRepository = new TimelineRepository(rootPath);        

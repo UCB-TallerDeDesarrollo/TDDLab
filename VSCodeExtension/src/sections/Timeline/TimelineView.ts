@@ -3,13 +3,12 @@ import { GetTimeline } from '../../modules/Timeline/application/GetTimeline';
 import { GetLastPoint } from '../../modules/Timeline/application/GetLastPoint';
 import { Timeline } from '../../modules/Timeline/domain/Timeline';
 import { CommitPoint } from '../../modules/Timeline/domain/CommitPoint';
-import { time } from 'console';
 
 export class TimelineView implements vscode.WebviewViewProvider {
-    private context: vscode.ExtensionContext;
+    private readonly context: vscode.ExtensionContext;
     public currentWebview: vscode.Webview | null = null;
-    private getTimeline: GetTimeline;
-    private getLastPoint: GetLastPoint;
+    private readonly getTimeline: GetTimeline;
+    private readonly getLastPoint: GetLastPoint;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
