@@ -96,7 +96,7 @@ function TDDChartPage({ port, role}: Readonly<CycleReportViewProps>) {
             setMetric={setMetric}
             port={port}
             role={role}
-             // Pasamos la función para actualizar la métrica
+             
           />
         </div>
       )}

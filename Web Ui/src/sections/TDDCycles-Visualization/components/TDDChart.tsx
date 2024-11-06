@@ -21,8 +21,10 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const [metricSelected, setMetricSelected] = useState(metric || "Cobertura de Código" );
-
+  const [metricSelected, setMetricSelected] = useState(metric ?? "Cobertura de Código" );
+  if (!commits || !jobsByCommit) {
+    return <div>No data available</div>; 
+  }
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
@@ -50,7 +52,7 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
             onChange={handleSelectChange}
             value={metricSelected}
             data-testid="select-graph-type"
-            label="Metrics"
+            label="Métricas"
           >
             <MenuItem value={"Cobertura de Código"}>
               Porcentaje de Cobertura de Código

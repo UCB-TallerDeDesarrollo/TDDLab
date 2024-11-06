@@ -65,7 +65,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       opacity = 0.7;
     } else {
       greenValue = 155;
-      opacity = 1;
     }
 
     return `rgba(0, ${greenValue}, 0, ${opacity})`;
@@ -143,8 +142,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
   useEffect(() => {
     if (graph) {
-      // Aquí puedes manejar cómo quieres propagar la métrica, por ejemplo, a un contexto global o almacenamiento.
-      console.log("Métrica seleccionada:", graph); // Puedes reemplazar esto con la lógica necesaria para manejar la métrica
+      console.log("Métrica seleccionada:", graph); 
     }
   }, [graph]);
 
@@ -183,11 +181,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                         {
                           x: index + 1,
                           y: commit.test_count,
-                          r: Math.max(10, commit.stats.total / 1.5), // Tamaño de la burbuja
+                          r: Math.max(10, commit.stats.total / 1.5), 
                         },
                       ],
                       backgroundColor,
-                      borderColor: `rgba(0,0,0,0.2)`, // Borde tenue
+                      borderColor: `rgba(0,0,0,0.2)`, 
                     };
                   }),
               }}
@@ -241,6 +239,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Total Número de Tests")}
+                tabIndex={0} 
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    changeGraph("Líneas de Código Modificadas");
+                  }
+                }} 
+                role="button" 
               >
                 <h3>Total Número de Tests</h3>
                 <Line
@@ -255,6 +260,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Cobertura de Código")}
+                tabIndex={0} 
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    changeGraph("Líneas de Código Modificadas");
+                  }
+                }} 
+                role="button" 
               >
                 <h3>Cobertura de Código</h3>
                 <Line
@@ -269,6 +281,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Líneas de Código Modificadas")}
+                tabIndex={0} 
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    changeGraph("Líneas de Código Modificadas");
+                  }
+                }}
+                role="button" 
               >
                 <h3>Líneas de Código Modificadas</h3>
                 <Line
