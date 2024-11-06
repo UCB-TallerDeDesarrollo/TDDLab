@@ -22,7 +22,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit,role,p
   const chartRefModifiedLines = useRef<any>();
   const chartRefTestCount = useRef<any>();
   const [graph, setGraph] = useState<string>("");
-
+  
   const testCounts = commits.map(commit => commit.test_count);
   const testCountsColor = commits.map(commit => commit.coverage);
   const minTestCount = Math.min(...testCountsColor);
@@ -31,19 +31,36 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit,role,p
   const numberOfLabels = 3;
   const step = Math.ceil((maxTestCount - minTestCount) / numberOfLabels);
   const labels = Array.from({ length: numberOfLabels }, (_, i) => maxTestCount - i * step);
-
-  const getColorByTestCountAndConclusion = (testCount: number, conclusion: string) => {
-    const intensity = (testCount - minTestCount) / (maxTestCount - minTestCount);
-    const adjustedIntensity = Math.max(0.7, Math.min(intensity, 3));
-
-    if (conclusion === "success") {
-      const greenValue = Math.floor(100 + (55 * adjustedIntensity));
-      const alpha = adjustedIntensity;
-      return `rgba(0,${greenValue}, 0, ${alpha})`;
+  
+  const getColorByCoverage = (testCountsColor: number) => {
+    let greenValue;
+    let opacity = 1; 
+  
+    if (testCountsColor < 90) {
+      greenValue = 155;  
+      opacity = 0.4; 
+    } else if (testCountsColor < 95) {
+      greenValue = 180;  
+      opacity = 0.7;
     } else {
-      return `rgba(255, 0, 0, ${adjustedIntensity})`;
+      greenValue = 155;  
+      opacity = 1; 
+    }
+  
+    return `rgba(0, ${greenValue}, 0, ${opacity})`; 
+  };
+  
+  const getColorByConclusion = (conclusion: string, coverage: number) => {
+    if (conclusion === "success") {
+      // Si el commit es exitoso, aplica el color basado en la cobertura
+      return getColorByCoverage(coverage);
+    } else {
+      // Si el commit falló, usa un rojo sólido sin ajuste de opacidad
+      return `rgba(255, 0, 0, 1)`;  // Rojo sólido
     }
   };
+  
+  
 
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
@@ -117,60 +134,60 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit,role,p
       {!graph ? (
         
         <div style={{ width: "80%", marginBottom: "20px" }}>
-                <h2>Métricas de Commits con Cobertura de Código</h2>
+          <h2>Métricas de Commits con Cobertura de Código</h2>
 
           <Bubble data={{
-            datasets: commits.slice().reverse().map((commit, index) => {
-              const job = jobsByCommit.find(job => job.sha === commit.sha);
-              const backgroundColor = getColorByTestCountAndConclusion(commit.test_count, job?.conclusion || "failed");
+              datasets: commits.slice().reverse().map((commit, index) => {
+                const job = jobsByCommit.find(job => job.sha === commit.sha);
+                const backgroundColor = getColorByConclusion(job?.conclusion || "failed", commit.coverage);
 
-              return {
-                label: `Commit ${index + 1}`,
-                data: [{
-                  x: index + 1,
-                  y: commit.test_count,
-                  r: Math.max(10, commit.stats.total / 1.5),
-                }],
-                backgroundColor,
-                borderColor: `rgba(0,0,0,0.2)`,
-              };
-            })
-          }} options={{
-            scales: {
-              x: {
-                title: { display: true, text: "Commits" },
-                ticks: {
-                  callback: (value: any) => `Commit ${value}`
+                return {
+                  label: `Commit ${index + 1}`,
+                  data: [{
+                    x: index + 1,
+                    y: commit.test_count,
+                    r: Math.max(10, commit.stats.total / 1.5), // Tamaño de la burbuja
+                  }],
+                  backgroundColor,
+                  borderColor: `rgba(0,0,0,0.2)`, // Borde tenue
+                };
+              })
+            }} options={{
+              scales: {
+                x: {
+                  title: { display: true, text: "Commits" },
+                  ticks: {
+                    callback: (value: any) => `Commit ${value}`
+                  }
+                },
+                y: {
+                  title: { display: true, text: "Total número de tests" },
+                  min: 0,
+                  max: maxTest + 6,
+                  suggestedMax: 80
                 }
               },
-              y: {
-                title: { display: true, text: "Total número de tests" },
-                min: 0,
-                max: maxTest + 6,
-                suggestedMax: 80
-              }
-            },
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: (tooltipItem: any) => {
-                    const index = tooltipItem.raw.x - 1;
-                    const commit = commits[index];
-                    const commitNumber = index + 1;
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: (tooltipItem: any) => {
+                      const index = tooltipItem.raw.x - 1;
+                      const commit = commits[index];
+                      const commitNumber = index + 1;
 
-                    return [
-                      `Commit ${commitNumber}: ${commit.commit.message}`,
-                      `Líneas Modificadas: ${commit.stats.additions}`,
-                      `Líneas Eliminadas: ${commit.stats.deletions}`,
-                      `Cobertura: ${commit.coverage}%`,
-                      `Total de Tests: ${commit.test_count}`,
-                    ];
+                      return [
+                        `Commit ${commitNumber}: ${commit.commit.message}`,
+                        `Líneas Modificadas: ${commit.stats.additions}`,
+                        `Líneas Eliminadas: ${commit.stats.deletions}`,
+                        `Cobertura: ${commit.coverage}%`,
+                        `Total de Tests: ${commit.test_count}`,
+                      ];
+                    }
                   }
                 }
               }
-            }
-          }} />
+            }} />
           <div style={{ display: "flex" }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "35px", justifyContent: "space-between", marginBottom: "30px" }}>
               <div style={{ width: "30%" }} onClick={() => changeGraph("Total Número de Tests")}>
@@ -203,6 +220,36 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit,role,p
 
       ) : null}
 
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        marginTop: "-700px",
+        marginLeft: "1200px"
+      }}>
+        <div style={{
+          width: "40px",
+          height: "400px",
+          background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
+          textAlign: "center",
+          position: "relative"
+        }}>
+          <p style={{ marginTop: '-30px', color: "#000", fontWeight: "bold", justifyContent:"center"}}> Cobertura</p>
+        </div>
+
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: "300px",
+          marginLeft: "10px",
+          fontSize: "12px",
+          color: "#000"
+        }}>
+          {labels.map(label => (
+            <p key={label} style={{ margin: 0 }}>{label}</p>
+          ))}
+        </div>
+      </div>
 
 
       {/* Solo muestra el gráfico de métricas si hay una selección */}
@@ -210,6 +257,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({ commits, jobsByCommit,role,p
         <TDDLineCharts port={port} role={role} filteredCommitsObject={commits} jobsByCommit={jobsByCommit} optionSelected={graph}/>
       )}
     </div>
+
   );
 };
 
