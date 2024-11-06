@@ -3,8 +3,8 @@ import { TimelineView } from './sections/Timeline/TimelineView';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ExecuteTestCommand } from './modules/RunTestButton/application/ExecuteTestCommand';
-import { VSCodeTerminalRepository } from './modules/RunTestButton/repository/VSCodeTerminalRepository';
-import { TestExecutionTreeView } from './sections/TestExecution/TestExecutionTreeView';
+import { VSCodeTerminalRepository } from './repository/VSCodeTerminalRepository';
+import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/CloneButton/application/ExecuteCloneCommand';
 
 /**
@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(runTestCommand);
     context.subscriptions.push(runCloneCommand);
 
-    const testExecutionTreeView = new TestExecutionTreeView(context);
+    const testExecutionTreeView = new ExecutionTreeView(context);
     testExecutionTreeView.initialize();
   
   }

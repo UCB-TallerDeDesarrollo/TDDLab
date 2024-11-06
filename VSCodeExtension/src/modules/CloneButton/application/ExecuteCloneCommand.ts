@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { TerminalPort } from '../domain/ports/TerminalPort';
+import { TerminalPort } from '../../../model/TerminalPort';
 
 export class ExecuteCloneCommand {
   constructor(private readonly terminalPort: TerminalPort) {}
