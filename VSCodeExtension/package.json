@@ -24,6 +24,10 @@
       {
         "command": "extension.showTimeline",
         "title": "Show Timeline"
+      },
+      {
+        "command": "TDD.cloneCommand",
+        "title": "Clone Proyect"
       }
     ],
     "viewsContainers": {
