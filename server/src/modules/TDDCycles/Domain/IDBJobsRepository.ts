@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 import { TestResultDataObject } from './TestResultDataObject';
 import { JobDataObject } from './JobDataObject';
+import { ITimelineEntry } from './ITimelineCommit';
 
 export interface IDBJobsRepository {
     pool: Pool;
@@ -10,4 +11,5 @@ export interface IDBJobsRepository {
     repositoryExists(owner: string, repoName: string): Promise<boolean>;
     getJobsNotSaved(owner: string, repoName: string, commitsWithActions: [string, number][]): Promise<[string, number][]>;
     saveJobsList(owner: string, repoName: string, jobs: Record<string, JobDataObject>): Promise<void>;
+    saveLogs(timeline: ITimelineEntry[]): Promise<void>;
 }

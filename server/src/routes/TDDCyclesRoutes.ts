@@ -31,4 +31,10 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getTestResults(req, res)
 );
 
+// Ruta para subir el archivo TDD log
+TDDCyclesRouter.post(
+  "/upload-log",
+  async (req, res) => await tddCyclesController.uploadTDDLog(req, res)
+);
+
 export default TDDCyclesRouter;
