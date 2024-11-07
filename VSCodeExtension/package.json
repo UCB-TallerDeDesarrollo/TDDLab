@@ -28,6 +28,10 @@
       {
         "command": "TDD.cloneCommand",
         "title": "Clone Proyect"
+      },
+      {
+        "command": "TDD.postCommand",
+        "title": "Post TDD Data"
       }
     ],
     "viewsContainers": {
@@ -91,6 +95,7 @@
   },
   "dependencies": {
     "extension": "file:",
+    "node-fetch": "^3.3.2",
     "tdd-extension-taller": "file:"
   }
 }
