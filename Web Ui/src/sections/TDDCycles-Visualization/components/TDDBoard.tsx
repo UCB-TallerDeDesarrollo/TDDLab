@@ -212,9 +212,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                     
                     callbacks: {
                       label: (tooltipItem: any) => {
+                        const reversedCommits = commits.slice().reverse(); 
                         const index = tooltipItem.raw.x - 1;
-                        const commit = commits.reverse()[index];
-                        const commitNumber = index + 1;
+                        const commit = reversedCommits[index];
+                        const commitNumber = index + 1;                        
                         return [
                           `Commit ${commitNumber}: ${commit.commit.message}`,
                           `Líneas Modificadas: ${commit.stats.additions}`,
