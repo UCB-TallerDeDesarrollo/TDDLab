@@ -10,6 +10,7 @@
     "test": "jest --watch",
     "test-once": "jest --verbose --coverage",
     "test-export-json": "jest --json --outputFile=./script/report.json",
+    "post-commit": "node ./script/commitScript.js",
     "tdd-script": "node ./script/tddScript.js",
     "cypress": "cypress open",
     "cypress-run": "cypress run",
@@ -22,6 +23,7 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
     "babel-jest": "^29.7.0",
+    "cross-spawn": "^7.0.3",
     "cypress": "^13.13.3",
     "eslint": "^9.10.0",
     "husky": "^9.1.6",
@@ -29,7 +31,6 @@
     "parcel": "^2.12.0"
   },
   "dependencies": {
-    "cross-spawn": "^7.0.3",
     "parcel-jest-base": "file:"
   }
 }
