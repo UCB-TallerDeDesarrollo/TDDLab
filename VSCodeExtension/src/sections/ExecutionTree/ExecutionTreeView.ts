@@ -23,6 +23,14 @@ export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<Execut
         '',
         new vscode.ThemeIcon('window', new vscode.ThemeColor('charts.white')),
         ''
+      ),
+      new ExecutionButton(
+        'TDD Lab Connection',
+        vscode.TreeItemCollapsibleState.None,
+        { command: 'TDD.postCommand', title: 'TDD Lab Connection'},
+        '',
+        new vscode.ThemeIcon('source-control', new vscode.ThemeColor('charts.white')),
+        ''
       )
     ]);
   }
