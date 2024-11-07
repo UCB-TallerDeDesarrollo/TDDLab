@@ -46,7 +46,7 @@
         {
           "id": "myExtension",
           "title": "TDD Lab",
-          "icon": "./src/modules/RunTestButton/resources/icon.svg"
+          "icon": "./src/modules/RunTestButton/resources/icono.png"
         }
       ],
       "panel": [
