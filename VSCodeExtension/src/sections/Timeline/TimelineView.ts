@@ -49,6 +49,9 @@ export class TimelineView implements vscode.WebviewViewProvider {
         const githubLogoUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this.context.extensionUri, 'images', 'github-color.png')
         );
+        const styleUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, 'media', 'style.css')
+        );
     
         const timelineHtml = timeline.map(point => {
             if (point instanceof Timeline) {
@@ -92,35 +95,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Línea de Tiempo</title>
-                <style>
-                    .timeline-dot {
-                        position: relative;
-                        cursor: pointer;
-                    }
-                    .popup {
-                        position: absolute;
-                        top: 100%; /* Aparece debajo del punto */
-                        left: 100%; /* Aparece a la derecha del punto */
-                        margin-top: 8px; /* Espacio adicional debajo */
-                        margin-left: 8px; /* Espacio adicional a la derecha */
-                        display: none;
-                        width: 150px;
-                        padding: 8px;
-                        background-color: #252526; /* Color oscuro similar al tema de VS Code */
-                        color: #cccccc; /* Texto gris claro para mejor legibilidad */
-                        text-align: left; /* Alineación para una mejor legibilidad */
-                        font-size: 12px;
-                        border-radius: 5px;
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Sombra suave */
-                        white-space: nowrap;
-                        pointer-events: none;
-                        border: 1px solid #3c3c3c; /* Borde sutil para darle el estilo de VS Code */
-                        z-index: 9999; /* Asegura que el popup esté por encima de otros elementos */
-                    }
-                    .timeline-dot:hover .popup {
-                        display: block;
-                    }
-                </style>
+                <link href="${styleUri}" rel="stylesheet">
             </head>
             <body>
                 <h2>Línea de Tiempo</h2>
