@@ -13,6 +13,7 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
+import { Button } from "@mui/material";
 
 ChartJS.register(
   Tooltip,
@@ -61,10 +62,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       greenValue = 150;
       opacity = 0.7;
     } else if (testCountsColor >= 90) {
-      
+
       greenValue = 100;
       opacity = 0.5;
-    
+
     } else {
       greenValue = 110;
     }
@@ -144,7 +145,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
   useEffect(() => {
     if (graph) {
-      console.log("Métrica seleccionada:", graph); 
+      console.log("Métrica seleccionada:", graph);
     }
   }, [graph]);
 
@@ -183,11 +184,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                         {
                           x: index + 1,
                           y: commit.test_count,
-                          r: Math.max(10, commit.stats.total / 1.5), 
+                          r: Math.max(10, commit.stats.total / 1.5),
                         },
                       ],
                       backgroundColor,
-                      borderColor: `rgba(0,0,0,0.2)`, 
+                      borderColor: `rgba(0,0,0,0.2)`,
                     };
                   }),
               }}
@@ -241,13 +242,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Total Número de Tests")}
-                tabIndex={0} 
+                tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     changeGraph("Líneas de Código Modificadas");
                   }
-                }} 
-                role="button" 
+                }}
+                role="button"
               >
                 <h3>Total Número de Tests</h3>
                 <Line
@@ -262,13 +263,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Cobertura de Código")}
-                tabIndex={0} 
+                tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     changeGraph("Líneas de Código Modificadas");
                   }
-                }} 
-                role="button" 
+                }}
+                role="button"
               >
                 <h3>Cobertura de Código</h3>
                 <Line
@@ -283,13 +284,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Líneas de Código Modificadas")}
-                tabIndex={0} 
+                tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     changeGraph("Líneas de Código Modificadas");
                   }
                 }}
-                role="button" 
+                role="button"
               >
                 <h3>Líneas de Código Modificadas</h3>
                 <Line
@@ -328,7 +329,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   color: "#000",
                   fontWeight: "bold",
                   justifyContent: "center",
-                  alignContent:"center",
+                  alignContent: "center",
                 }}
               >
                 {" "}
@@ -358,13 +359,34 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       ) : null}
 
       {graph && (
-        <TDDLineCharts
-          port={port}
-          role={role}
-          filteredCommitsObject={commits}
-          jobsByCommit={jobsByCommit}
-          optionSelected={graph}
-        />
+       <>
+       <div style={{ display: "flex", justifyContent: "center" }}>
+         <Button
+           onClick={() => setGraph("")}
+           style={{
+             backgroundColor: "#052845",
+             color: "#fff",
+             marginTop: "20px",
+             marginBottom: "20px",
+             width: "20%",
+             padding: "8px 16px",
+             borderRadius: "4px",
+             fontWeight: "bold",
+             textTransform: "none",
+           }}
+         >
+           Volver al Dashboard
+         </Button>
+       </div>
+       <TDDLineCharts
+         port={port}
+         role={role}
+         filteredCommitsObject={commits}
+         jobsByCommit={jobsByCommit}
+         optionSelected={graph}
+       />
+     </>
+     
       )}
     </>
   );
