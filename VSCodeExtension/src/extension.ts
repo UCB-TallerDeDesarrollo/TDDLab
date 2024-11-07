@@ -53,6 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
       await executeTestCommand.execute();
     });
 
+    const runTestActivityCommand = vscode.commands.registerCommand('TDD.runTestActivity', async () => {
+      await executeTestCommand.execute();
+    });
+
     const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
       await executeCloneCommand.execute();
     });
@@ -62,6 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
   
     context.subscriptions.push(runTestCommand);
+    context.subscriptions.push(runTestActivityCommand);
     context.subscriptions.push(runCloneCommand);
     context.subscriptions.push(runPostCommand);
 

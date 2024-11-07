@@ -29,6 +29,10 @@
         "title": "Run Test"
       },
       {
+        "command": "TDD.runTestActivity",
+        "title": "Run Test"
+      },
+      {
         "command": "extension.showTimeline",
         "title": "Show Timeline"
       },
@@ -75,7 +79,7 @@
     "menus": {
       "editor/title": [
         {
-          "command": "TDD.runTest",
+          "command": "TDD.runTestActivity",
           "group": "navigation"
         }
       ]
