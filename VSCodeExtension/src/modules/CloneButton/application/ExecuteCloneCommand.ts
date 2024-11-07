@@ -17,7 +17,7 @@ export class ExecuteCloneCommand {
       const selectedPath = folderUri[0].fsPath;
       const selectedPathUri = vscode.Uri.file(selectedPath);
 
-      await this.terminalPort.createAndExecuteCommand(
+      this.terminalPort.createAndExecuteCommand(
         'TDD Terminal',
         `git clone https://github.com/denilsFiesta/tddLabBaseProject.git "${selectedPath}"`
       );
