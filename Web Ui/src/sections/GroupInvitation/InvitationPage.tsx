@@ -15,6 +15,8 @@ import { handleGithubSignOut } from "../../modules/User-Authentication/applicati
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
+import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
+
 
 function InvitationPage() {
   const location = useLocation();
@@ -28,7 +30,13 @@ function InvitationPage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false); 
+  const [, setPopupMessage] = useState(""); 
+
   const dbAuthPort = new RegisterUserOnDb();
+
+
+  
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -62,21 +70,29 @@ function InvitationPage() {
     setShowPasswordPopup(true);
   };
 
-  const handleAcceptInvitation = async (type: string) => {
-    console.log(user?.email);
-    console.log(groupid);
-
-    // Have to Solve courseId error
-    if (user?.email) {
-      const userObj: UserOnDb = {
-        email: user.email,
-        groupid: groupid ?? 1,
-        role: type,
-      };
-      await dbAuthPort.register(userObj);
-      setShowPopUp(true);
+const handleAcceptInvitation = async (type: string) => {
+  console.log(user?.email);
+  console.log(groupid);
+  console.log(type);
+  if (user?.email) {
+    const existingUser = await dbAuthPort.getAccountInfo(user.email);
+    if (existingUser && existingUser.groupid) {
+      console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
+      setPopupMessage("El usuario ya tiene un grupo asignado.");
+      setOpenPopup(true); 
+      return;
     }
-  };
+    const userObj: UserOnDb = {
+      email: user.email,
+      groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
+      role: type,
+    };
+    await dbAuthPort.register(userObj);
+    setShowPopUp(true);
+  }
+};
+  
+  
 
   return (
     <div>
@@ -197,6 +213,7 @@ function InvitationPage() {
             />
           )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
+          {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
         </div>
       ) : (
         <Grid
