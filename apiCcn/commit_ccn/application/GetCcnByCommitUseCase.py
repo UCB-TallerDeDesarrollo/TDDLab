@@ -30,9 +30,7 @@ def parse_repo_url(repo_url):
     base_repo_url = f"https://github.com/{username}/{repo}"
  
     ref = None
-    if len(path_parts) > 3 and path_parts[2] == 'commit':
-        ref = path_parts[3]
-    elif len(path_parts) > 3 and path_parts[2] == 'tree':
+    if len(path_parts) > 3 and (path_parts[2] == 'commit' or path_parts[2] == 'tree'):
         ref = path_parts[3]
  
     return base_repo_url, ref
@@ -52,7 +50,9 @@ class GetCcnByCommitUseCase:
             logging.debug(f"Intentando descargar el repositorio desde: {url}")
             response = requests.get(url)
             if response.status_code != 200:
-                raise Exception(f"Error al descargar el repositorio desde: {url}")
+                raise requests.exceptions.RequestException(
+                    f"Error al descargar el repositorio desde: {url}"
+                )
 
         # Analizar el archivo ZIP
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -66,7 +66,7 @@ class GetCcnByCommitUseCase:
             extracted_dir = self._get_extracted_dir(tmpdirname)
             return self._analyze_files_in_dir(extracted_dir)
     
-    def _build_download_url(self, repo_url: str) -> str:
+    def _build_download_url(self, repo_url: str) -> List[str]:
         base_repo_url, ref = parse_repo_url(repo_url)
         logging.debug(f"Base repo URL: {base_repo_url}")
         logging.debug(f"Ref: {ref}")
@@ -87,11 +87,12 @@ class GetCcnByCommitUseCase:
             ]
             logging.debug("No se especificó ref, intentando con main y master.")
         return download_urls
+    
     def _get_extracted_dir(self, tmpdirname: str) -> str:
         # Encuentra el directorio extraído
         extracted_dirs = [d for d in os.listdir(tmpdirname) if os.path.isdir(os.path.join(tmpdirname, d))]
         if not extracted_dirs:
-            raise Exception("No se encontraron directorios compatibles después de extraer el ZIP.")
+            raise FileNotFoundError("No se encontraron directorios compatibles después de extraer el ZIP.")
         return os.path.join(tmpdirname, extracted_dirs[0])
 
     def _analyze_files_in_dir(self, extracted_dir: str) -> List[CommitMetrics]:
@@ -114,6 +115,3 @@ class GetCcnByCommitUseCase:
                             token_count=func.token_count
                         ))
         return results
-
-    # def run(self) -> List['CommitMetrics']:
-    #     return self.repository.get_ccn_by_commit()

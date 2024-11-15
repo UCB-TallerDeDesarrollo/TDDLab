@@ -19,39 +19,43 @@ logging.basicConfig(
 repository = InMemoryUserCommitMetricsRepository
 analyze_use_case = AnalyzeCommitUseCase(repository)
 analyze_by_commit = GetCcnByCommitUseCase(repository)
+
+MISSING_REPO_URL_MESSAGE = "No se proporcionó el enlace del repositorio."
+ERROR_PROCESSING_REPO_MESSAGE = "Error al procesar el repositorio"
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     data = request.get_json()
     repo_url = data.get('repoUrl')
 
     if not repo_url:
-        logging.debug("No se proporcionó el enlace del repositorio.")
-        return jsonify({"error": "No se proporcionó el enlace del repositorio"}), 400
+        logging.debug(MISSING_REPO_URL_MESSAGE)
+        return jsonify({"error": MISSING_REPO_URL_MESSAGE}), 400
 
     try:
         # Ejecutar el caso de uso en este caso el de analyze
         metrics = analyze_use_case.analyze_repo(repo_url)
         return jsonify({"metrics": [m.__dict__ for m in metrics]})
     except Exception as e:
-        logging.error(f"Error al procesar el repositorio: {str(e)}")
-        return jsonify({"error": "Error al procesar el repositorio", "details": str(e)}), 500
+        logging.error(f"{ERROR_PROCESSING_REPO_MESSAGE}: {str(e)}")
+        return jsonify({"error": ERROR_PROCESSING_REPO_MESSAGE, "details": str(e)}), 500
 
 @app.route('/analyzeCommit', methods=['POST'])
-def analyzeCommit():
+def analyze_commit():
     data = request.get_json()
     repo_url = data.get('repoUrl')
 
     if not repo_url:
-        logging.debug("No se proporcionó el enlace del repositorio.")
-        return jsonify({"error": "No se proporcionó el enlace del repositorio"}), 400
+        logging.debug(MISSING_REPO_URL_MESSAGE)
+        return jsonify({"error": MISSING_REPO_URL_MESSAGE}), 400
 
     try:
         # Ejecutar el caso de uso en este caso el de analyze
         metrics = analyze_by_commit.analyze_commit(repo_url)
         return jsonify({"metrics": [m.__dict__ for m in metrics]})
     except Exception as e:
-        logging.error(f"Error al procesar el repositorio: {str(e)}")
-        return jsonify({"error": "Error al procesar el repositorio", "details": str(e)}), 500
+        logging.error(f"{ERROR_PROCESSING_REPO_MESSAGE}: {str(e)}")
+        return jsonify({"error": ERROR_PROCESSING_REPO_MESSAGE, "details": str(e)}), 500
 
 
 @app.route('/analyzeAvgCcn', methods=['POST'])
@@ -60,8 +64,8 @@ def analyze_avg_ccn():
     repo_url = data.get('repoUrl')
 
     if not repo_url:
-        logging.debug("No se proporcionó el enlace del repositorio.")
-        return jsonify({"error": "No se proporcionó el enlace del repositorio"}), 400
+        logging.debug(MISSING_REPO_URL_MESSAGE)
+        return jsonify({"error": MISSING_REPO_URL_MESSAGE}), 400
 
     try:
         commits = analyze_use_case.get_commits(repo_url)
@@ -74,8 +78,8 @@ def analyze_avg_ccn():
                 }, commits))
         return jsonify({"results": results}), 200
     except Exception as e:
-        logging.error(f"Error al procesar el repositorio: {str(e)}")
-        return jsonify({"error": "Error al procesar el repositorio", "details": str(e)}), 500
+        logging.error(f"{ERROR_PROCESSING_REPO_MESSAGE}: {str(e)}")
+        return jsonify({"error": ERROR_PROCESSING_REPO_MESSAGE, "details": str(e)}), 500
 
 
 
