@@ -18,7 +18,9 @@ class AnalyzeCommitUseCase:
         download_url = self._build_download_url(repo_url)
         response = requests.get(download_url)
         if response.status_code != 200:
-            raise Exception(f"Error al descargar el repositorio desde: {download_url}")
+            raise requests.exceptions.RequestException(
+                f"Error al descargar el repositorio desde: {download_url}"
+            )
  
         # Analizar el archivo ZIP
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -54,9 +56,7 @@ class AnalyzeCommitUseCase:
         base_repo_url = f"https://github.com/{username}/{repo}"
  
         ref = None
-        if len(path_parts) > 3 and path_parts[2] == 'commit':
-            ref = path_parts[3]
-        elif len(path_parts) > 3 and path_parts[2] == 'tree':
+        if len(path_parts) > 3 and (path_parts[2] == 'commit' or path_parts[2] == 'tree'):
             ref = path_parts[3]
  
         return base_repo_url, ref
@@ -79,7 +79,7 @@ class AnalyzeCommitUseCase:
         # Encuentra el directorio extraído
         extracted_dirs = [d for d in os.listdir(tmpdirname) if os.path.isdir(os.path.join(tmpdirname, d))]
         if not extracted_dirs:
-            raise Exception("No se encontraron directorios compatibles después de extraer el ZIP.")
+            raise FileNotFoundError("No se encontraron directorios compatibles después de extraer el ZIP.")
         return os.path.join(tmpdirname, extracted_dirs[0])
  
     def _analyze_files_in_dir(self, extracted_dir: str) -> List[CommitMetrics]:
@@ -105,7 +105,7 @@ class AnalyzeCommitUseCase:
         return results
     
     def get_commits(self, repo_url: str) -> List[str]:
-        repo_base, ref = self._parse_repo_url(repo_url)
+        repo_base, _ = self._parse_repo_url(repo_url)
         partes_url = repo_base.rstrip("/").split("/")
         usuario = partes_url[-2]
         repositorio = partes_url[-1]
