@@ -143,8 +143,8 @@ describe("AssignmentDetail Component", () => {
       ...jest.requireActual('react-router-dom'),
       useSearchParams: () => [
         new URLSearchParams({
-          repoOwner: 'testOwner',
-          repoName: 'testRepo'
+          repoOwner: 'danTerra45',
+          repoName: 'parcel-jest-cars'
         })
       ]
     }));
