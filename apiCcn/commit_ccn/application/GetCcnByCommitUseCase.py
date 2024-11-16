@@ -9,7 +9,7 @@ import re
 from urllib.parse import urlparse
 from ..domain.CommitMetricsRepository import CommitMetricsRepository
 from ..domain.CommitMetrics import CommitMetrics
-from shared.repo_utils import parse_repo_url
+from commit_ccn.shared.repo_utils import parse_repo_url
  
 def is_commit(ref):
     """
