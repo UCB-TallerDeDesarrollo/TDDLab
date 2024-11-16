@@ -7,8 +7,8 @@ import os
 import logging
 from commit_ccn.domain.CommitMetrics import CommitMetrics
 from commit_ccn.domain.CommitMetricsRepository import CommitMetricsRepository
-from urllib.parse import urlparse
 import re
+from shared.repo_utils import parse_repo_url
  
 class AnalyzeCommitUseCase:
     def __init__(self, repository: CommitMetricsRepository):
@@ -36,31 +36,6 @@ class AnalyzeCommitUseCase:
  
             return self._analyze_files_in_dir(extracted_dir)
  
-    def _parse_repo_url(self, repo_url) -> tuple:
-        """
-        Parse the GitHub repo URL to extract the base repo URL and the ref (branch or commit).
-        Returns a tuple (base_repo_url, ref).
-        """
-        parsed_url = urlparse(repo_url)
-        path_parts = parsed_url.path.strip('/').split('/')
- 
-        if len(path_parts) < 2:
-            raise ValueError("URL del repositorio inválida.")
- 
-        username = path_parts[0]
-        repo = path_parts[1]
- 
-        if repo.endswith('.git'):
-            repo = repo[:-4]
- 
-        base_repo_url = f"https://github.com/{username}/{repo}"
- 
-        ref = None
-        if len(path_parts) > 3 and (path_parts[2] == 'commit' or path_parts[2] == 'tree'):
-            ref = path_parts[3]
- 
-        return base_repo_url, ref
- 
     def _is_commit(self, ref) -> bool:
         """
         Determine if the ref is a commit hash.
@@ -69,7 +44,7 @@ class AnalyzeCommitUseCase:
  
  
     def _build_download_url(self, repo_url: str) -> str:
-        base_repo_url, ref = self._parse_repo_url(repo_url)
+        base_repo_url, ref = parse_repo_url(repo_url)
         if ref and self._is_commit(ref):
             return f"{base_repo_url}/archive/{ref}.zip"
         else:
@@ -105,7 +80,7 @@ class AnalyzeCommitUseCase:
         return results
     
     def get_commits(self, repo_url: str) -> List[str]:
-        repo_base, _ = self._parse_repo_url(repo_url)
+        repo_base, _ = parse_repo_url(repo_url)
         partes_url = repo_base.rstrip("/").split("/")
         usuario = partes_url[-2]
         repositorio = partes_url[-1]
