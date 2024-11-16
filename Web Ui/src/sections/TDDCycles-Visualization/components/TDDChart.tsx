@@ -21,7 +21,7 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const [metricSelected, setMetricSelected] = useState(metric ?? "Cobertura de Código" );
+  const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
   if (!commits || !jobsByCommit) {
     return <div>No data available</div>; 
   }
@@ -54,20 +54,20 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
             data-testid="select-graph-type"
             label="Métricas"
           >
+             <MenuItem value={"Dashboard"}>
+              Dashboard
+            </MenuItem>
+            <MenuItem value={"Total Número de Tests"}>
+              Total Número de Tests
+            </MenuItem>
             <MenuItem value={"Cobertura de Código"}>
               Porcentaje de Cobertura de Código
             </MenuItem>
             <MenuItem value={"Líneas de Código Modificadas"}>
               Líneas de Código Modificadas
             </MenuItem>
-            <MenuItem value={"Total Número de Tests"}>
-              Total Número de Tests
-            </MenuItem>
             <MenuItem value={"Lista"}>
               Lista de Commits
-            </MenuItem>
-            <MenuItem value={"Dashboard"}>
-              Dashboard
             </MenuItem>
           </Select>
         </FormControl>
