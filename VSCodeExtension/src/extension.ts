@@ -12,6 +12,7 @@ import { ExecutePostCommand } from './modules/PostButton/application/ExecutePost
  * @param {vscode.ExtensionContext} context
  */
 export function activate(context: vscode.ExtensionContext) {
+    const tddBasePath = path.join(context.extensionPath, 'resources', 'tddlabBaseProject');
     const timelineView = new TimelineView(context);
     
     context.subscriptions.push(
@@ -58,7 +59,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
-      await executeCloneCommand.execute();
+      
+      await executeCloneCommand.execute(tddBasePath);
     });
 
     const runPostCommand = vscode.commands.registerCommand('TDD.postCommand', async () => {
