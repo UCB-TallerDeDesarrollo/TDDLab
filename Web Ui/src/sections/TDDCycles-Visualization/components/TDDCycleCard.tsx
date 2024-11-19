@@ -1,4 +1,3 @@
-import { formatDate } from "../../../modules/TDDCycles-Visualization/application/GetTDDCycles";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 
@@ -30,7 +29,6 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
   function getCommitStats() {
     const coverageText = commit.coverage ? `${commit.coverage}%` : "no se encontró cobertura";
     const testCountText = commit.test_count ? `${commit.test_count}` : "no se encontraron tests";
-    const date = commit.commit.date;
 
     return (
       <div className="commit-stats">
