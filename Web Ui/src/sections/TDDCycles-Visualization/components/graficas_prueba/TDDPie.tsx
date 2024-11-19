@@ -7,7 +7,7 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
-import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitDataObject } from "../../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 
 ChartJS.register(Tooltip, Legend, ArcElement);
 

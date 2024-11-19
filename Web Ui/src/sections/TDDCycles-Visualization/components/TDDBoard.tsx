@@ -14,7 +14,7 @@ import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/j
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
 import { Button } from "@mui/material";
-import TDDPie from "./TDDPie"; //IMPORTAMOS EL TDDPie
+import TDDPie from "./graficas_prueba/TDDPie"; //IMPORTAMOS EL TDDPie
 
 
 ChartJS.register(
