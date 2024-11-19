@@ -9,6 +9,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import TDDPie from "./TDDPie"; //IMPORTAMOS EL TDDPie
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -40,7 +41,7 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
     setMetricSelected(newMetric);
     setMetric(newMetric); 
   };
-
+  
   return (
     <div className="lineChartContainer">
       <Box>
@@ -66,19 +67,34 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
             <MenuItem value={"Líneas de Código Modificadas"}>
               Líneas de Código Modificadas
             </MenuItem>
+            
+            <MenuItem value={"Distribución de Commits"}>
+              Distribución de Commits
+              </MenuItem>
+
             <MenuItem value={"Lista"}>
               Lista de Commits
             </MenuItem>
           </Select>
         </FormControl>
       </Box>
-      <TDDLineCharts
-        filteredCommitsObject={filteredCommitsObject}
-        jobsByCommit={jobsByCommit}
-        optionSelected={metricSelected}
-        port={port}
-        role={role}
-      />
+      {/* Renderiza el gráfico correspondiente */}
+      {(() => {
+        switch (metricSelected) {
+          case "Distribución de Commits":
+            return <TDDPie commits={filteredCommitsObject} />;
+          default:
+            return (
+              <TDDLineCharts
+                filteredCommitsObject={filteredCommitsObject}
+                jobsByCommit={jobsByCommit}
+                optionSelected={metricSelected}
+                port={port}
+                role={role}
+              />
+             );
+            }
+          })()}
     </div>
   );
 }

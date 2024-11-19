@@ -14,6 +14,8 @@ import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/j
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
 import { Button } from "@mui/material";
+import TDDPie from "./TDDPie"; //IMPORTAMOS EL TDDPie
+
 
 ChartJS.register(
   Tooltip,
@@ -248,6 +250,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 marginBottom: "30px",
               }}
             >
+              {/* Tus otros gráficos AGREGAMOS ESTO PARA PROBAR EL GRAFICO PASTEL EN EL DASHBOARD*/}
+              <div style={{ width: "30%" }}>
+                <TDDPie commits={commits} />
+              </div>
+
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Total Número de Tests")}
