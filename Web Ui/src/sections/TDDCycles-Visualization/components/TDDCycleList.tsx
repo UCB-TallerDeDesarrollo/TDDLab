@@ -43,7 +43,7 @@ function TDDCycleList({
   return (
     <div style={{ display: "flex", gap: "5px", alignItems: "flex-start", marginBottom: "40px" }}>
       <div style={{ flex: "1", maxWidth: "300px" }}>
-        <div
+        <button
           onClick={toggleSortOrder}
           style={{
             cursor: "pointer",
@@ -59,7 +59,7 @@ function TDDCycleList({
           <span>
             {sortOrder === 'asc' ? '↑' : '↓'} 
           </span>
-        </div>
+        </button>
   
      
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
