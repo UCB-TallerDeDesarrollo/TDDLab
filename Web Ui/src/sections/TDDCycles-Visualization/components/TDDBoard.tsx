@@ -328,7 +328,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             <div
               style={{
                 width: "30px",
-                height: "400px",
+                height: "400px", //fix
                 background:
                   "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
                 textAlign: "center",
