@@ -53,7 +53,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
-  console.log(labels[1])
   const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
     let opacity = 2;
@@ -73,11 +72,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   };
 
   const getColorByConclusion = (conclusion: string, coverage: number) => {
+    console.log(conclusion)
     if (conclusion === "success") {
       return getColorByCoverage(coverage);
-    } else {
-      return `rgba(255, 0, 0, 1)`;
+    } else if (conclusion ==="failed") {
+
+      return "black";
     }
+    else {return 'red'}
   };
 
   const changeGraph = (graphText: string) => {
@@ -144,7 +146,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
   useEffect(() => {
     if (graph) {
-      console.log("Métrica seleccionada:", graph);
     }
   }, [graph]);
 
@@ -171,7 +172,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                     const job = jobsByCommit.find(
                       (job) => job.sha === commit.sha
                     );
-                    console.log(commit.coverage)
                     const backgroundColor = getColorByConclusion(
                       job?.conclusion || "failed",
                       commit.coverage
