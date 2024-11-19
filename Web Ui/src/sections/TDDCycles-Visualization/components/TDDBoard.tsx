@@ -43,7 +43,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const [graph, setGraph] = useState<string>("");
   const testCounts = commits.map((commit) => commit.test_count);
   const testCountsColor = commits.map((commit) => commit.coverage);
-  const minTestCount = Math.min(...testCountsColor);
+  const minTestCount = 0;
   const maxTestCount = Math.max(...testCountsColor);
   const maxTest = Math.max(...testCounts);
   const numberOfLabels = 3;
@@ -358,6 +358,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 marginLeft: "10px",
                 fontSize: "12px",
                 color: "#000",
+                marginBottom:"90px"
               }}
             >
               {labels.map((label) => (
