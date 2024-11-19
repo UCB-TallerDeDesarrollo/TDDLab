@@ -41,44 +41,79 @@ function TDDCycleList({
   });
 
   return (
-    <>
-      {/* Título interactivo */}
-      <div
-        onClick={toggleSortOrder}
-        style={{
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          marginBottom: '20px',
-          textDecoration: 'underline',
-        }}
-      >
-        Fecha ({sortOrder === 'asc' ? 'Ascendente' : 'Descendente'})
-      </div>
-
-      {/* Tabla con las fechas */}
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-        <thead>
-          <tr>
-            <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
-              Fechas Ordenadas
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedDates.map((date, index) => (
-            <tr key={index}>
-              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{date}</td>
+    <div style={{ display: "flex", gap: "5px", alignItems: "flex-start" }}>
+      <div style={{ flex: "1", maxWidth: "300px" }}>
+        {/* Título interactivo */}
+        <div
+          onClick={toggleSortOrder}
+          style={{
+            cursor: "pointer",
+            fontWeight: "bold",
+            marginTop: "-15px",
+            textDecoration: "underline",
+            textAlign: "center",
+          }}
+        >
+          Fecha 
+        </div>
+  
+        {/* Tabla con las fechas */}
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <thead>
+            <tr>
+              {/* <th
+                style={{
+                  backgroundColor: "#f4f4f4",
+                  border: "1px solid #ddd",
+                  padding: "10px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Fechas Ordenadas
+              </th> */}
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Lista ordenada */}
-      {sortedCombinedList.map(([commit, job]) => (
-        <TDDCycleCard key={commit.sha} commit={commit} jobs={job} />
-      ))}
-    </>
+          </thead>
+          <tbody>
+            {sortedDates.map((date, index) => (
+              <tr
+                key={index}
+                style={{
+                  backgroundColor:  "white",
+                }}
+              >
+                <td
+                  style={{
+                    border: "8px solid transparent",
+                    padding: "8px",
+                    textAlign: "left",
+                    height: "300px",
+                  }}
+                >
+                  {date}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+  
+      <div style={{ flex: "2" }}>
+        {/* Lista ordenada */}
+        {sortedCombinedList.map(([commit, job]) => (
+          <TDDCycleCard key={commit.sha} commit={commit} jobs={job} />
+        ))}
+      </div>
+    </div>
   );
+  
+  
 }
 
 export default TDDCycleList;
