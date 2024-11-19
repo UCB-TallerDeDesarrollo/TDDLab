@@ -98,7 +98,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
                 <link href="${styleUri}" rel="stylesheet">
             </head>
             <body>
-                <h2>Línea de Tiempo</h2>
+                <h2>TDDLab Timeline</h2>
                 <div style="display: flex; flex-wrap: wrap;">
                     ${timelineHtml}
                 </div>
