@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Bubble, Line } from "react-chartjs-2";
+import { Bubble, getElementAtEvent, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   Tooltip,
@@ -53,7 +53,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
-  console.log(labels[1])
   const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
     let opacity = 2;
@@ -66,7 +65,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
     } else if (testCountsColor < labels[2]) {
       greenValue = 110;
-      opacity=0.2;
+      opacity = 0.2;
     }
 
     return `rgba(0, ${greenValue}, 0, ${opacity})`;
@@ -75,9 +74,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const getColorByConclusion = (conclusion: string, coverage: number) => {
     if (conclusion === "success") {
       return getColorByCoverage(coverage);
-    } else {
-      return `rgba(255, 0, 0, 1)`;
+    } else if (conclusion === "failed") {
+
+      return "black";
     }
+    else { return 'red' }
   };
 
   const changeGraph = (graphText: string) => {
@@ -141,10 +142,22 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       ],
     };
   };
+  const chartRef = useRef<any>();
 
+  const onClick = (event: any) => {
+    const elements = getElementAtEvent(chartRef.current, event);
+    if (elements.length > 0) {
+      const dataSetIndexNum = elements[0]
+        .datasetIndex;
+    
+      const commit = commits.slice().reverse()[dataSetIndexNum];
+      if (commit && commit.html_url) {
+        window.open(commit.html_url, "_blank");
+      }
+    }
+  };
   useEffect(() => {
     if (graph) {
-      console.log("Métrica seleccionada:", graph);
     }
   }, [graph]);
 
@@ -164,14 +177,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             <h2>Métricas de Commits con Cobertura de Código</h2>
 
             <Bubble
+              ref={chartRef}
+              onClick={onClick}
               data={{
-                datasets: commits.slice()
+                datasets: commits
+                  .slice()
                   .reverse()
                   .map((commit, index) => {
-                    const job = jobsByCommit.find(
-                      (job) => job.sha === commit.sha
-                    );
-                    console.log(commit.coverage)
+                    const job = jobsByCommit.find((job) => job.sha === commit.sha);
                     const backgroundColor = getColorByConclusion(
                       job?.conclusion || "failed",
                       commit.coverage
@@ -209,13 +222,12 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 plugins: {
                   legend: { display: false },
                   tooltip: {
-                    
                     callbacks: {
                       label: (tooltipItem: any) => {
-                        const reversedCommits = commits.slice().reverse(); 
+                        const reversedCommits = commits.slice().reverse();
                         const index = tooltipItem.raw.x - 1;
                         const commit = reversedCommits[index];
-                        const commitNumber = index + 1;                        
+                        const commitNumber = index + 1;
                         return [
                           `Commit ${commitNumber}: ${commit.commit.message}`,
                           `Líneas Modificadas: ${commit.stats.additions}`,
@@ -228,7 +240,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   },
                 },
               }}
-            />
+            />;
 
             <div
               style={{
@@ -308,15 +320,15 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             style={{
               display: "flex",
               alignItems: "center",
-              position: "absolute", // Posiciona de forma absoluta respecto a su contenedor
-              top: "65%", // Ajusta según tu preferencia de ubicación vertical
+              position: "absolute",
+              top: "65%", 
               right: "9%",
             }}
           >
             <div
               style={{
                 width: "30px",
-                height: "400px",
+                height: "400px", //fix
                 background:
                   "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
                 textAlign: "center",
