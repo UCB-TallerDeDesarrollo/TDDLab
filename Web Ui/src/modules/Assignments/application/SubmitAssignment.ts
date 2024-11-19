@@ -25,8 +25,6 @@ export class SubmitAssignment {
           foundAssignment.comment = comment;
         }
 
-        console.log(foundAssignment.comment);
-
         return await this.assignmentsRepository.deliverAssignment(
           assignmentId,
           foundAssignment
