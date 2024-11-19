@@ -54,9 +54,6 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
           <div className="circle test-count" data-testid="test-count"></div>
           <span>Número de Tests:</span> {testCountText}
         </div>
-        <div className="commit-date-item">
-          {/* <span>{formatDate(date)}</span> */}
-        </div>
       </div>
     );
   }

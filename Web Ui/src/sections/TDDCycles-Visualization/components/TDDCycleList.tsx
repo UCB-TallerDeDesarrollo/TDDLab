@@ -19,7 +19,6 @@ function TDDCycleList({
     return null;
   }
 
-  // Alterna entre ascendente y descendente
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
@@ -35,16 +34,15 @@ function TDDCycleList({
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
-  // Extrae las fechas ordenadas
+
   const sortedDates = sortedCombinedList.map(([commit]) => {
     const date = new Date(commit.commit.date);
-    return date.toLocaleString(); // Convierte a formato legible
+    return date.toLocaleString(); 
   });
 
   return (
     <div style={{ display: "flex", gap: "5px", alignItems: "flex-start", marginBottom: "40px" }}>
       <div style={{ flex: "1", maxWidth: "300px" }}>
-        {/* Título interactivo */}
         <div
           onClick={toggleSortOrder}
           style={{
@@ -59,11 +57,11 @@ function TDDCycleList({
         >
           Fecha
           <span>
-            {sortOrder === 'asc' ? '↑' : '↓'} {/* Flecha dinámica */}
+            {sortOrder === 'asc' ? '↑' : '↓'} 
           </span>
         </div>
   
-        {/* Cards con las fechas */}
+     
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {sortedDates.map((date, index) => (
             <Card 
@@ -73,15 +71,11 @@ function TDDCycleList({
                 height: '295px', 
                 display: 'flex', 
                 flexDirection: 'column', 
-                justifyContent: 'center',  // Centra verticalmente
-                alignItems: 'center',        // Centra horizontalmente
+                justifyContent: 'center',  
+                alignItems: 'center',        
               }}
-<<<<<<< HEAD
-              
-=======
->>>>>>> d34c515289d71ce1d26e96111b18d2b1e8bec112
             >
-              <CardContent style={{ textAlign: 'center' }}>  {/* Asegura que el texto esté centrado */}
+              <CardContent style={{ textAlign: 'center' }}>  
                 <Typography variant="body2" color="textSecondary">
                   {date}
                 </Typography>
