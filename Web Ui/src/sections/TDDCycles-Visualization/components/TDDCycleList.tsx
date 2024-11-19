@@ -1,8 +1,7 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import TDDCycleCard from "./TDDCycleCard";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 
 interface CycleReportViewProps {
   commitsInfo: CommitDataObject[] | null;
@@ -19,8 +18,9 @@ function TDDCycleList({
     return null;
   }
 
-  const handleSortOrderChange = (event: SelectChangeEvent<'asc' | 'desc'>) => {
-    setSortOrder(event.target.value as 'asc' | 'desc');
+  // Alterna entre ascendente y descendente
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
 
   const combinedList: [CommitDataObject, JobDataObject | null][] = commitsInfo.map((commit) => {
@@ -34,19 +34,46 @@ function TDDCycleList({
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
+  // Extrae las fechas ordenadas
+  const sortedDates = sortedCombinedList.map(([commit]) => {
+    const date = new Date(commit.commit.date);
+    return date.toLocaleString(); // Convierte a formato legible
+  });
+
   return (
     <>
-      <FormControl variant="outlined" style={{ minWidth: 200, marginBottom: 20 }}>
-        <InputLabel>Ordenar por Fecha</InputLabel>
-        <Select
-          value={sortOrder}
-          onChange={handleSortOrderChange}
-          label="Ordenar por Fecha"
-        >
-          <MenuItem value="asc">Ascendente</MenuItem>
-          <MenuItem value="desc">Descendente</MenuItem>
-        </Select>
-      </FormControl>
+      {/* Título interactivo */}
+      <div
+        onClick={toggleSortOrder}
+        style={{
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          marginBottom: '20px',
+          textDecoration: 'underline',
+        }}
+      >
+        Fecha ({sortOrder === 'asc' ? 'Ascendente' : 'Descendente'})
+      </div>
+
+      {/* Tabla con las fechas */}
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+              Fechas Ordenadas
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedDates.map((date, index) => (
+            <tr key={index}>
+              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Lista ordenada */}
       {sortedCombinedList.map(([commit, job]) => (
         <TDDCycleCard key={commit.sha} commit={commit} jobs={job} />
       ))}

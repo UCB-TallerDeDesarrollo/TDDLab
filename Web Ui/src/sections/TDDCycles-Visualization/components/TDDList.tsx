@@ -43,7 +43,7 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
   }, []);
 
   return (
-    <div style={{ marginTop: "20px", marginRight: "30px" }}>
+    <div style={{ marginTop: "20px", marginLeft: "420px" }}>
       {loading ? (
         <div className="mainInfoContainer">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
