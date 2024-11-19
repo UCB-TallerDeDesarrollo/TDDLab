@@ -76,6 +76,7 @@ function TDDCycleList({
                 justifyContent: 'center',  // Centra verticalmente
                 alignItems: 'center',        // Centra horizontalmente
               }}
+              
             >
               <CardContent style={{ textAlign: 'center' }}>  {/* Asegura que el texto esté centrado */}
                 <Typography variant="body2" color="textSecondary">
