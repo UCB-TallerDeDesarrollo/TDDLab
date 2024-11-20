@@ -8,7 +8,7 @@
   border-radius: 6px;
   background-color: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  width: 60vw; 
+  width: 70vw; 
   height: 26.2vh;
 }
 
@@ -39,7 +39,7 @@
   color: #fff;
   font-weight: 600;
   border-radius: 4px;
-  padding: 12px; /* Mayor padding para el botón */
+  padding: 12px; 
 }
 
 .noActionsBox {
@@ -49,7 +49,7 @@
 
 .commit-link {
   display: inline-block;
-  padding: 16px 28px; /* Mayor padding para el botón */
+  padding: 16px 28px; 
   background-color: #0366d6;
   color: #fff;
   text-decoration: none;
@@ -117,18 +117,17 @@
 
 .cycleCardWrapper {
   display: flex; 
-  align-items: stretch; /* Asegura que los hijos tengan la misma altura */
-  gap: 16px; /* Espaciado entre el card de fecha y el container */
+  align-items: stretch; 
+  gap: 16px; 
   
 }
 
 .cycleCardWrapper > .MuiCard-root {
-  flex: 1; /* Permite que el card de fecha crezca y se ajuste */
-  min-width: 120px; 
+  flex: 1;
+  min-width: 80px; 
   display: flex; 
   flex-direction: column; 
-  justify-content: center; 
-  align-items: center; 
+  align-items: self-start;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
   padding: 16px; 
 }
@@ -137,7 +136,7 @@
 .dateCard {
   flex: 0 0 auto; 
   min-height: 150px; 
-  height: 26.2vh; /* Permite que el contenido interno crezca si es necesario */
+  height: 26.2vh; 
   display: flex; 
   flex-direction: column;
   justify-content: center;
