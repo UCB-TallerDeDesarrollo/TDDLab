@@ -7,7 +7,7 @@ export class GetLastPoint {
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
 
-        this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1000);
+        this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 9999);
         this.statusBarItem.show();
         this.context.subscriptions.push(this.statusBarItem);       
     }
@@ -18,8 +18,8 @@ export class GetLastPoint {
         if(status_point === 'green') {
             point = '🟢';
             text = 'Último test pasado';
-        }
-        this.statusBarItem.text = point;
+       }
+        this.statusBarItem.text = `${point} TDDLAB`; 
         this.statusBarItem.tooltip = text;
         this.statusBarItem.show();
     }
