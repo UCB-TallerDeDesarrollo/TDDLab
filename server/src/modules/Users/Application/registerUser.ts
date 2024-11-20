@@ -7,8 +7,9 @@ export const registerUser = async (
 ) => {
   try {
     const existingUser = await Adapter.obtainUserByemail(user.email);
-    if (existingUser) {
-      throw new Error("UserAlreadyExists");
+    console.log(existingUser)
+    if (existingUser && existingUser.groupid == user.groupid) {
+      throw new Error("UserAlreadyExistsInThatGroup");
     }
     await Adapter.registerUser(user);
     return;

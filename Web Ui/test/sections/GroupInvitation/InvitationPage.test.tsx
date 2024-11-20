@@ -39,6 +39,7 @@ jest.mock(
     return {
       RegisterUserOnDb: jest.fn().mockImplementation(() => ({
         register: jest.fn().mockResolvedValue(undefined),
+        getAccountInfo: jest.fn().mockResolvedValue(null),
       })),
     };
   }

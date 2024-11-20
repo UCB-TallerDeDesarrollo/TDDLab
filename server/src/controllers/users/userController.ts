@@ -26,8 +26,8 @@ class UserController {
       await registerUser({ email, groupid, role });
       res.status(201).json({ message: "Usuario registrado con éxito." });
     } catch (error: any) {
-      if(error.message === "UserAlreadyExists"){
-        res.status(409).json({error: "El usuario ya está registrado."});
+      if(error.message === "UserAlreadyExistsInThatGroup"){
+        res.status(409).json({error: "The user is already registered in that group."});
       }
       else{
         res.status(500).json({ error: "Server error while registering user" });
