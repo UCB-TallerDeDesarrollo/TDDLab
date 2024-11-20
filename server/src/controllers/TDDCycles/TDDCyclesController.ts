@@ -99,7 +99,11 @@ class TDDCyclesController {
               };
               commitTimelineEntries.push(commitTimelineEntry);
             } 
-          } 
+          }
+          // aca debemos procesar commit time line entries que tiene datos de green y red
+          // podemos usarun for para definir si fue exitoso o no
+          // despues insertamos en la tabla de commits tabla
+          // al momento de recuperar para ver si un commit fue exitoso consultamos esa tabla usando el sha 
           lastCommitIndex = i + 1;
         }
       }
