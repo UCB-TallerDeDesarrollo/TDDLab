@@ -2,7 +2,6 @@ import { useState } from 'react';
 import TDDCycleCard from "./TDDCycleCard";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { Card, CardContent, Typography, Box } from '@mui/material';
 
 interface CycleReportViewProps {
   commitsInfo: CommitDataObject[] | null;
@@ -34,12 +33,6 @@ function TDDCycleList({
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
-
-  const sortedDates = sortedCombinedList.map(([commit]) => {
-    const date = new Date(commit.commit.date);
-    return date.toLocaleString(); 
-  });
-
   return (
     <div style={{ display: "flex", gap: "5px", alignItems: "flex-start", marginBottom: "40px" }}>
       <div style={{ flex: "1", maxWidth: "300px" }}>
@@ -55,34 +48,8 @@ function TDDCycleList({
             gap: "5px",
           }}
         >
-          Fecha
-          <span>
-            {sortOrder === 'asc' ? '↑' : '↓'} 
-          </span>
+          Fecha <span> {sortOrder === 'asc' ? '↑' : '↓'} </span>
         </button>
-  
-     
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {sortedDates.map((date, index) => (
-            <Card 
-              key={index} 
-              style={{ 
-                boxShadow: '0 5px 6px rgba(0, 0, 0, 0.1)', 
-                height: '295px', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                justifyContent: 'center',  
-                alignItems: 'center',        
-              }}
-            >
-              <CardContent style={{ textAlign: 'center' }}>  
-                <Typography variant="body2" color="textSecondary">
-                  {date}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
       </div>
   
       <div style={{ flex: "1" }}>
