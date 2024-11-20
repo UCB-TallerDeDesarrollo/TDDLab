@@ -5,7 +5,7 @@ import {VITE_API} from "../../../../config.ts";
 
 const API_URL = VITE_API + "/user/users";
 
-class UsersRepository implements UsersRepositoryInterface {
+export class UsersRepository implements UsersRepositoryInterface {
 
   async getUserById(id: number): Promise<UserDataObject> {
     try {
