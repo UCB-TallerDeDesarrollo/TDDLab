@@ -74,5 +74,3 @@ node_modules/
 
 # archivo de reporte generado a la hora de correr los tests en tddlabBaseProject
 /tddlabBaseProject/script/report.json
-# dotenv environment variables file
-.env
