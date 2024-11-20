@@ -2,6 +2,8 @@ import { useState } from 'react';
 import TDDCycleCard from "./TDDCycleCard";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { Box, Typography } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 
 interface CycleReportViewProps {
   commitsInfo: CommitDataObject[] | null;
@@ -34,31 +36,36 @@ function TDDCycleList({
   });
 
   return (
-    <div style={{ display: "flex", gap: "5px", alignItems: "flex-start", marginBottom: "40px" }}>
-      <div style={{ flex: "1", maxWidth: "300px" }}>
-        <button
-          onClick={toggleSortOrder}
-          style={{
-            cursor: "pointer",
-            fontWeight: "bold",
-            marginTop: "-18px",
-            textAlign: "left",
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-          }}
-        >
-          Fecha <span> {sortOrder === 'asc' ? '↑' : '↓'} </span>
-        </button>
+    <>
+    <div style={{ flex: "1", maxWidth: "300px", marginLeft:"20px" }}>
+    <Box
+      onClick={toggleSortOrder}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+        cursor: 'pointer',
+        mb: 1,
+      }}
+    >
+      <Typography variant="body1" fontWeight="bold">
+        Fecha
+      </Typography>
+      {sortOrder === 'asc' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+    </Box>
+
       </div>
+    <div style={{ display: "flex", gap: "5px", alignItems: "flex-start", marginBottom: "40px", marginRight:"59px" }}>
+      
   
-      <div style={{ flex: "1" }}>
+      <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"20px",margin:"0 auto",width:"100vw" }} >
  
         {sortedCombinedList.map(([commit, job]) => (
           <TDDCycleCard key={commit.sha} commit={commit} jobs={job} />
         ))}
       </div>
     </div>
+    </>
   );
 }
 

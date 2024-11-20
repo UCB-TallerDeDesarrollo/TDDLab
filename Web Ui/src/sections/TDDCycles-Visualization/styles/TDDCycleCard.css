@@ -8,7 +8,7 @@
   border-radius: 6px;
   background-color: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  width: 60vw; 
+  width: 70vw; 
   height: 26.2vh;
 }
 
@@ -123,12 +123,11 @@
 }
 
 .cycleCardWrapper > .MuiCard-root {
-  flex: 1; /* Permite que el card de fecha crezca y se ajuste */
-  min-width: 120px; 
+  flex: 1;
+  min-width: 80px; 
   display: flex; 
   flex-direction: column; 
-  justify-content: center; 
-  align-items: center; 
+  align-items: self-start;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
   padding: 16px; 
 }
