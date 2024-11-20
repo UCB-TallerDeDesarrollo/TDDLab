@@ -151,19 +151,16 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
         .datasetIndex;
     
       const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit && commit.html_url) {
-        window.open(commit.html_url, "_blank");
-      }
+      commit?.html_url && window.open(commit.html_url, "_blank");
     }
   };
   useEffect(() => {
-    if (graph) {
-    }
+  
   }, [graph]);
 
   return (
     <>
-      {/* Gráfico Burbuja solo se muestra si graph no está vacío */}
+
       {!graph ? (
         <div
           style={{

@@ -118,6 +118,7 @@ export class GithubRepository implements IGithubRepository {
 
       return commits;
     } catch (error) {
+      console.error("An error occurred:", error); 
       throw error;
     }
   }
@@ -157,6 +158,7 @@ export class GithubRepository implements IGithubRepository {
       };
       return commitInfo;
     } catch (error) {
+      console.error("An error occurred:", error); 
       throw error;
     }
   }
@@ -182,6 +184,7 @@ export class GithubRepository implements IGithubRepository {
       }
       return {coveragePercentage: percentageMatch, test_count: testCount};
     } catch (error){
+      console.error("An error occurred:", error); 
       throw error;
     }
   }
@@ -239,6 +242,7 @@ export class GithubRepository implements IGithubRepository {
       ]);
       return response;
     } catch (error) {
+      console.error("An error occurred:", error); 
       throw error;
     }
   }
@@ -260,6 +264,7 @@ export class GithubRepository implements IGithubRepository {
       };
       return jobData;
     } catch (error) {
+      console.error("An error occurred:", error); 
       throw error;
     }
   }

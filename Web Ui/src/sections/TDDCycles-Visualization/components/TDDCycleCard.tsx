@@ -73,14 +73,14 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", // Centra el contenido verticalmente
-          alignItems: "center", // Centra el contenido horizontalmente
+          justifyContent: "center",
+          alignItems: "center", 
           boxShadow: "0 1px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <CardContent style={{ textAlign: "center" }}>
+        <CardContent style={{ textAlign: "center"}}>
           <Typography variant="body2" color="textSecondary">
-            {date}
+            <b>{date}</b>
           </Typography>
         </CardContent>
       </Card>
@@ -93,12 +93,12 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
       className="cycleCardWrapper"
       style={{
         display: "flex",
-        flexDirection: "row", // Cambiado a fila
-        alignItems: "flex-start", // Alineación vertical
-        marginBottom: "16px", // Espaciado entre tarjetas
+        flexDirection: "row", 
+        alignItems: "flex-start", 
+        marginBottom: "16px",
       }}
     >
-      {renderDateCard()} {/* Card de fecha a la izquierda */}
+      {renderDateCard()} 
       <div className="cycleCardContainer">
         <span className="title">Commit {commit.commit.message}</span>
         {getCommitStats()}

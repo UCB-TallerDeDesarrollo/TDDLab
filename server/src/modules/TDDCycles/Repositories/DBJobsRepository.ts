@@ -148,7 +148,8 @@ export class DBJobsRepository implements IDBJobsRepository {
         const result = await client.query(query, values);
         return result.rows.length > 0;
     } catch (error) {
-        throw error;
+      console.error("An error occurred:", error); 
+      throw error; 
     } finally {
         client.release();
     }
