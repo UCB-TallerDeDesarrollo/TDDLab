@@ -8,7 +8,8 @@
   border-radius: 6px;
   background-color: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  width: 80vw; /* Cambio a ancho fijo para igualar el tamaño */
+  width: 60vw; 
+  height: 26.2vh;
 }
 
 .cycleCardContainer span {
@@ -113,3 +114,34 @@
   margin-right: 40px;
   width: calc(24vw + 10px);
 }
+
+.cycleCardWrapper {
+  display: flex; 
+  align-items: stretch; /* Asegura que los hijos tengan la misma altura */
+  gap: 16px; /* Espaciado entre el card de fecha y el container */
+  
+}
+
+.cycleCardWrapper > .MuiCard-root {
+  flex: 1; /* Permite que el card de fecha crezca y se ajuste */
+  min-width: 120px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px; 
+}
+
+
+.dateCard {
+  flex: 0 0 auto; 
+  min-height: 150px; 
+  height: 26.2vh; /* Permite que el contenido interno crezca si es necesario */
+  display: flex; 
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
