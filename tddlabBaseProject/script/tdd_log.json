@@ -1,2 +1,22 @@
 [
+  {
+    "numPassedTests": 1,
+    "numTotalTests": 2,
+    "timestamp": 1730821131034
+  },
+  {
+    "numPassedTests": 2,
+    "numTotalTests": 2,
+    "timestamp": 1730821238544
+  },
+  {
+    "numPassedTests": 2,
+    "numTotalTests": 2,
+    "timestamp": 1730915875272
+  },
+  {
+    "numPassedTests": 2,
+    "numTotalTests": 2,
+    "timestamp": 1730916050163
+  }
 ]
