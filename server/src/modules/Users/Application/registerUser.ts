@@ -2,8 +2,8 @@ import { UserCreationObect } from "../Domain/User";
 import { UserRepository } from "../Repositories/UserRepository";
 
 export const registerUser = async (
-  user: UserCreationObect,
-  Adapter: UserRepository = new UserRepository()
+    user: UserCreationObect,
+    Adapter: UserRepository = new UserRepository()
 ) => {
   try {
     const existingUser = await Adapter.obtainUserByemail(user.email);

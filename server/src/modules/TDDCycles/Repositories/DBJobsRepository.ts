@@ -3,12 +3,43 @@ import config from "../../../config/db";
 import { TestResultDataObject } from "../Domain/TestResultDataObject";
 import { IDBJobsRepository } from "../Domain/IDBJobsRepository";
 import { JobDataObject } from "../Domain/JobDataObject";
+import { ITimelineEntry } from "../Domain/ITimelineCommit";
 
 export class DBJobsRepository implements IDBJobsRepository {
   pool: Pool;
   constructor() {
     this.pool = new Pool(config);
   }
+
+  async saveLogs(timeline: ITimelineEntry[]) {
+    const client = await this.pool.connect();
+    try {
+        for (const entry of timeline) {
+            const exists = await this.executionExists(entry.commit_sha, entry.execution_timestamp);
+            if (!exists) {
+                const query = `
+                    INSERT INTO commit_timeline (commit_sha, execution_timestamp, number_of_tests, passed_tests, color)
+                    VALUES ($1, $2, $3, $4, $5)
+                `;
+                const values = [
+                    entry.commit_sha,
+                    entry.execution_timestamp,
+                    entry.number_of_tests,
+                    entry.passed_tests,
+                    entry.color,
+                ];
+                await client.query(query, values);
+            }
+        }
+    } catch (error) {
+        console.error("Error al guardar el log:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+
   async saveJob(job: TestResultDataObject) {
     const client = await this.pool.connect();
     try {
@@ -104,4 +135,23 @@ export class DBJobsRepository implements IDBJobsRepository {
 
     await Promise.all(jobsFormatted.map((job) => this.saveJob(job)));
   }
+
+  async executionExists(commit_sha: string, timestamp: Date): Promise<boolean> {
+    const client = await this.pool.connect();
+    try {
+        const query = `
+            SELECT 1 FROM commit_timeline
+            WHERE commit_sha = $1 AND execution_timestamp = $2
+            LIMIT 1
+        `;
+        const values = [commit_sha, timestamp];
+        const result = await client.query(query, values);
+        return result.rows.length > 0;
+    } catch (error) {
+        throw error;
+    } finally {
+        client.release();
+    }
+  }
+
 }

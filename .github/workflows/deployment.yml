@@ -309,13 +309,17 @@ jobs:
           echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
           echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
       - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Link to Staging Project
         run: |
           cd ./server
-          npm install vercel
-      - name: Deploy to Vercel
+          vercel link --yes --project tdd-lab-api-staging --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Staging
         run: |
           cd ./server
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} -y
   deploy_vercel_production:
     runs-on: ubuntu-latest
     environment:
@@ -350,10 +354,14 @@ jobs:
           echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
           echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
       - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Link to Production Project
         run: |
           cd ./server
-          npm install vercel
-      - name: Deploy to Vercel
+          vercel link --yes --project tdd-lab-api --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Production
         run: |
           cd ./server
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} -y

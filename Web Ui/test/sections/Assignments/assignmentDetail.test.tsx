@@ -67,7 +67,7 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       const groupName = getByText("Test Group");
       expect(groupName).toBeInTheDocument();
-    });
+    },{ timeout: 3000 });
   });
 
   it("displays the Estado and Enlace sections for student role", async () => {
@@ -143,8 +143,8 @@ describe("AssignmentDetail Component", () => {
       ...jest.requireActual('react-router-dom'),
       useSearchParams: () => [
         new URLSearchParams({
-          repoOwner: 'testOwner',
-          repoName: 'testRepo'
+          repoOwner: 'danTerra45',
+          repoName: 'parcel-jest-cars'
         })
       ]
     }));

@@ -14,7 +14,7 @@ describe('GetUsersByGroupIdUseCase', () => {
   
     it('should retrieve users by group ID', async () => {
       const groupId = 70;
-      const expectedUsers = mockUsers.filter((user) => user.groupid === groupId);
+      const expectedUsers = mockUsers.filter((user) => user.groupid.includes(groupId));
   
       const result = await getUsersByGroupid.execute(groupId);
   

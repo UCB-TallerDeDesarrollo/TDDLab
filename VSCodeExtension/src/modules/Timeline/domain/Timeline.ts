@@ -8,4 +8,8 @@ export class Timeline {
     isSuccessful(): boolean {
         return this.numPassedTests === this.numTotalTests;
     }
+
+    getColor(): string {
+        return this.isSuccessful() ? "green" : "red";
+    }
 }

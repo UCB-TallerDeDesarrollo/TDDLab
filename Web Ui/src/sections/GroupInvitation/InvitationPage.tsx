@@ -20,13 +20,16 @@ import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 
 function InvitationPage() {
   const location = useLocation();
-  const getQueryParam = (param: string): number | undefined => {
+  const getQueryParam = (param: string): string | number | undefined => {
     const searchParams = new URLSearchParams(location.search);
     const value = searchParams.get(param);
-    return value ? parseInt(value, 10) : undefined;
-  };
+    if (param === "groupid") {
+      return value ? parseInt(value, 10) : undefined;
+    }
+    return value ?? undefined;  };
 
   const groupid = getQueryParam("groupid");
+  const userType = getQueryParam("type");
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
@@ -91,9 +94,7 @@ const handleAcceptInvitation = async (type: string) => {
     setShowPopUp(true);
   }
 };
-  
-  
-
+ 
   return (
     <div>
       {user ? (
@@ -183,24 +184,28 @@ const handleAcceptInvitation = async (type: string) => {
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
                     Israel Antezana te está invitando al curso
                   </Typography>
-                  <Button
-                    onClick={() => handleAcceptInvitation("student")}
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                    fullWidth
-                  >
-                    Aceptar invitación al curso
-                  </Button>
-                  <Button
-                    onClick={handlePopPassword}
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                    fullWidth
-                  >
-                    Aceptar invitación al curso como Docente
-                  </Button>
+                  {userType === "student" && (
+                    <Button
+                      onClick={() => handleAcceptInvitation("student")}
+                      variant="contained"
+                      color="primary"
+                      sx={{ marginTop: 2 }}
+                      fullWidth
+                    >
+                      Aceptar invitación al curso
+                    </Button>
+                  )}
+                  {userType === "teacher" && (
+                    <Button
+                      onClick={handlePopPassword}
+                      variant="contained"
+                      color="primary"
+                      sx={{ marginTop: 2 }}
+                      fullWidth
+                    >
+                      Aceptar invitación al curso como Docente
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </Grid>

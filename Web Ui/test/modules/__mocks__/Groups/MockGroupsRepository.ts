@@ -23,6 +23,10 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
   deleteGroup(_id: number): Promise<void> {
     throw new Error("Method not implemented.");
   }
+
+  getGroupsByUserId(_id: number): Promise<number[]>{
+    throw new Error("Method not implemented.");
+  }
 }
 
 export default MockGroupsRepository;

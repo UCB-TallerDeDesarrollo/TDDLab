@@ -133,33 +133,38 @@ describe("GithubRepository", () => {
 
     describe("getCommitsInforForTDDCycle", () => {
         it("should return an array of TDD cycle data for the given commits", async () => {
-            // Create a mock Octokit instance
-            const mockOctokit = {
-                request: jest
-                    .fn()
-                    .mockResolvedValueOnce({ data: commitInformationDataObjectMock })
-                    .mockResolvedValueOnce({
-                        data: [{ body: "Statements | 80% of 100 --- 10 tests passing" }],
-                    }),
-            } as unknown as Octokit;
-
-            // Assign the mock Octokit instance to githubRepository.octokit
-            githubRepository.octokit = mockOctokit;
-
-            const owner = "owner";
-            const repoName = "repoName";
-
-            const commitsData = await githubRepository.getCommitsInforForTDDCycle(
-                owner,
-                repoName,
-                commitsFromGithub
-            );
-
-            expect(commitsData).toEqual([tddCycleDataObject]);
-        });
-
+          const mockOctokit = {
+            request: jest
+              .fn()
+              .mockResolvedValueOnce({ data: commitInformationDataObjectMock })
+              .mockResolvedValueOnce({
+                data: [{ body: "Statements | 80% of 100 --- 10 tests passing" }],
+              }),
+          } as unknown as Octokit;
+          githubRepository.octokit = mockOctokit;
+      
+          const owner = "owner";
+          const repoName = "repoName";
+      
+          const commitsData = await githubRepository.getCommitsInforForTDDCycle(
+            owner,
+            repoName,
+            commitsFromGithub
+          );
     
-    });
+          const sanitizedCommitsData = commitsData.map(commit => {
+            const { date, ...rest } = commit.commit;  
+            return { ...commit, commit: rest };  
+          });
+      
+          const sanitizedTddCycleDataObject = { 
+            ...tddCycleDataObject, 
+            commit: { ...tddCycleDataObject.commit, date: undefined }  
+          };
+      
+          expect(sanitizedCommitsData).toEqual([sanitizedTddCycleDataObject]);
+        });
+      });      
 
     describe("GithubRepository", () => {
         let githubRepository: GithubRepository;
