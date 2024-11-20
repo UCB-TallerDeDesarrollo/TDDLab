@@ -16,7 +16,7 @@ logging.basicConfig(
     ]
 )
 
-repository = InMemoryUserCommitMetricsRepository
+repository = InMemoryUserCommitMetricsRepository()
 analyze_use_case = AnalyzeCommitUseCase(repository)
 analyze_by_commit = GetCcnByCommitUseCase(repository)
 
@@ -83,6 +83,6 @@ def analyze_avg_ccn():
 
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=True)
