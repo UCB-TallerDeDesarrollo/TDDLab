@@ -392,6 +392,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             port={port}
             role={role}
             filteredCommitsObject={commits}
+            complexity={null}
             jobsByCommit={jobsByCommit}
             optionSelected={graph}
           />

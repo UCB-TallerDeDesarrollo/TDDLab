@@ -8,6 +8,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
+import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/complexityInferface";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
@@ -45,6 +46,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
 
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
+  const [complexityInfo, setComplexity] = useState<ComplexityObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,6 +58,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+      const complexity = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
       setJobsByCommit(jobsData);
       setCommitsInfo(commits);
     } catch (error) {
@@ -159,6 +162,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
               data-testId="cycle-chart"
               commits={commitsInfo}
               jobsByCommit={jobsByCommit}
+              complexity = {complexityInfo}
               port={port}
               role={role}
               metric={metric}

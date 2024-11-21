@@ -21,6 +21,7 @@ import TDDList from "./TDDList";
 import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/complexityInferface";
 
 ChartJS.register(
   CategoryScale,
@@ -41,6 +42,7 @@ interface LineChartProps {
   optionSelected: string;
   port:GithubAPIRepository;
   role:string;
+  complexity: ComplexityObject[] | null;
 }
 
 function TDDLineCharts({
@@ -48,11 +50,12 @@ function TDDLineCharts({
   jobsByCommit,
   optionSelected,
   port,
-  role
+  role,
+  complexity
 }: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
-
+  console.log(complexity);
   function getDataLabels() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(

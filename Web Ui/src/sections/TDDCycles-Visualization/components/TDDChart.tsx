@@ -9,6 +9,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/complexityInferface";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -17,9 +18,10 @@ interface CycleReportViewProps {
   setMetric: (metric: string) => void; // Agregamos una función para actualizar el metric
   port: GithubAPIRepository;
   role: string;
+  complexity: ComplexityObject[]| null;
 }
 
-function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit,complexity, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
   if (!commits || !jobsByCommit) {
@@ -76,6 +78,7 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
         filteredCommitsObject={filteredCommitsObject}
         jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
+        complexity = {complexity}
         port={port}
         role={role}
       />
