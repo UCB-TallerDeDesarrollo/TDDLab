@@ -90,6 +90,9 @@ export class GithubAPIAdapter implements GithubAPIRepository {
     }
   }
 
+  async obtainComplexityOfRepo(owner: string, repoName: string) {
+    
+  }
   async obtainJobsOfRepo(
     owner: string,
     repoName: string,

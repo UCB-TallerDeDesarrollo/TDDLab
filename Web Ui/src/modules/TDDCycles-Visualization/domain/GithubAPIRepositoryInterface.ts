@@ -9,4 +9,6 @@ export interface GithubAPIRepository {
   obtainRunsOfGithubActions(owner: string, repoName: string): any;
 
   obtainJobsOfRepo(owner: string, repoName: string): any;
+
+  obtainComplexityOfRepo(owner:string, repoName: string): any;
 }
