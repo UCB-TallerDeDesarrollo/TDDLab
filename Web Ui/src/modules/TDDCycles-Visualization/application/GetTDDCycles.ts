@@ -21,6 +21,12 @@ export class PortGetTDDCycles {
   ): Promise<JobDataObject[]> {
     return await this.adapter.obtainJobsOfRepo(owner, repoName);
   }
+  async obtainComplexityData(
+    owner: string,
+    repoName: string,
+  ): Promise<JobDataObject[]> {
+    return await this.adapter.obtainComplexityOfRepo(owner, repoName);
+  }
 }
 
 export const formatDate = (date: Date): string => {
