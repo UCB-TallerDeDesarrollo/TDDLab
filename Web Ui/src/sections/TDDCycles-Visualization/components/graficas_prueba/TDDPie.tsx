@@ -8,31 +8,39 @@ import {
   ArcElement,
 } from "chart.js";
 import { CommitDataObject } from "../../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { JobDataObject } from "../../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
+import { GithubAPIRepository } from "../../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 
 ChartJS.register(Tooltip, Legend, ArcElement);
 
 interface TDDPieProps {
   commits: CommitDataObject[];
+  jobsByCommit: JobDataObject[];
+  port: GithubAPIRepository;
+  role: string;
 }
 
-const TDDPie: React.FC<TDDPieProps> = ({ commits }) => {
+const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
   // Calcula las categorías
-  let getCommitCategories = () => {
-    let categories = { green: 0, red: 0, blue: 0 };
-    commits.forEach((commit) => {
-      const message = commit.commit.message.toLowerCase();
-      if (/\brefactor(\w*)\b/i.test(message)) {
-        categories.blue++;
-      } else if (commit.stats.total === 0) {
-        categories.red++;
-      } else {
-        categories.green++;
-      }
-    });
-    return categories;
-  };
+  function containsRefactor(commitMessage: string): boolean {
+    const regex = /\brefactor(\w*)\b/i;
+    return regex.test(commitMessage);
+  }
 
-  const categories = getCommitCategories();
+  function getColorConclusion() {
+    let categories = { green: 0, red: 0, blue: 0 };
+
+    commits.map((commit) => {
+              const job = jobsByCommit.find((job) => job.sha === commit.sha);
+              if (job?.conclusion === "success") categories.green++;
+              else if (job === undefined) return "black";
+              else if (containsRefactor(commit.commit.message)) categories.blue++;
+              else categories.red++;
+            })
+            return categories;
+  }
+
+  const categories = getColorConclusion();
   const totalCommits = commits.length;
 
   const data = {

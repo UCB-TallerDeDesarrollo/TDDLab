@@ -21,6 +21,7 @@ import TDDList from "./TDDList";
 import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import TDDPie from "./graficas_prueba/TDDPie";
 
 ChartJS.register(
   CategoryScale,
@@ -276,6 +277,8 @@ function TDDLineCharts({
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
+      case "Pie":
+        return <TDDPie commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>; 
     }
     return (
       <Line
