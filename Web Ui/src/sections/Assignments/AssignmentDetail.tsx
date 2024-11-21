@@ -7,9 +7,13 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+import FileUploadDialog from "./components/FileUploadDialog";
 
 import axios from "axios"; // Use axios for making API requests
-import { VITE_API } from "../../../config.ts";
+import { VITE_API } from "../../../config.ts"; // we import this so later we can upload the tdd log json file
+
+//import FileUploadDialog from "./components/FileUploadDialog";
+
 
 import {
   Button,
@@ -301,6 +305,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+
 
   const [_comment, setComment] = useState("");
 
@@ -311,6 +317,20 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleCloseCommentDialog = () => {
     setIsCommentDialogOpen(false);
   };
+
+  const handleOpenFileDialog = () => {
+    setIsFileDialogOpen(true);
+  };
+  
+  const handleCloseFileDialog = () => {
+    setIsFileDialogOpen(false);
+  };
+  
+  const handleUploadFile = (file: File) => {
+    console.log("Archivo subido:", file);
+    // aqui desencriptamos el archivo
+  };
+  
 
   const handleSendComment = async (comment: string) => {
     if (submission){
@@ -632,15 +652,14 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             )}
             {isStudent(role) && (
               <Button
-              variant="contained"
-              disabled={isTaskInProgress}
-              onClick={handleOpenCommentDialog} //we should change this later
-              style={{textTransform:"none", fontSize:"15px", marginRight: "8px"}}
+                variant="contained"
+                disabled={isTaskInProgress}
+                onClick={handleOpenFileDialog} // Abrir el nuevo diálogo
+                style={{ textTransform: "none", fontSize: "15px", marginRight: "8px" }}
               >
                 Subir sesión TDD extension
               </Button>
             )}
-
             <CommentDialog
               open={isCommentDialogOpen}
               link={submission?.repository_link}
@@ -704,6 +723,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           </CardContent>
         </Card>
       )}
+      <FileUploadDialog
+        open={isFileDialogOpen}
+        onClose={handleCloseFileDialog}
+        onUpload={handleUploadFile}
+      />
     </div>
   );
 };
