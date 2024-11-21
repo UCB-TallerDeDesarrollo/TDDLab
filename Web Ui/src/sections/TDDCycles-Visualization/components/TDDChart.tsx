@@ -68,21 +68,21 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
               Líneas de Código Modificadas
             </MenuItem>
             
-            <MenuItem value={"Distribución de Commits"}>
+            <MenuItem value={"Pie"}>
               Distribución de Commits
               </MenuItem>
 
             <MenuItem value={"Lista"}>
               Lista de Commits
             </MenuItem>
+
           </Select>
         </FormControl>
       </Box>
       {/* Renderiza el gráfico correspondiente */}
       {(() => {
         switch (metricSelected) {
-          case "Distribución de Commits":
-            return <TDDPie commits={filteredCommitsObject} />;
+          
           default:
             return (
               <TDDLineCharts

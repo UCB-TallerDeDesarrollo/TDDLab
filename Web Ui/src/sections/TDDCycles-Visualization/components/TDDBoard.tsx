@@ -241,10 +241,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 marginBottom: "30px",
               }}
             >
-              {/* Tus otros gráficos AGREGAMOS ESTO PARA PROBAR EL GRAFICO PASTEL EN EL DASHBOARD*/}
-              <div style={{ width: "30%" }}>
-                <TDDPie commits={commits} />
-              </div>
+             
 
               <div
                 style={{ width: "30%" }}
