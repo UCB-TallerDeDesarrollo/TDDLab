@@ -19,8 +19,7 @@
     "keybindings":[
       {
         "command": "TDD.runTest",
-        "key": "ctrl+t",
-        "when": "editorTextFocus"
+        "key": "ctrl+t"
       }
     ],
     "commands": [
