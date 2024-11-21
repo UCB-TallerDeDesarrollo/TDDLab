@@ -7,15 +7,13 @@
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html",
-    "test": "jest --watch",
-    "test-once": "jest --verbose --coverage",
     "test-export-json": "jest --json --outputFile=./script/report.json",
     "post-commit": "node ./script/commitScript.js",
     "tdd-script": "node ./script/tddScript.js",
     "cypress": "cypress open",
     "cypress-run": "cypress run",
     "lint": "eslint .",
-    "postinstall": "git init && npx husky install"
+    "postinstall": "npx husky install"
   },
   "author": "Israel Antezana R.",
   "license": "ISC",
