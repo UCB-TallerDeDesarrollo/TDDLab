@@ -37,7 +37,7 @@ function TDDCycleList({
 
   return (
     <>
-    <div style={{ flex: "1", maxWidth: "300px", marginLeft:"20px" }}>
+    <div style={{ flex: "1", maxWidth: "30px", marginLeft:"20px" }}>
     <Box
       onClick={toggleSortOrder}
       sx={{
