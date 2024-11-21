@@ -100,7 +100,17 @@ class TDDCyclesController {
               commitTimelineEntries.push(commitTimelineEntry);
             } 
           }
+
           // aca debemos procesar commit time line entries que tiene datos de green y red
+          const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
+          const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";
+          if (hasRed && lastIsGreen) {
+            console.log("Si realizó un ciclo TDD");
+            
+          } else {
+            console.log("No se realizó un ciclo TDD");
+          }
+
           // podemos usarun for para definir si fue exitoso o no
           // despues insertamos en la tabla de commits tabla
           // al momento de recuperar para ver si un commit fue exitoso consultamos esa tabla usando el sha 
