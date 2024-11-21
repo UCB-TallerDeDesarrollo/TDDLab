@@ -92,6 +92,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   }
 
   async obtainComplexityOfRepo(owner: string, repoName: string) {
+
     try {
       const repoUrl = `https://github.com/${owner}/${repoName}`;
 
