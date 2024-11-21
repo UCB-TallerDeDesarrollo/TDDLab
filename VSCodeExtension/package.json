@@ -3,7 +3,7 @@
   "displayName": "TDD Lab",
   "description": "Plugin de VSCode para la aplicación TDDLab",
   "publisher": "TDDLab-TallerDesarrollo",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.94.0"
   },
@@ -16,14 +16,33 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "keybindings": [
+      {
+        "command": "TDD.runTest",
+        "key": "ctrl+t",
+        "when": "editorTextFocus"
+      }
+    ],
     "commands": [
       {
         "command": "TDD.runTest",
         "title": "Run Test"
       },
       {
+        "command": "TDD.runTestActivity",
+        "title": "Run Test"
+      },
+      {
         "command": "extension.showTimeline",
         "title": "Show Timeline"
+      },
+      {
+        "command": "TDD.cloneCommand",
+        "title": "Clone Proyect"
+      },
+      {
+        "command": "TDD.postCommand",
+        "title": "Post TDD Data"
       }
     ],
     "viewsContainers": {
@@ -31,13 +50,13 @@
         {
           "id": "myExtension",
           "title": "TDD Lab",
-          "icon": "./src/modules/Button/resources/icon.svg"
+          "icon": "resources/icono.png"
         }
       ],
       "panel": [
         {
           "id": "timelineContainer",
-          "title": "Timeline",
+          "title": "TDDLAB",
           "icon": ""
         }
       ]
@@ -45,8 +64,8 @@
     "views": {
       "myExtension": [
         {
-          "id": "myView",
-          "name": "My Tests"
+          "id": "tddTestExecution",
+          "name": "TDD test execution"
         }
       ],
       "timelineContainer": [
@@ -54,6 +73,14 @@
           "id": "timelineView",
           "name": "Timeline",
           "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "TDD.runTestActivity",
+          "group": "navigation"
         }
       ]
     }
@@ -79,6 +106,7 @@
   },
   "dependencies": {
     "extension": "file:",
+    "node-fetch": "^3.3.2",
     "tdd-extension-taller": "file:"
   }
 }

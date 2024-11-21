@@ -246,7 +246,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
+<<<<<<< HEAD
   const handleRedirect = (link: string, submissionId:number) => {
+=======
+  const handleRedirectStudent = (link: string) => {
+>>>>>>> main
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
@@ -260,6 +264,32 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             repoOwner: user,
             repoName: repo,
             submissionId: submissionId.toString(),
+          }).toString(),
+        });
+      } else {
+        alert("Link Invalido, por favor ingrese un link valido.");
+      }
+    } else {
+      alert("No se encontro un link para esta tarea.");
+    }
+  };
+
+  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number) => {
+    if (link) {
+      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+      const match = regex.exec(link);
+  
+      if (match) {
+        const [, user, repo] = match;
+        console.log(user, repo);
+  
+        navigate({
+          pathname: "/graph",
+          search: createSearchParams({
+            repoOwner: user,
+            repoName: repo,
+            fetchedSubmissions: JSON.stringify(fetchedSubmissions),
+            submissionId: submissionId.toString(),  // Convertimos submissionId a cadena para pasarlo como parámetro
           }).toString(),
         });
       } else {
@@ -364,7 +394,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
+<<<<<<< HEAD
                 onClick={() => handleRedirect(submission.repository_link, submission.id)}
+=======
+                onClick={() => handleRedirectAdmin(submission.repository_link, submissions, submission.id)}
+>>>>>>> main
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -569,7 +603,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
+<<<<<<< HEAD
                 onClick={() =>studentSubmission?.repository_link && handleRedirect(studentSubmission.repository_link, studentSubmission.id)}
+=======
+                onClick={() =>studentSubmission?.repository_link && handleRedirectStudent(studentSubmission.repository_link)}
+>>>>>>> main
                 color="primary"
                 style={{
                   textTransform: "none",

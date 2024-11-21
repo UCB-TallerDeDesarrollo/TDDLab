@@ -97,6 +97,7 @@ class GroupRepository {
     }
     return null;
   }
+
 }
 
 export default GroupRepository;

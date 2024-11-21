@@ -8,16 +8,23 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
+import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
   jobsByCommit: JobDataObject[] | null;
+  metric: string | null; // Cambié de String a string para mayor consistencia
+  setMetric: (metric: string) => void; // Agregamos una función para actualizar el metric
+  port: GithubAPIRepository;
+  role: string;
 }
 
-function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const [metricSelected, setMetricSelected] = useState("Cobertura de Código");
-
+  const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
+  if (!commits || !jobsByCommit) {
+    return <div>No data available</div>; 
+  }
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
@@ -27,8 +34,11 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
     }
     return commits;
   })();
+
   const handleSelectChange = (event: SelectChangeEvent) => {
-    setMetricSelected(event.target.value);
+    const newMetric = event.target.value;
+    setMetricSelected(newMetric);
+    setMetric(newMetric); 
   };
 
   return (
@@ -42,16 +52,19 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
             onChange={handleSelectChange}
             value={metricSelected}
             data-testid="select-graph-type"
-            label="Metrics"
+            label="Métricas"
           >
+             <MenuItem value={"Dashboard"}>
+              Dashboard
+            </MenuItem>
+            <MenuItem value={"Total Número de Tests"}>
+              Total Número de Tests
+            </MenuItem>
             <MenuItem value={"Cobertura de Código"}>
               Porcentaje de Cobertura de Código
             </MenuItem>
             <MenuItem value={"Líneas de Código Modificadas"}>
               Líneas de Código Modificadas
-            </MenuItem>
-            <MenuItem value={"Total Número de Tests"}>
-              Total Número de Tests
             </MenuItem>
             <MenuItem value={"Lista"}>
               Lista de Commits
@@ -63,7 +76,9 @@ function TDDCharts({ commits, jobsByCommit }: Readonly<CycleReportViewProps>) {
         filteredCommitsObject={filteredCommitsObject}
         jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
-      ></TDDLineCharts>
+        port={port}
+        role={role}
+      />
     </div>
   );
 }

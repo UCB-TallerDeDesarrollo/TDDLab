@@ -16,7 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.14",
-    "@types/express": "^4.17.17",
+    "@types/express": "^4.17.21",
     "@types/jest": "^29.5.5",
     "@types/pg": "^8.10.2",
     "@types/supertest": "^2.0.14",
@@ -28,9 +28,9 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "espressts": "file:",
-    "express": "4.18.2",
+    "express": "4.21.1",
     "octokit": "^3.1.2",
     "pg": "^8.11.3"
   }

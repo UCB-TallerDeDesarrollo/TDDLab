@@ -1,8 +1,9 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import TDDCycleCard from "./TDDCycleCard";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 
 interface CycleReportViewProps {
   commitsInfo: CommitDataObject[] | null;
@@ -19,8 +20,8 @@ function TDDCycleList({
     return null;
   }
 
-  const handleSortOrderChange = (event: SelectChangeEvent<'asc' | 'desc'>) => {
-    setSortOrder(event.target.value as 'asc' | 'desc');
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
 
   const combinedList: [CommitDataObject, JobDataObject | null][] = commitsInfo.map((commit) => {
@@ -36,22 +37,38 @@ function TDDCycleList({
 
   return (
     <>
-      <FormControl variant="outlined" style={{ minWidth: 200, marginBottom: 20 }}>
-        <InputLabel>Ordenar por Fecha</InputLabel>
-        <Select
-          value={sortOrder}
-          onChange={handleSortOrderChange}
-          label="Ordenar por Fecha"
-        >
-          <MenuItem value="asc">Ascendente</MenuItem>
-          <MenuItem value="desc">Descendente</MenuItem>
-        </Select>
-      </FormControl>
-      {sortedCombinedList.map(([commit, job]) => (
-        <TDDCycleCard key={commit.sha} commit={commit} jobs={job} />
-      ))}
+    <div style={{ flex: "1", maxWidth: "300px", marginLeft:"20px" }}>
+    <Box
+      onClick={toggleSortOrder}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+        cursor: 'pointer',
+        mb: 1,
+      }}
+    >
+      <Typography variant="body1" fontWeight="bold">
+        Fecha
+      </Typography>
+      {sortOrder === 'asc' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+    </Box>
+
+      </div>
+    <div style={{ display: "flex", gap: "5px", alignItems: "flex-start", marginBottom: "40px", marginRight:"59px" }}>
+      
+  
+      <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"20px",margin:"0 auto",width:"100vw" }} >
+ 
+        {sortedCombinedList.map(([commit, job]) => (
+          <TDDCycleCard key={commit.sha} commit={commit} jobs={job} />
+        ))}
+      </div>
+    </div>
     </>
   );
 }
 
 export default TDDCycleList;
+
+

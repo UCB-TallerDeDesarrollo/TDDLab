@@ -2,13 +2,14 @@ import { UserCreationObect } from "../Domain/User";
 import { UserRepository } from "../Repositories/UserRepository";
 
 export const registerUser = async (
-  user: UserCreationObect,
-  Adapter: UserRepository = new UserRepository()
+    user: UserCreationObect,
+    Adapter: UserRepository = new UserRepository()
 ) => {
   try {
     const existingUser = await Adapter.obtainUserByemail(user.email);
-    if (existingUser) {
-      throw new Error("UserAlreadyExists");
+    console.log(existingUser)
+    if (existingUser && existingUser.groupid == user.groupid) {
+      throw new Error("UserAlreadyExistsInThatGroup");
     }
     await Adapter.registerUser(user);
     return;

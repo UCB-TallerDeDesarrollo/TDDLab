@@ -15,20 +15,31 @@ import { handleGithubSignOut } from "../../modules/User-Authentication/applicati
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
+import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
+
 
 function InvitationPage() {
   const location = useLocation();
-  const getQueryParam = (param: string): number | undefined => {
+  const getQueryParam = (param: string): string | number | undefined => {
     const searchParams = new URLSearchParams(location.search);
     const value = searchParams.get(param);
-    return value ? parseInt(value, 10) : undefined;
-  };
+    if (param === "groupid") {
+      return value ? parseInt(value, 10) : undefined;
+    }
+    return value ?? undefined;  };
 
   const groupid = getQueryParam("groupid");
+  const userType = getQueryParam("type");
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false); 
+  const [, setPopupMessage] = useState(""); 
+
   const dbAuthPort = new RegisterUserOnDb();
+
+
+  
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -62,22 +73,28 @@ function InvitationPage() {
     setShowPasswordPopup(true);
   };
 
-  const handleAcceptInvitation = async (type: string) => {
-    console.log(user?.email);
-    console.log(groupid);
-
-    // Have to Solve courseId error
-    if (user?.email) {
-      const userObj: UserOnDb = {
-        email: user.email,
-        groupid: groupid ?? 1,
-        role: type,
-      };
-      await dbAuthPort.register(userObj);
-      setShowPopUp(true);
+const handleAcceptInvitation = async (type: string) => {
+  console.log(user?.email);
+  console.log(groupid);
+  console.log(type);
+  if (user?.email) {
+    const existingUser = await dbAuthPort.getAccountInfo(user.email);
+    if (existingUser && existingUser.groupid) {
+      console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
+      setPopupMessage("El usuario ya tiene un grupo asignado.");
+      setOpenPopup(true); 
+      return;
     }
-  };
-
+    const userObj: UserOnDb = {
+      email: user.email,
+      groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
+      role: type,
+    };
+    await dbAuthPort.register(userObj);
+    setShowPopUp(true);
+  }
+};
+ 
   return (
     <div>
       {user ? (
@@ -167,24 +184,28 @@ function InvitationPage() {
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
                     Israel Antezana te está invitando al curso
                   </Typography>
-                  <Button
-                    onClick={() => handleAcceptInvitation("student")}
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                    fullWidth
-                  >
-                    Aceptar invitación al curso
-                  </Button>
-                  <Button
-                    onClick={handlePopPassword}
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                    fullWidth
-                  >
-                    Aceptar invitación al curso como Docente
-                  </Button>
+                  {userType === "student" && (
+                    <Button
+                      onClick={() => handleAcceptInvitation("student")}
+                      variant="contained"
+                      color="primary"
+                      sx={{ marginTop: 2 }}
+                      fullWidth
+                    >
+                      Aceptar invitación al curso
+                    </Button>
+                  )}
+                  {userType === "teacher" && (
+                    <Button
+                      onClick={handlePopPassword}
+                      variant="contained"
+                      color="primary"
+                      sx={{ marginTop: 2 }}
+                      fullWidth
+                    >
+                      Aceptar invitación al curso como Docente
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
@@ -197,6 +218,7 @@ function InvitationPage() {
             />
           )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
+          {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
         </div>
       ) : (
         <Grid

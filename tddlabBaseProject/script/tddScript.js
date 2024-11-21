@@ -1,11 +1,15 @@
-const { exec } = require('child_process');
-const fs = require('fs');
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
+import { spawn } from 'cross-spawn';
 
-const COMMAND = 'npm run test-export-json';
+const COMMAND = 'npm';
+const args = ['run', 'test-export-json'];
 
-function runCommand(command) {
+function runCommand(command, args) {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
+    const process = spawn(command, args, { stdio: 'inherit' });
+    process.on('close', (code) => {
       resolve();
     });
   });
@@ -23,10 +27,9 @@ const writeJSONFile = (filePath, data) => {
 
 const extractAndAddObject = async (reportFile, tddLogFile) => {
   try {
-    await runCommand(COMMAND);  
+    await runCommand(COMMAND, args);
 
     const jsonData = readJSONFile(reportFile);
-
     const passedTests = jsonData.numPassedTests;
     const totalTests = jsonData.numTotalTests;
     const startTime = jsonData.startTime;
@@ -38,19 +41,21 @@ const extractAndAddObject = async (reportFile, tddLogFile) => {
     };
 
     const tddLog = readJSONFile(tddLogFile);
-
     tddLog.push(newReport);
 
     writeJSONFile(tddLogFile, tddLog);
     console.log("Tdd log has been updated");
   } catch (error) {
-    console.error(error);
+    console.error("Error en la ejecución:", error);
   }
 };
 
-const inputFilePath = __dirname.concat('/report.json');
-const outputFilePath = __dirname.concat('/tdd_log.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const inputFilePath = path.join(__dirname, 'report.json');
+const outputFilePath = path.join(__dirname, 'tdd_log.json');
 
 extractAndAddObject(inputFilePath, outputFilePath);
 
-module.exports = { extractAndAddObject };
+export { extractAndAddObject };
