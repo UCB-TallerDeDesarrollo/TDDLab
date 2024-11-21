@@ -61,7 +61,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     }
   }
   
-  async updatetTddCicle(
+  async updateTddCicle(
     owner: string,
     repoName: string,
     sha: string,
