@@ -60,6 +60,7 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       const complexity1 = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
       console.log(complexity1);
+
       setJobsByCommit(jobsData);
       setComplexity(null)
       setCommitsInfo(commits);
