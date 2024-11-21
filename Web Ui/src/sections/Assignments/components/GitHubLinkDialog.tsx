@@ -6,7 +6,6 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import { useGitHubLinkValidation } from "./GitValidationHook";
-import { useState } from "react";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -24,9 +23,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     validLink,
     handleLinkChange,
   } = useGitHubLinkValidation("");
-  
-  const [file, setFile] = useState<File | null>(null);
-  const [fileError, setFileError] = useState<string>("");
 
 
   const handleSend = () => {
@@ -36,17 +32,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleLinkChange(e.target.value);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = e.target.files?.[0];
-    if (uploadedFile?.name === "tdd_log.json") {
-      setFile(uploadedFile);
-      setFileError("");
-    } else {
-      setFile(null);
-      setFileError("Solo se acepta el archivo tdd_log.json");
-    } 
   };
 
   const dialogTitleStyle = {
@@ -91,22 +76,6 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
             Advertencia, link invalido.
           </Typography>
         )}
-        <div style={{ marginTop: "20px" }}>
-          <Typography variant="body2" style={{ marginBottom: "10px" }}>
-            Subir archivo (solo tdd_log.json):
-          </Typography>
-          <input
-            type="file"
-            accept=".json"
-            onChange={handleFileChange}
-            style={{ display: "block" }}
-          />
-          {fileError && (
-            <Typography variant="body2" color="error">
-              {fileError}
-            </Typography>
-          )}
-        </div>
       </DialogContent>
       <DialogActions>
         <Button

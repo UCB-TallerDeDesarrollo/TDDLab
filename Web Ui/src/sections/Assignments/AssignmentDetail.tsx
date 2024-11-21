@@ -7,6 +7,10 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+
+import axios from "axios"; // Use axios for making API requests
+import { VITE_API } from "../../../config.ts";
+
 import {
   Button,
   Card,
@@ -212,7 +216,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentid) {
+    console.log("I will print the json log") //delete later
+      if (assignmentid) { //means if the assignment id is in memory or somthn
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
@@ -623,6 +628,16 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 }}
               >
                 Finalizar tarea
+              </Button>
+            )}
+            {isStudent(role) && (
+              <Button
+              variant="contained"
+              disabled={isTaskInProgress}
+              onClick={handleOpenCommentDialog} //we should change this later
+              style={{textTransform:"none", fontSize:"15px", marginRight: "8px"}}
+              >
+                Subir sesión TDD extension
               </Button>
             )}
 
