@@ -82,8 +82,8 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", // Centra el contenido verticalmente
-          alignItems: "center", // Centra el contenido horizontalmente
+          justifyContent: "center", 
+          alignItems: "center", 
           boxShadow: "0 1px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
