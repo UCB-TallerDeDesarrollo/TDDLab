@@ -14,6 +14,7 @@ describe("TDDCharts", () => {
       jobsByCommit={null}  
       metric={""} 
       setMetric={() => {}}
+      complexity={null}
       port={new GithubAPIAdapter()}
       role={"student"}
     />);

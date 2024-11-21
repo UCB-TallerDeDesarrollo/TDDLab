@@ -58,8 +58,10 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
-      const complexity = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
+      const complexity1 = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
+      console.log(complexity1);
       setJobsByCommit(jobsData);
+      setComplexity(null)
       setCommitsInfo(commits);
     } catch (error) {
       console.error("Error obtaining data:", error);

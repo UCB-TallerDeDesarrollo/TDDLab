@@ -5,6 +5,7 @@ import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { formatDate } from '../application/GetTDDCycles';
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
+import { ComplexityObject } from "../domain/complexityInferface.ts";
 
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
@@ -115,7 +116,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   async obtainJobsOfRepo(
     owner: string,
     repoName: string,
-  ): Promise<JobDataObject[]> {
+  ): Promise<ComplexityObject[]> {
     try {
       const response = await axios.get(`${this.backAPI}/jobs`, {
         params: { owner, repoName },
@@ -125,14 +126,15 @@ export class GithubAPIAdapter implements GithubAPIRepository {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const responseData = response.data;
-      const jobs: JobDataObject[] = responseData.map((jobData: any) => ({
-        sha: jobData.sha,
-        conclusion: jobData.conclusion,
+      const complexityList: ComplexityObject[] = responseData.map((complexData: any) => ({
+        ciclomaticComplexity: complexData.ciclomaticComplexity,
+        file: complexData.file,
+        funcionName: complexData.funcionName
       }));
 
-      return jobs;
+      return complexityList;
     } catch (error) {
-      console.error("Error obtaining jobs:", error);
+      console.error("Error obtaining complexityList:", error);
       throw error;
     }
   }

@@ -18,6 +18,9 @@ export class MockGithubAPI implements GithubAPIRepository {
 
     return jobs;
   }
+  async obtainComplexityOfRepo(): Promise<JobDataObject[]> {
+    throw new Error("no complexity");
+  }
 }
 
 export class MockGithubAPIEmpty implements GithubAPIRepository {
@@ -34,6 +37,9 @@ export class MockGithubAPIEmpty implements GithubAPIRepository {
 
     return jobs;
   }
+  async obtainComplexityOfRepo(): Promise<JobDataObject[]> {
+    throw new Error("no complexity");
+  }
 }
 
 export class MockGithubAPIError implements GithubAPIRepository {
@@ -46,5 +52,8 @@ export class MockGithubAPIError implements GithubAPIRepository {
 
   async obtainJobsOfRepo(): Promise<JobDataObject[]> {
     throw new Error("no jobs");
+  }
+  async obtainComplexityOfRepo(): Promise<JobDataObject[]> {
+    throw new Error("no complexity");
   }
 }
