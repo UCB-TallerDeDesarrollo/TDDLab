@@ -85,9 +85,8 @@ function TDDLineCharts({
       const conclusions = filteredCommitsObject.map((commit) => {
         console.log(commit.commit.message)
         let job = jobsByCommit?.find((job) => job.sha === commit.sha);
-        if (job != null && job.conclusion === "success") return "green";
+        if (job != null && job.conclusion === "success") return containsRefactor(commit.commit.message) ? "blue" : "green";
         else if (job === undefined) return "black";
-        else if (containsRefactor(commit.commit.message)) return "blue";
         else return "red";
       });
       return conclusions.reverse();
