@@ -35,6 +35,7 @@ function InvitationPage() {
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false); 
   const [, setPopupMessage] = useState(""); 
+  const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
 
   const dbAuthPort = new RegisterUserOnDb();
 
@@ -93,6 +94,23 @@ const handleAcceptInvitation = async (type: string) => {
     await dbAuthPort.register(userObj);
     setShowPopUp(true);
   }
+};
+
+const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  const { clientX, clientY, currentTarget } = event;
+  const { left, top, width, height } = currentTarget.getBoundingClientRect();
+  
+  const x = clientX - (left + width / 2);
+  const y = clientY - (top + height / 2);
+  const rotateY = (x / width) * 30; 
+  const rotateX = -(y / height) * 30; 
+
+  setRotation({ rotateX, rotateY });
+
+};
+
+const handleMouseLeave = () => {
+  setRotation({ rotateX: 0, rotateY: 0 }); 
 };
 
   return (
@@ -179,6 +197,14 @@ const handleAcceptInvitation = async (type: string) => {
                   alt="Imagen de portada"
                   height="50%" // La mitad superior del card
                   image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
+                  sx={{
+                    transition: "transform 0.1s ease-out", 
+                    transformStyle: "preserve-3d",
+                    transform: `rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
+                    boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.5)",
+                  }}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave} 
                 />
                 <CardContent>
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
