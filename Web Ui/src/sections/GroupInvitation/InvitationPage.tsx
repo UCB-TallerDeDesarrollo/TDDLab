@@ -94,7 +94,7 @@ const handleAcceptInvitation = async (type: string) => {
     setShowPopUp(true);
   }
 };
- 
+
   return (
     <div>
       {user ? (
@@ -178,7 +178,7 @@ const handleAcceptInvitation = async (type: string) => {
                   component="img"
                   alt="Imagen de portada"
                   height="50%" // La mitad superior del card
-                  image="https://media.istockphoto.com/id/1400563511/es/foto/concepto-de-trabajo-en-equipo-y-asociaci%C3%B3n-las-manos-unen-piezas-del-rompecabezas-en-la.jpg?s=2048x2048&w=is&k=20&c=sCOTFRETLMg41khoit5_znVZidVevaoYnsJDRQpXGoE=" // Reemplaza con la ruta de tu imagen
+                  image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
                 />
                 <CardContent>
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
