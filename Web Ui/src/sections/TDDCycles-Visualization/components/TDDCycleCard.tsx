@@ -66,26 +66,36 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
   }
 
   function renderDateCard() {
-    const date = new Date(commit.commit.date).toLocaleString();
+    const date = new Date(commit.commit.date).toLocaleString("es-ES", {
+      hour12: false, // Desactiva el formato de 12 horas
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  
     return (
       <Card
         className="dateCard"
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center", 
+          justifyContent: "center", // Centra el contenido verticalmente
+          alignItems: "center", // Centra el contenido horizontalmente
           boxShadow: "0 1px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <CardContent style={{ textAlign: "center"}}>
+        <CardContent style={{ textAlign: "center" }}>
           <Typography variant="body2" color="textSecondary">
-            <b>{date}</b>
+            {date}
           </Typography>
         </CardContent>
       </Card>
     );
   }
+  
   
 
   return (
