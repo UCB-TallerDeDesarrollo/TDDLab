@@ -2,7 +2,7 @@ import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { JobDataObject } from "../domain/jobInterfaces";
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
-import { formatDate } from '../application/GetTDDCycles';
+import { formatDate } from "../application/GetTDDCycles";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { ComplexityObject } from "../domain/complexityInferface.ts";
@@ -10,7 +10,7 @@ import { ComplexityObject } from "../domain/complexityInferface.ts";
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
   backAPI: string;
-  
+
   constructor() {
     this.octokit = new Octokit();
     //auth: 'coloca tu token github para mas requests'
@@ -20,11 +20,11 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   async obtainUserName(owner: string): Promise<string> {
     try {
       const response = await this.octokit.request(`GET /users/${owner}`);
-      
+
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const userName = response.data.name;
       return userName || owner; // Retorna el nombre o un mensaje si no está disponible
     } catch (error) {
@@ -35,14 +35,14 @@ export class GithubAPIAdapter implements GithubAPIRepository {
 
   async obtainCommitsOfRepo(
     owner: string,
-    repoName: string,
+    repoName: string
   ): Promise<CommitDataObject[]> {
     try {
       const response = await axios.get(
-        this.backAPI + `/commits?owner=${owner}&repoName=${repoName}`,
+        this.backAPI + `/commits?owner=${owner}&repoName=${repoName}`
       );
       console.log(
-        this.backAPI + `/commits?owner=${owner}&repoName=${repoName}`,
+        this.backAPI + `/commits?owner=${owner}&repoName=${repoName}`
       );
 
       if (response.status != 200) {
@@ -57,7 +57,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
             total: commitData.total,
             additions: commitData.additions,
             deletions: commitData.deletions,
-            date: formatDate(new Date(commitData.commit_date))
+            date: formatDate(new Date(commitData.commit_date)),
           },
           commit: {
             date: new Date(commitData.commit_date), // Convert date string to Date object
@@ -67,7 +67,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
           },
           coverage: commitData.coverage,
           test_count: commitData.test_count,
-        }),
+        })
       );
       return commits;
     } catch (error) {
@@ -80,7 +80,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   async obtainRunsOfGithubActions(owner: string, repoName: string) {
     try {
       const response = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/actions/runs`,
+        `GET /repos/${owner}/${repoName}/actions/runs`
       );
 
       return response;
@@ -94,8 +94,37 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   async obtainComplexityOfRepo(owner: string, repoName: string) {
     try {
       const repoUrl = `https://github.com/${owner}/${repoName}`;
-    
-      const response = await axios.post('https://api-ccn.vercel.app/analyze', { repoUrl });
+
+      const response = await axios.post("https://api-ccn.vercel.app/analyze", {
+        repoUrl,
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const responseData = response.data.metrics;
+      console.log(response.data)
+      return  responseData.map((complexity: any) => ({
+        ciclomaticComplexity: complexity.cyclomatic_complexity,
+        file: complexity.file,
+        functionName: complexity.function_name,
+      }));
+
+      
+    } catch (error) {
+      console.error("Error obtaining jobs:", error);
+      throw error;
+    }
+  }
+
+  async obtainJobsOfRepo(
+    owner: string,
+    repoName: string
+  ): Promise<JobDataObject[]> {
+    try {
+      const response = await axios.get(`${this.backAPI}/jobs`, {
+        params: { owner, repoName },
+      });
 
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -109,32 +138,6 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       return jobs;
     } catch (error) {
       console.error("Error obtaining jobs:", error);
-      throw error;
-    }
-  }
-  
-  async obtainJobsOfRepo(
-    owner: string,
-    repoName: string,
-  ): Promise<ComplexityObject[]> {
-    try {
-      const response = await axios.get(`${this.backAPI}/jobs`, {
-        params: { owner, repoName },
-      });
-
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const responseData = response.data;
-      const complexityList: ComplexityObject[] = responseData.map((complexData: any) => ({
-        ciclomaticComplexity: complexData.ciclomaticComplexity,
-        file: complexData.file,
-        funcionName: complexData.funcionName
-      }));
-
-      return complexityList;
-    } catch (error) {
-      console.error("Error obtaining complexityList:", error);
       throw error;
     }
   }
