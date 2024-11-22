@@ -1,3 +1,4 @@
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 from ..application.AnalizeCommitUseCase import AnalyzeCommitUseCase
 from ..application.GetCcnByCommitUseCase import GetCcnByCommitUseCase
@@ -7,7 +8,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
-
+CORS(app)
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)s %(message)s',
