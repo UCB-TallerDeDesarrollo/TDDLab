@@ -95,31 +95,36 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   async obtainComplexityOfRepo(owner: string, repoName: string) {
     try {
       const repoUrl = `https://github.com/${owner}/${repoName}`;
-    
-      const response = await axios.post('https://api-ccn.vercel.app/analyze', { repoUrl });
+
+      const response = await axios.post("https://api-ccn.vercel.app/analyze", {
+        repoUrl,
+      });
 
 
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const responseData = response.data;
-      const jobs: JobDataObject[] = responseData.map((jobData: any) => ({
-        sha: jobData.sha,
-        conclusion: jobData.conclusion,
+      const responseData = response.data.metrics;
+      console.log(response.data)
+      return  responseData.map((complexity: any) => ({
+        ciclomaticComplexity: complexity.cyclomatic_complexity,
+        file: complexity.file,
+        functionName: complexity.function_name,
+
       }));
 
-      return jobs;
+      
     } catch (error) {
       console.error("Error obtaining jobs:", error);
       throw error;
     }
   }
-  
+
   async obtainJobsOfRepo(
     owner: string,
-    repoName: string,
-  ): Promise<ComplexityObject[]> {
+    repoName: string
+  ): Promise<JobDataObject[]> {
 
     try {
       const response = await axios.get(`${this.backAPI}/jobs`, {
@@ -130,15 +135,14 @@ export class GithubAPIAdapter implements GithubAPIRepository {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const responseData = response.data;
-      const complexityList: ComplexityObject[] = responseData.map((complexData: any) => ({
-        ciclomaticComplexity: complexData.ciclomaticComplexity,
-        file: complexData.file,
-        funcionName: complexData.funcionName
+      const jobs: JobDataObject[] = responseData.map((jobData: any) => ({
+        sha: jobData.sha,
+        conclusion: jobData.conclusion,
       }));
 
-      return complexityList;
+      return jobs;
     } catch (error) {
-      console.error("Error obtaining complexityList:", error);
+      console.error("Error obtaining jobs:", error);
       throw error;
     }
   }
