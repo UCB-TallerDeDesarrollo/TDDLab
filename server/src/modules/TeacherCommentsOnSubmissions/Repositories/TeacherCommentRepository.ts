@@ -27,9 +27,10 @@ export class TeacherCommentRepository {
       const values = [comment.submission_id, comment.teacher_id, comment.content];
 
       const result = await client.query(query, values);
-      return result.rows[0]; // Devuelve el comentario creado
+      return result.rows[0]; 
     } catch (error) {
       console.error("Error inserting teacher comment:", error);
+      throw new Error("Database error"); 
     } finally {
       if (client) {
         client.release();
@@ -41,10 +42,9 @@ export class TeacherCommentRepository {
     const query = "SELECT * FROM TeacherComments WHERE submission_id = $1";
     const values = [submission_id];
     const rows = await this.executeQuery(query, values);
-    return rows; // Retorna todos los comentarios para esa entrega
+    return rows;
   }
 
-  // Verifica si el usuario con el ID dado es un teacher
   async isTeacher(teacher_id: number): Promise<boolean> {
     const query = "SELECT 1 FROM userstable WHERE id = $1 AND role = $2";
     const values = [teacher_id, 'teacher'];
@@ -52,7 +52,6 @@ export class TeacherCommentRepository {
     return result.length > 0;
   }
 
-  // Verifica si el submission_id existe en la tabla de submissions
   async submissionExists(submission_id: number): Promise<boolean> {
     const query = "SELECT 1 FROM submissions WHERE id = $1";
     const values = [submission_id];
