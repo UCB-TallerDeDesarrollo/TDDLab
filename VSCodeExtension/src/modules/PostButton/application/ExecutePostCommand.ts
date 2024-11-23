@@ -22,7 +22,7 @@ export class ExecutePostCommand {
     try{ 
 
       const fileContent = await fs.readFile(filePath, 'utf-8');
-      const data = JSON.parse(fileContent);
+      // const data = JSON.parse(fileContent);
 
       vscode.window.showErrorMessage(JSON.stringify(JSON.parse(fileContent), null, 2));
 
