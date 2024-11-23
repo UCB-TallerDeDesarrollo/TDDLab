@@ -31,4 +31,11 @@ describe("Create Teacher Comment", () => {
     const result = await repository.createTeacherComment(newComment);
     expect(result).toEqual(mockResponse);
   });
+
+  it("should handle errors when creating a teacher comment", async () => {
+    const newComment = getTeacherCommentMock();
+    clientQueryMock.mockRejectedValue(new Error("Database error"));
+
+    await expect(repository.createTeacherComment(newComment)).rejects.toThrow("Database error");
+  });
 });
