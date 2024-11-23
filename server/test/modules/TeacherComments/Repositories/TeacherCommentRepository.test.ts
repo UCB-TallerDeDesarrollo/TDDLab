@@ -64,3 +64,25 @@ describe("Get Teacher Comments by Submission", () => {
     await expect(repository.getTeacherCommentsBySubmission(1)).rejects.toThrow("Database error");
   });
 });
+
+describe("Is Teacher", () => {
+  it("should return true if the teacher exists", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [{ exists: true }] });
+
+    const isTeacher = await repository.isTeacher(1);
+    expect(isTeacher).toBe(true);
+  });
+
+  it("should return false if the teacher does not exist", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [] });
+
+    const isTeacher = await repository.isTeacher(999);
+    expect(isTeacher).toBe(false);
+  });
+
+  it("should handle errors when checking if the teacher exists", async () => {
+    clientQueryMock.mockRejectedValue(new Error("Database error"));
+
+    await expect(repository.isTeacher(1)).rejects.toThrow("Database error");
+  });
+});
