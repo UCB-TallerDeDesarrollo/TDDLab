@@ -87,10 +87,6 @@ describe("Is Teacher", () => {
   });
 });
 
-
-
-
-
 describe("Submission Exists", () => {
   it("should return true if the submission exists", async () => {
     clientQueryMock.mockResolvedValue({ rows: [{ exists: true }] });
