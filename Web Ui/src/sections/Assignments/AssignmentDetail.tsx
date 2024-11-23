@@ -75,7 +75,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
   const [studentSubmission,setStudentSubmission] = useState<SubmissionDataObject>();
-  const [, setSubmissionsError] = useState<string | null>(null);
+  const [_submissionsError, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const navigate = useNavigate();
@@ -297,7 +297,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
-  const [_, setComment] = useState("");
+  const [_comment, setComment] = useState("");
 
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);
