@@ -37,10 +37,10 @@ export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<Execut
 }
 
 export class ExecutionTreeView {
-  private treeView: vscode.TreeView<ExecutionButton>;
-  private treeDataProvider: ExecutionTreeDataProvider;
+  private readonly treeView: vscode.TreeView<ExecutionButton>;
+  private readonly treeDataProvider: ExecutionTreeDataProvider;
 
-  constructor(private context: vscode.ExtensionContext) {
+  constructor(private readonly context: vscode.ExtensionContext) {
     this.treeDataProvider = new ExecutionTreeDataProvider();
     this.treeView = vscode.window.createTreeView('tddTestExecution', {
       treeDataProvider: this.treeDataProvider
