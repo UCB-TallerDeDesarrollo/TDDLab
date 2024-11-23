@@ -39,3 +39,28 @@ describe("Create Teacher Comment", () => {
     await expect(repository.createTeacherComment(newComment)).rejects.toThrow("Database error");
   });
 });
+
+describe("Get Teacher Comments by Submission", () => {
+  it("should retrieve teacher comments for a submission", async () => {
+    clientQueryMock.mockResolvedValue({
+      rows: [getTeacherCommentResponseMock()],
+    });
+
+    const comments = await repository.getTeacherCommentsBySubmission(1);
+    expect(comments).toHaveLength(1);
+    expect(comments[0]).toEqual(getTeacherCommentResponseMock());
+  });
+
+  it("should return an empty array when no comments are found", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [] });
+
+    const comments = await repository.getTeacherCommentsBySubmission(999);
+    expect(comments).toHaveLength(0);
+  });
+
+  it("should handle errors when retrieving teacher comments", async () => {
+    clientQueryMock.mockRejectedValue(new Error("Database error"));
+
+    await expect(repository.getTeacherCommentsBySubmission(1)).rejects.toThrow("Database error");
+  });
+});
