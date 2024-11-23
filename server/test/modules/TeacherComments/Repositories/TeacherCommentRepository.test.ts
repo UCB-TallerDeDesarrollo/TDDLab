@@ -86,3 +86,29 @@ describe("Is Teacher", () => {
     await expect(repository.isTeacher(1)).rejects.toThrow("Database error");
   });
 });
+
+
+
+
+
+describe("Submission Exists", () => {
+  it("should return true if the submission exists", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [{ exists: true }] });
+
+    const exists = await repository.submissionExists(1);
+    expect(exists).toBe(true);
+  });
+
+  it("should return false if the submission does not exist", async () => {
+    clientQueryMock.mockResolvedValue({ rows: [] });
+
+    const exists = await repository.submissionExists(999);
+    expect(exists).toBe(false);
+  });
+
+  it("should handle errors when checking if the submission exists", async () => {
+    clientQueryMock.mockRejectedValue(new Error("Database error"));
+
+    await expect(repository.submissionExists(1)).rejects.toThrow("Database error");
+  });
+});
