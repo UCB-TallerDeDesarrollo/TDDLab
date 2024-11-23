@@ -34,7 +34,7 @@ function InvitationPage() {
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false); 
-  const [, setPopupMessage] = useState(""); 
+  const [_popupMessage, setPopupMessage] = useState(""); 
 
   const dbAuthPort = new RegisterUserOnDb();
 
