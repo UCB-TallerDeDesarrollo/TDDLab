@@ -21,7 +21,7 @@ interface CycleReportViewProps {
   complexity: ComplexityObject[]| null;
 }
 
-function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit,complexity, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
   if (!commits || !jobsByCommit) {
@@ -71,9 +71,8 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
             <MenuItem value={"Lista"}>
               Lista de Commits
             </MenuItem>
-            <MenuItem value={"Complexity Analysis"}>
-              Complejidad Ciclomática
-            </MenuItem>
+            <MenuItem value={"Complejidad Ciclomática"}>Complejidad Ciclomática</MenuItem>
+
           </Select>
         </FormControl>
       </Box>
@@ -81,11 +80,7 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
         filteredCommitsObject={filteredCommitsObject}
         jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
-
-        complexity={[
-          { functionName: "func1", ciclomaticComplexity: 5, file: "file1.js" },
-          { functionName: "func2", ciclomaticComplexity: 8, file: "file2.js" },
-        ]}
+        complexity = {complexity}
         port={port}
         role={role}
       />
@@ -94,3 +89,4 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
 }
 
 export default TDDCharts;
+

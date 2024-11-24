@@ -51,12 +51,11 @@ function TDDLineCharts({
   optionSelected,
   port,
   role,
-  complexity 
-
+  complexity
 }: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
-  console.log(complexity);
+  
   function getDataLabels() {
     if (filteredCommitsObject != null) {
       const commitsArray = filteredCommitsObject.map(
@@ -66,6 +65,20 @@ function TDDLineCharts({
     } else {
       return [];
     }
+  }
+
+  function getCyclomaticComplexityData() {
+    if (complexity != null) {
+      return complexity.map((item) => item.ciclomaticComplexity).reverse();
+    }
+    return [];
+  }
+
+  function getCyclomaticComplexityLabels() {
+    if (complexity != null) {
+      return complexity.map((_, index) => index.toString()).reverse();
+    }
+    return [];
   }
 
   function getCommitName() {
@@ -87,7 +100,6 @@ function TDDLineCharts({
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
       const conclusions = filteredCommitsObject.map((commit) => {
-        console.log(commit.commit.message)
         let job = jobsByCommit?.find((job) => job.sha === commit.sha);
         if (job != null && job.conclusion === "success") return containsRefactor(commit.commit.message) ? "blue" : "green";
         else if (job === undefined) return "black";
@@ -167,6 +179,7 @@ function TDDLineCharts({
     return dataChart;
   }
 
+
   function getOptionsChart(axisText: string) {
     const optionsLineChart = {
       responsive: true,
@@ -237,6 +250,68 @@ function TDDLineCharts({
     return optionsLineChart;
   }
 
+  function getOptionsCyclomaticComplexityChart() {
+    return {
+      responsive: true,
+      pointRadius: 5,
+      pointHoverRadius: 8,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Índice del Array",
+            font: {
+              size: 16,
+              lineHeight: 1.2,
+            },
+          },
+          ticks: {
+            callback: function(value: any) {
+              return value; // Muestra el índice directamente
+            }
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Complejidad Ciclomática",
+            font: {
+              size: 16,
+              lineHeight: 1.2,
+            },
+          },
+          ticks: {
+            stepSize: 1, // Asegura que los valores en el eje Y sean enteros
+          }
+        },
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            title: function (context: any) {
+              if (complexity != null && complexity.length > 0) {
+                const index = context[0].dataIndex;
+                return `Índice: ${getCyclomaticComplexityLabels()[index]}`;
+              }
+              return "No data available";
+            },
+            afterBody: function (context: any) {
+              if (complexity != null && complexity.length > 0) {
+                const index = context[0].dataIndex;
+                const item = complexity[index];
+                return [
+                  `Archivo: ${item.file}`,
+                  `Nombre de Función: ${item.functionName}`
+                ];
+              }
+              return ["No additional information available"];
+            }
+          }
+        }
+      },
+    };
+  }
+
   const onClick = (event: any) => {
     if (getElementAtEvent(chartRef.current, event).length > 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
@@ -250,92 +325,29 @@ function TDDLineCharts({
     }
   };
 
-  function getComplexityDataChart(complexityData: ComplexityObject[]) {
-    const labels = complexityData.map((item) => item.functionName); // Etiquetas basadas en nombres de funciones
-    const data = complexityData.map((item) => item.ciclomaticComplexity); // Datos de complejidad ciclomática
-  
-    const chartData = {
-      labels,
-      datasets: [
-        {
-          label: "Complejidad Ciclomática",
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 2,
-          pointRadius: 5,
-          data, // Valores de complejidad
-        },
-      ],
-    };
-  
-    return chartData;
-  }
-  
-  function getComplexityChartOptions() {
-    return {
-      responsive: true,
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Funciones",
-            font: {
-              size: 16,
-            },
-          },
-        },
-        y: {
-          title: {
-            display: true,
-            text: "Complejidad Ciclomática",
-            font: {
-              size: 16,
-            },
-          },
-          beginAtZero: true,
-        },
-      },
-      plugins: {
-        tooltip: {
-          callbacks: {
-            title: (context: any) => {
-              return `Función: ${context[0].label}`;
-            },
-            label: (context: any) => {
-              return `Complejidad: ${context.raw}`;
-            },
-          },
-        },
-      },
-    };
-  }
-  
-  // En el componente TDDLineCharts
-  function getComplexityChart() {
-    if (complexity && complexity.length > 0) {
-      const dataChart = getComplexityDataChart(complexity);
-      const optionsChart = getComplexityChartOptions();
-  
-      return (
-        <Line
-          height="100"
-          data={dataChart}
-          options={optionsChart}
-          ref={chartRef}
-          data-testid="graph-complexity"
-        />
-      );
-    } else {
-      return <p>No hay datos de complejidad para mostrar.</p>;
-    }
-  }
-  
-
   function getLineChart() {
     let dataChart: any = null;
     let optionsChart: any = null;
     let dataTestid: string = "";
+    
     switch (optionSelected) {
+      case "Complejidad Ciclomática":
+        dataChart = {
+          labels: getCyclomaticComplexityLabels(),
+          datasets: [
+            {
+              label: "Complejidad Ciclomática",
+              data: getCyclomaticComplexityData(),
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              fill: true,
+              tension: 0.4, // Añade una ligera curvatura a la línea
+            },
+          ],
+        };
+        optionsChart = getOptionsCyclomaticComplexityChart();
+        dataTestid = "graph-cyclomaticComplexity";
+        break;
       case "Cobertura de Código":
         dataChart = getDataChart(
           getCommitCoverage(),
@@ -359,24 +371,23 @@ function TDDLineCharts({
         break;
       case "Lista":
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
-      case "Complexity Analysis":
-          return getComplexityChart();
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
+        return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
     }
+    
     return (
       <Line
-        height="100"
-        data={dataChart}
-        options={optionsChart}
-        onClick={onClick}
-        ref={chartRef}
-        data-testid={dataTestid}
-      />
+      height="100"
+      data={dataChart}
+      options={optionsChart}
+      onClick={onClick}
+      ref={chartRef}
+      data-testid={dataTestid}
+    />
     );
   }
 
   return getLineChart();
-} 
+}
 
 export default TDDLineCharts;

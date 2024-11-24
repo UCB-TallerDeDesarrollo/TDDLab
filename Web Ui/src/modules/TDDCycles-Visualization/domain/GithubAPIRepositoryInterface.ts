@@ -12,3 +12,4 @@ export interface GithubAPIRepository {
 
   obtainComplexityOfRepo(owner:string, repoName: string): any;
 }
+
