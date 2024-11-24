@@ -46,7 +46,7 @@ export class TeacherCommentRepository {
 
   // Verifica si el usuario con el ID dado es un teacher
   async isTeacher(teacher_id: number): Promise<boolean> {
-    const query = "SELECT 1 FROM userstable WHERE id = $1 AND role = $2";
+    const query = "SELECT 1 FROM userstable WHERE id = $1 AND role <> $2";
     const values = [teacher_id, 'teacher'];
     const result = await this.executeQuery(query, values);
     return result.length > 0;

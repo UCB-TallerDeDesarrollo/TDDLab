@@ -6,6 +6,7 @@ import {
   MockGithubAPIEmpty,
   MockGithubAPIError,
 } from "./__mocks__/MocksGithubAPI";
+import TeacherCommentsRepository from "../../../src/modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 
 // Mock de `useNavigate` con tipo explícito
 jest.mock("react-router-dom", () => ({
@@ -73,7 +74,7 @@ describe("TDDChartPage", () => {
     spyConsoleError.mockImplementation(() => {});
 
     await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" />);
+      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" commentsRepo={new TeacherCommentsRepository} teacher_id={294}/>);
     });
 
     expect(spyConsoleError).toHaveBeenCalledWith(
