@@ -108,7 +108,7 @@ function App() {
           path="/graph"
           element={
             <ProtectedRouteComponent>
-              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} />
+              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} />
             </ProtectedRouteComponent>
           }
         />

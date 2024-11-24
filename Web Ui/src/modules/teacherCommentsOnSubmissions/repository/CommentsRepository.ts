@@ -24,6 +24,7 @@ class TeacherCommentsRepository implements TeacherCommentsRepositoryInterface {
   }
   async createComment(commentData: CommentsCreationObject): Promise<CommentDataObject> { 
     try {
+      console.log("TRATANDO: ",`${API_URL}`)
       const response = await axios.post<CommentDataObject>(API_URL, commentData);
       if (response.status === 201) { 
         return response.data; 
