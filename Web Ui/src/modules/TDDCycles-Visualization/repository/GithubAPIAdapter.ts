@@ -5,7 +5,7 @@ import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { formatDate } from "../application/GetTDDCycles";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
-import { ComplexityObject } from "../domain/complexityInferface.ts";
+
 
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;

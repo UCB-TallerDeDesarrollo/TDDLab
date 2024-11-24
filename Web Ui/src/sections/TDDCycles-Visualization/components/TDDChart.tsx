@@ -21,7 +21,7 @@ interface CycleReportViewProps {
   complexity: ComplexityObject[]| null;
 }
 
-function TDDCharts({ commits, jobsByCommit,complexity, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
   if (!commits || !jobsByCommit) {
