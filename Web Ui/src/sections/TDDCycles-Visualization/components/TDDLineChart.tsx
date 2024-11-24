@@ -259,7 +259,7 @@ function TDDLineCharts({
         x: {
           title: {
             display: true,
-            text: "Índice del Array",
+            text: "Métrica",
             font: {
               size: 16,
               lineHeight: 1.2,
