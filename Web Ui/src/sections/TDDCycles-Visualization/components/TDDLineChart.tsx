@@ -53,7 +53,6 @@ function TDDLineCharts({
   role,
   complexity 
 
-
 }: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
