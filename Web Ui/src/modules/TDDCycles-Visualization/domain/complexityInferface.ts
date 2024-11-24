@@ -1,5 +1,5 @@
 export interface ComplexityObject{
     ciclomaticComplexity: number;
-    file:string;
+    file?:string;
     functionName:string;
 }

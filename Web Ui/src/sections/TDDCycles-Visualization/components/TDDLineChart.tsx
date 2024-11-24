@@ -51,7 +51,7 @@ function TDDLineCharts({
   optionSelected,
   port,
   role,
-  complexity
+  complexity 
 }: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
@@ -249,6 +249,87 @@ function TDDLineCharts({
     }
   };
 
+  function getComplexityDataChart(complexityData: ComplexityObject[]) {
+    const labels = complexityData.map((item) => item.functionName); // Etiquetas basadas en nombres de funciones
+    const data = complexityData.map((item) => item.ciclomaticComplexity); // Datos de complejidad ciclomática
+  
+    const chartData = {
+      labels,
+      datasets: [
+        {
+          label: "Complejidad Ciclomática",
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 2,
+          pointRadius: 5,
+          data, // Valores de complejidad
+        },
+      ],
+    };
+  
+    return chartData;
+  }
+  
+  function getComplexityChartOptions() {
+    return {
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Funciones",
+            font: {
+              size: 16,
+            },
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Complejidad Ciclomática",
+            font: {
+              size: 16,
+            },
+          },
+          beginAtZero: true,
+        },
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            title: (context: any) => {
+              return `Función: ${context[0].label}`;
+            },
+            label: (context: any) => {
+              return `Complejidad: ${context.raw}`;
+            },
+          },
+        },
+      },
+    };
+  }
+  
+  // En el componente TDDLineCharts
+  function getComplexityChart() {
+    if (complexity && complexity.length > 0) {
+      const dataChart = getComplexityDataChart(complexity);
+      const optionsChart = getComplexityChartOptions();
+  
+      return (
+        <Line
+          height="100"
+          data={dataChart}
+          options={optionsChart}
+          ref={chartRef}
+          data-testid="graph-complexity"
+        />
+      );
+    } else {
+      return <p>No hay datos de complejidad para mostrar.</p>;
+    }
+  }
+  
+
   function getLineChart() {
     let dataChart: any = null;
     let optionsChart: any = null;
@@ -277,6 +358,8 @@ function TDDLineCharts({
         break;
       case "Lista":
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
+      case "Complexity Analysis":
+          return getComplexityChart();
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
     }

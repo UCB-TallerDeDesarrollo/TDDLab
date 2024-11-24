@@ -71,6 +71,9 @@ function TDDCharts({ commits, jobsByCommit,complexity, metric, setMetric,port,ro
             <MenuItem value={"Lista"}>
               Lista de Commits
             </MenuItem>
+            <MenuItem value={"Complexity Analysis"}>
+              Complejidad Ciclomática
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -78,7 +81,10 @@ function TDDCharts({ commits, jobsByCommit,complexity, metric, setMetric,port,ro
         filteredCommitsObject={filteredCommitsObject}
         jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
-        complexity = {complexity}
+        complexity={[
+          { functionName: "func1", ciclomaticComplexity: 5, file: "file1.js" },
+          { functionName: "func2", ciclomaticComplexity: 8, file: "file2.js" },
+        ]}
         port={port}
         role={role}
       />
