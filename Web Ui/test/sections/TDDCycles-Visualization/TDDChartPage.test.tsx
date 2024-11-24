@@ -25,7 +25,7 @@ describe("TDDChartPage", () => {
     "renders loading spinner when loading is true for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} />
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -39,7 +39,7 @@ describe("TDDChartPage", () => {
     "displays an error message when no data is available for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} />
+        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -53,7 +53,7 @@ describe("TDDChartPage", () => {
     "displays the repository name for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} />
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -73,7 +73,7 @@ describe("TDDChartPage", () => {
     spyConsoleError.mockImplementation(() => {});
 
     await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" />);
+      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294}/>);
     });
 
     expect(spyConsoleError).toHaveBeenCalledWith(
