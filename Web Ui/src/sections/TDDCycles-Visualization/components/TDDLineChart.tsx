@@ -19,8 +19,6 @@ import {
 } from "chart.js";
 import TDDList from "./TDDList";
 import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
-import TDDBoard from "./TDDBoard";
-import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 
 ChartJS.register(
   CategoryScale,
@@ -39,16 +37,12 @@ interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
   jobsByCommit: JobDataObject[] | null;
   optionSelected: string;
-  port:GithubAPIRepository;
-  role:string;
 }
 
 function TDDLineCharts({
   filteredCommitsObject,
   jobsByCommit,
   optionSelected,
-  port,
-  role
 }: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
@@ -75,17 +69,11 @@ function TDDLineCharts({
     }
   }
 
-  function containsRefactor(commitMessage: string): boolean {
-    const regex = /\brefactor(\w*)\b/i;
-    return regex.test(commitMessage);
-  }
-
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
       const conclusions = filteredCommitsObject.map((commit) => {
-        console.log(commit.commit.message)
         let job = jobsByCommit?.find((job) => job.sha === commit.sha);
-        if (job != null && job.conclusion === "success") return containsRefactor(commit.commit.message) ? "blue" : "green";
+        if (job != null && job.conclusion === "success") return "green";
         else if (job === undefined) return "black";
         else return "red";
       });
@@ -274,8 +262,6 @@ function TDDLineCharts({
         break;
       case "Lista":
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
-      case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
     }
     return (
       <Line

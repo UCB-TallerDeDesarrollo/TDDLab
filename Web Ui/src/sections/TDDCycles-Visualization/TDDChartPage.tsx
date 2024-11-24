@@ -8,10 +8,14 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
+import { CommentDataObject, CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
+import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
+  commentsRepo: TeacherCommentsRepository;
   role: string;
+  teacher_id: number;
 }
 
 interface Submission {
@@ -23,7 +27,12 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
+function TDDChartPage({
+  port,
+  commentsRepo,
+  role,
+  teacher_id,
+}: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -39,13 +48,17 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
 
   const [currentIndex, setCurrentIndex] = useState(
     !isStudent(role)
-      ? fetchedSubmissions.findIndex((submission) => submission.id === submissionId)
+      ? fetchedSubmissions.findIndex(
+          (submission) => submission.id === submissionId
+        )
       : 0
   );
 
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
+  const [comments, setComments] = useState<CommentDataObject[] | null>(null);
+  const [feedback, setFeedback] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   const getTDDCycles = new PortGetTDDCycles(port);
@@ -65,6 +78,45 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
     }
   };
 
+  const obtainComments = async () => {
+    try {
+      const commentsData: CommentDataObject[] =
+        await commentsRepo.getCommentsBySubmissionId(submissionId);
+      setComments(commentsData);
+    } catch (error) {
+      console.error("Error obtaining comments:", error);
+    }
+  };
+
+  const handleFeedbackChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFeedback(event.target.value);
+  };
+
+  const handleSubmitFeedback = async () => {
+    if (!feedback.trim()) {
+      console.log("El feedback está vacío.");
+      return;
+    }
+
+    try {
+      const commentData: CommentsCreationObject = {
+        submission_id: submissionId,
+        teacher_id,
+        content: feedback,
+      };
+
+      console.log("Datos del comentario a enviar:", commentData);
+
+      await commentsRepo.createComment(commentData);
+      console.log("Retroalimentación enviada:", feedback);
+
+      setFeedback("");
+      obtainComments();
+    } catch (error) {
+      console.error("Error al enviar la retroalimentación:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchOwnerName = async () => {
       try {
@@ -74,12 +126,14 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
         console.error("Error obtaining owner name:", error);
       }
     };
+
     fetchOwnerName();
   }, [repoOwner]);
 
   useEffect(() => {
     fetchData();
-  }, [repoOwner, repoName]);
+    obtainComments();
+  }, [repoOwner, repoName, submissionId]);
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
@@ -102,12 +156,46 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
       setCurrentIndex(nextIndex);
     }
   };
-  const [metric, setMetric] = useState<string | null>(null); 
+
   return (
     <div className="container">
       <h1 data-testid="repoNameTitle">Tarea: {repoName}</h1>
       {!isStudent(role) && (
         <h1 data-testid="repoOwnerTitle">Autor: {ownerName}</h1>
+      )}
+
+      {!isStudent(role) && (
+        <div className="feedback-container">
+          <label htmlFor="feedback">Retroalimentación de la tarea:</label>
+          <textarea
+            id="feedback"
+            value={feedback}
+            onChange={handleFeedbackChange}
+            placeholder="Ingrese su retroalimentación aquí"
+            style={{
+              width: "100%",
+              height: "100px",
+              padding: "10px",
+              marginTop: "5px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
+            }}
+          />
+          <button
+            onClick={handleSubmitFeedback}
+            style={{
+              marginTop: "10px",
+              padding: "10px 20px",
+              backgroundColor: "#36d7b7",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Enviar Retroalimentación
+          </button>
+        </div>
       )}
 
       {loading && (
@@ -124,48 +212,57 @@ function TDDChartPage({ port, role }: Readonly<CycleReportViewProps>) {
 
       {!loading && commitsInfo?.length !== 0 && (
         <React.Fragment>
-          {!isStudent(role) && (
-            <div className="navigation-buttons">
-              <button
-                data-testid="previous-student"
-                className="nav-button"
-                onClick={goToPreviousStudent}
-                disabled={currentIndex === 0}
-                style={{
-                  backgroundColor: currentIndex === 0 ? "#B0B0B0" : "#052845",
-                }}
-              >
-                Anterior
-              </button>
-              <button
-                data-testid="next-student"
-                className="nav-button"
-                onClick={goToNextStudent}
-                disabled={currentIndex === fetchedSubmissions.length - 1}
-                style={{
-                  backgroundColor:
-                    currentIndex === fetchedSubmissions.length - 1
-                      ? "#B0B0B0"
-                      : "#052845",
-                }}
-              >
-                Siguiente
-              </button>
-            </div>
-          )}
-          
+          <div className="navigation-buttons">
+            <button
+              data-testid="previous-student"
+              className="nav-button"
+              onClick={goToPreviousStudent}
+              disabled={currentIndex === 0}
+              style={{
+                backgroundColor: currentIndex === 0 ? "#B0B0B0" : "#052845",
+              }}
+            >
+              Anterior
+            </button>
+            <button
+              data-testid="next-student"
+              className="nav-button"
+              onClick={goToNextStudent}
+              disabled={currentIndex === fetchedSubmissions.length - 1}
+              style={{
+                backgroundColor:
+                  currentIndex === fetchedSubmissions.length - 1
+                    ? "#B0B0B0"
+                    : "#052845",
+              }}
+            >
+              Siguiente
+            </button>
+          </div>
+
           <div className="mainInfoContainer">
             <TDDCharts
               data-testId="cycle-chart"
               commits={commitsInfo}
               jobsByCommit={jobsByCommit}
-              port={port}
-              role={role}
-              metric={metric}
-              setMetric={setMetric}
             />
           </div>
         </React.Fragment>
+      )}
+
+      {!loading && comments && comments.length > 0 && (
+        <div className="comments-section">
+          <h2>Comentarios</h2>
+          <ul>
+            {comments.map((comment) => (
+              <li key={comment.id}>
+                <p>
+                  <strong>Profesor {comment.teacher_id}:</strong> {comment.content}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
