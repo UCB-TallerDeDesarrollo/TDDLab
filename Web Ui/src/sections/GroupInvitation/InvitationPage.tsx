@@ -34,7 +34,7 @@ function InvitationPage() {
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false); 
-  const [_popupMessage, setPopupMessage] = useState(""); 
+  const [_popupMessage, setPopupMessage] = useState("");
 
   const dbAuthPort = new RegisterUserOnDb();
 
@@ -79,7 +79,7 @@ const handleAcceptInvitation = async (type: string) => {
   console.log(type);
   if (user?.email) {
     const existingUser = await dbAuthPort.getAccountInfo(user.email);
-    if (existingUser && existingUser.groupid) {
+    if (existingUser?.groupid) {
       console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
       setPopupMessage("El usuario ya tiene un grupo asignado.");
       setOpenPopup(true); 
