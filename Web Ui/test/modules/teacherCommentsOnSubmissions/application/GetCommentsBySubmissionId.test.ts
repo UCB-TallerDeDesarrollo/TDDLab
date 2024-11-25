@@ -11,4 +11,17 @@ describe('GetCommentsBySubmissionId', () => {
         mockRepository = new MockTeacherCommentsRepository();
         getComments = new GetCommentsBySubmissionId(mockRepository);
     });
+
+    it('should successfully get comments by submission ID', async () => {
+        const mockComments = [{
+            ...commentDataMock,
+            id: 1,
+            created_at: new Date()
+        }];
+        mockRepository.getCommentsBySubmissionId.mockResolvedValue(mockComments);
+
+        const result = await getComments.getCommentsBySubmissionId(1);
+        expect(result).toEqual(mockComments);
+        expect(mockRepository.getCommentsBySubmissionId).toHaveBeenCalledWith(1);
+    });
 });
