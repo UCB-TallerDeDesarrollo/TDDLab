@@ -38,6 +38,7 @@ class DeliverAssignmentUseCase {
 
       return assignment;
     } catch (error) {
+      console.error(`Error updating assignment with ID ${assignmentId}:`, error);
       throw error;
     }
   }
