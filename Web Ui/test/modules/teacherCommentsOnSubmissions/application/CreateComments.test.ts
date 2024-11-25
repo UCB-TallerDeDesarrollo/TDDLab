@@ -13,4 +13,17 @@ describe('CreateComments', () => {
         mockRepository = new MockTeacherCommentsRepository();
         createComments = new CreateComments(mockRepository);
     });
+
+    it('should successfully create a new comment', async () => {
+        const mockResponse = {
+            ...commentDataMock,
+            id: 1,
+            created_at: new Date()
+        };
+        mockRepository.createComment.mockResolvedValue(mockResponse);
+
+        const result = await createComments.createComment(commentDataMock);
+        expect(result).toEqual(mockResponse);
+        expect(mockRepository.createComment).toHaveBeenCalledWith(commentDataMock);
+    });
 });
