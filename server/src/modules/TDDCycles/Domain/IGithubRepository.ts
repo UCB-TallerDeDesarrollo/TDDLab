@@ -11,5 +11,5 @@ export interface IGithubRepository {
     getRunsOfGithubActionsIds(owner: string, repoName: string): Promise<[string, number][]>;
     getJobsDataFromGithub(owner: string, repoName: string, listOfCommitsWithActions: [string, number][]): Promise<Record<string, JobDataObject>>;
     getCommitsInforForTDDCycle(owner: string, repoName: string, commits: CommitDataObject[]): Promise<TDDCycleDataObject[]>;
-    fetchCoverageDataForCommit(owner: String, repoName: string, sha: string): Promise<any>;
+    fetchCoverageDataForCommit(owner: string, repoName: string, sha: string): Promise<any>;
 }
