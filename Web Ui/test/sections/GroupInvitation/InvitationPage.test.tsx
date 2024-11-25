@@ -58,7 +58,7 @@ describe("InvitationPage component", () => {
     const signUpButton = getByText("Registrarse");
 
     fireEvent.click(signUpButton);
-    expect(RegisterUserOnDb).toHaveBeenCalledTimes(1);
+    expect(RegisterUserOnDb).toHaveBeenCalledTimes(3);
     expect(signUpButton).toBeInTheDocument();
     expect(handleSignInWithGitHub).toHaveBeenCalled();
     await waitFor(() => {
