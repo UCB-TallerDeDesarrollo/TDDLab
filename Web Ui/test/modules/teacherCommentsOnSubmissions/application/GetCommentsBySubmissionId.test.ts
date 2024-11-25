@@ -24,4 +24,10 @@ describe('GetCommentsBySubmissionId', () => {
         expect(result).toEqual(mockComments);
         expect(mockRepository.getCommentsBySubmissionId).toHaveBeenCalledWith(1);
     });
+
+    it('should handle fetch error', async () => {
+        mockRepository.getCommentsBySubmissionId.mockRejectedValue(new Error("Fetch failed"));
+        await expect(getComments.getCommentsBySubmissionId(1))
+            .rejects.toThrowError("Fetch failed");
+    });
 });
