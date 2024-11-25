@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "chart.js": "^3.9.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "check-node-version": "^4.2.1"
   },
   "devDependencies": {
