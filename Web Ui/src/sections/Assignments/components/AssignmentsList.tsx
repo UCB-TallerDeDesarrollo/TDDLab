@@ -68,7 +68,7 @@ function Assignments({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [, setHoveredRow] = useState<number | null>(null);
+  const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
 
