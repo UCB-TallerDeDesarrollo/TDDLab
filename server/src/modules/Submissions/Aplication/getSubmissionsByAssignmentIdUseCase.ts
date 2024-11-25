@@ -15,6 +15,7 @@ class GetSubmissionsByAssignmentIdUseCase {
       );
       return submissions;
     } catch (error) {
+      console.error(`Error:`, error);
       throw error;
     }
   }
