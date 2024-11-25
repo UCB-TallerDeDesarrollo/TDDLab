@@ -6,7 +6,7 @@ import { ExecuteTestCommand } from './modules/RunTestButton/application/ExecuteT
 import { VSCodeTerminalRepository } from './repository/VSCodeTerminalRepository';
 import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/CloneButton/application/ExecuteCloneCommand';
-import { ExecutePostCommand } from './modules/PostButton/application/ExecutePostCommand';
+import { ExecuteExportCommand } from './modules/ExportButton/application/ExecuteExportCommand';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
     
-    const executePostCommand = new ExecutePostCommand(terminalRepository);
+    const executeExportCommand = new ExecuteExportCommand();
 
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
       await executeTestCommand.execute();
@@ -61,14 +61,14 @@ export function activate(context: vscode.ExtensionContext) {
       await executeCloneCommand.execute();
     });
 
-    const runPostCommand = vscode.commands.registerCommand('TDD.postCommand', async () => {
-      await executePostCommand.execute();
+    const runExportCommand = vscode.commands.registerCommand('TDD.exportCommand', async () => {
+      await executeExportCommand.execute();
     });
   
     context.subscriptions.push(runTestCommand);
     context.subscriptions.push(runTestActivityCommand);
     context.subscriptions.push(runCloneCommand);
-    context.subscriptions.push(runPostCommand);
+    context.subscriptions.push(runExportCommand);
 
     const testExecutionTreeView = new ExecutionTreeView(context);
     testExecutionTreeView.initialize();
