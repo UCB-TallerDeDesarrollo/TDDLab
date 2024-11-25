@@ -3,8 +3,6 @@ import { CreateComments } from "../../../../src/modules/teacherCommentsOnSubmiss
 import { MockTeacherCommentsRepository } from "../../__mocks__/submissions/mockTeacherCommentsRepository";
 import { commentDataMock } from "../../__mocks__/submissions/commentDataMock";
 
-
-
 describe('CreateComments', () => {
     let mockRepository: MockTeacherCommentsRepository;
     let createComments: CreateComments;
@@ -25,5 +23,11 @@ describe('CreateComments', () => {
         const result = await createComments.createComment(commentDataMock);
         expect(result).toEqual(mockResponse);
         expect(mockRepository.createComment).toHaveBeenCalledWith(commentDataMock);
+    });
+
+    it('should handle creation error', async () => {
+        mockRepository.createComment.mockRejectedValue(new Error("Creation failed"));
+        await expect(createComments.createComment(commentDataMock))
+            .rejects.toThrowError("Creation failed");
     });
 });
