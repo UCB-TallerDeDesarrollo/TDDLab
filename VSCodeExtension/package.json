@@ -40,8 +40,8 @@
         "title": "Clone Proyect"
       },
       {
-        "command": "TDD.postCommand",
-        "title": "Post TDD Data"
+        "command": "TDD.exportCommand",
+        "title": "Export TDD Data"
       }
     ],
     "viewsContainers": {
@@ -93,6 +93,8 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.6",
+    "@types/crypto-js": "^4.2.2",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
     "@types/vscode": "^1.94.0",
@@ -104,6 +106,9 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "adm-zip": "^0.5.16",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.5",
     "extension": "file:",
     "node-fetch": "^3.3.2",
     "tdd-extension-taller": "file:"
