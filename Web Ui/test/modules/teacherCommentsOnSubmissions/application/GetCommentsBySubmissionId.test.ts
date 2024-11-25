@@ -4,4 +4,11 @@ import { MockTeacherCommentsRepository } from "../../__mocks__/submissions/mockT
 import { commentDataMock } from "../../__mocks__/submissions/commentDataMock";
 
 describe('GetCommentsBySubmissionId', () => {
+    let mockRepository: MockTeacherCommentsRepository;
+    let getComments: GetCommentsBySubmissionId;
+
+    beforeEach(() => {
+        mockRepository = new MockTeacherCommentsRepository();
+        getComments = new GetCommentsBySubmissionId(mockRepository);
+    });
 });
