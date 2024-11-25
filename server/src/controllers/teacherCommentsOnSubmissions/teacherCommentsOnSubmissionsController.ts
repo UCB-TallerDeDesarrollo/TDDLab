@@ -4,7 +4,7 @@ import { createTeacherComment } from "../../modules/TeacherCommentsOnSubmissions
 import { getTeacherComments } from "../../modules/TeacherCommentsOnSubmissions/Application/getTeacherComments";
 
 export class TeacherCommentController {
-  private teacherCommentRepository: TeacherCommentRepository;
+  private readonly teacherCommentRepository: TeacherCommentRepository;
 
   constructor(teacherCommentRepository: TeacherCommentRepository) {
     this.teacherCommentRepository = teacherCommentRepository;
