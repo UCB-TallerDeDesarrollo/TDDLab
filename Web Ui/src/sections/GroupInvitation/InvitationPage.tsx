@@ -9,14 +9,13 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
-
 
 function InvitationPage() {
   const location = useLocation();
@@ -26,7 +25,7 @@ function InvitationPage() {
     if (param === "groupid") {
       return value ? parseInt(value, 10) : undefined;
     }
-    return value ?? undefined;  };
+    return value ?? undefined; };
 
   const groupid = getQueryParam("groupid");
   const userType = getQueryParam("type");
@@ -35,10 +34,8 @@ function InvitationPage() {
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false); 
   const [_popupMessage, setPopupMessage] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
-
-
   
   useEffect(() => {
     const auth = getAuth(firebase);
@@ -53,50 +50,87 @@ function InvitationPage() {
   const [showPopUp, setShowPopUp] = useState(false);
 
   const handleSignUp = async () => {
-    const userData = await handleSignInWithGitHub();
-    if (userData) {
-      setUser(userData);
+    setIsLoading(true);
+    try {
+      const userData = await handleSignInWithGitHub();
+      if (userData) {
+        setUser(userData);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handlePassVerification = async (password: string) => {
-    const result = await dbAuthPort.verifyPass(password);
+    setIsLoading(true);
+    try {
+      const result = await dbAuthPort.verifyPass(password);
 
-    if (result === true) {
-      handleAcceptInvitation("teacher");
-      return;
+      if (result === true) {
+        await handleAcceptInvitation("teacher");
+        return;
+      }
+      alert("Contraseña inválida");
+    } finally {
+      setIsLoading(false);
     }
-    alert("Contraseña invalida");
   };
 
   const handlePopPassword = async () => {
     setShowPasswordPopup(true);
   };
 
-const handleAcceptInvitation = async (type: string) => {
-  console.log(user?.email);
-  console.log(groupid);
-  console.log(type);
-  if (user?.email) {
-    const existingUser = await dbAuthPort.getAccountInfo(user.email);
-    if (existingUser?.groupid) {
-      console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
-      setPopupMessage("El usuario ya tiene un grupo asignado.");
-      setOpenPopup(true); 
-      return;
+  const LoadingOverlay = () => (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 99999,
+        backdropFilter: 'blur(5px)', //blur
+      }}
+    >
+      <CircularProgress size={60} />
+    </div>
+  );  
+
+  const handleAcceptInvitation = async (type: string) => {
+    console.log(user?.email);
+    console.log(groupid);
+    console.log(type);
+    setIsLoading(true); // Activar loading
+    try {
+      if (user?.email) {
+        const existingUser = await dbAuthPort.getAccountInfo(user.email);
+        if (existingUser?.groupid) {
+          console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
+          setPopupMessage("El usuario ya tiene un grupo asignado.");
+          setOpenPopup(true); 
+          return;
+        }
+        const userObj: UserOnDb = {
+          email: user.email,
+          groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
+          role: type,
+        };
+        await dbAuthPort.register(userObj);
+        setShowPopUp(true);
+      }
+    } finally{
+      setIsLoading(false);
     }
-    const userObj: UserOnDb = {
-      email: user.email,
-      groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
-      role: type,
-    };
-    await dbAuthPort.register(userObj);
-    setShowPopUp(true);
-  }
-};
+  };
  
   return (
-    <div>
+    <div style={{ position: "relative" }}>
+    {isLoading && <LoadingOverlay />}
+
       {user ? (
         <div>
           <Grid
@@ -163,6 +197,7 @@ const handleAcceptInvitation = async (type: string) => {
                           onClick={handleGithubSignOut}
                           variant="contained"
                           color="primary"
+                          disabled={isLoading}
                         >
                           Cerrar sesión
                         </Button>
@@ -191,6 +226,7 @@ const handleAcceptInvitation = async (type: string) => {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
+                      disabled={isLoading}
                     >
                       Aceptar invitación al curso
                     </Button>
@@ -202,6 +238,7 @@ const handleAcceptInvitation = async (type: string) => {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
+                      disabled={isLoading}
                     >
                       Aceptar invitación al curso como Docente
                     </Button>
@@ -230,7 +267,7 @@ const handleAcceptInvitation = async (type: string) => {
           style={{ minHeight: "100vh" }}
         >
           <Grid item>
-            <Button color="primary" onClick={handleSignUp}>
+            <Button color="primary" onClick={handleSignUp} disabled={isLoading}>
               <div
                 style={{
                   display: "flex",
