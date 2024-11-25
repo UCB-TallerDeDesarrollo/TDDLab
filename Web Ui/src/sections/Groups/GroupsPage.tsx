@@ -6,7 +6,6 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
-import PersonIcon from '@mui/icons-material/Person';
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
@@ -16,6 +15,7 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
+import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
   Table,
   TableHead,
@@ -334,7 +334,7 @@ function Groups() {
                           aria-label="enlace"
                           onClick={(event) => handleLinkClickTeacher(event, index)}
                         >
-                          <PersonIcon  />
+                          <PiChalkboardTeacherFill  />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Eliminar grupo" arrow>
