@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Observa el archivo JSON para detectar cambios
     fs.watch(jsonFilePath, (eventType, filename) => {
         if (eventType === 'change') {
-            vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
+            
 
             if (timelineView.currentWebview) {
               timelineView.showTimeline(timelineView.currentWebview);
