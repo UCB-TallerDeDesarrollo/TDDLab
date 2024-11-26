@@ -278,7 +278,8 @@ function TDDLineCharts({
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
       case "Pie":
-        return <TDDPie commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>; 
+        return <TDDPie commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} />;
+       
     }
     return (
       <Line
