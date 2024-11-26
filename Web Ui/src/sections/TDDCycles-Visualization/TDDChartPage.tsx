@@ -10,6 +10,7 @@ import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domai
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 import { CommentDataObject,CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
+import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
@@ -54,7 +55,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
-
+  const [complexity,setComplexity] = useState<ComplexityObject[] | null>(null);
 
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
@@ -64,6 +65,8 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+      const complexityList = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
+      setComplexity(complexityList)
       setJobsByCommit(jobsData);
       setCommitsInfo(commits);
     } catch (error) {
@@ -211,6 +214,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
               data-testId="cycle-chart"
               commits={commitsInfo}
               jobsByCommit={jobsByCommit}
+              complexity = {complexity}
               port={port}
               role={role}
               metric={metric}

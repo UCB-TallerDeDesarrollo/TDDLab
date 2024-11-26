@@ -21,6 +21,7 @@ import TDDList from "./TDDList";
 import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 
 ChartJS.register(
   CategoryScale,
@@ -41,6 +42,7 @@ interface LineChartProps {
   optionSelected: string;
   port:GithubAPIRepository;
   role:string;
+  complexity : ComplexityObject[] | null;
 }
 
 function TDDLineCharts({
@@ -48,7 +50,8 @@ function TDDLineCharts({
   jobsByCommit,
   optionSelected,
   port,
-  role
+  role,
+  complexity
 }: LineChartProps) {
   let dataChart: any = {};
   const chartRef = useRef<any>();
@@ -232,7 +235,7 @@ function TDDLineCharts({
     };
     return optionsLineChart;
   }
-
+  console.log(complexity)
   const onClick = (event: any) => {
     if (getElementAtEvent(chartRef.current, event).length > 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
@@ -276,6 +279,17 @@ function TDDLineCharts({
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
+      case "Complejidad":
+            if (complexity != null) {
+              const ciclomaticComplexities = complexity.map(
+                (complexityData) => complexityData.ciclomaticComplexity
+              );
+              dataChart = getDataChart(ciclomaticComplexities, "Complejidad Ciclomática");
+              optionsChart = getOptionsChart("Complejidad Ciclomática");
+              dataTestid = "graph-complexity";
+            }
+            break;
+      
     }
     return (
       <Line

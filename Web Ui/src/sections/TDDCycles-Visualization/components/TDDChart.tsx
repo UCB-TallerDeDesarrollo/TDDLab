@@ -9,6 +9,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -17,9 +18,10 @@ interface CycleReportViewProps {
   setMetric: (metric: string) => void; // Agregamos una función para actualizar el metric
   port: GithubAPIRepository;
   role: string;
+  complexity:ComplexityObject[] | null;
 }
 
-function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role,complexity }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
   if (!commits || !jobsByCommit) {
@@ -69,6 +71,9 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
             <MenuItem value={"Lista"}>
               Lista de Commits
             </MenuItem>
+            <MenuItem value={"Complejidad"}>
+              Lista de Complejidad
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -76,6 +81,7 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
         filteredCommitsObject={filteredCommitsObject}
         jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
+        complexity = {complexity}
         port={port}
         role={role}
       />
