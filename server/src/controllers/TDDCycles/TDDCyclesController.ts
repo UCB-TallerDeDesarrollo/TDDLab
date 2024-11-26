@@ -120,10 +120,8 @@ class TDDCyclesController {
           } catch (error) {
             console.error(`Error al actualizar el commit ${actualCommitSha}: ${error}`);
           }
-          // podemos usarun for para definir si fue exitoso o no
-          // despues insertamos en la tabla de commits tabla
-          // Tiene de momento con la sha. 
-          // al momento de recuperar para ver si un commit fue exitoso consultamos esa tabla usando el sha 
+          // despues insertamos en la tabla de commits tabla 
+          // Se modificó la tabla en staging
           lastCommitIndex = i + 1;
         }
       }
