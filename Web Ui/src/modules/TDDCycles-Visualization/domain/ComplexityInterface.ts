@@ -3,5 +3,6 @@ export interface ComplexityObject{
     file?:string;
     functionName:string;
     avgComplexity:number;
-    color:string
+    color:string;
+    commit:number
 }

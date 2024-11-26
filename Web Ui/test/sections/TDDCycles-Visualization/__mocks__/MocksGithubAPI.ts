@@ -1,3 +1,4 @@
+import { ComplexityObject } from "../../../../src/modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import { GithubAPIRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/jobInterfaces";
@@ -18,6 +19,11 @@ export class MockGithubAPI implements GithubAPIRepository {
 
     return jobs;
   }
+  async obtainComplexityOfRepo(): Promise<ComplexityObject[]> {
+    let jobs: ComplexityObject[] = [];
+
+    return jobs;
+  }
 }
 
 export class MockGithubAPIEmpty implements GithubAPIRepository {
@@ -34,6 +40,11 @@ export class MockGithubAPIEmpty implements GithubAPIRepository {
 
     return jobs;
   }
+  async obtainComplexityOfRepo(): Promise<ComplexityObject[]> {
+    let jobs: ComplexityObject[] = [];
+
+    return jobs;
+  }
 }
 
 export class MockGithubAPIError implements GithubAPIRepository {
@@ -46,5 +57,10 @@ export class MockGithubAPIError implements GithubAPIRepository {
 
   async obtainJobsOfRepo(): Promise<JobDataObject[]> {
     throw new Error("no jobs");
+  }
+  async obtainComplexityOfRepo(): Promise<ComplexityObject[]> {
+    let jobs: ComplexityObject[] = [];
+
+    return jobs;
   }
 }
