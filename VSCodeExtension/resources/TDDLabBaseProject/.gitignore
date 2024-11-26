@@ -1,0 +1,9 @@
+node_modules
+.cache
+dist
+.parcel-cache
+/coverage
+.DS_Store
+./script/report.json
+./.husky/_
+./script/tdd_log.json
