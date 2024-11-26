@@ -11,6 +11,7 @@ import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/reposito
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 import { CommentDataObject,CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
+import UsersRepository from "../../modules/Users/repository/UsersRepository";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
@@ -32,7 +33,8 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [searchParams] = useSearchParams();
   const commentsRepo = new TeacherCommentsRepository();
   const navigate = useNavigate();
-
+  const usersRepository = new UsersRepository();
+ 
   const repoOwner: string = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName: string = String(searchParams.get("repoName")) || "defaultRepo";
   const submissionIdcomments = parseInt(searchParams.get("submissionId") || "0");
@@ -56,6 +58,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [complexity,setComplexity] = useState<ComplexityObject[] | null>(null);
+  const [emails, setEmails] = useState<{ [key: number]: string }>({});
 
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
@@ -80,6 +83,19 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       console.log("intentando conectar para comentarios: ")
       const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionIdcomments);
+      
+      const emailMap: { [key: number]: string } = {};
+      for (const comment of commentsData) {
+      try {
+        const email = await getUserEmailById(comment.teacher_id);
+        emailMap[comment.teacher_id] = email;
+      } catch {
+        emailMap[comment.teacher_id] = "Correo no disponible";
+      }
+    }
+
+    setEmails(emailMap);
+
       console.log("siguiente paso comentarios")
       setComments(commentsData);  
     } catch (error) {
@@ -157,6 +173,15 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     }
   };
 
+  const getUserEmailById = async (userId: number): Promise<string> => {
+    try {
+      const user = await usersRepository.getUserById(userId);
+      return user.email.toString();
+    } catch (error) {
+      console.error("Error fetching student email:", error);
+      return "";
+    }
+  };
 
   const [metric, setMetric] = useState<string | null>(null); 
   return (
@@ -258,19 +283,27 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     </div>
   )}
   {!loading && comments && comments.length > 0 && (
-        <div className="comments-section">
-          <h2>Comentarios</h2>
-          <ul>
-            {comments.map((comment, index) => (
-              <li key={index} style={{ marginBottom: "10px", borderBottom: "1px solid #ddd" }}>
-                <p><strong>Autor:</strong> {comment.teacher_id}</p>
-                <p><strong>Comentario:</strong> {comment.content}</p>
-                <p><strong>Fecha:</strong> {new Date(comment.created_at).toLocaleDateString()}</p>
-              </li>
-            ))}
-          </ul>
+  <div className="comments-section">
+    <h2 className="comments-title">Comentarios</h2>
+    <div className="comments-list">
+      {comments.map((comment, index) => (
+        <div key={index} className="comment-card">
+          <div className="comment-header">
+            <strong className="comment-author">
+              {emails[comment.teacher_id] || "Cargando..."}
+            </strong>
+            <span className="comment-date">
+              {new Date(comment.created_at).toLocaleDateString()}
+            </span>
+          </div>
+          <div className="comment-body">
+            <p>{comment.content}</p>
+          </div>
         </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
     </div>
   );
 }
