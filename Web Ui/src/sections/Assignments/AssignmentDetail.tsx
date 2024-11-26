@@ -9,10 +9,6 @@ import AssignmentsRepository from "../../modules/Assignments/repository/Assignme
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import FileUploadDialog from "./components/FileUploadDialog";
 
-import axios from "axios"; // Use axios for making API requests
-import { VITE_API } from "../../../config.ts"; // we import this so later we can upload the tdd log json file
-
-
 
 import {
   Button,
