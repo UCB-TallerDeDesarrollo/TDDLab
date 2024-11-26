@@ -1,44 +1,50 @@
-# name: ApiCcn Workflow
+name: ApiCcn Workflow
 
-# on:
-#   push:
-#   pull_request:
-#     branches: ["main"]
-#   workflow_dispatch:
-# jobs:
-#   deploy_vercel_api-ccn:
-#     runs-on: ubuntu-latest
-#     environment:
-#       name: staging
-#     #Ejecutar solo si es la rama main
+on:
+  push:
+    paths:
+      - "apiCcn/**"
+  pull_request:
+    paths:
+      - "apiCcn/**"
+  workflow_dispatch:
 
-#     #   env:
-#     #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-#     #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-#     #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
+jobs:
+  deploy_vercel_api-ccn:
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: "Echo values"
-#         run: |
-#           echo $VERCEL_PROJECT_ID
-#           echo $VERCEL_ORG_ID 
-#           echo $VERCEL_TOKEN 
+    steps:
+      - name: "Echo values"
+        run: |
+          echo $VERCEL_PROJECT_ID
+          echo $VERCEL_ORG_ID
+          echo $VERCEL_TOKEN
 
-#       - name: Checkout repo
-#         uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-#       - name: Setup Python
-#         uses: actions/setup-python@v3
-#         with:
-#           python-version: '3.8'
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
 
-#       - name: Install Python dependencies
-#         run: |
-#           cd ./apiCcn
-#           pip install -r requirements.txt
+      - name: Install Python dependencies
+        run: |
+          cd ./apiCcn
+          pip install -r requirements.txt
 
-#       - name: Deploy to Vercel
-#         run: |
-#           cd ./apiCcn
-#           vercel --prod --token ${{ secrets.VERCEL_TOKEN }} -y
-# 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Link to Api CCN Project
+        run: |
+          cd ./apiCcn
+          vercel link --yes --project api-ccn --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        run: |
+          cd ./apiCcn
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} -y
