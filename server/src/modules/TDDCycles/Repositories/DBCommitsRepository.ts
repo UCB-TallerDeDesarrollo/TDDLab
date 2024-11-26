@@ -61,17 +61,15 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     }
   }
   
-  async updateTddCicle(
-    owner: string,
-    repoName: string,
+  async updateTddCycle(
     sha: string,
     tdd_cicle:boolean,
   ) {
     const client = await this.pool.connect();
     try {
       const query =
-        "UPDATE commitsTable SET tdd_cicle = $1 WHERE owner = $2 AND reponame = $3 AND sha = $4";
-      const values = [tdd_cicle, owner, repoName, sha];
+        "UPDATE commitsTable SET tdd_cycle = $1 WHERE sha = $2";
+      const values = [tdd_cicle, sha];
       await client.query(query, values);
     } catch (error) {
       throw error;
