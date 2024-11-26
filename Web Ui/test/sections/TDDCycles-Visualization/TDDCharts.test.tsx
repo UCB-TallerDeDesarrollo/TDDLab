@@ -15,6 +15,7 @@ describe("TDDCharts", () => {
       metric={""} 
       setMetric={() => {}}
       port={new GithubAPIAdapter()}
+      complexity={null}
       role={"student"}
     />);
 

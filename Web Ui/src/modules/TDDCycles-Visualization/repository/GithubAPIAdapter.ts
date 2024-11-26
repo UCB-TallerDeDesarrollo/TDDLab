@@ -75,6 +75,32 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       throw error;
     }
   }
+  async obtainComplexityOfRepo(owner: string, repoName: string) {
+    try {
+      const repoUrl = `https://github.com/${owner}/${repoName}`;
+      
+      const response = await axios.post("https://api-ccn.vercel.app/analyzeAvgCcn", {
+        repoUrl,
+      });
+
+     
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = response.data.results;
+      console.log(response.data)
+      return  responseData.map((complexity: any) => ({
+        ciclomaticComplexity: Math.round(complexity.average_cyclomatic_complexity),
+        commit: complexity.commit,
+      }));
+
+      
+    } catch (error) {
+      console.error("Error obtaining jobs:", error);
+      throw error;
+    }
+  }
 
   async obtainRunsOfGithubActions(owner: string, repoName: string) {
     try {
