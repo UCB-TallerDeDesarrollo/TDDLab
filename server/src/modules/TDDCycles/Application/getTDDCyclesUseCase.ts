@@ -64,6 +64,7 @@ export class GetTDDCyclesUseCase {
 
       return commits;
     } catch (error) {
+      console.error(`Error al ejecutar: ${error}`);
       throw error;
     }
   }
