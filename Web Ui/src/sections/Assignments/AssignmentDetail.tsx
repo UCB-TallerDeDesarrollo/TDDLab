@@ -7,6 +7,9 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+import FileUploadDialog from "./components/FileUploadDialog";
+
+
 import {
   Button,
   Card,
@@ -212,7 +215,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentid) {
+    console.log("I will print the json log") //delete later
+      if (assignmentid) { //means if the assignment id is in memory or somthn
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
@@ -296,6 +300,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+
 
   const [_comment, setComment] = useState("");
 
@@ -306,6 +312,20 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleCloseCommentDialog = () => {
     setIsCommentDialogOpen(false);
   };
+
+  const handleOpenFileDialog = () => {
+    setIsFileDialogOpen(true);
+  };
+  
+  const handleCloseFileDialog = () => {
+    setIsFileDialogOpen(false);
+  };
+  
+  const handleUploadFile = (file: File) => {
+    console.log("Archivo subido:", file);
+    // aqui desencriptamos el archivo
+  };
+  
 
   const handleSendComment = async (comment: string) => {
     if (submission){
@@ -625,7 +645,16 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Finalizar tarea
               </Button>
             )}
-
+            {isStudent(role) && (
+              <Button
+                variant="contained"
+                disabled={isTaskInProgress}
+                onClick={handleOpenFileDialog} // Abrir el nuevo diálogo
+                style={{ textTransform: "none", fontSize: "15px", marginRight: "8px" }}
+              >
+                Subir sesión TDD extension
+              </Button>
+            )}
             <CommentDialog
               open={isCommentDialogOpen}
               link={submission?.repository_link}
@@ -689,6 +718,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           </CardContent>
         </Card>
       )}
+      <FileUploadDialog
+        open={isFileDialogOpen}
+        onClose={handleCloseFileDialog}
+        onUpload={handleUploadFile}
+      />
     </div>
   );
 };

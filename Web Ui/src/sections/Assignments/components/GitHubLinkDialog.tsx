@@ -24,6 +24,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     handleLinkChange,
   } = useGitHubLinkValidation("");
 
+
   const handleSend = () => {
     if (validLink) {
       onSend(link);
