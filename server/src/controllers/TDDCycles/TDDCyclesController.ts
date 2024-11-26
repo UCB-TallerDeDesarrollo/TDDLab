@@ -68,9 +68,9 @@ class TDDCyclesController {
   async uploadTDDLog(req: Request, res: Response) {
     
     try {
-      const tddLog = req.body;
-      if (!tddLog) {
-        return res.status(400).json({ error: "Choquito choquito, necesito tu TDD log, no jalo de otra." });
+      const { repoOwner, repoName, log: tddLog } = req.body;
+      if (!repoOwner || !repoName || !tddLog) {
+        return res.status(400).json({ error: "Faltan campos requeridos: repoOwner, repoName o log." });
       }
       console.log("Archivo TDD log recibido", tddLog);
       console.log("Ahora procederé a extraer los datos para insertarlos en la tabla");
@@ -96,6 +96,8 @@ class TDDCyclesController {
                 number_of_tests: testEntry.numTotalTests,
                 passed_tests: testEntry.numPassedTests,
                 color: color,
+                repoName,
+                repoOwner
               };
               commitTimelineEntries.push(commitTimelineEntry);
             } 
