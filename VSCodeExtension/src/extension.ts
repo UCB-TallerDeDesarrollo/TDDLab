@@ -12,7 +12,7 @@ import { ExecuteExportCommand } from './modules/ExportButton/application/Execute
  * @param {vscode.ExtensionContext} context
  */
 export function activate(context: vscode.ExtensionContext) {
-    const tddBasePath = path.join(context.extensionPath, 'resources', 'tddlabBaseProject');
+    const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
     const timelineView = new TimelineView(context);
     
     context.subscriptions.push(
