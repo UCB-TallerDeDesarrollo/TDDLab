@@ -6,6 +6,7 @@ import { GetTDDCyclesUseCase } from "../../modules/TDDCycles/Application/getTDDC
 import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLogUseCase";
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
+import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 
 
 
@@ -13,6 +14,7 @@ class TDDCyclesController {
   tddCyclesUseCase: GetTDDCyclesUseCase;
   testResultsUseCase: GetTestResultsUseCase;
   submitTDDLogToDB: PostTDDLogUseCase;
+  dbCommitsRepository: IDBCommitsRepository;
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
@@ -29,6 +31,7 @@ class TDDCyclesController {
     this.submitTDDLogToDB = new PostTDDLogUseCase(
       dbJobsRepository,
     );
+    this.dbCommitsRepository=new DBCommitsRepository();
   }
   async getTDDCycles(req: Request, res: Response) {
     try {
@@ -100,15 +103,22 @@ class TDDCyclesController {
               commitTimelineEntries.push(commitTimelineEntry);
             } 
           }
-
+          
+          let tdd_cycle_entry;
           // aca debemos procesar commit time line entries que tiene datos de green y red
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
           const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";
           if (hasRed && lastIsGreen) {
             console.log("Si realizó un ciclo TDD");
-
+            tdd_cycle_entry=true;
           } else {
             console.log("No se realizó un ciclo TDD");
+            tdd_cycle_entry=false;
+          }
+          try{
+            await this.dbCommitsRepository.updateTddCycle(actualCommitSha,tdd_cycle_entry); 
+          } catch (error) {
+            console.error(`Error al actualizar el commit ${actualCommitSha}: ${error}`);
           }
           // podemos usarun for para definir si fue exitoso o no
           // despues insertamos en la tabla de commits tabla
