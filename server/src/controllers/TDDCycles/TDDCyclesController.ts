@@ -112,7 +112,7 @@ class TDDCyclesController {
           }
           // podemos usarun for para definir si fue exitoso o no
           // despues insertamos en la tabla de commits tabla
-          
+          // Tiene de momento con la sha. 
           // al momento de recuperar para ver si un commit fue exitoso consultamos esa tabla usando el sha 
           lastCommitIndex = i + 1;
         }
