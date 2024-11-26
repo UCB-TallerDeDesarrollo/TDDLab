@@ -12,6 +12,7 @@ import { ExecuteExportCommand } from './modules/ExportButton/application/Execute
  * @param {vscode.ExtensionContext} context
  */
 export function activate(context: vscode.ExtensionContext) {
+    const tddBasePath = path.join(context.extensionPath, 'resources', 'tddlabBaseProject');
     const timelineView = new TimelineView(context);
     
     context.subscriptions.push(
@@ -58,7 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
-      await executeCloneCommand.execute();
+      await executeCloneCommand.execute(tddBasePath);
     });
 
     const runExportCommand = vscode.commands.registerCommand('TDD.exportCommand', async () => {
