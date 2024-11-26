@@ -36,5 +36,9 @@ TDDCyclesRouter.post(
   "/upload-log",
   async (req, res) => await tddCyclesController.uploadTDDLog(req, res)
 );
-
+//Ruta para obtener los commits de un repositorio de la BD
+TDDCyclesRouter.get(
+  "/get-commits",
+  async (req, res) => await tddCyclesController.getCommits(req, res)
+);
 export default TDDCyclesRouter;

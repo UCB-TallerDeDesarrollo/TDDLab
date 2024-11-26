@@ -136,6 +136,25 @@ class TDDCyclesController {
       return res.status(500).json({ error: "Error al procesar el archivo TDD log" });
     }
   }
+  async getCommits(req: Request, res: Response) {
+    try {
+      const { owner, repoName } = req.query;
+
+      if (!owner || !repoName) {
+        return res.status(400).json({ error: "Se requiere owner y repoName" });
+      }
+
+      const commits = await this.dbCommitsRepository.getCommits(
+        owner as string,
+        repoName as string
+      );
+
+      return res.status(200).json(commits);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Error al obtener commits" });
+    }
+  }
   
   
 }
