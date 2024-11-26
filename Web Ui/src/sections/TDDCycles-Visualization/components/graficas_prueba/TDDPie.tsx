@@ -80,7 +80,7 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
       legend: {
         position: "top" as const,
         labels: {
-          generateLabels: (chart: any) => {
+          generateLabels: () => {
             return allLabels.map((label: string, index: number) => {
               const value = rawData[index];
               return {
