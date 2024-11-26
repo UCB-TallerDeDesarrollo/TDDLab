@@ -8,7 +8,7 @@ import {
 } from "chart.js";
 
 ChartJS.register(Tooltip, Legend, ArcElement);
-
+//Props
 interface TDDPieProps {
   commits: { sha: string; commit: { message: string } }[];
   jobsByCommit: { sha: string; conclusion: string }[];
