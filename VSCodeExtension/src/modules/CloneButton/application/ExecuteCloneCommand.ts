@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs/promises';
 import { TerminalPort } from '../../../model/TerminalPort';
 
 export class ExecuteCloneCommand {
   constructor(private readonly terminalPort: TerminalPort) {}
 
-  async execute(): Promise<void> {
+  async execute( tddBasePath: string ): Promise<void> {
 
     const folderUri = await vscode.window.showOpenDialog({
       canSelectFiles: false,
@@ -17,10 +18,7 @@ export class ExecuteCloneCommand {
       const selectedPath = folderUri[0].fsPath;
       const selectedPathUri = vscode.Uri.file(selectedPath);
 
-      this.terminalPort.createAndExecuteCommand(
-        'TDD Terminal',
-        `git clone https://github.com/denilsFiesta/tddLabBaseProject.git "${selectedPath}"`
-      );
+      await fs.cp(tddBasePath, selectedPath, { recursive:true });
 
       await vscode.commands.executeCommand('vscode.openFolder', selectedPathUri, true);
 
