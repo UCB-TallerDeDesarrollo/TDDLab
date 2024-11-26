@@ -14,30 +14,32 @@ export class DBJobsRepository implements IDBJobsRepository {
   async saveLogs(timeline: ITimelineEntry[]) {
     const client = await this.pool.connect();
     try {
-        for (const entry of timeline) {
-            const exists = await this.executionExists(entry.commit_sha, entry.execution_timestamp);
-            if (!exists) {
-                const query = `
-                    INSERT INTO commit_timeline (commit_sha, execution_timestamp, number_of_tests, passed_tests, color)
-                    VALUES ($1, $2, $3, $4, $5)
-                `;
-                const values = [
-                    entry.commit_sha,
-                    entry.execution_timestamp,
-                    entry.number_of_tests,
-                    entry.passed_tests,
-                    entry.color,
-                ];
-                await client.query(query, values);
-            }
+      for (const entry of timeline) {
+        const exists = await this.executionExists(entry.commit_sha, entry.execution_timestamp);
+        if (!exists) {
+          const query = `
+            INSERT INTO commit_timeline (commit_sha, execution_timestamp, number_of_tests, passed_tests, color, repoOwner, repoName)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `;
+          const values = [
+            entry.commit_sha,
+            entry.execution_timestamp,
+            entry.number_of_tests,
+            entry.passed_tests,
+            entry.color,
+            entry.repoOwner,
+            entry.repoName
+          ];
+          await client.query(query, values);
         }
+      }
     } catch (error) {
-        console.error("Error al guardar el log:", error);
-        throw error;
+      console.error("Error al guardar el log:", error);
+      throw error;
     } finally {
-        client.release();
+      client.release();
     }
-}
+  }
 
 
   async saveJob(job: TestResultDataObject) {
