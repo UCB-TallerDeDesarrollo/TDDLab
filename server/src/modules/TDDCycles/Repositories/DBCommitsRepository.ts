@@ -35,6 +35,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       ];
       await client.query(query, values);
     } catch (error) {
+      console.error(`Error saving commit ${commit.sha} for ${owner}/${repoName}`);
       throw error;
     } finally {
       client.release();
@@ -55,6 +56,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const values = [coverage, test_count, owner, repoName, sha];
       await client.query(query, values);
     } catch (error) {
+      console.error(`Error updating coverage and test count for commit ${sha} in ${owner} / ${repoName}`);
       throw error;
     } finally {
       client.release();
@@ -74,6 +76,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const values = [tdd_cicle, owner, repoName, sha];
       await client.query(query, values);
     } catch (error) {
+      console.error(`Error updating TDD cycle for commit ${sha} in ${owner}/${repoName}`);
       throw error;
     } finally {
       client.release();
@@ -89,6 +92,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows;
     } catch (error) {
+      console.error(`Error retrieving commits for ${owner}/${repoName}`);
       throw error;
     } finally {
       client.release();
@@ -103,6 +107,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows.length > 0;
     } catch (error) {
+      console.error(`Error checking existence of commit ${sha} in ${owner}/${repoName}`);
       throw error;
     } finally {
       client.release();
@@ -117,6 +122,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const result = await client.query(query, values);
       return result.rows[0].count > 0;
     } catch (error) {
+      console.error(`Error checking existence of repository ${owner}/${repoName}`);
       throw error;
     } finally {
       client.release();
@@ -148,6 +154,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
         newCommits.map((commit) => this.saveCommit(owner, repoName, commit))
       );
     } catch (error) {
+      console.error(`Error saving commits list for ${owner}/${repoName}`);
       throw error;
     }
   }
