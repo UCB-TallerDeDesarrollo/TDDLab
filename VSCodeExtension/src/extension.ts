@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (!workspaceFolder) {
             vscode.window.showErrorMessage(
-                'No hay un proyecto abierto. Por favor, abre un proyecto para ejecutar la extensión.'
+                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado para ejecutar la extensión.'
             );
             return;
         }
@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
         try {
             if (!fs.existsSync(projectJsonPath)) {
                 throw new Error(
-                    'El archivo "tdd_log.json" no se encontró en la carpeta raíz del proyecto dentro de "script".'
+                    'Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
                 );
             }
 
@@ -63,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
             await executeTestCommand.execute();
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Se produjo un error desconocido.';
-            vscode.window.showErrorMessage(`Error al ejecutar la extensión: ${message}`);
+            vscode.window.showErrorMessage(`TDD Lab: Error al ejecutar la extensión. ${message}`);
         }
     });
 
@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (!workspaceFolder) {
             vscode.window.showErrorMessage(
-                'No hay un proyecto abierto. Por favor, abre un proyecto para ejecutar la extensión.'
+                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado y compatible para ejecutar la extensión.'
             );
             return;
         }
@@ -81,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
             const projectJsonPath = path.join(workspaceFolder, 'script', 'tdd_log.json');
             if (!fs.existsSync(projectJsonPath)) {
                 vscode.window.showErrorMessage(
-                    'No se encontró el archivo "tdd_log.json" en la carpeta "script".'
+                    'TDD Lab: Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
                 );
                 return;
             }
