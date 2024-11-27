@@ -13,7 +13,6 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
-import { Button } from "@mui/material";
 
 ChartJS.register(
   Tooltip,
@@ -83,6 +82,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
+    localStorage.setItem("selectedMetric", graphText);
+    window.location.reload();
   };
 
   const getChartOptions = (yAxisText: string) => {
@@ -370,24 +371,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
       {graph && (
         <>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              onClick={() => setGraph("")}
-              style={{
-                backgroundColor: "#052845",
-                color: "#fff",
-                marginTop: "20px",
-                marginBottom: "20px",
-                width: "20%",
-                padding: "8px 16px",
-                borderRadius: "4px",
-                fontWeight: "bold",
-                textTransform: "none",
-              }}
-            >
-              Volver al Dashboard
-            </Button>
-          </div>
           <TDDLineCharts
             port={port}
             role={role}
