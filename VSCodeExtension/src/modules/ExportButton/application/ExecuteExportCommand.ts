@@ -63,9 +63,10 @@ export class ExecuteExportCommand {
 
   private encryptFile(sourceFile: string, destinationFile: string): void {
     try {
-      const data = fs.readFileSync(sourceFile, 'utf8');
-      const encryptedContent = CryptoJS.AES.encrypt(data, this.key).toString();
-      fs.writeFileSync(destinationFile, encryptedContent);
+      const binaryData = fs.readFileSync(sourceFile);
+      const base64Data = binaryData.toString('base64');
+      const encryptedContent = CryptoJS.AES.encrypt(base64Data, this.key).toString();
+      fs.writeFileSync(destinationFile, encryptedContent, 'utf8');
     } catch (error) {
       console.error('Error en la encriptación:', error);
     }
