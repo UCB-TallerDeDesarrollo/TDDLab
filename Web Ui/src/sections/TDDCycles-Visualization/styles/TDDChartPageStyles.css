@@ -49,8 +49,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #ff5252; /* Red background color */
-  color: #fff; /* White text color */
+  background-color: #ff5252; 
+  color: #fff; 
   padding: 10px;
   border-radius: 10px;
   margin: 10px 0;
