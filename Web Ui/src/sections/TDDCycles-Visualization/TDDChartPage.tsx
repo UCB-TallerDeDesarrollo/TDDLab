@@ -83,6 +83,16 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       console.log("intentando conectar para comentarios: ")
       const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionIdcomments);
+      const emailMap: { [key: number]: string } = {};
+      for (const comment of commentsData) {
+      try {
+        const email = await getUserEmailById(comment.teacher_id);
+        emailMap[comment.teacher_id] = email;
+      } catch {
+        emailMap[comment.teacher_id] = "Correo no disponible";
+      }
+    }
+    setEmails(emailMap);
       console.log("siguiente paso comentarios")
       setComments(commentsData);  
     } catch (error) {
@@ -271,18 +281,26 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   )}
   {!loading && comments && comments.length > 0 && (
         <div className="comments-section">
-          <h2>Comentarios</h2>
-          <ul>
-            {comments.map((comment, index) => (
-              <li key={index} style={{ marginBottom: "10px", borderBottom: "1px solid #ddd" }}>
-                <p><strong>Autor:</strong> {comment.teacher_id}</p>
-                <p><strong>Comentario:</strong> {comment.content}</p>
-                <p><strong>Fecha:</strong> {new Date(comment.created_at).toLocaleDateString()}</p>
-              </li>
-            ))}
-          </ul>
+        <h2 className="comments-title">Comentarios</h2>
+        <div className="comments-list">
+          {comments.map((comment, index) => (
+            <div key={index} className="comment-card">
+              <div className="comment-header">
+                <strong className="comment-author">
+                  {emails[comment.teacher_id] || "Cargando..."}
+                </strong>
+                <span className="comment-date">
+                  {new Date(comment.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="comment-body">
+                <p>{comment.content}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }
