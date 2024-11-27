@@ -11,6 +11,7 @@ import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/reposito
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 import { CommentDataObject,CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
+import UsersRepository from "../../modules/Users/repository/UsersRepository";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
@@ -32,6 +33,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [searchParams] = useSearchParams();
   const commentsRepo = new TeacherCommentsRepository();
   const navigate = useNavigate();
+  const usersRepository = new UsersRepository();
 
   const repoOwner: string = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName: string = String(searchParams.get("repoName")) || "defaultRepo";
