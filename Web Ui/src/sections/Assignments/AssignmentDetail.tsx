@@ -10,6 +10,7 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import FileUploadDialog from "./components/FileUploadDialog";
 import JSZip from "jszip";
 import CryptoJS from "crypto-js";
+import {VITE_API} from "../../../config.ts";
 
 
 
@@ -327,7 +328,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleUploadFile = async (file: File) => {
     try {
       console.log("Archivo recibido:", file);
-  
       const reader = new FileReader();
       reader.onload = async () => {
         const encryptedContent = reader.result as string;
@@ -336,6 +336,26 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         const jsonData = parseJSON(fileContent);
         const updatedData = enrichWithRepoData(jsonData, studentSubmission?.repository_link);
         console.log("JSON actualizado:", updatedData);
+        
+        const API_URL = `${VITE_API}/TDDCycles/upload-log`;
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedData),
+        });
+  
+        if (response.ok) {
+          console.log("Archivo subido exitosamente.");
+          const responseData = await response.json();
+          console.log("Respuesta de la API:", responseData);
+        } else {
+          console.error("Error al subir el archivo:", response.statusText);
+          throw new Error(`Error en el POST: ${response.statusText}`);
+        }
+
         return updatedData;
       };
       reader.readAsText(file);
@@ -396,7 +416,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     return {
       repoName,
       repoOwner,
-      logs: jsonData,
+      log: jsonData,
     };
   };
   
