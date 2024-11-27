@@ -23,13 +23,27 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
+
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") || "Dashboard";
     return initialMetric;
   });
-  if (!commits || !jobsByCommit) {
-    return <div>No data available</div>; 
-  }
+  useEffect(() => {
+    const handleStorageChange = () => {
+      console.log("storage event triggered");
+      const storedMetric = localStorage.getItem("selectedMetric") || "Dashboard";
+      setMetricSelected(storedMetric);
+      setMetric(storedMetric);
+      console.log("Detected localStorage change, new metric:", storedMetric);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [setMetric]);
+
   const filteredCommitsObject = (() => {
     if (commits != null) {
       const filteredCommitsObject = commits.filter(
@@ -39,33 +53,21 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity }: Re
     }
     return commits;
   })();
+  
+  if (!commits || !jobsByCommit) {
+    return <div>No data available</div>;
+  }
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     const newMetric = event.target.value;
     setMetricSelected(newMetric);
     setMetric(newMetric);
-    
+
     localStorage.setItem("selectedMetric", newMetric);
-  
+
     const storageEvent = new Event("storage");
     window.dispatchEvent(storageEvent);
   };
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      console.log("storage event triggered");
-      const storedMetric = localStorage.getItem("selectedMetric") || "Dashboard";
-      setMetricSelected(storedMetric);
-      setMetric(storedMetric);
-      console.log("Detected localStorage change, new metric:", storedMetric);
-    };
-  
-    window.addEventListener("storage", handleStorageChange);
-  
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [setMetric]);
 
   return (
     <div className="lineChartContainer">
