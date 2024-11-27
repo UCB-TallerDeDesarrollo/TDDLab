@@ -59,6 +59,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [feedback, setFeedback] = useState<string>("");
   const [complexity,setComplexity] = useState<ComplexityObject[] | null>(null);
   const [emails, setEmails] = useState<{ [key: number]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
@@ -113,6 +114,8 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
       return;
     }
 
+    setIsSubmitting(true); 
+
     try {
       const commentData: CommentsCreationObject = {
         submission_id: submissionIdcomments,
@@ -129,6 +132,8 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
       obtainComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
+    } finally {
+    setIsSubmitting(false);
     }
   };
 
@@ -256,8 +261,13 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     />
     <button
       onClick={handleSubmitFeedback}
+      disabled={isSubmitting}
     >
-      Enviar
+      {isSubmitting ? (
+    <PropagateLoader color="#fff" size={5} />
+  ) : (
+    "Enviar"
+  )}
     </button>
     </div>
   )}
