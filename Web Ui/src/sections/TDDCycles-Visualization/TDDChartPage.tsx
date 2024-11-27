@@ -158,8 +158,17 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
       setCurrentIndex(nextIndex);
     }
   };
+  
+  const getUserEmailById =   async (userId: number): Promise<string> =>{
+    try{
+      const user= await usersRepository.getUserById(userId);
+      return user.email.toString();
 
-
+    }catch(error){
+      console.error("Error fetching student email:", error);
+      return "";
+    }
+  }
   const [metric, setMetric] = useState<string | null>(null); 
   return (
     <div className="container">
