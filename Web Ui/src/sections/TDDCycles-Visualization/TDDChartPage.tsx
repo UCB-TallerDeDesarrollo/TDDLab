@@ -58,6 +58,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [complexity,setComplexity] = useState<ComplexityObject[] | null>(null);
+  const [emails, setEmails] = useState<{ [key: number]: string }>({});
 
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
