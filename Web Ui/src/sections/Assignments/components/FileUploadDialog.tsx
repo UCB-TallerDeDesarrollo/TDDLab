@@ -35,8 +35,6 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
   const handleUpload = () => {
     if (selectedFile) {
       onUpload(selectedFile);
-      console.log("I am inside handle upload from File Upload Dialog");
-      console.log("Selected file is", selectedFile);
       onClose();
     } else {
       setError("Please select a file before uploading.");

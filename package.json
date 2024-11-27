@@ -1,6 +1,8 @@
 {
   "dependencies": {
-    "check-node-version": "^4.2.1"
+    "check-node-version": "^4.2.1",
+    "crypto-js": "^4.2.0",
+    "jszip": "^3.10.1"
   },
   "devDependencies": {
     "js-cookie": "^3.0.5"
