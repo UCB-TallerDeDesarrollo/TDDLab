@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Timeline } from '../domain/Timeline';
 import { CommitPoint } from '../domain/CommitPoint';
 import { TimelineRepository } from '../repository/TimelineRepository';
+import { PushPoint } from '../domain/PushPoint';
 
 export class GetTimeline  {
     private readonly timelineRepository: TimelineRepository;
@@ -10,8 +11,8 @@ export class GetTimeline  {
         this.timelineRepository = new TimelineRepository(rootPath);        
     }
 
-    async execute(): Promise<Array<Timeline | CommitPoint>> {
-        let response: Array<Timeline | CommitPoint> = [];
+    async execute(): Promise<Array<Timeline | CommitPoint | PushPoint>> {
+        let response: Array<Timeline | CommitPoint | PushPoint> = [];
         try {
             const timeline = await this.timelineRepository.getTimelines();
             response = timeline;

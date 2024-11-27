@@ -10,6 +10,7 @@ export class GetLastPoint {
         this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 9999);
         this.statusBarItem.show();
         this.context.subscriptions.push(this.statusBarItem);       
+        this.statusBarItem.command = 'extension.showTimeline';
     }
 
     execute(status_point: string) {
