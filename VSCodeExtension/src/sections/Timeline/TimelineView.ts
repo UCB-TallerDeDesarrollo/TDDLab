@@ -3,6 +3,7 @@ import { GetTimeline } from '../../modules/Timeline/application/GetTimeline';
 import { GetLastPoint } from '../../modules/Timeline/application/GetLastPoint';
 import { Timeline } from '../../modules/Timeline/domain/Timeline';
 import { CommitPoint } from '../../modules/Timeline/domain/CommitPoint';
+import { PushPoint } from '../../modules/Timeline/domain/PushPoint';
 
 export class TimelineView implements vscode.WebviewViewProvider {
     private readonly context: vscode.ExtensionContext;
@@ -36,7 +37,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
         }
     }
 
-    lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline | undefined {
+    lastTestPoint(timeline: Array<Timeline | CommitPoint | PushPoint>): Timeline | undefined {
         for (let i = timeline.length - 1; i >= 0; i--) {
             if (timeline[i] instanceof Timeline && timeline[i] !== undefined) {
                 return timeline[i] as Timeline;
@@ -45,7 +46,10 @@ export class TimelineView implements vscode.WebviewViewProvider {
         return undefined;
     }
 
-    generateHtml(timeline: Array<Timeline | CommitPoint>, webview: vscode.Webview): string {
+    generateHtml(timeline: Array<Timeline | CommitPoint | PushPoint>, webview: vscode.Webview): string {
+        const gitLogoUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, 'images', 'git.png')
+        );
         const githubLogoUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this.context.extensionUri, 'images', 'github-color.png')
         );
@@ -58,6 +62,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
                 const color = point.getColor();
                 const date = point.timestamp.toLocaleDateString();
                 const time = point.timestamp.toLocaleTimeString();
+                
                 return `
                     <div class="timeline-dot" style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;">
                         <span class="popup">
@@ -72,9 +77,22 @@ export class TimelineView implements vscode.WebviewViewProvider {
                 const time = point.commitTimestamp.toLocaleTimeString();
                 return `
                     <div class="timeline-dot">
-                        <img src="${githubLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
+                        <img src="${gitLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
                         <span class="popup">
                             <strong>Commit ID:</strong> ${point.commitId}<br>
+                            <strong>Fecha:</strong> ${date}<br>
+                            <strong>Hora:</strong> ${time}
+                        </span>
+                    </div>
+                `;
+            }else if (point instanceof PushPoint) {
+                const date = point.pushTimestamp.toLocaleDateString();
+                const time = point.pushTimestamp.toLocaleTimeString();
+                return `
+                    <div class="timeline-dot">
+                        <img src="${githubLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
+                        <span class="popup">
+                            <strong>Push ID:</strong> ${point.pushId}<br>
                             <strong>Fecha:</strong> ${date}<br>
                             <strong>Hora:</strong> ${time}
                         </span>
