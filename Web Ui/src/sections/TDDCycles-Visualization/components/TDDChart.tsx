@@ -1,6 +1,6 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -21,9 +21,12 @@ interface CycleReportViewProps {
   complexity:ComplexityObject[] | null;
 }
 
-function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role,complexity }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
+  const [metricSelected, setMetricSelected] = useState(() => {
+    const initialMetric = localStorage.getItem("selectedMetric") || "Dashboard";
+    return initialMetric;
+  });
   if (!commits || !jobsByCommit) {
     return <div>No data available</div>; 
   }
@@ -40,8 +43,29 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role,complexi
   const handleSelectChange = (event: SelectChangeEvent) => {
     const newMetric = event.target.value;
     setMetricSelected(newMetric);
-    setMetric(newMetric); 
+    setMetric(newMetric);
+    
+    localStorage.setItem("selectedMetric", newMetric);
+  
+    const storageEvent = new Event("storage");
+    window.dispatchEvent(storageEvent);
   };
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      console.log("storage event triggered");
+      const storedMetric = localStorage.getItem("selectedMetric") || "Dashboard";
+      setMetricSelected(storedMetric);
+      setMetric(storedMetric);
+      console.log("Detected localStorage change, new metric:", storedMetric);
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+  
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [setMetric]);
 
   return (
     <div className="lineChartContainer">
