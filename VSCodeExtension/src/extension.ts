@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        const projectJsonPath = path.join(workspaceFolder, 'script', 'tdd_log.json');
+        const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
 
         try {
             if (!fs.existsSync(projectJsonPath)) {
@@ -78,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         try {
-            const projectJsonPath = path.join(workspaceFolder, 'script', 'tdd_log.json');
+            const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
             if (!fs.existsSync(projectJsonPath)) {
                 vscode.window.showErrorMessage(
                     'TDD Lab: Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
