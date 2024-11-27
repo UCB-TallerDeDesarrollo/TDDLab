@@ -68,15 +68,43 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const runTestActivityCommand = vscode.commands.registerCommand('TDD.runTestActivity', async () => {
-        await executeTestCommand.execute();
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+
+        if (!workspaceFolder) {
+            vscode.window.showErrorMessage(
+                'No hay un proyecto abierto. Por favor, abre un proyecto para ejecutar la extensión.'
+            );
+            return;
+        }
+
+        try {
+            const projectJsonPath = path.join(workspaceFolder, 'script', 'tdd_log.json');
+            if (!fs.existsSync(projectJsonPath)) {
+                vscode.window.showErrorMessage(
+                    'No se encontró el archivo "tdd_log.json" en la carpeta "script".'
+                );
+                return;
+            }
+            await executeTestCommand.execute();
+        } catch (error) {
+            vscode.window.showErrorMessage('Ocurrió un error al intentar ejecutar la prueba.');
+        }
     });
 
     const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
-        await executeCloneCommand.execute(tddBasePath);
+        try {
+            await executeCloneCommand.execute(tddBasePath);
+        } catch (error) {
+            vscode.window.showErrorMessage('Error al clonar el proyecto. Por favor, verifica la configuración.');
+        }
     });
 
     const runExportCommand = vscode.commands.registerCommand('TDD.exportCommand', async () => {
-        await executeExportCommand.execute();
+        try {
+            await executeExportCommand.execute();
+        } catch (error) {
+            vscode.window.showErrorMessage('Error al exportar los datos. Por favor, intenta nuevamente.');
+        }
     });
 
     context.subscriptions.push(runTestCommand);
