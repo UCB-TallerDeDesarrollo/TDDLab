@@ -17,10 +17,13 @@ import {
   Dialog, 
   DialogActions, 
   DialogContent, 
-  DialogContentText, 
   DialogTitle, 
   Button 
 } from "@mui/material";
+
+
+
+import { VITE_API } from "../../../../config";
 
 ChartJS.register(
   Tooltip,
@@ -47,6 +50,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommitUrl, setSelectedCommitUrl] = useState<string | null>(null);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
+  const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
 
 
   const chartRefCoverage = useRef<any>();
@@ -158,19 +162,41 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   };
   const chartRef = useRef<any>();  
 
-  const onClick = (event: any) => {
+  const onClick = async (event: any) => {
     const elements = getElementAtEvent(chartRef.current, event);
     if (elements.length > 0) {
       const dataSetIndexNum = elements[0].datasetIndex;
-    
       const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit?.html_url) {
-        setSelectedCommitUrl(commit.html_url);
-        setSelectedCommit(commit);
-        setOpenModal(true);
+      if (commit && commit.html_url) {
+        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
+        const match = commit.html_url.match(regex);
+  
+        if (match) {
+          const repoOwner = match[1];
+          const repoName = match[2];
+          const sha = match[3];
+  
+          try {
+            const response = await fetch(
+              `${VITE_API}/TDDCycles/commit-timeline?sha=${sha}&repoName=${repoName}&owner=${repoOwner}`
+            );
+  
+            if (response.ok) {
+              const data = await response.json();
+              setCommitTimelineData(data); // Guarda los datos recuperados
+              setSelectedCommit(commit); // Guarda el commit seleccionado
+              setOpenModal(true); // Abre el modal
+            } else {
+              console.error("Error al obtener los datos:", response.statusText);
+            }
+          } catch (error) {
+            console.error("Error al llamar a la API:", error);
+          }
+        }
       }
     }
   };
+  
 
   const handleGoToCommit = () => {
     if (selectedCommitUrl) {
@@ -269,7 +295,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 },
               }}
             />;
-
             <Dialog
               open={openModal}
               onClose={handleCloseModal}
@@ -277,23 +302,113 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               fullWidth
               maxWidth="sm"
             >
-              <DialogTitle id="commit-details-dialog">Commit timeline</DialogTitle>
+              <DialogTitle id="commit-details-dialog">Commit Timeline</DialogTitle>
               <DialogContent>
-                {selectedCommit && (
-                  <DialogContentText>
-                    <strong>Hello</strong>
-                  </DialogContentText>
+                {commitTimelineData.length > 0 ? (
+                  <div>
+                    <div style={{ width: "100%", height: "300px" }}>
+                      <Bubble
+                        data={{
+                          datasets: [
+                            {
+                              label: "Execution Timeline",
+                              data: commitTimelineData.map((item, index) => ({
+                                x: index + 1,
+                                y: 1,
+                                r: 1, 
+                                backgroundColor: item.color === "green" ? "#28A745" : "#D73A49", 
+                                borderColor: item.color === "green" ? "#28A745" : "#D73A49",
+                                numTests: item.number_of_tests,
+                                passedTests: item.passed_tests, 
+                              })),
+                              backgroundColor: commitTimelineData.map((item) =>
+                                item.color === "green" ? "#28A745" : "#D73A49"
+                              ),
+                              borderColor: commitTimelineData.map((item) =>
+                                item.color === "green" ? "#28A745" : "#D73A49"
+                              ),
+                              borderWidth: 1,
+                            },
+                          ],
+                        }}
+                        options={{
+                          scales: {
+                            x: {
+                              title: {
+                                display: true,
+                                text: "Timestamp", 
+                              },
+                              ticks: {
+                                display: false, 
+                              },
+                            },
+                            y: {
+                              title: {
+                                display: true,
+                                text: "Execution",
+                              },
+                              ticks: {
+                                display: false, 
+                              },
+                              min: 0.5,
+                              max: 1.5, 
+                            },
+                          },
+                          plugins: {
+                            legend: { display: false }, 
+                            tooltip: {
+                              enabled: true,
+                              callbacks: {
+                                label: function (context: any) {
+                                  const dataPoint = context.raw;
+                                  return [
+                                    `Number of Tests: ${dataPoint.numTests}`,
+                                    `Passed Tests: ${dataPoint.passedTests}`,
+                                  ];
+                                },
+                              },
+                            },
+                          },
+                          elements: {
+                            point: {
+                              backgroundColor: (context: any) =>
+                                context.raw.backgroundColor, 
+                              borderColor: (context: any) =>
+                                context.raw.borderColor, 
+                              hoverBackgroundColor: (context: any) =>
+                                context.raw.backgroundColor, 
+                              hoverBorderColor: (context: any) =>
+                                context.raw.borderColor, 
+                              hoverRadius: 8, 
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <p>No data available for this commit.</p>
                 )}
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseModal} color="primary">
                   Cerrar
                 </Button>
-                <Button onClick={handleGoToCommit} color="primary" variant="contained">
+                <Button
+                  onClick={() => {
+                    if (selectedCommit?.html_url) {
+                      window.open(selectedCommit.html_url, "_blank");
+                    }
+                  }}
+                  color="primary"
+                  variant="contained"
+                >
                   Ir al Commit
                 </Button>
               </DialogActions>
             </Dialog>
+
+
 
             <div
               style={{
