@@ -101,7 +101,6 @@ export class ExecuteExportCommand {
       
     this.compressFile(tddLogPath, destinationPath);
     this.encryptFile(destinationPath, destinationPath);
-    console.log(`TDD Data exportado correctamente en: ${destinationPath}`);
-
+    vscode.window.showInformationMessage(`TDD Data exportado correctamente en: ${destinationPath}`);
   }
 }
