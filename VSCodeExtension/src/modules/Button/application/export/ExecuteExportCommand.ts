@@ -73,6 +73,14 @@ export class ExecuteExportCommand {
   }
 
   async execute(): Promise<void> {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    const tddLogPath = `${workspaceFolder}/script/tdd_log.json`;
+
+    if(!fs.existsSync(tddLogPath)){
+      vscode.window.showErrorMessage('No existe un registro de pruebas.');
+      return;
+    }
+
       
     const folderPath = await this.selectFolder();
     if(!folderPath){
@@ -90,10 +98,7 @@ export class ExecuteExportCommand {
       vscode.window.showWarningMessage(`El archivo '${fileName}' ya existe en la carpeta seleccionada.`);
       return;
     } 
-  
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-    const tddLogPath = `${workspaceFolder}/script/tdd_log.json`;
-    
+      
     this.compressFile(tddLogPath, destinationPath);
     this.encryptFile(destinationPath, destinationPath);
     console.log(`TDD Data exportado correctamente en: ${destinationPath}`);
