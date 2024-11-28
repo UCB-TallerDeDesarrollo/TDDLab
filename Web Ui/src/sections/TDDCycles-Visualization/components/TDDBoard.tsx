@@ -13,6 +13,14 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
+import { 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogContentText, 
+  DialogTitle, 
+  Button 
+} from "@mui/material";
 
 ChartJS.register(
   Tooltip,
@@ -36,6 +44,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   role,
   port,
 }) => {
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedCommitUrl, setSelectedCommitUrl] = useState<string | null>(null);
+  const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
+
+
   const chartRefCoverage = useRef<any>();
   const chartRefModifiedLines = useRef<any>();
   const chartRefTestCount = useRef<any>();
@@ -143,25 +156,42 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       ],
     };
   };
-  const chartRef = useRef<any>();
+  const chartRef = useRef<any>();  
 
   const onClick = (event: any) => {
     const elements = getElementAtEvent(chartRef.current, event);
     if (elements.length > 0) {
-      const dataSetIndexNum = elements[0]
-        .datasetIndex;
+      const dataSetIndexNum = elements[0].datasetIndex;
     
       const commit = commits.slice().reverse()[dataSetIndexNum];
-      commit?.html_url && window.open(commit.html_url, "_blank");
+      if (commit?.html_url) {
+        setSelectedCommitUrl(commit.html_url);
+        setSelectedCommit(commit);
+        setOpenModal(true);
+      }
     }
   };
+
+  const handleGoToCommit = () => {
+    if (selectedCommitUrl) {
+      window.open(selectedCommitUrl, "_blank");
+      setOpenModal(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedCommitUrl(null);
+    setSelectedCommit(null);
+  };
+
+  
   useEffect(() => {
   
   }, [graph]);
 
   return (
     <>
-
       {!graph ? (
         <div
           style={{
@@ -239,6 +269,31 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 },
               }}
             />;
+
+            <Dialog
+              open={openModal}
+              onClose={handleCloseModal}
+              aria-labelledby="commit-details-dialog"
+              fullWidth
+              maxWidth="sm"
+            >
+              <DialogTitle id="commit-details-dialog">Commit timeline</DialogTitle>
+              <DialogContent>
+                {selectedCommit && (
+                  <DialogContentText>
+                    <strong>Hello</strong>
+                  </DialogContentText>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseModal} color="primary">
+                  Cerrar
+                </Button>
+                <Button onClick={handleGoToCommit} color="primary" variant="contained">
+                  Ir al Commit
+                </Button>
+              </DialogActions>
+            </Dialog>
 
             <div
               style={{
