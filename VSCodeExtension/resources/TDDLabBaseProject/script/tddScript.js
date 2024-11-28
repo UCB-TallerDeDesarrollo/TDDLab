@@ -25,9 +25,17 @@ const writeJSONFile = (filePath, data) => {
   fs.writeFileSync(filePath, jsonString, 'utf-8');
 };
 
+const ensureFileExists = (filePath, initialData) => {
+  if (!fs.existsSync(filePath)) {
+    writeJSONFile(filePath, initialData);
+  }
+};
+
 const extractAndAddObject = async (reportFile, tddLogFile) => {
   try {
     await runCommand(COMMAND, args);
+
+    ensureFileExists(tddLogFile, []);
 
     const jsonData = readJSONFile(reportFile);
     const passedTests = jsonData.numPassedTests;
