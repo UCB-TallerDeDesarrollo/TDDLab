@@ -1,5 +1,5 @@
 import { CommitDataObject } from "./githubCommitInterfaces";
-
+import { TddCycle} from "./TddcycleInterface";
 export interface GithubAPIRepository {
   obtainCommitsOfRepo(
     owner: string,
@@ -9,4 +9,6 @@ export interface GithubAPIRepository {
   obtainRunsOfGithubActions(owner: string, repoName: string): any;
 
   obtainJobsOfRepo(owner: string, repoName: string): any;
+
+  obtainGetCommitsDb(owner: string, repoName: string): Promise<TddCycle[]>;
 }

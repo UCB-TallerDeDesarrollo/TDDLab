@@ -1,6 +1,7 @@
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { JobDataObject } from "../domain/jobInterfaces";
+import { TddCycle } from "../domain/TddcycleInterface"
 
 export class PortGetTDDCycles {
   adapter: GithubAPIRepository;
@@ -20,6 +21,13 @@ export class PortGetTDDCycles {
     repoName: string,
   ): Promise<JobDataObject[]> {
     return await this.adapter.obtainJobsOfRepo(owner, repoName);
+  }
+
+  async obtainGetCommitsDb(
+    owner: string,
+    repoName: string
+  ): Promise<TddCycle[]> {
+    return await this.adapter.obtainGetCommitsDb(owner, repoName);
   }
 }
 

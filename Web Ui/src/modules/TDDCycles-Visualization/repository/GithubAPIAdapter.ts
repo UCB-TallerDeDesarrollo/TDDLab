@@ -5,6 +5,7 @@ import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { formatDate } from '../application/GetTDDCycles';
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
+import { TddCycle } from "../domain/TddcycleInterface.ts"
 
 export class GithubAPIAdapter implements GithubAPIRepository {
   octokit: Octokit;
@@ -114,4 +115,38 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       throw error;
     }
   }
+
+  async obtainGetCommitsDb(
+    owner: string,
+    repoName: string,
+  ): Promise< TddCycle[]> {
+    try {
+      const response = await axios.get(
+        this.backAPI + `/get-commits?owner=${owner}&repoName=${repoName}`,
+      );
+      console.log(
+        this.backAPI + `/get-commits?owner=${owner}&repoName=${repoName}`,
+      );
+
+      if (response.status != 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const responseData: [] = response.data;
+      const commitCycles: TddCycle[] = responseData.map(
+        (commitData: any) => ({
+          owner: commitData.owner,
+          url: commitData.commitData.url,
+          tddcycle: commitData.tdd_cycle
+        }),
+      );
+      return commitCycles;
+    } catch (error) {
+      // Handle any errors here
+      console.error("Error obtaining commits:", error);
+      throw error;
+    }
+  }
+  
 }
+
+
