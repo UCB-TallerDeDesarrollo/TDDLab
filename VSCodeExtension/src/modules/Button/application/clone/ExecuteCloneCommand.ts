@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs/promises';
-import { TerminalPort } from '../../../model/TerminalPort';
+import { TerminalPort } from '../../model/TerminalPort';
 
 export class ExecuteCloneCommand {
   constructor(private readonly terminalPort: TerminalPort) {}
