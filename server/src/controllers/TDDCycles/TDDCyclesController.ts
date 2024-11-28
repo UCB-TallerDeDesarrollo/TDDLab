@@ -76,6 +76,7 @@ class TDDCyclesController {
   async getCommitTimeLine(req: Request, res: Response) {
     try {
       const { sha, owner, repoName } = req.query;
+      console.log("I am here");
       if (!sha || !owner || !repoName) {
         return res
           .status(400)
@@ -87,6 +88,8 @@ class TDDCyclesController {
         String(owner),
         String(repoName)
       );
+
+      console.log( "this is the job data",jobData);
   
       return res.status(200).json(jobData);
     } catch (error) {
