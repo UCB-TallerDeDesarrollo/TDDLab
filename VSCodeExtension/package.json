@@ -49,7 +49,7 @@
         {
           "id": "myExtension",
           "title": "TDD Lab",
-          "icon": "resources/icono.png"
+          "icon": "resources/TddLab.png"
         }
       ],
       "panel": [
