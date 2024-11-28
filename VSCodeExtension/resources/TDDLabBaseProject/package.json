@@ -7,14 +7,12 @@
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html",
-    "test-export-json": "jest --json --outputFile=./script/report.json",
-    "post-commit": "node ./script/commitScript.js",
-    "post-push": "node ./script/pushScript.js",
-    "tdd-script": "node ./script/tddScript.js",
+    "test": "node ./script/tddScript.js",
     "cypress": "cypress open",
     "cypress-run": "cypress run",
     "lint": "eslint .",
-    "postinstall": "npx husky install"
+    "postinstall": "npx husky install",
+    "sem-commits": "node semantic-commits.js"
   },
   "author": "Israel Antezana R.",
   "license": "ISC",
