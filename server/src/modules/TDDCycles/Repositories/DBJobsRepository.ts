@@ -10,6 +10,37 @@ export class DBJobsRepository implements IDBJobsRepository {
   constructor() {
     this.pool = new Pool(config);
   }
+  async getCommitExecutions(sha: string, owner: string, repo:string): Promise<any> {
+    let client;
+    try {
+      client = await this.pool.connect();
+      const query = `
+        SELECT * 
+        FROM commit_timeline
+        WHERE commit_sha = $1 
+          AND repoOwner = $2
+          AND repoName = $3
+      `;
+      const values = [sha, owner, repo];
+      const result = await client.query(query, values);
+      return result.rows.map((row) => ({
+        jobs: [
+          {
+            run_id: row.id,
+            head_sha: row.commit_sha,
+            conclusion: row.color, 
+          }
+        ]
+      }));
+    } catch (error) {
+      console.error("Error fetching commit executions:", error);
+      throw error;
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
 
   async saveLogs(timeline: ITimelineEntry[]) {
     const client = await this.pool.connect();
