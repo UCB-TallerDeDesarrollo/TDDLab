@@ -4,6 +4,6 @@ dist
 .parcel-cache
 /coverage
 .DS_Store
-./script/report.json
+report.json
 ./.husky/_
-./script/tdd_log.json
+tdd_log.json
