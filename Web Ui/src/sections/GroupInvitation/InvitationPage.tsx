@@ -34,7 +34,7 @@ function InvitationPage() {
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false); 
-  const [, setPopupMessage] = useState(""); 
+  const [_popupMessage, setPopupMessage] = useState(""); 
   const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
 
   const dbAuthPort = new RegisterUserOnDb();
@@ -74,28 +74,27 @@ function InvitationPage() {
     setShowPasswordPopup(true);
   };
 
-const handleAcceptInvitation = async (type: string) => {
-  console.log(user?.email);
-  console.log(groupid);
-  console.log(type);
-  if (user?.email) {
-    const existingUser = await dbAuthPort.getAccountInfo(user.email);
-    if (existingUser && existingUser.groupid) {
-      console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
-      setPopupMessage("El usuario ya tiene un grupo asignado.");
-      setOpenPopup(true); 
-      return;
+  const handleAcceptInvitation = async (type: string) => {
+    console.log(user?.email);
+    console.log(groupid);
+    console.log(type);
+    if (user?.email) {
+      const existingUser = await dbAuthPort.getAccountInfo(user.email);
+      if (existingUser?.groupid) {
+        console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
+        setPopupMessage("El usuario ya tiene un grupo asignado.");
+        setOpenPopup(true); 
+        return;
+      }
+      const userObj: UserOnDb = {
+        email: user.email,
+        groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
+        role: type,
+      };
+      await dbAuthPort.register(userObj);
+      setShowPopUp(true);
     }
-    const userObj: UserOnDb = {
-      email: user.email,
-      groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
-      role: type,
-    };
-    await dbAuthPort.register(userObj);
-    setShowPopUp(true);
-  }
 };
-
 const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
   const { clientX, clientY, currentTarget } = event;
   const { left, top, width, height } = currentTarget.getBoundingClientRect();
