@@ -3,6 +3,7 @@ import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/applicat
 import TDDCharts from "./components/TDDChart";
 import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { TddCycle } from "../../modules/TDDCycles-Visualization/domain/TddcycleInterface";
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
@@ -50,6 +51,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
 
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
+  const [tddcycles, setTddCycles] = useState<TddCycle[]>([]);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
@@ -64,8 +66,10 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+      const tddCycles = await getTDDCycles.obtainGetCommitsDb(repoOwner, repoName)
       setJobsByCommit(jobsData);
       setCommitsInfo(commits);
+      setTddCycles(tddCycles);
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -211,6 +215,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
               data-testId="cycle-chart"
               commits={commitsInfo}
               jobsByCommit={jobsByCommit}
+              tddCycles={tddcycles}
               port={port}
               role={role}
               metric={metric}

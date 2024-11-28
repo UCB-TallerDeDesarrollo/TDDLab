@@ -1,5 +1,6 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
+import { TddCycle } from "../../../modules/TDDCycles-Visualization/domain/TddcycleInterface"
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
@@ -18,9 +19,10 @@ interface CycleReportViewProps {
   setMetric: (metric: string) => void; // Agregamos una función para actualizar el metric
   port: GithubAPIRepository;
   role: string;
+  tddCycles: TddCycle[];
 }
 
-function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role, tddCycles}: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(metric ?? "Dashboard" );
   if (!commits || !jobsByCommit) {
@@ -87,8 +89,7 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
           case "Bar":
             return (
               <TDDBar 
-                commits={commits} 
-                jobsByCommit={jobsByCommit} 
+                tddCycles={tddCycles}
               />
             );
           
