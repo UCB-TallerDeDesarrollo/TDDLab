@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Unit Tests
-        run: npm run test-once
+        run: npx jest --verbose --coverage
       - name: Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2.2.6
         id: coverage
