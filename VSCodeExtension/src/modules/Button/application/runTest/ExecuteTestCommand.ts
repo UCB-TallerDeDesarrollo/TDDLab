@@ -1,4 +1,4 @@
-import { TerminalPort } from '../../../model/TerminalPort';
+import { TerminalPort } from "../../model/TerminalPort";
 
 export class ExecuteTestCommand {
   constructor(private readonly terminalPort: TerminalPort) {}

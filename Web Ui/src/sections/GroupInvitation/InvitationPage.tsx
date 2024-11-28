@@ -33,7 +33,8 @@ function InvitationPage() {
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false); 
-  const [_popupMessage, setPopupMessage] = useState("");
+  const [_popupMessage, setPopupMessage] = useState(""); 
+  const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [isLoading, setIsLoading] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
   
@@ -126,7 +127,22 @@ function InvitationPage() {
       setIsLoading(false);
     }
   };
- 
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const { clientX, clientY, currentTarget } = event;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+  
+    const x = clientX - (left + width / 2);
+    const y = clientY - (top + height / 2);
+    const rotateY = (x / width) * 30; 
+    const rotateX = -(y / height) * 30; 
+  
+    setRotation({ rotateX, rotateY });
+  
+  };
+  
+  const handleMouseLeave = () => {
+    setRotation({ rotateX: 0, rotateY: 0 }); 
+  };
   return (
     <div style={{ position: "relative" }}>
     {isLoading && <LoadingOverlay />}
@@ -213,7 +229,15 @@ function InvitationPage() {
                   component="img"
                   alt="Imagen de portada"
                   height="50%" // La mitad superior del card
-                  image="https://media.istockphoto.com/id/1400563511/es/foto/concepto-de-trabajo-en-equipo-y-asociaci%C3%B3n-las-manos-unen-piezas-del-rompecabezas-en-la.jpg?s=2048x2048&w=is&k=20&c=sCOTFRETLMg41khoit5_znVZidVevaoYnsJDRQpXGoE=" // Reemplaza con la ruta de tu imagen
+                  image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
+                  sx={{
+                    transition: "transform 0.1s ease-out", 
+                    transformStyle: "preserve-3d",
+                    transform: `rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
+                    boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.5)",
+                  }}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave} 
                 />
                 <CardContent>
                   <Typography variant="body1" sx={{ textAlign: "center" }}>

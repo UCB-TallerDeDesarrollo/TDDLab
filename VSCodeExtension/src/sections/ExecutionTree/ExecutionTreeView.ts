@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ExecutionButton } from '../../model/ExecutionButton';
+import { ExecutionButton } from '../../modules/Button/model/ExecutionButton';
 
 export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<ExecutionButton> {
   getTreeItem(element: ExecutionButton): vscode.TreeItem {
