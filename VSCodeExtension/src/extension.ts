@@ -117,15 +117,33 @@ export function activate(context: vscode.ExtensionContext) {
 
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
     const jsonFilePath = path.join(workspaceFolder, 'script', 'tdd_log.json');
+    let isInitialRun = true;
 
-    // Observa el archivo JSON para detectar cambios si existe
-    if (fs.existsSync(jsonFilePath)) {
+    const updateTimeLine = () => {
+        if (timelineView.currentWebview) {
+            timelineView.showTimeline(timelineView.currentWebview); }
+    };
+
+    const watchFile = () => {
         fs.watch(jsonFilePath, (eventType, filename) => {
             if (eventType === 'change') {
-                if (timelineView.currentWebview) {
-                    timelineView.showTimeline(timelineView.currentWebview);
-                }
+                updateTimeLine();
             }
         });
+        if (isInitialRun) {
+            updateTimeLine();
+            isInitialRun = false;
+        }
+    };
+
+    if (fs.existsSync(jsonFilePath)) {
+        watchFile();
+    } else {
+        const interval = setInterval(() => {
+            if (fs.existsSync(jsonFilePath)) {
+                clearInterval(interval); 
+                watchFile();
+            }
+        }, 1000);
     }
 }
