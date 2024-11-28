@@ -48,7 +48,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   port,
 }) => {
   const [openModal, setOpenModal] = useState(false);
-  const [setSelectedCommitUrl] = useState<string | null>(null);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
 
