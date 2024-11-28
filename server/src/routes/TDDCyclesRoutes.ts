@@ -31,10 +31,14 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getTestResults(req, res)
 );
 
-// Ruta para subir el archivo TDD log
 TDDCyclesRouter.post(
   "/upload-log",
   async (req, res) => await tddCyclesController.uploadTDDLog(req, res)
+);
+
+TDDCyclesRouter.get( //en teoria aqui deberia recibir el sha del commit
+  "/commit-timeline",
+  async (req, res) => await tddCyclesController.getCommitTimeLine(req, res)
 );
 
 export default TDDCyclesRouter;

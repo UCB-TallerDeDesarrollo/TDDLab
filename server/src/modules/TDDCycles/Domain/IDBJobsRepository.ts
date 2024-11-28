@@ -12,4 +12,5 @@ export interface IDBJobsRepository {
     getJobsNotSaved(owner: string, repoName: string, commitsWithActions: [string, number][]): Promise<[string, number][]>;
     saveJobsList(owner: string, repoName: string, jobs: Record<string, JobDataObject>): Promise<void>;
     saveLogs(timeline: ITimelineEntry[]): Promise<void>;
+    getCommitExecutions(sha: string, owner: string, repo:string): Promise<any>;
 }
