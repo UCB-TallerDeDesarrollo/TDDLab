@@ -48,7 +48,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   port,
 }) => {
   const [openModal, setOpenModal] = useState(false);
-  const [selectedCommitUrl, setSelectedCommitUrl] = useState<string | null>(null);
+  const [setSelectedCommitUrl] = useState<string | null>(null);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
 
@@ -199,7 +199,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   
   const handleCloseModal = () => {
     setOpenModal(false);
-    setSelectedCommitUrl(null);
     setSelectedCommit(null);
   };
 
@@ -307,7 +306,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                               data: commitTimelineData.map((item, index) => ({
                                 x: index + 1,
                                 y: 1,
-                                r: 1, 
+                                r: 25, 
                                 backgroundColor: item.color === "green" ? "#28A745" : "#D73A49", 
                                 borderColor: item.color === "green" ? "#28A745" : "#D73A49",
                                 numTests: item.number_of_tests,
