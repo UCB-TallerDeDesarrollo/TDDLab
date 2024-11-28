@@ -197,14 +197,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     }
   };
   
-
-  const handleGoToCommit = () => {
-    if (selectedCommitUrl) {
-      window.open(selectedCommitUrl, "_blank");
-      setOpenModal(false);
-    }
-  };
-
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedCommitUrl(null);
