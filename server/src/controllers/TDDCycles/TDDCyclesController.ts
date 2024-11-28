@@ -7,6 +7,7 @@ import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTe
 import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLogUseCase";
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
 import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
+import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 
 
 
@@ -15,6 +16,7 @@ class TDDCyclesController {
   testResultsUseCase: GetTestResultsUseCase;
   submitTDDLogToDB: PostTDDLogUseCase;
   dbCommitsRepository: IDBCommitsRepository;
+  getCommitExecutions: GetCommitTimeLineUseCase;
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
@@ -29,6 +31,9 @@ class TDDCyclesController {
       githubRepository
     );
     this.submitTDDLogToDB = new PostTDDLogUseCase(
+      dbJobsRepository,
+    );
+    this.getCommitExecutions = new GetCommitTimeLineUseCase(
       dbJobsRepository,
     );
     this.dbCommitsRepository=new DBCommitsRepository();
@@ -64,6 +69,31 @@ class TDDCyclesController {
       );
       return res.status(200).json(testResults);
     } catch (error) {
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getCommitTimeLine(req: Request, res: Response) {
+    try {
+      const { sha, owner, repoName } = req.query;
+      console.log("I am here");
+      if (!sha || !owner || !repoName) {
+        return res
+          .status(400)
+          .json({ error: "Bad request, missing sha, owner or repoName" });
+      }
+  
+      const jobData = await this.getCommitExecutions.execute(
+        String(sha),
+        String(owner),
+        String(repoName)
+      );
+
+      console.log( "this is the job data",jobData);
+  
+      return res.status(200).json(jobData);
+    } catch (error) {
+      console.error("Error getting commit timeline:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }
