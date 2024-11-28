@@ -2,11 +2,11 @@ import * as vscode from 'vscode';
 import { TimelineView } from './sections/Timeline/TimelineView';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ExecuteTestCommand } from './modules/RunTestButton/application/ExecuteTestCommand';
-import { VSCodeTerminalRepository } from './repository/VSCodeTerminalRepository';
+import { ExecuteTestCommand } from './modules/Button/application/runTest/ExecuteTestCommand';
+import { VSCodeTerminalRepository } from './modules/Button/infraestructure/VSCodeTerminalRepository';
 import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
-import { ExecuteCloneCommand } from './modules/CloneButton/application/ExecuteCloneCommand';
-import { ExecuteExportCommand } from './modules/ExportButton/application/ExecuteExportCommand';
+import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
+import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
 
 /**
  * @param {vscode.ExtensionContext} context
