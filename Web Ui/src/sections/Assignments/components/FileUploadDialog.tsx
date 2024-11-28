@@ -7,11 +7,10 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-
 interface FileUploadDialogProps {
   open: boolean;
   onClose: () => void;
-  onUpload: (file: File) => void;
+  onUpload: (file: File) => Promise<void>;
 }
 
 const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
@@ -21,6 +20,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,38 +32,62 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (selectedFile) {
-      onUpload(selectedFile);
-      onClose();
+      try {
+        await onUpload(selectedFile);
+        setShowSuccessDialog(true); 
+        onClose();
+      } catch (uploadError) {
+        console.error("Error al subir el archivo:", uploadError);
+        setError("Error al subir el archivo. Por favor, inténtalo de nuevo.");
+      }
     } else {
-      setError("Please select a file before uploading.");
+      setError("Por favor selecciona un archivo antes de subirlo.");
     }
   };
 
+  const handleCloseSuccessDialog = () => {
+    setShowSuccessDialog(false);
+  };
+
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Subir Sesión TDD</DialogTitle>
-      <DialogContent>
-        <Typography variant="body2" style={{ marginBottom: "10px" }}>
-          Selecciona un archivo de sesión TDD para subir.
-        </Typography>
-        <input type="file" onChange={handleFileChange} />
-        {error && (
-          <Typography color="error" variant="body2" style={{ marginTop: "10px" }}>
-            {error}
+    <>
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle>Subir Sesión TDD</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" style={{ marginBottom: "10px" }}>
+            Selecciona un archivo de sesión TDD para subir.
           </Typography>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancelar
-        </Button>
-        <Button onClick={handleUpload} color="primary" variant="contained">
-          Subir
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <input type="file" onChange={handleFileChange} />
+          {error && (
+            <Typography color="error" variant="body2" style={{ marginTop: "10px" }}>
+              {error}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleUpload} color="primary" variant="contained">
+            Subir
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={showSuccessDialog} onClose={handleCloseSuccessDialog}>
+        <DialogTitle>Éxito</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">¡El archivo se subió correctamente!</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSuccessDialog} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
