@@ -85,11 +85,11 @@ export class TimelineView implements vscode.WebviewViewProvider {
                         </span>
                     </div>
                 `;
-            }else if (point instanceof PushPoint) {
+            } else if (point instanceof PushPoint) {
                 const date = point.pushTimestamp.toLocaleDateString();
                 const time = point.pushTimestamp.toLocaleTimeString();
                 return `
-                    <div class="timeline-dot">
+                    <div class="timeline-dot" onclick="handlePushClick('${point.pushId}')">
                         <img src="${githubLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
                         <span class="popup">
                             <strong>Push ID:</strong> ${point.pushId}<br>
@@ -98,7 +98,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
                         </span>
                     </div>
                 `;
-            }
+            }            
         }).join('');
     
         let lastPoint = this.lastTestPoint(timeline);
