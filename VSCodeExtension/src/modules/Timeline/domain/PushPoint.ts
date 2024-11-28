@@ -1,9 +1,6 @@
 export class PushPoint {
-    public pushId: string;
-    public pushTimestamp: Date;
-
-    constructor(pushId: string, pushTimestamp: Date) {
-        this.pushId = pushId;
-        this.pushTimestamp = pushTimestamp;
-    }
+    constructor(
+        public readonly pushId: string,
+        public readonly pushTimestamp: Date
+    ) {}
 }
