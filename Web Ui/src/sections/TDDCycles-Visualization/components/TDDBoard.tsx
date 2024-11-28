@@ -183,9 +183,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   
             if (response.ok) {
               const data = await response.json();
-              setCommitTimelineData(data); // Guarda los datos recuperados
-              setSelectedCommit(commit); // Guarda el commit seleccionado
-              setOpenModal(true); // Abre el modal
+              setCommitTimelineData(data); 
+              setSelectedCommit(commit); 
+              setOpenModal(true); 
             } else {
               console.error("Error al obtener los datos:", response.statusText);
             }
