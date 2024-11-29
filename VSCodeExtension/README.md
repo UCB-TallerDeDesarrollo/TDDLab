@@ -12,7 +12,7 @@ TDD Lab incluye los siguientes botones:
 
 - **Run Test**: Ejecuta todas las pruebas en Jest y muestra una línea de tiempo con los resultados de las pruebas ejecutadas.
 - **Open New Project**: Crea una nueva ventana en Visual Studio Code con un proyecto base, ideal para iniciar un nuevo proyecto de TDD.
-- **TDD Lab Connection**: En un futuro permitirá conectar con una API. Actualmente, muestra como mensaje el JSON de `tdd_log`.
+- **Export TDD Data**: Este boton permite exportar los datos de las prueba realizas, este guarda las ejecuciones y commits realizados. Posteriormente estos datos pueden ser subidos al TDD Lab Web.
 - **Run Test (Barra de Actividades)**: Este botón se encuentra en la parte superior derecha en la barra de actividades. Realiza la misma función que el botón de "Run Test" anterior, proporcionando una alternativa de acceso rápido.
 
 ## Atajos de Teclado

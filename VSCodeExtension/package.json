@@ -3,7 +3,7 @@
   "displayName": "TDD Lab",
   "description": "Plugin de VSCode para la aplicación TDDLab",
   "publisher": "TDDLab-TallerDesarrollo",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "engines": {
     "vscode": "^1.94.0"
   },
@@ -11,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:myView",
+    "onView:tddTestExecution", 
     "onCommand:TDD.runTest"
   ],
   "main": "./out/extension.js",
