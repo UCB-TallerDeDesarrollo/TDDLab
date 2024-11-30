@@ -12,4 +12,9 @@ vsc-extension-quickstart.md
 **/*.ts
 **/.vscode-test.*
 out/test
-.env
+
+node_modules/**
+
+!node_modules/adm-zip/**
+!node_modules/crypto-js/**
+!node_modules/dotenv/**
