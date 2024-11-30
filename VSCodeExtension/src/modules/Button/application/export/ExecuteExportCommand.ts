@@ -8,7 +8,7 @@ import AdmZip from 'adm-zip';
 export class ExecuteExportCommand {
   key: string = '';
   constructor(){
-    dotenv.config({ path: path.resolve(__dirname, '../../../../.env' )});
+    dotenv.config({ path: path.resolve(__dirname, '../../../../../.env' )});
     this.key = process.env.CLAVE_ENCRIPTACION || '';
   }
 
