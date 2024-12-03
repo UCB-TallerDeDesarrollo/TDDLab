@@ -10,6 +10,6 @@ export class Timeline {
     }
 
     getColor(): string {
-        return this.isSuccessful() ? "green" : "red";
+        return this.isSuccessful() && this.numTotalTests !== 0 ? "green" : "red";    
     }
 }
