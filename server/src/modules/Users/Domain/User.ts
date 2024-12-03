@@ -7,6 +7,6 @@ export interface User {
 
 export interface UserCreationObect{
   email: string;
-  groupid: number[];
+  groupid: number;
   role: string;
 }
