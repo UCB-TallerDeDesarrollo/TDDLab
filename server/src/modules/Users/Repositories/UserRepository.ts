@@ -44,7 +44,7 @@ export class UserRepository {
     const values = [email];
     const rows = await this.executeQuery(query, values);
     if (rows.length >= 1) {
-      return {
+      return { // Solo devuelve el primer usuario encontrado, considerar cambiarlo cuando se rediseñe la base de datos
         id: rows[0].id,
         email: rows[0].email,
         groupid: rows.map((row) => row.groupid),

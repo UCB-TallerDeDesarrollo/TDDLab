@@ -9,7 +9,13 @@ export class RegisterUserOnDb {
   }
 
   async register(user: UserOnDb) {
-    await this.adapter.registerAccount(user);
+    try {
+      await this.adapter.registerAccount(user);
+    } catch (error) {
+      console.log("Error fetching user course:", error);
+      throw error;
+    }
+
   }
 
   async verifyPass(pass: string): Promise<boolean> {
