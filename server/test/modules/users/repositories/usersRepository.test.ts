@@ -145,7 +145,7 @@ describe('executeQuery', () => {
   });
   describe('registerUser', () => {
     it('should insert a new user into the database', async () => {
-      const newUser = { email: 'newuser@example.com', groupid: [70], role: 'user' };
+      const newUser = { email: 'newuser@example.com', groupid: 70, role: 'user' };
       clientQueryMock.mockResolvedValue({ rowCount: 1 });
   
       await repository.registerUser(newUser);
@@ -157,7 +157,7 @@ describe('executeQuery', () => {
     });
   
     it('should handle errors when inserting a new user', async () => {
-      const newUser = { email: 'newuser@example.com', groupid: [70], role: 'user' };
+      const newUser = { email: 'newuser@example.com', groupid: 70, role: 'user' };
       const error = new Error('Database error');
       clientQueryMock.mockRejectedValue(error);
   

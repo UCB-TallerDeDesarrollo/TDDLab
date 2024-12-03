@@ -102,25 +102,22 @@ function InvitationPage() {
   );  
 
   const handleAcceptInvitation = async (type: string) => {
-    console.log(user?.email);
-    console.log(groupid);
-    console.log(type);
-    setIsLoading(true); // Activar loading
+    setIsLoading(true);
     try {
       if (user?.email) {
-        const existingUser = await dbAuthPort.getAccountInfo(user.email);
-        if (existingUser?.groupid) {
-          console.log('El usuario ya tiene un grupo asignado:', existingUser.groupid);
-          setPopupMessage("El usuario ya tiene un grupo asignado.");
-          setOpenPopup(true); 
-          return;
-        }
         const userObj: UserOnDb = {
           email: user.email,
           groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
           role: type,
         };
-        await dbAuthPort.register(userObj);
+        try{
+          await dbAuthPort.register(userObj);
+        } catch (error) {
+          setPopupMessage("El usuario ya tiene un grupo asignado.");
+          setOpenPopup(true);
+          return;
+        }
+
         setShowPopUp(true);
       }
     } finally{

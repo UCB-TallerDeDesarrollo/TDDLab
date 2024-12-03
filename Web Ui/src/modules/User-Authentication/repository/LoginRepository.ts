@@ -24,7 +24,7 @@ class AuthRepository implements AuthDBRepositoryInterface {
   }
   async registerAccount(user: UserOnDb): Promise<void> {
     try {
-      await axios.post(API_URL + "/user/register", user);
+      return await axios.post(API_URL + "/user/register", user);
     } catch (error) {
       console.error("Error saving user", error);
       throw error;
