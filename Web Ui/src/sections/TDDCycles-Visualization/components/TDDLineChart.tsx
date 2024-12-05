@@ -81,12 +81,11 @@ useEffect(() => {
             }
           );
 
-        
           console.log("Contenido de la respuesta:", response.data.metrics);
 
           
-        
-            responses.push(response.data);
+
+          responses.push(JSON.stringify(response.data));
           
         } catch (error) {
           console.error("Error al procesar el commit:", error);
@@ -274,7 +273,7 @@ useEffect(() => {
               );
 
               const complexityResponse = analyzeData[context[0].dataIndex];
-              console.log(analyzeData)
+              console.log("EX1M"+complexityResponse)
               if (complexityResponse) {
                 afterBodyContent.push(`Complejidad Ciclomática: ${complexityResponse}`);
               }
