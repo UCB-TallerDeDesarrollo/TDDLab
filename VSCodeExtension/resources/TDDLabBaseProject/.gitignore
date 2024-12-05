@@ -7,3 +7,4 @@ dist
 report.json
 ./.husky/_
 tdd_log.json
+.husky/state-semantic-commit
