@@ -280,16 +280,52 @@ function TDDLineCharts({
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
-      case "Complejidad":
+          case "Complejidad":
             if (complexity != null) {
               const ciclomaticComplexities = complexity.map(
                 (complexityData) => complexityData.ciclomaticComplexity
               );
-              dataChart = getDataChart(ciclomaticComplexities, "Complejidad Ciclomática");
+          
+              // Enviar POST para cada commit y registrar la respuesta
+              const analyzeCommits = async () => {
+                if (filteredCommitsObject) {
+                  const reversedCommits = filteredCommitsObject.slice().reverse();
+          
+                  for (const commit of reversedCommits) {
+                    console.log(`Procesando commit: ${commit.html_url}`);
+                    const requestBody = {
+                      repoUrl: commit.html_url,
+                    };
+          
+                    try {
+                      const response = await fetch("https://api-ccn.vercel.app/analyze", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(requestBody),
+                      });
+          
+                      const responseData = await response.json();
+                      console.log("Respuesta de la API:", responseData);
+                    } catch (error) {
+                      console.error("Error al procesar el commit:", error);
+                    }
+                  }
+                }
+              };
+          
+              analyzeCommits();
+          
+              dataChart = getDataChart(
+                ciclomaticComplexities,
+                "Complejidad Ciclomática"
+              );
               optionsChart = getOptionsChart("Complejidad Ciclomática");
               dataTestid = "graph-complexity";
             }
             break;
+          
       
     }
     return (
