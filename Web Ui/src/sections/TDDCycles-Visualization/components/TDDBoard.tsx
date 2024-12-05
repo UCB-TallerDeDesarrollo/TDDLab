@@ -61,7 +61,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const minTestCount = 0;
   const maxTestCount = Math.max(...testCountsColor);
   const maxTest = Math.max(...testCounts);
-  const numberOfLabels = 3;
+  const numberOfLabels = 4;
   const step = Math.ceil((maxTestCount - minTestCount) / numberOfLabels);
   const labels = Array.from(
     { length: numberOfLabels },
@@ -72,16 +72,19 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     let greenValue;
     let opacity = 2;
 
-    if (testCountsColor >= labels[1] && testCountsColor <= labels[0]) {
+    if (testCountsColor >= labels[0]) {
       greenValue = 110;
-    } else if (testCountsColor >= labels[2] && testCountsColor < labels[1]) {
+  } else if (testCountsColor >= labels[1]) {
       greenValue = 110;
       opacity = 0.5;
-
-    } else if (testCountsColor < labels[2]) {
+  } else if (testCountsColor >= labels[2]) {
+      greenValue = 110;
+      opacity = 0.6;
+  } else {
       greenValue = 110;
       opacity = 0.2;
-    }
+  }
+  
 
     return `rgba(0, ${greenValue}, 0, ${opacity})`;
   };
