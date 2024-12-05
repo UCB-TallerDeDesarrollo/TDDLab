@@ -1,0 +1,20 @@
+if [ ! -f .husky/state-semantic-commit ] || [ ! -s .husky/state-semantic-commit ]; then
+  echo "disabled" > .husky/state-semantic-commit
+fi
+
+state=$(cat .husky/state-semantic-commit | tr -d '\r\n')
+
+
+if [ "${state}" == "disabled" ]; then
+  echo "🔵 Validacion de commits semanticos deshabilitada."
+  exit 0
+fi
+
+MESSAGE=$(cat "$1")
+
+REGEX="^(feat|fix|docs|style|refactor|test|chore|perf)(\\(\\w+\\))?: .{1,150}$"
+if ! echo "$MESSAGE" | grep -Eq "$REGEX"; then
+  echo "⛔️ Error: El mensaje del commit debe seguir las convenciones semánticas."
+  echo "Ejemplo: refactor(login): simplificar la función que valida el correo electrónico"
+  exit 1
+fi

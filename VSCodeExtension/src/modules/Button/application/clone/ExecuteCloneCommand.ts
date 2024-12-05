@@ -18,7 +18,7 @@ export class ExecuteCloneCommand {
       const selectedPath = folderUri[0].fsPath;
       const selectedPathUri = vscode.Uri.file(selectedPath);
 
-
+      await fs.cp(tddBasePath, selectedPath, { recursive:true });
       await vscode.commands.executeCommand('vscode.openFolder', selectedPathUri, true);
 
     } else {
