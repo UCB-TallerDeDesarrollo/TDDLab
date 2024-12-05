@@ -1,7 +1,7 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { getElementAtEvent, Line } from "react-chartjs-2";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
 
 import {
@@ -22,6 +22,7 @@ import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repos
 import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
+import axios from "axios";
 
 ChartJS.register(
   CategoryScale,
@@ -56,6 +57,48 @@ function TDDLineCharts({
   
   let dataChart: any = {};
   const chartRef = useRef<any>();
+
+  const [analyzeData, setAnalyzeData] = useState<string[]>([]); 
+  
+useEffect(() => {
+  if (optionSelected === "Complejidad" && complexity && filteredCommitsObject) {
+    const analyzeCommits = async () => {
+      const reversedCommits = filteredCommitsObject.slice().reverse();
+      const responses: string[] = [];
+
+      for (const commit of reversedCommits) {
+        const requestBody = { repoUrl: commit.html_url };
+
+        try {
+         
+          const response = await axios.post(
+            "https://api-ccn.vercel.app/analyze",
+            requestBody,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          console.log("Contenido de la respuesta:", response.data.metrics);
+
+          
+
+          responses.push(JSON.stringify(response.data));
+          
+        } catch (error) {
+          console.error("Error al procesar el commit:", error);
+        }
+      }
+
+      console.log("RESPONSES",responses)
+      setAnalyzeData(responses);
+    };
+
+    analyzeCommits();
+  }
+}, [optionSelected, filteredCommitsObject, complexity]);
 
   function getDataLabels() {
     if (filteredCommitsObject != null) {
@@ -228,6 +271,12 @@ function TDDLineCharts({
               afterBodyContent.push(
                 `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
               );
+
+              const complexityResponse = analyzeData[context[0].dataIndex];
+              console.log("EX1M"+complexityResponse)
+              if (complexityResponse) {
+                afterBodyContent.push(`Complejidad Ciclomática: ${complexityResponse}`);
+              }
               return afterBodyContent;
             },
           },
@@ -280,16 +329,21 @@ function TDDLineCharts({
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
-      case "Complejidad":
+          case "Complejidad":
             if (complexity != null) {
-              const ciclomaticComplexities = complexity.map(
-                (complexityData) => complexityData.ciclomaticComplexity
+             
+          
+
+              
+              dataChart = getDataChart(
+                complexity?.map((data) => data.ciclomaticComplexity),
+                "Complejidad Ciclomática"
               );
-              dataChart = getDataChart(ciclomaticComplexities, "Complejidad Ciclomática");
               optionsChart = getOptionsChart("Complejidad Ciclomática");
-              dataTestid = "graph-complexity";
+              dataTestid = "graph-complexity";;
             }
             break;
+          
       
     }
     return (
