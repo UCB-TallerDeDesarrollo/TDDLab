@@ -331,9 +331,7 @@ useEffect(() => {
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
           case "Complejidad":
             if (complexity != null) {
-              const ciclomaticComplexities = complexity.map(
-                (complexityData) => complexityData.ciclomaticComplexity
-              );
+             
           
 
               
