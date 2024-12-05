@@ -46,13 +46,21 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity }: Re
 
   const filteredCommitsObject = (() => {
     if (commits != null) {
-      const filteredCommitsObject = commits.filter(
-        (commit) => commit.stats.total < maxLinesInGraph,
-      );
+      const filteredCommitsObject = commits.map((commit) => {
+        // Si commit.stats.total es mayor que maxLinesInGraph, ajustamos a 50
+        if (commit.stats.total > maxLinesInGraph) {
+          commit.stats.total = 50;
+        }
+        // Devolvemos el commit (modificado o no) para que esté en el array
+        return commit;
+      });
+  
+      console.log(filteredCommitsObject);
       return filteredCommitsObject;
     }
     return commits;
   })();
+  
   
   if (!commits || !jobsByCommit) {
     return <div>No data available</div>;

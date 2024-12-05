@@ -53,6 +53,7 @@ function TDDLineCharts({
   role,
   complexity
 }: LineChartProps) {
+  
   let dataChart: any = {};
   const chartRef = useRef<any>();
 
@@ -86,7 +87,7 @@ function TDDLineCharts({
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
       const conclusions = filteredCommitsObject.map((commit) => {
-        console.log(commit.commit.message)
+     
         let job = jobsByCommit?.find((job) => job.sha === commit.sha);
         if (job != null && job.conclusion === "success") return containsRefactor(commit.commit.message) ? "blue" : "green";
         else if (job === undefined) return "black";
@@ -237,7 +238,7 @@ function TDDLineCharts({
   }
   console.log(complexity)
   const onClick = (event: any) => {
-    if (getElementAtEvent(chartRef.current, event).length > 0) {
+    if (getElementAtEvent(chartRef.current, event).length >= 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
         .datasetIndex;
       const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;

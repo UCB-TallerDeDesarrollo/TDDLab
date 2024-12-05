@@ -68,6 +68,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
           test_count: commitData.test_count,
         }),
       );
+      console.log(commits)
       return commits;
     } catch (error) {
       // Handle any errors here
