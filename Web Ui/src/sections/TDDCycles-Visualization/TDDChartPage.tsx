@@ -69,10 +69,12 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+      console.log(commits)
       const complexityList = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
       setComplexity(complexityList)
       setJobsByCommit(jobsData);
       setCommitsInfo(commits);
+      
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -237,6 +239,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
             </div>
           )}
           <div className="mainInfoContainer">
+        
             <TDDCharts
               data-testId="cycle-chart"
               commits={commitsInfo}
