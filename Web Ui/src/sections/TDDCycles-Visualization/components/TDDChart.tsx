@@ -10,6 +10,7 @@ import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
+import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -19,9 +20,10 @@ interface CycleReportViewProps {
   port: GithubAPIRepository;
   role: string;
   complexity:ComplexityObject[] | null;
+  commitsTddCycles: CommitCycle[] | null;
 }
 
-function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, commitsTddCycles }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
 
   const [metricSelected, setMetricSelected] = useState(() => {
@@ -108,6 +110,9 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity }: Re
             <MenuItem value={"Complejidad"}>
               Lista de Complejidad
             </MenuItem>
+            <MenuItem value={"TddCiclos"}>
+              TddCycles
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -118,6 +123,7 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity }: Re
         complexity = {complexity}
         port={port}
         role={role}
+        commitsCycles={commitsTddCycles}
       />
     </div>
   );

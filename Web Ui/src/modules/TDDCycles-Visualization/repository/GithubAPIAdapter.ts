@@ -3,6 +3,7 @@ import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { JobDataObject } from "../domain/jobInterfaces";
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { formatDate } from '../application/GetTDDCycles';
+import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 
@@ -138,6 +139,38 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       return jobs;
     } catch (error) {
       console.error("Error obtaining jobs:", error);
+      throw error;
+    }
+  }
+
+  async obtainCommitTddCycle(
+    owner: string,
+    repoName: string,
+  ): Promise<CommitCycle[]> {
+    try {
+      const response = await axios.get(
+        this.backAPI + `/get-commits?owner=${owner}&repoName=${repoName}`,
+      );
+      console.log(
+        this.backAPI + `/get-commits?owner=${owner}&repoName=${repoName}`,
+      );
+
+      if (response.status != 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const responseData: [] = response.data;
+      const commits: CommitCycle[] = responseData.map(
+        (commitData: any) => ({
+          url: commitData.url,
+          sha: commitData.sha,
+          tddCylce: commitData.tdd_cycle
+        }),
+      );
+      console.log(commits)
+      return commits;
+    } catch (error) {
+      // Handle any errors here
+      console.error("Error obtaining commits:", error);
       throw error;
     }
   }

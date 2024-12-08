@@ -12,6 +12,7 @@ import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmission
 import { CommentDataObject,CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
+import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
@@ -54,6 +55,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
+  const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
@@ -69,12 +71,14 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+      const tddCycles = await getTDDCycles.obtainCommitTddCycle(repoOwner, repoName);
       console.log(commits)
       const complexityList = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
       setComplexity(complexityList)
       setJobsByCommit(jobsData);
       setCommitsInfo(commits);
-      
+      setCommitsTddCycles(tddCycles);
+
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -245,6 +249,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
               commits={commitsInfo}
               jobsByCommit={jobsByCommit}
               complexity = {complexity}
+              commitsTddCycles = {commitsTddCycles}
               port={port}
               role={role}
               metric={metric}
