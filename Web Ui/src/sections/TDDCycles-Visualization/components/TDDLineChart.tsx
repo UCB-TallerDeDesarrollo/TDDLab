@@ -1,5 +1,6 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
+import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
 import { useEffect, useRef, useState } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
@@ -23,6 +24,7 @@ import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import axios from "axios";
+import TDDBar from "./TDDBarCycle";
 
 ChartJS.register(
   CategoryScale,
@@ -44,6 +46,7 @@ interface LineChartProps {
   port:GithubAPIRepository;
   role:string;
   complexity : ComplexityObject[] | null;
+  commitsCycles: CommitCycle[] | null;
 }
 
 function TDDLineCharts({
@@ -52,7 +55,8 @@ function TDDLineCharts({
   optionSelected,
   port,
   role,
-  complexity
+  complexity,
+  commitsCycles
 }: LineChartProps) {
   
   let dataChart: any = {};
@@ -344,7 +348,8 @@ useEffect(() => {
             }
             break;
           
-      
+      case "TddCiclos":
+        return <TDDBar CommitsCycles={commitsCycles || []}></TDDBar>
     }
     return (
       <Line

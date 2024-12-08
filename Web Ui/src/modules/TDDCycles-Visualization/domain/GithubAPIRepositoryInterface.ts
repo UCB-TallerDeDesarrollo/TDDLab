@@ -11,4 +11,5 @@ export interface GithubAPIRepository {
   obtainJobsOfRepo(owner: string, repoName: string): any;
   obtainComplexityOfRepo(owner:string, repoName: string): any;
 
+  obtainCommitTddCycle(owner:string, repoName: string): any;
 }
