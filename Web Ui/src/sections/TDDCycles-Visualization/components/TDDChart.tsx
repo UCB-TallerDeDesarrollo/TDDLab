@@ -9,7 +9,6 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
-import TDDBar from "./graficas_prueba/TDDBar";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -76,21 +75,12 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
               Lista de Commits
             </MenuItem>
 
-            <MenuItem value={"Bar"}>Ciclos de TDD (Gráfico de Barras)</MenuItem>
-
           </Select>
         </FormControl>
       </Box>
       {/* Renderiza el gráfico correspondiente */}
       {(() => {
         switch (metricSelected) {
-          case "Bar":
-            return (
-              <TDDBar 
-                commits={commits} 
-                jobsByCommit={jobsByCommit} 
-              />
-            );
           
           default:
             return (
