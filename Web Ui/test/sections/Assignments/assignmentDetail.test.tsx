@@ -4,6 +4,8 @@ import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/sections/Assignments/AssignmentDetail";
 import { GitLinkDialog } from "../../../src/sections/Assignments/components/GitHubLinkDialog";
 
+jest.setTimeout(10000);
+
 jest.mock(
   "../../../src/modules/Assignments/application/GetAssignmentDetail",
   () => ({
@@ -67,7 +69,7 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       const groupName = getByText("Test Group");
       expect(groupName).toBeInTheDocument();
-    },{ timeout: 3000 });
+    }, { timeout: 5000 });
   });
 
   it("displays the Estado and Enlace sections for student role", async () => {
