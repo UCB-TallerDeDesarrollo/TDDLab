@@ -54,12 +54,11 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
     "Éxito (Verde)",
     "Fallidos (Rojo)",
     "Refactorización (Azul)",
-    "Sin Trabajo (Negro)",
+    "Sin Presentación (Negro)",
   ];
 
   const allColors = ["#00ff00", "#ff0000", "#0000ff", "#000000"];
 
-  // Filtrar datos para el gráfico (excluyendo 0%)
   const filteredData = rawData.filter((value) => value > 0);
   const filteredColors = allColors.filter((_, index) => rawData[index] > 0);
 
@@ -68,7 +67,7 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
     datasets: [
       {
         label: "Porcentaje de Commits",
-        data: filteredData, // Solo incluir valores mayores a 0 en el gráfico
+        data: filteredData, 
         backgroundColor: filteredColors,
       },
     ],
@@ -101,7 +100,7 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
     interaction: {
       mode: undefined, 
     },
-    events: [], // Deshabilitar todos los eventos (click, hover, etc.)
+    events: [], 
     animation: {
       onComplete: function () {
         const chart = chartRef.current;
