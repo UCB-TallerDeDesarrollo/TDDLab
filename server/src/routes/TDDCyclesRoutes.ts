@@ -41,4 +41,10 @@ TDDCyclesRouter.get( //en teoria aqui deberia recibir el sha del commit
   async (req, res) => await tddCyclesController.getCommitTimeLine(req, res)
 );
 
+//Ruta para obtener los commits de un repositorio de la BD
+TDDCyclesRouter.get(
+  "/get-commits",
+  async (req, res) => await tddCyclesController.getCommits(req, res)
+);
+
 export default TDDCyclesRouter;
