@@ -17,6 +17,7 @@ describe("TDDCharts", () => {
       port={new GithubAPIAdapter()}
       complexity={null}
       role={"student"}
+      commitsTddCycles={null}
     />);
 
     expect(screen.queryByTestId("graph-coverage")).not.toBeInTheDocument();

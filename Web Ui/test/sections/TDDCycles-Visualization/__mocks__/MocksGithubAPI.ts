@@ -2,6 +2,7 @@ import { ComplexityObject } from "../../../../src/modules/TDDCycles-Visualizatio
 import { GithubAPIRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/jobInterfaces";
+import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { mockArrayCommitData } from "./dataTypeMocks/commitData";
 import { mockArrayJobData } from "./dataTypeMocks/jobData";
 
@@ -24,6 +25,11 @@ export class MockGithubAPI implements GithubAPIRepository {
 
     return jobs;
   }
+
+  async obtainCommitTddCycle(): Promise<CommitCycle[]> {
+    let commitscycles: CommitCycle[] = [];
+    return commitscycles;
+  }
 }
 
 export class MockGithubAPIEmpty implements GithubAPIRepository {
@@ -45,6 +51,11 @@ export class MockGithubAPIEmpty implements GithubAPIRepository {
 
     return jobs;
   }
+
+  async obtainCommitTddCycle(): Promise<CommitCycle[]> {
+    let commitscycles: CommitCycle[] = [];
+    return commitscycles;
+  }
 }
 
 export class MockGithubAPIError implements GithubAPIRepository {
@@ -63,4 +74,10 @@ export class MockGithubAPIError implements GithubAPIRepository {
 
     return jobs;
   }
+
+  async obtainCommitTddCycle(): Promise<CommitCycle[]> {
+    let commitscycles: CommitCycle[] = [];
+    return commitscycles;
+  }
+  
 }
