@@ -71,16 +71,16 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
     let opacity = 2;
-
-    if (testCountsColor >= labels[0]) {
+    console.log(labels[3])
+    if (testCountsColor >= labels[1]) {
       greenValue = 110;
-  } else if (testCountsColor >= labels[1]) {
+  } else if (testCountsColor < labels[1] && testCountsColor >= labels[2]) {
       greenValue = 110;
       opacity = 0.5;
-  } else if (testCountsColor >= labels[2]) {
+  } else if (testCountsColor < labels[2] && testCountsColor >= labels[3]) {
       greenValue = 110;
       opacity = 0.6;
-  } else {
+  } else if(testCountsColor < labels[3]) {
       greenValue = 110;
       opacity = 0.2;
   }
