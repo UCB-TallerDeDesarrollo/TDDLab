@@ -136,16 +136,20 @@ class TDDCyclesController {
             } 
           }
           
-          let tdd_cycle_entry;
-          // aca debemos procesar commit time line entries que tiene datos de green y red
+          let tdd_cycle_entry="";
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
           const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";
           if (hasRed && lastIsGreen) {
-            console.log("Si realizó un ciclo TDD");
-            tdd_cycle_entry=true;
-          } else {
-            console.log("No se realizó un ciclo TDD");
-            tdd_cycle_entry=false;
+            console.log("Commits con ciclos de TDD rojo - verde");
+            tdd_cycle_entry="RojoVerde";
+          }
+          else if (!lastIsGreen){
+            console.log("Commits con ultima ejecucion de pruebas rojo");
+            tdd_cycle_entry="Rojo";
+          }
+          else if(!hasRed){
+            console.log(" Commits con ejecucion de pruebas de solo verde");
+            tdd_cycle_entry="Verde";
           }
           try{
             await this.dbCommitsRepository.updateTddCycle(actualCommitSha,tdd_cycle_entry); 
