@@ -50,8 +50,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
-
-
   const chartRefCoverage = useRef<any>();
   const chartRefModifiedLines = useRef<any>();
   const chartRefTestCount = useRef<any>();
@@ -201,11 +199,27 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     setOpenModal(false);
     setSelectedCommit(null);
   };
-
   
   useEffect(() => {
   
   }, [graph]);
+
+  const [barraHeight, setBarraHeight] = useState(window.innerWidth / 3);
+
+  useEffect(() => {
+    const actualizarAltura = () => {
+      setBarraHeight(window.innerWidth / 3);
+    };
+
+    // Agregamos el listener de redimensionamiento
+    window.addEventListener('resize', actualizarAltura);
+
+    // Llamamos una primera vez para configurar la altura inicial
+    actualizarAltura();
+
+    // Limpiamos el listener cuando el componente se desmonte
+    return () => window.removeEventListener('resize', actualizarAltura);
+  }, []);
 
   return (
     <>
@@ -218,8 +232,57 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             justifyContent: "center",
           }}
         >
-          <div style={{ width: "85%", marginBottom: "20px" }}>
+          <div style={{ width: "85%", marginBottom: "20px",marginRight:"20px", position: 'relative' }}>
             <h2>Métricas de Commits con Cobertura de Código</h2>
+              <div
+                style={{
+                  position: "absolute",
+                  right: -230,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+              <div
+                style={{
+                  width: "20px",
+                  height: `${barraHeight}px`, // Altura dinámica ajustada
+                  transform: 'translateX(-655%) translateY(6%)',
+                  background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
+                  textAlign: "center",
+                  display: "flex",
+                }}
+              >
+              <p
+                style={{
+                  
+                  transform: 'translateX(-33%) translateY(-18%)',
+                  color: "#000",
+
+                  fontWeight: "bold",
+                }}
+              >
+                Cobertura
+              </p>
+            </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  transform: 'translateX(-599%) translateY(3%)',
+                  justifyContent: "space-between",
+                  height: `${barraHeight*0.93}px`,
+                  fontSize: "12px",
+                  color: "#000",
+                }}
+              >
+                {labels.map((label) => (
+                  <p key={label} style={{ margin: 0 }}>
+                    {label}
+                  </p>
+                ))}
+              </div>
+            </div>
 
             <Bubble
               ref={chartRef}
@@ -475,57 +538,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               </div>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              position: "absolute",
-              top: "65%", 
-              right: "9%",
-            }}
-          >
-            <div
-              style={{
-                width: "30px",
-                height: "400px", //fix
-                background:
-                  "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
-                textAlign: "center",
-                position: "relative",
-              }}
-            >
-              <p
-                style={{
-                  marginTop: "-30px",
-                  color: "#000",
-                  fontWeight: "bold",
-                  justifyContent: "center",
-                  alignContent: "center",
-                }}
-              >
-                {" "}
-                Cobertura
-              </p>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                height: "300px",
-                marginLeft: "10px",
-                fontSize: "12px",
-                color: "#000",
-                marginBottom:"90px"
-              }}
-            >
-              {labels.map((label) => (
-                <p key={label} style={{ margin: 0 }}>
-                  {label}
-                </p>
-              ))}
-            </div>
+          <div>
           </div>
         </div>
       ) : null}
