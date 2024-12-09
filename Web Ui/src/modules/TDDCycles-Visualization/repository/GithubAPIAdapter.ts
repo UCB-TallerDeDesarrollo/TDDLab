@@ -163,7 +163,7 @@ export class GithubAPIAdapter implements GithubAPIRepository {
         (commitData: any) => ({
           url: commitData.url,
           sha: commitData.sha,
-          tddCylce: commitData.tdd_cycle
+          tddCylce: commitData.tdd_cycle ?? "null"
         }),
       );
       console.log(commits)
