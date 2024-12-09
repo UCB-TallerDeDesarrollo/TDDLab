@@ -1,5 +1,4 @@
 import axios from "axios";
-//import { VITE_API } from "../../../../config";
 import TeacherCommentsRepositoryInterface from "../domain/CommentsRepositoryInterface";
 import { CommentDataObject,CommentsCreationObject } from "../domain/CommentsInterface";
 import { VITE_API } from "../../../../config";
