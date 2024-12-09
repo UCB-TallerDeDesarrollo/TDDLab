@@ -65,7 +65,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
   
   async updateTddCycle(
     sha: string,
-    tdd_cicle:boolean,
+    tdd_cicle:string,
   ) {
     const client = await this.pool.connect();
     try {
