@@ -335,10 +335,6 @@ useEffect(() => {
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
           case "Complejidad":
             if (complexity != null) {
-             
-          
-
-              
               dataChart = getDataChart(
                 complexity?.map((data) => data.ciclomaticComplexity),
                 "Complejidad Ciclomática"
