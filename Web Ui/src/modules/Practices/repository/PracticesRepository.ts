@@ -2,7 +2,6 @@ import axios from "axios";
 import { PracticeDataObject } from "../domain/PracticeInterface";
 import PracticeRepositoryInterface from "../domain/PracticeRepositoryInterface";
 import { VITE_API } from "../../../../config";
-
 const API_URL = VITE_API + "/practices";
 
 class PracticesRepository implements PracticeRepositoryInterface {
@@ -28,10 +27,26 @@ class PracticesRepository implements PracticeRepositoryInterface {
       if (response.status === 200) {
         return response.data;
       } else {
-        throw new Error("Failed to fetch assignments by ID");
+        throw new Error("Failed to fetch practices by ID");
       }
     } catch (error) {
-      console.error("Error fetching assignments by ID:", error);
+      console.error("Error fetching practices by ID:", error);
+      throw error;
+    }
+  }
+
+  async getPracticeByUserId(
+    userid: number | undefined
+  ): Promise<PracticeDataObject[]> {
+    try {
+      const response = await axios.get(`${API_URL}/user/${userid}`);
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error("Failed to fetch practices by USER ID");
+      }
+    } catch (error) {
+      console.error("Error fetching practices by USER ID:", error);
       throw error;
     }
   }

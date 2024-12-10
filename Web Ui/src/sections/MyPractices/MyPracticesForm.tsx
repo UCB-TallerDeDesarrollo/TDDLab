@@ -129,7 +129,7 @@ function MyPracticesForm({
       {!!validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
-          title="Tarea creada exitosamente"
+          title="Practica creada exitosamente"
           closeText="Cerrar"
           onClose={() => window.location.reload()}
         />

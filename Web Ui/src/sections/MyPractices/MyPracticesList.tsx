@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  setGlobalState,
+  useGlobalState,
+} from "../../modules/User-Authentication/domain/authStates";
+
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
   Table,
@@ -59,7 +64,6 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const practicesRepository = new PracticesRepository();
   const deletePractice = new DeletePractice(practicesRepository);
 
-  // Ordenar prácticas
   const orderPractices = (
     practicesArray: PracticeDataObject[],
     sorting: string
@@ -82,11 +86,13 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
       setPractices(sortedPractices);
     }
   };
-
+  const authData = useGlobalState("authData")[0];
   // Obtener prácticas
   const fetchData = async () => {
     try {
-      const data = await practicesRepository.getPractices();
+      const data = await practicesRepository.getPracticeByUserId(
+        authData.userid
+      );
       setPractices(data);
       orderPractices(data, selectedSorting);
     } catch (error) {
