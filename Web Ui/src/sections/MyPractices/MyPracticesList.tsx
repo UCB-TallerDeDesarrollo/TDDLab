@@ -47,6 +47,7 @@ interface PracticesProps {
 }
 
 function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
+  const [authData, setAuthData] = useGlobalState("authData");
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -83,8 +84,8 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
       setPractices(sortedPractices);
     }
   };
-  const authData = useGlobalState("authData")[0];
   // Obtener prácticas
+
   const fetchData = async () => {
     try {
       const data = await practicesRepository.getPracticeByUserId(
@@ -99,7 +100,7 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
 
   useEffect(() => {
     fetchData();
-  }, [selectedSorting]);
+  }, [selectedSorting, authData]);
 
   const handleOrderPractices = (event: { target: { value: string } }) => {
     const sorting = event.target.value;
@@ -178,7 +179,7 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
-            title="¿Eliminar la tarea?"
+            title="¿Eliminar la practica?"
             content="Ten en cuenta que esta acción también eliminará todas las entregas asociadas."
             cancelText="Cancelar"
             deleteText="Eliminar"
