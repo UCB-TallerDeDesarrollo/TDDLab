@@ -46,7 +46,7 @@ const navArrayLinks = [
     title: "Mis Practicas",
     path: "/mis-practicas",
     icon: <NoteAdd />,
-    access: ["admin", "teacher"],
+    access: ["admin", "teacher", "student"],
   },
 ];
 

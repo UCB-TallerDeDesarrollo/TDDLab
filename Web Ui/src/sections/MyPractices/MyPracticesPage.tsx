@@ -18,9 +18,7 @@ interface PracticeManagerProps {
   userRole: string;
   userGroupid: number;
 }
-function PracticeManager({
-  userRole, // Recibir userGroupid como prop
-}: Readonly<PracticeManagerProps>) {
+function PracticeManager({ userRole }: Readonly<PracticeManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
 
