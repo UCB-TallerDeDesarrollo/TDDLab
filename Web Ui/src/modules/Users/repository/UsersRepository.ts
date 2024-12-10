@@ -60,6 +60,26 @@ export class UsersRepository implements UsersRepositoryInterface {
       throw error;
     }
   }
+
+  async removeUserFromGroup(userId: number): Promise<void> {
+    if (!userId) {
+      throw new Error("El ID de usuario no es válido.");
+    }
+  
+    try {
+      console.log("repository"+userId)
+      await axios.delete(`${API_URL}/delete/${userId}`);
+      // if (response.status !== 200) {
+      //   throw new Error(
+      //     `Error al eliminar usuario: el servidor respondió con el estado ${response.status}.`
+      //   );
+      // }
+      console.log(`Usuario con ID ${userId} eliminado exitosamente.`);
+    } catch (error) {
+      console.error("Error al eliminar usuario:", error);
+      throw error;
+    }
+  }
 }
 
 export default UsersRepository;

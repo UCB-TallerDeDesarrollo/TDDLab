@@ -74,6 +74,20 @@ export class UserRepository {
     const rows = await this.executeQuery(query,values);
     return rows.map((row) => this.mapRowToUser(row));
   }
+
+  async removeUserFromGroup(userId: number): Promise<void> {
+    const query = "DELETE FROM userstable WHERE id = $1";
+    const values = [userId];
+  
+    try {
+      await this.executeQuery(query, values);
+      console.log(`Usuario con ID ${userId} ha sido eliminado`);
+    } catch (error) {
+      console.error("Error al eliminar usuario", error);
+      throw error; // Relanzar error para manejarlo en capas superiores
+    }
+  }
+  
   async updateUser(
     id: number,
     groupid: number,

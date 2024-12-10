@@ -5,8 +5,8 @@ interface UsersRepositoryInterface {
   getUsers(): Promise<UserDataObject[]>;
   getUsersByGroupid(groupid: number): Promise<UserDataObject[]>;
   getUserByEmail(email: string): Promise<UserDataObject | null>;
-  updateUser(int: number,
-    groupid: number):Promise<void>;
+  updateUser(int: number, groupid: number):Promise<void>;
+  removeUserFromGroup(userId: number): Promise<void>;
 }
 
 export default UsersRepositoryInterface;
