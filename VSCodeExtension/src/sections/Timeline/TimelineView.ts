@@ -90,8 +90,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
                         <span class="popup">
                             <strong>Nombre:</strong> ${point.commitName ? point.commitName : ''}<br>
                             <strong>Commit ID:</strong> ${point.commitId}<br>
-                            <strong>Fecha:</strong> ${date}<br>
-                            <strong>Hora:</strong> ${time}
+                            <strong>Fecha:</strong> ${date} ${time}
                         </span>
                     </div>
                 `;
