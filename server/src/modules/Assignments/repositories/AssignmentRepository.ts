@@ -36,6 +36,11 @@ class AssignmentRepository {
       groupid: row.groupid,
     };
   }
+  async checkDuplicateTitle(title: string, groupid: number): Promise<boolean> {
+    const query = "SELECT EXISTS (SELECT 1 FROM assignments WHERE LOWER(title) = LOWER($1) AND groupid = $2)";
+    const result: QueryResult[] = await this.executeQuery(query, [title, groupid]);
+    return result[0].exists;
+  }
 
   async obtainAssignments(): Promise<AssignmentDataObject[]> {
     const query =
