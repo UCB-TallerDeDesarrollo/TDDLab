@@ -66,33 +66,37 @@ class AssignmentController {
     }
   }
 
-  async createAssignment(req: Request, res: Response): Promise<void> {
-    try {
-      const {
-        title,
-        description,
-        state,
-        start_date,
-        end_date,
-        link,
-        comment,
-        groupid,
-      } = req.body;
-      const newAssignment = await this.createAssignmentUseCase.execute({
-        title,
-        description,
-        state,
-        start_date,
-        end_date,
-        link,
-        comment,
-        groupid,
-      });
-      res.status(201).json(newAssignment);
-    } catch (error) {
+async createAssignment(req: Request, res: Response): Promise<void> {
+  try {
+    const {
+      title,
+      description,
+      state,
+      start_date,
+      end_date,
+      link,
+      comment,
+      groupid,
+    } = req.body;
+    const newAssignment = await this.createAssignmentUseCase.execute({
+      title,
+      description,
+      state,
+      start_date,
+      end_date,
+      link,
+      comment,
+      groupid,
+    });
+    res.status(201).json(newAssignment);
+  } catch (error) {
+    if (error instanceof Error && error.message === "Ya existe una tarea con el mismo nombre en este grupo") {
+      res.status(400).json({ error: error.message });
+    } else {
       res.status(500).json({ error: "Server error" });
     }
   }
+}
 
   async deleteAssignment(req: Request, res: Response): Promise<void> {
     try {
