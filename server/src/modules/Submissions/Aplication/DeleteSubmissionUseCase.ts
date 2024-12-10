@@ -11,7 +11,7 @@ class DeleteSubmission {
     try {
       await this.adapter.deleteSubmission(submissionid);
     } catch (error) {
-      console.error("Submission Deletion Unsuccessful.", error);
+      console.error("Submission Deletion Unsuccessful.");
       throw error;
     }
   }

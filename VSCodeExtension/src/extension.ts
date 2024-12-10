@@ -59,7 +59,6 @@ export function activate(context: vscode.ExtensionContext) {
                 throw new Error('El archivo "tdd_log.json" no es un archivo válido.');
             }
 
-            // Ejecuta los comandos si todo está correcto
             await executeTestCommand.execute();
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Se produjo un error desconocido.';
