@@ -76,7 +76,6 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
               Lista de Commits
             </MenuItem>
 
-            <MenuItem value={"Bar"}>Ciclos de TDD (Gráfico de Barras)</MenuItem>
 
           </Select>
         </FormControl>
@@ -84,13 +83,7 @@ function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Reado
       {/* Renderiza el gráfico correspondiente */}
       {(() => {
         switch (metricSelected) {
-          case "Bar":
-            return (
-              <TDDBar 
-                commits={commits} 
-                jobsByCommit={jobsByCommit} 
-              />
-            );
+          
           
           default:
             return (
