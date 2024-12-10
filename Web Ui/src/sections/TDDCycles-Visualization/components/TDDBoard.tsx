@@ -321,7 +321,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   x: {
                     title: { display: true, text: "Commits" },
                     ticks: {
-                      callback: (value: any, index: number) => `Commit ${index + 1}`, 
+                      callback: (_: any,index: number) => `Commit ${index + 1}`, 
                       stepSize: 1, 
                     },
                   },
