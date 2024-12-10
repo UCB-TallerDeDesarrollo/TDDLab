@@ -234,7 +234,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
                 className="nav-button"
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
-                  goToPreviousStudent();
+                  goToNextStudent();
                 }}
                 disabled={currentIndex === fetchedSubmissions.length - 1}
                 style={{
