@@ -22,6 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 
+// Componente ValidationDialog
 interface ValidationDialogProps {
   open: boolean;
   title: string;
@@ -74,6 +75,7 @@ const ValidationDialog = ({
   );
 };
 
+// Componente Form principal
 interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
@@ -95,7 +97,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     comment: "",
     groupid: groupid,
   });
-  const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const isCreateButtonClicked = useRef(false);
 
   const handleSaveClick = async () => {
@@ -116,30 +117,28 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     }
 
     try {
-      // Verificamos si existe una tarea con el mismo nombre en el grupo
       const assignments = await assignmentsRepository.getAssignmentsByGroupid(assignmentData.groupid);
       const duplicateAssignment = assignments.find(
         (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
       );
 
       if (duplicateAssignment) {
-        console.log("Error: Ya existe una tarea con el mismo nombre en este grupo");
         setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
         setValidationDialogOpen(true);
+        setSave(false);
         return;
       }
 
       await createAssignments.createAssignment(assignmentData);
-      setValidationMessage("Tarea creada exitosamente");
-      setValidationDialogOpen(true);
       
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      setValidationMessage(error.response?.data?.error || "Error al crear la tarea");
-      setValidationDialogOpen(true);
     } finally {
       setSave(false);
     }
+    
+    setValidationMessage("Tarea creada exitosamente");
+    setValidationDialogOpen(true);
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -155,7 +154,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     field: string,
   ) => {
     const { value } = event.target;
-
     setAssignmentData((prevData) => ({
       ...prevData,
       [field]: value,
@@ -164,7 +162,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
 
   const handleGroupChange = (event: SelectChangeEvent<number>) => {
     const groupid = event.target.value as number;
-
     setAssignmentData((prevData) => ({
       ...prevData,
       groupid,
@@ -181,7 +178,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
 
   useEffect(() => {
     setSave(false);
-    setValidationMessage("Tarea creada exitosamente");
     setAssignmentData({
       id: 0,
       title: "",
@@ -196,6 +192,8 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   }, [open, groupid]);
 
   const groupRepository = new GroupsRepository();
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
+  
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -216,11 +214,10 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           <DialogContent>
             <section className="mb-4">
               <FormControl fullWidth variant="outlined" margin="normal">
-                <InputLabel htmlFor="group-select" id="group-select-label">
+                <InputLabel htmlFor="group-select">
                   Grupo
                 </InputLabel>
                 <Select
-                  labelId="group-select-label"
                   id="group-select"
                   value={assignmentData.groupid}
                   onChange={handleGroupChange}
@@ -238,8 +235,8 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
             </section>
             
             <TextField
-              error={save && assignmentData.title.trim() === ""}
-              helperText={save && assignmentData.title.trim() === "" ? "El título es requerido" : ""}
+              error={save && !assignmentData.title.trim()}
+              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
               autoFocus
               margin="dense"
               id="assignment-title"
@@ -298,7 +295,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           title={validationMessage}
           closeText="Cerrar"
           onClose={() => {
-            if (validationMessage.includes("exitosamente")) {
+            if (!validationMessage.includes("Error")) {
               window.location.reload();
             } else {
               setValidationDialogOpen(false);
