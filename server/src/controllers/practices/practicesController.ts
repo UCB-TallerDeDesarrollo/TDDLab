@@ -3,6 +3,7 @@ import CreatePracticeUseCase from "../../modules/Practices/application/PracticeU
 import DeletePracticeUseCase from "../../modules/Practices/application/PracticeUseCases/deletePracticeUseCase";
 import GetPracticesUseCase from "../../modules/Practices/application/PracticeUseCases/getPracticesUseCase";
 import GetPracticesByIdUseCase from "../../modules/Practices/application/PracticeUseCases/getPracticeByIdUseCase";
+import GetPracticesByUserIdUseCase from "../../modules/Practices/application/PracticeUseCases/getPracticesByUserIdUseCase";
 import UpdatePracticeUseCase from "../../modules/Practices/application/PracticeUseCases/updatePracticeUseCase";
 import PracticeRepository from "../../modules/Practices/repository/PracticeRepository";
 
@@ -12,11 +13,13 @@ class PracticesController {
   private readonly updatePracticeUseCase: UpdatePracticeUseCase;
   private readonly getPracticesUseCase: GetPracticesUseCase;
   private readonly getPracticeByIdUseCase: GetPracticesByIdUseCase;
+  private readonly getPracticesByUserIdUseCase: GetPracticesByUserIdUseCase;
 
   constructor(repository: PracticeRepository) {
     this.createPracticeUseCase = new CreatePracticeUseCase(repository);
     this.deletePracticeUseCase = new DeletePracticeUseCase(repository);
     this.getPracticeByIdUseCase = new GetPracticesByIdUseCase(repository);
+    this.getPracticesByUserIdUseCase = new GetPracticesByUserIdUseCase(repository);
     this.getPracticesUseCase = new GetPracticesUseCase(repository);
     this.updatePracticeUseCase = new UpdatePracticeUseCase(repository);
   }
@@ -35,6 +38,16 @@ class PracticesController {
       const id = req.params.id;
       const practice = await this.getPracticeByIdUseCase.execute(id);
       res.status(200).json(practice);
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getPracticesByUserId(req: Request, res: Response): Promise<void> {
+    try {
+      const userid = req.params.userid;
+      const practices = await this.getPracticesByUserIdUseCase.execute(userid);
+      res.status(200).json(practices);
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }

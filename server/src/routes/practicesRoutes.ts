@@ -24,6 +24,12 @@ practicesRouter.get(
   async (req, res) => await practicesController.getPracticesById(req, res)
 );
 
+//Get a practice by UserID
+practicesRouter.get(
+  "/user/:userid",
+  async (req, res) => await practicesController.getPracticesByUserId(req, res)
+);
+
 // Update a practice by ID
 practicesRouter.put(
   "/:id",

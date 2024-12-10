@@ -47,6 +47,15 @@ class PracticeRepository {
     return null;
   }
 
+  async obtainPracticesByUserId(userid: string): Promise<PracticeDataObject[]> {
+    const query =
+      "SELECT id, title, description, creation_date, state, userid FROM practices WHERE userid = $1";
+    const values = [userid];
+    const rows = await this.executeQuery(query, values);
+    return rows.map(this.mapRowToPractice); 
+  }
+  
+
   async createPractice(
     practice: PracticeCreationObject
   ): Promise<PracticeCreationObject> {
