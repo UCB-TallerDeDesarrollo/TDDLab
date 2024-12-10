@@ -21,7 +21,7 @@ class CreateAssignment {
       const newAssignment = await this.adapter.createAssignment(assignment);
       return newAssignment;
     } catch (error) {
-      console.error("Ocurrió un error al crear la tarea:", error);
+      console.error("Ocurrió un error al crear la tarea");
       throw error;
     }
   }

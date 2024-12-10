@@ -11,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:tddTestExecution", 
+    "onView:tddTestExecution",
     "onCommand:TDD.runTest"
   ],
   "main": "./out/extension.js",

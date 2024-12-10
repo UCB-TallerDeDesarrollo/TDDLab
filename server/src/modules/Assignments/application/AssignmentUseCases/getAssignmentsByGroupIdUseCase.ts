@@ -15,7 +15,7 @@ class GetAssignmentsByGroupidUseCase {
       );
       return assignments;
     } catch (error) {
-      console.error("Error Obtaining assigments by groupid", error);
+      console.error("Error Obtaining assigments by groupid");
       throw error;
     }
   }
