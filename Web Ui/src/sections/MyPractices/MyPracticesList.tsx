@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "../../modules/User-Authentication/domain/authStates";
+import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
