@@ -503,7 +503,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
-                onClick={() => handleRedirectAdmin(submission.repository_link, submissions, submission.id)}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "Dashboard");
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id)}}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -708,7 +710,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() =>studentSubmission?.repository_link && handleRedirectStudent(studentSubmission.repository_link)}
+                onClick={() => {localStorage.setItem("selectedMetric", "Dashboard");
+                  studentSubmission?.repository_link && handleRedirectStudent(studentSubmission.repository_link)}}
                 color="primary"
                 style={{
                   textTransform: "none",
