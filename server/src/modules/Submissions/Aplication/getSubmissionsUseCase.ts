@@ -13,7 +13,7 @@ class GetSubmissionsUseCase {
       const assignments = await this.adapter.ObtainSubmissions();
       return assignments;
     } catch (error) {
-      console.error("Error Obtaining Submissions", error);
+      console.error("Error Obtaining Submissions");
       throw error;
     }
   }

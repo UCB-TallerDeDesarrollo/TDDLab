@@ -19,7 +19,7 @@ class UpdateSubmission {
       );
       return updatedSubmissionResult;
     } catch (error) {
-      console.error("Error updating Submission", error);
+      console.error("Error updating Submission");
       throw error;
     }
   }
