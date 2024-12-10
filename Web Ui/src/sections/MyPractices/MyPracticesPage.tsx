@@ -1,8 +1,7 @@
-import Form from "../Assignments/components/AssignmentForm";
 import Practices from "./MyPracticesList";
 import { styled } from "@mui/system";
 import { useState } from "react";
-
+import MyPracticesForm from "./MyPracticesForm";
 const PrcticesContainer = styled("div")({
   justifyContent: "center",
   alignItems: "center",
@@ -15,17 +14,15 @@ const FormsContainer = styled("div")({
   marginTop: "68px",
 });
 
-interface AssignmentManagerProps {
+interface PracticeManagerProps {
   userRole: string;
   userGroupid: number;
 }
-function AssignmentManager({
-  userRole,
-  userGroupid, // Recibir userGroupid como prop
-}: Readonly<AssignmentManagerProps>) {
+function PracticeManager({
+  userRole, // Recibir userGroupid como prop
+}: Readonly<PracticeManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
   const handleCreateAssignmentClick = () => {
     setCreateAssignmentPopupOpen(true);
@@ -34,20 +31,14 @@ function AssignmentManager({
   return (
     <>
       <PrcticesContainer data-testid="assignments-container">
-        <Practices
-          ShowForm={handleCreateAssignmentClick}
-          userRole={userRole}
-          userGroupid={userGroupid}
-          onGroupChange={setSelectedGroupId}
-        />
+        <Practices ShowForm={handleCreateAssignmentClick} userRole={userRole} />
       </PrcticesContainer>
       <FormsContainer>
         {createAssignmentPopupOpen && (
-          <Form
+          <MyPracticesForm
             data-testid="form-container"
             open={createAssignmentPopupOpen}
             handleClose={() => setCreateAssignmentPopupOpen(false)}
-            groupid={selectedGroupId || userGroupid}
           />
         )}
       </FormsContainer>
@@ -55,4 +46,4 @@ function AssignmentManager({
   );
 }
 
-export default AssignmentManager;
+export default PracticeManager;

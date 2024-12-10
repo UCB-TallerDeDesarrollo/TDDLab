@@ -42,19 +42,12 @@ const CustomTableCell2 = styled(TableCell)({
 interface PracticesProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number;
-  onGroupChange: (groupId: number) => void;
 }
 
-function Practices({
-  ShowForm: showForm,
-  userRole,
-  userGroupid,
-}: Readonly<PracticesProps>) {
+function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
-  const [selectedGroup] = useState<number>(userGroupid || 0);
   const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<
     number | null
   >(null);
@@ -103,7 +96,7 @@ function Practices({
 
   useEffect(() => {
     fetchData();
-  }, [selectedGroup, selectedSorting]);
+  }, [selectedSorting]);
 
   const handleOrderPractices = (event: { target: { value: string } }) => {
     const sorting = event.target.value;
@@ -153,16 +146,14 @@ function Practices({
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleOrderPractices}
                   />
-                  {userRole !== "student" && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<AddIcon />}
-                      onClick={showForm}
-                    >
-                      Crear
-                    </Button>
-                  )}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    onClick={showForm}
+                  >
+                    Crear
+                  </Button>
                 </ButtonContainer>
               </CustomTableCell2>
             </TableRow>
