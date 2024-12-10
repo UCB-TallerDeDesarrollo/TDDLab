@@ -39,25 +39,32 @@ const ValidationDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: 1,
-        color: isError ? '#d32f2f' : '#2e7d32'
-      }}>
+      <DialogTitle 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1.5,
+          color: isError ? '#d32f2f' : '#2e7d32',
+          fontSize: '1rem',
+          fontWeight: 400,
+          py: 2,
+          fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
+        }}
+      >
         {isError ? (
-          <Warning sx={{ color: '#d32f2f' }} />
+          <Warning sx={{ color: '#d32f2f', fontSize: 22 }} />
         ) : (
-          <CheckCircle sx={{ color: '#2e7d32' }} />
+          <CheckCircle sx={{ color: '#2e7d32', fontSize: 22 }} />
         )}
         {title}
       </DialogTitle>
-      <DialogActions>
+      <DialogActions sx={{ pb: 2, pr: 2 }}>
         <Button 
           onClick={onClose}
           style={{ 
             color: isError ? '#d32f2f' : '#2e7d32',
-            textTransform: 'none'
+            textTransform: 'none',
+            fontSize: '0.875rem'
           }}
         >
           {closeText}
