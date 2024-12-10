@@ -18,6 +18,14 @@ class CreateAssignment {
       if (!groupExists) {
         throw new Error("Inexistent group ID");
       }
+      const titleExists = await this.adapter.checkDuplicateTitle(
+        assignment.title,
+        assignment.groupid
+      );
+      if (titleExists) {
+        throw new Error("Ya existe una tarea con el mismo nombre en este grupo");
+      }
+  
       const newAssignment = await this.adapter.createAssignment(assignment);
       return newAssignment;
     } catch (error) {
