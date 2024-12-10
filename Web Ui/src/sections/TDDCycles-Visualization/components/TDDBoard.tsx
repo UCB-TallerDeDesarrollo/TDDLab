@@ -143,7 +143,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       datasets: [
         {
           label,
-          data: data.reverse(),
+          data: [...data].reverse(),
           backgroundColor: commits
             .map((commit) => {
               const job = jobsByCommit.find((job) => job.sha === commit.sha);
