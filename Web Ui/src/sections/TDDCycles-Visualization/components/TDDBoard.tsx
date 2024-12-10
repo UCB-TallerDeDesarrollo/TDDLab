@@ -220,6 +220,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     // Limpiamos el listener cuando el componente se desmonte
     return () => window.removeEventListener('resize', actualizarAltura);
   }, []);
+  
 
   return (
     <>
@@ -246,7 +247,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 style={{
                   width: "20px",
                   height: `${barraHeight}px`, // Altura dinámica ajustada
-                  transform: 'translateX(-655%) translateY(6%)',
+                  transform:  'translateX(-655%) translateY(6%)',
                   background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
                   textAlign: "center",
                   display: "flex",
@@ -254,7 +255,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               >
               <p
                 style={{
-                  
                   transform: 'translateX(-33%) translateY(-18%)',
                   color: "#000",
 
@@ -265,23 +265,27 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               </p>
             </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  transform: 'translateX(-599%) translateY(3%)',
-                  justifyContent: "space-between",
-                  height: `${barraHeight*0.93}px`,
-                  fontSize: "12px",
-                  color: "#000",
-                }}
-              >
-                {labels.map((label) => (
-                  <p key={label} style={{ margin: 0 }}>
-                    {label}
-                  </p>
-                ))}
-              </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                transform:
+                  labels.includes(0) 
+                    ? "translateX(-1700%) translateY(3%)"
+                    : "translateX(-599%) translateY(3%)",
+                justifyContent: "space-between",
+                height: `${barraHeight * 0.93}px`,
+                fontSize: "12px",
+                color: "#000",
+              }}
+            >
+              {labels.map((label) => (
+                <p key={label} style={{ margin: 0 }}>
+                  {label}
+                </p>
+              ))}
+            </div>
+
             </div>
 
             <Bubble
