@@ -29,6 +29,7 @@ export class TimelineRepository {
                         } else if (item.commitId && item.commitTimestamp) {
                             timeline.push(new CommitPoint(
                                 item.commitId,
+                                item.commitName,
                                 new Date(item.commitTimestamp)
                             ));
                         } 

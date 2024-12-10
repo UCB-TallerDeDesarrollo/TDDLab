@@ -8,12 +8,17 @@ const getLatestCommitId = () => {
     return latestCommit;
 };
 
-const updateJsonFile = (commitId) => {
+const getLatestCommitName = () => {
+    const commitName = execSync('git log -1 --pretty=%B').toString().trim();
+    return commitName;
+};
+
+const updateJsonFile = (commitId, commitName) => {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     const filePath = path.join(__dirname, 'tdd_log.json');
     const commitTimestamp = Date.now();
-    const data = { commitId, commitTimestamp };
+    const data = { commitId, commitName, commitTimestamp };
 
     try {
         const fileData = fs.readFileSync(filePath, 'utf8');
@@ -30,4 +35,5 @@ const updateJsonFile = (commitId) => {
 };
 
 const latestCommitId = getLatestCommitId();
-updateJsonFile(latestCommitId);
+const latestCommitName = getLatestCommitName();
+updateJsonFile(latestCommitId, latestCommitName);
