@@ -8,6 +8,7 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
+
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 
 ChartJS.register(Tooltip, Legend, BarElement, CategoryScale, LinearScale);
@@ -20,38 +21,50 @@ const TDDBar: React.FC<TDDBarProps> = ({ CommitsCycles }) => {
   
 
   function analyzeCycles() {
-    let tddCorrect = 0;
-    let incorrect = 0;
+    let redGreen = 0;
+    let lastRed = 0;
+    let onlyGreen = 0;
+    let noDateExtension = 0;
   
     CommitsCycles.forEach((commitcycle) => {
-        if(commitcycle.tddCylce){
-            tddCorrect ++;
-        }
-        else{
-            incorrect++;
+        switch(commitcycle.tddCylce){
+          case "RojoVerde":
+            redGreen ++;
+            break;
+          case "Rojo":
+            lastRed ++;
+            break;
+          case "Verde":
+            onlyGreen ++;
+            break;
+          case "null":
+            noDateExtension ++;
+            break;
         }
       });
-    
-  
     // Validación adicional para evitar divisiones por cero
-    const totalCycles = tddCorrect + incorrect;
+    const totalCycles = redGreen + lastRed + onlyGreen + noDateExtension;
     if (totalCycles === 0) {
-      return { tddCorrect: 0, incorrect: 100 }; 
+      return { redGreen: 0, lastRed: 0, onlyGreen: 0, noDateExtension: 100 }; 
     }
-  
-    return { tddCorrect, incorrect };
+    return { redGreen, lastRed, onlyGreen, noDateExtension };
   }
 
-  const { tddCorrect, incorrect } = analyzeCycles();
-  const totalCycles = tddCorrect  + incorrect;
+  const { redGreen, lastRed, onlyGreen, noDateExtension } = analyzeCycles();
+  const totalCycles = redGreen + lastRed + onlyGreen + noDateExtension;
 
   const rawData = [
-    (tddCorrect / totalCycles) * 100,
-    (incorrect / totalCycles) * 100,
+    (redGreen / totalCycles) * 100,
+    (lastRed / totalCycles) * 100,
+    (onlyGreen / totalCycles) * 100,
+    (noDateExtension / totalCycles) * 100,
   ];
 
-  const labels = ["Ciclos Correctos", "Casos Incorrectos"];
-  const colors = ["#00ff00", "#ff0000"];
+  const labels = ["Commits con ciclos de TDD R-V",
+      "Ultima ejecucion de pruebas rojo",
+      "Ejecucion de pruebas de solo verde",
+      "Sin información (VSCode TDDLab)"];
+  const colors = ["#A9A9A9", "#ff0000", "#00ff00","#000000"];
 
   const data = {
     labels,
