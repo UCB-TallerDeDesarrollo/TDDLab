@@ -27,13 +27,13 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
   const maxLinesInGraph = 100;
 
   const [metricSelected, setMetricSelected] = useState(() => {
-    const initialMetric = localStorage.getItem("selectedMetric") || "Dashboard";
+    const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
     return initialMetric;
   });
   useEffect(() => {
     const handleStorageChange = () => {
       console.log("storage event triggered");
-      const storedMetric = localStorage.getItem("selectedMetric") || "Dashboard";
+      const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
       setMetricSelected(storedMetric);
       setMetric(storedMetric);
       console.log("Detected localStorage change, new metric:", storedMetric);
