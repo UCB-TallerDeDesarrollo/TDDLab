@@ -154,10 +154,13 @@ function InvitationPage() {
             style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
             direction="column" // Alinea los elementos en una sola columna
           >
-            <Grid item>
+            <Grid item
+              style={{
+                width: user.displayName ? "400px" : "600px",
+                transition: "width 0.3s ease",
+              }}>
               <Card
                 sx={{
-                  width: 400, // Establece un ancho fijo para el primer Card
                   "&:hover": {
                     boxShadow: "md",
                     borderColor: "neutral.outlinedHoverBorder",
@@ -202,7 +205,7 @@ function InvitationPage() {
                     >
                       <Grid item>
                         <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                          {user.displayName ?? "Usuario"}
+                          {user.displayName ?? user.email}
                         </Typography>
                       </Grid>
                       <Grid item sx={{ marginTop: "auto" }}>
@@ -221,7 +224,8 @@ function InvitationPage() {
               </Card>
             </Grid>
             <Grid item>
-              <Card sx={{ width: 400 }} variant="outlined">
+              <Card sx={{ width: user.displayName ? "400px" : "500px",
+              transition: "width 0.5s ease" }} variant="outlined">
                 <CardMedia
                   component="img"
                   alt="Imagen de portada"
