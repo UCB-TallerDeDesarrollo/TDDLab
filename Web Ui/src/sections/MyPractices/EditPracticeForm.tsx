@@ -47,7 +47,7 @@ function EditPracticeDialog({
         onClose();
         window.location.reload();
       } else {
-        console.error("La practice actual no se encontró.");
+        console.error("La practica actual no se encontró.");
       }
     } catch (error) {
       console.error("Error al guardar los cambios:", error);
