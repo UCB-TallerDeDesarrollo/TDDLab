@@ -4,7 +4,7 @@ export interface PracticeDataObject {
   description: string;
   creation_date: Date;
   state: string;
-  userid: number;
+  userid: number | undefined;
 }
 
 export interface PracticeCreationObject {
