@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Timeline } from '../domain/Timeline';
 import { CommitPoint } from '../domain/CommitPoint';
-import { PushPoint } from '../domain/PushPoint';
 
 export class TimelineRepository {
     private readonly filePath: string;
@@ -11,7 +10,7 @@ export class TimelineRepository {
         this.filePath = path.join(extensionPath, 'script', 'tdd_log.json');
     }
 
-    async getTimelines(): Promise<Array<Timeline | CommitPoint | PushPoint>> {
+    async getTimelines(): Promise<Array<Timeline | CommitPoint >> {
         return new Promise((resolve, reject) => {
             fs.readFile(this.filePath, 'utf8', (err, data) => {
                 if (err) {
@@ -19,7 +18,7 @@ export class TimelineRepository {
                 }
                 try {
                     const jsonData = JSON.parse(data);
-                    const timeline: Array<Timeline | CommitPoint | PushPoint> = [];
+                    const timeline: Array<Timeline | CommitPoint > = [];
                     jsonData.forEach((item: any) => {
                         if (item.numPassedTests !== undefined && item.numTotalTests !== undefined) {
                             timeline.push(new Timeline(
@@ -32,12 +31,7 @@ export class TimelineRepository {
                                 item.commitId,
                                 new Date(item.commitTimestamp)
                             ));
-                        } else if (item.pushId && item.pushTimestamp) {
-                            timeline.push(new PushPoint(
-                                item.pushId,
-                                new Date(item.pushTimestamp)
-                            ));
-                        }
+                        } 
                     });
                     resolve(timeline);
                 } catch (error) {
