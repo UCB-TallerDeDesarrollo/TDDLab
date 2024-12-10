@@ -18,12 +18,11 @@
     font-size: 12px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    white-space: normal;
+    white-space: nowrap;
     pointer-events: none;
     border: 1px solid #3c3c3c;
     z-index: 9999;
-    max-width: 300px;
-    word-wrap: break-word;
+    max-width: 350px;
 }
 .timeline-dot:hover .popup {
     display: block;
