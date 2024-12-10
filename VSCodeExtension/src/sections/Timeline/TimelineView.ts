@@ -55,6 +55,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
         const styleUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this.context.extensionUri, 'media', 'style.css')
         );
+        const regex = /refactor/i;
     
         const timelineHtml = timeline.map(point => {
             if (point instanceof Timeline) {
@@ -72,18 +73,29 @@ export class TimelineView implements vscode.WebviewViewProvider {
                     </div>
                 `;
             } else if (point instanceof CommitPoint) {
+                let htmlPoint = '';
+                if (point.commitName && regex.test(point.commitName)) {
+                    htmlPoint += `
+                    <div class="timeline-dot" style="margin: 3px; background-color: skyblue; width: 25px; height: 25px; border-radius: 50px;">
+                        <span class="popup">
+                            <center><strong>Punto de Refactoring</strong></center>
+                        </span>
+                    </div>
+                `; }
                 const date = point.commitTimestamp.toLocaleDateString();
                 const time = point.commitTimestamp.toLocaleTimeString();
-                return `
+                htmlPoint += `
                     <div class="timeline-dot">
                         <img src="${gitLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
                         <span class="popup">
+                            <strong>Nombre:</strong> ${point.commitName ? point.commitName : ''}<br>
                             <strong>Commit ID:</strong> ${point.commitId}<br>
                             <strong>Fecha:</strong> ${date}<br>
                             <strong>Hora:</strong> ${time}
                         </span>
                     </div>
                 `;
+                return htmlPoint;
             }      
         }).join('');
     
