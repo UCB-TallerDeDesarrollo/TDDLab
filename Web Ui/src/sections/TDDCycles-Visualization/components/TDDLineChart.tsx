@@ -1,8 +1,7 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
 
 import {
@@ -22,9 +21,7 @@ import TDDList from "./TDDList";
 import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
-import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
-import axios from "axios";
-import TDDBar from "./TDDBarCycle";
+import TDDPie from "./graficas_prueba/TDDPie";
 
 ChartJS.register(
   CategoryScale,
@@ -45,8 +42,6 @@ interface LineChartProps {
   optionSelected: string;
   port:GithubAPIRepository;
   role:string;
-  complexity : ComplexityObject[] | null;
-  commitsCycles: CommitCycle[] | null;
 }
 
 function TDDLineCharts({
@@ -54,55 +49,10 @@ function TDDLineCharts({
   jobsByCommit,
   optionSelected,
   port,
-  role,
-  complexity,
-  commitsCycles
+  role
 }: LineChartProps) {
-  
   let dataChart: any = {};
   const chartRef = useRef<any>();
-
-  const [analyzeData, setAnalyzeData] = useState<string[]>([]); 
-  
-useEffect(() => {
-  if (optionSelected === "Complejidad" && complexity && filteredCommitsObject) {
-    const analyzeCommits = async () => {
-      const reversedCommits = filteredCommitsObject.slice().reverse();
-      const responses: string[] = [];
-
-      for (const commit of reversedCommits) {
-        const requestBody = { repoUrl: commit.html_url };
-
-        try {
-         
-          const response = await axios.post(
-            "https://api-ccn.vercel.app/analyze",
-            requestBody,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          console.log("Contenido de la respuesta:", response.data.metrics);
-
-          
-
-          responses.push(JSON.stringify(response.data));
-          
-        } catch (error) {
-          console.error("Error al procesar el commit:", error);
-        }
-      }
-
-      console.log("RESPONSES",responses)
-      setAnalyzeData(responses);
-    };
-
-    analyzeCommits();
-  }
-}, [optionSelected, filteredCommitsObject, complexity]);
 
   function getDataLabels() {
     if (filteredCommitsObject != null) {
@@ -134,7 +84,7 @@ useEffect(() => {
   function getColorConclusion() {
     if (filteredCommitsObject != null && jobsByCommit != null) {
       const conclusions = filteredCommitsObject.map((commit) => {
-     
+        console.log(commit.commit.message)
         let job = jobsByCommit?.find((job) => job.sha === commit.sha);
         if (job != null && job.conclusion === "success") return containsRefactor(commit.commit.message) ? "blue" : "green";
         else if (job === undefined) return "black";
@@ -275,12 +225,6 @@ useEffect(() => {
               afterBodyContent.push(
                 `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
               );
-
-              const complexityResponse = analyzeData[context[0].dataIndex];
-              console.log("EX1M"+complexityResponse)
-              if (complexityResponse) {
-                afterBodyContent.push(`Complejidad Ciclomática: ${complexityResponse}`);
-              }
               return afterBodyContent;
             },
           },
@@ -289,9 +233,9 @@ useEffect(() => {
     };
     return optionsLineChart;
   }
-  console.log(complexity)
+
   const onClick = (event: any) => {
-    if (getElementAtEvent(chartRef.current, event).length >= 0) {
+    if (getElementAtEvent(chartRef.current, event).length > 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
         .datasetIndex;
       const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
@@ -333,23 +277,9 @@ useEffect(() => {
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
-          case "Complejidad":
-            if (complexity != null) {
-             
-          
-
-              
-              dataChart = getDataChart(
-                complexity?.map((data) => data.ciclomaticComplexity),
-                "Complejidad Ciclomática"
-              );
-              optionsChart = getOptionsChart("Complejidad Ciclomática");
-              dataTestid = "graph-complexity";;
-            }
-            break;
-          
-      case "TddCiclos":
-        return <TDDBar CommitsCycles={commitsCycles || []}></TDDBar>
+      case "Pie":
+        return <TDDPie commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} />;
+       
     }
     return (
       <Line

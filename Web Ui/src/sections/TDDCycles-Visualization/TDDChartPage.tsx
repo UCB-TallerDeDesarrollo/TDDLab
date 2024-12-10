@@ -10,9 +10,6 @@ import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domai
 import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 import { CommentDataObject,CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
-import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
-import UsersRepository from "../../modules/Users/repository/UsersRepository";
-import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 
 interface CycleReportViewProps {
   port: GithubAPIRepository;
@@ -34,7 +31,6 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [searchParams] = useSearchParams();
   const commentsRepo = new TeacherCommentsRepository();
   const navigate = useNavigate();
-  const usersRepository = new UsersRepository();
 
   const repoOwner: string = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName: string = String(searchParams.get("repoName")) || "defaultRepo";
@@ -55,13 +51,10 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
-  const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
-  const [complexity,setComplexity] = useState<ComplexityObject[] | null>(null);
-  const [emails, setEmails] = useState<{ [key: number]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const getTDDCycles = new PortGetTDDCycles(port);
   const githubAPIAdapter = new GithubAPIAdapter();
@@ -71,14 +64,8 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
-      const tddCycles = await getTDDCycles.obtainCommitTddCycle(repoOwner, repoName);
-      console.log(commits)
-      const complexityList = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
-      setComplexity(complexityList)
       setJobsByCommit(jobsData);
       setCommitsInfo(commits);
-      setCommitsTddCycles(tddCycles);
-
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -90,16 +77,6 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     try {
       console.log("intentando conectar para comentarios: ")
       const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionIdcomments);
-      const emailMap: { [key: number]: string } = {};
-      for (const comment of commentsData) {
-      try {
-        const email = await getUserEmailById(comment.teacher_id);
-        emailMap[comment.teacher_id] = email;
-      } catch {
-        emailMap[comment.teacher_id] = "Correo no disponible";
-      }
-    }
-    setEmails(emailMap);
       console.log("siguiente paso comentarios")
       setComments(commentsData);  
     } catch (error) {
@@ -120,8 +97,6 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
       return;
     }
 
-    setIsSubmitting(true); 
-
     try {
       const commentData: CommentsCreationObject = {
         submission_id: submissionIdcomments,
@@ -138,8 +113,6 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
       obtainComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
-    } finally {
-    setIsSubmitting(false);
     }
   };
 
@@ -180,17 +153,8 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
       setCurrentIndex(nextIndex);
     }
   };
-  
-  const getUserEmailById =   async (userId: number): Promise<string> =>{
-    try{
-      const user= await usersRepository.getUserById(userId);
-      return user.email.toString();
 
-    }catch(error){
-      console.error("Error fetching student email:", error);
-      return "";
-    }
-  }
+
   const [metric, setMetric] = useState<string | null>(null); 
   return (
     <div className="container">
@@ -243,13 +207,10 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
             </div>
           )}
           <div className="mainInfoContainer">
-        
             <TDDCharts
               data-testId="cycle-chart"
               commits={commitsInfo}
               jobsByCommit={jobsByCommit}
-              complexity = {complexity}
-              commitsTddCycles = {commitsTddCycles}
               port={port}
               role={role}
               metric={metric}
@@ -260,47 +221,52 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
       )}
       {role != "student" && (
     <div className="feedback-container">
-      <h2 className="comments-title">Escribe un comentario:</h2>
-    <textarea
-      id="feedback"
-      value={feedback}
-      onChange={handleFeedbackChange}
-      placeholder="Ingrese su retroalimentación aquí"
-    />
-    <button
-      onClick={handleSubmitFeedback}
-      disabled={isSubmitting}
-    >
-      {isSubmitting ? (
-    <PropagateLoader color="#fff" size={5} />
-  ) : (
-    "Enviar"
-  )}
-    </button>
+      <label htmlFor="feedback">Retroalimentación de la tarea:</label>
+      <textarea
+        id="feedback"
+        value={feedback}
+        onChange={handleFeedbackChange}
+        placeholder="Ingrese su retroalimentación aquí"
+        style={{
+          width: "100%",
+          height: "100px",
+          padding: "10px",
+          marginTop: "5px",
+          borderRadius: "5px",
+          border: "1px solid #ccc"
+        }}
+      />
+      <button
+        onClick={handleSubmitFeedback}
+        style={{
+          marginTop: "10px",
+          padding: "10px 20px",
+          backgroundColor: "#36d7b7",
+          color: "#fff",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+          marginBottom: "20px"
+        }}
+      >
+        Enviar Retroalimentación
+      </button>
     </div>
   )}
   {!loading && comments && comments.length > 0 && (
         <div className="comments-section">
-        <h2 className="comments-title">Comentarios</h2>
-        <div className="comments-list">
-          {comments.map((comment, index) => (
-            <div key={index} className="comment-card">
-              <div className="comment-header">
-                <strong className="comment-author">
-                  {emails[comment.teacher_id] || "Cargando..."}
-                </strong>
-                <span className="comment-date">
-                  {new Date(comment.created_at).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="comment-body">
-                <p>{comment.content}</p>
-              </div>
-            </div>
-          ))}
+          <h2>Comentarios</h2>
+          <ul>
+            {comments.map((comment, index) => (
+              <li key={index} style={{ marginBottom: "10px", borderBottom: "1px solid #ddd" }}>
+                <p><strong>Autor:</strong> {comment.teacher_id}</p>
+                <p><strong>Comentario:</strong> {comment.content}</p>
+                <p><strong>Fecha:</strong> {new Date(comment.created_at).toLocaleDateString()}</p>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
-    )}
+      )}
     </div>
   );
 }

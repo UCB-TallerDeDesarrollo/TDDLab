@@ -13,17 +13,8 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
-import { 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogTitle, 
-  Button 
-} from "@mui/material";
+import { Button } from "@mui/material";
 
-
-
-import { VITE_API } from "../../../../config";
 
 ChartJS.register(
   Tooltip,
@@ -47,9 +38,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   role,
   port,
 }) => {
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
-  const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
   const chartRefCoverage = useRef<any>();
   const chartRefModifiedLines = useRef<any>();
   const chartRefTestCount = useRef<any>();
@@ -59,7 +47,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const minTestCount = 0;
   const maxTestCount = Math.max(...testCountsColor);
   const maxTest = Math.max(...testCounts);
-  const numberOfLabels = 4;
+  const numberOfLabels = 3;
   const step = Math.ceil((maxTestCount - minTestCount) / numberOfLabels);
   const labels = Array.from(
     { length: numberOfLabels },
@@ -69,19 +57,18 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
     let opacity = 2;
-    console.log(labels[3])
-    if (testCountsColor >= labels[1]) {
+
+    if (testCountsColor >= labels[1] && testCountsColor <= labels[0]) {
       greenValue = 110;
-  } else if (testCountsColor < labels[1] && testCountsColor >= labels[2]) {
+    } else if (testCountsColor >= labels[2] && testCountsColor < labels[1]) {
       greenValue = 110;
       opacity = 0.5;
-  } else if (testCountsColor < labels[2] && testCountsColor >= labels[3]) {
-      greenValue = 110;
-      opacity = 0.6;
-  } else if(testCountsColor < labels[3]) {
+
+    } else if (testCountsColor < labels[2]) {
       greenValue = 110;
       opacity = 0.2;
-  }
+    }
+
     return `rgba(0, ${greenValue}, 0, ${opacity})`;
   };
 
@@ -97,8 +84,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
-    localStorage.setItem("selectedMetric", graphText);
-    window.location.reload();
   };
 
   const getChartOptions = (yAxisText: string) => {
@@ -158,71 +143,25 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       ],
     };
   };
-  const chartRef = useRef<any>();  
+  const chartRef = useRef<any>();
 
-  const onClick = async (event: any) => {
+  const onClick = (event: any) => {
     const elements = getElementAtEvent(chartRef.current, event);
     if (elements.length > 0) {
-      const dataSetIndexNum = elements[0].datasetIndex;
+      const dataSetIndexNum = elements[0]
+        .datasetIndex;
+    
       const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit && commit.html_url) {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
-        const match = commit.html_url.match(regex);
-  
-        if (match) {
-          const repoOwner = match[1];
-          const repoName = match[2];
-          const sha = match[3];
-  
-          try {
-            const response = await fetch(
-              `${VITE_API}/TDDCycles/commit-timeline?sha=${sha}&repoName=${repoName}&owner=${repoOwner}`
-            );
-  
-            if (response.ok) {
-              const data = await response.json();
-              setCommitTimelineData(data); 
-              setSelectedCommit(commit); 
-              setOpenModal(true); 
-            } else {
-              console.error("Error al obtener los datos:", response.statusText);
-            }
-          } catch (error) {
-            console.error("Error al llamar a la API:", error);
-          }
-        }
-      }
+      commit?.html_url && window.open(commit.html_url, "_blank");
     }
   };
-  
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedCommit(null);
-  };
-  
   useEffect(() => {
   
   }, [graph]);
 
-  const [barraHeight, setBarraHeight] = useState(window.innerWidth / 3);
-
-  useEffect(() => {
-    const actualizarAltura = () => {
-      setBarraHeight(window.innerWidth / 3);
-    };
-
-    // Agregamos el listener de redimensionamiento
-    window.addEventListener('resize', actualizarAltura);
-
-    // Llamamos una primera vez para configurar la altura inicial
-    actualizarAltura();
-
-    // Limpiamos el listener cuando el componente se desmonte
-    return () => window.removeEventListener('resize', actualizarAltura);
-  }, []);
-
   return (
     <>
+
       {!graph ? (
         <div
           style={{
@@ -232,57 +171,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             justifyContent: "center",
           }}
         >
-          <div style={{ width: "85%", marginBottom: "20px",marginRight:"20px", position: 'relative' }}>
+          <div style={{ width: "85%", marginBottom: "20px" }}>
             <h2>Métricas de Commits con Cobertura de Código</h2>
-              <div
-                style={{
-                  position: "absolute",
-                  right: -230,
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-              <div
-                style={{
-                  width: "20px",
-                  height: `${barraHeight}px`, // Altura dinámica ajustada
-                  transform: 'translateX(-655%) translateY(6%)',
-                  background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
-                  textAlign: "center",
-                  display: "flex",
-                }}
-              >
-              <p
-                style={{
-                  
-                  transform: 'translateX(-33%) translateY(-18%)',
-                  color: "#000",
-
-                  fontWeight: "bold",
-                }}
-              >
-                Cobertura
-              </p>
-            </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  transform: 'translateX(-599%) translateY(3%)',
-                  justifyContent: "space-between",
-                  height: `${barraHeight*0.93}px`,
-                  fontSize: "12px",
-                  color: "#000",
-                }}
-              >
-                {labels.map((label) => (
-                  <p key={label} style={{ margin: 0 }}>
-                    {label}
-                  </p>
-                ))}
-              </div>
-            </div>
 
             <Bubble
               ref={chartRef}
@@ -349,120 +239,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 },
               }}
             />;
-            <Dialog
-              open={openModal}
-              onClose={handleCloseModal}
-              aria-labelledby="commit-details-dialog"
-              fullWidth
-              maxWidth="sm"
-            >
-              <DialogTitle id="commit-details-dialog">Commit Timeline</DialogTitle>
-              <DialogContent>
-                {commitTimelineData.length > 0 ? (
-                  <div>
-                    <div style={{ width: "100%", height: "300px" }}>
-                      <Bubble
-                        data={{
-                          datasets: [
-                            {
-                              label: "Execution Timeline",
-                              data: commitTimelineData.map((item, index) => ({
-                                x: index + 1,
-                                y: 1,
-                                r: 25, 
-                                backgroundColor: item.color === "green" ? "#28A745" : "#D73A49", 
-                                borderColor: item.color === "green" ? "#28A745" : "#D73A49",
-                                numTests: item.number_of_tests,
-                                passedTests: item.passed_tests, 
-                              })),
-                              backgroundColor: commitTimelineData.map((item) =>
-                                item.color === "green" ? "#28A745" : "#D73A49"
-                              ),
-                              borderColor: commitTimelineData.map((item) =>
-                                item.color === "green" ? "#28A745" : "#D73A49"
-                              ),
-                              borderWidth: 1,
-                            },
-                          ],
-                        }}
-                        options={{
-                          scales: {
-                            x: {
-                              title: {
-                                display: true,
-                                text: "Timestamp", 
-                              },
-                              ticks: {
-                                display: false, 
-                              },
-                            },
-                            y: {
-                              title: {
-                                display: true,
-                                text: "Execution",
-                              },
-                              ticks: {
-                                display: false, 
-                              },
-                              min: 0.5,
-                              max: 1.5, 
-                            },
-                          },
-                          plugins: {
-                            legend: { display: false }, 
-                            tooltip: {
-                              enabled: true,
-                              callbacks: {
-                                label: function (context: any) {
-                                  const dataPoint = context.raw;
-                                  return [
-                                    `Number of Tests: ${dataPoint.numTests}`,
-                                    `Passed Tests: ${dataPoint.passedTests}`,
-                                  ];
-                                },
-                              },
-                            },
-                          },
-                          elements: {
-                            point: {
-                              backgroundColor: (context: any) =>
-                                context.raw.backgroundColor, 
-                              borderColor: (context: any) =>
-                                context.raw.borderColor, 
-                              hoverBackgroundColor: (context: any) =>
-                                context.raw.backgroundColor, 
-                              hoverBorderColor: (context: any) =>
-                                context.raw.borderColor, 
-                              hoverRadius: 8, 
-                            },
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <p>No data available for this commit.</p>
-                )}
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCloseModal} color="primary">
-                  Cerrar
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (selectedCommit?.html_url) {
-                      window.open(selectedCommit.html_url, "_blank");
-                    }
-                  }}
-                  color="primary"
-                  variant="contained"
-                >
-                  Ir al Commit
-                </Button>
-              </DialogActions>
-            </Dialog>
-
-
 
             <div
               style={{
@@ -473,6 +249,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 marginBottom: "30px",
               }}
             >
+             
+
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Total Número de Tests")}
@@ -538,21 +316,87 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               </div>
             </div>
           </div>
-          <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              position: "absolute",
+              top: "65%", 
+              right: "9%",
+            }}
+          >
+            <div
+              style={{
+                width: "30px",
+                height: "400px", //fix
+                background:
+                  "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
+                textAlign: "center",
+                position: "relative",
+              }}
+            >
+              <p
+                style={{
+                  marginTop: "-30px",
+                  color: "#000",
+                  fontWeight: "bold",
+                  justifyContent: "center",
+                  alignContent: "center",
+                }}
+              >
+                {" "}
+                Cobertura
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "300px",
+                marginLeft: "10px",
+                fontSize: "12px",
+                color: "#000",
+                marginBottom:"90px"
+              }}
+            >
+              {labels.map((label) => (
+                <p key={label} style={{ margin: 0 }}>
+                  {label}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}
 
       {graph && (
         <>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              onClick={() => setGraph("")}
+              style={{
+                backgroundColor: "#052845",
+                color: "#fff",
+                marginTop: "20px",
+                marginBottom: "20px",
+                width: "20%",
+                padding: "8px 16px",
+                borderRadius: "4px",
+                fontWeight: "bold",
+                textTransform: "none",
+              }}
+            >
+              Volver al Dashboard
+            </Button>
+          </div>
           <TDDLineCharts
             port={port}
             role={role}
             filteredCommitsObject={commits}
             jobsByCommit={jobsByCommit}
             optionSelected={graph}
-            complexity={null}
-            commitsCycles= {null}
           />
         </>
 
