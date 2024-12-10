@@ -16,20 +16,67 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Filter from "./DatePicker";
 import { CreateAssignments } from "../../../modules/Assignments/application/CreateAssingment";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { SelectChangeEvent } from '@mui/material/Select';
+import { Warning, CheckCircle } from "@mui/icons-material";
+
+interface ValidationDialogProps {
+  open: boolean;
+  title: string;
+  closeText: string;
+  onClose: () => void;
+}
+
+const ValidationDialog = ({
+  open,
+  title,
+  closeText,
+  onClose,
+}: ValidationDialogProps) => {
+  const isError = title.toLowerCase().includes('error');
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 1,
+        color: isError ? '#d32f2f' : '#2e7d32'
+      }}>
+        {isError ? (
+          <Warning sx={{ color: '#d32f2f' }} />
+        ) : (
+          <CheckCircle sx={{ color: '#2e7d32' }} />
+        )}
+        {title}
+      </DialogTitle>
+      <DialogActions>
+        <Button 
+          onClick={onClose}
+          style={{ 
+            color: isError ? '#d32f2f' : '#2e7d32',
+            textTransform: 'none'
+          }}
+        >
+          {closeText}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
   groupid: number;
 }
 
-function Form({ open, handleClose,groupid }: Readonly<CreateAssignmentPopupProps>) {
+function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
     title: "",
@@ -41,6 +88,7 @@ function Form({ open, handleClose,groupid }: Readonly<CreateAssignmentPopupProps
     comment: "",
     groupid: groupid,
   });
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const isCreateButtonClicked = useRef(false);
 
   const handleSaveClick = async () => {
@@ -52,18 +100,39 @@ function Form({ open, handleClose,groupid }: Readonly<CreateAssignmentPopupProps
     isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
+    
     if (assignmentData.start_date > assignmentData.end_date) {
+      setValidationMessage("Error: La fecha de inicio no puede ser posterior a la fecha de fin");
+      setValidationDialogOpen(true);
+      setSave(false);
       return;
     }
+
     try {
+      // Verificamos si existe una tarea con el mismo nombre en el grupo
+      const assignments = await assignmentsRepository.getAssignmentsByGroupid(assignmentData.groupid);
+      const duplicateAssignment = assignments.find(
+        (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
+      );
+
+      if (duplicateAssignment) {
+        console.log("Error: Ya existe una tarea con el mismo nombre en este grupo");
+        setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
+        setValidationDialogOpen(true);
+        return;
+      }
+
       await createAssignments.createAssignment(assignmentData);
+      setValidationMessage("Tarea creada exitosamente");
+      setValidationDialogOpen(true);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setValidationMessage(error.response?.data?.error || "Error al crear la tarea");
+      setValidationDialogOpen(true);
     } finally {
       setSave(false);
     }
-    setValidationDialogOpen(true);
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -86,31 +155,40 @@ function Form({ open, handleClose,groupid }: Readonly<CreateAssignmentPopupProps
     }));
   };
 
- 
-const handleGroupChange = (event: SelectChangeEvent<number>) => {
-  const groupid = event.target.value as number;
+  const handleGroupChange = (event: SelectChangeEvent<number>) => {
+    const groupid = event.target.value as number;
 
-  setAssignmentData((prevData) => ({
-    ...prevData,
-    groupid,
-  }));
-};
-  
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      groupid,
+    }));
+  };
 
   const handleCancel = () => {
     handleClose();
   };
 
   const formInvalid = () => {
-    return assignmentData.title === "" || assignmentData.groupid === 0;
+    return assignmentData.title.trim() === "" || assignmentData.groupid === 0;
   };
 
   useEffect(() => {
     setSave(false);
-  }, [open]);
+    setValidationMessage("Tarea creada exitosamente");
+    setAssignmentData({
+      id: 0,
+      title: "",
+      description: "",
+      start_date: new Date(),
+      end_date: new Date(),
+      state: "pending",
+      link: "",
+      comment: "",
+      groupid: groupid,
+    });
+  }, [open, groupid]);
 
   const groupRepository = new GroupsRepository();
-  const [groups, setGroups] = useState<GroupDataObject[]>([]);
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -118,42 +196,46 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
       setGroups(allGroups);
     };
 
-    fetchGroups();
-  });
+    if (open) {
+      fetchGroups();
+    }
+  }, [open]);
+
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear tarea</DialogTitle>
+          <DialogTitle style={{ fontSize: "0.8rem" }}>Crear tarea</DialogTitle>
           <DialogContent>
-          <section>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel htmlFor="group-select" id="group-select-label">
-                Grupo
-              </InputLabel>
-              <Select
-                labelId="group-select-label"
-                id="group-select"
-                value={assignmentData.groupid}
-                onChange={handleGroupChange}
-                label="Grupo"
-                fullWidth
-                style={{ visibility: 'visible' }} 
-              >
-                <MenuItem value={0}>Selecciona un grupo</MenuItem>
-                {groups.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.groupName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </section>
+            <section className="mb-4">
+              <FormControl fullWidth variant="outlined" margin="normal">
+                <InputLabel htmlFor="group-select" id="group-select-label">
+                  Grupo
+                </InputLabel>
+                <Select
+                  labelId="group-select-label"
+                  id="group-select"
+                  value={assignmentData.groupid}
+                  onChange={handleGroupChange}
+                  label="Grupo"
+                  error={save && assignmentData.groupid === 0}
+                >
+                  <MenuItem value={0}>Selecciona un grupo</MenuItem>
+                  {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.groupName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </section>
+            
             <TextField
-              error={formInvalid() && !!save}
+              error={save && assignmentData.title.trim() === ""}
+              helperText={save && assignmentData.title.trim() === "" ? "El título es requerido" : ""}
               autoFocus
               margin="dense"
-              id="assigment-title"
+              id="assignment-title"
               name="assignmentTitle"
               label="Nombre de la Tarea*"
               type="text"
@@ -162,6 +244,7 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
               onChange={(e) => handleInputChange(e, "title")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
+            
             <TextField
               multiline
               rows={3.7}
@@ -175,12 +258,14 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
               onChange={(e) => handleInputChange(e, "description")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
-            <section>
+            
+            <section className="mt-4">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
               </LocalizationProvider>
             </section>
           </DialogContent>
+          
           <DialogActions>
             <Button
               onClick={handleCancel}
@@ -192,18 +277,26 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
               onClick={handleSaveClick}
               color="primary"
               style={{ textTransform: "none" }}
+              disabled={formInvalid()}
             >
               Crear
             </Button>
           </DialogActions>
         </>
       )}
-      {!!validationDialogOpen && (
+      
+      {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
-          title="Tarea creada exitosamente"
+          title={validationMessage}
           closeText="Cerrar"
-          onClose={() => window.location.reload()}
+          onClose={() => {
+            if (validationMessage.includes("exitosamente")) {
+              window.location.reload();
+            } else {
+              setValidationDialogOpen(false);
+            }
+          }}
         />
       )}
     </Dialog>
@@ -211,4 +304,3 @@ const handleGroupChange = (event: SelectChangeEvent<number>) => {
 }
 
 export default Form;
-
