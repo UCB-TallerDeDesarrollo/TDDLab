@@ -10,6 +10,7 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
+import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
@@ -20,6 +21,8 @@ import { getSessionCookie } from "./modules/User-Authentication/application/getS
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import UsersByGroupPage from "./sections/User/UserBygroupPage";
+import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
+
 const navArrayLinks = [
   {
     title: "Grupos",
@@ -37,6 +40,12 @@ const navArrayLinks = [
     title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
+    access: ["admin", "teacher"],
+  },
+  {
+    title: "Mis Practicas",
+    path: "/mis-practicas",
+    icon: <NoteAdd />,
     access: ["admin", "teacher"],
   },
 ];
@@ -73,7 +82,10 @@ function App() {
           path="/"
           element={
             <ProtectedRouteComponent>
-              <GestionTareas userRole={authData.userRole ?? ""} userGroupid={authData.usergroupid ?? -1} />
+              <GestionTareas
+                userRole={authData.userRole ?? ""}
+                userGroupid={authData.usergroupid ?? -1}
+              />
             </ProtectedRouteComponent>
           }
         />
@@ -81,7 +93,10 @@ function App() {
           path="/assignment/:id"
           element={
             <ProtectedRouteComponent>
-              <AssignmentDetail role={authData.userRole ?? ""} userid={authData.userid ?? -1} />
+              <AssignmentDetail
+                role={authData.userRole ?? ""}
+                userid={authData.userid ?? -1}
+              />
             </ProtectedRouteComponent>
           }
         />
@@ -117,15 +132,34 @@ function App() {
           element={
             <ProtectedRouteComponent>
               <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="aditionalgraph" />
+              <TDDChartPage
+                port={new GithubAPIAdapter()}
+                role={authData.userRole ?? ""}
+                teacher_id={authData.userid ?? -1}
+                graphs="graph"
+              />
             </ProtectedRouteComponent>
           }
         />
         <Route path="/invitation" element={<InvitationPage />} />
-        <Route path="/users/group/:groupid" element={
-          <ProtectedRouteComponent>
-            <UsersByGroupPage />
-          </ProtectedRouteComponent>
-        } />
+
+        <Route
+          path="/mis-practicas"
+          element={
+            <MyPracticesPage
+              userRole={authData.userRole ?? ""}
+              userGroupid={authData.usergroupid ?? -1}
+            />
+          }
+        />
+        <Route
+          path="/users/group/:groupid"
+          element={
+            <ProtectedRouteComponent>
+              <UsersByGroupPage />
+            </ProtectedRouteComponent>
+          }
+        />
       </Routes>
     </Router>
   );
