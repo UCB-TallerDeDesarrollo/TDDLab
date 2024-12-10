@@ -218,7 +218,10 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
               <button
                 data-testid="previous-student"
                 className="nav-button"
-                onClick={goToPreviousStudent}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "Dashboard");
+                  goToPreviousStudent();
+                }}
                 disabled={currentIndex === 0}
                 style={{
                   backgroundColor: currentIndex === 0 ? "#B0B0B0" : "#052845",
@@ -229,7 +232,10 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
               <button
                 data-testid="next-student"
                 className="nav-button"
-                onClick={goToNextStudent}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "Dashboard");
+                  goToNextStudent();
+                }}
                 disabled={currentIndex === fetchedSubmissions.length - 1}
                 style={{
                   backgroundColor:
