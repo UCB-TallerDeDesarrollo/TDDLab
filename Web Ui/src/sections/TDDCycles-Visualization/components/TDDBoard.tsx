@@ -27,6 +27,7 @@ import handleUploadFile from "../../Assignments/AssignmentDetail";
 
 
 import { VITE_API } from "../../../../config";
+import { handleUploadTDDLogFile } from "../../../modules/Assignments/application/HandleUploadTDDLogFile";
 
 ChartJS.register(
   Tooltip,
@@ -78,21 +79,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     setIsFileDialogOpen(false);
   };
 
-  const handleUploadFileWrapper = async (file: any) => {
-    try {
-      await handleUploadFile(file);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
+  const handleFileUpload = async (file: File) => {
+    await handleUploadTDDLogFile(file, studentSubmission?.repository_link);
   };
   
-  <FileUploadDialog
-    open={isFileDialogOpen}
-    onClose={handleCloseFileDialog}
-    onUpload={handleUploadFileWrapper} // Envía esta función
-  />
-  
-
   const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
     let opacity = 2;

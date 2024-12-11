@@ -12,6 +12,8 @@ import JSZip from "jszip";
 import CryptoJS from "crypto-js";
 import {VITE_API} from "../../../config.ts";
 
+import { handleUploadTDDLogFile } from "../../modules/Assignments/application/HandleUploadTDDLogFile.ts";
+
 
 
 import {
@@ -325,99 +327,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     setIsFileDialogOpen(false);
   };
 
-  const handleUploadFile = async (file: File) => {
-    try {
-      console.log("Archivo recibido:", file);
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const encryptedContent = reader.result as string;
-        const binaryData = decryptContent(encryptedContent, "iDHJp8o32$%u4drMjPLq8c!7S@wZEXWC");
-        const fileContent = await extractFileFromZip(binaryData, "tdd_log.json");
-        const jsonData = parseJSON(fileContent);
-        const updatedData = enrichWithRepoData(jsonData, studentSubmission?.repository_link);
-        console.log("JSON actualizado:", updatedData);
-        
-        const API_URL = `${VITE_API}/TDDCycles/upload-log`;
-
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedData),
-        });
-  
-        if (response.ok) {
-          console.log("Archivo subido exitosamente.");
-          const responseData = await response.json();
-          console.log("Respuesta de la API:", responseData);
-        } else {
-          console.error("Error al subir el archivo:", response.statusText);
-          throw new Error(`Error en el POST: ${response.statusText}`);
-        }
-
-        return updatedData;
-      };
-      reader.readAsText(file);
-    } catch (error) {
-      console.error("Error al procesar el archivo:", error);
-      throw error;
-    }
-  };
-  
-  const decryptContent = (encryptedContent: string, decryptionKey: string): Uint8Array => {
-    const decryptedBytes = CryptoJS.AES.decrypt(encryptedContent, decryptionKey);
-    const base64Data = decryptedBytes.toString(CryptoJS.enc.Utf8);
-  
-    if (!base64Data) {
-      throw new Error("Error al desencriptar");
-    }
-  
-    const binaryString = atob(base64Data);
-    const binaryData = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      binaryData[i] = binaryString.charCodeAt(i);
-    }
-  
-    return binaryData;
-  };
-  
-  const extractFileFromZip = async (binaryData: Uint8Array, targetFileName: string): Promise<string> => {
-    const zip = new JSZip();
-    const loadedZip = await zip.loadAsync(binaryData);
-    const targetFile = loadedZip.file(targetFileName);
-    if (!targetFile) {
-      throw new Error(`El archivo ${targetFileName} no se encuentra en el ZIP.`);
-    }
-    return targetFile.async("string");
-  };
-  
-  const parseJSON = (fileContent: string): any => {
-    try {
-      return JSON.parse(fileContent);
-    } catch (error) {
-      throw new Error("Error al parsear el JSON original.");
-    }
-  };
-  
-  const enrichWithRepoData = (jsonData: any, repoLink?: string) => {
-    if (!repoLink) {
-      throw new Error("No se encontró el enlace del repositorio.");
-    }
-  
-    const repoMatch = repoLink.match(/https:\/\/github\.com\/([^/]+)\/([^/]+)/);
-    if (!repoMatch) {
-      throw new Error("El enlace del repositorio no es válido.");
-    }
-  
-    const repoOwner = repoMatch[1];
-    const repoName = repoMatch[2];
-  
-    return {
-      repoName,
-      repoOwner,
-      log: jsonData,
-    };
+  const handleFileUpload = async (file: File) => {
+    await handleUploadTDDLogFile(file, studentSubmission?.repository_link);
   };
   
   
@@ -818,7 +729,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       <FileUploadDialog
         open={isFileDialogOpen}
         onClose={handleCloseFileDialog}
-        onUpload={handleUploadFile}
+        onUpload={handleFileUpload}
       />
     </div>
   );
