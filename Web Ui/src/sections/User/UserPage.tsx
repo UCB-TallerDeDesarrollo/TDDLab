@@ -145,7 +145,7 @@ function UserPage() {
                     lineHeight: "2",
                   }}
                 >
-                  Curso
+                  Grupo
                 </TableCell>
                 <TableCell
                   sx={{
