@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { handleSignInWithGitHub } from "../../../src/modules/User-Authentication/application/signInWithGithub";
 import { mockUserCredential } from "../../modules/__mocks__/Auth/mockedUserCredential";
 import { RegisterUserOnDb } from "../../../src/modules/User-Authentication/application/registerUserOnDb";
+import { MemoryRouter } from "react-router-dom";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -54,7 +55,11 @@ describe("InvitationPage component", () => {
     ).mockResolvedValue(mockedUser);
   });
   it("Renders the Sign Up button and press it", async () => {
-    const { getByText } = render(<InvitationPage />);
+    const { getByText } = render(
+      <MemoryRouter>
+        <InvitationPage />
+      </MemoryRouter>
+    );
     const signUpButton = getByText("Registrarse");
 
     fireEvent.click(signUpButton);
