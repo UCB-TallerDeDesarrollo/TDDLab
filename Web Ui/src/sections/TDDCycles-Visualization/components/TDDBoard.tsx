@@ -361,7 +361,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               fullWidth
               maxWidth="sm"
             >
-              <DialogTitle id="commit-details-dialog">Commit Timeline</DialogTitle>
+              <DialogTitle id="commit-details-dialog">
+                {`Commit Timeline del commit ${selectedCommit?.sha}`}
+              </DialogTitle>
+
               <DialogContent>
                 {commitTimelineData.length > 0 ? (
                   <div>
