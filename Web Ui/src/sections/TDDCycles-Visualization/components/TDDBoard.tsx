@@ -360,12 +360,29 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               aria-labelledby="commit-details-dialog"
               fullWidth
               maxWidth="sm"
+              sx={{
+                "& .MuiDialog-paper": {
+                  padding: "25px",
+                  borderRadius: "10px",
+                },
+              }}
             >
-              <DialogTitle id="commit-details-dialog">Commit Timeline</DialogTitle>
+              <DialogTitle 
+                id="commit-details-dialog"
+                style={{textAlign: "center", fontSize:"2em", fontWeight:"bold"}}>
+                  {`Timeline del commit ${commits.length - commits.findIndex((commit) => commit.sha === selectedCommit?.sha)} `}
+              </DialogTitle>
               <DialogContent>
+              {selectedCommit?.commit?.message && (
+                <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                  <div style={{fontFamily:"monospace", fontSize: "1.25em", marginBottom: "10px"}}>
+                    ({selectedCommit?.sha})
+                  </div>
+                </div>
+              )}
                 {commitTimelineData.length > 0 ? (
                   <div>
-                    <div style={{ width: "100%", height: "300px" }}>
+                    <div style={{ width: "100%", height: "300px"}}>
                       <Bubble
                         data={{
                           datasets: [
@@ -443,9 +460,21 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                       />
                     </div>
                   </div>
+                  
                 ) : (
-                  <p>El estudiante todavía no subió la sesión de la extensión del TDD Lab a la plataforma</p>
+                  <p 
+                    style={{textAlign:"center", margin:"2em 0px 2em 0px"}}>
+                    No hay un registro de ejecución vinculante para este commit
+                  </p>
                 )}
+                {selectedCommit?.commit?.message && (
+                <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                  <strong>Mensaje:</strong> 
+                  <span style={{ fontStyle: "italic" }}>
+                    {selectedCommit.commit.message}
+                  </span>
+                </div>
+              )}
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseModal} color="primary">
