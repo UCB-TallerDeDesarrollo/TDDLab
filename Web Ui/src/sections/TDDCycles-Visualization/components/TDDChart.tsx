@@ -17,6 +17,7 @@ interface CycleReportViewProps {
   setMetric: (metric: string) => void; // Agregamos una función para actualizar el metric
   port: GithubAPIRepository;
   role: string;
+  
 }
 
 function TDDCharts({ commits, jobsByCommit, metric, setMetric,port,role }: Readonly<CycleReportViewProps>) {
