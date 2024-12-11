@@ -424,6 +424,23 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Ver gráfica
               </Button>
             </TableCell>
+            <TableCell>
+              <Button
+                variant="contained"
+                disabled={submission.repository_link === ""}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "Dashboard");
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id)}}
+                color="primary"
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Ver gráficas adicionales
+              </Button>
+            </TableCell>
           </TableRow>
         );
       })
@@ -713,6 +730,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     <TableCell>Fecha de finalización</TableCell>
                     <TableCell>Comentario</TableCell>
                     <TableCell>Gráfica</TableCell>
+                    <TableCell>Gráficas Adicionales</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
