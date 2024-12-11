@@ -495,7 +495,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                     <p style={{ textAlign: "center", margin: "2em 0px 2em 0px" }}>
                       No hay un registro de ejecución vinculante para este commit.
                     </p>
-                    <div style={{ textAlign: "center", marginTop: "1em" }}>
+                    <div style={{ textAlign: "center", margin: "1em 0 1em 0" }}>
                       <Button
                         variant="contained"
                         color="primary"
