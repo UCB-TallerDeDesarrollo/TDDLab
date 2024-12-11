@@ -370,11 +370,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                         data={{
                           datasets: [
                             {
-                              label: "Execution Timeline",
+                              label: "Ejecución",
                               data: commitTimelineData.map((item, index) => ({
                                 x: index + 1,
                                 y: 1,
-                                r: 25, 
+                                r: 15, 
                                 backgroundColor: item.color === "green" ? "#28A745" : "#D73A49", 
                                 borderColor: item.color === "green" ? "#28A745" : "#D73A49",
                                 numTests: item.number_of_tests,
@@ -395,7 +395,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                             x: {
                               title: {
                                 display: true,
-                                text: "Timestamp", 
                               },
                               ticks: {
                                 display: false, 
@@ -404,7 +403,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                             y: {
                               title: {
                                 display: true,
-                                text: "Execution",
                               },
                               ticks: {
                                 display: false, 
@@ -446,7 +444,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <p>No data available for this commit.</p>
+                  <p>El estudiante todavía no subió la sesión de la extensión del TDD Lab a la plataforma</p>
                 )}
               </DialogContent>
               <DialogActions>
