@@ -41,7 +41,7 @@
       },
       {
         "command": "TDD.exportCommand",
-        "title": "Export TDD Data"
+        "title": "Exportar sesion TDDLab"
       }
     ],
     "viewsContainers": {
