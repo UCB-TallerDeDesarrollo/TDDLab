@@ -360,6 +360,12 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               aria-labelledby="commit-details-dialog"
               fullWidth
               maxWidth="sm"
+              sx={{
+                "& .MuiDialog-paper": {
+                  padding: "25px",
+                  borderRadius: "10px",
+                },
+              }}
             >
               <DialogTitle 
                 id="commit-details-dialog"
@@ -369,18 +375,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <DialogContent>
               {selectedCommit?.commit?.message && (
                 <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                  <div style={{ fontSize: "1.25em", marginBottom: "5px"}}>
+                  <div style={{fontFamily:"monospace", fontSize: "1.25em", marginBottom: "10px"}}>
                     ({selectedCommit?.sha})
                   </div>
-                  <strong>Mensaje:</strong> 
-                  <span style={{ fontStyle: "italic" }}>
-                    {selectedCommit.commit.message}
-                  </span>
                 </div>
               )}
                 {commitTimelineData.length > 0 ? (
                   <div>
-                    <div style={{ width: "100%", height: "300px" }}>
+                    <div style={{ width: "100%", height: "300px"}}>
                       <Bubble
                         data={{
                           datasets: [
@@ -458,9 +460,18 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                       />
                     </div>
                   </div>
+                  
                 ) : (
                   <p>El estudiante todavía no subió la sesión de la extensión del TDD Lab a la plataforma</p>
                 )}
+                {selectedCommit?.commit?.message && (
+                <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                  <strong>Mensaje:</strong> 
+                  <span style={{ fontStyle: "italic" }}>
+                    {selectedCommit.commit.message}
+                  </span>
+                </div>
+              )}
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseModal} color="primary">
