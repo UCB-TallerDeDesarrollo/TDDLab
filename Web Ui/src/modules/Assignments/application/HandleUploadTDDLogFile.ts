@@ -2,7 +2,13 @@ import JSZip from "jszip";
 import CryptoJS from "crypto-js";
 import { VITE_API } from "../../../../config";
 
-export const handleUploadTDDLogFile = async (file: File, repositoryLink?: string): Promise<void> => {
+export const handleUploadTDDLogFile = async (
+    file: File, 
+    repositoryLink?: string,
+    repoOwner?: string,
+    repoName?: string
+
+): Promise<void> => {
   try {
     console.log("Archivo recibido:", file);
     const reader = new FileReader();
@@ -13,7 +19,10 @@ export const handleUploadTDDLogFile = async (file: File, repositoryLink?: string
       const fileContent = await extractFileFromZip(binaryData, "tdd_log.json");
       const jsonData = parseJSON(fileContent);
 
-      const updatedData = enrichWithRepoData(jsonData, repositoryLink);
+      const updatedData = repositoryLink
+        ? enrichWithRepoData(jsonData, repositoryLink)
+        : { repoName, repoOwner, log: jsonData };
+    
       console.log("JSON actualizado:", updatedData);
       const response = await fetch(`${VITE_API}/TDDCycles/upload-log`, {
         method: "POST",
