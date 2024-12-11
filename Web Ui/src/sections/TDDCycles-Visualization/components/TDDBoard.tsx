@@ -362,7 +362,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               maxWidth="sm"
             >
               <DialogTitle 
-                id="commit-details-dialog">
+                id="commit-details-dialog"
+                style={{textAlign: "center"}}>
                   {`Timeline del commit ${commits.findIndex((commit) => commit.sha === selectedCommit?.sha) + 1} 
                   (${selectedCommit?.sha})`}
               </DialogTitle>
