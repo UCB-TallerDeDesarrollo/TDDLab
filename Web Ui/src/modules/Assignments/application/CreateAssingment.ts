@@ -7,6 +7,13 @@ export class CreateAssignments {
   ) {}
 
   async createAssignment(assignmentData: AssignmentDataObject) {
-    return await this.assignmentsRepository.createAssignment(assignmentData);
+    try {
+      return await this.assignmentsRepository.createAssignment(assignmentData);
+    } catch (error) {
+      console.error("Error al crear la tarea:", error);
+      throw error; 
+      
+    }
   }
+  
 }
