@@ -271,8 +271,30 @@ describe('executeQuery', () => {
         [email]
       );
     });
-
   });
+
+  describe('removeUserFromGroup', () => {
+    it('should delete the user from the group successfully', async () => {
+      const userId = 1;
+      const mockQueryResult = { rowCount: 1 }; // Simula la eliminación exitosa
+  
+      clientQueryMock.mockResolvedValue(mockQueryResult);
+  
+      // Espiar console.log
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+  
+      await repository.removeUserFromGroup(userId);
+  
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "DELETE FROM userstable WHERE id = $1",
+        [userId]
+      );
+      expect(consoleLogSpy).toHaveBeenCalledWith(`Usuario con ID ${userId} ha sido eliminado`);
+  
+      consoleLogSpy.mockRestore(); // Restaurar el comportamiento original de console.log
+    });
+  });  
+
   describe("updateUserGroup", () => {
     it("should update the user's group and return the updated user", async () => {
       const userId = 1;
@@ -312,4 +334,4 @@ describe('executeQuery', () => {
       await expect(repository.updateUser(userId, newGroupId)).rejects.toThrow("Database error");
       expect(clientQueryMock).not.toHaveBeenCalled();
     });
-  });
+  }); 
