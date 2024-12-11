@@ -8,9 +8,6 @@ import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import FileUploadDialog from "./components/FileUploadDialog";
-import JSZip from "jszip";
-import CryptoJS from "crypto-js";
-import {VITE_API} from "../../../config.ts";
 
 import { handleUploadTDDLogFile } from "../../modules/Assignments/application/HandleUploadTDDLogFile.ts";
 
