@@ -3,6 +3,8 @@ import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { GithubAPIAdapter } from "./modules/TDDCycles-Visualization/repository/GithubAPIAdapter"; //Revisar el cambio por puerto
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
+import TDDAditionalChartPage from "./sections/TDDCycles-Visualization/TDDAditionalChartPage";
+
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
@@ -109,6 +111,14 @@ function App() {
           element={
             <ProtectedRouteComponent>
               <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} />
+            </ProtectedRouteComponent>
+          }
+        />
+        <Route
+          path="/aditionalgraph"
+          element={
+            <ProtectedRouteComponent>
+              <TDDAditionalChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} />
             </ProtectedRouteComponent>
           }
         />
