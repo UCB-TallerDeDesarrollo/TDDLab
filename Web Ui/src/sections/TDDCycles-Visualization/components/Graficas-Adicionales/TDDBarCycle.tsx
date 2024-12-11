@@ -9,7 +9,7 @@ import {
   LinearScale,
 } from "chart.js";
 
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
+import { CommitCycle } from "../../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 
 ChartJS.register(Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 

@@ -113,6 +113,9 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
             <MenuItem value={"TddCiclos"}>
               TddCycles
             </MenuItem>
+            <MenuItem value={"Pie"}>
+              Distribución de Commits
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
