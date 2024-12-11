@@ -90,13 +90,26 @@ async createAssignment(req: Request, res: Response): Promise<void> {
     });
     res.status(201).json(newAssignment);
   } catch (error) {
-    if (error instanceof Error && error.message === "Ya existe una tarea con el mismo nombre en este grupo") {
-      res.status(400).json({ error: error.message });
+    if (error instanceof Error) {
+      if (error.message === "Ya existe una tarea con el mismo nombre en este grupo") {
+        res.status(400).json({ error: error.message });
+      } else if (error.message.includes("Limite de caracteres excedido")) {
+        res.status(400).json({
+          error: error.message,
+          message: `El titulo no puede tener mas de 50 caracteres.`
+        });
+      } else {
+        console.error("Unexpected error: ", error);
+        res.status(500).json({ error: "Server error" });
+      }
     } else {
+      console.error("Unexpected error: ", error);
       res.status(500).json({ error: "Server error" });
     }
   }
 }
+
+
 
   async deleteAssignment(req: Request, res: Response): Promise<void> {
     try {
