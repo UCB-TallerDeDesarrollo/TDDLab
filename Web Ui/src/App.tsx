@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
+import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import { GithubAPIAdapter } from "./modules/TDDCycles-Visualization/repository/GithubAPIAdapter"; //Revisar el cambio por puerto
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
@@ -96,6 +97,18 @@ function App() {
               <AssignmentDetail
                 role={authData.userRole ?? ""}
                 userid={authData.userid ?? -1}
+              />
+            </ProtectedRouteComponent>
+          }
+        />
+
+        <Route
+          path="/practice/:id"
+          element={
+            <ProtectedRouteComponent>
+              <PracticeDetail
+                // role={authData.userRole ?? ""}
+                // userid={authData.userid ?? -1}
               />
             </ProtectedRouteComponent>
           }
