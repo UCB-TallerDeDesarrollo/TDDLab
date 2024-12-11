@@ -4,7 +4,7 @@ import { VITE_API } from "../../../../config";
 import { VITE_DECRYPTION_KEY } from "../../../../config";
 
 
-export const handleUploadTDDLogFile = async (
+export const UploadTDDLogFile = async (
     file: File, 
     repositoryLink?: string,
     repoOwner?: string,

@@ -25,7 +25,7 @@ import {
 
 
 import { VITE_API } from "../../../../config";
-import { handleUploadTDDLogFile } from "../../../modules/Assignments/application/HandleUploadTDDLogFile";
+import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
 import { useSearchParams } from "react-router-dom";
 import FileUploadDialog from "../../Assignments/components/FileUploadDialog";
 
@@ -85,7 +85,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const handleFileUpload = async (file: File) => {
     if (repoOwner && repoName) {
       try {
-        await handleUploadTDDLogFile(file, undefined, repoOwner, repoName);
+        await UploadTDDLogFile(file, undefined, repoOwner, repoName);
         console.log("Archivo subido exitosamente.");
       } catch (error) {
         console.error("Error al subir el archivo:", error);
