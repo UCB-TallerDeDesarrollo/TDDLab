@@ -9,6 +9,7 @@ import groupsRouter from "./routes/groupsRouter";
 import submissionsRouter from "./routes/submissionRoutes";
 import teacherCommentsOnSubmissionRouter from "./routes/teacherCommentsOnSubmissionsRoutes";
 import practicesRouter from "./routes/practicesRoutes";
+import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 
 const app = express();
 const port = 3000;
@@ -23,6 +24,7 @@ app.use("/api/groups", groupsRouter);
 app.use("/api/submissions", submissionsRouter);
 app.use("/api/commentsSubmission", teacherCommentsOnSubmissionRouter);
 app.use("/api/practices", practicesRouter);
+app.use("/api/practiceSubmissions", practiceSubmissionsRouter);
 
 server(app, port);
 export default app;
