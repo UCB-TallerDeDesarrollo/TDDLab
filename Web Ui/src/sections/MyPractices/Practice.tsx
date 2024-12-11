@@ -8,36 +8,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
-import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-import { FaCheck } from "react-icons/fa6";
-import { TbRotateClockwise2 } from "react-icons/tb";
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case "pending":
-      return <PriorityHighIcon style={{ fontSize: 26 }} />;
-    case "in progress":
-      return (
-        <TbRotateClockwise2 size={27.4} style={{ strokeWidth: "2.7px" }} />
-      );
-    case "delivered":
-      return <FaCheck size={24.4} style={{ strokeWidth: "9.5px" }} />;
-    default:
-      return null;
-  }
-};
-const getStatusTooltip = (status: string) => {
-  switch (status) {
-    case "pending":
-      return "Tarea no iniciada";
-    case "in progress":
-      return "Tarea en progreso";
-    case "delivered":
-      return "Tarea enviada";
-    default:
-      return "";
-  }
-};
+import { getStatusIcon, getStatusTooltip } from "../Shared/statusHelpers";
 
 interface PracticeProps {
   practice: PracticeDataObject;
@@ -45,7 +16,6 @@ interface PracticeProps {
   handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
   handleRowHover: (index: number | null) => void;
-  role: string;
 }
 
 const Practice: React.FC<PracticeProps> = ({
