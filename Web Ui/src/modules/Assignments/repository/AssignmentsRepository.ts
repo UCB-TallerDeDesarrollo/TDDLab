@@ -66,8 +66,15 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   }
 
   async createAssignment(assignmentData: AssignmentDataObject): Promise<void> {
-    // Send a POST request to create a new assignment
-    await axios.post(API_URL, assignmentData);
+    try {
+      await axios.post(API_URL, assignmentData);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.message || "Error al crear la tarea");
+      } else {
+        throw new Error("Error de red o desconocido al crear la tarea");
+      }
+    }
   }
 
   async updateAssignment(
