@@ -56,17 +56,17 @@ function EditPracticeDialog({
   const getCurrentPractice = async () => {
     const practicesRepository = new PracticesRepository();
     try {
-      const assignment = await practicesRepository.getPracticeById(practiceId);
-      return assignment;
+      const practice = await practicesRepository.getPracticeById(practiceId);
+      return practice;
     } catch (error) {
-      console.error("Error obteniendo la tarea actual:", error);
+      console.error("Error obteniendo la practica actual:", error);
       throw error;
     }
   };
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Tarea : {currentTitle}</DialogTitle>
+      <DialogTitle>Editar Practica : {currentTitle}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
@@ -80,24 +80,23 @@ function EditPracticeDialog({
           />
           <TextField
             id="descripcion"
-            label="Descripción"
+            label="Descripcion"
             variant="outlined"
             size="small"
             required
             sx={{
               "& label.Mui-focused": {
-                color: "#001F3F",
+                color: "#001f3f",
               },
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "#001F3F",
+                  borderColor: "#001f3f",
                 },
               },
             }}
             onChange={(e) => setDescription(e.target.value)}
             defaultValue={currentDescription}
           />
-          <section>{/* The rest of your components go here */}</section>
         </Box>
       </DialogContent>
       <DialogActions>
@@ -107,7 +106,7 @@ function EditPracticeDialog({
           style={{
             textTransform: "none",
           }}
-          onClick={handleSaveChanges} // Asocia la función handleSaveChanges al evento onClick del botón
+          onClick={handleSaveChanges}
         >
           Guardar Cambios
         </Button>
