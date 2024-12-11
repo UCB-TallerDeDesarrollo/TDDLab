@@ -366,6 +366,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 style={{textAlign: "center"}}>
                   {`Timeline del commit ${commits.findIndex((commit) => commit.sha === selectedCommit?.sha) + 1} 
                   (${selectedCommit?.sha})`}
+                  {selectedCommit?.commit?.message}
               </DialogTitle>
               <DialogContent>
                 {commitTimelineData.length > 0 ? (
