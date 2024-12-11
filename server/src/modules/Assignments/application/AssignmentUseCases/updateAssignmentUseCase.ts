@@ -11,6 +11,12 @@ class UpdateAssignment {
     assignmentId: string,
     updatedAssignment: AssignmentCreationObject
   ): Promise<AssignmentCreationObject | null> {
+    const MAX_TITLE_LENGTH = 50;
+    if (updatedAssignment.title.length > MAX_TITLE_LENGTH) {
+      throw new Error(
+        `Limite de caracteres excedido. El titulo no puede tener mas de ${MAX_TITLE_LENGTH} caracteres.`
+      );
+    }
     try {
       const updatedAssignmentResult = await this.repository.updateAssignment(
         assignmentId,
