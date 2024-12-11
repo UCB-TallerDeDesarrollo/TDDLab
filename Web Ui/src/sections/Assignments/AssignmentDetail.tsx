@@ -9,7 +9,7 @@ import AssignmentsRepository from "../../modules/Assignments/repository/Assignme
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import FileUploadDialog from "./components/FileUploadDialog";
 
-import { handleUploadTDDLogFile } from "../../modules/Assignments/application/HandleUploadTDDLogFile.ts";
+import { UploadTDDLogFile } from "../../modules/Assignments/application/UploadTDDLogFile.ts";
 
 
 
@@ -325,7 +325,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   };
 
   const handleFileUpload = async (file: File) => {
-    await handleUploadTDDLogFile(file, studentSubmission?.repository_link);
+    await UploadTDDLogFile(file, studentSubmission?.repository_link);
   };
   
   
