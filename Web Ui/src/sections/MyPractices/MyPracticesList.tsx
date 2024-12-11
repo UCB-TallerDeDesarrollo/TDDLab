@@ -109,7 +109,7 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   };
 
   const handleClickDetail = (index: number) => {
-    navigate(`/practices/${practices[index].id}`);
+    navigate(`/practice/${practices[index].id}`);
   };
 
   const handleClickDelete = (index: number) => {
