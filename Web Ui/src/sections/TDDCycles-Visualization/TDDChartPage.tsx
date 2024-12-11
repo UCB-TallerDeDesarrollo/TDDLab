@@ -208,7 +208,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
 
       {!loading && !commitsInfo?.length && (
         <div className="error-message" data-testid="errorMessage">
-          No se encontraron commits en el repositorio
+          Hubo un problema al cargar los commits del repositorio
         </div>
       )}
 
