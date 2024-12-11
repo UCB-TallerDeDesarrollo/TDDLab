@@ -5,16 +5,32 @@ import {VITE_API} from "../../../../config.ts";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub.ts";
+import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount.ts";
+import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser.ts";
+import { useNavigate } from "react-router-dom";
 
 function SuccessfulEnrollmentPopUp() {
   const [open, setOpen] = React.useState(true);
   const [groupName, setGroupName] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const handleClose = () => {
+  const handleClose = async () => {
     setOpen(false);
-    window.location.href = "/";
-    localStorage.clear();
-    console.log(open);
+    const userData = await handleSignInWithGitHub();
+    if (userData?.email) {
+       const loginPort = new CheckIfUserHasAccount();
+       const userCourse = await loginPort.userHasAnAccount(userData.email);
+      setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
+        navigate({
+          pathname: "/",
+        }),
+      );
+      window.location.href = "/";
+      console.log(open);
+    } else {
+      alert("Disculpa, tu usuario no esta registrado");
+    }
   };
 
   useEffect(() => {
