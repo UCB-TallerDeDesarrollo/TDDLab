@@ -334,7 +334,7 @@ useEffect(() => {
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
-          case "Complejidad":
+      case "Complejidad":
             if (complexity != null) {
              
           
@@ -345,7 +345,7 @@ useEffect(() => {
                 "Complejidad Ciclomática"
               );
               optionsChart = getOptionsChart("Complejidad Ciclomática");
-              dataTestid = "graph-complexity";;
+              dataTestid = "graph-complexity";
             }
             break;
           
