@@ -13,21 +13,12 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
-import { 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogTitle, 
-  Button 
-} from "@mui/material";
-
-
 
 
 import { VITE_API } from "../../../../config";
-import { handleUploadTDDLogFile } from "../../../modules/Assignments/application/HandleUploadTDDLogFile";
+import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
 import { useSearchParams } from "react-router-dom";
-import FileUploadDialog from "../../Assignments/components/FileUploadDialog";
+import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 
 ChartJS.register(
   Tooltip,
@@ -85,7 +76,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const handleFileUpload = async (file: File) => {
     if (repoOwner && repoName) {
       try {
-        await handleUploadTDDLogFile(file, undefined, repoOwner, repoName);
+        await UploadTDDLogFile(file, undefined, repoOwner, repoName);
         console.log("Archivo subido exitosamente.");
       } catch (error) {
         console.error("Error al subir el archivo:", error);
@@ -383,166 +374,17 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 },
               }}
             />;
-            <Dialog
+            <CommitTimelineDialog
               open={openModal}
-              onClose={handleCloseModal}
-              aria-labelledby="commit-details-dialog"
-              fullWidth
-              maxWidth="sm"
-              sx={{
-                "& .MuiDialog-paper": {
-                  padding: "25px",
-                  borderRadius: "10px",
-                },
-              }}
-            >
-              <DialogTitle 
-                id="commit-details-dialog"
-                style={{textAlign: "center", fontSize:"2em", fontWeight:"bold"}}>
-                  {`Timeline del commit ${commits.length - commits.findIndex((commit) => commit.sha === selectedCommit?.sha)} `}
-              </DialogTitle>
-              <DialogContent>
-              {selectedCommit?.commit?.message && (
-                <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                  <div style={{fontFamily:"monospace", fontSize: "1.25em", marginBottom: "10px"}}>
-                    ({selectedCommit?.sha})
-                  </div>
-                </div>
-              )}
-                {commitTimelineData.length > 0 ? (
-                  <div>
-                    <div style={{ width: "100%", height: "300px"}}>
-                      <Bubble
-                        data={{
-                          datasets: [
-                            {
-                              label: "Ejecución",
-                              data: commitTimelineData.map((item, index) => ({
-                                x: index + 1,
-                                y: 1,
-                                r: 15, 
-                                backgroundColor: item.color === "green" ? "#28A745" : "#D73A49", 
-                                borderColor: item.color === "green" ? "#28A745" : "#D73A49",
-                                numTests: item.number_of_tests,
-                                passedTests: item.passed_tests, 
-                              })),
-                              backgroundColor: commitTimelineData.map((item) =>
-                                item.color === "green" ? "#28A745" : "#D73A49"
-                              ),
-                              borderColor: commitTimelineData.map((item) =>
-                                item.color === "green" ? "#28A745" : "#D73A49"
-                              ),
-                              borderWidth: 1,
-                            },
-                          ],
-                        }}
-                        options={{
-                          scales: {
-                            x: {
-                              title: {
-                                display: true,
-                              },
-                              ticks: {
-                                display: false, 
-                              },
-                            },
-                            y: {
-                              title: {
-                                display: true,
-                              },
-                              ticks: {
-                                display: false, 
-                              },
-                              min: 0.5,
-                              max: 1.5, 
-                            },
-                          },
-                          plugins: {
-                            legend: { display: false }, 
-                            tooltip: {
-                              enabled: true,
-                              callbacks: {
-                                label: function (context: any) {
-                                  const dataPoint = context.raw;
-                                  return [
-                                    `Number of Tests: ${dataPoint.numTests}`,
-                                    `Passed Tests: ${dataPoint.passedTests}`,
-                                  ];
-                                },
-                              },
-                            },
-                          },
-                          elements: {
-                            point: {
-                              backgroundColor: (context: any) =>
-                                context.raw.backgroundColor, 
-                              borderColor: (context: any) =>
-                                context.raw.borderColor, 
-                              hoverBackgroundColor: (context: any) =>
-                                context.raw.backgroundColor, 
-                              hoverBorderColor: (context: any) =>
-                                context.raw.borderColor, 
-                              hoverRadius: 8, 
-                            },
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-                  
-                ) : (
-                  <div>
-                    <p style={{ textAlign: "center", margin: "2em 0px 2em 0px" }}>
-                      No hay un registro de ejecución vinculante para este commit.
-                    </p>
-                    <div style={{ textAlign: "center", margin: "1em 0 1em 0" }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleOpenFileDialog}
-                      >
-                        Subir Sesión TDD
-                      </Button>
-                    </div>
-                
-                    {/* Integración del FileUploadDialog */}
-                    <FileUploadDialog
-                      open={isFileDialogOpen}
-                      onClose={handleCloseFileDialog}
-                      onUpload={handleFileUpload}
-                    />
-                  </div>
-                )
-                }
-                {selectedCommit?.commit?.message && (
-                <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                  <strong>Mensaje:</strong> 
-                  <span style={{ fontStyle: "italic" }}>
-                    {selectedCommit.commit.message}
-                  </span>
-                </div>
-              )}
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCloseModal} color="primary">
-                  Cerrar
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (selectedCommit?.html_url) {
-                      window.open(selectedCommit.html_url, "_blank");
-                    }
-                  }}
-                  color="primary"
-                  variant="contained"
-                >
-                  Ir al Commit
-                </Button>
-              </DialogActions>
-            </Dialog>
-
-
-
+              handleCloseModal={handleCloseModal}
+              handleOpenFileDialog={handleOpenFileDialog}
+              handleCloseFileDialog={handleCloseFileDialog}
+              handleFileUpload={handleFileUpload}
+              isFileDialogOpen={isFileDialogOpen}
+              selectedCommit={selectedCommit}
+              commitTimelineData={commitTimelineData}
+              commits={commits}
+            />
             <div
               style={{
                 display: "flex",
