@@ -17,17 +17,17 @@ export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<Execut
         'Execute TDD Tests'
       ),
       new ExecutionButton(
-        'Open New Project',
+        'Crear Proyecto',
         vscode.TreeItemCollapsibleState.None,
-        { command: 'TDD.cloneCommand', title: 'Open New Project'},
+        { command: 'TDD.cloneCommand', title: 'Crear Proyecto'},
         '',
         new vscode.ThemeIcon('window', new vscode.ThemeColor('charts.white')),
         ''
       ),
       new ExecutionButton(
-        'Export TDD Data',
+        'Exportar sesion TDDLab',
         vscode.TreeItemCollapsibleState.None,
-        { command: 'TDD.exportCommand', title: 'Export TDD Data'},
+        { command: 'TDD.exportCommand', title: 'Exportar sesion TDDLab'},
         '',
         new vscode.ThemeIcon('arrow-down', new vscode.ThemeColor('charts.white')),
         ''
