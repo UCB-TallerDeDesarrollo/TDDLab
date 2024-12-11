@@ -462,7 +462,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   </div>
                   
                 ) : (
-                  <p>El estudiante todavía no subió la sesión de la extensión del TDD Lab a la plataforma</p>
+                  <p 
+                    style={{textAlign:"center", margin:"2em 0px 2em 0px"}}>
+                    No hay un registro de ejecución vinculante para este commit
+                  </p>
                 )}
                 {selectedCommit?.commit?.message && (
                 <div style={{ textAlign: "center", marginBottom: "10px" }}>
