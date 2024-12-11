@@ -56,7 +56,7 @@ const LoadingContainer = styled("div")({
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number;
+  userGroupid: number[];
   onGroupChange: (groupId: number) => void;
 }
 
@@ -73,7 +73,7 @@ function Assignments({
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
       number | null
   >(null);
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -109,14 +109,19 @@ function Assignments({
 
   async function getUserGroups() {
     setIsLoading(true);
+
     let allGroups: GroupDataObject[] = [];
-    console.log("userGroupID" ,userGroupid)
     if (userRole === "student") {
       if (localStorage.getItem('userGroups') === null) {
+        const studentGroups = userGroupid
+        localStorage.setItem('userGroups', JSON.stringify(studentGroups));
+        allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
+      } else if(localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
         const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
         localStorage.setItem('userGroups', JSON.stringify(studentGroups));
         allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
-      } else {
+      }
+      else {
         const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') ?? '[]');
         allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
       }
@@ -125,9 +130,7 @@ function Assignments({
     }
 
     if(selectedGroup === 0 && allGroups.length > 0) {
-      localStorage.setItem("selectedGroup", allGroups[0]?.id.toString());
-      setSelectedGroup(allGroups[0]?.id);
-      onGroupChange(allGroups[0]?.id);
+      await loadAssignmentsByGroupId(allGroups[0].id);
     }
 
     setIsLoading(false);
@@ -135,7 +138,6 @@ function Assignments({
   }
 
   const fetchData = async () => {
-    console.log("Fetching data...", authData);
     try {
       const allGroups = await getUserGroups();
       setGroupList(allGroups);
@@ -207,8 +209,7 @@ function Assignments({
     orderAssignments([...assignments], event.target.value);
   };
 
-  const handleGroupChange = async (event: SelectChangeEvent<number>) => {
-    const groupId = event.target.value as number;
+  const loadAssignmentsByGroupId = async (groupId: number) => {
     setSelectedGroup(groupId);
     onGroupChange(groupId);
 
@@ -231,6 +232,11 @@ function Assignments({
     } catch (error) {
       console.error("Error fetching assignments by group ID:", error);
     }
+  };
+
+  const handleGroupChange = async (event: SelectChangeEvent<number>) => {
+    const groupId = event.target.value as number;
+    await loadAssignmentsByGroupId(groupId);
   };
 
   const filteredAssignments = selectedGroup
