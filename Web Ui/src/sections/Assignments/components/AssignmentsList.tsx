@@ -56,7 +56,7 @@ const LoadingContainer = styled("div")({
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number[];
+  userGroupid: number | number[] ;
   onGroupChange: (groupId: number) => void;
 }
 
@@ -109,13 +109,17 @@ function Assignments({
 
   async function getUserGroups() {
     setIsLoading(true);
-
     let allGroups: GroupDataObject[] = [];
     if (userRole === "student") {
       if (localStorage.getItem('userGroups') === null) {
         const studentGroups = userGroupid
         localStorage.setItem('userGroups', JSON.stringify(studentGroups));
-        allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
+        if (Array.isArray(studentGroups)) {
+          allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
+        }
+        else{
+          allGroups = await Promise.all([getGroups.getGroupById(studentGroups)]);
+        }
       } else if(localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
         const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
         localStorage.setItem('userGroups', JSON.stringify(studentGroups));
