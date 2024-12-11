@@ -33,14 +33,30 @@ class AuthRepository implements AuthDBRepositoryInterface {
 
   async verifyPassword(password: string): Promise<boolean> {
     try {
+
       const response = await axios.post(API_URL + "/user/verifyPassword", {
         password: password,
       });
+      console.log("Aqui en el segundo verify")
 
       return response.data.success;
-    } catch (error) {
-      console.error("Server error:", error);
-      alert("Server error");
+    } catch (error: unknown) {  
+      if (axios.isAxiosError(error)) { 
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+          if (error.response.status === 401) {
+            alert("Contraseña incorrecta. Por favor ingresa una contraseña valida");  
+          } else {
+            alert(error.response.data.message || "Error en el servidor");
+          }
+        } else if (error.request) {
+          console.error("Error request:", error.request);
+          alert("Error de red: No se pudo conectar con el servidor");
+        }
+      } else {
+        console.error("Error:", error);
+        alert("Error desconocido");
+      }
       throw error;
     }
   }
