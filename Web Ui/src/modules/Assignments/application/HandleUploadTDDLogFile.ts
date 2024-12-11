@@ -70,7 +70,10 @@ const parseJSON = (fileContent: string): any => {
 
 const enrichWithRepoData = (jsonData: any, repoLink?: string) => {
   if (!repoLink) throw new Error("Enlace del repositorio no proporcionado.");
-  const repoMatch = repoLink.match(/https:\/\/github\.com\/([^/]+)\/([^/]+)/);
+  
+  const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+  const repoMatch = regex.exec(repoLink); // Cambio realizado: usamos regex.exec().
+
   if (!repoMatch) throw new Error("Enlace del repositorio inválido.");
   return { repoName: repoMatch[2], repoOwner: repoMatch[1], log: jsonData };
 };
