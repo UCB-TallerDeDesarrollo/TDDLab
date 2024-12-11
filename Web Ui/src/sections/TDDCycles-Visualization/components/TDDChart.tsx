@@ -111,7 +111,7 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
               Lista de Complejidad
             </MenuItem>
             <MenuItem value={"TddCiclos"}>
-              TddCycles
+              Analisis de distribución de pruebas por commit 
             </MenuItem>
             <MenuItem value={"Pie"}>
               Distribución de Commits
