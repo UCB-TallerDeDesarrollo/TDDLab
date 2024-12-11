@@ -121,24 +121,33 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       const duplicateAssignment = assignments.find(
         (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
       );
-
+    
       if (duplicateAssignment) {
         setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
         setValidationDialogOpen(true);
         setSave(false);
         return;
       }
-
+    
       await createAssignments.createAssignment(assignmentData);
-      
+      setValidationMessage("Tarea creada exitosamente");
+      setValidationDialogOpen(true);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        // Verifica si el mensaje del backend menciona el límite de caracteres
+        if (error.message.includes("Limite de caracteres excedido")) {
+          setValidationMessage("Error: El título no puede tener más de 50 caracteres.");
+        } else {
+          setValidationMessage(`Error: ${error.message}`);
+        }
+      } else {
+        setValidationMessage("Error desconocido al crear la tarea.");
+      }
+      setValidationDialogOpen(true);
     } finally {
       setSave(false);
     }
     
-    setValidationMessage("Tarea creada exitosamente");
-    setValidationDialogOpen(true);
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
