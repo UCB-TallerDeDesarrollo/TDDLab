@@ -13,7 +13,7 @@ class CreateAssignment {
   ): Promise<AssignmentCreationObject> {
     const MAX_TITLE_LENGTH = 50;
     if (assignment.title.length > MAX_TITLE_LENGTH) {
-      throw new Error(`Límite de caracteres excedido. El título no puede tener más de ${MAX_TITLE_LENGTH} caracteres.`);
+      throw new Error(`Limite de caracteres excedido. El titulo no puede tener mas de ${MAX_TITLE_LENGTH} caracteres.`);
     }
     try {
       const groupExists = await this.adapter.groupidExistsForAssigment(
