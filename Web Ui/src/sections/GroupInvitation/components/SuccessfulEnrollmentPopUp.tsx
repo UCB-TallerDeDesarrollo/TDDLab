@@ -27,11 +27,21 @@ function SuccessfulEnrollmentPopUp() {
         }),
       );
       window.location.href = "/";
+      localStorage.clear();
+      localStorage.setItem("userGroups", "[0]")
       console.log(open);
     } else {
       alert("Disculpa, tu usuario no esta registrado");
     }
   };
+
+    // const handleClose = () => {
+    //     setOpen(false);
+    //     window.location.href = "/";
+    //     localStorage.clear();
+    //     localStorage.setItem("userGroups", "[0]")
+    //     console.log(open);
+    // };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
