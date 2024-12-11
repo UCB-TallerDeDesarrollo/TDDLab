@@ -1,6 +1,8 @@
 import JSZip from "jszip";
 import CryptoJS from "crypto-js";
 import { VITE_API } from "../../../../config";
+import { VITE_DECRYPTION_KEY } from "../../../../config";
+
 
 export const handleUploadTDDLogFile = async (
     file: File, 
@@ -15,7 +17,7 @@ export const handleUploadTDDLogFile = async (
 
     reader.onload = async () => {
       const encryptedContent = reader.result as string;
-      const binaryData = decryptContent(encryptedContent, "iDHJp8o32$%u4drMjPLq8c!7S@wZEXWC");
+      const binaryData = decryptContent(encryptedContent, VITE_DECRYPTION_KEY);
       const fileContent = await extractFileFromZip(binaryData, "tdd_log.json");
       const jsonData = parseJSON(fileContent);
 
