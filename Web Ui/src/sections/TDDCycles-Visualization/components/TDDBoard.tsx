@@ -363,13 +363,15 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             >
               <DialogTitle 
                 id="commit-details-dialog"
-                style={{textAlign: "center"}}>
-                  {`Timeline del commit ${commits.length - commits.findIndex((commit) => commit.sha === selectedCommit?.sha)} 
-                  (${selectedCommit?.sha})`}
+                style={{textAlign: "center", fontSize:"2em", fontWeight:"bold"}}>
+                  {`Timeline del commit ${commits.length - commits.findIndex((commit) => commit.sha === selectedCommit?.sha)} `}
               </DialogTitle>
               <DialogContent>
               {selectedCommit?.commit?.message && (
                 <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                  <div style={{ fontSize: "1.25em", marginBottom: "5px"}}>
+                    ({selectedCommit?.sha})
+                  </div>
                   <strong>Mensaje:</strong> 
                   <span style={{ fontStyle: "italic" }}>
                     {selectedCommit.commit.message}
