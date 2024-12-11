@@ -21,6 +21,9 @@ import {
   Button 
 } from "@mui/material";
 
+import FileUploadDialog from "../../Assignments/components/FileUploadDialog";
+import handleUploadFile from "../../Assignments/AssignmentDetail";
+
 
 
 import { VITE_API } from "../../../../config";
@@ -47,6 +50,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   role,
   port,
 }) => {
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
@@ -65,6 +69,29 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     { length: numberOfLabels },
     (_, i) => maxTestCount - i * step
   );
+
+  const handleOpenFileDialog = () => {
+    setIsFileDialogOpen(true);
+  };
+  
+  const handleCloseFileDialog = () => {
+    setIsFileDialogOpen(false);
+  };
+
+  const handleUploadFileWrapper = async (file: any) => {
+    try {
+      await handleUploadFile(file);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+  
+  <FileUploadDialog
+    open={isFileDialogOpen}
+    onClose={handleCloseFileDialog}
+    onUpload={handleUploadFileWrapper} // Envía esta función
+  />
+  
 
   const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
@@ -462,10 +489,26 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   </div>
                   
                 ) : (
-                  <p 
-                    style={{textAlign:"center", margin:"2em 0px 2em 0px"}}>
-                    No hay un registro de ejecución vinculante para este commit
-                  </p>
+                  <div>
+      <p style={{ textAlign: "center", margin: "2em 0px 2em 0px" }}>
+        No hay un registro de ejecución vinculante para este commit.
+      </p>
+      <div style={{ textAlign: "center", marginTop: "1em" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOpenFileDialog}
+        >
+          Subir Sesión TDD
+        </Button>
+      </div>
+      <FileUploadDialog
+        open={isFileDialogOpen}
+        onClose={handleCloseFileDialog}
+        onUpload={handleUploadFileWrapper}
+      />
+    </div>
+                    
                 )}
                 {selectedCommit?.commit?.message && (
                 <div style={{ textAlign: "center", marginBottom: "10px" }}>

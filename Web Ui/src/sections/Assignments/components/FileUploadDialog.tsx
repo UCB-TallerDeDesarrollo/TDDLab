@@ -10,8 +10,9 @@ import {
 interface FileUploadDialogProps {
   open: boolean;
   onClose: () => void;
-  onUpload: (file: File) => Promise<void>;
+  onUpload: (file: any) => void; // Cambiado el tipo de File a any y el retorno a void
 }
+
 
 const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
   open,
