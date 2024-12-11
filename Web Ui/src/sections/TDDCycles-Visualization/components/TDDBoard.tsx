@@ -28,6 +28,7 @@ import { VITE_API } from "../../../../config";
 import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
 import { useSearchParams } from "react-router-dom";
 import FileUploadDialog from "../../Assignments/components/FileUploadDialog";
+import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 
 ChartJS.register(
   Tooltip,
@@ -383,10 +384,17 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 },
               }}
             />;
-            
-
-
-
+            <CommitTimelineDialog
+              open={openModal}
+              handleCloseModal={handleCloseModal}
+              handleOpenFileDialog={handleOpenFileDialog}
+              handleCloseFileDialog={handleCloseFileDialog}
+              handleFileUpload={handleFileUpload}
+              isFileDialogOpen={isFileDialogOpen}
+              selectedCommit={selectedCommit}
+              commitTimelineData={commitTimelineData}
+              commits={commits}
+            />
             <div
               style={{
                 display: "flex",
