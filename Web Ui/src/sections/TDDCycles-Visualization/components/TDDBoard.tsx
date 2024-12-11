@@ -165,7 +165,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     if (elements.length > 0) {
       const dataSetIndexNum = elements[0].datasetIndex;
       const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit && commit.html_url) {
+      if (commit?.html_url) {
         const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
         const match = commit.html_url.match(regex);
   
