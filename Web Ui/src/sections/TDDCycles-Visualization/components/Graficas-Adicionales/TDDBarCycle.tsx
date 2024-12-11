@@ -115,7 +115,7 @@ const TDDBar: React.FC<TDDBarProps> = ({ CommitsCycles }) => {
 
   return (
     <div style={{ width: "60%", margin: "0 auto" }}>
-      <h3 style={{ textAlign: "center" }}>Análisis de Ciclos de TDD</h3>
+      <h3 style={{ textAlign: "center" }}>Analisis de distribución de pruebas por commit </h3>
       <Bar data={data} options={options} />
     </div>
   );
