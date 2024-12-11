@@ -70,15 +70,16 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
     setLoading(true);
     try {
       const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
-      const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
-      const tddCycles = await getTDDCycles.obtainCommitTddCycle(repoOwner, repoName);
-      console.log(commits)
-      const complexityList = await getTDDCycles.obtainComplexityData(repoOwner,repoName);
-      setComplexity(complexityList)
       setJobsByCommit(jobsData);
+
+      const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       setCommitsInfo(commits);
+
+      const tddCycles = await getTDDCycles.obtainCommitTddCycle(repoOwner, repoName);
       setCommitsTddCycles(tddCycles);
 
+      const complexityList = await getTDDCycles.obtainComplexityData(repoOwner,repoName); // Problema de CORS
+      setComplexity(complexityList)
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -207,7 +208,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
 
       {!loading && !commitsInfo?.length && (
         <div className="error-message" data-testid="errorMessage">
-          No se pudo cargar la Información
+          No se encontraron commits en el repositorio
         </div>
       )}
 
