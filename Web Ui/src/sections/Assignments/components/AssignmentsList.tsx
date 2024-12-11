@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import {
   Table,
@@ -45,6 +46,13 @@ const CustomTableCell2 = styled(TableCell)({
   width: "10%",
 });
 
+const LoadingContainer = styled("div")({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "100vh",
+});
+
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
@@ -65,6 +73,7 @@ function Assignments({
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
       number | null
   >(null);
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -99,19 +108,29 @@ function Assignments({
   };
 
   async function getUserGroups() {
+    setIsLoading(true);
     let allGroups: GroupDataObject[] = [];
+    console.log("userGroupID" ,userGroupid)
     if (userRole === "student") {
-        if (localStorage.getItem('userGroups') === null) {
-          const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
-          localStorage.setItem('userGroups', JSON.stringify(studentGroups));
-          allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
-        } else {
-          const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') ?? '[]');
-          allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
-        }
+      if (localStorage.getItem('userGroups') === null) {
+        const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
+        localStorage.setItem('userGroups', JSON.stringify(studentGroups));
+        allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
+      } else {
+        const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') ?? '[]');
+        allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
+      }
     } else if(userRole === "teacher" || userRole === "admin") {
       allGroups = await getGroups.getGroups();
     }
+
+    if(selectedGroup === 0 && allGroups.length > 0) {
+      localStorage.setItem("selectedGroup", allGroups[0]?.id.toString());
+      setSelectedGroup(allGroups[0]?.id);
+      onGroupChange(allGroups[0]?.id);
+    }
+
+    setIsLoading(false);
     return allGroups;
   }
 
@@ -259,89 +278,95 @@ function Assignments({
 
   return (
       <Container>
-        <section className="Tareas">
-          <StyledTable>
-            <TableHead>
-              <TableRow
-                  sx={{
-                    borderBottom: "2px solid #E7E7E7"
-                  }}
-              >
-                <CustomTableCell1
-                    sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
-                >
-                  Tareas
-                </CustomTableCell1>
-                <CustomTableCell2>
-                  <ButtonContainer>
-                      <GroupFilter
-                          selectedGroup={selectedGroup}
-                          groupList={groupList}
-                          onChangeHandler={handleGroupChange}
-                          defaultName={groupList.find(group => group.id === userGroupid)?.groupName || "Selecciona un grupo"}
+        {isLoading ? ( // Muestra el spinner mientras se cargan los datos
+            <LoadingContainer>
+              <CircularProgress />
+            </LoadingContainer>
+        ) : (
+            <section className="Tareas">
+              <StyledTable>
+                <TableHead>
+                  <TableRow
+                      sx={{
+                        borderBottom: "2px solid #E7E7E7"
+                      }}
+                  >
+                    <CustomTableCell1
+                        sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+                    >
+                      Tareas
+                    </CustomTableCell1>
+                    <CustomTableCell2>
+                      <ButtonContainer>
+                        <GroupFilter
+                            selectedGroup={selectedGroup}
+                            groupList={groupList}
+                            onChangeHandler={handleGroupChange}
+                            defaultName={groupList.find(group => group.id == selectedGroup)?.groupName || groupList[0]?.groupName || "Selecciona un grupo"}
+                        />
+                        <SortingComponent
+                            selectedSorting={selectedSorting}
+                            onChangeHandler={handleOrderAssignments}
+                        />
+                        {userRole !== "student" && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddIcon />}
+                                sx={{
+                                  borderRadius: "17px",
+                                  textTransform: "none",
+                                  fontSize: "0.95rem",
+                                }}
+                                onClick={showForm}
+                            >
+                              Crear
+                            </Button>
+                        )}
+                      </ButtonContainer>
+                    </CustomTableCell2>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredAssignments.map((assignment, index) => (
+                      <Assignment
+                          key={assignment.id}
+                          assignment={assignment}
+                          index={index}
+                          handleClickDetail={handleClickDetail}
+                          handleClickDelete={handleClickDelete}
+                          handleRowHover={handleRowHover}
+                          role={userRole}
                       />
-                    <SortingComponent
-                        selectedSorting={selectedSorting}
-                        onChangeHandler={handleOrderAssignments}
-                    />
-                    {userRole !== "student" && (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AddIcon />}
-                            sx={{
-                              borderRadius: "17px",
-                              textTransform: "none",
-                              fontSize: "0.95rem",
-                            }}
-                            onClick={showForm}
-                        >
-                          Crear
-                        </Button>
-                    )}
-                  </ButtonContainer>
-                </CustomTableCell2>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredAssignments.map((assignment, index) => (
-                  <Assignment
-                      key={assignment.id}
-                      assignment={assignment}
-                      index={index}
-                      handleClickDetail={handleClickDetail}
-                      handleClickDelete={handleClickDelete}
-                      handleRowHover={handleRowHover}
-                      role={userRole}
+                  ))}
+                </TableBody>
+              </StyledTable>
+              {confirmationOpen && (
+                  <ConfirmationDialog
+                      open={confirmationOpen}
+                      title="¿Eliminar la tarea?"
+                      content={
+                        <>
+                          Ten en cuenta que esta acción tambien eliminará <br /> todas las
+                          entregas asociadas.
+                        </>
+                      }
+                      cancelText="Cancelar"
+                      deleteText="Eliminar"
+                      onCancel={() => setConfirmationOpen(false)}
+                      onDelete={handleConfirmDelete}
                   />
-              ))}
-            </TableBody>
-          </StyledTable>
-          {confirmationOpen && (
-              <ConfirmationDialog
-                  open={confirmationOpen}
-                  title="¿Eliminar la tarea?"
-                  content={
-                    <>
-                      Ten en cuenta que esta acción tambien eliminará <br /> todas las
-                      entregas asociadas.
-                    </>
-                  }
-                  cancelText="Cancelar"
-                  deleteText="Eliminar"
-                  onCancel={() => setConfirmationOpen(false)}
-                  onDelete={handleConfirmDelete}
-              />
-          )}
-          {validationDialogOpen && (
-              <ValidationDialog
-                  open={validationDialogOpen}
-                  title="Tarea eliminada exitosamente"
-                  closeText="Cerrar"
-                  onClose={() => window.location.reload()}
-              />
-          )}
-        </section>
+              )}
+              {validationDialogOpen && (
+                  <ValidationDialog
+                      open={validationDialogOpen}
+                      title="Tarea eliminada exitosamente"
+                      closeText="Cerrar"
+                      onClose={() => window.location.reload()}
+                  />
+              )}
+            </section>
+        )}
       </Container>
   );
 }
