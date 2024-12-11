@@ -24,7 +24,8 @@ import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import axios from "axios";
-import TDDBar from "./TDDBarCycle";
+import TDDBar from "./Graficas-Adicionales/TDDBarCycle";
+import TDDPie from "./Graficas-Adicionales/TDDPie";
 
 ChartJS.register(
   CategoryScale,
@@ -350,6 +351,9 @@ useEffect(() => {
           
       case "TddCiclos":
         return <TDDBar CommitsCycles={commitsCycles || []}></TDDBar>
+      case "Pie":
+        return <TDDPie commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} />;     
+
     }
     return (
       <Line
