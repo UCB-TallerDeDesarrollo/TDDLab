@@ -23,7 +23,7 @@ interface CycleReportViewProps {
   commitsTddCycles: CommitCycle[] | null;
 }
 
-function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, commitsTddCycles }: Readonly<CycleReportViewProps>) {
+function TDDAditionalCharts({ commits, jobsByCommit, setMetric,port,role,complexity, commitsTddCycles }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
 
   const [metricSelected, setMetricSelected] = useState(() => {
@@ -92,20 +92,14 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
             data-testid="select-graph-type"
             label="Métricas"
           >
-             <MenuItem value={"Dashboard"}>
-              Dashboard
+            <MenuItem value={"Complejidad"}>
+              Lista de Complejidad
             </MenuItem>
-            <MenuItem value={"Total Número de Tests"}>
-              Total Número de Tests
+            <MenuItem value={"TddCiclos"}>
+              Analisis de distribución de pruebas por commit 
             </MenuItem>
-            <MenuItem value={"Cobertura de Código"}>
-              Porcentaje de Cobertura de Código
-            </MenuItem>
-            <MenuItem value={"Líneas de Código Modificadas"}>
-              Líneas de Código Modificadas
-            </MenuItem>
-            <MenuItem value={"Lista"}>
-              Lista de Commits
+            <MenuItem value={"Pie"}>
+              Distribución de Commits
             </MenuItem>
           </Select>
         </FormControl>
@@ -123,4 +117,4 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
   );
 }
 
-export default TDDCharts;
+export default TDDAditionalCharts;
