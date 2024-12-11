@@ -23,7 +23,11 @@ import {
 
 
 
+
 import { VITE_API } from "../../../../config";
+import { handleUploadTDDLogFile } from "../../../modules/Assignments/application/HandleUploadTDDLogFile";
+import { useSearchParams } from "react-router-dom";
+import FileUploadDialog from "../../Assignments/components/FileUploadDialog";
 
 ChartJS.register(
   Tooltip,
@@ -47,6 +51,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   role,
   port,
 }) => {
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+  const repoOwner = searchParams.get("repoOwner");
+  const repoName = searchParams.get("repoName");
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
@@ -66,6 +74,27 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
+  const handleOpenFileDialog = () => {
+    setIsFileDialogOpen(true);
+  };
+  
+  const handleCloseFileDialog = () => {
+    setIsFileDialogOpen(false);
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (repoOwner && repoName) {
+      try {
+        await handleUploadTDDLogFile(file, undefined, repoOwner, repoName);
+        console.log("Archivo subido exitosamente.");
+      } catch (error) {
+        console.error("Error al subir el archivo:", error);
+      }
+    } else {
+      console.error("No se encontraron repoOwner y repoName en el enlace.");
+    }
+  };
+  
   const getColorByCoverage = (testCountsColor: number) => {
     let greenValue;
     let opacity = 2;
@@ -462,11 +491,29 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   </div>
                   
                 ) : (
-                  <p 
-                    style={{textAlign:"center", margin:"2em 0px 2em 0px"}}>
-                    No hay un registro de ejecución vinculante para este commit
-                  </p>
-                )}
+                  <div>
+                    <p style={{ textAlign: "center", margin: "2em 0px 2em 0px" }}>
+                      No hay un registro de ejecución vinculante para este commit.
+                    </p>
+                    <div style={{ textAlign: "center", margin: "1em 0 1em 0" }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleOpenFileDialog}
+                      >
+                        Subir Sesión TDD
+                      </Button>
+                    </div>
+                
+                    {/* Integración del FileUploadDialog */}
+                    <FileUploadDialog
+                      open={isFileDialogOpen}
+                      onClose={handleCloseFileDialog}
+                      onUpload={handleFileUpload}
+                    />
+                  </div>
+                )
+                }
                 {selectedCommit?.commit?.message && (
                 <div style={{ textAlign: "center", marginBottom: "10px" }}>
                   <strong>Mensaje:</strong> 
