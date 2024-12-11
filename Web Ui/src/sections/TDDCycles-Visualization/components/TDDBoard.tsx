@@ -143,7 +143,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       datasets: [
         {
           label,
-          data: data.reverse(),
+          data: [...data].reverse(),
           backgroundColor: commits
             .map((commit) => {
               const job = jobsByCommit.find((job) => job.sha === commit.sha);
@@ -165,7 +165,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     if (elements.length > 0) {
       const dataSetIndexNum = elements[0].datasetIndex;
       const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit && commit.html_url) {
+      if (commit?.html_url) {
         const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
         const match = commit.html_url.match(regex);
   
