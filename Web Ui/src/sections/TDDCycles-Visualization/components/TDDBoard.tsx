@@ -13,21 +13,11 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
-import { 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogTitle, 
-  Button 
-} from "@mui/material";
-
-
 
 
 import { VITE_API } from "../../../../config";
 import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
 import { useSearchParams } from "react-router-dom";
-import FileUploadDialog from "../../Assignments/components/FileUploadDialog";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 
 ChartJS.register(
