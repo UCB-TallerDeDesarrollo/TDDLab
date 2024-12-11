@@ -17,7 +17,7 @@ const FormsContainer = styled("div")({
 
 interface AssignmentManagerProps {
   userRole: string;
-  userGroupid: number[];
+  userGroupid: number;
 }
 function AssignmentManager({
   userRole,
@@ -47,7 +47,7 @@ function AssignmentManager({
             data-testid="form-container"
             open={createAssignmentPopupOpen}
             handleClose={() => setCreateAssignmentPopupOpen(false)}
-            groupid={selectedGroupId || userGroupid[0]}
+            groupid={selectedGroupId || userGroupid}
           />
         )}
       </FormsContainer>
