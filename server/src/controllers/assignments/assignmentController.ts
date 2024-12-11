@@ -175,7 +175,21 @@ async createAssignment(req: Request, res: Response): Promise<void> {
         res.status(404).json({ error: "Assignment not found" });
       }
     } catch (error) {
-      res.status(500).json({ error: "Server error" });
+      if (error instanceof Error) {
+      
+        if (error.message.includes("Limite de caracteres excedido")) {
+          res.status(400).json({
+            error: error.message,
+            message: `El titulo no puede tener mas de 50 caracteres.`,
+          });
+        } else {
+          console.error("Unexpected error: ", error);
+          res.status(500).json({ error: "Server error" });
+        }
+      } else {
+        console.error("Unexpected error: ", error);
+        res.status(500).json({ error: "Server error" });
+      }
     }
   }
 }
