@@ -2,14 +2,11 @@ export class Timeline {
     constructor(
         public numPassedTests: number,
         public numTotalTests: number,
-        public timestamp: Date
+        public timestamp: Date,
+        public success: Boolean
     ) {}
 
-    isSuccessful(): boolean {
-        return this.numPassedTests === this.numTotalTests;
-    }
-
     getColor(): string {
-        return this.isSuccessful() && this.numTotalTests !== 0 ? "green" : "red";    
+        return this.success && this.numTotalTests !== 0 ? "green" : "red";    
     }
 }
