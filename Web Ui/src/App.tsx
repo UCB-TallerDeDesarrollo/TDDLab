@@ -149,7 +149,7 @@ function App() {
           element={
             <MyPracticesPage
               userRole={authData.userRole ?? ""}
-              userGroupid={authData.usergroupid ?? -1}
+              userid={authData.userid ?? 0}
             />
           }
         />
