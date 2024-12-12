@@ -35,14 +35,6 @@ function SuccessfulEnrollmentPopUp() {
     }
   };
 
-    // const handleClose = () => {
-    //     setOpen(false);
-    //     window.location.href = "/";
-    //     localStorage.clear();
-    //     localStorage.setItem("userGroups", "[0]")
-    //     console.log(open);
-    // };
-
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const groupId = urlParams.get("groupid");
