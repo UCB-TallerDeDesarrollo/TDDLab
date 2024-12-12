@@ -16,4 +16,5 @@ export interface IDBJobsRepository {
     findJobByCommit(sha: string, owner: string, repoName: string): Promise<any | null>;
     updateJobConclusion(sha: string, repoOwner: string, repoName: string, conclusion: string): Promise<void>;
     saveJobFromTDDLog(job: TestResultDataObject): Promise<void>;
+    
 }
