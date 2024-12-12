@@ -115,21 +115,26 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
   const handleConfirmDelete = async () => {
     try {
-      if (selectedPracticeIndex !== null) {
-        const practiceToDelete = practices[selectedPracticeIndex];
-        await deletePractice.DeletePractice(practiceToDelete.id);
-        const updatedPractices = practices.filter(
-          (_, i) => i !== selectedPracticeIndex
+      if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
+        console.log(
+          "ID de la practica a eliminar:",
+          practices[selectedPracticeIndex].id
         );
+        await deletePractice.DeletePractice(
+          practices[selectedPracticeIndex].id
+        );
+        const updatedPractices = [...practices];
+        updatedPractices.splice(selectedPracticeIndex, 1);
         setPractices(updatedPractices);
       }
-      setValidationDialogOpen(true);
-    } catch (error) {
-      console.error("Error deleting practice:", error);
-    } finally {
       setConfirmationOpen(false);
+    } catch (error) {
+      console.error(error);
     }
+    setValidationDialogOpen(true);
+    setConfirmationOpen(false);
   };
+
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
