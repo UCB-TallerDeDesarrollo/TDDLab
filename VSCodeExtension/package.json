@@ -25,11 +25,11 @@
     "commands": [
       {
         "command": "TDD.runTest",
-        "title": "$(beaker) TDD Lab Test"
+        "title": "Run Test"
       },
       {
         "command": "TDD.runTestActivity",
-        "title": "Run Test"
+        "title": "$(beaker) TDD Lab Test"
       },
       {
         "command": "extension.showTimeline",
