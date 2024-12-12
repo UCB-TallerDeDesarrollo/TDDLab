@@ -1,29 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { formatDate } from "../../utils/dateUtils";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository.ts";
 import FileUploadDialog from "../Assignments/components/FileUploadDialog.tsx";
 import JSZip from "jszip";
 import CryptoJS from "crypto-js";
 import { VITE_API } from "../../../config.ts";
-import {
-  Button,
-  Card,
-  CardContent,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
-  Comment as CommentIcon,
 } from "@mui/icons-material";
 import { GitLinkDialog } from "../Assignments/components/GitHubLinkDialog.tsx";
 import { CommentDialog } from "../Assignments/components/CommentDialog.tsx";
@@ -37,20 +22,14 @@ import {
 } from "../../modules/PracticeSubmissions/Domain/PracticeSubmissionInterface.ts";
 import { CheckPracticeSubmissionExists } from "../../modules/PracticeSubmissions/Application/CheckPracticeSubmissionExists.ts";
 import { GetPracticeSubmissionsByPracticeId } from "../../modules/PracticeSubmissions/Application/getPracticeSubmissionByPracticeId.ts";
-import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishPracticeSubmission } from "../../modules/PracticeSubmissions/Application/FinishPracticeSubmission.ts";
 import { GetPracticeSubmissionByUserandPracticeSubmissionId } from "../../modules/PracticeSubmissions/Application/getPracticeSubmissionByUserIdAnPracticeSubmissionId.ts";
 
 import { GetPracticeById } from "../../modules/Practices/application/GetPracticeById.ts";
+import { formatDate } from "../../utils/dateUtils.ts";
 interface PracticeDetailProps {
   title: string;
   userid: number;
-}
-
-function generateUniqueId() {
-  const timestamp = Date.now().toString(36);
-  const randomChars = Math.random().toString(36).substring(2, 8);
-  return timestamp + randomChars;
 }
 
 const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
@@ -62,20 +41,19 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     [key: string]: boolean;
   }>({});
 
-  const [loadingSubmissions, setLoadingPracticeSubmissions] = useState(true);
+  const [_, setLoadingPracticeSubmissions] = useState(true);
   const [practiceSubmissions, setPracticeSubmissions] = useState<
     PracticeSubmissionDataObject[]
   >([]);
-  const [studentSubmission, setStudentSubmission] =
-    useState<PracticeSubmissionDataObject>();
+  const [practiceSubmission] = useState<PracticeSubmissionDataObject>();
   const [_submissionsError, setSubmissionsError] = useState<string | null>(
     null
   );
-  const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setPracticeSubmission] =
     useState<PracticeSubmissionDataObject | null>(null);
   const navigate = useNavigate();
-  const usersRepository = new UsersRepository();
+
+  console.log("HOLAAAA" + practiceSubmission);
 
   useEffect(() => {
     const practiceSubmissionRepository = new PracticeSubmissionRepository();
@@ -173,37 +151,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   useEffect(() => {}, [practiceSubmissions]);
 
   const isTaskInProgress = submission?.status !== "in progress";
-  // useEffect(() => {
-  //   const fetchStudentSubmission = async () => {
-  //     if (isStudent(role)) {
-  //       if (assignmentid && userid && userid !== -1) {
-  //         try {
-  //           const submissionRepository = new SubmissionRepository();
-  //           const getSubmissionsByAssignmentId =
-  //             new GetSubmissionsByAssignmentId(submissionRepository);
-  //           const allSubmissions =
-  //             await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(
-  //               assignmentid
-  //             );
-  //           const userSubmission = allSubmissions.find(
-  //             (submission) => submission.userid === userid
-  //           );
-  //           setSubmissionStatus((prevStatus) => ({
-  //             ...prevStatus,
-  //             [userid]: !!userSubmission,
-  //           }));
-  //           if (userSubmission) {
-  //             setStudentSubmission(userSubmission);
-  //           }
-  //         } catch (error) {
-  //           console.error("Error fetching student submission:", error);
-  //         }
-  //       }
-  //     }
-  //   };
-
-  //   fetchStudentSubmission();
-  // }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
     console.log("I will print the json log"); //delete later
@@ -244,13 +191,11 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   };
 
   const handleRedirectStudent = (link: string) => {
-    console.log("ENTRAAAA");
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
 
       if (match) {
-        console.log("ENTRA");
         const [, user, repo] = match;
         console.log(user, repo);
         navigate({
@@ -262,35 +207,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         });
       } else {
         console.log("No entra");
-        alert("Link Invalido, por favor ingrese un link valido.");
-      }
-    } else {
-      alert("No se encontro un link para esta tarea.");
-    }
-  };
-  const handleRedirect = (
-    link: string,
-    fetchedSubmissions: any[],
-    submissionId: number
-  ) => {
-    if (link) {
-      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(link);
-
-      if (match) {
-        const [, user, repo] = match;
-        console.log(user, repo);
-
-        navigate({
-          pathname: "/graph",
-          search: createSearchParams({
-            repoOwner: user,
-            repoName: repo,
-            fetchedSubmissions: JSON.stringify(fetchedSubmissions),
-            submissionId: submissionId.toString(), // Convertimos submissionId a cadena para pasarlo como parámetro
-          }).toString(),
-        });
-      } else {
         alert("Link Invalido, por favor ingrese un link valido.");
       }
     } else {
@@ -336,7 +252,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         const jsonData = parseJSON(fileContent);
         const updatedData = enrichWithRepoData(
           jsonData,
-          studentSubmission?.repository_link
+          practiceSubmission?.repository_link
         );
         console.log("JSON actualizado:", updatedData);
 
@@ -464,21 +380,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     window.location.reload();
   };
 
-  const getDisplayStatus = (status: string | undefined) => {
-    switch (status) {
-      case "pending":
-        return "Pendiente";
-      case "in progress":
-        return "En progreso";
-      case "delivered":
-        return "Enviado";
-      case undefined:
-        return "Pendiente";
-      default:
-        return status;
-    }
-  };
-
   return (
     <div
       style={{
@@ -516,8 +417,10 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                   color="text.secondary"
                   style={{ fontSize: "16px", lineHeight: "1.8" }}
                 >
-                  <strong>Estado:</strong>{" "}
-                  {getDisplayStatus(studentSubmission?.status)}
+                  <strong>Fecha de Creación:</strong>{" "}
+                  {formatDate(
+                    practiceSubmissions[0]?.start_date?.toString() ?? ""
+                  )}
                 </Typography>
               </div>
 
@@ -536,31 +439,12 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 >
                   <strong>Enlace:</strong>
                   <a
-                    href={studentSubmission?.repository_link}
+                    href={practiceSubmissions[0]?.repository_link}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {studentSubmission?.repository_link}
+                    {practiceSubmissions[0]?.repository_link}
                   </a>
-                </Typography>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <CommentIcon style={{ marginRight: "8px", color: "#666666" }} />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
-                  <strong>Comentario:</strong>{" "}
-                  {studentSubmission?.repository_link === "" ||
-                    studentSubmission == null}
                 </Typography>
               </div>
             </div>
