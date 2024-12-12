@@ -89,13 +89,6 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
     { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
     { value: 'Lista', label: 'Lista de Commits' },
 ];
-const [visibleOptions, setVisibleOptions] = useState(() => {
-  if (typegraphs == 'aditionalgraph') {
-      return options.filter(option => ['Complejidad', 'TddCiclos', 'Pie'].includes(option.value));
-  } else {
-      return options.filter(option => !['Complejidad', 'TddCiclos', 'Pie'].includes(option.value));
-  }
-});
   return (
     <div className="lineChartContainer">
       <Box>
@@ -109,11 +102,17 @@ const [visibleOptions, setVisibleOptions] = useState(() => {
             data-testid="select-graph-type"
             label="Métricas"
           >
-            {visibleOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
+             {options.filter(option => {
+        if (typegraphs === 'aditionalgraph') {
+            return ['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+        } else {
+            return !['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+        }
+        }).map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+                {option.label}
+            </MenuItem>
+        ))}
           </Select>
         </FormControl>
       </Box>
