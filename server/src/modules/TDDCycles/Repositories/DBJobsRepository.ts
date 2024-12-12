@@ -10,6 +10,13 @@ export class DBJobsRepository implements IDBJobsRepository {
   constructor() {
     this.pool = new Pool(config);
   }
+
+  async findJobByCommit(sha: string, owner: string, repoName: string): Promise<any | null> {
+    const client = await this.pool.connect();
+    
+}
+
+
   async getCommitExecutions(sha: string, owner: string, repo: string): Promise<any[]> {
     let client;
     try {
