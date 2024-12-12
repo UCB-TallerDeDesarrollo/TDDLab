@@ -60,7 +60,7 @@ export class GetTDDCyclesUseCase {
       following function
       
       */
-      await this.updateCommitsWithCoverageData(owner, repoName, commits);
+      //await this.updateCommitsWithCoverageData(owner, repoName, commits);
       return commits;
     } catch (error) {
       console.error(`Error al ejecutar: ${error}`);
