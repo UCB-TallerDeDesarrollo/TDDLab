@@ -13,4 +13,8 @@ export interface IDBJobsRepository {
     saveJobsList(owner: string, repoName: string, jobs: Record<string, JobDataObject>): Promise<void>;
     saveLogs(timeline: ITimelineEntry[]): Promise<void>;
     getCommitExecutions(sha: string, owner: string, repo:string): Promise<any>;
+    findJobByCommit(sha: string, owner: string, repoName: string): Promise<any | null>;
+    updateJobConclusion(sha: string, repoOwner: string, repoName: string, conclusion: string): Promise<void>;
+    saveJobFromTDDLog(job: TestResultDataObject): Promise<void>;
+    
 }

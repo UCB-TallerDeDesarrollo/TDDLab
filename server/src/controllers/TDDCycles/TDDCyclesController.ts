@@ -16,6 +16,7 @@ class TDDCyclesController {
   testResultsUseCase: GetTestResultsUseCase;
   submitTDDLogToDB: PostTDDLogUseCase;
   dbCommitsRepository: IDBCommitsRepository;
+  dbJobsRepository: IDBJobsRepository;
   getCommitExecutions: GetCommitTimeLineUseCase;
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
@@ -37,6 +38,7 @@ class TDDCyclesController {
       dbJobsRepository,
     );
     this.dbCommitsRepository=new DBCommitsRepository();
+    this.dbJobsRepository = dbJobsRepository;
   }
   async getTDDCycles(req: Request, res: Response) {
     try {
@@ -98,6 +100,124 @@ class TDDCyclesController {
     }
   }
 
+  private async insertJobForCommit(
+    actualCommitSha: string,
+    repoOwner: string,
+    repoName: string,
+    commitTimelineEntries: ITimelineEntry[]
+  ): Promise<void> {
+    const lastExecution = commitTimelineEntries.at(-1);
+    const color = lastExecution?.color;
+    const conclusion = color === "green" ? "success" : "failure";
+  
+    try {
+      await this.dbJobsRepository.saveJobFromTDDLog({
+        sha: actualCommitSha,
+        owner: repoOwner,
+        reponame: repoName,
+        conclusion,
+      });
+      console.log(
+        `Insertado el commit ${actualCommitSha} en jobsTable con conclusión ${conclusion}.`
+      );
+    } catch (error) {
+      console.error(
+        `Error al insertar el commit ${actualCommitSha} en jobsTable:`,
+        error
+      );
+    }
+  }
+  
+  private async handleJobConclusionUpdate(
+    actualCommitSha: string,
+    repoOwner: string,
+    repoName: string,
+    commitTimelineEntries: ITimelineEntry[]
+  ): Promise<void> {
+    const commitInJobs = await this.dbJobsRepository.findJobByCommit(
+      actualCommitSha,
+      repoOwner,
+      repoName
+    );
+  
+    if (commitInJobs) {
+      console.log(`El commit ${actualCommitSha} ya existe en jobsTable.`);
+      console.log(`Esta es toda la info que tengo de ese señor commit ${commitInJobs.conclusion}`);
+      if (commitInJobs.conclusion === null) {
+        console.log(
+          `El campo conclusion del commit ${actualCommitSha} está vacío. Procediendo a actualizar.`
+        );
+        const lastExecution = commitTimelineEntries.at(-1);
+        const color = lastExecution?.color;
+        const conclusion = color === "green" ? "success" : "failure";
+  
+        try {
+          await this.dbJobsRepository.updateJobConclusion(
+            actualCommitSha,
+            repoOwner,
+            repoName,
+            conclusion
+          );
+          console.log(
+            `Actualizada conclusión del commit ${actualCommitSha} a ${conclusion}`
+          );
+        } catch (error) {
+          console.error(
+            `Error al actualizar conclusión del commit ${actualCommitSha}:`,
+            error
+          );
+        }
+      }
+    } else {
+      console.log(`No hay registro de job de este commit ${actualCommitSha}, procederé a insertar el registro en la BD`);
+      await this.insertJobForCommit(
+        actualCommitSha,
+        repoOwner,
+        repoName,
+        commitTimelineEntries
+      );
+    }
+  }
+
+  private async updateTestCountIfNeeded(
+    repoOwner: string,
+    repoName: string,
+    commitSha: string,
+    numTotalTests: number
+  ): Promise<void> {
+    try {
+      const commitInCommitsTable = await this.dbCommitsRepository.getCommitBySha(
+        repoOwner,
+        repoName,
+        commitSha
+      );
+  
+      if (commitInCommitsTable) {
+        console.log(`commit encontrado en commitsTable: ${commitSha}`);
+        console.log(`valor actual de test_count: ${commitInCommitsTable.test_count}`);
+        //console.log(`tipo de test_count: ${typeof commitInCommitsTable.test_count}`);
+  
+        if (commitInCommitsTable.test_count === "") {
+          console.log(`el test_count está vacío, actualizando con valor: ${numTotalTests}`);
+          await this.dbCommitsRepository.updateTestCount(
+            repoOwner,
+            repoName,
+            commitSha,
+            numTotalTests
+          );
+          console.log(`campo test_count actualizado para commit ${commitSha}`);
+        }
+      } else {
+        console.error(`commit ${commitSha} no se encontró en commitsTable (esto no debería ocurrir).`); //ojala que no
+      }
+    } catch (error) {
+      console.error(`error al manejar el campo test_count para el commit ${commitSha}:`, error);
+      throw error;
+    }
+  }
+  
+  
+
   async uploadTDDLog(req: Request, res: Response) {
     
     try {
@@ -146,7 +266,23 @@ class TDDCyclesController {
               commitTimelineEntries.push(commitTimelineEntry);
             } 
           }
-          
+          await this.handleJobConclusionUpdate(
+            actualCommitSha,
+            repoOwner,
+            repoName,
+            commitTimelineEntries
+          ); 
+
+          const lastExecutionEntry = commitTimelineEntries[commitTimelineEntries.length - 1];
+          if (lastExecutionEntry) {
+            await this.updateTestCountIfNeeded(
+              repoOwner,
+              repoName,
+              actualCommitSha,
+              lastExecutionEntry.number_of_tests
+            );
+          }
+       
           let tdd_cycle_entry="";
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
           const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";

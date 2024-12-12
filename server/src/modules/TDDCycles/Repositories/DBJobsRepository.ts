@@ -10,6 +10,61 @@ export class DBJobsRepository implements IDBJobsRepository {
   constructor() {
     this.pool = new Pool(config);
   }
+
+  async findJobByCommit(sha: string, owner: string, repoName: string): Promise<any | null> {
+    const client = await this.pool.connect();
+    try {
+        const query = `
+            SELECT * 
+            FROM jobstable
+            WHERE sha = $1 AND owner = $2 AND reponame = $3
+        `;
+        const values = [sha, owner, repoName];
+        const result = await client.query(query, values);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+        console.error("Error buscando el commit en jobsTable:", error); //esto es complicado, no creo que pase (dios)
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conclusion: string): Promise<void> {
+  const client = await this.pool.connect();
+  try {
+    const query = `
+      UPDATE jobstable
+      SET conclusion = $4
+      WHERE sha = $1 AND owner = $2 AND reponame = $3 AND conclusion IS NULL
+    `;
+    const values = [sha, repoOwner, repoName, conclusion];
+    await client.query(query, values);
+  } catch (error) {
+    console.error("Error al actualizar la conclusión en jobsTable:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+  async saveJobFromTDDLog(job: TestResultDataObject): Promise<void> {
+    const client = await this.pool.connect();
+    try {
+      const query = `
+        INSERT INTO jobstable (sha, owner, reponame, conclusion)
+        VALUES ($1, $2, $3, $4)
+      `;
+      const values = [job.sha, job.owner, job.reponame, job.conclusion];
+      await client.query(query, values);
+    } catch (error) {
+      console.error("Error al insertar en jobsTable:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   async getCommitExecutions(sha: string, owner: string, repo: string): Promise<any[]> {
     let client;
     try {

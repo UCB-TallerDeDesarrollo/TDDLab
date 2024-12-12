@@ -12,4 +12,7 @@ export interface IDBCommitsRepository {
   saveCommitsList(owner: string, repoName: string, newCommits: TDDCycleDataObject[]): Promise<void>;
   updateCommitCoverageAndTestCount(owner: string, repoName: string, sha: string, coverage: string, test_count: string) : Promise<any>;
   updateTddCycle(sha: string, tdd_cicle:string) : Promise<any>;
+  getCommitBySha(owner: string, repoName: string, sha: string): Promise<any>;
+  updateTestCount(repoOwner: string, repoName: string, commitSha: string, numTotalTests: number): Promise<void>;
+  
 }
