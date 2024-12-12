@@ -86,6 +86,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                           item.color === "green" ? "#28A745" : "#D73A49",
                         numTests: item.number_of_tests,
                         passedTests: item.passed_tests,
+                        date: item.execution_timestamp,
                       })),
                       backgroundColor: commitTimelineData.map((item) =>
                         item.color === "green" ? "#28A745" : "#D73A49"
@@ -124,12 +125,29 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                       enabled: true,
                       callbacks: {
                         label: function (context: any) {
-                          const dataPoint = context.raw;
-                          return [
-                            `Number of Tests: ${dataPoint.numTests}`,
-                            `Passed Tests: ${dataPoint.passedTests}`,
-                          ];
-                        },
+                            const dataPoint = context.raw;
+                            const formatDate = (date: string | Date): string => {
+                              const d = new Date(date);
+                              const day = String(d.getDate()).padStart(2, '0');
+                              const month = String(d.getMonth() + 1).padStart(2, '0');
+                              const year = d.getFullYear();
+                              return `${day}/${month}/${year}`;
+                            };
+                          
+                            const formatTime = (date: string | Date): string => {
+                              const d = new Date(date);
+                              const hours = String(d.getHours()).padStart(2, '0');
+                              const minutes = String(d.getMinutes()).padStart(2, '0');
+                              return `${hours}:${minutes}`;
+                            };
+                          
+                            return [
+                              `Number of Tests: ${dataPoint.numTests}`,
+                              `Passed Tests: ${dataPoint.passedTests}`,
+                              `Fecha: ${formatDate(dataPoint.date)}`,
+                              `Hora: ${formatTime(dataPoint.date)}`,
+                            ];
+                          },                          
                       },
                     },
                   },
