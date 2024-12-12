@@ -21,11 +21,12 @@ interface CycleReportViewProps {
   role: string;
   complexity:ComplexityObject[] | null;
   commitsTddCycles: CommitCycle[] | null;
+  typegraphs: string;
 }
 
-function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, commitsTddCycles }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, commitsTddCycles,typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-
+  console.log("TDDCHART says: ", typegraphs)
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
     return initialMetric;
@@ -78,7 +79,16 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
     const storageEvent = new Event("storage");
     window.dispatchEvent(storageEvent);
   };
-
+  const options = [
+    { value: 'Complejidad', label: 'Lista de Complejidad' },
+    { value: 'TddCiclos', label: 'Análisis de distribución de pruebas por commit' },
+    { value: 'Pie', label: 'Distribución de Commits' },
+    { value: 'Dashboard', label: 'Dashboard' },
+    { value: 'Total Número de Tests', label: 'Total Número de Tests' },
+    { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
+    { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
+    { value: 'Lista', label: 'Lista de Commits' },
+];
   return (
     <div className="lineChartContainer">
       <Box>
@@ -92,30 +102,17 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
             data-testid="select-graph-type"
             label="Métricas"
           >
-             <MenuItem value={"Dashboard"}>
-              Dashboard
+             {options.filter(option => {
+        if (typegraphs === 'aditionalgraph') {
+            return ['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+        } else {
+            return !['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+        }
+        }).map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+                {option.label}
             </MenuItem>
-            <MenuItem value={"Total Número de Tests"}>
-              Total Número de Tests
-            </MenuItem>
-            <MenuItem value={"Cobertura de Código"}>
-              Porcentaje de Cobertura de Código
-            </MenuItem>
-            <MenuItem value={"Líneas de Código Modificadas"}>
-              Líneas de Código Modificadas
-            </MenuItem>
-            <MenuItem value={"Lista"}>
-              Lista de Commits
-            </MenuItem>
-            <MenuItem value={"Complejidad"}>
-              Lista de Complejidad
-            </MenuItem>
-            <MenuItem value={"TddCiclos"}>
-              Analisis de distribución de pruebas por commit 
-            </MenuItem>
-            <MenuItem value={"Pie"}>
-              Distribución de Commits
-            </MenuItem>
+        ))}
           </Select>
         </FormControl>
       </Box>
@@ -127,6 +124,7 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}
+        
       />
     </div>
   );

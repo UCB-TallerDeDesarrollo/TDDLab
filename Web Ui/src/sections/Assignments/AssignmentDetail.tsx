@@ -275,8 +275,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       alert("No se encontro un link para esta tarea.");
     }
   };
-
-  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number) => {
+  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url:string) => {
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
@@ -286,7 +285,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         console.log(user, repo);
   
         navigate({
-          pathname: "/graph",
+          pathname: url,
           search: createSearchParams({
             repoOwner: user,
             repoName: repo,
@@ -301,7 +300,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       alert("No se encontro un link para esta tarea.");
     }
   };
-
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
 
@@ -413,7 +411,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id)}}
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")}}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -422,6 +420,23 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 }}
               >
                 Ver gráfica
+              </Button>
+            </TableCell>
+            <TableCell>
+              <Button
+                variant="contained"
+                disabled={submission.repository_link === ""}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "Complejidad");
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id,"/aditionalgraph")}}
+                color="primary"
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Ver gráficas adicionales
               </Button>
             </TableCell>
           </TableRow>
@@ -713,6 +728,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     <TableCell>Fecha de finalización</TableCell>
                     <TableCell>Comentario</TableCell>
                     <TableCell>Gráfica</TableCell>
+                    <TableCell>Gráficas Adicionales</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
