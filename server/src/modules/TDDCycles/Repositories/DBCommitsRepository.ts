@@ -10,6 +10,31 @@ export class DBCommitsRepository implements IDBCommitsRepository {
     this.pool = new Pool(config);
   }
 
+  async updateTestCount(
+    repoOwner: string,
+    repoName: string,
+    commitSha: string,
+    numTotalTests: number
+  ): Promise<void> {
+    const client = await this.pool.connect();
+    try {
+      const query = `
+        UPDATE commitstable
+        SET test_count = $1
+        WHERE reponame = $2 AND repoowner = $3 AND sha = $4
+      `;
+      const values = [numTotalTests, repoName, repoOwner, commitSha];
+      await client.query(query, values);
+      console.log(`test_count actualizado a ${numTotalTests} para commit ${commitSha}`);
+    } catch (error) {
+      console.error(`Error al actualizar test_count en commitsTable:`, error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+  
+
   async getCommitBySha(owner: string, repoName: string, sha: string): Promise<any> {
     const client = await this.pool.connect();
     try {
