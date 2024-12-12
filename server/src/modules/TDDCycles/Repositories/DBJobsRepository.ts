@@ -48,6 +48,23 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
   }
 }
 
+  async saveJobFromTDDLog(job: TestResultDataObject): Promise<void> {
+    const client = await this.pool.connect();
+    try {
+      const query = `
+        INSERT INTO jobstable (sha, owner, reponame, conclusion)
+        VALUES ($1, $2, $3, $4)
+      `;
+      const values = [job.sha, job.owner, job.reponame, job.conclusion];
+      await client.query(query, values);
+    } catch (error) {
+      console.error("Error al insertar en jobsTable:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   async getCommitExecutions(sha: string, owner: string, repo: string): Promise<any[]> {
     let client;
     try {
