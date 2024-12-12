@@ -105,16 +105,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     return `rgba(0, ${greenValue}, 0, ${opacity})`;
   };
 
-  const getColorByConclusion = (conclusion: string, coverage: number) => {
-    if (conclusion === "success") {
+  const getColorByConclusion = (job: any, coverage: number) => {
+    if (job?.conclusion === "success") {
       return getColorByCoverage(coverage);
-    } else if (conclusion === "failed") {
-
+    } else if (job === undefined) {
       return "black";
     }
     else { return 'red' }
   };
-
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
     localStorage.setItem("selectedMetric", graphText);
@@ -318,7 +316,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   .map((commit, index) => {
                     const job = jobsByCommit.find((job) => job.sha === commit.sha);
                     const backgroundColor = getColorByConclusion(
-                      job?.conclusion || "failed",
+                      job,
                       commit.coverage
                     );
 

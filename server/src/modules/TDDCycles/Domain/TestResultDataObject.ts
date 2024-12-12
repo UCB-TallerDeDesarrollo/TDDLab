@@ -1,5 +1,5 @@
 export interface TestResultDataObject{
-    id:number,
+    id?:number,
     sha:string,
     owner:string,
     reponame:string,
