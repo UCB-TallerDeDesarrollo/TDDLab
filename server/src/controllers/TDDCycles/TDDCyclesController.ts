@@ -195,8 +195,7 @@ class TDDCyclesController {
       if (commitInCommitsTable) {
         console.log(`commit encontrado en commitsTable: ${commitSha}`);
         console.log(`valor actual de test_count: ${commitInCommitsTable.test_count}`);
-        //console.log(`tipo de test_count: ${typeof commitInCommitsTable.test_count}`);
-  
+        
         if (commitInCommitsTable.test_count === "") {
           console.log(`el test_count está vacío, actualizando con valor: ${numTotalTests}`);
           await this.dbCommitsRepository.updateTestCount(

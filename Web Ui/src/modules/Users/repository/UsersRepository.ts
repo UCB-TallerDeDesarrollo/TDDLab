@@ -69,11 +69,7 @@ export class UsersRepository implements UsersRepositoryInterface {
     try {
       console.log("repository"+userId)
       await axios.delete(`${API_URL}/delete/${userId}`);
-      // if (response.status !== 200) {
-      //   throw new Error(
-      //     `Error al eliminar usuario: el servidor respondió con el estado ${response.status}.`
-      //   );
-      // }
+      
       console.log(`Usuario con ID ${userId} eliminado exitosamente.`);
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
