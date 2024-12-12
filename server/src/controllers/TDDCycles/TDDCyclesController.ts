@@ -100,6 +100,52 @@ class TDDCyclesController {
     }
   }
 
+  private async handleJobConclusionUpdate(
+    actualCommitSha: string,
+    repoOwner: string,
+    repoName: string,
+    commitTimelineEntries: ITimelineEntry[]
+  ): Promise<void> {
+    const commitInJobs = await this.dbJobsRepository.findJobByCommit(
+      actualCommitSha,
+      repoOwner,
+      repoName
+    );
+  
+    if (commitInJobs) {
+      console.log(`El commit ${actualCommitSha} ya existe en jobsTable.`);
+  
+      if (commitInJobs.conclusion === null) {
+        console.log(
+          `El campo conclusion del commit ${actualCommitSha} está vacío. Procediendo a actualizar.`
+        );
+        const lastExecution = commitTimelineEntries.at(-1);
+        const color = lastExecution?.color;
+        const conclusion = color === "green" ? "success" : "failure";
+  
+        try {
+          await this.dbJobsRepository.updateJobConclusion(
+            actualCommitSha,
+            repoOwner,
+            repoName,
+            conclusion
+          );
+          console.log(
+            `Actualizada conclusión del commit ${actualCommitSha} a ${conclusion}`
+          );
+        } catch (error) {
+          console.error(
+            `Error al actualizar conclusión del commit ${actualCommitSha}:`,
+            error
+          );
+        }
+      }
+    } else {
+      console.log(`El commit ${actualCommitSha} no está en jobsTable.`);
+    }
+  }
+  
+
   async uploadTDDLog(req: Request, res: Response) {
     
     try {
@@ -148,40 +194,12 @@ class TDDCyclesController {
               commitTimelineEntries.push(commitTimelineEntry);
             } 
           }
-
-          const commitInJobs = await this.dbJobsRepository.findJobByCommit(
+          await this.handleJobConclusionUpdate(
             actualCommitSha,
             repoOwner,
-            repoName
+            repoName,
+            commitTimelineEntries
           );
-
-          if (commitInJobs) {
-            console.log(`El commit ${actualCommitSha} ya existe en jobsTable.`);
-
-            if (commitInJobs.conclusion === null){
-              console.log(`El campo conclusion del commit ${actualCommitSha} está vacío. Procediendo a actualizar.`);
-              const lastExecution = commitTimelineEntries[commitTimelineEntries.length - 1];
-              const color = lastExecution?.color;
-              const conclusion = color === "green" ? "success" : "failure";
-
-              try {
-                await this.dbJobsRepository.updateJobConclusion(
-                  actualCommitSha,
-                  repoOwner,
-                  repoName,
-                  conclusion
-                );
-                console.log(`Actualizada conclusión del commit ${actualCommitSha} a ${conclusion}`);
-              } catch (error) {
-                console.error(`Error al actualizar conclusión del commit ${actualCommitSha}:`, error);
-              }
-            }
-
-
-          } else {
-            console.log(`El commit ${actualCommitSha} no está en jobsTable.`);
-          }
-          
           let tdd_cycle_entry="";
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
           const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";
