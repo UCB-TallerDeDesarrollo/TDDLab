@@ -1,25 +1,25 @@
 export interface PracticeSubmissionDataObject {
   id: number;
-  assignmentid: number;
+  practiceid: number;
   userid: number;
   status: string;
   repository_link: string;
-  start_date: Date;
-  end_date: Date;
-  comment: string;
+  start_date: Date | null;
+  end_date: Date | null;
+  comment: string | null;
 }
 
 export interface PracticeSubmissionCreationObject {
-  assignmentid: number;
-  userid: number;
+  practiceid: number;
+  userid: number | undefined;
   status: string;
   repository_link: string;
-  start_date: Date;
+  start_date: Date | null;
 }
 
 export interface PracticeSubmissionUpdateObject {
   id?: number;
   status: string;
-  end_date: Date;
-  comment: string;
+  end_date: Date | null;
+  comment: string | null;
 }
