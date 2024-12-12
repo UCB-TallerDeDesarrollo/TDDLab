@@ -275,8 +275,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       alert("No se encontro un link para esta tarea.");
     }
   };
-
-  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number) => {
+  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url:string) => {
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
@@ -286,7 +285,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         console.log(user, repo);
   
         navigate({
-          pathname: "/graph",
+          pathname: url,
           search: createSearchParams({
             repoOwner: user,
             repoName: repo,
@@ -301,32 +300,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       alert("No se encontro un link para esta tarea.");
     }
   };
-  const handleRedirectAdminAditionalGraps = (link: string, fetchedSubmissions: any[], submissionId: number) => {
-    if (link) {
-      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(link);
-  
-      if (match) {
-        const [, user, repo] = match;
-        console.log(user, repo);
-  
-        navigate({
-          pathname: "/aditionalgraph",
-          search: createSearchParams({
-            repoOwner: user,
-            repoName: repo,
-            fetchedSubmissions: JSON.stringify(fetchedSubmissions),
-            submissionId: submissionId.toString(),  // Convertimos submissionId a cadena para pasarlo como parámetro
-          }).toString(),
-        });
-      } else {
-        alert("Link Invalido, por favor ingrese un link valido.");
-      }
-    } else {
-      alert("No se encontro un link para esta tarea.");
-    }
-  };
-
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
 
@@ -438,7 +411,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id)}}
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")}}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -455,7 +428,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Complejidad");
-                  handleRedirectAdminAditionalGraps(submission.repository_link, submissions, submission.id)}}
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id,"/aditionalgraph")}}
                 color="primary"
                 style={{
                   textTransform: "none",
