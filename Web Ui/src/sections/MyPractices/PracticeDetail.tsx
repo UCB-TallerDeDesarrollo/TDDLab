@@ -170,9 +170,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     fetchSubmissions();
   }, [practiceid]);
 
-  useEffect(() => {
-    renderStudentRows();
-  }, [practiceSubmissions]);
+  useEffect(() => {}, [practiceSubmissions]);
 
   const isTaskInProgress = submission?.status !== "in progress";
   // useEffect(() => {
@@ -246,11 +244,13 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   };
 
   const handleRedirectStudent = (link: string) => {
+    console.log("ENTRAAAA");
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
 
       if (match) {
+        console.log("ENTRA");
         const [, user, repo] = match;
         console.log(user, repo);
         navigate({
@@ -261,14 +261,14 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
           }).toString(),
         });
       } else {
+        console.log("No entra");
         alert("Link Invalido, por favor ingrese un link valido.");
       }
     } else {
       alert("No se encontro un link para esta tarea.");
     }
   };
-
-  const handleRedirectAdmin = (
+  const handleRedirect = (
     link: string,
     fetchedSubmissions: any[],
     submissionId: number
@@ -479,76 +479,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     }
   };
 
-  const getStudentEmailById = async (studentId: number): Promise<string> => {
-    try {
-      const student = await usersRepository.getUserById(studentId);
-      return student.email;
-    } catch (error) {
-      console.error("Error fetching student email:", error);
-      return "";
-    }
-  };
-
-  const renderStudentRows = async () => {
-    const rows = await Promise.all(
-      practiceSubmissions.map(async (practiceSubmission) => {
-        const studentEmail = await getStudentEmailById(
-          practiceSubmission.userid
-        );
-        const formattedStartDate = formatDate(
-          practiceSubmission.start_date?.toString() || ""
-        );
-
-        const formattedEndDate = practiceSubmission.end_date
-          ? formatDate(practiceSubmission.end_date.toString())
-          : "N/A";
-
-        return (
-          <TableRow key={generateUniqueId()}>
-            <TableCell>{studentEmail}</TableCell>
-            <TableCell>{getDisplayStatus(practiceSubmission.status)}</TableCell>
-            <TableCell>
-              <a
-                href={practiceSubmission.repository_link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {practiceSubmission.repository_link}
-              </a>
-            </TableCell>
-            <TableCell>{formattedStartDate}</TableCell>
-            <TableCell>{formattedEndDate}</TableCell>
-            <TableCell>{practiceSubmission.comment || "N/A"}</TableCell>
-            <TableCell>
-              <Button
-                variant="contained"
-                disabled={practiceSubmission.repository_link === ""}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
-                  handleRedirectAdmin(
-                    practiceSubmission.repository_link,
-                    practiceSubmissions,
-                    practiceSubmission.id
-                  );
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Ver gráfica
-              </Button>
-            </TableCell>
-          </TableRow>
-        );
-      })
-    );
-
-    setStudentRows(rows);
-  };
-
   return (
     <div
       style={{
@@ -650,14 +580,13 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
 
             <Button
               variant="contained"
-              disabled={
-                studentSubmission?.repository_link === "" ||
-                studentSubmission == null
-              }
               onClick={() => {
+                console.log(practiceSubmissions);
                 localStorage.setItem("selectedMetric", "Dashboard");
-                studentSubmission?.repository_link &&
-                  handleRedirectStudent(studentSubmission.repository_link);
+                practiceSubmissions[0]?.repository_link &&
+                  handleRedirectStudent(
+                    practiceSubmissions[0]?.repository_link
+                  );
               }}
               color="primary"
               style={{
