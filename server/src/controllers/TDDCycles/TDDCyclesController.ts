@@ -100,6 +100,34 @@ class TDDCyclesController {
     }
   }
 
+  private async insertJobForCommit(
+    actualCommitSha: string,
+    repoOwner: string,
+    repoName: string,
+    commitTimelineEntries: ITimelineEntry[]
+  ): Promise<void> {
+    const lastExecution = commitTimelineEntries.at(-1); // Última ejecución del commit
+    const color = lastExecution?.color;
+    const conclusion = color === "green" ? "success" : "failure";
+  
+    try {
+      await this.dbJobsRepository.saveJobFromTDDLog({
+        sha: actualCommitSha,
+        owner: repoOwner,
+        reponame: repoName,
+        conclusion,
+      });
+      console.log(
+        `Insertado el commit ${actualCommitSha} en jobsTable con conclusión ${conclusion}.`
+      );
+    } catch (error) {
+      console.error(
+        `Error al insertar el commit ${actualCommitSha} en jobsTable:`,
+        error
+      );
+    }
+  }
+  
   private async handleJobConclusionUpdate(
     actualCommitSha: string,
     repoOwner: string,
@@ -142,7 +170,7 @@ class TDDCyclesController {
       }
     } else {
       console.log(`No hay registro de job de este commit ${actualCommitSha}, procederé a insertar el registro en la BD`);
-      
+
     }
   }
   
