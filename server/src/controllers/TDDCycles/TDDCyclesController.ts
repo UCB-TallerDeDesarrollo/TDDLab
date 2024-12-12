@@ -101,6 +101,17 @@ class TDDCyclesController {
   async uploadTDDLog(req: Request, res: Response) {
     
     try {
+
+      const getColor = (testEntry: any): string => {
+        if (testEntry.numTotalTests === 0) {
+          return "red";
+        } else if (testEntry.numPassedTests === testEntry.numTotalTests) {
+          return "green";
+        } else {
+          return "red";
+        }
+      };
+
       const { repoOwner, repoName, log: tddLog } = req.body;
       if (!repoOwner || !repoName || !tddLog) {
         return res.status(400).json({ error: "Faltan campos requeridos: repoOwner, repoName o log." });
@@ -121,7 +132,7 @@ class TDDCyclesController {
           {
             const testEntry = tddLog[j];
             if(testEntry.numPassedTests !== undefined && testEntry.numTotalTests !== undefined && testEntry.timestamp){
-              const color = testEntry.numPassedTests === testEntry.numTotalTests ? "green" : "red";
+              const color = getColor(testEntry);
               const commitTimelineEntry: ITimelineEntry = {
                 execution_id: null, 
                 commit_sha: actualCommitSha,
