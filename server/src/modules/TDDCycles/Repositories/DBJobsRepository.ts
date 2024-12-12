@@ -30,6 +30,24 @@ export class DBJobsRepository implements IDBJobsRepository {
     }
 }
 
+async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conclusion: string): Promise<void> {
+  const client = await this.pool.connect();
+  try {
+    const query = `
+      UPDATE jobstable
+      SET conclusion = $4
+      WHERE sha = $1 AND owner = $2 AND reponame = $3 AND conclusion IS NULL
+    `;
+    const values = [sha, repoOwner, repoName, conclusion];
+    await client.query(query, values);
+  } catch (error) {
+    console.error("Error al actualizar la conclusión en jobsTable:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 
   async getCommitExecutions(sha: string, owner: string, repo: string): Promise<any[]> {
     let client;
