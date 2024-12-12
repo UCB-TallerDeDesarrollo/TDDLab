@@ -18,6 +18,7 @@ interface CycleReportViewProps {
   port: GithubAPIRepository;
   role: string;
   teacher_id: number;
+  graphs:string;
 }
 
 interface Submission {
@@ -29,7 +30,16 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>) {
+function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportViewProps>) {
+  let DefaultItem="";
+  if(graphs==="graph")
+  {
+    DefaultItem="Dashboard";
+  }
+  else
+  {
+    DefaultItem="Complejidad";
+  }
   
   const [searchParams] = useSearchParams();
   const commentsRepo = new TeacherCommentsRepository();
@@ -220,7 +230,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
                 data-testid="previous-student"
                 className="nav-button"
                 onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
+                  localStorage.setItem("selectedMetric", DefaultItem);
                   goToPreviousStudent();
                 }}
                 disabled={currentIndex === 0}
@@ -234,7 +244,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
                 data-testid="next-student"
                 className="nav-button"
                 onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
+                  localStorage.setItem("selectedMetric",DefaultItem);
                   goToNextStudent();
                 }}
                 disabled={currentIndex === fetchedSubmissions.length - 1}
@@ -261,6 +271,7 @@ function TDDChartPage({ port, role, teacher_id }: Readonly<CycleReportViewProps>
               role={role}
               metric={metric}
               setMetric={setMetric}
+              typegraphs={graphs}
             />
           </div>
         </React.Fragment>
