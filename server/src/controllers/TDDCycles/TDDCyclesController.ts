@@ -234,6 +234,20 @@ class TDDCyclesController {
             repoName,
             commitTimelineEntries
           );
+
+          // bueno, ahora actualizamos el num tests, diosito
+
+          const commitInCommitsTable = await this.dbCommitsRepository.getCommitBySha(
+            repoOwner,
+            repoName,
+            actualCommitSha
+          );
+          
+          if (commitInCommitsTable) {
+            console.log(`Commit encontrado en commitsTable: ${actualCommitSha}`);
+            console.log(`Valor actual de test_count: ${commitInCommitsTable.test_count}`);
+          } 
+
           let tdd_cycle_entry="";
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
           const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";
