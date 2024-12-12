@@ -24,7 +24,8 @@ export class TimelineRepository {
                             timeline.push(new Timeline(
                                 item.numPassedTests, 
                                 item.numTotalTests, 
-                                new Date(item.timestamp)
+                                new Date(item.timestamp),
+                                item.success
                             ));
                         } else if (item.commitId && item.commitTimestamp) {
                             timeline.push(new CommitPoint(
