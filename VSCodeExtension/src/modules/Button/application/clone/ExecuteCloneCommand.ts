@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs/promises';
+import * as path from 'path';
 import { TerminalPort } from '../../model/TerminalPort';
 
 export class ExecuteCloneCommand {
@@ -18,7 +19,13 @@ export class ExecuteCloneCommand {
       const selectedPath = folderUri[0].fsPath;
       const selectedPathUri = vscode.Uri.file(selectedPath);
 
-      await fs.cp(tddBasePath, selectedPath, { recursive:true });
+      await fs.cp(tddBasePath, selectedPath, { 
+        recursive:true,
+        filter: (src) => {
+          const basename = path.basename(src);
+          return basename !== '.git'; 
+        }, 
+      });
       await vscode.commands.executeCommand('vscode.openFolder', selectedPathUri, true);
 
     } else {
