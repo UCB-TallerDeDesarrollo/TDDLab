@@ -9,6 +9,26 @@ export class DBCommitsRepository implements IDBCommitsRepository {
   constructor() {
     this.pool = new Pool(config);
   }
+
+  async getCommitBySha(owner: string, repoName: string, sha: string): Promise<any> {
+    const client = await this.pool.connect();
+    try {
+      const query = `
+        SELECT * FROM commitstable
+        WHERE owner = $1 AND repoName = $2 AND sha = $3
+      `;
+      const values = [owner, repoName, sha];
+      const result = await client.query(query, values);
+      return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+      console.error("Error al buscar el commit en commitsTable:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+  
+
   async saveCommit(
     owner: string,
     repoName: string,
