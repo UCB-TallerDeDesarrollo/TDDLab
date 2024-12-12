@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
-import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import { GithubAPIAdapter } from "./modules/TDDCycles-Visualization/repository/GithubAPIAdapter"; //Revisar el cambio por puerto
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
@@ -23,6 +22,7 @@ import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import UsersByGroupPage from "./sections/User/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
+//import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 
 const navArrayLinks = [
   {
@@ -102,18 +102,6 @@ function App() {
           }
         />
 
-        <Route
-          path="/practice/:id"
-          element={
-            <ProtectedRouteComponent>
-              <PracticeDetail
-                // role={authData.userRole ?? ""}
-                // userid={authData.userid ?? -1}
-              />
-            </ProtectedRouteComponent>
-          }
-        />
-
         <Route path="/login" element={<Login />} />
 
         <Route
@@ -165,6 +153,9 @@ function App() {
             />
           }
         />
+
+        <Route path="/mis-practicas/:id" />
+
         <Route
           path="/users/group/:groupid"
           element={
