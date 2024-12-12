@@ -114,7 +114,7 @@ class TDDCyclesController {
   
     if (commitInJobs) {
       console.log(`El commit ${actualCommitSha} ya existe en jobsTable.`);
-  
+      console.log(`Esta es toda la info que tengo de ese señor commit ${commitInJobs.conclusion}`);
       if (commitInJobs.conclusion === null) {
         console.log(
           `El campo conclusion del commit ${actualCommitSha} está vacío. Procediendo a actualizar.`
@@ -141,7 +141,7 @@ class TDDCyclesController {
         }
       }
     } else {
-      console.log(`El commit ${actualCommitSha} no está en jobsTable.`);
+      console.log(`No hay registro de job de este commit ${actualCommitSha}`);
     }
   }
   

@@ -15,4 +15,5 @@ export interface IDBJobsRepository {
     getCommitExecutions(sha: string, owner: string, repo:string): Promise<any>;
     findJobByCommit(sha: string, owner: string, repoName: string): Promise<any | null>;
     updateJobConclusion(sha: string, repoOwner: string, repoName: string, conclusion: string): Promise<void>;
+    saveJob(job: TestResultDataObject): Promise<void>;
 }
