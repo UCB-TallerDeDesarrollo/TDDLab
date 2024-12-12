@@ -23,6 +23,7 @@ export class DBJobsRepository implements IDBJobsRepository {
         const result = await client.query(query, values);
         return result.rows.length > 0 ? result.rows[0] : null;
     } catch (error) {
+        console.error("Error buscando el commit en jobsTable:", error); //esto es complicado, no creo que pase (dios)
         throw error;
     } finally {
         client.release();
