@@ -16,6 +16,7 @@ class TDDCyclesController {
   testResultsUseCase: GetTestResultsUseCase;
   submitTDDLogToDB: PostTDDLogUseCase;
   dbCommitsRepository: IDBCommitsRepository;
+  dbJobsRepository: IDBJobsRepository;
   getCommitExecutions: GetCommitTimeLineUseCase;
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
@@ -37,6 +38,7 @@ class TDDCyclesController {
       dbJobsRepository,
     );
     this.dbCommitsRepository=new DBCommitsRepository();
+    this.dbJobsRepository = dbJobsRepository;
   }
   async getTDDCycles(req: Request, res: Response) {
     try {
@@ -145,6 +147,18 @@ class TDDCyclesController {
               };
               commitTimelineEntries.push(commitTimelineEntry);
             } 
+          }
+
+          const commitInJobs = await this.dbJobsRepository.findJobByCommit(
+            actualCommitSha,
+            repoOwner,
+            repoName
+          );
+
+          if (commitInJobs) {
+            console.log(`El commit ${actualCommitSha} ya existe en jobsTable.`);
+          } else {
+            console.log(`El commit ${actualCommitSha} no está en jobsTable.`);
           }
           
           let tdd_cycle_entry="";
