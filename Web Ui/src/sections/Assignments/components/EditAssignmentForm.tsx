@@ -39,7 +39,9 @@ function EditAssignmentDialog({
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
-
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
   const handleGroupChange = (event: SelectChangeEvent<number>) => {
   setSelectedGroup(event.target.value as number); 
 };
@@ -90,6 +92,8 @@ function EditAssignmentDialog({
       }
     } catch (error) {
       console.error("Error al guardar los cambios:", error);
+      setErrorOpen(true);
+      setErrorMessage("Por favor verifica la logitud del titulo");
     }
   };
   // Esta función se encarga de obtener los detalles de la tarea actual
@@ -171,7 +175,17 @@ function EditAssignmentDialog({
           Guardar Cambios
         </Button>
       </DialogActions>
+      <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>
+        <DialogTitle style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '18px' }}>Error</DialogTitle>
+        <DialogContent>
+          <p style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>{errorMessage}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={() => setErrorOpen(false)}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
     </Dialog>
+     
   );
 }
 
