@@ -170,7 +170,12 @@ class TDDCyclesController {
       }
     } else {
       console.log(`No hay registro de job de este commit ${actualCommitSha}, procederé a insertar el registro en la BD`);
-
+      await this.insertJobForCommit(
+        actualCommitSha,
+        repoOwner,
+        repoName,
+        commitTimelineEntries
+      );
     }
   }
   
