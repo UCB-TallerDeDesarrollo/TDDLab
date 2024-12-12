@@ -195,8 +195,9 @@ class TDDCyclesController {
       if (commitInCommitsTable) {
         console.log(`commit encontrado en commitsTable: ${commitSha}`);
         console.log(`valor actual de test_count: ${commitInCommitsTable.test_count}`);
+        //console.log(`tipo de test_count: ${typeof commitInCommitsTable.test_count}`);
   
-        if (commitInCommitsTable.test_count === null || commitInCommitsTable.test_count === undefined) {
+        if (commitInCommitsTable.test_count === "") {
           console.log(`el test_count está vacío, actualizando con valor: ${numTotalTests}`);
           await this.dbCommitsRepository.updateTestCount(
             repoOwner,
@@ -272,6 +273,16 @@ class TDDCyclesController {
             commitTimelineEntries
           ); 
 
+          const lastExecutionEntry = commitTimelineEntries[commitTimelineEntries.length - 1];
+          if (lastExecutionEntry) {
+            await this.updateTestCountIfNeeded(
+              repoOwner,
+              repoName,
+              actualCommitSha,
+              lastExecutionEntry.number_of_tests
+            );
+          }
+       
           let tdd_cycle_entry="";
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
           const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";

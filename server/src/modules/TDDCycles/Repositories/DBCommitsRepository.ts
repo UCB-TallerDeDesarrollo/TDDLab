@@ -21,7 +21,7 @@ export class DBCommitsRepository implements IDBCommitsRepository {
       const query = `
         UPDATE commitstable
         SET test_count = $1
-        WHERE reponame = $2 AND repoowner = $3 AND sha = $4
+        WHERE reponame = $2 AND owner = $3 AND sha = $4
       `;
       const values = [numTotalTests, repoName, repoOwner, commitSha];
       await client.query(query, values);
