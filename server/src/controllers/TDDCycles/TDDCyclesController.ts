@@ -106,7 +106,7 @@ class TDDCyclesController {
     repoName: string,
     commitTimelineEntries: ITimelineEntry[]
   ): Promise<void> {
-    const lastExecution = commitTimelineEntries.at(-1); // Última ejecución del commit
+    const lastExecution = commitTimelineEntries.at(-1);
     const color = lastExecution?.color;
     const conclusion = color === "green" ? "success" : "failure";
   
