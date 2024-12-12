@@ -14,12 +14,12 @@ export class GetTDDCyclesUseCase {
 
   async updateCommitsWithCoverageData(owner: string, repoName: string, commits: any){
     for(const commit of commits){
-      if(!commit.coverage || !commit.test_count){
+      if(!commit.coverage){
         try{
           const coverageData = await this.githubRepository.fetchCoverageDataForCommit(owner, repoName, commit.sha);
           commit.coverage = coverageData.coveragePercentage;
-          commit.test_count = coverageData.test_count;
-          await this.dbCommitRepository.updateCommitCoverageAndTestCount(owner, repoName, commit.sha, coverageData.coveragePercentage, coverageData.test_count);
+          commit.test_count = "";
+          await this.dbCommitRepository.updateCommitCoverage(owner, repoName, commit.sha, coverageData.coveragePercentage);
         } catch (error) {
           console.error(`Error al actualizar el commit ${commit.sha}: ${error}`);
         }
