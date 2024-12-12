@@ -13,11 +13,13 @@ import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 interface CreatePracticePopupProps {
   open: boolean;
   handleClose: () => void;
+  userid: number;
 }
 
 function MyPracticesForm({
   open,
   handleClose,
+  userid,
 }: Readonly<CreatePracticePopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -27,7 +29,7 @@ function MyPracticesForm({
     description: "",
     state: "pending",
     creation_date: new Date(),
-    userid: 314,
+    userid: userid,
   });
   const isCreateButtonClicked = useRef(false);
 

@@ -16,9 +16,9 @@ const FormsContainer = styled("div")({
 
 interface PracticeManagerProps {
   userRole: string;
-  userGroupid: number;
+  userid: number;
 }
-function PracticeManager({ userRole }: Readonly<PracticeManagerProps>) {
+function PracticeManager({ userRole, userid }: Readonly<PracticeManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
 
@@ -37,6 +37,7 @@ function PracticeManager({ userRole }: Readonly<PracticeManagerProps>) {
             data-testid="form-container"
             open={createAssignmentPopupOpen}
             handleClose={() => setCreateAssignmentPopupOpen(false)}
+            userid={userid}
           />
         )}
       </FormsContainer>
