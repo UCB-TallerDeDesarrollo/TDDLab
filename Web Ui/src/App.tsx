@@ -122,6 +122,14 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
+        <Route
+          path="/aditionalgraph"
+          element={
+            <ProtectedRouteComponent>
+              <TDDAditionalChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} />
+            </ProtectedRouteComponent>
+          }
+        />
         <Route path="/invitation" element={<InvitationPage />} />
         <Route path="/users/group/:groupid" element={
           <ProtectedRouteComponent>
