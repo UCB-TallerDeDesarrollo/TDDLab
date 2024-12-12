@@ -110,7 +110,7 @@ function App() {
           path="/graph"
           element={
             <ProtectedRouteComponent>
-              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} />
+              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="graph" />
             </ProtectedRouteComponent>
           }
         />
@@ -118,7 +118,7 @@ function App() {
           path="/aditionalgraph"
           element={
             <ProtectedRouteComponent>
-              <TDDAditionalChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} />
+              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="aditionalgraph" />
             </ProtectedRouteComponent>
           }
         />
