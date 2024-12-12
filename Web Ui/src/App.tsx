@@ -22,7 +22,7 @@ import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import UsersByGroupPage from "./sections/User/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
-//import PracticeDetail from "./sections/MyPractices/PracticeDetail";
+import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 
 const navArrayLinks = [
   {
@@ -154,7 +154,14 @@ function App() {
           }
         />
 
-        <Route path="/mis-practicas/:id" />
+        <Route
+          path="/mis-practicas/:id"
+          element={
+            <ProtectedRouteComponent>
+              <PracticeDetail userid={authData.userid ?? 0} title={""} />
+            </ProtectedRouteComponent>
+          }
+        />
 
         <Route
           path="/users/group/:groupid"
