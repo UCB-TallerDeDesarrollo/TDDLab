@@ -1,7 +1,7 @@
 import JSZip from "jszip";
 import CryptoJS from "crypto-js";
-import { VITE_API } from "../../../../config";
-import { VITE_DECRYPTION_KEY } from "../../../../config";
+import { VITE_API, VITE_DECRYPTION_KEY } from "../../../../config";
+
 
 
 export const UploadTDDLogFile = async (

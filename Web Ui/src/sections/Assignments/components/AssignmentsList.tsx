@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
-import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-import {
-  Table,
+import { CircularProgress, Table,
   TableHead,
   TableBody,
   TableRow,
   TableCell,
   Container,
   Button,
-  SelectChangeEvent,
-} from "@mui/material";
+  SelectChangeEvent } from "@mui/material";
+import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
