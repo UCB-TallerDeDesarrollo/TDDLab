@@ -29,7 +29,7 @@
       },
       {
         "command": "TDD.runTestActivity",
-        "title": "Run Test"
+        "title": "$(beaker) TDD Lab Test"
       },
       {
         "command": "extension.showTimeline",
