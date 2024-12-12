@@ -5,6 +5,7 @@ import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
+import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
 
 class UserController {
   private readonly userRepository: UserRepository;
@@ -159,6 +160,29 @@ class UserController {
       else res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async removeUserFromGroup(req: Request, res: Response): Promise<void> {
+    const userId = parseInt(req.params.userId);
+
+    if (!userId) {
+        res.status(400).json({
+          error: "Debes proporcionar un id de usuario valido:",
+        });
+        return;
+      }
+    try {
+      console.log(userId)
+      await removeUser(userId);
+      res.status(200).json({ message: "Usuario eliminado del grupo exitosamente." });
+    } catch (error) {
+      console.error("Error al eliminar usuario del grupo:", error);
+      if (error === "Usuario o grupo no encontrado") {
+        res.status(404).json({ error: error });
+      } else {
+        res.status(500).json({ error: "Error interno del servidor." });
+      }
     }
   }
 }
