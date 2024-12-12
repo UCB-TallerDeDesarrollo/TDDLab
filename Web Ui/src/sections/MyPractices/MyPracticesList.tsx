@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
-
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
   Table,
@@ -12,7 +11,6 @@ import {
   Container,
   Button,
 } from "@mui/material";
-
 import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import AddIcon from "@mui/icons-material/Add";
@@ -32,7 +30,6 @@ const ButtonContainer = styled("div")({
   justifyContent: "flex-end",
   gap: "8px",
 });
-
 const CustomTableCell1 = styled(TableCell)({
   width: "80%",
 });
@@ -40,14 +37,13 @@ const CustomTableCell1 = styled(TableCell)({
 const CustomTableCell2 = styled(TableCell)({
   width: "10%",
 });
-
 interface PracticesProps {
   ShowForm: () => void;
   userRole: string;
 }
 
-function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
-  const [authData, setAuthData] = useGlobalState("authData");
+function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
+  const [authData] = useGlobalState("authData");
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -109,7 +105,7 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   };
 
   const handleClickDetail = (index: number) => {
-    navigate(`/practice/${practices[index].id}`);
+    navigate(`/mis-practicas/${practices[index].id}`);
   };
 
   const handleClickDelete = (index: number) => {
@@ -171,7 +167,6 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
                 handleClickDetail={handleClickDetail}
                 handleClickDelete={handleClickDelete}
                 handleRowHover={handleRowHover}
-                role={userRole}
               />
             ))}
           </TableBody>
