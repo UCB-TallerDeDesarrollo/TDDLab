@@ -121,7 +121,7 @@ class TDDCyclesController {
           {
             const testEntry = tddLog[j];
             if(testEntry.numPassedTests !== undefined && testEntry.numTotalTests !== undefined && testEntry.timestamp){
-              const color = testEntry.numPassedTests === testEntry.numTotalTests ? "green" : "red";
+              const color = testEntry.numTotalTests === 0 ? "red" : (testEntry.numPassedTests === testEntry.numTotalTests ? "green" : "red");
               const commitTimelineEntry: ITimelineEntry = {
                 execution_id: null, 
                 commit_sha: actualCommitSha,
