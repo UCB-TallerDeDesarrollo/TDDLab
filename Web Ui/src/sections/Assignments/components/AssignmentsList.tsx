@@ -133,7 +133,7 @@ function Assignments({
       allGroups = await getGroups.getGroups();
     }
 
-    if(selectedGroup === 0 && allGroups.length > 0) {
+    if(selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
       await loadAssignmentsByGroupId(allGroups[0].id);
     }
 
