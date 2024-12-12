@@ -107,4 +107,20 @@ describe('UsersRepository', () => {
         await expect(repository.getUserEmailById(1)).rejects.toThrowError('Network Error');
       });
   });
+  describe('removeUserFromGroup', () => {
+    it('should remove user from group successfully', async () => {
+      axios.delete = jest.fn().mockResolvedValue({ status: 200 });
+  
+      await repository.removeUserFromGroup(1);
+  
+      expect(axios.delete).toHaveBeenCalledWith(`${API_URL}/delete/1`);
+    });
+  
+    it('should handle error when removing user from group', async () => {
+      axios.delete = jest.fn().mockRejectedValue(new Error('Network Error'));
+  
+      await expect(repository.removeUserFromGroup(1)).rejects.toThrowError('Network Error');
+    });
+  });
+  
 });

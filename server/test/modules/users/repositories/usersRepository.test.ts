@@ -271,8 +271,48 @@ describe('executeQuery', () => {
         [email]
       );
     });
-
   });
+
+  describe('removeUserFromGroup', () => {
+    it('should delete the user from the group successfully', async () => {
+      const userId = 1;
+      const mockQueryResult = { rowCount: 1 }; // Eliminación exitosa
+  
+      clientQueryMock.mockResolvedValue(mockQueryResult);
+  
+      // Espiar console.log
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+  
+      await repository.removeUserFromGroup(userId);
+  
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "DELETE FROM userstable WHERE id = $1",
+        [userId]
+      );
+      expect(consoleLogSpy).toHaveBeenCalledWith(`Usuario con ID ${userId} ha sido eliminado`);
+  
+      consoleLogSpy.mockRestore(); 
+    });
+
+    it('should throw an error if the deletion fails', async () => {
+      const userId = 1;
+      const error = new Error("Database error");
+      clientQueryMock.mockRejectedValue(error);
+  
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+  
+      await expect(repository.removeUserFromGroup(userId)).rejects.toThrow("Database error");
+  
+      expect(clientQueryMock).toHaveBeenCalledWith(
+        "DELETE FROM userstable WHERE id = $1",
+        [userId]
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Error al eliminar usuario", error);
+  
+      consoleErrorSpy.mockRestore(); 
+    });
+  });  
+
   describe("updateUserGroup", () => {
     it("should update the user's group and return the updated user", async () => {
       const userId = 1;
@@ -312,4 +352,4 @@ describe('executeQuery', () => {
       await expect(repository.updateUser(userId, newGroupId)).rejects.toThrow("Database error");
       expect(clientQueryMock).not.toHaveBeenCalled();
     });
-  });
+  }); 

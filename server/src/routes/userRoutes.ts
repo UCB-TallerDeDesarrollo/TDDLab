@@ -15,4 +15,5 @@ router.get("/groups/:id", (req, res) => userController.getUserGroupsController(r
 router.get("/users/groupid/:groupid", (req, res) => userController.getUsersByGroupid(req, res));
 router.get("/users/:id", (req, res) => userController.getUserbyid(req, res));
 router.put("/users/:id", (req, res) => userController.updateUser(req, res));
+router.delete("/users/delete/:userId", (req, res) => userController.removeUserFromGroup(req, res));
 export default router;
