@@ -13,7 +13,20 @@ export class DBJobsRepository implements IDBJobsRepository {
 
   async findJobByCommit(sha: string, owner: string, repoName: string): Promise<any | null> {
     const client = await this.pool.connect();
-    
+    try {
+        const query = `
+            SELECT * 
+            FROM jobstable
+            WHERE sha = $1 AND owner = $2 AND reponame = $3
+        `;
+        const values = [sha, owner, repoName];
+        const result = await client.query(query, values);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+        throw error;
+    } finally {
+        client.release();
+    }
 }
 
 
