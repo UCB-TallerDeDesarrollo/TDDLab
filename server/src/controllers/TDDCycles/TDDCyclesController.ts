@@ -178,6 +178,43 @@ class TDDCyclesController {
       );
     }
   }
+
+  private async updateTestCountIfNeeded(
+    repoOwner: string,
+    repoName: string,
+    commitSha: string,
+    numTotalTests: number
+  ): Promise<void> {
+    try {
+      const commitInCommitsTable = await this.dbCommitsRepository.getCommitBySha(
+        repoOwner,
+        repoName,
+        commitSha
+      );
+  
+      if (commitInCommitsTable) {
+        console.log(`commit encontrado en commitsTable: ${commitSha}`);
+        console.log(`valor actual de test_count: ${commitInCommitsTable.test_count}`);
+  
+        if (commitInCommitsTable.test_count === null || commitInCommitsTable.test_count === undefined) {
+          console.log(`el test_count está vacío, actualizando con valor: ${numTotalTests}`);
+          await this.dbCommitsRepository.updateTestCount(
+            repoOwner,
+            repoName,
+            commitSha,
+            numTotalTests
+          );
+          console.log(`campo test_count actualizado para commit ${commitSha}`);
+        }
+      } else {
+        console.error(`commit ${commitSha} no se encontró en commitsTable (esto no debería ocurrir).`); //ojala que no
+      }
+    } catch (error) {
+      console.error(`error al manejar el campo test_count para el commit ${commitSha}:`, error);
+      throw error;
+    }
+  }
+  
   
 
   async uploadTDDLog(req: Request, res: Response) {
@@ -233,20 +270,7 @@ class TDDCyclesController {
             repoOwner,
             repoName,
             commitTimelineEntries
-          );
-
-          // bueno, ahora actualizamos el num tests, diosito
-
-          const commitInCommitsTable = await this.dbCommitsRepository.getCommitBySha(
-            repoOwner,
-            repoName,
-            actualCommitSha
-          );
-          
-          if (commitInCommitsTable) {
-            console.log(`Commit encontrado en commitsTable: ${actualCommitSha}`);
-            console.log(`Valor actual de test_count: ${commitInCommitsTable.test_count}`);
-          } 
+          ); 
 
           let tdd_cycle_entry="";
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
