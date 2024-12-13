@@ -147,10 +147,12 @@ function App() {
         <Route
           path="/mis-practicas"
           element={
-            <MyPracticesPage
-              userRole={authData.userRole ?? ""}
-              userid={authData.userid ?? 0}
-            />
+            <ProtectedRouteComponent>
+              <MyPracticesPage
+                userRole={authData.userRole ?? ""}
+                userid={authData.userid ?? 0}
+              />
+            </ProtectedRouteComponent>
           }
         />
 
