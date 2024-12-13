@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, createSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository.ts";
 import FileUploadDialog from "../Assignments/components/FileUploadDialog.tsx";
 import JSZip from "jszip";
