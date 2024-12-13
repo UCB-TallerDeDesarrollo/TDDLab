@@ -47,6 +47,11 @@ import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplicati
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
 import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
+
+import {
+  handleRedirectStudent,
+} from '../Shared/handlers.ts';
+
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -253,28 +258,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const handleRedirectStudent = (link: string) => {
-    if (link) {
-      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(link);
-
-      if (match) {
-        const [, user, repo] = match;
-        console.log(user, repo);
-        navigate({
-          pathname: "/graph",
-          search: createSearchParams({
-            repoOwner: user,
-            repoName: repo,
-          }).toString(),
-        });
-      } else {
-        alert("Link Invalido, por favor ingrese un link valido.");
-      }
-    } else {
-      alert("No se encontro un link para esta tarea.");
-    }
-  };
   const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url:string) => {
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
@@ -633,8 +616,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => {localStorage.setItem("selectedMetric", "Dashboard");
-                  studentSubmission?.repository_link && handleRedirectStudent(studentSubmission.repository_link)}}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "Dashboard");
+                  if (studentSubmission?.repository_link) {
+                    handleRedirectStudent(studentSubmission.repository_link, navigate);
+                  }
+                }}
                 color="primary"
                 style={{
                   textTransform: "none",
