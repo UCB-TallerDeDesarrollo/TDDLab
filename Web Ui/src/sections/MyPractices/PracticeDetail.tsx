@@ -27,6 +27,11 @@ import { GetPracticeSubmissionByUserandPracticeSubmissionId } from "../../module
 
 import { GetPracticeById } from "../../modules/Practices/application/GetPracticeById.ts";
 import { formatDate } from "../../utils/dateUtils.ts";
+
+import {
+  handleRedirectStudent,
+} from '../Shared/handlers.ts';
+
 interface PracticeDetailProps {
   title: string;
   userid: number;
@@ -156,7 +161,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     console.log("I will print the json log"); //delete later
     if (practiceid) {
       const practiceSubmissionsRepository = new PracticeSubmissionRepository();
-      const createSubmission = new CreatePracticeSubmission(
+      const createPracticeSubmission = new CreatePracticeSubmission(
         practiceSubmissionsRepository
       );
       const startDate = new Date();
@@ -165,7 +170,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         startDate.getMonth(),
         startDate.getDate()
       );
-      const submissionData: PracticeSubmissionCreationObject = {
+      const practiceSubmissionData: PracticeSubmissionCreationObject = {
         practiceid: practiceid,
         userid: userid,
         status: "in progress",
@@ -173,7 +178,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         start_date: start_date,
       };
       try {
-        await createSubmission.createSubmission(submissionData);
+        await createPracticeSubmission.createPracticeSubmission(practiceSubmissionData);
         handleCloseLinkDialog();
       } catch (error) {
         console.error(error);
@@ -188,30 +193,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
     window.location.reload();
-  };
-
-  const handleRedirectStudent = (link: string) => {
-    if (link) {
-      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(link);
-
-      if (match) {
-        const [, user, repo] = match;
-        console.log(user, repo);
-        navigate({
-          pathname: "/graph",
-          search: createSearchParams({
-            repoOwner: user,
-            repoName: repo,
-          }).toString(),
-        });
-      } else {
-        console.log("No entra");
-        alert("Link Invalido, por favor ingrese un link valido.");
-      }
-    } else {
-      alert("No se encontro un link para esta tarea.");
-    }
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
@@ -467,10 +448,9 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               onClick={() => {
                 console.log(practiceSubmissions);
                 localStorage.setItem("selectedMetric", "Dashboard");
-                practiceSubmissions[0]?.repository_link &&
-                  handleRedirectStudent(
-                    practiceSubmissions[0]?.repository_link
-                  );
+                if (practiceSubmissions[0]?.repository_link) {
+                  handleRedirectStudent(practiceSubmissions[0]?.repository_link, navigate);
+                }
               }}
               color="primary"
               style={{
