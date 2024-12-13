@@ -5,7 +5,7 @@ export class CreatePracticeSubmission {
     private readonly practicesubmissionRepository: PracticeSubmissionRepositoryInterface
   ) {}
 
-  async createSubmission(
+  async createPracticeSubmission(
     practiceSubmissionData: PracticeSubmissionCreationObject
   ) {
     return await this.practicesubmissionRepository.createPracticeSubmission(
