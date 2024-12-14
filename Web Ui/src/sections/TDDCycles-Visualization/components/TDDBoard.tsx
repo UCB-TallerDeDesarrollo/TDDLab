@@ -338,7 +338,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   x: {
                     title: { display: true, text: "Commits" },
                     ticks: {
-                      callback: (_: any,index: number) => `Commit ${index + 1}`, 
+                      callback: (_: any, index: number) => {
+                        const dataLength = commits.length;
+                        if (dataLength === 1) {
+                          return `Commit ${index}`;
+                        }
+                        return `Commit ${index + 1}`;
+                      },
                       stepSize: 1, 
                     },
                   },
