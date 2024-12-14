@@ -54,9 +54,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const chartRefTestCount = useRef<any>();
   const [graph, setGraph] = useState<string>("");
   const testCounts = commits.map((commit) => commit.test_count);
-  const testCountsColor = commits.map((commit) => commit.coverage);
   const minTestCount = 0;
-  const maxTestCount = Math.max(...testCountsColor);
+  const maxTestCount = 100;
   const maxTest = Math.max(...testCounts);
   const numberOfLabels = 4;
   const step = Math.ceil((maxTestCount - minTestCount) / numberOfLabels);
