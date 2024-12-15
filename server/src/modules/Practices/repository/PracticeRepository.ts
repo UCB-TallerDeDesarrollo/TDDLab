@@ -1,9 +1,6 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import {
-  PracticeDataObject,
-  PracticeCreationObject,
-} from "../domain/Practice";
+import { PracticeDataObject, PracticeCreationObject } from "../domain/Practice";
 
 const pool = new Pool(config);
 
@@ -23,7 +20,7 @@ class PracticeRepository {
       id: row.id,
       title: row.title,
       description: row.description,
-      creation_date: row.start_date,
+      creation_date: row.creation_date,
       state: row.state,
       userid: row.userid,
     };
@@ -52,15 +49,13 @@ class PracticeRepository {
       "SELECT id, title, description, creation_date, state, userid FROM practices WHERE userid = $1";
     const values = [userid];
     const rows = await this.executeQuery(query, values);
-    return rows.map(this.mapRowToPractice); 
+    return rows.map(this.mapRowToPractice);
   }
-  
 
   async createPractice(
     practice: PracticeCreationObject
   ): Promise<PracticeCreationObject> {
-    const { title, description, creation_date, state, userid } =
-      practice;
+    const { title, description, creation_date, state, userid } = practice;
     const query =
       "INSERT INTO practices (title, description, creation_date, state, userid) VALUES ($1, $2, $3, $4, $5) RETURNING *";
     const values = [title, description, creation_date, state, userid];
@@ -77,26 +72,18 @@ class PracticeRepository {
   async updatePractice(
     id: string,
     updatedPractice: PracticeCreationObject
-    ): Promise<PracticeCreationObject | null> {
+  ): Promise<PracticeCreationObject | null> {
     const { title, description, creation_date, state, userid } =
       updatedPractice;
     const query =
       "UPDATE practices SET title = $1, description = $2, creation_date = $3, state = $4, userid = $5 WHERE id = $6 RETURNING *";
-    const values = [
-      title,
-      description,
-      creation_date,
-      state,
-      userid,
-      id,
-    ];
+    const values = [title, description, creation_date, state, userid, id];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
       return this.mapRowToPractice(rows[0]);
     }
     return null;
   }
-
 }
-  
+
 export default PracticeRepository;

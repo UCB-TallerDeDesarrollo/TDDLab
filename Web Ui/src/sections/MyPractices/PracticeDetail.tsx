@@ -24,13 +24,9 @@ import { CheckPracticeSubmissionExists } from "../../modules/PracticeSubmissions
 import { GetPracticeSubmissionsByPracticeId } from "../../modules/PracticeSubmissions/Application/getPracticeSubmissionByPracticeId.ts";
 import { FinishPracticeSubmission } from "../../modules/PracticeSubmissions/Application/FinishPracticeSubmission.ts";
 import { GetPracticeSubmissionByUserandPracticeSubmissionId } from "../../modules/PracticeSubmissions/Application/getPracticeSubmissionByUserIdAnPracticeSubmissionId.ts";
-
 import { GetPracticeById } from "../../modules/Practices/application/GetPracticeById.ts";
 import { formatDate } from "../../utils/dateUtils.ts";
-
-import {
-  handleRedirectStudent,
-} from '../Shared/handlers.ts';
+import { handleRedirectStudent } from "../Shared/handlers.ts";
 
 interface PracticeDetailProps {
   title: string;
@@ -54,11 +50,12 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   const [_submissionsError, setSubmissionsError] = useState<string | null>(
     null
   );
+
+  const [datePrac, setDatePrac] = useState<Date | null>(null);
+
   const [submission, setPracticeSubmission] =
     useState<PracticeSubmissionDataObject | null>(null);
   const navigate = useNavigate();
-
-  console.log("HOLAAAA" + practiceSubmission);
 
   useEffect(() => {
     const practiceSubmissionRepository = new PracticeSubmissionRepository();
@@ -84,11 +81,14 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
       .obtainAssignmentDetail(practiceid)
       .then((fetchedPractice) => {
         if (fetchedPractice) {
+          setDatePrac(fetchedPractice.creation_date);
+          // Actualiza el estado con la fecha correcta
           setPractice({
             ...fetchedPractice,
             userid: fetchedPractice.userid ?? 0, // Usa un valor predeterminado si `userid` es undefined
           });
         } else {
+          setDatePrac(null);
           setPractice(null); // Maneja el caso de datos nulos
         }
       })
@@ -96,6 +96,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         console.error("Error fetching practice:", error);
       });
   }, [practiceid]);
+  console.log("fehca " + datePrac);
 
   useEffect(() => {
     const checkIfStarted = async () => {
@@ -178,7 +179,9 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         start_date: start_date,
       };
       try {
-        await createPracticeSubmission.createPracticeSubmission(practiceSubmissionData);
+        await createPracticeSubmission.createPracticeSubmission(
+          practiceSubmissionData
+        );
         handleCloseLinkDialog();
       } catch (error) {
         console.error(error);
@@ -399,9 +402,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                   style={{ fontSize: "16px", lineHeight: "1.8" }}
                 >
                   <strong>Fecha de Creación:</strong>{" "}
-                  {formatDate(
-                    practiceSubmissions[0]?.start_date?.toString() ?? ""
-                  )}
+                  {formatDate(datePrac?.toString() ?? "")}
                 </Typography>
               </div>
 
@@ -424,7 +425,8 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {practiceSubmissions[0]?.repository_link}
+                    {practiceSubmissions[0]?.repository_link ??
+                      " No se inicio la practica"}
                   </a>
                 </Typography>
               </div>
@@ -440,7 +442,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 marginRight: "8px",
               }}
             >
-              Iniciar tarea
+              Iniciar Practica
             </Button>
 
             <Button
@@ -449,7 +451,10 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 console.log(practiceSubmissions);
                 localStorage.setItem("selectedMetric", "Dashboard");
                 if (practiceSubmissions[0]?.repository_link) {
-                  handleRedirectStudent(practiceSubmissions[0]?.repository_link, navigate);
+                  handleRedirectStudent(
+                    practiceSubmissions[0]?.repository_link,
+                    navigate
+                  );
                 }
               }}
               color="primary"
@@ -478,7 +483,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 marginRight: "8px",
               }}
             >
-              Finalizar tarea
+              Finalizar Practica
             </Button>
 
             <Button
