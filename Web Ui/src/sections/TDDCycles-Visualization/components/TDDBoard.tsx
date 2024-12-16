@@ -85,28 +85,40 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     }
   };
   
-  const getColorByCoverage = (testCountsColor: number) => {
-    let greenValue;
+  function containsRefactor(commitMessage: string): boolean {
+    const regex = /\brefactor(\w*)\b/i;
+    return regex.test(commitMessage);
+  }
+
+  const getColorByCoverage = (testCountsColor: number, isRefactor: boolean) => {
+    let colorValue;
     let opacity = 2;
+    const baseColor = isRefactor ? 'blue' : 'green';
+  
     console.log(labels[3])
     if (testCountsColor >= labels[1]) {
-      greenValue = 110;
-  } else if (testCountsColor < labels[1] && testCountsColor >= labels[2]) {
-      greenValue = 110;
+      colorValue = 110;
+    } else if (testCountsColor < labels[1] && testCountsColor >= labels[2]) {
+      colorValue = 110;
       opacity = 0.5;
-  } else if (testCountsColor < labels[2] && testCountsColor >= labels[3]) {
-      greenValue = 110;
+    } else if (testCountsColor < labels[2] && testCountsColor >= labels[3]) {
+      colorValue = 110;
       opacity = 0.6;
-  } else if(testCountsColor < labels[3]) {
-      greenValue = 110;
+    } else if (testCountsColor < labels[3]) {
+      colorValue = 110;
       opacity = 0.2;
-  }
-    return `rgba(0, ${greenValue}, 0, ${opacity})`;
+    }
+  
+    return baseColor === 'green'
+      ? `rgba(0, ${colorValue}, 0, ${opacity})`
+      : `rgba(0, 100, 255, ${opacity})`;
   };
 
-  const getColorByConclusion = (job: any, coverage: number) => {
+  const getColorByConclusion = (job: any, coverage: number, commitMessage: string) => {
     if (job?.conclusion === "success") {
-      return getColorByCoverage(coverage);
+      const isRefactor = containsRefactor(commitMessage);
+      console.log("commit message" ,commitMessage)
+      return getColorByCoverage(coverage, isRefactor);
     } else if (job === undefined) {
       return "black";
     }
@@ -316,7 +328,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                     const job = jobsByCommit.find((job) => job.sha === commit.sha);
                     const backgroundColor = getColorByConclusion(
                       job,
-                      commit.coverage
+                      commit.coverage,
+                      commit.commit.message
                     );
 
                     return {
