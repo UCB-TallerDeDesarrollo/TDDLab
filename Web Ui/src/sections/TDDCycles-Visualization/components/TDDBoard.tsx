@@ -115,15 +115,18 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   };
 
   const getColorByConclusion = (job: any, coverage: number, commitMessage: string) => {
-    if (job?.conclusion === "success") {
-      const isRefactor = containsRefactor(commitMessage);
-      console.log("commit message" ,commitMessage)
-      return getColorByCoverage(coverage, isRefactor);
-    } else if (job === undefined) {
-      return "black";
-    }
-    else { return 'red' }
-  };
+  if (job?.conclusion === "success") {
+    const isRefactor = containsRefactor(commitMessage);
+    console.log("commit message", commitMessage);
+    return getColorByCoverage(coverage, isRefactor);
+  } else if (job?.conclusion === "failure") {
+    return "red";
+  } else if (job?.conclusion === null) {
+    return "black";
+  } else {
+    return "black";
+  }
+};
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
     localStorage.setItem("selectedMetric", graphText);
