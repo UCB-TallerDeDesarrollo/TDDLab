@@ -60,7 +60,6 @@ export class GetTDDCyclesUseCase {
       following function
       
       */
-     console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++ UPDATE WITH COVERAGE DATA +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       await this.updateCommitsWithCoverageData(owner, repoName, commits);
       return commits;
     } catch (error) {
