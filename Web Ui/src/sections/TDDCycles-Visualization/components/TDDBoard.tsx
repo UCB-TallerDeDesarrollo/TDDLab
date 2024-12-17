@@ -76,7 +76,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     if (repoOwner && repoName) {
       try {
         await UploadTDDLogFile(file, undefined, repoOwner, repoName);
-        console.log("Archivo subido exitosamente.");
+
       } catch (error) {
         console.error("Error al subir el archivo:", error);
       }
@@ -94,8 +94,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     let colorValue;
     let opacity = 2;
     const baseColor = isRefactor ? 'blue' : 'green';
-  
-    console.log(labels[3])
     if (testCountsColor >= labels[1]) {
       colorValue = 110;
     } else if (testCountsColor < labels[1] && testCountsColor >= labels[2]) {
@@ -449,8 +447,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 <Line
                   data={getLineChartData(
                     "Porcentaje de Cobertura de Código",
-                    commits.map((commit) => commit.coverage)
+                    commits.map((commit) => commit.coverage ?? 0)
                   )}
+                        
                   options={getChartOptions("Cobertura de Código")}
                   ref={chartRefCoverage}
                 />

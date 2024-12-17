@@ -172,13 +172,14 @@ useEffect(() => {
   function getCommitCoverage() {
     if (filteredCommitsObject != null) {
       const coverage = filteredCommitsObject
-        .map((commit) => (commit.coverage != 0 ? commit.coverage : 0)) 
+        .map((commit) => (commit.coverage != null && commit.coverage !== 0 ? commit.coverage : 0))
         .reverse();
       return coverage;
     } else {
       return [];
     }
   }
+  
 
   function getTestsCount() {
     if (filteredCommitsObject != null) {
