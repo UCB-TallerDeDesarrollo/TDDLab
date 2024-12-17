@@ -163,31 +163,36 @@ export class GithubRepository implements IGithubRepository {
     }
   }
 
-  async fetchCoverageDataForCommit(owner: string, repoName: string, sha: string){
-    try{
-      const coverageResponse = await this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}/comments`);
-      let percentageMatch = "";
-      let testCount = "";
-      if(coverageResponse.data.length > 0){
-        const body = coverageResponse.data[0].body;
-        const coverageMatch = /\|\s*🟢\s*\|\s*Statements\s*\|\s*([\d.]+)%\s*\|/.exec(body);
-        const testCountMatch = /(\d+)(?=\s*tests passing)/.exec(body);
-        if(coverageMatch){
-          percentageMatch = String(coverageMatch[1]);
+  async fetchCoverageDataForCommit(owner: string, repoName: string, sha: string) {
+    try {
+      const coverageResponse = await this.octokit.request(
+        `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
+      );
+      let coveragePercentage = null;
+  
+      if (coverageResponse.data.length > 0) {
+        const body = coverageResponse.data[0]?.body;
+        const coverageMatch = body.match(
+          /\|\s*(?:🟢|🔴|🟡)\s*\|\s*Statements\s*\|\s*([\d.]+)%\s*\|/
+        );
+  
+        if (coverageMatch) {
+          coveragePercentage = coverageMatch[1];
+        } else {
+          console.warn("No se encontró el patrón de cobertura en el body.");
         }
-        if(testCountMatch){
-          testCount = String(testCountMatch[1]);
-        }
+      } else {
+        console.warn(`No se encontraron comentarios para el commit ${sha}`);
       }
-      else{
-        console.log(`No comments were found for commit with sha ${sha}`);
-      }
-      return {coveragePercentage: percentageMatch, test_count: testCount};
-    } catch (error){
-      console.error("An error occurred"); 
+  
+      return { coveragePercentage };
+    } catch (error) {
+      console.error(`Error al recuperar la cobertura para commit ${sha}:`, error);
       throw error;
     }
   }
+  
+    
 
   async getCommitsInforForTDDCycle(
     owner: string,
