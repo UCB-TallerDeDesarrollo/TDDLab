@@ -17,8 +17,8 @@ export class GetTDDCyclesUseCase {
       if(!commit.coverage){
         try{
           const coverageData = await this.githubRepository.fetchCoverageDataForCommit(owner, repoName, commit.sha);
+          console.log(`Se recuperó este coverage data ${coverageData.coveragePercentage}% para el commit con SHA: ${commit.sha}`);
           commit.coverage = coverageData.coveragePercentage;
-          commit.test_count = "";
           await this.dbCommitRepository.updateCommitCoverage(owner, repoName, commit.sha, coverageData.coveragePercentage);
         } catch (error) {
           console.error(`Error al actualizar el commit ${commit.sha}: ${error}`);
@@ -60,7 +60,8 @@ export class GetTDDCyclesUseCase {
       following function
       
       */
-      //await this.updateCommitsWithCoverageData(owner, repoName, commits);
+     console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++ UPDATE WITH COVERAGE DATA +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      await this.updateCommitsWithCoverageData(owner, repoName, commits);
       return commits;
     } catch (error) {
       console.error(`Error al ejecutar: ${error}`);
