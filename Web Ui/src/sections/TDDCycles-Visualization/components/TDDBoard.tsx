@@ -447,8 +447,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 <Line
                   data={getLineChartData(
                     "Porcentaje de Cobertura de Código",
-                    commits.map((commit) => commit.coverage != null ? commit.coverage : 0)
-                  )}                  
+                    commits.map((commit) => commit.coverage ?? 0)
+                  )}
+                        
                   options={getChartOptions("Cobertura de Código")}
                   ref={chartRefCoverage}
                 />
