@@ -95,12 +95,12 @@ export class DBCommitsRepository implements IDBCommitsRepository {
   ) {
     const client = await this.pool.connect();
     try {
-      const query =
-        "UPDATE commitsTable SET coverage = $1, WHERE owner = $2 AND reponame = $3 AND sha = $4";
+      const query = `UPDATE commitstable SET coverage = $1 WHERE owner = $2 AND reponame = $3 AND sha = $4`;
+
       const values = [coverage, owner, repoName, sha];
       await client.query(query, values);
     } catch (error) {
-      console.error(`Error updating coverage and test count for commit.`);
+      console.error(`Error updating coverage for commit.`);
       throw error;
     } finally {
       client.release();
