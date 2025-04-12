@@ -11,6 +11,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import { NoteAdd } from "@mui/icons-material";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
@@ -23,6 +24,7 @@ import ProtectedRouteComponent from "./ProtectedRoute";
 import UsersByGroupPage from "./sections/User/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
+import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 
 const navArrayLinks = [
   {
@@ -30,6 +32,12 @@ const navArrayLinks = [
     path: "/groups",
     icon: <GroupsIcon />,
     access: ["admin", "teacher"],
+  },
+  {
+    title: "Asistente IA",
+    path: "/asistente-ia",
+    icon: <SmartToyIcon />,
+    access: ["admin", "teacher", "student"],
   },
   {
     title: "Tareas",
@@ -164,6 +172,15 @@ function App() {
           element={
             <ProtectedRouteComponent>
               <UsersByGroupPage />
+            </ProtectedRouteComponent>
+          }
+        />
+
+        <Route
+          path="/asistente-ia"
+          element={
+            <ProtectedRouteComponent>
+              <AIAssistantPage />
             </ProtectedRouteComponent>
           }
         />
