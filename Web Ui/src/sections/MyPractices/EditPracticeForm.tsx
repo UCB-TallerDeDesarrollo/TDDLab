@@ -68,7 +68,7 @@ function EditPracticeDialog({
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Editar Practica : {currentTitle}</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "grid", gap: 2 }}>
+        <Box sx={{ display: "grid", gap: 2, marginTop: 2 }}>
           <TextField
             id="titulo"
             label="Título"
@@ -84,16 +84,8 @@ function EditPracticeDialog({
             variant="outlined"
             size="small"
             required
-            sx={{
-              "& label.Mui-focused": {
-                color: "#001f3f",
-              },
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#001f3f",
-                },
-              },
-            }}
+            multiline
+            rows = {5}
             onChange={(e) => setDescription(e.target.value)}
             defaultValue={currentDescription}
           />
