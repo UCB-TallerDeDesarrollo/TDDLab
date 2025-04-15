@@ -27,13 +27,33 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   onSend,
 }) => {
   const [comment, setComment] = useState("");
-  const { repo, validLink, handleLinkChange } = useGitHubLinkValidation(link);
+  const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
   const [edit, setEdit] = useState(false);
   const [originalLink, setOriginalLink] = useState(link);
+  const [isLoading, setIsLoading] = useState(true);  // El estado "Cargando" al abrir el diálogo
 
   useEffect(() => {
-    setOriginalLink(link);
-  }, [link]);
+    if (link) {
+      setIsLoading(false); // Cuando el diálogo se abre, desactivamos "Cargando..."
+      handleLinkChange(link);  // Recuperamos el enlace
+    } else {
+      setIsLoading(true);  // Si no hay enlace, activamos "Cargando..."
+    }
+  }, [link, open]);  // Se activa cuando se abre el diálogo o el link cambia
+
+  useEffect(() => {
+    // Cuando el enlace es validado o ya está listo, desactivamos "Cargando..."
+    if (repo || !link) {
+      setIsLoading(false);
+    }
+  }, [repo, link]);
+
+  useEffect(() => {
+    // Si se cambia el enlace o se comienza a editar, salimos del estado de carga.
+    if (repo || !isLinkLoading) {
+      setIsLoading(false);
+    }
+  }, [repo, isLinkLoading]);
 
   const handleCancel = () => {
     if (originalLink) {
@@ -50,6 +70,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setComment(event.target.value);
   };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleLinkChange(e);
   };
@@ -85,20 +106,26 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
-        <TextField
-          margin="dense"
-          label="Enlace del Repositorio"
-          type="text"
-          fullWidth
-          value={repo}
-          onChange={handleInputChange}
-          disabled={!edit}
-          color={ getInputColor() }
-          InputProps={{
-            endAdornment: renderEndAdornmentEdit(),
-          }}
-        />
-        {!validLink && repo !== "" && (
+        {isLoading ? (
+          <Typography variant="body2" color="textSecondary">
+            Cargando...
+          </Typography>
+        ) : (
+          <TextField
+            margin="dense"
+            label="Enlace del Repositorio"
+            type="text"
+            fullWidth
+            value={repo}
+            onChange={handleInputChange}
+            disabled={!edit}
+            color={getInputColor()}
+            InputProps={{
+              endAdornment: renderEndAdornmentEdit(),
+            }}
+          />
+        )}
+        {!validLink && repo !== "" && !isLoading && (
           <Typography variant="body2" color="error">
             Advertencia: Link invalido
           </Typography>
@@ -133,7 +160,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         <Button
           onClick={handleSend}
           color="primary"
-          disabled={!validLink || repo == ""}
+          disabled={!validLink || repo === ""}
           style={{ textTransform: "none" }}
         >
           Enviar
