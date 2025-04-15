@@ -21,6 +21,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const {
     repo: link,
     validLink,
+    errorMessage,
     handleLinkChange,
   } = useGitHubLinkValidation("");
 
@@ -73,7 +74,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         />
         {!validLink && link !== "" && (
           <Typography variant="body2" color="error">
-            Advertencia, link invalido.
+            {errorMessage}
           </Typography>
         )}
       </DialogContent>
