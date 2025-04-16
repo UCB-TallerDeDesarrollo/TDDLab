@@ -106,10 +106,20 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
+        try {
+            //
+        } catch (error) {
+            vscode.window.showErrorMessage('Error');
+        }
+    });
+
     context.subscriptions.push(runTestCommand);
     context.subscriptions.push(runTestActivityCommand);
     context.subscriptions.push(runCloneCommand);
     context.subscriptions.push(runExportCommand);
+    context.subscriptions.push(runAsistenteCommand);
+
 
     const testExecutionTreeView = new ExecutionTreeView(context);
     testExecutionTreeView.initialize();
