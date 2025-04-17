@@ -15,6 +15,10 @@ export const useGitHubLinkValidation = (
   const [errorMessage, setErrorMessage] = useState("");
 
   const validateGitHubLink = (text: string): { isValid: boolean; error: string } => {
+    if (!text || text.trim() === "") {
+      return { isValid: false, error: "El enlace no puede estar vacío." };
+    }
+    
     try {
       const url = new URL(text);
       const pathParts = url.pathname.split('/').filter(part => part.length > 0);
@@ -44,10 +48,13 @@ export const useGitHubLinkValidation = (
       }
       
     } catch (error) {
-      return { 
-        isValid: false, 
-        error: "Enlace inválida. Formato esperado: https://github.com/usuario/repositorio" 
-      };
+      if (error instanceof TypeError) {
+        return { 
+          isValid: false, 
+          error: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio" 
+        };
+      }
+      throw new Error(`Error validando enlace GitHub: ${error instanceof Error ? error.message : String(error)}`);
     }
     
     return { isValid: true, error: "" };
@@ -56,9 +63,16 @@ export const useGitHubLinkValidation = (
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
     const newLink = typeof e === "string" ? e : e.target.value;
     setRepo(newLink);
-    const { isValid, error } = validateGitHubLink(newLink);
-    setValidLink(isValid);
-    setErrorMessage(error);
+    
+    try {
+      const { isValid, error } = validateGitHubLink(newLink);
+      setValidLink(isValid);
+      setErrorMessage(error);
+    } catch (error) {
+      setValidLink(false);
+      setErrorMessage("Error inesperado al validar el enlace.");
+      console.error("Error validating GitHub link:", error);
+    }
   };
 
   return { repo, validLink, errorMessage, handleLinkChange };
