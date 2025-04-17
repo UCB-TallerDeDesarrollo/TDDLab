@@ -411,8 +411,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 variant="contained"
                 disabled={submission.repository_link === ""}
                 onClick={() => {
-                  localStorage.setItem("selectedMetric", "AssistantAI");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/asistente-ia")}}
+                  navigate("/asistente-ia", {
+                    state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
+                  });
+                }}
                 color="primary"
                 style={{
                   textTransform: "none",
