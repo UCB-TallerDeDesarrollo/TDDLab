@@ -7,6 +7,7 @@ import { VSCodeTerminalRepository } from './modules/Button/infraestructure/VSCod
 import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
+import { AIWebviewPanel } from './sections/IA/AIWebviewPanel';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -108,7 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
         try {
-            //
+            AIWebviewPanel.createOrShow();
         } catch (error) {
             vscode.window.showErrorMessage('Error');
         }
