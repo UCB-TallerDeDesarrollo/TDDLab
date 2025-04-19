@@ -40,6 +40,29 @@ export class AIWebviewPanel {
     `;
   }
 
+  private async fetchResponse() {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) return;
+
+    const rootPath = workspaceFolders[0].uri.fsPath;
+    const tddLogPath = path.join(rootPath, '/script/tdd_log.json');
+
+    try {
+      const tddLogContent = this.readTddLogFile(tddLogPath);
+      const tddLogJson = this.parseJson(tddLogContent);
+
+      const body = JSON.stringify({
+        tddlog: tddLogJson,
+      });
+      const response = await this.getTDDFeedback(body);
+
+      this.handleApiResponse(response);
+    } catch (err) {
+      this.handleError(err);
+    }
+  }
+
+
   private readTddLogFile(tddLogPath: string): string {
     return fs.readFileSync(tddLogPath, 'utf-8');
   }
@@ -57,6 +80,14 @@ export class AIWebviewPanel {
     console.error(err);
     this.messages.push('Error leyendo archivos o llamando a la API');
     this.update();
+  }
+
+  private getTDDFeedback(data: string): Promise<string> {
+    return new Promise(resolve => {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      resolve(`Hora actual: ${timeString}`);
+    });
   }
 
 
