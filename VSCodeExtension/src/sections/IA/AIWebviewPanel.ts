@@ -11,6 +11,28 @@ export class AIWebviewPanel {
     this.panel = panel;
   }
 
+  public static async createOrShow() {
+    const column = vscode.ViewColumn.Beside;
+
+    if (AIWebviewPanel.currentPanel) {
+      await AIWebviewPanel.currentPanel.fetchResponse();
+      AIWebviewPanel.currentPanel.panel.reveal(column);
+    } else {
+      const panel = vscode.window.createWebviewPanel(
+        'aiPanel',
+        'Asistente de IA',
+        column,
+        { enableScripts: true }
+      );
+      AIWebviewPanel.currentPanel = new AIWebviewPanel(panel);
+      await AIWebviewPanel.currentPanel.fetchResponse();
+
+      panel.onDidDispose(() => {
+        AIWebviewPanel.currentPanel = undefined;
+      });
+    }
+  }
+
   private update() {
     const messagesHtml = this.createMessagesHtml();
     this.panel.webview.html = this.generateHtmlContent(messagesHtml);
