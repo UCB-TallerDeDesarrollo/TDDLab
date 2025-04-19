@@ -48,5 +48,17 @@ export class AIWebviewPanel {
     return JSON.parse(content);
   }
 
+  private async handleApiResponse(response: string): Promise<void> {
+    this.messages.push(response);
+    this.update();
+  }
+
+  private handleError(err: any): void {
+    console.error(err);
+    this.messages.push('Error leyendo archivos o llamando a la API');
+    this.update();
+  }
+
+
 
 }
