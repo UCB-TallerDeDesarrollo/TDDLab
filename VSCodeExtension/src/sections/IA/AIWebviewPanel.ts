@@ -11,32 +11,6 @@ export class AIWebviewPanel {
     this.panel = panel;
   }
 
-  public static async createOrShow() {
-    const column = vscode.ViewColumn.Beside;
-
-    if (AIWebviewPanel.currentPanel) {
-      await AIWebviewPanel.currentPanel.fetchResponse();
-      AIWebviewPanel.currentPanel.panel.reveal(column);
-    } else {
-      const panel = vscode.window.createWebviewPanel(
-        'aiPanel',
-        'Asistente de IA',
-        column,
-        { enableScripts: true }
-      );
-      AIWebviewPanel.currentPanel = new AIWebviewPanel(panel);
-      await AIWebviewPanel.currentPanel.fetchResponse();
-
-      panel.onDidDispose(() => {
-        AIWebviewPanel.currentPanel = undefined;
-      });
-    }
-  }
-
-  private update() {
-    const messagesHtml = this.createMessagesHtml();
-    this.panel.webview.html = this.generateHtmlContent(messagesHtml);
-  }
 
   private createMessagesHtml(): string {
     return this.messages.map(msg => `<p>${msg}</p>`).join('');
@@ -62,6 +36,38 @@ export class AIWebviewPanel {
     `;
   }
 
+  private update() {
+    const messagesHtml = this.createMessagesHtml();
+    this.panel.webview.html = this.generateHtmlContent(messagesHtml);
+  }
+
+  private async handleApiResponse(response: string): Promise<void> {
+    this.messages.push(response);
+    this.update();
+  }
+
+  private handleError(err: any): void {
+    console.error(err);
+    this.messages.push('Error leyendo archivos o llamando a la API');
+    this.update();
+  }
+
+  private readTddLogFile(tddLogPath: string): string {
+    return fs.readFileSync(tddLogPath, 'utf-8');
+  }
+
+  private parseJson(content: string): any {
+    return JSON.parse(content);
+  }
+
+  private getTDDFeedback(data: string): Promise<string> {
+    return new Promise(resolve => {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      resolve(`Hora actual: ${timeString}`);
+    });
+  }
+
   private async fetchResponse() {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) return;
@@ -84,34 +90,26 @@ export class AIWebviewPanel {
     }
   }
 
+  public static async createOrShow() {
+    const column = vscode.ViewColumn.Beside;
 
-  private readTddLogFile(tddLogPath: string): string {
-    return fs.readFileSync(tddLogPath, 'utf-8');
+    if (AIWebviewPanel.currentPanel) {
+      await AIWebviewPanel.currentPanel.fetchResponse();
+      AIWebviewPanel.currentPanel.panel.reveal(column);
+    } else {
+      const panel = vscode.window.createWebviewPanel(
+        'aiPanel',
+        'Asistente de IA',
+        column,
+        { enableScripts: true }
+      );
+      AIWebviewPanel.currentPanel = new AIWebviewPanel(panel);
+      await AIWebviewPanel.currentPanel.fetchResponse();
+
+      panel.onDidDispose(() => {
+        AIWebviewPanel.currentPanel = undefined;
+      });
+    }
   }
-
-  private parseJson(content: string): any {
-    return JSON.parse(content);
-  }
-
-  private async handleApiResponse(response: string): Promise<void> {
-    this.messages.push(response);
-    this.update();
-  }
-
-  private handleError(err: any): void {
-    console.error(err);
-    this.messages.push('Error leyendo archivos o llamando a la API');
-    this.update();
-  }
-
-  private getTDDFeedback(data: string): Promise<string> {
-    return new Promise(resolve => {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString();
-      resolve(`Hora actual: ${timeString}`);
-    });
-  }
-
-
 
 }
