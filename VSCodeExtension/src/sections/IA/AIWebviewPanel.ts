@@ -40,4 +40,13 @@ export class AIWebviewPanel {
     `;
   }
 
+  private readTddLogFile(tddLogPath: string): string {
+    return fs.readFileSync(tddLogPath, 'utf-8');
+  }
+
+  private parseJson(content: string): any {
+    return JSON.parse(content);
+  }
+
+
 }
