@@ -25,6 +25,14 @@ export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<Execut
         ''
       ),
       new ExecutionButton(
+        'Asistente de IA',
+        vscode.TreeItemCollapsibleState.None,
+        { command: 'TDD.AsistenteCommand', title: 'Asistente de IA'},
+        '',
+        new vscode.ThemeIcon('symbol-method', new vscode.ThemeColor('charts.white')),
+        ''
+      ),
+      new ExecutionButton(
         'Exportar sesion TDDLab',
         vscode.TreeItemCollapsibleState.None,
         { command: 'TDD.exportCommand', title: 'Exportar sesion TDDLab'},

@@ -42,6 +42,10 @@
       {
         "command": "TDD.exportCommand",
         "title": "Exportar sesion TDDLab"
+      },
+      {
+        "command": "TDD.AsistenteCommand",
+        "title": "Asistente de IA"
       }
     ],
     "viewsContainers": {
@@ -111,6 +115,7 @@
     "dotenv": "^16.4.5",
     "extension": "file:",
     "node-fetch": "^3.3.2",
+    "simple-git": "^3.27.0",
     "tdd-extension-taller": "file:"
   }
 }
