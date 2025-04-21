@@ -68,5 +68,20 @@ export class AIWebviewPanel {
     this.update();
   }
 
+  private readTddLogFile(tddLogPath: string): string {
+    return fs.readFileSync(tddLogPath, 'utf-8');
+  }
+
+  private parseJson(content: string): any {
+    return JSON.parse(content);
+  }
+
+  private createApiRequestBody(tddLogJson: any, gitInfo: any): string {
+    return JSON.stringify({
+      tddlog: tddLogJson,
+      gitInfo: gitInfo
+    });
+  }
+
 
 }
