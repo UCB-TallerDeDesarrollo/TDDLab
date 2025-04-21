@@ -85,17 +85,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   );
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
-  const [studentSubmission,setStudentSubmission] = useState<SubmissionDataObject>();
+  const [studentSubmission, setStudentSubmission] = useState<SubmissionDataObject>();
   const [_submissionsError, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
 
-  useEffect(()=>{
+  useEffect(() => {
     const submissionRepository = new SubmissionRepository();
     const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
-    submissionData.getSubmisssionByUserandSubmissionId(assignmentid,userid).then((fetchedSubmission) =>{
+    submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid).then((fetchedSubmission) => {
       setSubmission(fetchedSubmission);
     }).catch((error) => {
       console.error("Error fetching submission:", error);
@@ -224,7 +224,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const handleSendGithubLink = async (repository_link: string) => {
     console.log("I will print the json log") //delete later
-      if (assignmentid) { //means if the assignment id is in memory or somthn
+    if (assignmentid) { //means if the assignment id is in memory or somthn
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
@@ -258,15 +258,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url:string) => {
+  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url: string) => {
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
-  
+
       if (match) {
         const [, user, repo] = match;
         console.log(user, repo);
-  
+
         navigate({
           pathname: url,
           search: createSearchParams({
@@ -300,7 +300,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleOpenFileDialog = () => {
     setIsFileDialogOpen(true);
   };
-  
+
   const handleCloseFileDialog = () => {
     setIsFileDialogOpen(false);
   };
@@ -308,10 +308,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleFileUpload = async (file: File) => {
     await UploadTDDLogFile(file, studentSubmission?.repository_link);
   };
-  
-  
+
+
   const handleSendComment = async (comment: string) => {
-    if (submission){
+    if (submission) {
       setComment(comment);
       const submissionRepository = new SubmissionRepository();
       const finishSubmission = new FinishSubmission(submissionRepository);
@@ -326,10 +326,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         status: "delivered",
         end_date: end_date,
         comment: comment
-       };
+      };
       try {
         await finishSubmission.finishSubmission(submission.id, submissionData);
-      handleCloseLinkDialog();
+        handleCloseLinkDialog();
       } catch (error) {
         console.error(error);
       }
@@ -371,7 +371,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         const formattedEndDate = submission.end_date
           ? formatDate(submission.end_date.toString())
           : "N/A";
-  
+
         return (
           <TableRow key={generateUniqueId()}>
             <TableCell>{studentEmail}</TableCell>
@@ -394,7 +394,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")}}
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")
+                }}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -432,7 +433,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Complejidad");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id,"/aditionalgraph")}}
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
+                }}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -447,10 +449,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         );
       })
     );
-  
+
     setStudentRows(rows);
   };
-  
+
 
   return (
     <div
@@ -683,6 +685,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Subir sesión TDD extension
               </Button>
             )}
+            {isStudent(role) && (
+              <Button
+                variant="contained"
+                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "AssistantAI");
+                  navigate("/asistente-ia");
+                }}
+                color="primary"
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Asistente IA
+              </Button>
+            )}
+
             <CommentDialog
               open={isCommentDialogOpen}
               link={submission?.repository_link}

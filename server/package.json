@@ -30,7 +30,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "espressts": "file:",
-    "express": "4.21.1",
+    "express": "^4.21.1",
     "octokit": "^3.1.2",
     "pg": "^8.11.3"
   }
