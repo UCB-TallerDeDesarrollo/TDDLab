@@ -703,7 +703,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Asistente IA
               </Button>
             )}
-
             <CommentDialog
               open={isCommentDialogOpen}
               link={submission?.repository_link}
