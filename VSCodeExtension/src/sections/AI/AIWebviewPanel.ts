@@ -56,5 +56,17 @@ export class AIWebviewPanel {
     this.panel.webview.html = this.generateHtmlContent(messagesHtml);
   }
 
+  private handleError(err: any): void {
+    console.error(err);
+    this.messages.push('Error leyendo archivos o llamando a la API');
+    this.update();
+  }
+
+  private async handleApiResponse(response: string): Promise<void> {
+    console.log("RESPUESTAAAA", response);
+    this.messages.push(response);
+    this.update();
+  }
+
 
 }
