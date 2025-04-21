@@ -83,5 +83,30 @@ export class AIWebviewPanel {
     });
   }
 
+  private getTDDFeedback(data: string): Promise<string> {
+    const horaActual = new Date().toLocaleTimeString();
+    return Promise.resolve(`Hora actual del sistema: ${horaActual}`);
+  }
+
+  public async fetchResponse() {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) return;
+
+    const rootPath = workspaceFolders[0].uri.fsPath;
+    const tddLogPath = path.join(rootPath, '/script/tdd_log.json');
+
+    try {
+      const tddLogContent = this.readTddLogFile(tddLogPath);
+      const tddLogJson = this.parseJson(tddLogContent);
+      const gitInfo = {};
+      const body = this.createApiRequestBody(tddLogJson, gitInfo);
+      const response = await this.getTDDFeedback(body);
+
+      this.handleApiResponse(response);
+    } catch (err) {
+      this.handleError(err);
+    }
+  }
+
 
 }
