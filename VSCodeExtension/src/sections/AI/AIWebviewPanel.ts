@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as http from 'http';
-import simpleGit, { SimpleGit } from 'simple-git';
 
 export class AIWebviewPanel {
   private readonly panel: vscode.WebviewPanel;
