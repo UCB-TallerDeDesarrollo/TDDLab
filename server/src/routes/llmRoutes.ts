@@ -1,13 +1,13 @@
 import express from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
 import LlmController from '../controllers/llmAI/llmController';
-import { MockLLMService } from '../modules/LlmAi/Infraestructura/MockLLMService';
+import { LLMRepository } from '../modules/LlmAi/repository/LLMRepositoy';
 
 // Instanciar la implementación del servicio (mock o real)
-const mockLLMService = new MockLLMService();
+const llmRepository = new LLMRepository();
 
 // Instanciar el caso de uso con su dependencia
-const analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(mockLLMService);
+const analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(llmRepository);
 
 // Instanciar el controlador
 const llmController = new LlmController(analyzeOrRefactorUseCase);

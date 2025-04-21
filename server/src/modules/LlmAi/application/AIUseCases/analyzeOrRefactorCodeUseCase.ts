@@ -1,9 +1,9 @@
-import { LLMService } from '../../repositories/LLMService';
+import { LLMService, Instruction } from '../../domain/LlmAI';
 
 export class AnalyzeOrRefactorCodeUseCase {
     constructor(private llmService: LLMService) { }
 
-    async execute(prompt: string): Promise<string> {
-        return await this.llmService.sendPrompt(prompt);
+    async execute(instruction: Instruction): Promise<string> {
+        return await this.llmService.sendPrompt(instruction);
     }
 }
