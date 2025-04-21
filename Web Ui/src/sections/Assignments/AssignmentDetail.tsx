@@ -691,7 +691,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "AssistantAI");
-                  navigate("/asistente-ia");
+                  navigate("/asistente-ia", {
+                    state: { repositoryLink: studentSubmission?.repository_link }
+                  });
                 }}
                 color="primary"
                 style={{
