@@ -7,6 +7,7 @@ import { VSCodeTerminalRepository } from './modules/Button/infraestructure/VSCod
 import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
+import { ExecuteAssistantCommand } from './modules/Button/application/AIAssitant/ExecuteAssistantCommand';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -34,6 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
     const executeTestCommand = new ExecuteTestCommand(terminalRepository);
     const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
     const executeExportCommand = new ExecuteExportCommand();
+    const executeAssistantCommand = new ExecuteAssistantCommand();
 
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
@@ -106,10 +108,21 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+
+    const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
+        try {
+            await executeAssistantCommand.execute();
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Error: ${error?.message}`);
+        }
+    });
+
     context.subscriptions.push(runTestCommand);
     context.subscriptions.push(runTestActivityCommand);
     context.subscriptions.push(runCloneCommand);
     context.subscriptions.push(runExportCommand);
+    context.subscriptions.push(runAsistenteCommand);
+
 
     const testExecutionTreeView = new ExecutionTreeView(context);
     testExecutionTreeView.initialize();
