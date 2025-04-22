@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import simpleGit, { SimpleGit } from 'simple-git';
+
 
 export class AIWebviewPanel {
   private readonly panel: vscode.WebviewPanel;
@@ -81,9 +83,41 @@ export class AIWebviewPanel {
     });
   }
 
+
   private getTDDFeedback(data: string): Promise<string> {
     const horaActual = new Date().toLocaleTimeString();
     return Promise.resolve(`Hora actual del sistema: ${horaActual}`);
+  }
+
+  private async getGitDiff(commitId: string, repoPath: string): Promise<string> {
+    if (!/^[0-9a-f]{5,40}$/.test(commitId)) {
+      throw new Error("Commit ID inválido");
+    }
+  
+    const git: SimpleGit = simpleGit(repoPath);
+  
+    try {
+      const diff = await git.show([`${commitId}`, '--', 'src/*.test.js', 'src/*.js']);
+      return diff;
+    } catch (error) {
+      console.error('Error al obtener el diff del commit:', error);
+      throw new Error('No se pudo obtener el diff del commit');
+    }
+  }
+
+  private filterDiffLines(diff: string): string[] {
+    return diff.split("\n").filter((line: string) =>
+      line.startsWith("+") || line.startsWith("-")
+    );
+  }
+
+  private handleGitError(err: unknown, reject: (reason?: any) => void): void {
+    if (err instanceof Error) {
+      console.error('Error capturado:', err.message);
+      reject('Error al obtener información de Git: ' + err.message);
+    } else {
+      reject('Error desconocido al obtener información de Git');
+    }
   }
 
   public async fetchResponse() {
@@ -105,6 +139,10 @@ export class AIWebviewPanel {
       this.handleError(err);
     }
   }
+
+  
+
+
 
 
 }
