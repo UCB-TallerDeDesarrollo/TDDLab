@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as http from 'http';
 
 export class AIWebviewPanel {
   private readonly panel: vscode.WebviewPanel;
@@ -106,5 +107,18 @@ export class AIWebviewPanel {
     }
   }
 
+  private createApiRequest(data: string, resolve: (value: string) => void, reject: (reason?: any) => void): http.ClientRequest {
+    return http.request({
+      hostname: 'localhost',
+      port: 3000,
+      path: '/generate',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data),
+      },
+    }, res => this.handleApiResponseStream());
+  }
 
+  private handleApiResponseStream(): void {}
 }
