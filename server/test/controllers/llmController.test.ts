@@ -1,6 +1,8 @@
 import LlmController from '../../src/controllers/llmAI/llmController';
 import { AnalyzeOrRefactorCodeUseCase } from '../../src/modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
 import { Request, Response } from 'express';
+import { LLMService} from '../../src/modules/LlmAi/domain/LlmAI'
+
 describe('LlmController', () => {
   let controller: LlmController;
   let req: Partial<Request>;
