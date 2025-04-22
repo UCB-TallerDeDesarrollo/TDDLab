@@ -117,8 +117,20 @@ export class AIWebviewPanel {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
       },
-    }, res => this.handleApiResponseStream());
+    }, res => this.handleApiResponseStream(res, resolve));
   }
 
-  private handleApiResponseStream(): void {}
+  private handleApiResponseStream(res: http.IncomingMessage, resolve: (value: string) => void): void {
+    let responseData = '';
+
+    res.on('data', chunk => responseData += chunk);
+    res.on('end', () => {
+      try {
+        const parsed = JSON.parse(responseData);
+        resolve(`Respuesta IA: ${parsed.generatedText}`);
+      } catch {
+        resolve(`Respuesta no válida: ${responseData}`);
+      }
+    });
+  }
 }
