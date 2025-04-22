@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import simpleGit, { SimpleGit } from 'simple-git';
+import * as http from 'http';
 
 
 export class AIWebviewPanel {
@@ -85,8 +86,11 @@ export class AIWebviewPanel {
 
 
   private getTDDFeedback(data: string): Promise<string> {
-    const horaActual = new Date().toLocaleTimeString();
-    return Promise.resolve(`Hora actual del sistema: ${horaActual}`);
+    return new Promise((resolve, reject) => {
+      const req = this.createApiRequest(data, resolve, reject);
+      req.write(data);
+      req.end();
+    });
   }
 
   private async getGitDiff(commitId: string, repoPath: string): Promise<string> {
@@ -130,7 +134,9 @@ export class AIWebviewPanel {
     try {
       const tddLogContent = this.readTddLogFile(tddLogPath);
       const tddLogJson = this.parseJson(tddLogContent);
-      const gitInfo = {};
+
+      const gitInfo = await this.getGitInfo(rootPath, tddLogJson);
+
       const body = this.createApiRequestBody(tddLogJson, gitInfo);
       const response = await this.getTDDFeedback(body);
 
@@ -177,5 +183,30 @@ export class AIWebviewPanel {
     return results;
   }
   
+  private createApiRequest(data: string, resolve: (value: string) => void, reject: (reason?: any) => void): http.ClientRequest {
+    return http.request({
+      hostname: 'localhost',
+      port: 3000,
+      path: '/generate',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data),
+      },
+    }, res => this.handleApiResponseStream(res, resolve));
+  }
 
+  private handleApiResponseStream(res: http.IncomingMessage, resolve: (value: string) => void): void {
+    let responseData = '';
+
+    res.on('data', chunk => responseData += chunk);
+    res.on('end', () => {
+      try {
+        const parsed = JSON.parse(responseData);
+        resolve(`Respuesta IA: ${parsed.generatedText}`);
+      } catch {
+        resolve(`Respuesta no válida: ${responseData}`);
+      }
+    });
+  }
 }
