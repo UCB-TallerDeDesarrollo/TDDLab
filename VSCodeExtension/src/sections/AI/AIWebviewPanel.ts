@@ -100,7 +100,9 @@ export class AIWebviewPanel {
     try {
       const tddLogContent = this.readTddLogFile(tddLogPath);
       const tddLogJson = this.parseJson(tddLogContent);
-      const gitInfo = {};
+
+      const gitInfo = await this.getGitInfo(rootPath, tddLogJson);
+
       const body = this.createApiRequestBody(tddLogJson, gitInfo);
       const response = await this.getTDDFeedback(body);
 
@@ -109,6 +111,8 @@ export class AIWebviewPanel {
       this.handleError(err);
     }
   }
+
+  private getGitInfo(rootPath: any, tddLogJson: any){};
 
   private createApiRequest(data: string, resolve: (value: string) => void, reject: (reason?: any) => void): http.ClientRequest {
     return http.request({
