@@ -83,8 +83,11 @@ export class AIWebviewPanel {
   }
 
   private getTDDFeedback(data: string): Promise<string> {
-    const horaActual = new Date().toLocaleTimeString();
-    return Promise.resolve(`Hora actual del sistema: ${horaActual}`);
+    return new Promise((resolve, reject) => {
+      const req = this.createApiRequest(data, resolve, reject);
+      req.write(data);
+      req.end();
+    });
   }
 
   public async fetchResponse() {
