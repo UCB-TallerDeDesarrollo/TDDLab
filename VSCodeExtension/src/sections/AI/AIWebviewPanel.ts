@@ -140,11 +140,6 @@ export class AIWebviewPanel {
     }
   }
 
-  
-
-
-
-
   private async getGitInfo(repoPath: string, tddLogJson: any): Promise<any> {
     try {
       const commits = this.filterCommits(tddLogJson);
@@ -181,17 +176,6 @@ export class AIWebviewPanel {
   
     return results;
   }
-  private async getGitDiff(commitId: string, repoPath: string): Promise<string> {
-    return ""; 
-  }
-  
-  private filterDiffLines(diff: string): string[] {
-    return []; 
-  }
-  private handleGitError(err: unknown, reject: (reason?: any) => void): void {
-
-  }
-
   
 
 }
