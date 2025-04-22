@@ -7,6 +7,9 @@
   "devDependencies": {
     "@types/node": "^22.14.1",
     "@types/vscode": "^1.99.1",
-    "js-cookie": "^3.0.5"
+    "js-cookie": "^3.0.5",
+    "@types/jest": "^29.5.14",
+    "js-cookie": "^3.0.5",
+    "vite": "^6.2.2"
   }
 }

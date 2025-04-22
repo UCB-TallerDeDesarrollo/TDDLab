@@ -60,7 +60,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
         const timelineHtml = timeline.map(point => {
             if (point instanceof Timeline) {
                 const color = point.getColor();
-                const date = point.timestamp.toLocaleDateString();
+                const date = point.timestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'})
                 const time = point.timestamp.toLocaleTimeString();
                 
                 return `
@@ -82,14 +82,13 @@ export class TimelineView implements vscode.WebviewViewProvider {
                         </span>
                     </div>
                 `; }
-                const date = point.commitTimestamp.toLocaleDateString();
+                const date = point.commitTimestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'})
                 const time = point.commitTimestamp.toLocaleTimeString();
                 htmlPoint += `
                     <div class="timeline-dot">
                         <img src="${gitLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
                         <span class="popup">
                             <strong>Nombre:</strong> ${point.commitName ? point.commitName : ''}<br>
-                            <strong>Commit ID:</strong> ${point.commitId}<br>
                             <strong>Fecha:</strong> ${date} ${time}
                         </span>
                     </div>
