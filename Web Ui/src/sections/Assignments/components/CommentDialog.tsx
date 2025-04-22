@@ -29,7 +29,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const [comment, setComment] = useState("");
   const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
   const [edit, setEdit] = useState(false);
-  const [originalLink, setOriginalLink] = useState(link);
+  const [originalLink] = useState(link);
   const [isLoading, setIsLoading] = useState(true);  // El estado "Cargando" al abrir el diálogo
 
   useEffect(() => {
