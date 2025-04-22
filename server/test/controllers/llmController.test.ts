@@ -2,47 +2,58 @@ import LlmController from '../../src/controllers/llmAI/llmController';
 import { AnalyzeOrRefactorCodeUseCase } from '../../src/modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
 import { Request, Response } from 'express';
 describe('LlmController', () => {
-  const mockUseCase: jest.Mocked<AnalyzeOrRefactorCodeUseCase> = {
-    execute: jest.fn()
-  };
-  const controller = new LlmController(mockUseCase);
+  let controller: LlmController;
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let mockLLMService: LLMService;
+  let useCase: AnalyzeOrRefactorCodeUseCase;
 
-  const mockRes = () => {
-    const res: Partial<Response> = {};
-    res.status = jest.fn().mockReturnValue(res);
-    res.json = jest.fn().mockReturnValue(res);
-    return res;
-  };
+  beforeEach(() => {
+    mockLLMService = {
+      sendPrompt: jest.fn().mockResolvedValue('Respuesta del LLM'),
+    };
 
-  it('retorna error 400 si faltan datos', async () => {
-    const req = { body: { instruction: {} } } as Request;
-    const res = mockRes();
+    useCase = new AnalyzeOrRefactorCodeUseCase(mockLLMService);
+    jest.spyOn(useCase, 'execute');
+    controller = new LlmController(useCase);
 
-    await controller.handle(req, res as Response);
+    req = {
+      body: {
+        instruction: {
+          URL: 'https://github.com/proyecto',
+          value: 'analiza esto',
+        },
+      },
+    };
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Faltan datos en el prompt' });
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
   });
 
-  it('retorna resultado del use case', async () => {
-    const req = { body: { instruction: { URL: 'https://github.com/ej', value: 'analizar' } } } as Request;
-    const res = mockRes();
-    mockUseCase.execute.mockResolvedValue('respuesta LLM');
+  it('debería retornar resultado del LLM', async () => {
+    await controller.handle(req as Request, res as Response);
 
-    await controller.handle(req, res as Response);
-
-    expect(mockUseCase.execute).toHaveBeenCalled();
-    expect(res.json).toHaveBeenCalledWith({ result: 'respuesta LLM' });
+    expect(useCase.execute).toHaveBeenCalledWith(req.body.instruction);
+    expect(res?.json).toHaveBeenCalledWith({ result: 'Respuesta del LLM' });
   });
 
-  it('maneja errores del use case', async () => {
-    const req = { body: { instruction: { URL: 'https://github.com/ej', value: 'refactorizar' } } } as Request;
-    const res = mockRes();
-    mockUseCase.execute.mockRejectedValue(new Error('Fallo LLM'));
+  it('debería retornar error 400 si faltan datos', async () => {
+    req.body.instruction = { URL: '', value: '' };
 
-    await controller.handle(req, res as Response);
+    await controller.handle(req as Request, res as Response);
 
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Error procesando el prompt' });
+    expect(res?.status).toHaveBeenCalledWith(400);
+    expect(res?.json).toHaveBeenCalledWith({ error: 'Faltan datos en el prompt' });
+  });
+
+  it('debería retornar error 500 si ocurre una excepción', async () => {
+    (useCase.execute as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
+
+    await controller.handle(req as Request, res as Response);
+
+    expect(res?.status).toHaveBeenCalledWith(500);
+    expect(res?.json).toHaveBeenCalledWith({ error: 'Error procesando el prompt' });
   });
 });
