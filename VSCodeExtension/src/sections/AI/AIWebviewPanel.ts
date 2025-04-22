@@ -106,5 +106,8 @@ export class AIWebviewPanel {
     }
   }
 
+  private filterCommits(tddLog: any): any[] {
+    return tddLog.filter((entry: any) => entry.commitId);
+  }
 
 }
