@@ -106,9 +106,24 @@ export class AIWebviewPanel {
     }
   }
 
+
+  private async getGitInfo(repoPath: string, tddLogJson: any): Promise<any> {
+    try {
+      const commits = this.filterCommits(tddLogJson);
+      if (commits.length === 0) return [];
+  
+      return await this.getCommitDetails(commits, repoPath);
+    } catch (err) {
+      this.handleGitError(err, () => {});
+      return [];
+    }
+  }
+
+
   private filterCommits(tddLog: any): any[] {
     return tddLog.filter((entry: any) => entry.commitId);
   }
+
   private async getCommitDetails(commits: any[], repoPath: string): Promise<any[]> {
     const results = [];
   
@@ -135,6 +150,10 @@ export class AIWebviewPanel {
   private filterDiffLines(diff: string): string[] {
     return []; 
   }
+  private handleGitError(err: unknown, reject: (reason?: any) => void): void {
+
+  }
+
   
 
 }
