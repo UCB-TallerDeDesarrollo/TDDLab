@@ -2,13 +2,13 @@
   "dependencies": {
     "check-node-version": "^4.2.1",
     "crypto-js": "^4.2.0",
+    "dotenv": "^16.5.0",
     "jszip": "^3.10.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.14.1",
     "@types/vscode": "^1.99.1",
-    "js-cookie": "^3.0.5",
-    "@types/jest": "^29.5.14",
     "js-cookie": "^3.0.5",
     "vite": "^6.2.2"
   }
