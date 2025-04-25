@@ -19,7 +19,7 @@ import {
   LineElement,
 } from "chart.js";
 import TDDList from "./TDDList";
-import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
+import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubFileAdapter";
 import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";

@@ -90,19 +90,38 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     return regex.test(commitMessage);
   }
 
-  const getColorByCoverage = (testCountsColor: number, isRefactor: boolean) => {
-    let colorValue;
-    let opacity = 2;
+  const getColorByConclusion = (job: JobDataObject | undefined, coverage: number, commitMessage: string): string => {
+    if (job?.conclusion === "success") {
+      const isRefactor = containsRefactor(commitMessage);
+      console.log("commit message", commitMessage);
+      return getColorByCoverage(coverage, isRefactor);
+    } else if (job?.conclusion === "failure") {
+      return "red";
+    } else if (job?.conclusion === null) {
+      return "black";
+    } else {
+      return "black";
+    }
+  };
+  
+  const getColorByCoverage = (coverage: number, isRefactor: boolean): string => {
+    let colorValue: number;
+    let opacity: number;
     const baseColor = isRefactor ? 'blue' : 'green';
-    if (testCountsColor >= labels[1]) {
+  
+    if (coverage >= 90) {
       colorValue = 110;
-    } else if (testCountsColor < labels[1] && testCountsColor >= labels[2]) {
+      opacity = 1;
+    } else if (coverage >= 80) {
       colorValue = 110;
-      opacity = 0.5;
-    } else if (testCountsColor < labels[2] && testCountsColor >= labels[3]) {
+      opacity = 0.8;
+    } else if (coverage >= 70) {
       colorValue = 110;
       opacity = 0.6;
-    } else if (testCountsColor < labels[3]) {
+    } else if (coverage >= 60) {
+      colorValue = 110;
+      opacity = 0.4;
+    } else {
       colorValue = 110;
       opacity = 0.2;
     }
@@ -111,20 +130,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       ? `rgba(0, ${colorValue}, 0, ${opacity})`
       : `rgba(0, 100, 255, ${opacity})`;
   };
+   
 
-  const getColorByConclusion = (job: any, coverage: number, commitMessage: string) => {
-  if (job?.conclusion === "success") {
-    const isRefactor = containsRefactor(commitMessage);
-    console.log("commit message", commitMessage);
-    return getColorByCoverage(coverage, isRefactor);
-  } else if (job?.conclusion === "failure") {
-    return "red";
-  } else if (job?.conclusion === null) {
-    return "black";
-  } else {
-    return "black";
-  }
-};
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
     localStorage.setItem("selectedMetric", graphText);

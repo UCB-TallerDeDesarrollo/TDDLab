@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 
 import TDDCharts from "../../../src/sections/TDDCycles-Visualization/components/TDDChart";
 import "@testing-library/jest-dom";
-import { GithubAPIAdapter } from "../../../src/modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
+import { GithubAPIAdapter } from "../../../src/modules/TDDCycles-Visualization/repository/GithubFileAdapter";
 
 
 describe("TDDCharts", () => {
