@@ -10,6 +10,7 @@ import submissionsRouter from "./routes/submissionRoutes";
 import teacherCommentsOnSubmissionRouter from "./routes/teacherCommentsOnSubmissionsRoutes";
 import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
+import llmRouter from "./routes/llmRoutes";
 
 const app = express();
 const port = 3000;
@@ -25,6 +26,7 @@ app.use("/api/submissions", submissionsRouter);
 app.use("/api/commentsSubmission", teacherCommentsOnSubmissionRouter);
 app.use("/api/practices", practicesRouter);
 app.use("/api/practiceSubmissions", practiceSubmissionsRouter);
+app.use("/api/llm", llmRouter);
 
 server(app, port);
 export default app;

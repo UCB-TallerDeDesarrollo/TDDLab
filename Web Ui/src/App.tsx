@@ -23,6 +23,8 @@ import ProtectedRouteComponent from "./ProtectedRoute";
 import UsersByGroupPage from "./sections/User/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
+import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
+
 
 const navArrayLinks = [
   {
@@ -167,6 +169,16 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
+
+        <Route
+          path="/asistente-ia"
+          element={
+            <ProtectedRouteComponent>
+              <AIAssistantPage />
+            </ProtectedRouteComponent>
+          }
+        />
+
       </Routes>
     </Router>
   );
