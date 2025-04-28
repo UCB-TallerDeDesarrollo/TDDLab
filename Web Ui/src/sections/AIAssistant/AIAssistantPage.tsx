@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Typography, Button } from '@mui/material';
 import { AnalyzeCode } from '../../modules/LlmAI/application/analyzeCode';
@@ -10,7 +10,7 @@ const analyzeCodeUseCase = new AnalyzeCode(llmRepository);
 const AIAssistantPage = () => {
   const location = useLocation();
   const repositoryLink = location.state?.repositoryLink || "No hay enlace disponible";
-  
+
   const [analysisResponse, setAnalysisResponse] = useState<string>("");
   const [refactorResponse, setRefactorResponse] = useState<string>("");
   const [loadingAnalysis, setLoadingAnalysis] = useState<boolean>(false);
@@ -25,7 +25,7 @@ const AIAssistantPage = () => {
 
     setLoadingAnalysis(true);
     setErrorMessage("");
-    
+
     try {
       const result = await analyzeCodeUseCase.execute(repositoryLink, "Analiza");
       setAnalysisResponse(result);
@@ -45,7 +45,7 @@ const AIAssistantPage = () => {
 
     setLoadingRefactor(true);
     setErrorMessage("");
-    
+
     try {
       const result = await analyzeCodeUseCase.execute(repositoryLink, "Refactoriza");
       setRefactorResponse(result);
@@ -101,14 +101,14 @@ const AIAssistantPage = () => {
       {/* Recuadro con scroll para análisis */}
       <div
         style={{
-          border: '2px solid #b0b0b0',  
+          border: '2px solid #b0b0b0',
           borderRadius: '8px',
-          backgroundColor: '#f9f9f9',  
+          backgroundColor: '#f9f9f9',
           width: '100%',
           maxWidth: '1200px',
           height: '400px',
-          overflowY: 'scroll',  
-          overflowX: 'hidden',  
+          overflowY: 'scroll',
+          overflowX: 'hidden',
           padding: '10px',
           marginBottom: '20px',
         }}
@@ -118,8 +118,8 @@ const AIAssistantPage = () => {
           color="text.secondary"
           style={{ fontSize: "16px", lineHeight: "1.8", whiteSpace: 'pre-wrap' }}
         >
-          {loadingAnalysis 
-            ? "Analizando..." 
+          {loadingAnalysis
+            ? "Analizando..."
             : analysisResponse || "RESPUESTA DE LA IA - PROMPT ANALIZAR"}
         </Typography>
       </div>
@@ -130,8 +130,8 @@ const AIAssistantPage = () => {
         color="primary"
         style={{
           textTransform: 'none',
-          fontSize: '15px', 
-          marginRight: '8px',  
+          fontSize: '15px',
+          marginRight: '8px',
           marginBottom: '20px',
         }}
         onClick={handleAnalyze}
@@ -143,14 +143,14 @@ const AIAssistantPage = () => {
       {/* Recuadro con scroll para refactorización */}
       <div
         style={{
-          border: '2px solid #b0b0b0',  
+          border: '2px solid #b0b0b0',
           borderRadius: '8px',
-          backgroundColor: '#f9f9f9',  
+          backgroundColor: '#f9f9f9',
           width: '100%',
           maxWidth: '1200px',
           height: '400px',
-          overflowY: 'scroll',  
-          overflowX: 'hidden',  
+          overflowY: 'scroll',
+          overflowX: 'hidden',
           padding: '10px',
           marginBottom: '20px',
         }}
@@ -160,8 +160,8 @@ const AIAssistantPage = () => {
           color="text.secondary"
           style={{ fontSize: "16px", lineHeight: "1.8", whiteSpace: 'pre-wrap' }}
         >
-          {loadingRefactor 
-            ? "Refactorizando..." 
+          {loadingRefactor
+            ? "Refactorizando..."
             : refactorResponse || "RESPUESTA DE LA IA - PROMPT REFACTORIZAR"}
         </Typography>
       </div>
@@ -172,8 +172,8 @@ const AIAssistantPage = () => {
         color="primary"
         style={{
           textTransform: 'none',
-          fontSize: '15px',  
-          marginRight: '8px',  
+          fontSize: '15px',
+          marginRight: '8px',
         }}
         onClick={handleRefactor}
         disabled={loadingAnalysis || loadingRefactor}
