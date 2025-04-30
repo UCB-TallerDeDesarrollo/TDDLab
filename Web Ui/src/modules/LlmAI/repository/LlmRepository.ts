@@ -1,18 +1,18 @@
 import axios from "axios";
-import { LlmRequestObject, LlmResponseObject } from "../domain/llmInterfaces";
-import LlmRepositoryInterface from "../domain/LlmRepositoryInterface";
+import { AIRequest, AIResponse } from "../domain/AIAssistantRepositoryInterface";
+import AIAssistantInterface from "../domain/AIAssistantInterface";
 import { VITE_API } from "../../../../config";
 
 const API_URL = VITE_API + "/llm";
 
-class LlmRepository implements LlmRepositoryInterface {
-  async sendPrompt(request: LlmRequestObject): Promise<LlmResponseObject> {
+class aIAssistantInterface implements AIAssistantInterface {
+  async sendQuery(request: AIRequest): Promise<AIResponse> {
     try {
       // Adaptamos el formato para que coincida con lo que espera el backend
       const backendRequest = {
         instruction: {
           URL: request.repoUrl || "",  // Añadimos esta propiedad
-          value: request.prompt
+          value: request.query
         }
       };
       
@@ -30,4 +30,4 @@ class LlmRepository implements LlmRepositoryInterface {
   }
 }
 
-export default LlmRepository;
+export default aIAssistantInterface;

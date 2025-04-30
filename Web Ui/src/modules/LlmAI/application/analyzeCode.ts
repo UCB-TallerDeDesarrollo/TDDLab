@@ -1,5 +1,5 @@
-import { LlmRequestObject } from "../domain/llmInterfaces";
-import LlmRepositoryInterface from "../domain/LlmRepositoryInterface";
+import { AIRequest } from "../domain/AIAssistantRepositoryInterface";
+import LlmRepositoryInterface from "../domain/AIAssistantInterface";
 
 export class AnalyzeCode {
   constructor(
@@ -7,12 +7,12 @@ export class AnalyzeCode {
   ) {}
 
   async execute(repoUrl: string, type: "Analiza" | "Refactoriza"): Promise<string> {
-    const request: LlmRequestObject = {
-      prompt: type,
+    const request: AIRequest = {
+      query: type,
       repoUrl: repoUrl
     };
     
-    const response = await this.llmRepository.sendPrompt(request);
+    const response = await this.llmRepository.sendQuery(request);
     return response.result;
   }
 }
