@@ -310,6 +310,7 @@ jobs:
           echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
           echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
           echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
+          echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> ./server/.env
       - name: Install Vercel CLI
         run: npm install -g vercel
 
@@ -355,6 +356,7 @@ jobs:
           echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
           echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
           echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
+          echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> ./server/.env
       - name: Install Vercel CLI
         run: npm install -g vercel
 
