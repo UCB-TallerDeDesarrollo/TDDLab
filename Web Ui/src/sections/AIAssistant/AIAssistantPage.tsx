@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Typography, Button } from '@mui/material';
-import { AnalyzeCode } from '../../modules/LlmAI/application/analyzeCode';
-import LlmRepository from '../../modules/LlmAI/repository/LlmRepository';
+import { EvaluateWithAI } from '../../modules/LlmAI/application/EvaluateWithAI';
 
-const llmRepository = new LlmRepository();
-const analyzeCodeUseCase = new AnalyzeCode(llmRepository);
+const evaluateWithAIUseCase = new EvaluateWithAI();
 
 const AIAssistantPage = () => {
   const location = useLocation();
@@ -27,7 +25,7 @@ const AIAssistantPage = () => {
     setErrorMessage("");
 
     try {
-      const result = await analyzeCodeUseCase.execute(repositoryLink, "Analiza");
+      const result = await evaluateWithAIUseCase.execute(repositoryLink, "Analiza");
       setAnalysisResponse(result);
     } catch (error) {
       console.error("Error al analizar:", error);
@@ -47,7 +45,7 @@ const AIAssistantPage = () => {
     setErrorMessage("");
 
     try {
-      const result = await analyzeCodeUseCase.execute(repositoryLink, "Refactoriza");
+      const result = await evaluateWithAIUseCase.execute(repositoryLink, "Refactoriza");
       setRefactorResponse(result);
     } catch (error) {
       console.error("Error al refactorizar:", error);
