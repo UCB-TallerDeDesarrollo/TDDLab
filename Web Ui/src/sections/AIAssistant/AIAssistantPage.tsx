@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Typography, Button } from '@mui/material';
-import { EvaluateWithAI } from '../../modules/LlmAI/application/EvaluateWithAI';
+import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 
