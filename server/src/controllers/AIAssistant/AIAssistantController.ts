@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
-import { Instruction } from '../../modules/AIAssistant/domain/AIAssistant';
+import { AIAssistantInstructionObject } from '../../modules/AIAssistant/domain/AIAssistant';
 
 export default class LlmController {
     constructor(
@@ -8,7 +8,7 @@ export default class LlmController {
     ) { }
 
     async handle(req: Request, res: Response): Promise<void> {
-        const instruction: Instruction = req.body.instruction;
+        const instruction: AIAssistantInstructionObject = req.body.instruction;
 
         if (!instruction?.URL || !instruction?.value) {
             res.status(400).json({ error: 'Faltan datos en el prompt' });

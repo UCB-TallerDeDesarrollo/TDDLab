@@ -1,8 +1,8 @@
-export interface Instruction {
+export interface AIAssistantInstructionObject {
     URL: string;
     value: string;
 }
 
-export interface LLMService {
-    sendPrompt(instruction: Instruction): Promise<string>;
+export interface AIAssistantAnswerObject {
+    sendPrompt(instruction: AIAssistantInstructionObject): Promise<string>;
 }

@@ -1,9 +1,9 @@
-import { LLMService, Instruction } from '../domain/AIAssistant';
 import dotenv from 'dotenv';
+import { AIAssistantAnswerObject, AIAssistantInstructionObject } from '../domain/AIAssistant';
 
 dotenv.config();
 
-export class LLMRepository implements LLMService {
+export class LLMRepository implements AIAssistantAnswerObject {
     private readonly apiUrl = process.env.LLM_API_URL!;
 
     private buildInstruction(instructionValue: string): string {
@@ -29,7 +29,7 @@ export class LLMRepository implements LLMService {
         }
     }
 
-    public async sendPrompt(instruction: Instruction): Promise<string> {
+    public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<string> {
         const newInstruction = this.buildInstruction(instruction.value);
         return await this.executePostRequest(instruction.URL, newInstruction);
     }

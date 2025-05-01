@@ -1,9 +1,9 @@
-import { LLMService, Instruction } from '../../domain/AIAssistant';
+import { AIAssistantAnswerObject, AIAssistantInstructionObject } from "../../domain/AIAssistant";
 
 export class AnalyzeOrRefactorCodeUseCase {
-    constructor(private llmService: LLMService) { }
+    constructor(private llmService: AIAssistantAnswerObject) { }
 
-    async execute(instruction: Instruction): Promise<string> {
+    async execute(instruction: AIAssistantInstructionObject): Promise<string> {
         return await this.llmService.sendPrompt(instruction);
     }
 }
