@@ -1,6 +1,6 @@
 import express from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
-import LlmController from '../controllers/llmAI/llmController';
+import LlmController from '../controllers/AIAssistant/AIAssistantController';
 import { LLMRepository } from '../modules/LlmAi/repository/LLMRepositoy';
 
 // Instanciar la implementación del servicio (mock o real)
