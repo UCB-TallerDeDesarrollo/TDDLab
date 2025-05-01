@@ -10,7 +10,7 @@ import submissionsRouter from "./routes/submissionRoutes";
 import teacherCommentsOnSubmissionRouter from "./routes/teacherCommentsOnSubmissionsRoutes";
 import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
-import llmRouter from "./routes/llmRoutes";
+import llmRouter from "./routes/AIAssistant";
 
 const app = express();
 const port = 3000;

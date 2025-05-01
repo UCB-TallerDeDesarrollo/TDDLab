@@ -1,5 +1,5 @@
-import { AnalyzeOrRefactorCodeUseCase } from '../../../../../src/modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
-import { LLMService, Instruction } from '../../../../../src/modules/LlmAi/domain/LlmAI'
+import { AnalyzeOrRefactorCodeUseCase } from '../../../../../src/modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
+import { LLMService, Instruction } from '../../../../../src/modules/AIAssistant/domain/AIAssistant'
 ;
 describe('AnalyzeOrRefactorCodeUseCase', () => {
   const mockLLMService: jest.Mocked<LLMService> = {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { AnalyzeOrRefactorCodeUseCase } from '../../modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
-import { Instruction } from '../../modules/LlmAi/domain/LlmAI';
+import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
+import { Instruction } from '../../modules/AIAssistant/domain/AIAssistant';
 
 export default class LlmController {
     constructor(

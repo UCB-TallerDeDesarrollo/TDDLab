@@ -1,7 +1,7 @@
 import express from 'express';
-import { AnalyzeOrRefactorCodeUseCase } from '../modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
-import LlmController from '../controllers/AIAssistant/AIAssistantController';
-import { LLMRepository } from '../modules/LlmAi/repository/LLMRepositoy';
+import { AnalyzeOrRefactorCodeUseCase } from '../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
+import { LLMRepository } from '../modules/AIAssistant/repository/AIAssistantRepositoy';
+import AIAssistantController from '../controllers/AIAssistant/AIAssistantController';
 
 // Instanciar la implementación del servicio (mock o real)
 const llmRepository = new LLMRepository();
@@ -10,7 +10,7 @@ const llmRepository = new LLMRepository();
 const analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(llmRepository);
 
 // Instanciar el controlador
-const llmController = new LlmController(analyzeOrRefactorUseCase);
+const llmController = new AIAssistantController(analyzeOrRefactorUseCase);
 
 // Crear router
 const llmRouter = express.Router();

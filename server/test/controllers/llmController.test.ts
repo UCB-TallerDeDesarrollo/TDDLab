@@ -1,7 +1,7 @@
 import LlmController from '../../src/controllers/AIAssistant/AIAssistantController';
-import { AnalyzeOrRefactorCodeUseCase } from '../../src/modules/LlmAi/application/AIUseCases/analyzeOrRefactorCodeUseCase';
+import { AnalyzeOrRefactorCodeUseCase } from '../../src/modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
 import { Request, Response } from 'express';
-import { LLMService} from '../../src/modules/LlmAi/domain/LlmAI'
+import { LLMService} from '../../src/modules/AIAssistant/domain/AIAssistant'
 
 describe('LlmController', () => {
   let controller: LlmController;

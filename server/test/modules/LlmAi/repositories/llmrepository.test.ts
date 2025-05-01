@@ -1,5 +1,5 @@
-import { LLMRepository } from '../../../../src/modules/LlmAi/repository/LLMRepositoy';
-import { Instruction } from '../../../../src/modules/LlmAi/domain/LlmAI';
+import { LLMRepository } from '../../../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
+import { Instruction } from '../../../../src/modules/AIAssistant/domain/AIAssistant';
 
 global.fetch = jest.fn(() =>
   Promise.resolve({

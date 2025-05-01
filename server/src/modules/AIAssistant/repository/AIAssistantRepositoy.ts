@@ -1,4 +1,4 @@
-import { LLMService, Instruction } from '../domain/LlmAI';
+import { LLMService, Instruction } from '../domain/AIAssistant';
 import dotenv from 'dotenv';
 
 dotenv.config();

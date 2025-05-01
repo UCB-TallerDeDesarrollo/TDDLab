@@ -1,4 +1,4 @@
-import { LLMService, Instruction } from '../../domain/LlmAI';
+import { LLMService, Instruction } from '../../domain/AIAssistant';
 
 export class AnalyzeOrRefactorCodeUseCase {
     constructor(private llmService: LLMService) { }
