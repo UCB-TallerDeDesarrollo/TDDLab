@@ -1,9 +1,14 @@
-import { AIAssistantAnswerObject, AIAssistantInstructionObject } from "../../domain/AIAssistant";
+import { AIAssistantInstructionObject } from "../../domain/AIAssistant";
+import { AIAssistantRepository } from "../../repository/AIAssistantRepositoy";
 
 export class AnalyzeOrRefactorCodeUseCase {
-    constructor(private aiAssistantAnswerObject: AIAssistantAnswerObject) { }
+    private readonly adapter: AIAssistantRepository;
+
+    constructor(adapter: AIAssistantRepository) {
+        this.adapter = adapter;
+    }
 
     async execute(instruction: AIAssistantInstructionObject): Promise<string> {
-        return await this.aiAssistantAnswerObject.sendPrompt(instruction);
+        return await this.adapter.sendPrompt(instruction);
     }
 }

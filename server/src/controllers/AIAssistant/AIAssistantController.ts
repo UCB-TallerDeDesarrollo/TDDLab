@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
+import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAssistantRepositoy';
 
 export default class LlmController {
-    constructor(
-        private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase
-    ) { }
+
+    private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
+
+    constructor(repository: AIAssistantRepository) {
+        this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
+    }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
         const instruction = req.body.instruction;

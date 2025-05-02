@@ -3,7 +3,7 @@ import { AIAssistantAnswerObject, AIAssistantInstructionObject } from '../domain
 
 dotenv.config();
 
-export class aiAssistantRepository implements AIAssistantAnswerObject {
+export class AIAssistantRepository implements AIAssistantAnswerObject {
     private readonly apiUrl = process.env.LLM_API_URL!;
 
     private buildPromt(instructionValue: string): string {
