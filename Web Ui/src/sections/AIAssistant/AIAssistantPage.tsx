@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
-import { AnalyzeCode } from '../../modules/LlmAI/application/analyzeCode';
-import LlmRepository from '../../modules/LlmAI/repository/LlmRepository';
 import AIResultSection from './components/AIResultSection';
+import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 
@@ -31,7 +30,7 @@ const AIAssistantPage = () => {
     setErrorMessage("");
 
     try {
-      const result = await analyzeCodeUseCase.execute(repositoryLink, action);
+      const result = await evaluateWithAIUseCase.execute(repositoryLink, action);
       setResponse(result);
     } catch (error) {
       console.error(`Error al ${action.toLowerCase()}:`, error);
