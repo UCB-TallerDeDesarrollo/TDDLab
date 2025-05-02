@@ -1,10 +1,10 @@
 import express from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
-import { LLMRepository } from '../modules/AIAssistant/repository/AIAssistantRepositoy';
+import { aiAssistantRepository } from '../modules/AIAssistant/repository/AIAssistantRepositoy';
 import AIAssistantController from '../controllers/AIAssistant/AIAssistantController';
 
 // Instanciar la implementación del servicio (mock o real)
-const llmRepository = new LLMRepository();
+const llmRepository = new aiAssistantRepository();
 
 // Instanciar el caso de uso con su dependencia
 const analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(llmRepository);
