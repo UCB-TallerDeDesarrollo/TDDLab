@@ -6,7 +6,7 @@ dotenv.config();
 export class LLMRepository implements AIAssistantAnswerObject {
     private readonly apiUrl = process.env.LLM_API_URL!;
 
-    private buildInstruction(instructionValue: string): string {
+    private buildPromt(instructionValue: string): string {
         const lower = instructionValue.toLowerCase();
         if (lower.includes('analiza')) return `Evalúa la cobertura de pruebas y si se aplican principios de TDD. ¿Qué áreas podrían mejorarse?`;
         if (lower.includes('refactoriza')) return `Evalúa este repositorio y sugiere mejoras usando principios de ingeniería de IA: claridad en las instrucciones, eficiencia en el contexto, uso adecuado de modelos, estructura del código y facilidad de mantenimiento`;
@@ -30,7 +30,7 @@ export class LLMRepository implements AIAssistantAnswerObject {
     }
 
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<string> {
-        const newInstruction = this.buildInstruction(instruction.value);
+        const newInstruction = this.buildPromt(instruction.value);
         return await this.executePostRequest(instruction.URL, newInstruction);
     }
 }

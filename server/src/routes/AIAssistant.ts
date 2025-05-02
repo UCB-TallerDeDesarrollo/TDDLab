@@ -13,12 +13,12 @@ const analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(llmRepository)
 const llmController = new AIAssistantController(analyzeOrRefactorUseCase);
 
 // Crear router
-const llmRouter = express.Router();
+const aiAssistantRouter = express.Router();
 
 // Definir ruta POST
-llmRouter.post(
+aiAssistantRouter.post(
     '/',
-    async (req, res) => await llmController.handle(req, res)
+    async (req, res) => await llmController.analyzeOrRefactor(req, res)
 );
 
-export default llmRouter;
+export default aiAssistantRouter;
