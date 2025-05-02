@@ -20,7 +20,7 @@ export default class LlmController {
 
         try {
             const result = await this.analyzeOrRefactorUseCase.execute(instruction);
-            res.json({ result });
+            res.json(result);
         } catch (err) {
             res.status(500).json({ error: 'Error procesando el prompt' });
         }

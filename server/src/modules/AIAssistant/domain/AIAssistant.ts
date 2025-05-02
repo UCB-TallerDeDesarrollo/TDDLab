@@ -4,5 +4,5 @@ export interface AIAssistantInstructionObject {
 }
 
 export interface AIAssistantAnswerObject {
-    sendPrompt(instruction: AIAssistantInstructionObject): Promise<string>;
+    result: string;
 }

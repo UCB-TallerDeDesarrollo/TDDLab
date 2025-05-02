@@ -3,8 +3,14 @@ import { AIAssistantAnswerObject, AIAssistantInstructionObject } from '../domain
 
 dotenv.config();
 
-export class AIAssistantRepository implements AIAssistantAnswerObject {
+export class AIAssistantRepository {
     private readonly apiUrl = process.env.LLM_API_URL!;
+
+    private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
+        return {
+            result: data.result || 'No se recibió respuesta del modelo.',
+        };
+    }
 
     private buildPromt(instructionValue: string): string {
         const lower = instructionValue.toLowerCase();
@@ -22,15 +28,16 @@ export class AIAssistantRepository implements AIAssistantAnswerObject {
             });
 
             const data = await response.json();
-            return data.result || 'No se recibió respuesta del modelo.';
+            return data || 'No se recibió respuesta del modelo.';
         } catch (error) {
             console.error('[LLM ERROR]', error);
             return 'Error al comunicarse con el modelo.';
         }
     }
 
-    public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<string> {
+    public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         const newInstruction = this.buildPromt(instruction.value);
-        return await this.executePostRequest(instruction.URL, newInstruction);
+        const raw = await this.executePostRequest(instruction.URL, newInstruction);
+        return this.mapToAIAssistantAnswer(raw);
     }
 }

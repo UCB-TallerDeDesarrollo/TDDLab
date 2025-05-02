@@ -1,4 +1,4 @@
-import { AIAssistantInstructionObject } from "../../domain/AIAssistant";
+import { AIAssistantAnswerObject, AIAssistantInstructionObject } from "../../domain/AIAssistant";
 import { AIAssistantRepository } from "../../repository/AIAssistantRepositoy";
 
 export class AnalyzeOrRefactorCodeUseCase {
@@ -8,7 +8,7 @@ export class AnalyzeOrRefactorCodeUseCase {
         this.adapter = adapter;
     }
 
-    async execute(instruction: AIAssistantInstructionObject): Promise<string> {
+    async execute(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         return await this.adapter.sendPrompt(instruction);
     }
 }
