@@ -12,6 +12,9 @@ import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import llmRouter from "./routes/llmRoutes";
 
+
+import featureFlagsRouter from "./routes/featureFlagsRoutes";
+
 const app = express();
 const port = 3000;
 // Enable CORS for all routes
@@ -27,6 +30,9 @@ app.use("/api/commentsSubmission", teacherCommentsOnSubmissionRouter);
 app.use("/api/practices", practicesRouter);
 app.use("/api/practiceSubmissions", practiceSubmissionsRouter);
 app.use("/api/llm", llmRouter);
+
+
+app.use("/api/featureFlags", featureFlagsRouter);
 
 server(app, port);
 export default app;

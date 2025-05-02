@@ -1,10 +1,15 @@
 import { LLMService, Instruction } from '../domain/LlmAI';
+import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
+const TOGETHER_API_URL = 'https://api.together.xyz/v1/chat/completions';
+const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
+
 export class LLMRepository implements LLMService {
-    private readonly apiUrl = process.env.LLM_API_URL!;
+    private readonly apiKey = process.env.TOGETHER_API_KEY!;
+    private readonly apiUrl = TOGETHER_API_URL;
 
     private buildInstruction(instructionValue: string): string {
         const lower = instructionValue.toLowerCase();
@@ -15,14 +20,27 @@ export class LLMRepository implements LLMService {
 
     private async executePostRequest(code: string, instruction: string): Promise<string> {
         try {
-            const response = await fetch(this.apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code, instruction }),
-            });
+            const userContent = `${instruction}\n\n${code}`;
+            const response = await axios.post(
+                this.apiUrl,
+                {
+                    model: MODEL,
+                    messages: [
+                        { role: 'system', content: 'Eres un experto en desarrollo de software.' },
+                        { role: 'user', content: userContent }
+                    ],
+                    temperature: 0.2,
+                    max_tokens: 1024
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
 
-            const data = await response.json();
-            return data.result || 'No se recibió respuesta del modelo.';
+            return response.data.choices[0].message.content || 'No se recibió respuesta del modelo.';
         } catch (error) {
             console.error('[LLM ERROR]', error);
             return 'Error al comunicarse con el modelo.';
