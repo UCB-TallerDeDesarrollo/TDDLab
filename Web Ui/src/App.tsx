@@ -24,7 +24,7 @@ import UsersByGroupPage from "./sections/User/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
-
+import ConfigPage from "./sections/Configuration/ConfigPage";
 
 const navArrayLinks = [
   {
@@ -50,6 +50,12 @@ const navArrayLinks = [
     path: "/mis-practicas",
     icon: <NoteAdd />,
     access: ["admin", "teacher", "student"],
+  },
+  {
+    title: "Configuraciones",
+    path: "/configuraciones",
+    icon: <NoteAdd />,
+    access: ["admin", "teacher","student"],
   },
 ];
 
@@ -178,7 +184,11 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
-
+        <Route
+          path="/configuraciones"
+          
+          element={<ConfigPage />}  // Componente que muestra la página de configuraciones
+        />
       </Routes>
     </Router>
   );
