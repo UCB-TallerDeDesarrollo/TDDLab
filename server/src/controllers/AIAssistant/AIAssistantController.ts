@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
 import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAssistantRepositoy';
 
-export default class LlmController {
+export default class AIAssistantController {
 
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
 
