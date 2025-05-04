@@ -6,14 +6,14 @@ describe('AIAssitantController', () => {
   let controller: AIAssistantController;
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let mockAiAssistantRepo: AIAssistantRepository;
+  let mockAiAssistantRepository: AIAssistantRepository;
 
   beforeEach(() => {
-    mockAiAssistantRepo = {
+    mockAiAssistantRepository = {
       sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del Asistente' }),
     } as unknown as AIAssistantRepository;
 
-    controller = new AIAssistantController(mockAiAssistantRepo);
+    controller = new AIAssistantController(mockAiAssistantRepository);
 
     req = {
       body: {
@@ -33,7 +33,7 @@ describe('AIAssitantController', () => {
   it('debería retornar resultado del LLM', async () => {
     await controller.analyzeOrRefactor(req as Request, res as Response);
 
-    expect(mockAiAssistantRepo.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
+    expect(mockAiAssistantRepository.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
     expect(res?.json).toHaveBeenCalledWith({ result: 'Respuesta del Asistente' });
   });
 
@@ -47,7 +47,7 @@ describe('AIAssitantController', () => {
   });
 
   it('debería retornar error 500 si ocurre una excepción', async () => {
-    (mockAiAssistantRepo.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
+    (mockAiAssistantRepository.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
 
     await controller.analyzeOrRefactor(req as Request, res as Response);
 

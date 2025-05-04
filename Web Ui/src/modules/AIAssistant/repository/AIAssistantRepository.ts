@@ -2,7 +2,7 @@ import axios from "axios";
 import { AIRequest, AIResponse } from "../domain/AIAssistantRepositoryInterface";
 import AIAssistantInterface from "../domain/AIAssistantInterface";
 import { VITE_API } from "../../../../config";
-// ai-assistant POSIBLE NOMBRE
+
 const API_URL = VITE_API + "/AIAssistant";
 
 class AIAssistantRepository implements AIAssistantInterface {
