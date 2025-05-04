@@ -3,13 +3,13 @@ import { AIAssistantRepository } from '../modules/AIAssistant/repository/AIAssis
 import AIAssistantController from '../controllers/AIAssistant/AIAssistantController';
 
 const aiAssistantRepository = new AIAssistantRepository();
-const llmController = new AIAssistantController(aiAssistantRepository);
+const aiAssistantController = new AIAssistantController(aiAssistantRepository);
 
 const aiAssistantRouter = express.Router();
 
 aiAssistantRouter.post(
     '/',
-    async (req, res) => await llmController.analyzeOrRefactor(req, res)
+    async (req, res) => await aiAssistantController.analyzeOrRefactor(req, res)
 );
 
 export default aiAssistantRouter;
