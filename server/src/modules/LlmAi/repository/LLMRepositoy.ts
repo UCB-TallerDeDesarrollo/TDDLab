@@ -8,7 +8,7 @@ const TOGETHER_API_URL = 'https://api.together.xyz/v1/chat/completions';
 const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
 
 export class LLMRepository implements LLMService {
-    private readonly apiKey = process.env.TOGETHER_API_KEY!;
+    private readonly apiKey = "9a376d4db383d0862943fc952978b41ede783adfe0acdaa81013e7f58672ef73";
     private readonly apiUrl = TOGETHER_API_URL;
 
     private buildInstruction(instructionValue: string): string {

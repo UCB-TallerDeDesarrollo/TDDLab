@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/axios": "^0.14.4",
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.5",
@@ -28,6 +29,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "axios": "^1.9.0",
     "dotenv": "^16.4.5",
     "espressts": "file:",
     "express": "^4.21.1",
