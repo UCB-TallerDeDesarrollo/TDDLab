@@ -1,9 +1,9 @@
-import LlmController from '../../src/controllers/AIAssistant/AIAssistantController';
+import AIAssistantController from '../../src/controllers/AIAssistant/AIAssistantController';
 import { Request, Response } from 'express';
 import { AIAssistantRepository } from '../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
 
 describe('AIAssitantController', () => {
-  let controller: LlmController;
+  let controller: AIAssistantController;
   let req: Partial<Request>;
   let res: Partial<Response>;
   let mockAiAssistantRepo: AIAssistantRepository;
@@ -13,7 +13,7 @@ describe('AIAssitantController', () => {
       sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del Asistente' }),
     } as unknown as AIAssistantRepository;
 
-    controller = new LlmController(mockAiAssistantRepo);
+    controller = new AIAssistantController(mockAiAssistantRepo);
 
     req = {
       body: {
