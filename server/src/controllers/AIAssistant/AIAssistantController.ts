@@ -14,7 +14,7 @@ export default class AIAssistantController {
         const instruction = req.body.instruction;
 
         if (!instruction?.URL || !instruction?.value) {
-            res.status(400).json({ error: 'Faltan datos en el prompt' });
+            res.status(400).json({ error: 'Faltan datos en la instruccion' });
             return;
         }
 

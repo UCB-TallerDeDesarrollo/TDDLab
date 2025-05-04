@@ -2,18 +2,18 @@ import LlmController from '../../src/controllers/AIAssistant/AIAssistantControll
 import { Request, Response } from 'express';
 import { AIAssistantRepository } from '../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
 
-describe('LlmController', () => {
+describe('AIAssitantController', () => {
   let controller: LlmController;
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let mockLLMRepo: AIAssistantRepository;
+  let mockAiAssistantRepo: AIAssistantRepository;
 
   beforeEach(() => {
-    mockLLMRepo = {
-      sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del LLM' }),
+    mockAiAssistantRepo = {
+      sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del Asistente' }),
     } as unknown as AIAssistantRepository;
 
-    controller = new LlmController(mockLLMRepo);
+    controller = new LlmController(mockAiAssistantRepo);
 
     req = {
       body: {
@@ -33,8 +33,8 @@ describe('LlmController', () => {
   it('debería retornar resultado del LLM', async () => {
     await controller.analyzeOrRefactor(req as Request, res as Response);
 
-    expect(mockLLMRepo.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
-    expect(res?.json).toHaveBeenCalledWith({ result: 'Respuesta del LLM' });
+    expect(mockAiAssistantRepo.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
+    expect(res?.json).toHaveBeenCalledWith({ result: 'Respuesta del Asistente' });
   });
 
   it('debería retornar error 400 si faltan datos', async () => {
@@ -43,11 +43,11 @@ describe('LlmController', () => {
     await controller.analyzeOrRefactor(req as Request, res as Response);
 
     expect(res?.status).toHaveBeenCalledWith(400);
-    expect(res?.json).toHaveBeenCalledWith({ error: 'Faltan datos en el prompt' });
+    expect(res?.json).toHaveBeenCalledWith({ error: 'Faltan datos en la instruccion' });
   });
 
   it('debería retornar error 500 si ocurre una excepción', async () => {
-    (mockLLMRepo.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
+    (mockAiAssistantRepo.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
 
     await controller.analyzeOrRefactor(req as Request, res as Response);
 
