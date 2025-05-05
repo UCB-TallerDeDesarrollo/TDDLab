@@ -10,4 +10,4 @@ export interface AIAssistantAnswerObject {
 export interface AIAssistantPromptObject {
     analysis_tdd: string;
     refactoring: string;
-}
+}   

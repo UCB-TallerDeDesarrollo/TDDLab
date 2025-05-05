@@ -12,4 +12,9 @@ aiAssistantRouter.post(
     async (req, res) => await aiAssistantController.analyzeOrRefactor(req, res)
 );
 
+aiAssistantRouter.get(
+    "/",
+    async (req, res) => await aiAssistantController.getPrompts(req, res)
+  );
+
 export default aiAssistantRouter;
