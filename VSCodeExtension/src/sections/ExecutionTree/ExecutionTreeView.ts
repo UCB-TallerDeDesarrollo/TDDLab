@@ -12,8 +12,12 @@ export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<Execut
 
   private loadFeatureConfig(): void {
     try {
-      const configPath = path.join(this.context.extensionPath, 'resources', 'VSCodeExtensionFeatures.json');
-      const rawData = fs.readFileSync(configPath, 'utf8');
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      if (!workspaceFolders) return;
+  
+      const rootPath = workspaceFolders[0].uri.fsPath;
+      const fullPath = path.join(rootPath, "script/VSCodeExtensionFeatures.json");
+      const rawData = fs.readFileSync(fullPath, 'utf8');
       this.features = JSON.parse(rawData);
     } catch (error) {
       console.error('Error al cargar features.json:', error);

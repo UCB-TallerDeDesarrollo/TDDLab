@@ -1,3 +1,0 @@
-{
-    "prompt":"Analiza el historial de pruebas y de commits que te voy a enviar y dime si se respeta el ciclo de Test-Driven Development (TDD). El ciclo de TDD consiste en tres pasos:\nRed: Escribir una prueba que falle, lo que indica que la funcionalidad aún no está implementada.\nGreen: Escribir el código mínimo necesario para hacer que la prueba pase.\nRefactor: Mejorar el código, refactorizando sin alterar el comportamiento, asegurando que las pruebas sigan pasando.\nPor favor, analiza los siguientes datos de commits y pruebas, y evalúa si se sigue adecuadamente este ciclo en el desarrollo del proyecto. Estoy enviando el historial de pruebas y commits ahora."
-}
