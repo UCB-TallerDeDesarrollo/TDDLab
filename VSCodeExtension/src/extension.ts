@@ -112,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
         try {
-            await executeAssistantCommand.execute();
+            await executeAssistantCommand.execute(context);
         } catch (error: any) {
             vscode.window.showErrorMessage(`Error: ${error?.message}`);
         }

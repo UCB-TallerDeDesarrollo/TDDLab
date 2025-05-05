@@ -1,13 +1,14 @@
 import { AIWebviewPanel } from "../../../../sections/AI/AIWebviewPanel";
+import * as vscode from 'vscode';
 
 let aiWebviewPanel: AIWebviewPanel | undefined;
 
 export class ExecuteAssistantCommand {
-    async execute(): Promise<void> {
+    async execute(context: vscode.ExtensionContext): Promise<void> {
       if (aiWebviewPanel) {
           aiWebviewPanel.reveal();
         } else {
-          aiWebviewPanel = new AIWebviewPanel();
+          aiWebviewPanel = new AIWebviewPanel(context);
           aiWebviewPanel.onDispose(() => {
             aiWebviewPanel = undefined;
           });

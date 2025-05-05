@@ -8,8 +8,10 @@ import * as http from 'http';
 export class AIWebviewPanel {
   private readonly panel: vscode.WebviewPanel;
   private readonly messages: string[] = [];
+  private readonly context: vscode.ExtensionContext;
 
-  constructor() {
+  constructor(context: vscode.ExtensionContext) {
+    this.context = context;
     this.panel = vscode.window.createWebviewPanel(
       'aiPanel',
       'Asistente de IA',
@@ -77,10 +79,20 @@ export class AIWebviewPanel {
     return JSON.parse(content);
   }
 
+  private loadPrompt(): string {
+    const promptPath = path.join(this.context.extensionPath, 'resources', 'prompt.json');
+    const fileContent = fs.readFileSync(promptPath, 'utf-8');
+    const promptJson = JSON.parse(fileContent);
+    return promptJson.prompt;
+  }
+    
   private createApiRequestBody(tddLogJson: any, gitInfo: any): string {
+    const prompt = this.loadPrompt();
+  
     return JSON.stringify({
       tddlog: tddLogJson,
-      gitInfo: gitInfo
+      gitInfo: gitInfo,
+      prompt: prompt
     });
   }
 
