@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
-import { AnalyzeCode } from '../../modules/LlmAI/application/analyzeCode';
-import LlmRepository from '../../modules/LlmAI/repository/LlmRepository';
 import AIResultSection from './components/AIResultSection';
+import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
 
-const llmRepository = new LlmRepository();
-const analyzeCodeUseCase = new AnalyzeCode(llmRepository);
+const evaluateWithAIUseCase = new EvaluateWithAI();
 
 const AIAssistantPage = () => {
   const location = useLocation();
@@ -19,7 +17,7 @@ const AIAssistantPage = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleApiCall = async (
-    action: "Analiza" | "Refactoriza",
+    action: "Evaluar la aplicación de TDD" | "Evaluar la aplicación de Refactoring",
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setResponse: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -32,7 +30,7 @@ const AIAssistantPage = () => {
     setErrorMessage("");
 
     try {
-      const result = await analyzeCodeUseCase.execute(repositoryLink, action);
+      const result = await evaluateWithAIUseCase.execute(repositoryLink, action);
       setResponse(result);
     } catch (error) {
       console.error(`Error al ${action.toLowerCase()}:`, error);
@@ -85,15 +83,15 @@ const AIAssistantPage = () => {
           title="Procesando..."
           response={analysisResponse}
           loading={loadingAnalysis}
-          onAction={() => handleApiCall("Analiza", setLoadingAnalysis, setAnalysisResponse)}
-          buttonText="Analizar"
+          onAction={() => handleApiCall("Evaluar la aplicación de TDD", setLoadingAnalysis, setAnalysisResponse)}
+          buttonText="Evaluar la aplicación de TDD"
         />
         <AIResultSection
           title="Procesando..."
           response={refactorResponse}
           loading={loadingRefactor}
-          onAction={() => handleApiCall("Refactoriza", setLoadingRefactor, setRefactorResponse)}
-          buttonText="Refactorizar"
+          onAction={() => handleApiCall("Evaluar la aplicación de Refactoring", setLoadingRefactor, setRefactorResponse)}
+          buttonText="Evaluar la aplicación de Refactoring"
         />
       </div>
     </div>

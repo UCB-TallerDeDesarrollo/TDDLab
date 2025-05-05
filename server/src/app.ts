@@ -10,7 +10,7 @@ import submissionsRouter from "./routes/submissionRoutes";
 import teacherCommentsOnSubmissionRouter from "./routes/teacherCommentsOnSubmissionsRoutes";
 import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
-import llmRouter from "./routes/llmRoutes";
+import aiAssistantRouter from "./routes/AIAssistant";
 
 
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
@@ -29,7 +29,7 @@ app.use("/api/submissions", submissionsRouter);
 app.use("/api/commentsSubmission", teacherCommentsOnSubmissionRouter);
 app.use("/api/practices", practicesRouter);
 app.use("/api/practiceSubmissions", practiceSubmissionsRouter);
-app.use("/api/llm", llmRouter);
+app.use("/api/AIAssistant", aiAssistantRouter);
 
 
 app.use("/api/featureFlags", featureFlagsRouter);
