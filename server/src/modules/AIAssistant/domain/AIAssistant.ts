@@ -6,3 +6,8 @@ export interface AIAssistantInstructionObject {
 export interface AIAssistantAnswerObject {
     result: string;
 }
+
+export interface AIAssistantPromptObject {
+    analysis_tdd: string;
+    refactoring: string;
+}
