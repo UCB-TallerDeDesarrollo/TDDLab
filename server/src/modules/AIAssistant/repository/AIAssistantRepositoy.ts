@@ -7,10 +7,21 @@ export class AIAssistantRepository {
     private readonly apiUrl = process.env.LLM_API_URL!;
 
     private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
-        return {
-            result: data.result || 'No se recibió respuesta del modelo.',
-        };
+        if (!data) {
+            return { result: 'No se recibio ninguna respuesta del modelo.' };
+        }
+    
+        if (data.error) {
+            return { result: `Error del modelo: ${data.error}` };
+        }
+    
+        if (!data.result) {
+            return { result: 'La respuesta del modelo no fue valida o no contenia informacion' };
+        }
+    
+        return { result: data.result };
     }
+    
 
     private buildPromt(instructionValue: string): string {
         const lower = instructionValue.toLowerCase();
@@ -27,8 +38,12 @@ export class AIAssistantRepository {
                 body: JSON.stringify({ code, instruction }),
             });
 
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+            }
+
             const data = await response.json();
-            return data || 'No se recibió respuesta del modelo.';
+            return data;
         } catch (error) {
             console.error('[LLM ERROR]', error);
             return 'Error al comunicarse con el modelo.';
