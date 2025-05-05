@@ -8,7 +8,7 @@ export class AIAssistantRepository {
 
     private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
         return {
-            result: data.result || 'No se recibió respuesta del modelo.',
+            result: data.result
         };
     }
 
