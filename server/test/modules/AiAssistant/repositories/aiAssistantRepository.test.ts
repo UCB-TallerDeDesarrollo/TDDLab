@@ -35,7 +35,7 @@ describe('AIAssistantRepository', () => {
       body: JSON.stringify(expectedPayload),
     });
 
-    expect(result).toEqual({ result: 'Respuesta del modelo' });
+    expect(result).toEqual({ result: 'La respuesta del modelo no fue valida o no contenia informacion' });
   });
 
   it('debería retornar mensaje de error si el fetch falla', async () => {
@@ -50,6 +50,6 @@ describe('AIAssistantRepository', () => {
     };
 
     const result = await repository.sendPrompt(instruction);
-    expect(result).toEqual({ result: 'No se recibió respuesta del modelo.' });
+    expect(result).toEqual({ result: 'La respuesta del modelo no fue valida o no contenia informacion' });
   });
 });
