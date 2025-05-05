@@ -7,7 +7,7 @@ import { VSCodeTerminalRepository } from './modules/Button/infraestructure/VSCod
 import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
-import { ExecuteAssistantCommand } from './modules/Button/application/AIAssistant/ExecuteAssistantCommand';
+import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
 
 
 /**
@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
     const executeTestCommand = new ExecuteTestCommand(terminalRepository);
     const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
     const executeExportCommand = new ExecuteExportCommand();
-    const executeAssistantCommand = new ExecuteAssistantCommand();
+    const executeAIAssistant = new ExecuteAIAssistant();
 
 
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
@@ -112,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
         try {
-            await executeAssistantCommand.execute(context);
+            await executeAIAssistant.execute(context);
         } catch (error: any) {
             vscode.window.showErrorMessage(`Error: ${error?.message}`);
         }

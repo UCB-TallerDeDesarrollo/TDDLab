@@ -12,7 +12,7 @@ export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<Execut
 
   private loadFeatureConfig(): void {
     try {
-      const configPath = path.join(this.context.extensionPath, 'resources', 'features.json');
+      const configPath = path.join(this.context.extensionPath, 'resources', 'VSCodeExtensionFeatures.json');
       const rawData = fs.readFileSync(configPath, 'utf8');
       this.features = JSON.parse(rawData);
     } catch (error) {
