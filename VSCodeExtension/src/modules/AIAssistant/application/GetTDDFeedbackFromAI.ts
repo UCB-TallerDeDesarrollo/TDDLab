@@ -1,19 +1,17 @@
 import AIAssistantRepository from "../repositories/AIAssistantRepository";
-import TDDLogRepository from "../repositories/TDDLogRepository";
-import PromptRepository from "../repositories/PromptRepository";
+import FileRepository from "../repositories/FileRepository";
 import * as vscode from "vscode";
 
 export class GetTDDFeedbackFromAI {
   constructor(
-    private readonly tDDLogRepository: TDDLogRepository = new TDDLogRepository(),
-    private readonly promptRepository: PromptRepository = new PromptRepository(),
+    private readonly fileRepository: FileRepository = new FileRepository(),
     private readonly aIAssistantRepository: AIAssistantRepository = new AIAssistantRepository()
   ) {}
 
   public async fetchResponse(context: vscode.ExtensionContext) {
     try {
-      const responseFromTDDLogRepository = this.tDDLogRepository.getTDDLog();
-      const responseFromPromptRepository = this.promptRepository.getPrompt(context);
+      const responseFromTDDLogRepository = this.fileRepository.getTDDLog();
+      const responseFromPromptRepository = this.fileRepository.getPrompt();
       const responseFromAIAssistantRepository =
         await this.aIAssistantRepository.getTDDFeedbackFromAI(
           responseFromTDDLogRepository,
