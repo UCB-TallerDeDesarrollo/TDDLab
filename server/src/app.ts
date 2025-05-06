@@ -11,16 +11,19 @@ import teacherCommentsOnSubmissionRouter from "./routes/teacherCommentsOnSubmiss
 import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
-
-
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
+import chatbotRouter from "./routes/chatbotRoutes";  // Import the chatbot routes
 
 const app = express();
 const port = 3000;
+
 // Enable CORS for all routes
 app.use(cors());
+app.use(express.json()); 
 
 app.use(bodyParser.json());
+
+// Define routes
 app.use("/api/user", router);
 app.use("/api/assignments", assignmentsRouter);
 app.use("/api/TDDCycles", TDDCyclesRouter);
@@ -32,7 +35,10 @@ app.use("/api/practiceSubmissions", practiceSubmissionsRouter);
 app.use("/api/AIAssistant", aiAssistantRouter);
 
 
+app.use("/api/chat", chatbotRouter);  // Use the chatbot routes under /api
+
 app.use("/api/featureFlags", featureFlagsRouter);
 
+// Start the server
 server(app, port);
 export default app;
