@@ -27,6 +27,11 @@ export default function ConfigPage() {
   }, []);
 
   const handleCheckboxChange = async (id: number, currentValue: boolean) => {
+    const confirmChange = window.confirm(
+      `¿Estás seguro de que quieres ${!currentValue ? "habilitar" : "deshabilitar"} esta funcionalidad?`
+    );
+
+    if (!confirmChange) return;
     try {
       const updated = await axios.put(`${VITE_API}/featureflags/${id}`, {
         is_enabled: !currentValue,
