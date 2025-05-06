@@ -25,7 +25,7 @@ import UsersByGroupPage from "./sections/User/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
-
+import SettingsPage from "./sections/Settings/SettingsPage";
 
 const navArrayLinks = [
   {
@@ -185,6 +185,15 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
+
+        <Route
+          path="/configuraciones"
+          element={
+            <ProtectedRouteComponent>
+              <SettingsPage />
+            </ProtectedRouteComponent>
+         }
+       /> 
 
       </Routes>
     </Router>
