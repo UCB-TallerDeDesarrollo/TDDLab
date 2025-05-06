@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { VITE_API } from "../../../config";
 
 type FeatureFlag = {
   id: number;
@@ -14,7 +15,7 @@ export default function ConfigPage() {
   useEffect(() => {
     const fetchFlags = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/featureflags");
+        const response = await axios.get(`${VITE_API}/featureflags`);
         setFlags(response.data);
       } catch (err) {
         console.error("Error al cargar los flags", err);
@@ -27,7 +28,7 @@ export default function ConfigPage() {
 
   const handleCheckboxChange = async (id: number, currentValue: boolean) => {
     try {
-      const updated = await axios.put(`http://localhost:3000/api/featureflags/${id}`, {
+      const updated = await axios.put(`${VITE_API}/featureflags/${id}`, {
         is_enabled: !currentValue,
       });
 
