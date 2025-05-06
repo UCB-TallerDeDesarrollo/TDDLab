@@ -31,7 +31,7 @@ export class AIAssistantRepository {
         return 'interpreta el siguiente código';
     }
 
-    private async executePostRequest(code: string, instruction: string): Promise<string> {
+    private async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
             const userContent = `${instruction}\n\n${code}`;
             const response = await axios.post(
@@ -66,7 +66,7 @@ export class AIAssistantRepository {
 
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         const newInstruction = this.buildPromt(instruction.value);
-        const raw = await this.executePostRequest(instruction.URL, newInstruction);
+        const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
         return this.mapToAIAssistantAnswer(raw);
     }
 }
