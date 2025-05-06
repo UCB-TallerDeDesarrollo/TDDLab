@@ -30,6 +30,21 @@ export class AIAssistantRepository {
         return 'interpreta el siguiente código';
     }
 
+    public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
+        const tddlogString = JSON.stringify(tddlog, null, 2);
+        
+        return `<|system|>
+                Eres un experto en TDD y análisis de código. Analiza el siguiente archivo según las instrucciones proporcionadas.
+                </s>
+                <|user|>
+                ${promptInstructions}
+                
+                Este es el archivo a analizar:
+                ${tddlogString}
+                </s>
+                <|assistant|>`;
+    }
+
     private async executePostRequest(code: string, instruction: string): Promise<string> {
         try {
             const response = await fetch(this.apiUrl, {
