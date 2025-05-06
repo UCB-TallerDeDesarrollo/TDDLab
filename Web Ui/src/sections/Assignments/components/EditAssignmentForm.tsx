@@ -120,8 +120,15 @@ function EditAssignmentDialog({
             variant="outlined"
             size="small"
             required
+            fullWidth 
             onChange={(e) => setTitle(e.target.value)}
             defaultValue={currentTitle}
+            sx={{
+              marginTop: 2, 
+              "& .MuiInputBase-input": {
+                paddingTop: "14px",
+              },
+            }}
           />
           <TextField
             id="descripcion"
@@ -129,6 +136,9 @@ function EditAssignmentDialog({
             variant="outlined"
             size="small"
             required
+            multiline
+            fullWidth
+            rows={4}
             sx={{
               "& label.Mui-focused": {
                 color: "#001F3F",
