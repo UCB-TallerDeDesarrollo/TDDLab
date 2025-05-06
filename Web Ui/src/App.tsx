@@ -40,16 +40,16 @@ const navArrayLinks = [
     access: ["admin", "student", "teacher"],
   },
   {
-    title: "Usuarios",
-    path: "/user",
-    icon: <PersonIcon />,
-    access: ["admin", "teacher"],
-  },
-  {
     title: "Mis Practicas",
     path: "/mis-practicas",
     icon: <NoteAdd />,
     access: ["admin", "teacher", "student"],
+  },
+  {
+    title: "Usuarios",
+    path: "/user",
+    icon: <PersonIcon />,
+    access: ["admin", "teacher"],
   },
 ];
 
