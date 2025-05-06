@@ -12,4 +12,9 @@ aiAssistantRouter.post(
     async (req, res) => await aiAssistantController.analyzeOrRefactor(req, res)
 );
 
+aiAssistantRouter.post(
+    '/analyze-tdd-extension',
+    async (req, res) => await aiAssistantController.analyzeTDDFromExtension(req, res)
+);
+
 export default aiAssistantRouter;
