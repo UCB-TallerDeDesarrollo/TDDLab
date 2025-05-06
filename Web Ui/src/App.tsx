@@ -10,6 +10,7 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings"; 
 import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
@@ -50,6 +51,12 @@ const navArrayLinks = [
     path: "/user",
     icon: <PersonIcon />,
     access: ["admin", "teacher"],
+  },
+  {
+    title: "Configuraciones",
+    path: "/configuraciones",
+    icon: <SettingsIcon />,
+    access: ["admin", "teacher"], 
   },
 ];
 
