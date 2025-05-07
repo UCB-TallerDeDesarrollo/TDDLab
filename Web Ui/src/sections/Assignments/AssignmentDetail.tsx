@@ -54,7 +54,7 @@ import {
 
 interface AssignmentDetailProps {
   role: string;
-  userid: number;
+  userid: number; 
 }
 
 function isStudent(role: string) {
