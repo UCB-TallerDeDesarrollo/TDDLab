@@ -4,19 +4,19 @@ import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAs
 import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/getPromptsCodeUseCases';
 import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
 import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
-import { ChatbotUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotUseCase';
+import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
 export default class AIAssistantController {
 
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
     private readonly getPromptsUseCase: GetPromptsCodeUseCase;
     private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
-    private readonly chatbotUseCase: ChatbotUseCase;
+    private readonly chatbotCodeUseCase: ChatbotCodeUseCase;
 
     constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
-        this.chatbotUseCase = new ChatbotUseCase(repository);
+        this.chatbotCodeUseCase = new ChatbotCodeUseCase(repository);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -72,7 +72,7 @@ export default class AIAssistantController {
         }
 
         try {
-            const response = await this.chatbotUseCase.execute(userInput);
+            const response = await this.chatbotCodeUseCase.execute(userInput);
             res.json({ response });
         } catch (err) {
             res.status(500).json({ error: 'Error procesando la solicitud del chatbot' });
