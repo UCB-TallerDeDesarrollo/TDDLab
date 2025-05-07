@@ -122,9 +122,10 @@ return (
         buttonText="Evaluar la aplicación de Refactoring"
       />
     </div>
+    <div style={{ margin: '20px 0' }}></div>
     {/* Sección del Chatbot */}
     <Paper elevation={3} style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
-      <Typography variant="h6" gutterBottom>Chatbot Asistente</Typography>
+      <Typography variant="h6" gutterBottom>TDD Buddy</Typography>
 
       <Box
         style={{
