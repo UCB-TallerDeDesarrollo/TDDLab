@@ -235,11 +235,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         const data = await response.json();
         setShowIAButton(data.is_enabled === true);
       } catch (error) {
-        
         console.error("Error consultando el feature flag:", error);
       }
     }
-
     fetchFeatureFlag();
   }, [role]);
 
@@ -710,7 +708,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Subir sesión TDD extension
               </Button>
             )}
-            {isStudent(role) && (
+            {isStudent(role) && showIAButton && (
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
