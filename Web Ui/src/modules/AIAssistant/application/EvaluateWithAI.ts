@@ -9,12 +9,12 @@ export class EvaluateWithAI {
     this.aIAssistantInterface = new AIAssistantRepository();
   }
 
-  async execute(repoUrl: string, type: "Evaluar la aplicación de TDD" | "Evaluar la aplicación de Refactoring"): Promise<string> {
+  async execute(repoUrl: string, type: "analiza" | "refactoriza"): Promise<string> {
     const request: AIRequest = {
       query: type,
       repoUrl: repoUrl
     };
-    
+
     const response = await this.aIAssistantInterface.sendQuery(request);
     return response.result;
   }
