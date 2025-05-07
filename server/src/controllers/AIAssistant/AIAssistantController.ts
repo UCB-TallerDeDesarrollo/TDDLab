@@ -29,6 +29,7 @@ export default class AIAssistantController {
             const result = await this.analyzeOrRefactorUseCase.execute(instruction);
             res.json(result);
         } catch (err) {
+            console.error("Error en analyzeOrRefactor:", err);
             res.status(500).json({ error: 'Error procesando el prompt' });
         }
     }
@@ -38,6 +39,7 @@ export default class AIAssistantController {
             const prompts = await this.getPromptsUseCase.execute();
             res.status(200).json(prompts);
         } catch (error) {
+            console.error("Error en getPrompts:", err);
             res.status(500).json({ error: "Server error" });
         }
     }
@@ -57,6 +59,7 @@ export default class AIAssistantController {
             );
             res.status(200).json(updatePrompts);
         } catch (error) {
+            console.error("Error en updatePrompts:", err);
             res.status(500).json({ error: "Server error" });
         }
     }
