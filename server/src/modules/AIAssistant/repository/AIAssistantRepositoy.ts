@@ -1,10 +1,14 @@
+import axios from 'axios';
 import dotenv from 'dotenv';
 import { AIAssistantAnswerObject, AIAssistantInstructionObject } from '../domain/AIAssistant';
 
 dotenv.config();
+const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
+
 
 export class AIAssistantRepository {
-    private readonly apiUrl = process.env.LLM_API_URL!;
+    private readonly apiKey = process.env.TOGETHER_API_KEY;
+    private readonly apiUrl = process.env.LLM_API_URL || '';
 
     private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
         if (!data) {
@@ -15,11 +19,8 @@ export class AIAssistantRepository {
             return { result: `Error del modelo: ${data.error}` };
         }
     
-        if (!data.result) {
-            return { result: 'La respuesta del modelo no fue valida o no contenia informacion' };
-        }
     
-        return { result: data.result };
+        return { result: data };
     }
     
 
@@ -30,20 +31,33 @@ export class AIAssistantRepository {
         return 'interpreta el siguiente código';
     }
 
-    private async executePostRequest(code: string, instruction: string): Promise<string> {
+    private async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
-            const response = await fetch(this.apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code, instruction }),
-            });
+            const userContent = `${instruction}\n\n${code}`;
+            const response = await axios.post(
+                this.apiUrl || (() => { throw new Error('LLM_API_URL no está definido'); })(),
+                {
+                    model: MODEL,
+                    messages: [
+                        { role: 'system', content: 'Eres un experto en desarrollo de software.' },
+                        { role: 'user', content: userContent }
+                    ],
+                    temperature: 0.2,
+                    max_tokens: 1024
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
 
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+            if (!response.data || !response.data.choices || !response.data.choices[0].message.content) {
+                throw new Error('No se recibió una respuesta válida del modelo.');
             }
 
-            const data = await response.json();
-            return data;
+            return response.data.choices[0].message.content;
         } catch (error) {
             console.error('[LLM ERROR]', error);
             return 'Error al comunicarse con el modelo.';
@@ -52,7 +66,7 @@ export class AIAssistantRepository {
 
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         const newInstruction = this.buildPromt(instruction.value);
-        const raw = await this.executePostRequest(instruction.URL, newInstruction);
+        const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
         return this.mapToAIAssistantAnswer(raw);
     }
 }
