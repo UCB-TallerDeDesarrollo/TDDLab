@@ -28,12 +28,12 @@ export class AIAssistantRepository {
         if (!data) {
             return { result: 'No se recibio ninguna respuesta del modelo.' };
         }
-    
+
         if (data.error) {
             return { result: `Error del modelo: ${data.error}` };
         }
-    
-    
+
+
         return { result: data };
     }
 
@@ -42,7 +42,7 @@ export class AIAssistantRepository {
             analysis_tdd: row.analysis_tdd,
             refactoring: row.refactoring,
         };
-      }
+    }
 
     private buildPromt(instructionValue: string): string {
         const lower = instructionValue.toLowerCase();
@@ -100,5 +100,27 @@ export class AIAssistantRepository {
             return this.mapRowToPromptAIAssistant(rows[0]);
         }
         return null;
-      }
+    }
+
+    public async updatePrompts(prompt: AIAssistantPromptObject): Promise<AIAssistantPromptObject | null> {
+        const {
+            analysis_tdd,
+            refactoring
+        } = prompt;
+
+        const query = `UPDATE prompts_ia SET analysis_tdd = $1, refactoring = $2 WHERE id = $3 RETURNING analysis_tdd, refactoring`;
+        const values = [
+            analysis_tdd,
+            refactoring,
+            1
+        ];
+
+        const rows = await this.executeQuery(query, values);
+
+        if (rows.length === 1) {
+            return this.mapRowToPromptAIAssistant(rows[0]);
+        }
+
+        return null;
+    }
 }
