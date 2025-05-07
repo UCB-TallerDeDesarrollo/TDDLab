@@ -7,12 +7,40 @@ export class AIAssistantPanel {
   private readonly context: vscode.ExtensionContext;
   private readonly feedbackAssistant: GetTDDFeedbackFromAI =
     new GetTDDFeedbackFromAI();
+  private static instance: AIAssistantPanel | undefined;
 
-  constructor(context: vscode.ExtensionContext) {
+  public static getInstance(context: vscode.ExtensionContext): AIAssistantPanel {
+    if (!AIAssistantPanel.instance) {
+      AIAssistantPanel.instance = new AIAssistantPanel(context);
+    }
+    return AIAssistantPanel.instance;
+  }
+
+  private constructor(context: vscode.ExtensionContext) {
     this.context = context;
 
-    // Crear el panel solo si no está ya creado
-    if (!this.panel) {
+    // Crear el panel
+    this.panel = vscode.window.createWebviewPanel(
+      "aiPanel",
+      "Asistente de IA",
+      vscode.ViewColumn.Beside,
+      { enableScripts: true }
+    );
+
+    this.panel.onDidDispose(() => {
+      // Limpiar la referencia cuando el panel se cierre
+      this.panel = undefined;
+      AIAssistantPanel.instance = undefined; // Limpiar la instancia
+    });
+
+    this.update(); // Actualiza el contenido del panel
+  }
+
+  public reveal() {
+    if (this.panel) {
+      this.panel.reveal(vscode.ViewColumn.Beside);
+    } else {
+      // Si el panel no existe (porque se cerró), crearlo de nuevo
       this.panel = vscode.window.createWebviewPanel(
         "aiPanel",
         "Asistente de IA",
@@ -21,17 +49,18 @@ export class AIAssistantPanel {
       );
 
       this.panel.onDidDispose(() => {
-        // Limpiar la referencia cuando el panel se cierre
         this.panel = undefined;
+        AIAssistantPanel.instance = undefined;
       });
-
-      this.update(); // Actualiza el contenido del panel
+      this.update();
     }
   }
 
-  public reveal() {
+  public dispose() {
     if (this.panel) {
-      this.panel.reveal(vscode.ViewColumn.Beside);
+      this.panel.dispose();
+      this.panel = undefined;
+      AIAssistantPanel.instance = undefined;
     }
   }
 
