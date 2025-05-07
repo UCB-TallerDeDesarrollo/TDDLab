@@ -1,16 +1,16 @@
 import { AIAssistantPromptObject } from "../../domain/AIAssistant";
 import { AIAssistantDataBaseRepository } from "../../repository/AiAssistantDataBaseRepository";
 
-export class GetPromptsCodeUseCase {
+export class UpdatePromptsCodeUseCase {
     private readonly adapter: AIAssistantDataBaseRepository;
 
     constructor(adapter: AIAssistantDataBaseRepository) {
         this.adapter = adapter;
     }
 
-    async execute(): Promise<AIAssistantPromptObject | null> {
+    async execute(prompt: AIAssistantPromptObject): Promise<AIAssistantPromptObject | null> {
         try {
-            const prompts = await this.adapter.getPrompts();
+            const prompts = await this.adapter.updatePrompts(prompt);
             return prompts;
         } catch (err) {
             console.log("Error");
