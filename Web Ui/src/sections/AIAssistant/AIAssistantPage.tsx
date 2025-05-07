@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Typography, Box, Button, CircularProgress, TextField, Paper } from '@mui/material';
 import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
-import { ChatbotService } from '../../modules/AIAssistant/application/ChatbotService';
+import { ChatbotUseCase } from '../../modules/AIAssistant/application/ChatbotUseCase';
 import AIResultSection from './components/AIResultSection';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as generateUniqueId } from 'uuid';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
-const chatbotService = new ChatbotService();
+const chatbotUseCase = new ChatbotUseCase();
 
 const AIAssistantPage = () => {
   const location = useLocation();
@@ -51,11 +51,11 @@ const AIAssistantPage = () => {
     if (!userMessage.trim()) return;
     setLoadingChat(true);
 
-    const newMessages = [...messages, { id: uuidv4(), from: 'user', text: userMessage }];
+    const newMessages = [...messages, { id: generateUniqueId(), from: 'user', text: userMessage }];
     setMessages(newMessages);
 
     try {
-      const botReply = await chatbotService.sendMessage(userMessage);
+      const botReply = await chatbotUseCase.sendMessage(userMessage);
       setMessages([...newMessages, { from: 'bot', text: botReply }]);
     } catch (error) {
       console.error("Error al enviar mensaje al chatbot:", error);

@@ -3,7 +3,7 @@ import { VITE_API } from "../../../../config";
 
 const API_URL = VITE_API + "/AIAssistant/chatbot";
 
-export class ChatbotAPI {
+export class ChatbotRepository {
   async sendMessage(message: string): Promise<string> {
     try {
       const response = await axios.post(API_URL, { input: message });
