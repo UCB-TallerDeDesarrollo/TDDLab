@@ -2,15 +2,22 @@ import { Request, Response } from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
 import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAssistantRepositoy';
 import { AnalyzeTDDUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeTDDUseCase';
+import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/getPromptsCodeUseCases';
+import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
+import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 
 export default class AIAssistantController {
 
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
     private readonly analyzeTDDUseCase: AnalyzeTDDUseCase;
+    private readonly getPromptsUseCase: GetPromptsCodeUseCase;
+    private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
 
-    constructor(repository: AIAssistantRepository) {
+    constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
         this.analyzeTDDUseCase = new AnalyzeTDDUseCase(repository);
+        this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
+        this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -59,6 +66,31 @@ export default class AIAssistantController {
                 error: "Error al analizar el código",
                 details: errorMessage 
             });
+    async getPrompts(_req: Request, res: Response): Promise<void> {
+        try {
+            const prompts = await this.getPromptsUseCase.execute();
+            res.status(200).json(prompts);
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    }
+
+    async updatePrompts(_req: Request, res: Response): Promise<void> {
+        const {
+            analysis_tdd,
+            refactoring
+        } = _req.body;
+
+        try {
+            const updatePrompts = await this.updatePromptsUseCase.execute(
+                {
+                    analysis_tdd,
+                    refactoring
+                }
+            );
+            res.status(200).json(updatePrompts);
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
         }
     }
 }
