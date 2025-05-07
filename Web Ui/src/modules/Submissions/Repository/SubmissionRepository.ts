@@ -23,7 +23,6 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
                 // Manejar el error 404 sin mostrarlo en la consola
                 return Promise.resolve({ hasStarted: false });
             }
-            // Manejar otros errores sin mostrarlos en la consola
             throw error;
         }
     }
@@ -37,7 +36,6 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
                 throw new Error("Failed to get submissions by assignment ID");
             }
         } catch (error) {
-            //console.error("Error getting submissions by assignment ID:", error);
             throw error;
         }
     }
@@ -59,10 +57,8 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
-                // Manejar el error 404 sin mostrarlo en la consola
                 return Promise.reject(new Error("Submission not found"));
             }
-            // Manejar otros errores sin mostrarlos en la consola
             return Promise.reject(error);
         }
     }

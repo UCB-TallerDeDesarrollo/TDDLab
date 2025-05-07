@@ -100,13 +100,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
 
                 if (assignmentid < 0 || userid < 0) {
-                    return; // Validación silenciosa
+                    return;
                 }
 
                 const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
                 setSubmission(fetchedSubmission);
             } catch (error) {
-                // Manejar el error sin mostrarlo en la consola
                 if (error instanceof Error && error.message === "Submission not found") {
                     setSubmissionsError("No se encontró la entrega.");
                 } else {
@@ -161,7 +160,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                         [userid]: !!response.hasStarted,
                     }));
                 } catch (error) {
-                    // Manejar el error sin mostrarlo en la consola
                     setSubmissionsError("Error verificando el estado de la entrega.");
                 }
             }
@@ -187,12 +185,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               assignmentid
             );
           setSubmissions(fetchedSubmissions);
-          //console.log("Lista de submissions: ", fetchedSubmissions);
         } catch (error) {
           setSubmissionsError(
             "Error fetching submissions. Please try again later."
           );
-          //console.error("Error fetching SubmissionByAssignmentAndUser:", error);
         } finally {
           setLoadingSubmissions(false);
         }
@@ -224,7 +220,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               setStudentSubmission(userSubmission);
             }
           } catch (error) {
-            //console.error("Error fetching student submission:", error);
             throw error;
           }
         }
@@ -256,7 +251,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await createSubmission.createSubmission(submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        //console.error(error);
         throw error;
       }
     }
@@ -344,7 +338,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await finishSubmission.finishSubmission(submission.id, submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        //console.error(error);
         throw error;
       }
     }
