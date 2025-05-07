@@ -215,100 +215,93 @@ class TDDCyclesController {
     }
   }
   
-  
+  private getColor = (testEntry: any): string => {
+    if (testEntry.numTotalTests === 0) {
+      return "red";
+    } else if (testEntry.numPassedTests === testEntry.numTotalTests) {
+      return "green";
+    } else {
+      return "red";
+    }
+  };
+
+  private processTDDLogEntries(tddLog: any[], repoOwner: string, repoName: string): { entries: ITimelineEntry[], commits: string[] } {
+    const entries: ITimelineEntry[] = [];
+    const commitShas: string[] = [];
+    let lastCommitIndex = 0;
+
+    for (let i = 0; i < tddLog.length; i++) {
+      const entry = tddLog[i];
+
+      if (entry.commitId) {
+        const actualCommitSha = entry.commitId;
+        commitShas.push(actualCommitSha);
+
+        for (let j = lastCommitIndex; j < i; j++) {
+          const testEntry = tddLog[j];
+          if (testEntry.numPassedTests !== undefined && testEntry.numTotalTests !== undefined && testEntry.timestamp) {
+            const color = this.getColor(testEntry);
+            entries.push({
+              execution_id: null,
+              commit_sha: actualCommitSha,
+              execution_timestamp: new Date(testEntry.timestamp),
+              number_of_tests: testEntry.numTotalTests,
+              passed_tests: testEntry.numPassedTests,
+              color,
+              repoName,
+              repoOwner
+            });
+          }
+        }
+
+        lastCommitIndex = i + 1;
+      }
+    }
+
+    return { entries, commits: commitShas };
+  }
+
+  private determineCycleType(entries: ITimelineEntry[]): string {
+    const hasRed = entries.some(entry => entry.color === "red");
+    const lastIsGreen = entries.length > 0 && entries[entries.length - 1].color === "green";
+
+    if (hasRed && lastIsGreen) return "RojoVerde";
+    if (!lastIsGreen) return "Rojo";
+    return "Verde";
+  }
 
   async uploadTDDLog(req: Request, res: Response) {
-    
     try {
-
-      const getColor = (testEntry: any): string => {
-        if (testEntry.numTotalTests === 0) {
-          return "red";
-        } else if (testEntry.numPassedTests === testEntry.numTotalTests) {
-          return "green";
-        } else {
-          return "red";
-        }
-      };
-
       const { repoOwner, repoName, log: tddLog } = req.body;
       if (!repoOwner || !repoName || !tddLog) {
         return res.status(400).json({ error: "Faltan campos requeridos: repoOwner, repoName o log." });
       }
-      console.log("Archivo TDD log recibido", tddLog);
-      console.log("Ahora procederé a extraer los datos para insertarlos en la tabla");
-      let actualCommitSha = null;
-      let lastCommitIndex = 0;
-      const commitTimelineEntries = [];
-      //itero sobre todos los objetos del tdd log
-      for (let i = 0; i < tddLog.length; i++){
-        const entry = tddLog[i];
-        //chequeamos si el entry es un commit entry
-        if(entry.commitId){
-          actualCommitSha = entry.commitId;
-          //una vez encontrado el entry commit, chequeamos todos los commits anteriores, por lo que por ahora, hacemos otro for
-          for(let j = lastCommitIndex; j < i; j++)
-          {
-            const testEntry = tddLog[j];
-            if(testEntry.numPassedTests !== undefined && testEntry.numTotalTests !== undefined && testEntry.timestamp){
-              const color = getColor(testEntry);
-              const commitTimelineEntry: ITimelineEntry = {
-                execution_id: null, 
-                commit_sha: actualCommitSha,
-                execution_timestamp: new Date(testEntry.timestamp),
-                number_of_tests: testEntry.numTotalTests,
-                passed_tests: testEntry.numPassedTests,
-                color: color,
-                repoName,
-                repoOwner
-              };
-              commitTimelineEntries.push(commitTimelineEntry);
-            } 
-          }
-          await this.handleJobConclusionUpdate(
-            actualCommitSha,
-            repoOwner,
-            repoName,
-            commitTimelineEntries
-          ); 
 
-          const lastExecutionEntry = commitTimelineEntries[commitTimelineEntries.length - 1];
-          if (lastExecutionEntry) {
-            await this.updateTestCountIfNeeded(
-              repoOwner,
-              repoName,
-              actualCommitSha,
-              lastExecutionEntry.number_of_tests
-            );
-          }
-       
-          let tdd_cycle_entry="";
-          const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
-          const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";
-          if (hasRed && lastIsGreen) {
-            console.log("Commits con ciclos de TDD rojo - verde");
-            tdd_cycle_entry="RojoVerde";
-          }
-          else if (!lastIsGreen){
-            console.log("Commits con ultima ejecucion de pruebas rojo");
-            tdd_cycle_entry="Rojo";
-          }
-          else if(!hasRed){
-            console.log(" Commits con ejecucion de pruebas de solo verde");
-            tdd_cycle_entry="Verde";
-          }
-          try{
-            await this.dbCommitsRepository.updateTddCycle(actualCommitSha,tdd_cycle_entry); 
-          } catch (error) {
-            console.error(`Error al actualizar el commit ${actualCommitSha}: ${error}`);
-          }
-          // despues insertamos en la tabla de commits tabla 
-          // Se modificó la tabla en staging
-          lastCommitIndex = i + 1;
+      const { entries: commitTimelineEntries, commits: commitShas } = this.processTDDLogEntries(tddLog, repoOwner, repoName);
+
+      for (const commitSha of commitShas) {
+        await this.handleJobConclusionUpdate(commitSha, repoOwner, repoName, commitTimelineEntries);
+
+        const lastExecution = commitTimelineEntries
+          .filter(entry => entry.commit_sha === commitSha)
+          .at(-1);
+
+        if (lastExecution) {
+          await this.updateTestCountIfNeeded(repoOwner, repoName, commitSha, lastExecution.number_of_tests);
+        }
+
+        const tddCycle = this.determineCycleType(
+          commitTimelineEntries.filter(entry => entry.commit_sha === commitSha)
+        );
+
+        try {
+          await this.dbCommitsRepository.updateTddCycle(commitSha, tddCycle);
+        } catch (error) {
+          console.error(`Error al actualizar el commit ${commitSha}: ${error}`);
         }
       }
-      console.log("Entradas para registrar en la BD:", commitTimelineEntries);
-      await this.submitTDDLogToDB.execute(commitTimelineEntries); //anadi esta linea de codigo
+
+      await this.submitTDDLogToDB.execute(commitTimelineEntries);
 
       return res.status(200).json({ message: "Archivo TDD log procesado y registros creados", data: commitTimelineEntries });
     } catch (error) {

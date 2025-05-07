@@ -6,6 +6,7 @@ import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/dom
 import { mockArrayCommitData } from "./dataTypeMocks/commitData";
 import { mockArrayJobData } from "./dataTypeMocks/jobData";
 
+// los nombres repetidos en funciones son necesarias  , ya q pertenecen a cada clase distinta
 export class MockGithubAPI implements GithubAPIRepository {
   async obtainCommitsOfRepo(): Promise<CommitDataObject[]> {
     let commits = mockArrayCommitData;
