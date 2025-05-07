@@ -1,10 +1,10 @@
 import { AIAssistantPromptObject } from "../../domain/AIAssistant";
-import { AIAssistantRepository } from "../../repository/AIAssistantRepositoy";
+import { AIAssistantDataBaseRepository } from "../../repository/AiAssistantDataBaseRepository";
 
 export class GetPromptsCodeUseCase {
-    private readonly adapter: AIAssistantRepository;
+    private readonly adapter: AIAssistantDataBaseRepository;
 
-    constructor(adapter: AIAssistantRepository) {
+    constructor(adapter: AIAssistantDataBaseRepository) {
         this.adapter = adapter;
     }
 

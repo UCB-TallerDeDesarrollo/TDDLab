@@ -1,9 +1,11 @@
 import express from 'express';
 import { AIAssistantRepository } from '../modules/AIAssistant/repository/AIAssistantRepositoy';
 import AIAssistantController from '../controllers/AIAssistant/AIAssistantController';
+import { AIAssistantDataBaseRepository } from '../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 
 const aiAssistantRepository = new AIAssistantRepository();
-const aiAssistantController = new AIAssistantController(aiAssistantRepository);
+const aiAssistantDBRepository = new AIAssistantDataBaseRepository();
+const aiAssistantController = new AIAssistantController(aiAssistantRepository, aiAssistantDBRepository);
 
 const aiAssistantRouter = express.Router();
 

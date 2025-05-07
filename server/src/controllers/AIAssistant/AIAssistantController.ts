@@ -3,6 +3,7 @@ import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/applicat
 import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAssistantRepositoy';
 import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/getPromptsCodeUseCases';
 import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
+import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 
 export default class AIAssistantController {
 
@@ -10,10 +11,10 @@ export default class AIAssistantController {
     private readonly getPromptsUseCase: GetPromptsCodeUseCase;
     private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
 
-    constructor(repository: AIAssistantRepository) {
+    constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
-        this.getPromptsUseCase = new GetPromptsCodeUseCase(repository);
-        this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repository);
+        this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
+        this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
