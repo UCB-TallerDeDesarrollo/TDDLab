@@ -10,13 +10,13 @@ export default class AIAssistantController {
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
     private readonly getPromptsUseCase: GetPromptsCodeUseCase;
     private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
-    private readonly chatbotCodeUseCase: ChatbotCodeUseCase;
+    private readonly chatbotUseCase: ChatbotCodeUseCase;
 
     constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
-        this.chatbotCodeUseCase = new ChatbotCodeUseCase(repository);
+        this.chatbotUseCase = new ChatbotCodeUseCase(repository);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -72,7 +72,7 @@ export default class AIAssistantController {
         }
 
         try {
-            const response = await this.chatbotCodeUseCase.execute(userInput);
+            const response = await this.chatbotUseCase.execute(userInput);
             res.json({ response });
         } catch (err) {
             res.status(500).json({ error: 'Error procesando la solicitud del chatbot' });
