@@ -79,4 +79,10 @@ export class AIAssistantRepository {
         const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
         return this.mapToAIAssistantAnswer(raw);
     }
+
+    public async sendTDDExtensionPrompt(tddlog: any, promptInstructions: string): Promise<AIAssistantAnswerObject> {
+        const prompt = this.buildPromptByTestExecuted(tddlog, promptInstructions);
+        const raw = await this.sendRequestToAIAssistant(prompt, '');
+        return this.mapToAIAssistantAnswer(raw);
+    }
 }

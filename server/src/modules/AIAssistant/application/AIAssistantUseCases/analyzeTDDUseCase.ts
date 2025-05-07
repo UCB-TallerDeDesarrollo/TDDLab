@@ -4,11 +4,7 @@ export class AnalyzeTDDUseCase {
     constructor(private readonly repository: AIAssistantRepository) {}
 
     public async execute(tddlog: any, promptInstructions: string): Promise<string> {
-        const prompt = this.repository.buildPromptByTestExecuted(tddlog, promptInstructions);
-        const response = await this.repository.sendPrompt({
-            URL: 'internal-tdd-analysis',
-            value: prompt
-        });
+        const response = await this.repository.sendTDDExtensionPrompt(tddlog, promptInstructions);
         return response.result;
     }
 }
