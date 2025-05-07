@@ -1,7 +1,7 @@
 import { ChatbotAPI } from '../repository/ChatbotRepository';
 
 export class ChatbotService {
-  private chatbotAPI: ChatbotAPI;
+  private readonly chatbotAPI: ChatbotAPI;
 
   constructor() {
     this.chatbotAPI = new ChatbotAPI();
