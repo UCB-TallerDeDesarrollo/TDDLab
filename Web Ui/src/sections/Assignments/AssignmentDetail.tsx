@@ -224,7 +224,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignmentid, userid, role]);
 
   useEffect(() => {
-    
+    const fetchFeatureFlag = async () => {
+      
+    }
   }, [role]);
   
 
