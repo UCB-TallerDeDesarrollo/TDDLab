@@ -51,6 +51,11 @@ describe('AIAssistantRepository', () => {
 
     const result = await repository.sendPrompt(instruction);
 
+    jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
+      analysis_tdd: 'fake prompt',
+      refactoring: 'fake prompt',
+    });
+
     expect(mockedAxios.post).toHaveBeenCalledWith('https://fake-api.com', expectedPayload, {
       headers: {
         Authorization: `Bearer apíkey`,
@@ -78,6 +83,12 @@ describe('AIAssistantRepository', () => {
     };
 
     const result = await repository.sendPrompt(instruction);
+
+    jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
+      analysis_tdd: 'fake prompt',
+      refactoring: 'fake prompt',
+    });
+
     expect(result).toEqual({
       result: 'Error al comunicarse con el modelo.',
     });
