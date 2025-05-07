@@ -1,19 +1,25 @@
 import AIAssistantController from '../../src/controllers/AIAssistant/AIAssistantController';
 import { Request, Response } from 'express';
 import { AIAssistantRepository } from '../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
+import { AIAssistantDataBaseRepository } from '../../src/modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 
 describe('AIAssitantController', () => {
   let controller: AIAssistantController;
   let req: Partial<Request>;
   let res: Partial<Response>;
   let mockAiAssistantRepository: AIAssistantRepository;
+  let mockAiAssistantDBRepository: AIAssistantDataBaseRepository;
 
   beforeEach(() => {
     mockAiAssistantRepository = {
       sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del Asistente' }),
     } as unknown as AIAssistantRepository;
 
-    controller = new AIAssistantController(mockAiAssistantRepository);
+    mockAiAssistantDBRepository = {
+      sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del Asistente' }),
+    } as unknown as AIAssistantDataBaseRepository;
+
+    controller = new AIAssistantController(mockAiAssistantRepository, mockAiAssistantDBRepository);
 
     req = {
       body: {

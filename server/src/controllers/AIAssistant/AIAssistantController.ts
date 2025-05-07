@@ -3,19 +3,20 @@ import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/applicat
 import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAssistantRepositoy';
 import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/getPromptsCodeUseCases';
 import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
+import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
 export default class AIAssistantController {
 
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
     private readonly getPromptsUseCase: GetPromptsCodeUseCase;
     private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
-    private readonly chatbotUseCase: ChatbotCodeUseCase;  
+    private readonly chatbotUseCase: ChatbotCodeUseCase;
 
-    constructor(repository: AIAssistantRepository) {
+    constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
-        this.getPromptsUseCase = new GetPromptsCodeUseCase(repository);
-        this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repository);
-        this.chatbotUseCase = new ChatbotCodeUseCase(repository); 
+        this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
+        this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
+        this.chatbotUseCase = new ChatbotCodeUseCase(repository);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -71,7 +72,6 @@ export default class AIAssistantController {
         }
 
         try {
-            // Usamos el chatbotUseCase para obtener la respuesta del chatbot
             const response = await this.chatbotUseCase.execute(userInput);
             res.json({ response });
         } catch (err) {
