@@ -642,7 +642,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
                   if (studentSubmission?.repository_link) {
-                    handleRedirectStudent(studentSubmission.repository_link, navigate);
+                    handleRedirectStudent(studentSubmission.repository_link,studentSubmission.id,navigate)
                   }
                 }}
                 color="primary"
