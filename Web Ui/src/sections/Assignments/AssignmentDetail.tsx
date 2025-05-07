@@ -223,6 +223,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     fetchStudentSubmission();
   }, [assignmentid, userid, role]);
 
+  useEffect(() => {
+    
+  }, [role]);
+  
+
   const handleSendGithubLink = async (repository_link: string) => {
     console.log("I will print the json log") //delete later
     if (assignmentid) { //means if the assignment id is in memory or somthn
