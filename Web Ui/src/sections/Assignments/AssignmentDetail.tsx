@@ -91,6 +91,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
+  const [showIAButton, setShowIAButton] = useState(false);
 
   useEffect(() => {
     const submissionRepository = new SubmissionRepository();
