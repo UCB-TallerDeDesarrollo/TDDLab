@@ -228,6 +228,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       if (!isStudent(role)) return;
       try {
         const response = await fetch("/feature-flags/name/IA_ASSISTANT");
+        if (!response.ok) {
+          console.error("No se pudo obtener el feature flag");
+          return;
+        }
       } catch (error) {
         console.error("Error consultando el feature flag:", error);
       }
