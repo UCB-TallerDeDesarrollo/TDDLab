@@ -1,7 +1,6 @@
 import { AIAssistantRepository } from '../../../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
 import { AIAssistantInstructionObject } from '../../../../src/modules/AIAssistant/domain/AIAssistant';
 import axios from 'axios';
-import { AIAssistantDataBaseRepository } from '../../../../src/modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 
 jest.mock('axios');
 
@@ -23,9 +22,8 @@ describe('AIAssistantRepository', () => {
     });
 
     const repository = new AIAssistantRepository();
-    const repositoryDB = new AIAssistantDataBaseRepository();
 
-    jest.spyOn(repositoryDB, 'getPrompts').mockResolvedValue({
+    jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
       analysis_tdd: 'Evalúa la cobertura de pruebas y si se aplican principios de TDD. ¿Qué áreas podrían mejorarse?',
       refactoring: 'irrelevante',
     });
@@ -51,11 +49,6 @@ describe('AIAssistantRepository', () => {
 
     const result = await repository.sendPrompt(instruction);
 
-    jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
-      analysis_tdd: 'fake prompt',
-      refactoring: 'fake prompt',
-    });
-
     expect(mockedAxios.post).toHaveBeenCalledWith('https://fake-api.com', expectedPayload, {
       headers: {
         Authorization: `Bearer apíkey`,
@@ -68,9 +61,8 @@ describe('AIAssistantRepository', () => {
 
   it('debería retornar mensaje de error si el fetch falla', async () => {
     const repository = new AIAssistantRepository();
-    const repositoryDB = new AIAssistantDataBaseRepository();
 
-    jest.spyOn(repositoryDB, 'getPrompts').mockResolvedValue({
+    jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
       analysis_tdd: 'fake prompt',
       refactoring: 'fake prompt',
     });
@@ -83,11 +75,6 @@ describe('AIAssistantRepository', () => {
     };
 
     const result = await repository.sendPrompt(instruction);
-
-    jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
-      analysis_tdd: 'fake prompt',
-      refactoring: 'fake prompt',
-    });
 
     expect(result).toEqual({
       result: 'Error al comunicarse con el modelo.',
