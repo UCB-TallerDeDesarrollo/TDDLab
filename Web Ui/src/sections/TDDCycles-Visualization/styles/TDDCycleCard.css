@@ -8,21 +8,21 @@
   border-radius: 6px;
   background-color: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  width: 70vw; 
+  width: 65vw; 
   height: 26.2vh;
 }
 
 .cycleCardContainer span {
   font-size: 18px;
   font-weight: 600;
-  margin-right: 80px;
+  margin-right: 50px;
 }
 
 .commit-stats {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: auto;
+  margin-right: 10%;
   padding: 12px;
 }
 .commit-date-item{
@@ -53,10 +53,10 @@
   background-color: #0366d6;
   color: #fff;
   text-decoration: none;
+  text-align: center;
   border-radius: 4px;
   transition: background-color 0.3s ease;
-  margin-left: 12px;
-  width: calc(4vw + 10px);
+  width: calc(4vw + 15px);
 }
 
 .commit-link:hover {
@@ -111,7 +111,7 @@
 .cycleCardContainer span.title {
   font-size: 18px;
   font-weight: 600;
-  margin-right: 40px;
+  margin-right: 30px;
   width: calc(24vw + 10px);
 }
 

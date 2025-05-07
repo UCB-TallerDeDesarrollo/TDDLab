@@ -1,15 +1,10 @@
+import { ComplexityObject } from "./ComplexityInterface";
 import { CommitDataObject } from "./githubCommitInterfaces";
+import { CommitCycle } from "./TddCycleInterface";
 
 export interface GithubAPIRepository {
-  obtainCommitsOfRepo(
-    owner: string,
-    repoName: string,
-  ): Promise<CommitDataObject[]>;
-
-  obtainRunsOfGithubActions(owner: string, repoName: string): any;
-
-  obtainJobsOfRepo(owner: string, repoName: string): any;
-  obtainComplexityOfRepo(owner:string, repoName: string): any;
-
-  obtainCommitTddCycle(owner:string, repoName: string): any;
+  obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]>;
+  obtainUserName(owner: string): Promise<string>;
+  obtainComplexityOfRepo(owner: string, repoName: string): Promise<ComplexityObject[]>;
+  obtainCommitTddCycle(owner: string, repoName: string): Promise<CommitCycle[]>;
 }

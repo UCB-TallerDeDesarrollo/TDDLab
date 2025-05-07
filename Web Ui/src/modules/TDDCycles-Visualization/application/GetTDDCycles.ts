@@ -1,7 +1,6 @@
 import { ComplexityObject } from "../domain/ComplexityInterface";
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
-import { JobDataObject } from "../domain/jobInterfaces";
 import { CommitCycle } from "../domain/TddCycleInterface";
 
 export class PortGetTDDCycles {
@@ -17,12 +16,6 @@ export class PortGetTDDCycles {
     return await this.adapter.obtainCommitsOfRepo(owner, repoName);
   }
 
-  async obtainJobsData(
-    owner: string,
-    repoName: string,
-  ): Promise<JobDataObject[]> {
-    return await this.adapter.obtainJobsOfRepo(owner, repoName);
-  }
   async obtainComplexityData(
     owner: string,
     repoName: string,
@@ -35,6 +28,24 @@ export class PortGetTDDCycles {
     repoName: string,
   ): Promise<CommitCycle[]> {
     return await this.adapter.obtainCommitTddCycle(owner, repoName);
+  }
+  
+  // Método auxiliar para determinar el estado de un commit basado en su cobertura
+  // Esto reemplaza la necesidad de jobsByCommit
+  getCommitStatus(commit: CommitDataObject): { status: string; color: string } {
+    if (commit.coverage !== null && commit.coverage !== undefined) {
+      return { status: "success", color: "green" };
+    } else if (this.containsRefactor(commit.commit.message)) {
+      return { status: "refactor", color: "blue" };
+    } else {
+      return { status: "failed", color: "red" };
+    }
+  }
+  
+  // Método auxiliar para verificar si un commit es de refactorización
+  containsRefactor(commitMessage: string): boolean {
+    const regex = /\brefactor(\w*)\b/i;
+    return regex.test(commitMessage);
   }
 }
 

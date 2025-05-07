@@ -1,83 +1,86 @@
 import { ComplexityObject } from "../../../../src/modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import { GithubAPIRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { JobDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { mockArrayCommitData } from "./dataTypeMocks/commitData";
-import { mockArrayJobData } from "./dataTypeMocks/jobData";
+import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";
+
+// Función para convertir CommitData al formato CommitDataObject para mantener compatibilidad
+export function convertToCommitDataObject(commitData: CommitData): CommitDataObject {
+  return {
+    html_url: commitData.html_url || "", // Aseguramos que nunca sea undefined
+    sha: commitData.sha,
+    stats: {
+      total: commitData.stats.total,
+      additions: commitData.stats.additions,
+      deletions: commitData.stats.deletions
+    },
+    commit: {
+      date: commitData.commit.date,
+      message: commitData.commit.message,
+      url: commitData.commit.url,
+      comment_count: commitData.commit.comment_count || 0
+    },
+    coverage: commitData.coverage,
+    test_count: commitData.test_count
+  };
+}
 
 export class MockGithubAPI implements GithubAPIRepository {
-  async obtainCommitsOfRepo(): Promise<CommitDataObject[]> {
-    let commits = mockArrayCommitData;
-    return commits;
-  }
-  obtainRunsOfGithubActions(): any {
-    return {};
+  async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
+    // Convertimos nuestros datos al formato esperado por la interfaz
+    return mockCommitDataArray.map(convertToCommitDataObject);
   }
 
-  async obtainJobsOfRepo(): Promise<JobDataObject[]> {
-    let jobs: JobDataObject[] = mockArrayJobData;
-
-    return jobs;
-  }
-  async obtainComplexityOfRepo(): Promise<ComplexityObject[]> {
-    let jobs: ComplexityObject[] = [];
-
-    return jobs;
+  async obtainUserName(_owner: string): Promise<string> {
+    return "MockUsername";
   }
 
-  async obtainCommitTddCycle(): Promise<CommitCycle[]> {
-    let commitscycles: CommitCycle[] = [];
-    return commitscycles;
+  async obtainComplexityOfRepo(_owner: string, _repoName: string): Promise<ComplexityObject[]> {
+    let complexity: ComplexityObject[] = [];
+    return complexity;
+  }
+
+  async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
+    let commitCycles: CommitCycle[] = [];
+    return commitCycles;
   }
 }
 
 export class MockGithubAPIEmpty implements GithubAPIRepository {
-  async obtainCommitsOfRepo(): Promise<CommitDataObject[]> {
+  async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     let commits: CommitDataObject[] = [];
     return commits;
   }
-  obtainRunsOfGithubActions(): any {
-    return {};
+
+  async obtainUserName(_owner: string): Promise<string> {
+    return "";
   }
 
-  async obtainJobsOfRepo(): Promise<JobDataObject[]> {
-    let jobs: JobDataObject[] = [];
-
-    return jobs;
-  }
-  async obtainComplexityOfRepo(): Promise<ComplexityObject[]> {
-    let jobs: ComplexityObject[] = [];
-
-    return jobs;
+  async obtainComplexityOfRepo(_owner: string, _repoName: string): Promise<ComplexityObject[]> {
+    let complexity: ComplexityObject[] = [];
+    return complexity;
   }
 
-  async obtainCommitTddCycle(): Promise<CommitCycle[]> {
-    let commitscycles: CommitCycle[] = [];
-    return commitscycles;
+  async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
+    let commitCycles: CommitCycle[] = [];
+    return commitCycles;
   }
 }
 
 export class MockGithubAPIError implements GithubAPIRepository {
-  async obtainCommitsOfRepo(): Promise<CommitDataObject[]> {
+  async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     throw new Error("no commits");
   }
-  obtainRunsOfGithubActions(): any {
-    return {};
+
+  async obtainUserName(_owner: string): Promise<string> {
+    throw new Error("no username");
   }
 
-  async obtainJobsOfRepo(): Promise<JobDataObject[]> {
-    throw new Error("no jobs");
-  }
-  async obtainComplexityOfRepo(): Promise<ComplexityObject[]> {
-    let jobs: ComplexityObject[] = [];
-
-    return jobs;
+  async obtainComplexityOfRepo(_owner: string, _repoName: string): Promise<ComplexityObject[]> {
+    throw new Error("no complexity");
   }
 
-  async obtainCommitTddCycle(): Promise<CommitCycle[]> {
-    let commitscycles: CommitCycle[] = [];
-    return commitscycles;
+  async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
+    throw new Error("no commit cycles");
   }
-  
 }

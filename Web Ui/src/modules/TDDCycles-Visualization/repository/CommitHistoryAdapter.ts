@@ -1,8 +1,6 @@
 import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
-import { JobDataObject } from "../domain/jobInterfaces.ts";
 import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
-import { formatDate } from '../application/GetTDDCycles.ts';
 import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
@@ -16,7 +14,6 @@ export class GithubAPIAdapter implements GithubAPIRepository {
     //auth: 'coloca tu token github para mas requests'
     this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
   }
-
   // Función para generar la URL del historial de commits
   private getCommitHistoryUrl(owner: string, repoName: string): string {
     return `https://raw.githubusercontent.com/${owner}/${repoName}/main/commit-history.json`;
@@ -67,10 +64,13 @@ export class GithubAPIAdapter implements GithubAPIRepository {
           date: new Date(commitData.commit.date), 
           message: commitData.commit.message,
           url: commitData.commit.url,
-          comment_count: commitData.commit.comment_count, // Este dato no está en tu JSON
+          comment_count: commitData.commit.comment_count, // No esta en mi archivo
         },
         coverage: commitData.coverage,
         test_count: commitData.test_count,
+        // Añadimos esta propiedad para compatibilidad con el código existente
+        // Representa el estado del commit basado en la cobertura
+        conclusion: commitData.coverage !== null && commitData.coverage !== undefined ? "success" : "failure"
       }));
       
       commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
@@ -84,74 +84,36 @@ export class GithubAPIAdapter implements GithubAPIRepository {
   }
 
   async obtainComplexityOfRepo(owner: string, repoName: string) {
-    try {
-      const repoUrl = `https://github.com/${owner}/${repoName}`;
-      
-      const response = await axios.post("https://api-ccn.vercel.app/analyzeAvgCcn", {
-        repoUrl,
-      });
+  try {
+    const repoUrl = `https://github.com/${owner}/${repoName}`;
+    console.log("Requesting complexity data for repo:", repoUrl);
 
-     
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+    const response = await axios.post("https://api-ccn.vercel.app/analyzeAvgCcn", {
+      repoUrl,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-      const responseData = response.data.results;
-      console.log(response.data)
-      return  responseData.map((complexity: any) => ({
-        ciclomaticComplexity: Math.round(complexity.average_cyclomatic_complexity),
-        commit: complexity.commit,
-      }));
-
-      
-    } catch (error) {
-      console.error("Error obtaining jobs:", error);
-      throw error;
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
-  }
 
-  async obtainRunsOfGithubActions(owner: string, repoName: string) {
-    try {
-      const response = await this.octokit.request(
-        `GET /repos/${owner}/${repoName}/actions/runs`,
-      );
-
-      return response;
-    } catch (error) {
-      // Handle any errors here
-      console.error("Error obtaining runs:", error);
-      throw error;
+    const responseData = response.data.results;
+    return responseData.map((complexity: any) => ({
+      ciclomaticComplexity: Math.round(complexity.average_cyclomatic_complexity),
+      commit: complexity.commit,
+    }));
+  } catch (error) {
+    console.error("Error obtaining complexity data:", error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error("Server responded with status:", error.response.status);
+      console.error("Server response data:", error.response.data);
     }
+    throw error;
   }
-
-  async obtainJobsOfRepo(owner: string, repoName: string): Promise<JobDataObject[]> {
-    try {
-      console.log(`Fetching jobs for ${owner}/${repoName}`);
-
-      // Obtenemos la URL dinámica usando las variables owner y repoName
-      const commitHistoryUrl = this.getCommitHistoryUrl(owner, repoName);
-      const response = await axios.get(commitHistoryUrl);
-
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const commitHistory = response.data;
-
-      // Transformar los commits en jobs
-      const jobs: JobDataObject[] = commitHistory.map((commitData: any) => ({
-        sha: commitData.sha, // SHA del commit
-        conclusion: commitData.conclusion, // Conclusión del commit
-      }));
-
-      return jobs;
-    } catch (error) {
-      console.error("Error obtaining jobs:", error);
-      console.log("Returning empty jobs array due to error");
-      return [];
-    }
-  }
-  
+}
 
   async obtainCommitTddCycle(
     owner: string,
@@ -172,7 +134,8 @@ export class GithubAPIAdapter implements GithubAPIRepository {
       const commits: CommitCycle[] = commitHistory.map((commitData: any) => ({
         url: commitData.commit.url,
         sha: commitData.sha,
-        tddCycle: commitData.tdd_cycle ?? "null" // No esta en el Json
+        tddCycle: commitData.tdd_cycle ?? "null", // No esta en mi archivo
+        coverage: commitData.coverage // Añadimos la cobertura para compatibilidad
       }));
       
       console.log(commits);
