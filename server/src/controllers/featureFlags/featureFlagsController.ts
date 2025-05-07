@@ -29,6 +29,7 @@ class FeatureFlagsController {
       const featureFlags = await this.getFeatureFlagsUseCase.execute();
       res.status(200).json(featureFlags);
     } catch (error) {
+      console.error("Error en getFeatureFlags:", error);
       res.status(500).json({ error: "Error del servidor" });
     }
   }
@@ -49,6 +50,7 @@ class FeatureFlagsController {
       
       res.status(200).json(featureFlag);
     } catch (error) {
+      console.error("Error en getFeatureFlagById:", error);
       res.status(500).json({ error: "Error del servidor" });
     }
   }
@@ -69,6 +71,7 @@ class FeatureFlagsController {
       
       res.status(200).json(featureFlag);
     } catch (error) {
+      console.error("Error en getFeatureFlagByName:", error);
       res.status(500).json({ error: "Error del servidor" });
     }
   }
@@ -90,8 +93,10 @@ class FeatureFlagsController {
       res.status(201).json(newFeatureFlag);
     } catch (error) {
       if (error instanceof Error && error.message.includes("cannot be empty")) {
+       
         res.status(400).json({ error: error.message });
       } else {
+        
         res.status(500).json({ error: "Error del servidor" });
       }
     }
@@ -109,8 +114,10 @@ class FeatureFlagsController {
       res.status(204).send();
     } catch (error) {
       if (error instanceof Error && error.message.includes("not found")) {
+       
         res.status(404).json({ error: "Feature flag no encontrado" });
       } else {
+        
         res.status(500).json({ error: "Error del servidor" });
       }
     }
@@ -148,8 +155,10 @@ class FeatureFlagsController {
           (error.message.includes("Invalid feature flag ID") || 
            error.message.includes("No fields provided") || 
            error.message.includes("cannot be empty"))) {
+            
         res.status(400).json({ error: error.message });
       } else {
+        
         res.status(500).json({ error: "Error del servidor" });
       }
     }
