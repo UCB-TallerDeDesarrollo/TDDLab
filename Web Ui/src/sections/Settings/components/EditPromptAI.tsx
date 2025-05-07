@@ -41,16 +41,7 @@ const EditPromptAI = ({
         >
           {title}
         </Typography>
-        {!isEditing && (
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => setPrompt('')}
-            sx={{ textTransform: 'none' }}
-          >
-            Limpiar
-          </Button>
-        )}
+        {/* Se eliminó el botón "Limpiar" que aparecía cuando no estaba en modo edición */}
       </Box>
       <Divider sx={{ mb: 2 }} />
       
