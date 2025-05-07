@@ -37,7 +37,7 @@ describe('AIAssitantController', () => {
   });
 
   it('debería retornar resultado del LLM', async () => {
-    await controller.analyzeOrRefactor(req as Request, res as Response);
+    await controller.analyzeOrRefactor(req , res );
 
     expect(mockAiAssistantRepository.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
     expect(res?.json).toHaveBeenCalledWith({ result: 'Respuesta del Asistente' });
@@ -46,7 +46,7 @@ describe('AIAssitantController', () => {
   it('debería retornar error 400 si faltan datos', async () => {
     req.body.instruction = { URL: '', value: '' };
 
-    await controller.analyzeOrRefactor(req as Request, res as Response);
+    await controller.analyzeOrRefactor(req , res );
 
     expect(res?.status).toHaveBeenCalledWith(400);
     expect(res?.json).toHaveBeenCalledWith({ error: 'Faltan datos en la instruccion' });
@@ -55,7 +55,7 @@ describe('AIAssitantController', () => {
   it('debería retornar error 500 si ocurre una excepción', async () => {
     (mockAiAssistantRepository.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
 
-    await controller.analyzeOrRefactor(req as Request, res as Response);
+    await controller.analyzeOrRefactor(req , res );
 
     expect(res?.status).toHaveBeenCalledWith(500);
     expect(res?.json).toHaveBeenCalledWith({ error: 'Error procesando el prompt' });
