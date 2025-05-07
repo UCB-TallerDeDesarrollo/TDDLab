@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { GetTDDFeedbackFromAI } from "../../modules/AIAssistant/application/GetTDDFeedbackFromAI";
 
 export class AIAssistantPanel {
-  private readonly panel: vscode.WebviewPanel;
+  private panel: vscode.WebviewPanel | undefined;
   private readonly messages: string[] = [];
   private readonly context: vscode.ExtensionContext;
   private readonly feedbackAssistant: GetTDDFeedbackFromAI =
@@ -10,21 +10,35 @@ export class AIAssistantPanel {
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
-    this.panel = vscode.window.createWebviewPanel(
-      "aiPanel",
-      "Asistente de IA",
-      vscode.ViewColumn.Beside,
-      { enableScripts: true }
-    );
-    this.update();
+
+    // Crear el panel solo si no está ya creado
+    if (!this.panel) {
+      this.panel = vscode.window.createWebviewPanel(
+        "aiPanel",
+        "Asistente de IA",
+        vscode.ViewColumn.Beside,
+        { enableScripts: true }
+      );
+
+      this.panel.onDidDispose(() => {
+        // Limpiar la referencia cuando el panel se cierre
+        this.panel = undefined;
+      });
+
+      this.update(); // Actualiza el contenido del panel
+    }
   }
 
   public reveal() {
-    this.panel.reveal(vscode.ViewColumn.Beside);
+    if (this.panel) {
+      this.panel.reveal(vscode.ViewColumn.Beside);
+    }
   }
 
   public onDispose(callback: () => void) {
-    this.panel.onDidDispose(callback);
+    if (this.panel) {
+      this.panel.onDidDispose(callback);
+    }
   }
 
   private createMessagesHtml(): string {
@@ -52,8 +66,10 @@ export class AIAssistantPanel {
   }
 
   public update() {
-    const messagesHtml = this.createMessagesHtml();
-    this.panel.webview.html = this.generateHtmlContent(messagesHtml);
+    if (this.panel) {
+      const messagesHtml = this.createMessagesHtml();
+      this.panel.webview.html = this.generateHtmlContent(messagesHtml);
+    }
   }
 
   private handleError(err: any): void {
@@ -71,7 +87,6 @@ export class AIAssistantPanel {
   public async getTDDFeedbackFromAI() {
     try {
       const response = await this.feedbackAssistant.fetchResponse(this.context);
-
       this.handleApiResponse(response);
     } catch (err) {
       this.handleError(err);
