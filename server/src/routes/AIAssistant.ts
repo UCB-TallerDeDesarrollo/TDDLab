@@ -24,7 +24,7 @@ aiAssistantRouter.put(
 
 aiAssistantRouter.post(
     '/chatbot',
-    async (req, res) => await aiAssistantController.handleChat(req, res)
+    async (req, res) => await aiAssistantController.chatBot(req, res)
 );
 
 

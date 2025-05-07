@@ -62,7 +62,7 @@ export default class AIAssistantController {
         }
     }
 
-    async handleChat(req: Request, res: Response): Promise<void> {
+    async chatBot(req: Request, res: Response): Promise<void> {
         const userInput = req.body.input;
 
         if (!userInput) {
