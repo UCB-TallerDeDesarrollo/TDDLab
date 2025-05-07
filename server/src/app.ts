@@ -12,7 +12,6 @@ import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
-import chatbotRouter from "./routes/chatbotRoutes";  // Import the chatbot routes
 
 const app = express();
 const port = 3000;
@@ -34,8 +33,6 @@ app.use("/api/practices", practicesRouter);
 app.use("/api/practiceSubmissions", practiceSubmissionsRouter);
 app.use("/api/AIAssistant", aiAssistantRouter);
 
-
-app.use("/api/chat", chatbotRouter);  // Use the chatbot routes under /api
 
 app.use("/api/featureFlags", featureFlagsRouter);
 
