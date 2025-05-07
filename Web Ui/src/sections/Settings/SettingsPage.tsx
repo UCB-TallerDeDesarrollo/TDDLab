@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Typography, Container, Box, Button } from '@mui/material';
+import { Typography, Container, Box } from '@mui/material';
 import EditPromptAI from './components/EditPromptAI';
 
 const ConfigurationPage = () => {
@@ -39,28 +39,17 @@ const ConfigurationPage = () => {
     setEditingRefactoring(false);
   };
 
-  const handleClearAll = () => {
-    setTddPrompt("");
-    setRefactoringPrompt("");
-  };
+  // Se eliminó la función handleClearAll y el botón correspondiente
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+      <Box sx={{ mb: 4 }}>
         <Typography
           variant="h4"
           component="h1"
         >
           Configuración de Prompts
         </Typography>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={handleClearAll}
-          sx={{ textTransform: 'none' }}
-        >
-          Limpiar Todo
-        </Button>
       </Box>
 
       {/* TDD Prompt Section */}
