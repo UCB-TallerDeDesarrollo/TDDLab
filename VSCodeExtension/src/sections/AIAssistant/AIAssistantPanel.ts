@@ -12,14 +12,15 @@ export class AIAssistantPanel {
   public static getInstance(context: vscode.ExtensionContext): AIAssistantPanel {
     if (!AIAssistantPanel.instance) {
       AIAssistantPanel.instance = new AIAssistantPanel(context);
+      AIAssistantPanel.instance.showInfoMessage(); // Mostrar el mensaje al crear la instancia
     }
+    AIAssistantPanel.instance.showInfoMessage(); // Mostrar el mensaje cada vez que se pide la instancia
     return AIAssistantPanel.instance;
   }
 
   private constructor(context: vscode.ExtensionContext) {
     this.context = context;
 
-    // Crear el panel
     this.panel = vscode.window.createWebviewPanel(
       "aiPanel",
       "Asistente de IA",
@@ -28,19 +29,24 @@ export class AIAssistantPanel {
     );
 
     this.panel.onDidDispose(() => {
-      // Limpiar la referencia cuando el panel se cierre
       this.panel = undefined;
-      AIAssistantPanel.instance = undefined; // Limpiar la instancia
+      AIAssistantPanel.instance = undefined;
     });
 
-    this.update(); // Actualiza el contenido del panel
+    this.update();
+  }
+
+  private showInfoMessage() {
+    vscode.window.showInformationMessage(
+      "Para evitar que el panel del Asistente de IA aparezca vacío al reiniciar VS Code, por favor, ciérrelo manualmente antes de cerrar la aplicación."
+    );
   }
 
   public reveal() {
     if (this.panel) {
       this.panel.reveal(vscode.ViewColumn.Beside);
+      this.showInfoMessage(); // Mostrar el mensaje al revelar un panel existente
     } else {
-      // Si el panel no existe (porque se cerró), crearlo de nuevo
       this.panel = vscode.window.createWebviewPanel(
         "aiPanel",
         "Asistente de IA",
@@ -53,6 +59,7 @@ export class AIAssistantPanel {
         AIAssistantPanel.instance = undefined;
       });
       this.update();
+      this.showInfoMessage(); // Mostrar el mensaje al crear un nuevo panel
     }
   }
 
