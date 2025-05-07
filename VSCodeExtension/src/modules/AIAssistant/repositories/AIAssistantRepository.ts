@@ -15,7 +15,7 @@ class AIAssistantRepository {
     res.on("end", () => {
       try {
         const parsed = JSON.parse(responseData);
-        resolve(`Respuesta IA: ${parsed.generatedText}`);
+        resolve(`Respuesta IA: ${parsed.analysis}`);
       } catch {
         resolve(`Respuesta no válida: ${responseData}`);
       }
@@ -27,7 +27,7 @@ class AIAssistantRepository {
       {
         hostname: "localhost",
         port: 3000,
-        path: "/generate",
+        path: "/api/AIAssistant/analyze-tdd-extension",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
