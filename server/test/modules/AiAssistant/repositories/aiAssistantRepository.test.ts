@@ -60,16 +60,23 @@ describe('AIAssistantRepository', () => {
   });
 
   it('debería retornar mensaje de error si el fetch falla', async () => {
-    const mockedAxios = axios as jest.Mocked<typeof axios>;
-    mockedAxios.post.mockRejectedValueOnce(new Error('Falló el fetch'));
-
     const repository = new AIAssistantRepository();
+
+    jest.spyOn(repository, 'getPrompts').mockResolvedValue({
+      analysis_tdd: 'fake prompt',
+      refactoring: 'fake prompt',
+    });
+
+    jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Falló el fetch'));
+
     const instruction: AIAssistantInstructionObject = {
       URL: 'algo',
       value: 'analiza',
     };
 
     const result = await repository.sendPrompt(instruction);
-    expect(result).toEqual({ result: 'Error al comunicarse con el modelo.' });
+    expect(result).toEqual({
+      result: 'Error al comunicarse con el modelo.',
+    });
   });
 });
