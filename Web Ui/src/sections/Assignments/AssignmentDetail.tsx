@@ -232,7 +232,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           console.error("No se pudo obtener el feature flag");
           return;
         }
+        const data = await response.json();
+        setShowIAButton(data.is_enabled === true);
       } catch (error) {
+        
         console.error("Error consultando el feature flag:", error);
       }
     }
