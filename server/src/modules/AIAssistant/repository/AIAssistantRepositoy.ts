@@ -44,10 +44,11 @@ export class AIAssistantRepository {
         };
     }
 
-    private buildPromt(instructionValue: string): string {
+    private async buildPromt(instructionValue: string): Promise<string> {
+        const prompts = await this.getPrompts();
         const lower = instructionValue.toLowerCase();
-        if (lower.includes('analiza')) return `Evalúa la cobertura de pruebas y si se aplican principios de TDD. ¿Qué áreas podrían mejorarse?`;
-        if (lower.includes('refactoriza')) return `Evalúa este repositorio y sugiere mejoras usando principios de ingeniería de IA: claridad en las instrucciones, eficiencia en el contexto, uso adecuado de modelos, estructura del código y facilidad de mantenimiento`;
+        if (lower.includes('analiza')) return prompts?.analysis_tdd || 'Prompt no disponible para la evaluación de la aplicación de TDD.';
+        if (lower.includes('refactoriza')) return prompts?.refactoring || 'Prompt no disponible para la evaluación de la aplicación de refactoring.';
         return 'interpreta el siguiente código';
     }
 
@@ -85,7 +86,7 @@ export class AIAssistantRepository {
     }
 
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
-        const newInstruction = this.buildPromt(instruction.value);
+        const newInstruction = await this.buildPromt(instruction.value);
         const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
         return this.mapToAIAssistantAnswer(raw);
     }
