@@ -30,6 +30,14 @@ export class AIAssistantRepository {
         if (lower.includes('refactoriza')) return prompts?.refactoring || 'Prompt no disponible para la evaluación de la aplicación de refactoring.';
         return 'interpreta el siguiente código';
     }
+  
+    public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
+          const tddlogString = JSON.stringify(tddlog, null, 2);
+
+          return `
+                  ${promptInstructions}
+                  ${tddlogString}`;
+     }
 
     private async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
@@ -79,6 +87,12 @@ export class AIAssistantRepository {
         const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
         return this.mapToAIAssistantAnswer(raw);
     }
+  
+   public async sendTDDExtensionPrompt(tddlog: any, promptInstructions: string): Promise<AIAssistantAnswerObject> {
+        const prompt = this.buildPromptByTestExecuted(tddlog, promptInstructions);
+        const raw = await this.sendRequestToAIAssistant(prompt, '');
+        return this.mapToAIAssistantAnswer(raw);
+    }
 }
 
 
@@ -113,6 +127,8 @@ export class AIAssistantRepository {
         return 'interpreta el siguiente código';
     }
 
+    
+
     private async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
             const userContent = ${instruction}\n\n${code};
@@ -135,6 +151,22 @@ export class AIAssistantRepository {
                     ],
                     temperature: 0.2,
                     max_tokens: 1024
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 30000
+                }
+            );
+
+            if (!response.data || !response.data.choices || !response.data.choices[0].message.content) {
+                throw new Error('No se recibió una respuesta válida del modelo.');
+            }
+
+            return response.data.choices?.[0]?.message?.content || 
+            JSON.stringify(response.data);
                 }),
             });
 
@@ -160,5 +192,7 @@ export class AIAssistantRepository {
         const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
         return this.mapToAIAssistantAnswer(raw);
     }
+
+   
 }
 */

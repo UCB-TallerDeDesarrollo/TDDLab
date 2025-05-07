@@ -24,4 +24,9 @@ aiAssistantRouter.put(
   async (req, res) => await aiAssistantController.updatePrompts(req, res)
 );
 
+aiAssistantRouter.post(
+    '/analyze-tdd-extension',
+    async (req, res) => await aiAssistantController.analyzeTDDFromExtension(req, res)
+);
+
 export default aiAssistantRouter;
