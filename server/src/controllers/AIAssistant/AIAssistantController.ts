@@ -1,16 +1,21 @@
 import { Request, Response } from 'express';
 import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
 import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAssistantRepositoy';
-
+import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/getPromptsCodeUseCases';
+import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
+import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
 export default class AIAssistantController {
 
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
-    private readonly repository: AIAssistantRepository;
-
+    private readonly getPromptsUseCase: GetPromptsCodeUseCase;
+    private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
+    private readonly chatbotUseCase: ChatbotCodeUseCase;  
 
     constructor(repository: AIAssistantRepository) {
-        this.repository = repository; // Inicializas el repositorio
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
+        this.getPromptsUseCase = new GetPromptsCodeUseCase(repository);
+        this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repository);
+        this.chatbotUseCase = new ChatbotCodeUseCase(repository); 
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -29,6 +34,34 @@ export default class AIAssistantController {
         }
     }
 
+    async getPrompts(_req: Request, res: Response): Promise<void> {
+        try {
+            const prompts = await this.getPromptsUseCase.execute();
+            res.status(200).json(prompts);
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    }
+
+    async updatePrompts(_req: Request, res: Response): Promise<void> {
+        const {
+            analysis_tdd,
+            refactoring
+        } = _req.body;
+
+        try {
+            const updatePrompts = await this.updatePromptsUseCase.execute(
+                {
+                    analysis_tdd,
+                    refactoring
+                }
+            );
+            res.status(200).json(updatePrompts);
+        } catch (error) {
+            res.status(500).json({ error: "Server error" });
+        }
+    }
+
     async handleChat(req: Request, res: Response): Promise<void> {
         const userInput = req.body.input;
 
@@ -38,9 +71,8 @@ export default class AIAssistantController {
         }
 
         try {
-            console.log(userInput); 
-            // Usamos el método sendChat del repositorio
-            const response = await this.repository.sendChat(userInput);
+            // Usamos el chatbotUseCase para obtener la respuesta del chatbot
+            const response = await this.chatbotUseCase.execute(userInput);
             res.json({ response });
         } catch (err) {
             res.status(500).json({ error: 'Error procesando la solicitud del chatbot' });
