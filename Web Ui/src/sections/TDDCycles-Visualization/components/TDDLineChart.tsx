@@ -20,7 +20,7 @@ import {
 } from "chart.js";
 import TDDList from "./TDDList";
 import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
-import TDDBoard from "./TDDBoard";
+
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import axios from "axios";
@@ -333,8 +333,7 @@ useEffect(() => {
         break;
       case "Lista":
         return <TDDList port={new GithubAPIAdapter()}></TDDList>;
-      case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} jobsByCommit={jobsByCommit || []} port={port} role={role}/>;
+      
       case "Complejidad":
             if (complexity != null) {
                 dataChart = getDataChart(
