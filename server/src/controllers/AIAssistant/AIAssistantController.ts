@@ -5,8 +5,11 @@ import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAs
 export default class AIAssistantController {
 
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
+    private readonly repository: AIAssistantRepository;
+
 
     constructor(repository: AIAssistantRepository) {
+        this.repository = repository; // Inicializas el repositorio
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
     }
 
@@ -25,4 +28,25 @@ export default class AIAssistantController {
             res.status(500).json({ error: 'Error procesando el prompt' });
         }
     }
+
+    async handleChat(req: Request, res: Response): Promise<void> {
+        const userInput = req.body.input;
+
+        if (!userInput) {
+            res.status(400).json({ error: 'Faltan datos en la solicitud' });
+            return;
+        }
+
+        try {
+            console.log(userInput); 
+            // Usamos el método sendChat del repositorio
+            const response = await this.repository.sendChat(userInput);
+            res.json({ response });
+        } catch (err) {
+            res.status(500).json({ error: 'Error procesando la solicitud del chatbot' });
+        }
+    }
+
 }
+
+

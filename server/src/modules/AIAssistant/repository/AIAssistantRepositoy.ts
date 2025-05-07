@@ -5,6 +5,7 @@ dotenv.config();
 
 export class AIAssistantRepository {
     private readonly apiUrl = process.env.LLM_API_URL!;
+    
 
     private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
         if (!data) {
@@ -55,4 +56,18 @@ export class AIAssistantRepository {
         const raw = await this.executePostRequest(instruction.URL, newInstruction);
         return this.mapToAIAssistantAnswer(raw);
     }
+
+    public async sendChat(input: string): Promise<AIAssistantAnswerObject> {
+        const code = "Responde como un chatbot";  // Definimos un código apropiado para que el modelo actúe como un chatbot.
+        const instruction = input;  // El input del usuario es la instrucción que el modelo usará
+    
+        // Aquí, 'executePostRequest' se mantiene sin cambios
+        const raw = await this.executePostRequest(code, instruction);
+    
+        // Mapeamos la respuesta y la devolvemos
+        return this.mapToAIAssistantAnswer(raw);
+    }
+    
+
+    
 }

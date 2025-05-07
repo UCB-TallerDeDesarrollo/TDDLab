@@ -12,4 +12,10 @@ aiAssistantRouter.post(
     async (req, res) => await aiAssistantController.analyzeOrRefactor(req, res)
 );
 
+aiAssistantRouter.post(
+    '/chatbot',
+    async (req, res) => await aiAssistantController.handleChat(req, res)
+);
+
+
 export default aiAssistantRouter;
