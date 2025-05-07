@@ -106,6 +106,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
                 setSubmission(fetchedSubmission);
             } catch (error) {
+              console.error("Error verifying submission status:", error);
+              setSubmissionsError("Error verificando el estado de la entrega.");
                 // Manejar el error sin mostrarlo en la consola
                 if (error instanceof Error && error.message === "Submission not found") {
                     setSubmissionsError("No se encontró la entrega.");
@@ -223,8 +225,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               setStudentSubmission(userSubmission);
             }
           } catch (error) {
-            //console.error("Error fetching student submission:", error);
-            throw error;
+            console.error("Error fetching student submission:", error);
+            setSubmissionsError("An error occurred while fetching the student submission.");
           }
         }
       }
@@ -255,7 +257,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await createSubmission.createSubmission(submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        //console.error(error);
+        
         throw error;
       }
     }
@@ -343,7 +345,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await finishSubmission.finishSubmission(submission.id, submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        //console.error(error);
+        
         throw error;
       }
     }
@@ -371,7 +373,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       const student = await usersRepository.getUserById(studentId);
       return student.email;
     } catch (error) {
-      //console.error("Error fetching student email:", error);
+      console.error("Error fetching student email:", error);
       return "";
     }
   };
