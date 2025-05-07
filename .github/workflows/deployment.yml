@@ -135,6 +135,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           scanMetadataReportFile: .scannerwork/report-task.txt
+          pollingTimeoutSec: 600
 
         #continue-on-error: true  # Esta opción permite que el workflow siga ejecutándose aunque falle la Quality Gate
 
