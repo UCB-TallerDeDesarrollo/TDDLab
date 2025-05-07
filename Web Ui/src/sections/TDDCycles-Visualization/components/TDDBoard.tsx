@@ -483,7 +483,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       ) : null}
 
       {graph && (
-        <>
           <TDDLineCharts
             port={port}
             role={role}
@@ -493,8 +492,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             complexity={null}
             commitsCycles= {null}
           />
-        </>
-
       )}
     </>
   );
