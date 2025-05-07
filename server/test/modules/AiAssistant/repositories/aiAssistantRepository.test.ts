@@ -14,12 +14,20 @@ describe('AIAssistantRepository', () => {
 
   it('debería construir el prompt correcto para "analiza"', async () => {
     const mockedAxios = axios as jest.Mocked<typeof axios>;
+
     mockedAxios.post.mockResolvedValueOnce({
       data: {
         choices: [{ message: { content: 'Respuesta del modelo' } }],
       },
     });
+
     const repository = new AIAssistantRepository();
+
+    jest.spyOn(repository, 'getPrompts').mockResolvedValue({
+      analysis_tdd: 'Evalúa la cobertura de pruebas y si se aplican principios de TDD. ¿Qué áreas podrían mejorarse?',
+      refactoring: 'irrelevante',
+    });
+
     const instruction: AIAssistantInstructionObject = {
       URL: 'https://github.com/ejemplo/proyecto',
       value: 'analiza este código',
