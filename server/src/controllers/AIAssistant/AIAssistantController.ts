@@ -4,19 +4,19 @@ import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAs
 import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/getPromptsCodeUseCases';
 import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
 import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
-import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
+import { ChatbotUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotUseCase';
 export default class AIAssistantController {
 
     private readonly analyzeOrRefactorUseCase: AnalyzeOrRefactorCodeUseCase;
     private readonly getPromptsUseCase: GetPromptsCodeUseCase;
     private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
-    private readonly chatbotUseCase: ChatbotCodeUseCase;
+    private readonly chatbotUseCase: ChatbotUseCase;
 
     constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
-        this.chatbotUseCase = new ChatbotCodeUseCase(repository);
+        this.chatbotUseCase = new ChatbotUseCase(repository);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {

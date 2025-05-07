@@ -1,6 +1,6 @@
 import { AIAssistantRepository } from '../../repository/AIAssistantRepositoy';
 
-export class ChatbotCodeUseCase {
+export class ChatbotUseCase {
     private readonly repository: AIAssistantRepository;
 
     constructor(repository: AIAssistantRepository) {
