@@ -1,17 +1,37 @@
-import { useState } from 'react';
-import { Typography, Container, Box } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Typography, Container, Box, CircularProgress } from '@mui/material';
 import EditPromptAI from './components/EditPromptAI';
+import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 
 const ConfigurationPage = () => {
-  const [tddPrompt, setTddPrompt] = useState<string>(
-    "Este es el prompt actual para evaluación de TDD. Aquí iría el texto que se usa actualmente para la evaluación de TDD en la aplicación."
-  );
-  const [refactoringPrompt, setRefactoringPrompt] = useState<string>(
-    "Este es el prompt actual para evaluación de Refactoring. Aquí iría el texto que se usa actualmente para la evaluación de Refactoring en la aplicación."
-  );
+  const [tddPrompt, setTddPrompt] = useState<string>("");
+  const [refactoringPrompt, setRefactoringPrompt] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [editingTDD, setEditingTDD] = useState<boolean>(false);
   const [editingRefactoring, setEditingRefactoring] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadPrompts = async () => {
+      try {
+        setLoading(true);
+        const getPromptsUseCase = new GetPrompts();
+        const prompts = await getPromptsUseCase.execute();
+        
+        setTddPrompt(prompts.tddPrompt);
+        setRefactoringPrompt(prompts.refactoringPrompt);
+        setError(null);
+      } catch (error) {
+        console.error("Error al cargar los prompts:", error);
+        setError("No se pudieron cargar los prompts. Por favor, intenta de nuevo más tarde.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPrompts();
+  }, []);
 
   const handleEditTDD = () => {
     setEditingTDD(true);
@@ -39,8 +59,6 @@ const ConfigurationPage = () => {
     setEditingRefactoring(false);
   };
 
-  // Se eliminó la función handleClearAll y el botón correspondiente
-
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
@@ -52,25 +70,35 @@ const ConfigurationPage = () => {
         </Typography>
       </Box>
 
-      {/* TDD Prompt Section */}
-      <EditPromptAI
-        title="Prompt de Evaluación TDD"
-        initialPrompt={tddPrompt}
-        isEditing={editingTDD}
-        onEdit={handleEditTDD}
-        onSave={handleSaveTDD}
-        onCancel={handleCancelTDD}
-      />
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
+          <Typography color="error">{error}</Typography>
+        </Box>
+      ) : (
+        <>
+          <EditPromptAI
+            title="Prompt de Evaluación TDD"
+            initialPrompt={tddPrompt}
+            isEditing={editingTDD}
+            onEdit={handleEditTDD}
+            onSave={handleSaveTDD}
+            onCancel={handleCancelTDD}
+          />
 
-      {/* Refactoring Prompt Section */}
-      <EditPromptAI
-        title="Prompt de Evaluación Refactoring"
-        initialPrompt={refactoringPrompt}
-        isEditing={editingRefactoring}
-        onEdit={handleEditRefactoring}
-        onSave={handleSaveRefactoring}
-        onCancel={handleCancelRefactoring}
-      />
+          <EditPromptAI
+            title="Prompt de Evaluación Refactoring"
+            initialPrompt={refactoringPrompt}
+            isEditing={editingRefactoring}
+            onEdit={handleEditRefactoring}
+            onSave={handleSaveRefactoring}
+            onCancel={handleCancelRefactoring}
+          />
+        </>
+      )}
     </Container>
   );
 };

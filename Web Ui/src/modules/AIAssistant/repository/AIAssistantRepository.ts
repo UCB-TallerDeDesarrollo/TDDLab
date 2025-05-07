@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AIRequest, AIResponse } from "../domain/AIAssistantRepositoryInterface";
+import { AIRequest, AIResponse, AIPromptResponse } from "../domain/AIAssistantRepositoryInterface";
 import AIAssistantInterface from "../domain/AIAssistantInterface";
 import { VITE_API } from "../../../../config";
 
@@ -24,6 +24,24 @@ class AIAssistantRepository implements AIAssistantInterface {
       }
     } catch (error) {
       console.error("Error en la petición al asistente IA:", error);
+      throw error;
+    }
+  }
+
+  async getPrompts(): Promise<AIPromptResponse> {
+    try {
+      const response = await axios.get(API_URL);
+      
+      if (response.status === 200) {
+        return {
+          tddPrompt: response.data.analysis_tdd || "",
+          refactoringPrompt: response.data.refactoring || ""
+        };
+      } else {
+        throw new Error(`Error al obtener prompts: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error al obtener los prompts:", error);
       throw error;
     }
   }
