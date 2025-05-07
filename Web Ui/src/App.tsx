@@ -55,7 +55,7 @@ const navArrayLinks = [
     title: "Configuraciones",
     path: "/configuraciones",
     icon: <NoteAdd />,
-    access: ["admin", "teacher","student"],
+    access: ["admin", "teacher"],
   },
 ];
 

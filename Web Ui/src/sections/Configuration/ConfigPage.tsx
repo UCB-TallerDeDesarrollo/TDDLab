@@ -50,7 +50,7 @@ export default function ConfigPage() {
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h2>Configuración de Funcionalidades</h2>
+      <h2>Habilitacion de Funcionalidades</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {flags.map((flag) => (
         <div key={flag.id} style={{ marginBottom: "10px" }}>
