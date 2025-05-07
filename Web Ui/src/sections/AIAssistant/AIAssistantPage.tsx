@@ -1,31 +1,30 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Typography, Button, CircularProgress, TextField, Paper, Box } from '@mui/material';
-import AIResultSection from './components/AIResultSection';
+import { Typography, Box, Button, CircularProgress, TextField, Paper } from '@mui/material';
 import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
-import axios from 'axios';
-
-// Usa la variable de entorno
-import { VITE_API } from '../../../config'; // Importar la configuración de la API
-const API_URL = VITE_API + "/AIAssistant"
+import { ChatbotService } from '../../modules/AIAssistant/application/ChatbotService';
+import AIResultSection from './components/AIResultSection';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
+const chatbotService = new ChatbotService();
 
 const AIAssistantPage = () => {
   const location = useLocation();
   const repositoryLink = location.state?.repositoryLink || "No hay enlace disponible";
 
+  // Estado de las respuestas del análisis y refactorización
   const [analysisResponse, setAnalysisResponse] = useState<string>("");
   const [refactorResponse, setRefactorResponse] = useState<string>("");
   const [loadingAnalysis, setLoadingAnalysis] = useState<boolean>(false);
   const [loadingRefactor, setLoadingRefactor] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Chatbot state
+  // Estado del chatbot
   const [userMessage, setUserMessage] = useState<string>("");
   const [messages, setMessages] = useState<{ from: 'user' | 'bot', text: string }[]>([]);
   const [loadingChat, setLoadingChat] = useState<boolean>(false);
 
+  // Función para llamar la API de análisis o refactorización
   const handleApiCall = async (
     action: "Evaluar la aplicación de TDD" | "Evaluar la aplicación de Refactoring",
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -49,6 +48,8 @@ const AIAssistantPage = () => {
       setLoading(false);
     }
   };
+
+  // Función para enviar el mensaje del chatbot
   const handleChatSubmit = async () => {
     if (!userMessage.trim()) return;
     setLoadingChat(true);
@@ -57,14 +58,9 @@ const AIAssistantPage = () => {
     setMessages(newMessages);
 
     try {
-      const response = await axios.post(`${API_URL}/chatbot`, {
-        input: userMessage
-      });
-
-      const botReply = response.data.response?.result || "No hubo respuesta del asistente.";
+      const botReply = await chatbotService.sendMessage(userMessage);
       setMessages([...newMessages, { from: 'bot', text: botReply }]);
     } catch (error) {
-      console.error("Error en el chatbot:", error);
       setMessages([...newMessages, { from: 'bot', text: "Error de conexión con el servidor." }]);
     } finally {
       setUserMessage("");
@@ -72,89 +68,109 @@ const AIAssistantPage = () => {
     }
   };
 
-  return (
-    <div style={{ padding: 20 }}>
-      <Typography variant="h4" align="center" gutterBottom>Asistente IA</Typography>
+return (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '90vh', padding: '0 20px' }}>
+    <Typography
+      variant="h5"
+      component="div"
+      style={{ fontSize: "30px", lineHeight: "1.5", textAlign: 'center', marginBottom: '10px' }}
+    >
+      Asistente IA
+    </Typography>
 
-      <Typography variant="body1" align="center" gutterBottom>
-        <strong>Repositorio:</strong>{" "}
-        <a href={repositoryLink} target="_blank" rel="noopener noreferrer">
+    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        style={{ fontSize: "16px", lineHeight: "1.8" }}
+      >
+        <strong style={{ marginRight: '8px' }}>Enlace:</strong>
+        <a
+          href={repositoryLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#1976d2', textDecoration: 'none' }}
+        >
           {repositoryLink}
         </a>
       </Typography>
+    </div>
 
-      {errorMessage && (
-        <Typography variant="body2" color="error" align="center" gutterBottom>
-          {errorMessage}
-        </Typography>
-      )}
+    {errorMessage && (
+      <Typography
+        variant="body2"
+        color="error"
+        style={{ marginBottom: '10px' }}
+      >
+        {errorMessage}
+      </Typography>
+    )}
 
-      {/* Secciones de análisis */}
-      <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={4} mb={4}>
-        <AIResultSection
-          title="Procesando..."
-          response={analysisResponse}
-          loading={loadingAnalysis}
-          onAction={() => handleApiCall("Evaluar la aplicación de TDD", setLoadingAnalysis, setAnalysisResponse)}
-          buttonText="Evaluar la aplicación de TDD"
-        />
-        <AIResultSection
-          title="Procesando..."
-          response={refactorResponse}
-          loading={loadingRefactor}
-          onAction={() => handleApiCall("Evaluar la aplicación de Refactoring", setLoadingRefactor, setRefactorResponse)}
-          buttonText="Evaluar la aplicación de Refactoring"
-        />
+    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '1200px', gap: '40px' }}>
+      <AIResultSection
+        title="Procesando..."
+        response={analysisResponse}
+        loading={loadingAnalysis}
+        onAction={() => handleApiCall("Evaluar la aplicación de TDD", setLoadingAnalysis, setAnalysisResponse)}
+        buttonText="Evaluar la aplicación de TDD"
+      />
+      <AIResultSection
+        title="Procesando..."
+        response={refactorResponse}
+        loading={loadingRefactor}
+        onAction={() => handleApiCall("Evaluar la aplicación de Refactoring", setLoadingRefactor, setRefactorResponse)}
+        buttonText="Evaluar la aplicación de Refactoring"
+      />
+    </div>
+    {/* Sección del Chatbot */}
+    <Paper elevation={3} style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
+      <Typography variant="h6" gutterBottom>Chatbot Asistente</Typography>
+
+      <Box
+        style={{
+          border: "1px solid #ccc",
+          borderRadius: 8,
+          padding: 10,
+          height: 300,
+          overflowY: "auto",
+          marginBottom: 16,
+          backgroundColor: "#fafafa",
+        }}
+      >
+        {messages.length === 0 && (
+          <Typography variant="body2" color="textSecondary">
+            Inicia una conversación con el asistente...
+          </Typography>
+        )}
+        {messages.map((msg, idx) => (
+          <div key={idx} style={{ marginBottom: 10 }}>
+            <strong>{msg.from === 'user' ? 'Tú' : 'Asistente'}:</strong> {msg.text}
+          </div>
+        ))}
       </Box>
 
-      {/* Chatbot */}
-      <Paper elevation={3} style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
-        <Typography variant="h6" gutterBottom>Chatbot Asistente</Typography>
-
-        <Box
-          style={{
-            border: "1px solid #ccc",
-            borderRadius: 8,
-            padding: 10,
-            height: 300,
-            overflowY: "auto",
-            marginBottom: 16,
-            backgroundColor: "#fafafa",
+      <Box display="flex" gap={2}>
+        <TextField
+          fullWidth
+          label="Escribe tu mensaje..."
+          variant="outlined"
+          value={userMessage}
+          onChange={(e) => setUserMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleChatSubmit();
+            }
           }}
-        >
-          {messages.length === 0 && (
-            <Typography variant="body2" color="textSecondary">
-              Inicia una conversación con el asistente...
-            </Typography>
-          )}
-          {messages.map((msg, idx) => (
-            <div key={idx} style={{ marginBottom: 10 }}>
-              <strong>{msg.from === 'user' ? 'Tú' : 'Asistente'}:</strong> {msg.text}
-            </div>
-          ))}
-        </Box>
+        />
+        <Button variant="contained" onClick={handleChatSubmit} disabled={loadingChat}>
+          {loadingChat ? <CircularProgress size={24} /> : "Enviar"}
+        </Button>
+      </Box>
+    </Paper>
+  </div>
+);
 
-        <Box display="flex" gap={2}>
-          <TextField
-            fullWidth
-            label="Escribe tu mensaje..."
-            variant="outlined"
-            value={userMessage}
-            onChange={(e) => setUserMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleChatSubmit();
-              }
-            }}
-          />
-          <Button variant="contained" onClick={handleChatSubmit} disabled={loadingChat}>
-            {loadingChat ? <CircularProgress size={24} /> : "Enviar"}
-          </Button>
-        </Box>
-      </Paper>
-    </div>
-  );
 };
 
 export default AIAssistantPage;
