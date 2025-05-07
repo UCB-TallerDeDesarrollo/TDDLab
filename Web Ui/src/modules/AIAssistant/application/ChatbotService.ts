@@ -11,8 +11,10 @@ export class ChatbotService {
     try {
       const response = await this.chatbotAPI.sendMessage(message);
       return response;
-    } catch (error) {
-      throw new Error('Error al enviar el mensaje al chatbot');
-    }
+    } catch (error: any) {
+        throw new Error(`Error al enviar el mensaje al chatbot: ${error.message || error}`);
+      }
   }
 }
+
+  

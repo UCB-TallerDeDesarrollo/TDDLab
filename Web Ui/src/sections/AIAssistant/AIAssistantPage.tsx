@@ -4,6 +4,7 @@ import { Typography, Box, Button, CircularProgress, TextField, Paper } from '@mu
 import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
 import { ChatbotService } from '../../modules/AIAssistant/application/ChatbotService';
 import AIResultSection from './components/AIResultSection';
+import { v4 as uuidv4 } from 'uuid';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 const chatbotService = new ChatbotService();
@@ -50,18 +51,19 @@ const AIAssistantPage = () => {
     if (!userMessage.trim()) return;
     setLoadingChat(true);
 
-    const newMessages = [...messages, { from: 'user', text: userMessage }];
+    const newMessages = [...messages, { id: uuidv4(), from: 'user', text: userMessage }];
     setMessages(newMessages);
 
     try {
       const botReply = await chatbotService.sendMessage(userMessage);
       setMessages([...newMessages, { from: 'bot', text: botReply }]);
     } catch (error) {
+      console.error("Error al enviar mensaje al chatbot:", error);
       setMessages([...newMessages, { from: 'bot', text: "Error de conexión con el servidor." }]);
     } finally {
       setUserMessage("");
       setLoadingChat(false);
-    }
+    }    
   };
 
   return (
@@ -139,11 +141,12 @@ const AIAssistantPage = () => {
               Inicia una conversación con el asistente...
             </Typography>
           )}
-          {messages.map((msg, idx) => (
-            <div key={idx} style={{ marginBottom: 10 }}>
+          {messages.map((msg) => (
+            <div key={msg.id} style={{ marginBottom: 10 }}>
               <strong>{msg.from === 'user' ? 'Tú' : 'Asistente'}:</strong> {msg.text}
             </div>
           ))}
+
         </Box>
 
         <Box display="flex" gap={2}>
