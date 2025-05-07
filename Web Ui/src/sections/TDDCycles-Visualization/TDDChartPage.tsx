@@ -30,7 +30,8 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportViewProps>) {
+function 
+TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportViewProps>) {
   let DefaultItem="";
   if(graphs==="graph")
   {
@@ -61,7 +62,7 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
       ? fetchedSubmissions.findIndex((submission) => submission.id === submissionId)
       : 0
   );
-
+  
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
@@ -97,12 +98,12 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
     }
   };
   const obtainComments = async () => {
-    console.log("ID delsubmission: ",submissionIdcomments)
+    console.log("ID del submission: ",submissionIdcomments)
     try {
       console.log("intentando conectar para comentarios: ")
       const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionIdcomments);
       const emailMap: { [key: number]: string } = {};
-      for (const comment of commentsData) {
+        for (const comment of commentsData) {
       try {
         const email = await getUserEmailById(comment.teacher_id);
         emailMap[comment.teacher_id] = email;
@@ -111,7 +112,7 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
       }
     }
     setEmails(emailMap);
-      console.log("siguiente paso comentarios")
+      console.log("siguiente paso comentarios ")
       setComments(commentsData);  
     } catch (error) {
       console.error("Error obtaining comments:", error);
