@@ -1,6 +1,7 @@
 import { AIAssistantRepository } from '../../../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
 import { AIAssistantInstructionObject } from '../../../../src/modules/AIAssistant/domain/AIAssistant';
 import axios from 'axios';
+import { AIAssistantDataBaseRepository } from '../../../../src/modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 
 jest.mock('axios');
 
@@ -22,8 +23,9 @@ describe('AIAssistantRepository', () => {
     });
 
     const repository = new AIAssistantRepository();
+    const repositoryDB = new AIAssistantDataBaseRepository();
 
-    jest.spyOn(repository, 'getPrompts').mockResolvedValue({
+    jest.spyOn(repositoryDB, 'getPrompts').mockResolvedValue({
       analysis_tdd: 'Evalúa la cobertura de pruebas y si se aplican principios de TDD. ¿Qué áreas podrían mejorarse?',
       refactoring: 'irrelevante',
     });
@@ -61,8 +63,9 @@ describe('AIAssistantRepository', () => {
 
   it('debería retornar mensaje de error si el fetch falla', async () => {
     const repository = new AIAssistantRepository();
+    const repositoryDB = new AIAssistantDataBaseRepository();
 
-    jest.spyOn(repository, 'getPrompts').mockResolvedValue({
+    jest.spyOn(repositoryDB, 'getPrompts').mockResolvedValue({
       analysis_tdd: 'fake prompt',
       refactoring: 'fake prompt',
     });
