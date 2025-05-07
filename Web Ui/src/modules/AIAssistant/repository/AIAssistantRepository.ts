@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AIRequest, AIResponse, AIPromptResponse } from "../domain/AIAssistantRepositoryInterface";
+import { AIRequest, AIResponse, AIPromptResponse, UpdatePromptsRequest } from "../domain/AIAssistantRepositoryInterface";
 import AIAssistantInterface from "../domain/AIAssistantInterface";
 import { VITE_API } from "../../../../config";
 
@@ -42,6 +42,24 @@ class AIAssistantRepository implements AIAssistantInterface {
       }
     } catch (error) {
       console.error("Error al obtener los prompts:", error);
+      throw error;
+    }
+  }
+
+  async updatePrompts(request: UpdatePromptsRequest): Promise<AIPromptResponse> {
+    try {
+      const response = await axios.put(API_URL, request);
+      
+      if (response.status === 200) {
+        return {
+          tddPrompt: response.data.analysis_tdd || "",
+          refactoringPrompt: response.data.refactoring || ""
+        };
+      } else {
+        throw new Error(`Error al actualizar prompts: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error al actualizar los prompts:", error);
       throw error;
     }
   }
