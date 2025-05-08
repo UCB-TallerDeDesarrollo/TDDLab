@@ -107,13 +107,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 setSubmission(fetchedSubmission);
             } catch (error) {
               console.error("Error verifying submission status:", error);
-              setSubmissionsError("Error verificando el estado de la entrega.");
-                // Manejar el error sin mostrarlo en la consola
-                if (error instanceof Error && error.message === "Submission not found") {
-                    setSubmissionsError("No se encontró la entrega.");
-                } else {
-                    setSubmissionsError("No se pudo obtener la entrega. Inténtalo más tarde.");
-                }
             }
         }
     };
