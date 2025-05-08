@@ -10,6 +10,7 @@ import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings"; 
 import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
@@ -24,7 +25,7 @@ import UsersByGroupPage from "./sections/User/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
-import ConfigPage from "./sections/Configuration/ConfigPage";
+import SettingsPage from "./sections/Settings/SettingsPage";
 
 const navArrayLinks = [
   {
@@ -40,16 +41,22 @@ const navArrayLinks = [
     access: ["admin", "student", "teacher"],
   },
   {
+    title: "Mis Practicas",
+    path: "/mis-practicas",
+    icon: <NoteAdd />,
+    access: ["admin", "teacher", "student"],
+  },
+  {
     title: "Usuarios",
     path: "/user",
     icon: <PersonIcon />,
     access: ["admin", "teacher"],
   },
   {
-    title: "Mis Practicas",
-    path: "/mis-practicas",
-    icon: <NoteAdd />,
-    access: ["admin", "teacher", "student"],
+    title: "Configuraciones",
+    path: "/configuraciones",
+    icon: <SettingsIcon />,
+    access: ["admin", "teacher"], 
   },
   {
     title: "Configuraciones",
@@ -184,11 +191,16 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
+
         <Route
           path="/configuraciones"
-          
-          element={<ConfigPage />}  // Componente que muestra la página de configuraciones
-        />
+          element={
+            <ProtectedRouteComponent>
+              <SettingsPage />
+            </ProtectedRouteComponent>
+         }
+       /> 
+
       </Routes>
     </Router>
   );
