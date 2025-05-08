@@ -20,11 +20,11 @@ const AIAssistantPage = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [userMessage, setUserMessage] = useState<string>("");
-  const [messages, setMessages] = useState<{ from: 'user' | 'bot', text: string }[]>([]);
+  const [messages, setMessages] = useState<{id: string, from: "user" | "bot", text: string }[]>([]);
   const [loadingChat, setLoadingChat] = useState<boolean>(false);
 
   const handleApiCall = async (
-    action: "analiza" | "refactoriza",
+    action: "Evaluar la aplicación de TDD" | "Evaluar la aplicación de Refactoring",
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setResponse: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -51,15 +51,15 @@ const AIAssistantPage = () => {
     if (!userMessage.trim()) return;
     setLoadingChat(true);
 
-    const newMessages = [...messages, { id: generateUniqueId(), from: 'user', text: userMessage }];
+    const newMessages = [...messages, { id: generateUniqueId(), from: "user" as "user", text: userMessage }];
     setMessages(newMessages);
 
     try {
       const botReply = await chatbotUseCase.sendMessage(userMessage);
-      setMessages([...newMessages, { from: 'bot', text: botReply }]);
+      setMessages([...newMessages, {id: generateUniqueId(), from: 'bot', text: botReply }]);
     } catch (error) {
       console.error("Error al enviar mensaje al chatbot:", error);
-      setMessages([...newMessages, { from: 'bot', text: "Error de conexión con el servidor." }]);
+      setMessages([...newMessages, {id: generateUniqueId(), from: 'bot', text: "Error de conexión con el servidor." }]);
     } finally {
       setUserMessage("");
       setLoadingChat(false);
@@ -109,14 +109,14 @@ const AIAssistantPage = () => {
           title="Procesando..."
           response={analysisResponse}
           loading={loadingAnalysis}
-          onAction={() => handleApiCall("analiza", setLoadingAnalysis, setAnalysisResponse)}
+          onAction={() => handleApiCall("Evaluar la aplicación de TDD", setLoadingAnalysis, setAnalysisResponse)}
           buttonText="Evaluar la aplicación de TDD"
         />
         <AIResultSection
           title="Procesando..."
           response={refactorResponse}
           loading={loadingRefactor}
-          onAction={() => handleApiCall("refactoriza", setLoadingRefactor, setRefactorResponse)}
+          onAction={() => handleApiCall("Evaluar la aplicación de Refactoring", setLoadingRefactor, setRefactorResponse)}
           buttonText="Evaluar la aplicación de Refactoring"
         />
       </div>

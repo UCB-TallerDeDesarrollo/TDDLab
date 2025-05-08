@@ -362,8 +362,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       return "";
     }
   };
-
-  const renderStudentRows = async () => {
+    const renderStudentRows = async () => {
+    
     const rows = await Promise.all(
       submissions.map(async (submission) => {
         const studentEmail = await getStudentEmailById(submission.userid);
@@ -406,8 +406,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Ver gráfica
               </Button>
             </TableCell>
-
+           
             <TableCell>
+            
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
@@ -425,8 +426,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               >
                 Asistente IA
               </Button>
+            
             </TableCell>
-
+         
             <TableCell>
               <Button
                 variant="contained"
@@ -455,6 +457,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
 
   return (
+    
     <div
       style={{
         display: "flex",

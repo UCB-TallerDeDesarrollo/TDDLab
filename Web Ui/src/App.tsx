@@ -58,6 +58,12 @@ const navArrayLinks = [
     icon: <SettingsIcon />,
     access: ["admin", "teacher"], 
   },
+  {
+    title: "Configuraciones",
+    path: "/configuraciones",
+    icon: <NoteAdd />,
+    access: ["admin", "teacher"],
+  },
 ];
 
 function App() {
