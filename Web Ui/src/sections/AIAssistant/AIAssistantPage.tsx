@@ -24,7 +24,7 @@ const AIAssistantPage = () => {
   const [loadingChat, setLoadingChat] = useState<boolean>(false);
 
   const handleApiCall = async (
-    action: "Evaluar la aplicación de TDD" | "Evaluar la aplicación de Refactoring",
+    action: "analiza" | "refactoriza",
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setResponse: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -109,14 +109,14 @@ const AIAssistantPage = () => {
           title="Procesando..."
           response={analysisResponse}
           loading={loadingAnalysis}
-          onAction={() => handleApiCall("Evaluar la aplicación de TDD", setLoadingAnalysis, setAnalysisResponse)}
+          onAction={() => handleApiCall("analiza", setLoadingAnalysis, setAnalysisResponse)}
           buttonText="Evaluar la aplicación de TDD"
         />
         <AIResultSection
           title="Procesando..."
           response={refactorResponse}
           loading={loadingRefactor}
-          onAction={() => handleApiCall("Evaluar la aplicación de Refactoring", setLoadingRefactor, setRefactorResponse)}
+          onAction={() => handleApiCall("refactoriza", setLoadingRefactor, setRefactorResponse)}
           buttonText="Evaluar la aplicación de Refactoring"
         />
       </div>
