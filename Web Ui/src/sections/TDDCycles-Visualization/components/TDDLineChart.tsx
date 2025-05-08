@@ -18,7 +18,7 @@ import {
   LineElement,
 } from "chart.js";
 import TDDList from "./TDDList";
-import { GithubAPIAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
+import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TDDBoard from "./TDDBoard";
 import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
@@ -360,7 +360,7 @@ function TDDLineCharts({
         dataTestid = "graph-testCount";
         break;
       case "Lista":
-        return <TDDList port={new GithubAPIAdapter()}></TDDList>;
+        return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} port={port} role={role}/>;
       case "Complejidad":

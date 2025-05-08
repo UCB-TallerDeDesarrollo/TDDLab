@@ -6,7 +6,7 @@ import "./styles/TDDChartPageStyles.css";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
-import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
+import { CommitHistoryAdapter } from "../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 import { CommentDataObject, CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
@@ -69,7 +69,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getTDDCycles = new PortGetTDDCycles(port);
-  const githubAPIAdapter = new GithubAPIAdapter();
+  const CommitHistoryadapter = new CommitHistoryAdapter();
 
   const fetchData = async () => {
     setLoading(true);
@@ -151,7 +151,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   useEffect(() => {
     const fetchOwnerName = async () => {
       try {
-        const name = await githubAPIAdapter.obtainUserName(repoOwner);
+        const name = await CommitHistoryadapter.obtainUserName(repoOwner);
         setOwnerName(name);
       } catch (error) {
         console.error("Error obtaining owner name:", error);

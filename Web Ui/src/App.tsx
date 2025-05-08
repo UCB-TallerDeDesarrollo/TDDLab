@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
-import { GithubAPIAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter"; //Revisar el cambio por puerto
+import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter"; //Revisar el cambio por puerto
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
@@ -124,7 +124,7 @@ function App() {
           path="/graph"
           element={
             <ProtectedRouteComponent>
-              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="graph" />
+              <TDDChartPage port={new CommitHistoryAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="graph" />
             </ProtectedRouteComponent>
           }
         />
@@ -132,7 +132,7 @@ function App() {
           path="/aditionalgraph"
           element={
             <ProtectedRouteComponent>
-              <TDDChartPage port={new GithubAPIAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="aditionalgraph" />
+              <TDDChartPage port={new CommitHistoryAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="aditionalgraph" />
             </ProtectedRouteComponent>
           }
         />

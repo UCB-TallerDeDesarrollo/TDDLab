@@ -5,7 +5,7 @@ import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 
-export class GithubAPIAdapter implements GithubAPIRepository {
+export class CommitHistoryAdapter implements GithubAPIRepository {
   octokit: Octokit;
   backAPI: string;
   
