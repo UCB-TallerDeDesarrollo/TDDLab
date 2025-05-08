@@ -100,15 +100,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
     const fetchFeatureFlag = async () => {
       try {
-        const flag = await getFlagUseCase.execute("IA_ASSISTANT");
-        setShowIAButton(flag?.is_enabled ?? false);
+        const flag = await getFlagUseCase.execute("Boton Asistente IA");
+        setShowIAButton(flag?.is_enabled ?? true);
       } catch (error) {
         console.error("Error fetching feature flag IA_ASSISTANT:", error);
       }
     };
 
     fetchFeatureFlag();
-    const interval = setInterval(fetchFeatureFlag, 15000);
+    const interval = setInterval(fetchFeatureFlag, 2000);
     return () => clearInterval(interval);
   }, [role]);
 
