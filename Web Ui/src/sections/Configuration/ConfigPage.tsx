@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 
-type FeatureFlag = {
-  id: number;
-  feature_name: string;
-  is_enabled: boolean;
-};
-
+import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
+import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
+import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
 export default function ConfigPage() {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const getFlagsUseCase = new GetFeatureFlags();
+  const updateFlagUseCase = new UpdateFeatureFlag();
+
   useEffect(() => {
     const fetchFlags = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/featureflags");
-        setFlags(response.data);
+        const data = await getFlagsUseCase.execute();
+        setFlags(data);
       } catch (err) {
         console.error("Error al cargar los flags", err);
         setError("Error al cargar los flags");
@@ -26,14 +25,16 @@ export default function ConfigPage() {
   }, []);
 
   const handleCheckboxChange = async (id: number, currentValue: boolean) => {
-    try {
-      const updated = await axios.put(`http://localhost:3000/api/featureflags/${id}`, {
-        is_enabled: !currentValue,
-      });
+    const confirmChange = window.confirm(
+      `¿Estás seguro de que quieres ${!currentValue ? "habilitar" : "deshabilitar"} esta funcionalidad?`
+    );
+    if (!confirmChange) return;
 
+    try {
+      const updatedFlag = await updateFlagUseCase.execute(id, !currentValue);
       setFlags((prevFlags) =>
         prevFlags.map((flag) =>
-          flag.id === id ? { ...flag, is_enabled: updated.data.is_enabled } : flag
+          flag.id === id ? updatedFlag : flag
         )
       );
     } catch (err) {
@@ -44,7 +45,7 @@ export default function ConfigPage() {
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h2>Configuración de Funcionalidades</h2>
+      <h2>Habilitación de Funcionalidades</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {flags.map((flag) => (
         <div key={flag.id} style={{ marginBottom: "10px" }}>
