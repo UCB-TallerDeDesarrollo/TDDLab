@@ -154,7 +154,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     fetchSubmissions();
   }, [practiceid]);
 
-  useEffect(() => {}, [practiceSubmissions]);
+  useEffect(() => { }, [practiceSubmissions]);
 
   const isTaskInProgress = submission?.status !== "in progress";
 
@@ -498,6 +498,23 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               }}
             >
               Subir sesión TDD extension
+            </Button>
+
+            <Button
+              variant="contained"
+              disabled={isTaskInProgress}
+              onClick={() => {
+                localStorage.setItem("selectedMetric", "AssistantAI");
+                navigate("/asistente-ia");
+              }}
+              color="primary"
+              style={{
+                textTransform: "none",
+                fontSize: "15px",
+                marginRight: "8px",
+              }}
+            >
+              Asistente IA
             </Button>
 
             <CommentDialog
