@@ -10,8 +10,7 @@ export class GetFeatureFlagByName {
   }
 
   async execute(featureName: string): Promise<FeatureFlag | null> {
-    const allFlags = await this.repo.getFlags();
-    return allFlags.find(flag => flag.feature_name === featureName) || null;
+    return await this.repo.getFlagByName(featureName); // <-- directo al backend
   }
 }
 

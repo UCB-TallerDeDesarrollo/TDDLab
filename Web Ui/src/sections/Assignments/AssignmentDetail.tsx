@@ -107,12 +107,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       }
     };
 
-    // Llama al inicio
     fetchFeatureFlag();
-
-    // Llama cada 15 segundos
     const interval = setInterval(fetchFeatureFlag, 15000);
-
     return () => clearInterval(interval);
   }, [role]);
 
