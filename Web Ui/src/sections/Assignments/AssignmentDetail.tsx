@@ -94,22 +94,28 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [showIAButton, setShowIAButton] = useState(false);
 
   useEffect(() => {
-    const fetchFeatureFlag = async () => {
-      if (!isStudent(role)) return;
+    if (!isStudent(role)) return;
 
+    const getFlagUseCase = new GetFeatureFlagByName();
+
+    const fetchFeatureFlag = async () => {
       try {
-        const getFlagUseCase = new GetFeatureFlagByName();
         const flag = await getFlagUseCase.execute("IA_ASSISTANT");
-        if (flag?.is_enabled) {
-          setShowIAButton(true);
-        }
+        setShowIAButton(flag?.is_enabled ?? false);
       } catch (error) {
         console.error("Error fetching feature flag IA_ASSISTANT:", error);
       }
     };
 
+    // Llama al inicio
     fetchFeatureFlag();
+
+    // Llama cada 15 segundos
+    const interval = setInterval(fetchFeatureFlag, 15000);
+
+    return () => clearInterval(interval);
   }, [role]);
+
 
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
