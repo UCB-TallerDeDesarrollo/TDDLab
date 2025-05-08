@@ -158,12 +158,11 @@ export class AIAssistantPanel {
       // Agregar el mensaje del usuario al chat
       this.messages.push(`💬 Usuario: ${userMessage}`);
 
-      // Preparamos el tddLog (puedes ajustar esta parte según el formato que estés usando)
-      const tddLog = this.prepareTddLog(userMessage);  
-      const prompt = "Analizar TDD y generar feedback"; // El prompt para la IA
+      // No se necesita un "prompt" fijo. El mensaje del usuario es lo que se pasa directamente a la IA.
+      const tddLog = this.prepareTddLog(userMessage);  // Preparamos el tddLog (puedes adaptarlo a lo que necesites)
 
-      // Aquí pasamos ambos parámetros: tddLog y prompt
-      const response = await this.feedbackAssistant.getTDDFeedbackFromAI(tddLog, prompt);
+      // Ahora pasamos el mensaje directamente a la IA
+      const response = await this.feedbackAssistant.getTDDFeedbackFromAI(tddLog, userMessage);
 
       // Agregar la respuesta de la IA al chat
       this.messages.push(`🤖 IA: ${response}`);
@@ -175,7 +174,7 @@ export class AIAssistantPanel {
     }
   }
 
-  // Método para preparar el tddLog
+  // Método para preparar el tddLog (puedes adaptarlo a lo que necesites)
   private prepareTddLog(userMessage: string) {
     return {
       testResult: userMessage,  // Este es un ejemplo; puedes usar una estructura más compleja
@@ -183,10 +182,10 @@ export class AIAssistantPanel {
     };
   }
 
-  // Método para obtener retroalimentación desde la IA (llamada que se hace desde ExecuteAIAssistant)
+  // Método para obtener retroalimentación desde la IA
   public async getTDDFeedbackFromAI() {
     try {
-      // Obtener retroalimentación de la IA
+      // Aquí pasamos un mensaje predeterminado para obtener la respuesta de la IA
       const response = await this.feedbackAssistant.getTDDFeedbackFromAI(
         { testResult: 'Dummy TDD result', timestamp: new Date().toISOString() }, 
         "Analizar TDD y generar feedback" 
