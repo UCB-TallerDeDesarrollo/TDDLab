@@ -19,7 +19,10 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
                 throw new Error("Failed to check assignment start status");
             }
         } catch (error) {
-            console.error("Error checking assignment start status:", error);
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                // Manejar el error 404 sin mostrarlo en la consola
+                return Promise.resolve({ hasStarted: false });
+            }
             throw error;
         }
     }
@@ -33,8 +36,13 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
                 throw new Error("Failed to get submissions by assignment ID");
             }
         } catch (error) {
-            console.error("Error getting submissions by assignment ID:", error);
-            throw error;
+            if (axios.isAxiosError(error)) {
+                console.error(`Error fetching submissions for assignment ID ${assignmentid}:`, error.message);
+                if (error.response?.status === 404) {
+                    throw new Error("Submissions not found for the given assignment ID");
+                }
+            }
+            throw error; // Rethrow the error for further handling
         }
     }
 
@@ -54,8 +62,10 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
                 throw new Error("Failed to get submission");
             }
         } catch (error) {
-            console.error("Error getting submission status:", error);
-            throw error;
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                return Promise.reject(new Error("Submission not found"));
+            }
+            return Promise.reject(error instanceof Error ? error : new Error(String(error)));
         }
     }
 }
