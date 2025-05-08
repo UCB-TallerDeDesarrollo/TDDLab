@@ -24,7 +24,7 @@ export default class AIAssistantController {
         const instruction = req.body.instruction;
 
         if (!instruction?.URL || !instruction?.value) {
-            res.status(400).json({ error: 'Faltan datos en la instruccion' });
+            res.status(400).json({ error: 'Faltan datos en la instrucción' });
             return;
         }
 
@@ -39,9 +39,9 @@ export default class AIAssistantController {
 
     async analyzeTDDFromExtension(req: Request, res: Response): Promise<void> {
         const { tddlog, prompt } = req.body;
-    
+
         if (!tddlog || !prompt) {
-            res.status(400).json({ 
+            res.status(400).json({
                 error: 'Se requieren tddlog y prompt en el cuerpo de la solicitud',
                 details: {
                     received: {
@@ -52,45 +52,69 @@ export default class AIAssistantController {
             });
             return;
         }
-    
+
         try {
             const result = await this.analyzeTDDUseCase.execute(tddlog, prompt);
-            res.json({ 
+            res.json({
                 success: true,
-                analysis: result 
+                analysis: result
             });
         } catch (error: unknown) {
             console.error('[CONTROLLER ERROR] analyzeTDDFromExtension:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido al analizar el código';
-            res.status(500).json({ 
-                error: "Error al analizar el código",
-                details: errorMessage 
+            let errorMessage = 'Error desconocido al analizar el código';
+
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+
+            res.status(500).json({
+                error: 'Error al analizar el código',
+                details: errorMessage
             });
+        }
+    }
+
     async getPrompts(_req: Request, res: Response): Promise<void> {
         try {
             const prompts = await this.getPromptsUseCase.execute();
             res.status(200).json(prompts);
-        } catch (error) {
-            res.status(500).json({ error: "Server error" });
+        } catch (error: unknown) {
+            console.error('[CONTROLLER ERROR] getPrompts:', error);
+            res.status(500).json({
+                error: 'Error al obtener los prompts',
+                details: error instanceof Error ? error.message : 'Error desconocido'
+            });
         }
     }
 
     async updatePrompts(_req: Request, res: Response): Promise<void> {
-        const {
-            analysis_tdd,
-            refactoring
-        } = _req.body;
+        const { analysis_tdd, refactoring } = _req.body;
+
+        if (!analysis_tdd || !refactoring) {
+            res.status(400).json({
+                error: 'Faltan datos para actualizar los prompts',
+                details: {
+                    received: {
+                        analysis_tdd: analysis_tdd !== undefined,
+                        refactoring: refactoring !== undefined
+                    }
+                }
+            });
+            return;
+        }
 
         try {
-            const updatePrompts = await this.updatePromptsUseCase.execute(
-                {
-                    analysis_tdd,
-                    refactoring
-                }
-            );
+            const updatePrompts = await this.updatePromptsUseCase.execute({
+                analysis_tdd,
+                refactoring
+            });
             res.status(200).json(updatePrompts);
-        } catch (error) {
-            res.status(500).json({ error: "Server error" });
+        } catch (error: unknown) {
+            console.error('[CONTROLLER ERROR] updatePrompts:', error);
+            res.status(500).json({
+                error: 'Error al actualizar los prompts',
+                details: error instanceof Error ? error.message : 'Error desconocido'
+            });
         }
     }
 }
