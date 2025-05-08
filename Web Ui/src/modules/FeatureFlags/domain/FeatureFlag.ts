@@ -11,4 +11,5 @@ export type FeatureFlag = {
   export interface FeatureFlagRepositoryInterface {
     getFlags(): Promise<FeatureFlag[]>;
     updateFlag(id: number, request: FeatureFlagUpdateRequest): Promise<FeatureFlag>;
+    getFlagByName(name: string): Promise<FeatureFlag | null>;
   }

@@ -10,6 +10,8 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import FileUploadDialog from "./components/FileUploadDialog";
 
 import { UploadTDDLogFile } from "../../modules/Assignments/application/UploadTDDLogFile.ts";
+import { GetFeatureFlagByName } from "../../modules/FeatureFlags/application/GetFeatureFlagByName";
+
 
 
 
@@ -54,7 +56,7 @@ import {
 
 interface AssignmentDetailProps {
   role: string;
-  userid: number; 
+  userid: number;
 }
 
 function isStudent(role: string) {
@@ -89,8 +91,31 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [_submissionsError, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
+  const [showIAButton, setShowIAButton] = useState(false);
+
+  useEffect(() => {
+    if (!isStudent(role)) return;
+
+    const getFlagUseCase = new GetFeatureFlagByName();
+
+    const fetchFeatureFlag = async () => {
+      try {
+        const flag = await getFlagUseCase.execute("Boton Asistente IA");
+        setShowIAButton(flag?.is_enabled ?? true);
+      } catch (error) {
+        console.error("Error fetching feature flag IA_ASSISTANT:", error);
+      }
+    };
+
+    fetchFeatureFlag();
+    const interval = setInterval(fetchFeatureFlag, 2000);
+    return () => clearInterval(interval);
+  }, [role]);
+
+
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
+
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -370,8 +395,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       return "";
     }
   };
-    const renderStudentRows = async () => {
-    
+  const renderStudentRows = async () => {
+
     const rows = await Promise.all(
       submissions.map(async (submission) => {
         const studentEmail = await getStudentEmailById(submission.userid);
@@ -414,9 +439,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Ver gráfica
               </Button>
             </TableCell>
-           
+
             <TableCell>
-            
+
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
@@ -434,9 +459,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               >
                 Asistente IA
               </Button>
-            
+
             </TableCell>
-         
+
             <TableCell>
               <Button
                 variant="contained"
@@ -465,7 +490,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
 
   return (
-    
+
     <div
       style={{
         display: "flex",
@@ -653,7 +678,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
                   if (studentSubmission?.repository_link) {
-                    handleRedirectStudent(studentSubmission.repository_link,studentSubmission.id,navigate)
+                    handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate)
                   }
                 }}
                 color="primary"
@@ -696,7 +721,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Subir sesión TDD extension
               </Button>
             )}
-            {isStudent(role) && (
+            {isStudent(role) && showIAButton && (
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}

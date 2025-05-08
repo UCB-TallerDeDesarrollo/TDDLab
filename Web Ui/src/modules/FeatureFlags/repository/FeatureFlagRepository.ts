@@ -18,6 +18,16 @@ class FeatureFlagRepository implements FeatureFlagRepositoryInterface {
     const response = await axios.put(`${API_URL}/${id}`, request);
     return response.data;
   }
+
+  async getFlagByName(name: string): Promise<FeatureFlag | null> {
+    try {
+      const response = await axios.get(`${API_URL}/name/${name}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error al obtener el flag "${name}":`, error);
+      return null;
+    }
+  }
 }
 
 export default FeatureFlagRepository;
