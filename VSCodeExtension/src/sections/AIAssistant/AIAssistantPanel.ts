@@ -1,11 +1,17 @@
 import * as vscode from "vscode";
-import { GetTDDFeedbackFromAI } from "../../modules/AIAssistant/application/GetTDDFeedbackFromAI";
+import { GetTDDFeedbackFromAI } from "../../modules/AIAssistant/application/GetTDDFeedbackFromAI"; // Asegúrate de que esté bien importado
+
+// Definir tipo para los mensajes que recibimos del Webview fuera de la clase
+interface WebviewMessage {
+  type: string;
+  text: string;
+}
 
 export class AIAssistantPanel {
   private panel: vscode.WebviewPanel | undefined;
-  private readonly messages: string[] = [];
+  private readonly messages: string[] = [];  // Lista de mensajes en el chat
   private readonly context: vscode.ExtensionContext;
-  private readonly feedbackAssistant: GetTDDFeedbackFromAI = new GetTDDFeedbackFromAI();
+  private readonly feedbackAssistant: GetTDDFeedbackFromAI;  // Instancia de la clase GetTDDFeedbackFromAI
   private static instance: AIAssistantPanel | undefined;
 
   // Método para obtener la instancia única de AIAssistantPanel
@@ -19,6 +25,7 @@ export class AIAssistantPanel {
 
   private constructor(context: vscode.ExtensionContext) {
     this.context = context;
+    this.feedbackAssistant = new GetTDDFeedbackFromAI();  // Crear una nueva instancia de GetTDDFeedbackFromAI
 
     // Crear el panel webview solo si no existe
     if (!this.panel) {
@@ -32,6 +39,14 @@ export class AIAssistantPanel {
       this.panel.onDidDispose(() => {
         this.panel = undefined;
         AIAssistantPanel.instance = undefined;
+      });
+
+      // Escuchar mensajes del Webview
+      this.panel.webview.onDidReceiveMessage((message: WebviewMessage) => {
+        if (message.type === 'userMessage') {
+          const userMessage = message.text;
+          this.processUserMessage(userMessage); // Llamar al método que procesa el mensaje
+        }
       });
     }
   }
@@ -81,7 +96,7 @@ export class AIAssistantPanel {
 
   // Método para crear los mensajes en formato HTML
   private createMessagesHtml(): string {
-    return this.messages.map((msg) => `<p>${msg}</p>`).join("");
+    return this.messages.map((msg) => `<p>${msg}</p>`).join("");  // Generamos el HTML con los mensajes
   }
 
   // Método para generar el contenido HTML
@@ -104,7 +119,7 @@ export class AIAssistantPanel {
       <body>
         <h1>Asistente de IA</h1>
         <div id="chat-box">
-          ${messagesHtml}
+          ${messagesHtml}  <!-- Aquí se inyectan los mensajes -->
         </div>
 
         <form id="chat-form">
@@ -133,36 +148,59 @@ export class AIAssistantPanel {
   public update() {
     if (this.panel) {
       const messagesHtml = this.createMessagesHtml();
-      this.panel.webview.html = this.generateHtmlContent(messagesHtml);
+      this.panel.webview.html = this.generateHtmlContent(messagesHtml);  // Actualizamos el contenido de la webview
     }
   }
 
-  // Manejo de errores de la API
-  private handleError(err: any): void {
-    console.error(err);
-    this.messages.push("Error leyendo archivos o llamando a la API");
-    this.update();
+  // Lógica para manejar los mensajes del usuario y procesarlos
+  private async processUserMessage(userMessage: string) {
+    try {
+      // Agregar el mensaje del usuario al chat
+      this.messages.push(`💬 Usuario: ${userMessage}`);
+
+      // Preparamos el tddLog (puedes ajustar esta parte según el formato que estés usando)
+      const tddLog = this.prepareTddLog(userMessage);  
+      const prompt = "Analizar TDD y generar feedback"; // El prompt para la IA
+
+      // Aquí pasamos ambos parámetros: tddLog y prompt
+      const response = await this.feedbackAssistant.getTDDFeedbackFromAI(tddLog, prompt);
+
+      // Agregar la respuesta de la IA al chat
+      this.messages.push(`🤖 IA: ${response}`);
+      this.update();  // Actualizamos la webview para mostrar los nuevos mensajes
+    } catch (error) {
+      console.error("Error procesando el mensaje del usuario", error);
+      this.messages.push("Error al procesar el mensaje");
+      this.update();  // Actualizamos la webview incluso en caso de error
+    }
   }
 
-  // Manejo de la respuesta de la API
-  private async handleApiResponse(response: string) {
-    console.log("RESPUESTAAAA", response);
-    this.messages.push(response);
-    this.update();
+  // Método para preparar el tddLog
+  private prepareTddLog(userMessage: string) {
+    return {
+      testResult: userMessage,  // Este es un ejemplo; puedes usar una estructura más compleja
+      timestamp: new Date().toISOString(),
+    };
   }
 
-  // Método para obtener el feedback del TDD de la IA y luego habilitar el chat
+  // Método para obtener retroalimentación desde la IA (llamada que se hace desde ExecuteAIAssistant)
   public async getTDDFeedbackFromAI() {
     try {
-      // Primero obtenemos la retroalimentación del TDD
-      const response = await this.feedbackAssistant.fetchResponse(this.context);
-      this.handleApiResponse(response);
+      // Obtener retroalimentación de la IA
+      const response = await this.feedbackAssistant.getTDDFeedbackFromAI(
+        { testResult: 'Dummy TDD result', timestamp: new Date().toISOString() }, 
+        "Analizar TDD y generar feedback" 
+      );
+      
+      // Mostrar la respuesta
+      console.log("Respuesta de la IA: ", response);
 
-      // Después de mostrar la retroalimentación, habilitamos el chat
-      this.messages.push("🤖 IA: ¡El chat ahora está disponible!");
-      this.update(); // Actualizamos la webview después de mostrar el chat
-    } catch (err) {
-      this.handleError(err);
+      this.messages.push(`🤖 IA: ${response}`);
+      this.update();
+    } catch (error) {
+      console.error("Error al obtener la retroalimentación de la IA", error);
+      this.messages.push("Error al obtener la retroalimentación de la IA");
+      this.update();
     }
   }
 }
