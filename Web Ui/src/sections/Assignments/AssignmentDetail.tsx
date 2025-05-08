@@ -91,6 +91,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
+  const [showIAButton, setShowIAButton] = useState(false);
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -227,6 +228,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
     fetchStudentSubmission();
   }, [assignmentid, userid, role]);
+
+  useEffect(() => {
+    const fetchFeatureFlag = async () => {
+      if (!isStudent(role)) return;
+      try {
+        const response = await fetch("/feature-flags/name/IA_ASSISTANT");
+        if (!response.ok) {
+          console.error("No se pudo obtener el feature flag");
+          return;
+        }
+        const data = await response.json();
+        setShowIAButton(data.is_enabled === true);
+      } catch (error) {
+        console.error("Error consultando el feature flag:", error);
+      }
+    }
+    fetchFeatureFlag();
+  }, [role]);
+
 
   const handleSendGithubLink = async (repository_link: string) => {
     console.log("I will print the json log") //delete later
@@ -370,8 +390,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       return "";
     }
   };
-    const renderStudentRows = async () => {
-    
+  const renderStudentRows = async () => {
+
     const rows = await Promise.all(
       submissions.map(async (submission) => {
         const studentEmail = await getStudentEmailById(submission.userid);
@@ -414,9 +434,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Ver gráfica
               </Button>
             </TableCell>
-           
+
             <TableCell>
-            
+
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
@@ -434,9 +454,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               >
                 Asistente IA
               </Button>
-            
+
             </TableCell>
-         
+
             <TableCell>
               <Button
                 variant="contained"
@@ -465,7 +485,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
 
   return (
-    
+
     <div
       style={{
         display: "flex",
@@ -696,7 +716,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Subir sesión TDD extension
               </Button>
             )}
-            {isStudent(role) && (
+            {isStudent(role) && showIAButton && (
               <Button
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
