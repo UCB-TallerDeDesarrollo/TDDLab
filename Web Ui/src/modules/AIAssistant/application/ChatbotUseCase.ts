@@ -1,4 +1,4 @@
-import { ChatbotRepository } from '../repository/ChatbotRepository';
+import { ChatbotRepository } from '../repository/ChatBotRepository';
 
 export class ChatbotUseCase {
   private readonly chatbotRepository: ChatbotRepository;
