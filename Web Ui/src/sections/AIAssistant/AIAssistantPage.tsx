@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Typography } from '@mui/material';
-import AIResultSection from './components/AIResultSection';
+import { Typography, Box, Button, CircularProgress, TextField, Paper } from '@mui/material';
 import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
+import { ChatbotUseCase } from '../../modules/AIAssistant/application/ChatbotUseCase';
+import AIResultSection from './components/AIResultSection';
+import { v4 as generateUniqueId } from 'uuid';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
+const chatbotUseCase = new ChatbotUseCase();
 
 const AIAssistantPage = () => {
   const location = useLocation();
@@ -15,6 +18,10 @@ const AIAssistantPage = () => {
   const [loadingAnalysis, setLoadingAnalysis] = useState<boolean>(false);
   const [loadingRefactor, setLoadingRefactor] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const [userMessage, setUserMessage] = useState<string>("");
+  const [messages, setMessages] = useState<{ from: 'user' | 'bot', text: string }[]>([]);
+  const [loadingChat, setLoadingChat] = useState<boolean>(false);
 
   const handleApiCall = async (
     action: "analiza" | "refactoriza",
@@ -38,6 +45,25 @@ const AIAssistantPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChatSubmit = async () => {
+    if (!userMessage.trim()) return;
+    setLoadingChat(true);
+
+    const newMessages = [...messages, { id: generateUniqueId(), from: 'user', text: userMessage }];
+    setMessages(newMessages);
+
+    try {
+      const botReply = await chatbotUseCase.sendMessage(userMessage);
+      setMessages([...newMessages, { from: 'bot', text: botReply }]);
+    } catch (error) {
+      console.error("Error al enviar mensaje al chatbot:", error);
+      setMessages([...newMessages, { from: 'bot', text: "Error de conexión con el servidor." }]);
+    } finally {
+      setUserMessage("");
+      setLoadingChat(false);
+    }    
   };
 
   return (
@@ -94,8 +120,57 @@ const AIAssistantPage = () => {
           buttonText="Evaluar la aplicación de Refactoring"
         />
       </div>
+      <div style={{ margin: '20px 0' }}></div>
+      {/* Sección del Chatbot */}
+      <Paper elevation={3} style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
+        <Typography variant="h6" gutterBottom>TDD Buddy</Typography>
+
+        <Box
+          style={{
+            border: "1px solid #ccc",
+            borderRadius: 8,
+            padding: 10,
+            height: 300,
+            overflowY: "auto",
+            marginBottom: 16,
+            backgroundColor: "#fafafa",
+          }}
+        >
+          {messages.length === 0 && (
+            <Typography variant="body2" color="textSecondary">
+              Inicia una conversación con el asistente...
+            </Typography>
+          )}
+          {messages.map((msg) => (
+            <div key={msg.id} style={{ marginBottom: 10 }}>
+              <strong>{msg.from === 'user' ? 'Tú' : 'Asistente'}:</strong> {msg.text}
+            </div>
+          ))}
+
+        </Box>
+
+        <Box display="flex" gap={2}>
+          <TextField
+            fullWidth
+            label="Escribe tu mensaje..."
+            variant="outlined"
+            value={userMessage}
+            onChange={(e) => setUserMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleChatSubmit();
+              }
+            }}
+          />
+          <Button variant="contained" onClick={handleChatSubmit} disabled={loadingChat}>
+            {loadingChat ? <CircularProgress size={24} /> : "Enviar"}
+          </Button>
+        </Box>
+      </Paper>
     </div>
   );
+
 };
 
 export default AIAssistantPage;

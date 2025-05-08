@@ -5,6 +5,7 @@ import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIA
 import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
 import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 import { AnalyzeTDDCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeTDDCodeUseCase';
+import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
 
 export default class AIAssistantController {
 
@@ -12,12 +13,14 @@ export default class AIAssistantController {
     private readonly getPromptsUseCase: GetPromptsCodeUseCase;
     private readonly updatePromptsUseCase: UpdatePromptsCodeUseCase;
     private readonly analyzeTDDUseCase: AnalyzeTDDCodeUseCase;
+    private readonly chatbotUseCase: ChatbotCodeUseCase;
 
     constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
         this.analyzeTDDUseCase = new AnalyzeTDDCodeUseCase(repository);
+        this.chatbotUseCase = new ChatbotCodeUseCase(repository);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -95,4 +98,22 @@ export default class AIAssistantController {
                 details: errorMessage 
             });
         }}
+    async chatBot(req: Request, res: Response): Promise<void> {
+        const userInput = req.body.input;
+
+        if (!userInput) {
+            res.status(400).json({ error: 'Faltan datos en la solicitud' });
+            return;
+        }
+
+        try {
+            const response = await this.chatbotUseCase.execute(userInput);
+            res.json({ response });
+        } catch (err) {
+            res.status(500).json({ error: 'Error procesando la solicitud del chatbot' });
+        }
+    }
+
 }
+
+

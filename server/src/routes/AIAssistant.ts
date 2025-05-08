@@ -29,4 +29,10 @@ aiAssistantRouter.post(
     async (req, res) => await aiAssistantController.analyzeTDDFromExtension(req, res)
 );
 
+aiAssistantRouter.post(
+    '/chatbot',
+    async (req, res) => await aiAssistantController.chatBot(req, res)
+);
+
+
 export default aiAssistantRouter;

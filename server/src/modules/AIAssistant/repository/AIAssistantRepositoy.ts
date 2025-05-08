@@ -93,4 +93,12 @@ export class AIAssistantRepository {
         const raw = await this.sendRequestToAIAssistant(prompt, '');
         return this.mapToAIAssistantAnswer(raw);
     }  
+    public async sendChat(input: string): Promise<AIAssistantAnswerObject> {
+        const code = "Responde como un chatbot";
+        const instruction = input;
+
+        const raw = await this.sendRequestToAIAssistant(code, instruction);
+
+        return this.mapToAIAssistantAnswer(raw);
+    }
 }
