@@ -83,7 +83,7 @@ const AIAssistantPage = () => {
       {/* Header */}
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box display="flex" alignItems="center" gap={1}>
-          <ChatBubbleOutlineIcon fontSize="small" sx={{ color: '#1976d2' }} />
+          <ChatBubbleOutlineIcon fontSize="small" sx={{ color: '#1976D2' }} />
           <Typography variant="h5" fontWeight="bold">Asistente IA</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap={1}>
@@ -119,12 +119,12 @@ const AIAssistantPage = () => {
               >
                 {msg.from === 'bot' ? (
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, maxWidth: '75%' }}>
-                    <Avatar sx={{ bgcolor: '#1976d2', width: 32, height: 32 }}>
+                    <Avatar sx={{ color:'#1976D2' ,bgcolor: '#F1F5F9', width: 32, height: 32 }}>
                       <SmartToyIcon fontSize="small" />
                     </Avatar>
                     <Box
                       sx={{
-                        backgroundColor: '#f1f1f1',
+                        backgroundColor: '#F1F5F9',
                         color: '#000',
                         px: 2,
                         py: 1,
