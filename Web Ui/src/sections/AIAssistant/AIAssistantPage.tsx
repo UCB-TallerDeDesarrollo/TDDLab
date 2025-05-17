@@ -8,6 +8,10 @@ import { ChatbotUseCase } from '../../modules/AIAssistant/application/ChatbotUse
 import { v4 as generateUniqueId } from 'uuid';
 import SendIcon from '@mui/icons-material/Send';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import CodeIcon from '@mui/icons-material/Code';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 const chatbotUseCase = new ChatbotUseCase();
@@ -31,18 +35,19 @@ const AIAssistantPage = () => {
     if (!userMessage.trim()) return;
     setLoadingChat(true);
 
-    const newMessages = [...messages, { id: generateUniqueId(), from: "user", text: userMessage }];
+    const newMessages = [...messages, { id: generateUniqueId(), from: "user" as "user", text: userMessage }];
     setMessages(newMessages);
 
     try {
       const botReply = await chatbotUseCase.sendMessage(userMessage);
-      addBotMessage(botReply);
+      setMessages([...newMessages, {id: generateUniqueId(), from: 'bot', text: botReply }]);
     } catch (error) {
-      addBotMessage("Error de conexión con el servidor.");
+      console.error("Error al enviar mensaje al chatbot:", error);
+      setMessages([...newMessages, {id: generateUniqueId(), from: 'bot', text: "Error de conexión con el servidor." }]);
     } finally {
       setUserMessage("");
       setLoadingChat(false);
-    }
+    }    
   };
 
   const handleApiCall = async (action: "analiza" | "refactoriza") => {
@@ -76,16 +81,26 @@ const AIAssistantPage = () => {
   return (
     <Box sx={{ padding: 4, display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* Header */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>Asistente IA</Typography>
-        <a
-          href={repositoryLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none', color: 'gray', fontSize: 14 }}
-        >
-          {repositoryLink}
-        </a>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <ChatBubbleOutlineIcon fontSize="small" sx={{ color: '#1976d2' }} />
+          <Typography variant="h5" fontWeight="bold">Asistente IA</Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <GitHubIcon fontSize="small" sx={{ color: 'gray' }} />
+          <a
+            href={repositoryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              textDecoration: 'none',
+              color: 'gray',
+              fontSize: 14
+            }}
+          >
+            {repositoryLink}
+          </a>
+        </Box>
       </Box>
 
       {/* Contenedor Chat + Botones */}
@@ -173,6 +188,7 @@ const AIAssistantPage = () => {
             onClick={() => handleApiCall("analiza")}
             disabled={loadingAction !== null}
             fullWidth
+            startIcon={<CodeIcon />}
           >
             {loadingAction === "analiza" ? <CircularProgress size={20} /> : "TDD"}
           </Button>
@@ -182,6 +198,7 @@ const AIAssistantPage = () => {
             onClick={() => handleApiCall("refactoriza")}
             disabled={loadingAction !== null}
             fullWidth
+            startIcon={<AutorenewIcon />}
           >
             {loadingAction === "refactoriza" ? <CircularProgress size={20} /> : "Refactoring"}
           </Button>
