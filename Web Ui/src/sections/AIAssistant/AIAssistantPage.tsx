@@ -76,12 +76,15 @@ const AIAssistantPage = () => {
   return (
     <Box sx={{ padding: 4, display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight="bold">Asistente IA</Typography>
-        <Box display="flex" gap={2} alignItems="center">
-          <a href={repositoryLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: '#1976d2', fontSize: 14 }}>
-            {repositoryLink}
-          </a>
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>Asistente IA</Typography>
+        <Typography sx={{ color: 'gray', fontSize: 14 }}>{repositoryLink}</Typography>
+      </Box>
+
+      {/* Chat Section */}
+      <Paper elevation={3} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: 2, borderRadius: 2 }}>
+        {/* Botones arriba del chat */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 2 }}>
           <Button
             variant="contained"
             color="primary"
@@ -99,10 +102,8 @@ const AIAssistantPage = () => {
             {loadingAction === "refactoriza" ? <CircularProgress size={20} /> : "Refactoring"}
           </Button>
         </Box>
-      </Box>
 
-      {/* Chat Section */}
-      <Paper elevation={3} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: 2, borderRadius: 2 }}>
+        {/* Mensajes */}
         <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {messages.map((msg) => (
             <Box
@@ -112,31 +113,43 @@ const AIAssistantPage = () => {
                 justifyContent: msg.from === 'user' ? 'flex-end' : 'flex-start'
               }}
             >
-              <Box
-                sx={{
-                  backgroundColor: msg.from === 'user' ? '#e3f2fd' : '#f1f1f1',
-                  color: '#000',
-                  px: 2,
-                  py: 1,
-                  borderRadius: 2,
-                  maxWidth: '75%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  whiteSpace: 'pre-line'
-                }}
-              >
-                {msg.from === 'bot' && (
-                  <SmartToyIcon fontSize="small" sx={{ color: '#1976d2' }} />
-                )}
-                <Typography variant="body2">{msg.text}</Typography>
-              </Box>
+              {msg.from === 'bot' ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', maxWidth: '75%' }}>
+                  <SmartToyIcon fontSize="small" sx={{ color: '#1976d2', mb: 0.5 }} />
+                  <Box
+                    sx={{
+                      backgroundColor: '#f1f1f1',
+                      color: '#000',
+                      px: 2,
+                      py: 1,
+                      borderRadius: 2,
+                      whiteSpace: 'pre-line'
+                    }}
+                  >
+                    <Typography variant="body2">{msg.text}</Typography>
+                  </Box>
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    backgroundColor: '#e3f2fd',
+                    color: '#000',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 2,
+                    maxWidth: '75%',
+                    whiteSpace: 'pre-line'
+                  }}
+                >
+                  <Typography variant="body2">{msg.text}</Typography>
+                </Box>
+              )}
             </Box>
           ))}
         </Box>
 
         {/* Input */}
-        <Box display="flex" gap={1} mt="auto">
+        <Box display="flex" gap={1}>
           <TextField
             fullWidth
             variant="outlined"
