@@ -70,9 +70,25 @@ const Assignment: React.FC<AssignmentProps> = ({
     sx={{ 
       borderBottom: "2px solid #E7E7E7" 
     }}>
-      <TableCell>{assignment.title}</TableCell>
-      <TableCell>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <TableCell
+        style={{
+          width: "20%",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {assignment.title}
+      </TableCell>
+      <TableCell style={{ width: "30%", maxWidth: "300px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flexWrap: "nowrap",
+            }}
+          >
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"
