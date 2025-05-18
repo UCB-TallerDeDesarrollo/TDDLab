@@ -29,19 +29,12 @@ const StyledTable = styled(Table)({
   marginLeft: "auto",
   marginRight: "auto",
 });
-const ButtonContainer = styled("div")({
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: "8px",
-});
 
 const CustomTableCell1 = styled(TableCell)({
   width: "80%",
 });
 
-const CustomTableCell2 = styled(TableCell)({
-  width: "10%",
-});
+
 
 const LoadingContainer = styled("div")({
   display: "flex",
@@ -283,99 +276,125 @@ function Assignments({
     setHoveredRow(index);
   };
 
-  return (
-      <Container>
-        {isLoading ? ( // Muestra el spinner mientras se cargan los datos
-            <LoadingContainer>
-              <CircularProgress />
-            </LoadingContainer>
-        ) : (
-            <section className="Tareas">
-              <StyledTable>
-                <TableHead>
-                  <TableRow
-                      sx={{
-                        borderBottom: "2px solid #E7E7E7"
-                      }}
-                  >
-                    <CustomTableCell1
-                        sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
-                    >
-                      Tareas
-                    </CustomTableCell1>
-                    <CustomTableCell2>
-                      <ButtonContainer>
-                        <GroupFilter
-                            selectedGroup={selectedGroup}
-                            groupList={groupList}
-                            onChangeHandler={handleGroupChange}
-                            defaultName={groupList.find(group => group.id == selectedGroup)?.groupName || groupList[0]?.groupName || "Selecciona un grupo"}
-                        />
-                        <SortingComponent
-                            selectedSorting={selectedSorting}
-                            onChangeHandler={handleOrderAssignments}
-                        />
-                        {userRole !== "student" && (
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<AddIcon />}
-                                sx={{
-                                  borderRadius: "17px",
-                                  textTransform: "none",
-                                  fontSize: "0.95rem",
-                                }}
-                                onClick={showForm}
-                            >
-                              Crear
-                            </Button>
-                        )}
-                      </ButtonContainer>
-                    </CustomTableCell2>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredAssignments.map((assignment, index) => (
-                      <Assignment
-                          key={assignment.id}
-                          assignment={assignment}
-                          index={index}
-                          handleClickDetail={handleClickDetail}
-                          handleClickDelete={handleClickDelete}
-                          handleRowHover={handleRowHover}
-                          role={userRole}
-                      />
-                  ))}
-                </TableBody>
-              </StyledTable>
-              {confirmationOpen && (
-                  <ConfirmationDialog
-                      open={confirmationOpen}
-                      title="¿Eliminar la tarea?"
-                      content={
-                        <>
-                          Ten en cuenta que esta acción tambien eliminará <br /> todas las
-                          entregas asociadas.
-                        </>
-                      }
-                      cancelText="Cancelar"
-                      deleteText="Eliminar"
-                      onCancel={() => setConfirmationOpen(false)}
-                      onDelete={handleConfirmDelete}
-                  />
-              )}
-              {validationDialogOpen && (
-                  <ValidationDialog
-                      open={validationDialogOpen}
-                      title="Tarea eliminada exitosamente"
-                      closeText="Cerrar"
-                      onClose={() => window.location.reload()}
-                  />
-              )}
-            </section>
+ return (
+  <Container>
+    {isLoading ? (
+      <LoadingContainer>
+        <CircularProgress />
+      </LoadingContainer>
+    ) : (
+      <section className="Tareas">
+        {/* 🔹 Botones separados de la tabla */}
+        {/* 🔹 Botones arriba de la tabla en una sola línea */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "12px",
+            marginBottom: "1rem",
+            width: "82%",
+            marginLeft: "auto",
+            marginRight: "auto",
+            flexWrap: "nowrap"
+          }}
+        >
+          <GroupFilter
+            selectedGroup={selectedGroup}
+            groupList={groupList}
+            onChangeHandler={handleGroupChange}
+            defaultName={
+              groupList.find((group) => group.id == selectedGroup)?.groupName ||
+              groupList[0]?.groupName ||
+              "Selecciona un grupo"
+            }
+          />
+          <SortingComponent
+            selectedSorting={selectedSorting}
+            onChangeHandler={handleOrderAssignments}
+          />
+          {userRole !== "student" && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              sx={{
+                borderRadius: "17px",
+                textTransform: "none",
+                fontSize: "0.95rem",
+                paddingX: "16px",
+                paddingY: "8px",
+                minWidth: "90px",
+                whiteSpace: "nowrap",
+              }}
+              onClick={showForm}
+            >
+              Crear
+            </Button>
+          )}
+        </div>
+
+
+        {/* 🔹 Tabla solo con encabezado de columnas */}
+        <StyledTable>
+          <TableHead>
+            <TableRow
+              sx={{
+                borderBottom: "2px solid #E7E7E7",
+              }}
+            >
+              <CustomTableCell1
+                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+              >
+                Tareas
+              </CustomTableCell1>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredAssignments.map((assignment, index) => (
+              <Assignment
+                key={assignment.id}
+                assignment={assignment}
+                index={index}
+                handleClickDetail={handleClickDetail}
+                handleClickDelete={handleClickDelete}
+                handleRowHover={handleRowHover}
+                role={userRole}
+              />
+            ))}
+          </TableBody>
+        </StyledTable>
+
+        {/* Diálogos */}
+        {confirmationOpen && (
+          <ConfirmationDialog
+            open={confirmationOpen}
+            title="¿Eliminar la tarea?"
+            content={
+              <>
+                Ten en cuenta que esta acción también eliminará <br /> todas las
+                entregas asociadas.
+              </>
+            }
+            cancelText="Cancelar"
+            deleteText="Eliminar"
+            onCancel={() => setConfirmationOpen(false)}
+            onDelete={handleConfirmDelete}
+          />
         )}
-      </Container>
-  );
+        {validationDialogOpen && (
+          <ValidationDialog
+            open={validationDialogOpen}
+            title="Tarea eliminada exitosamente"
+            closeText="Cerrar"
+            onClose={() => window.location.reload()}
+          />
+        )}
+      </section>
+    )}
+  </Container>
+);
+
 }
 
 export default Assignments;
