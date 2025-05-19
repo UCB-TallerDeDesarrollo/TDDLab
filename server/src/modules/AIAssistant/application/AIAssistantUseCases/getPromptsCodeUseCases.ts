@@ -1,4 +1,4 @@
-import { AIAssistantPromptObject } from "../../domain/AIAssistant";
+import { AIAssistantPromptObject2 } from "../../domain/AIAssistant";
 import { AIAssistantDataBaseRepository } from "../../repository/AiAssistantDataBaseRepository";
 
 export class GetPromptsCodeUseCase {
@@ -8,7 +8,7 @@ export class GetPromptsCodeUseCase {
         this.adapter = adapter;
     }
 
-    async execute(): Promise<AIAssistantPromptObject | null> {
+    async execute(): Promise<AIAssistantPromptObject2 | null> {
         try {
             const prompts = await this.adapter.getPrompts();
             return prompts;
