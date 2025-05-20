@@ -8,10 +8,5 @@ export interface AIAssistantAnswerObject {
 }
 
 export interface AIAssistantPromptObject {
-    analysis_tdd: string;
-    refactoring: string;
-}   
-
-export interface AIAssistantPromptObject2 {
-    [key: string]: string; // flexible para nuevos tipos
+    [key: string]: string;
 }

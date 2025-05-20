@@ -19,7 +19,6 @@ export class AIAssistantRepository {
             return { result: `Error del modelo: ${data.error}` };
         }
 
-
         return { result: data };
     }
 
@@ -28,6 +27,7 @@ export class AIAssistantRepository {
         const lower = instructionValue.toLowerCase();
         if (lower.includes('analiza')) return prompts?.analysis_tdd || 'Prompt no disponible para la evaluación de la aplicación de TDD.';
         if (lower.includes('refactoriza')) return prompts?.refactoring || 'Prompt no disponible para la evaluación de la aplicación de refactoring.';
+        if (lower.includes('califica')) return prompts?.evaluation || 'Prompt no disponible para la calificacion de TDD.';
         return 'interpreta el siguiente código';
     }
   
