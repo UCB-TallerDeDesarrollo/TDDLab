@@ -497,7 +497,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   style={{
                     textTransform: "none",
                     fontSize: "15px",
-                    marginRight: "8px",
+                    marginRight: "7px",
                   }}
                 >
                   Ver gráficas adicionales
