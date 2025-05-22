@@ -14,7 +14,6 @@ import CodeIcon from '@mui/icons-material/Code';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import GradeIcon from '@mui/icons-material/Grade';
 
-
 const evaluateWithAIUseCase = new EvaluateWithAI();
 const chatbotUseCase = new ChatbotUseCase();
 
@@ -92,6 +91,7 @@ const AIAssistantPage = () => {
 };
 
 
+
   return (
     <Box sx={{ padding: 4, display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* Header */}
@@ -163,7 +163,7 @@ const AIAssistantPage = () => {
                       borderRadius: 2,
                       maxWidth: '75%',
                       whiteSpace: 'pre-line',
-                      wordBreak: 'break-word', // ✅ Agregado
+                      wordBreak: 'break-word',
                     }}
                   >
                     <Typography variant="body2">{msg.text}</Typography>
