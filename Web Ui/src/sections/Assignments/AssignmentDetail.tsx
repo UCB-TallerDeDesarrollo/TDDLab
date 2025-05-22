@@ -488,7 +488,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <TableCell>
                 <Button
                   variant="contained"
-                  disabled={submission.repository_link === ""}
+                  disabled={submission.repository_link === "" || disableAdditionalGraphs}
                   onClick={() => {
                     localStorage.setItem("selectedMetric", "Complejidad");
                     handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
