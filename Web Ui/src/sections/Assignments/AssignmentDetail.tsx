@@ -109,6 +109,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         }
       }
     };
+    
+    fetchFlag();
+    const interval = setInterval(fetchFlag, 2000); // Refresca el estado del flag
+    return () => clearInterval(interval);
 
   }, [role]);
 
