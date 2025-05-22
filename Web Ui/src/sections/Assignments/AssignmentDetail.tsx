@@ -53,7 +53,7 @@ import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Ap
 import {
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
-import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags.ts";
+
 
 interface AssignmentDetailProps {
   role: string;
