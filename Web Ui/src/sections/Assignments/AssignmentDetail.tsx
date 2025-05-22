@@ -92,6 +92,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const [showIAButton, setShowIAButton] = useState(false);
+  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
+
 
   useEffect(() => {
     if (!isStudent(role)) return;
