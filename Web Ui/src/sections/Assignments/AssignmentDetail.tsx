@@ -53,6 +53,7 @@ import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Ap
 import {
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
+import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags.ts";
 
 interface AssignmentDetailProps {
   role: string;
@@ -96,6 +97,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
 
   useEffect(() => {
+    const fetchFlag = async () => {
+    };
+    fetchFlag();
+  }, []);
+
+  useEffect(() => {
     if (!isStudent(role)) return;
 
     const getFlagUseCase = new GetFeatureFlagByName();
@@ -121,25 +128,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   useEffect(() => {
     const fetchSubmission = async () => {
-        if (assignmentid && userid && userid !== -1) {
-            try {
-                const submissionRepository = new SubmissionRepository();
-                const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
+      if (assignmentid && userid && userid !== -1) {
+        try {
+          const submissionRepository = new SubmissionRepository();
+          const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
 
-                if (assignmentid < 0 || userid < 0) {
-                    return; // Validación silenciosa
-                }
+          if (assignmentid < 0 || userid < 0) {
+            return; // Validación silenciosa
+          }
 
-                const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
-                setSubmission(fetchedSubmission);
-            } catch (error) {
-              console.error("Error verifying submission status:", error);
-            }
+          const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
+          setSubmission(fetchedSubmission);
+        } catch (error) {
+          console.error("Error verifying submission status:", error);
         }
+      }
     };
 
     fetchSubmission();
-}, [assignmentid, userid]);
+  }, [assignmentid, userid]);
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
@@ -172,25 +179,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   useEffect(() => {
     const checkIfStarted = async () => {
-        if (isStudent(role)) {
-            if (assignmentid && userid && userid !== -1) {
-                try {
-                    const submissionRepository = new SubmissionRepository();
-                    const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
-                    const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
-                    setSubmissionStatus((prevStatus) => ({
-                        ...prevStatus,
-                        [userid]: !!response.hasStarted,
-                    }));
-                } catch (error) {
-                    console.error("Error verifying submission status:", error);
-                    setSubmissionsError("Error verificando el estado de la entrega.");
-                }
-            }
+      if (isStudent(role)) {
+        if (assignmentid && userid && userid !== -1) {
+          try {
+            const submissionRepository = new SubmissionRepository();
+            const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
+            const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
+            setSubmissionStatus((prevStatus) => ({
+              ...prevStatus,
+              [userid]: !!response.hasStarted,
+            }));
+          } catch (error) {
+            console.error("Error verifying submission status:", error);
+            setSubmissionsError("Error verificando el estado de la entrega.");
+          }
         }
+      }
     };
     checkIfStarted();
-}, [assignmentid, userid]);
+  }, [assignmentid, userid]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -277,7 +284,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await createSubmission.createSubmission(submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        
+
         throw error;
       }
     }
@@ -365,7 +372,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await finishSubmission.finishSubmission(submission.id, submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        
+
         throw error;
       }
     }
