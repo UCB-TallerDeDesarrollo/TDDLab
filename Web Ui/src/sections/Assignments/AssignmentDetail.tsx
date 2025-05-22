@@ -115,6 +115,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
+  const [showIAButton, setShowIAButton] = useState(false);
 
 
   useEffect(() => {
@@ -252,6 +253,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
     fetchStudentSubmission();
   }, [assignmentid, userid, role]);
+
+  useEffect(() => {
+    const fetchFeatureFlag = async () => {
+      if (!isStudent(role)) return;
+      try {
+        const response = await fetch("/feature-flags/name/IA_ASSISTANT");
+        if (!response.ok) {
+          console.error("No se pudo obtener el feature flag");
+          return;
+        }
+        const data = await response.json();
+        setShowIAButton(data.is_enabled === true);
+      } catch (error) {
+        console.error("Error consultando el feature flag:", error);
+      }
+    }
+    fetchFeatureFlag();
+  }, [role]);
+
 
   const handleSendGithubLink = async (repository_link: string) => {
     console.log("I will print the json log") //delete later
