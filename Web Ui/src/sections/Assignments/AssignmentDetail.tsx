@@ -109,7 +109,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         }
       }
     };
-    
+
     fetchFlag();
     const interval = setInterval(fetchFlag, 2000); // Refresca el estado del flag
     return () => clearInterval(interval);
@@ -484,25 +484,26 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               </Button>
 
             </TableCell>
-
-            <TableCell>
-              <Button
-                variant="contained"
-                disabled={submission.repository_link === ""}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Complejidad");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Ver gráficas adicionales
-              </Button>
-            </TableCell>
+            {!isStudent(role) && (
+              <TableCell>
+                <Button
+                  variant="contained"
+                  disabled={submission.repository_link === ""}
+                  onClick={() => {
+                    localStorage.setItem("selectedMetric", "Complejidad");
+                    handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
+                  }}
+                  color="primary"
+                  style={{
+                    textTransform: "none",
+                    fontSize: "15px",
+                    marginRight: "8px",
+                  }}
+                >
+                  Ver gráficas adicionales
+                </Button>
+              </TableCell>
+            )}
           </TableRow>
         );
       })
