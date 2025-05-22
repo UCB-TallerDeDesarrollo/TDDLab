@@ -34,7 +34,7 @@ class AIAssistantRepository implements AIAssistantInterface {
       
       if (response.status === 200) {
         return {
-          tddPrompt: response.data.analysis_tdd || "",
+          tddPrompt: response.data.tdd_analysis || "",
           refactoringPrompt: response.data.refactoring || ""
         };
       } else {
@@ -52,7 +52,7 @@ class AIAssistantRepository implements AIAssistantInterface {
       
       if (response.status === 200) {
         return {
-          tddPrompt: response.data.analysis_tdd || "",
+          tddPrompt: response.data.tdd_analysis || "",
           refactoringPrompt: response.data.refactoring || ""
         };
       } else {
