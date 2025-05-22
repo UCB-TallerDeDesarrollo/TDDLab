@@ -724,7 +724,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && showIAButton && (
               <Button
                 variant="contained"
-                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
+                disabled={isTaskInProgress}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "AssistantAI");
                   navigate("/asistente-ia", {
