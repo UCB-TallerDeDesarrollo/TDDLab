@@ -20,7 +20,7 @@ export default class AIAssistantController {
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
         this.analyzeTDDUseCase = new AnalyzeTDDCodeUseCase(repository);
-        this.chatbotUseCase = new ChatbotCodeUseCase(repository);
+        this.chatbotUseCase = new ChatbotCodeUseCase();
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {

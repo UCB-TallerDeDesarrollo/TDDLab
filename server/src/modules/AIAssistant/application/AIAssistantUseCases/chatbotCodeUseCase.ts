@@ -1,15 +1,15 @@
-import { AIAssistantRepository } from '../../repository/AIAssistantRepositoy';
+import { ConversationService } from "../../repository/ChatbotMemoryRepository"; 
 
 export class ChatbotCodeUseCase {
-    private readonly repository: AIAssistantRepository;
+    private readonly convo: ConversationService;
 
-    constructor(repository: AIAssistantRepository) {
-        this.repository = repository;
+    constructor() {
+        this.convo = new ConversationService();
     }
 
     async execute(input: string): Promise<any> {
         try {
-            const response = await this.repository.sendChat(input);
+            const response = await this.convo.sendMessage(input);
             return response;
         } catch (error) {
             throw new Error("Error en el caso de uso del chatbot");
