@@ -54,6 +54,29 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
       </div>
     );
   }
+  
+  function getCommitStatus() {
+    const testCount = commit.test_count || 0;
+    const conclusion = commit.conclusion || "fail";
+    const isSuccessful = testCount > 0 && conclusion === "success";
+
+    return (
+      <div
+        style={{
+          backgroundColor: isSuccessful ? '#28a745' : '#dc3545',
+          color: 'white',
+          padding: '10px',
+          borderRadius: '8px',
+          marginTop: '10px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          maxWidth: '250px'
+        }}
+      >
+        {isSuccessful ? '✔️ Resultado: Exitoso' : '❌ Resultado: Fallido'}
+      </div>
+    );
+  }
 
   function renderDateCard() {
     const date = new Date(commit.commit.date).toLocaleString("es-ES", {
@@ -100,6 +123,7 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
       <div className="cycleCardContainer">
         <span className="title">Commit: {commit.commit.message}</span>
         {getCommitStats()}
+        {getCommitStatus()}
         {getCommitLink()}
       </div>
     </div>
