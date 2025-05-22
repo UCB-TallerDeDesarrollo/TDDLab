@@ -19,15 +19,15 @@ export class AIAssistantRepository {
             return { result: `Error del modelo: ${data.error}` };
         }
 
-
         return { result: data };
     }
 
     private async buildPromt(instructionValue: string): Promise<string> {
         const prompts = await this.aiAssistantDB.getPrompts();
         const lower = instructionValue.toLowerCase();
-        if (lower.includes('analiza')) return prompts?.analysis_tdd || 'Prompt no disponible para la evaluación de la aplicación de TDD.';
+        if (lower.includes('analiza')) return prompts?.tdd_analysis || 'Prompt no disponible para la evaluación de la aplicación de TDD.';
         if (lower.includes('refactoriza')) return prompts?.refactoring || 'Prompt no disponible para la evaluación de la aplicación de refactoring.';
+        if (lower.includes('califica')) return prompts?.evaluation || 'Prompt no disponible para la calificacion de TDD.';
         return 'interpreta el siguiente código';
     }
   
