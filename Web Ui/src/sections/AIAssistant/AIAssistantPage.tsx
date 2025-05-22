@@ -12,6 +12,8 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CodeIcon from '@mui/icons-material/Code';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import GradeIcon from '@mui/icons-material/Grade';
+
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 const chatbotUseCase = new ChatbotUseCase();
@@ -118,9 +120,12 @@ const AIAssistantPage = () => {
       {/* Contenedor Chat + Botones */}
       <Box sx={{ display: 'flex', flexGrow: 1, gap: 3 }}>
         {/* Chat Section */}
-        <Paper elevation={3} sx={{     maxWidth: '1100px',flexGrow: 1, display: 'flex', flexDirection: 'column', padding: 2, borderRadius: 2 }}>
+<Paper
+  elevation={3}
+  sx={{maxWidth: '1100px',flexGrow: 1,display: 'flex',flexDirection: 'column',padding: 2,borderRadius: 2,height: '100%',maxHeight: '80vh', overflow: 'hidden'}}>
           {/* Mensajes */}
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+<Box
+  sx={{flexGrow: 1, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 2, height: '100%'}}>
             {messages.map((msg) => (
               <Box
                 key={msg.id}
@@ -221,10 +226,10 @@ const AIAssistantPage = () => {
             onClick={() => handleApiCall("califica")}
             disabled={loadingAction !== null}
             fullWidth
-            startIcon={<AutorenewIcon />}
+            startIcon={<GradeIcon />}
           >
-            {loadingAction === "califica" ? <CircularProgress size={20} /> : "Calificar la implementacion de TDD"}
-          </Button>
+            {loadingAction === "califica" ? <CircularProgress size={20} /> : "Calificar la implementación de TDD"}
+            </Button>
         </Box>
       </Box>
     </Box>
