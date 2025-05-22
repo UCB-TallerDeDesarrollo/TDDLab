@@ -98,9 +98,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   useEffect(() => {
     const fetchFlag = async () => {
+      if (!isStudent(role)) {
+        // obtener flag
+      }
     };
     fetchFlag();
-  }, []);
+  }, [role]);
 
   useEffect(() => {
     if (!isStudent(role)) return;
