@@ -56,22 +56,25 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
   }
   
   function getCommitStatus() {
-    const testCount = commit.test_count || 0;
-    const conclusion = commit.conclusion || "fail";
-    const isSuccessful = testCount > 0 && conclusion === "success";
+    let testCount = commit.test_count || 0;
+    let conclusion = commit.conclusion || "failure";
+    console.log(conclusion);
+    let isSuccessful = testCount > 0 && conclusion === "success";
 
     return (
       <div
-        style={{
-          backgroundColor: isSuccessful ? '#28a745' : '#dc3545',
-          color: 'white',
-          padding: '10px',
-          borderRadius: '8px',
-          marginTop: '10px',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          maxWidth: '250px'
-        }}
+  style={{
+    backgroundColor: isSuccessful ? '#28a745' : '#dc3545',
+    color: 'white',
+    padding: '8px 20px',            // más ancho, menos alto
+    borderRadius: '8px',
+    marginRight: '20px',            // separa del botón azul
+    marginTop: '10px',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    display: 'inline-block'         // para que esté en línea con el botón azul
+  }}
+
       >
         {isSuccessful ? '✔️ Resultado: Exitoso' : '❌ Resultado: Fallido'}
       </div>

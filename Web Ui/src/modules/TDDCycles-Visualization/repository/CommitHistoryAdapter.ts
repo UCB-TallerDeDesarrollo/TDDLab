@@ -16,7 +16,7 @@ export class CommitHistoryAdapter implements GithubAPIRepository {
   }
   // Función para generar la URL del historial de commits
   private getCommitHistoryUrl(owner: string, repoName: string): string {
-    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/commit-history.json`;
+    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
   }
 
   async obtainUserName(owner: string): Promise<string> {
@@ -49,7 +49,8 @@ export class CommitHistoryAdapter implements GithubAPIRepository {
       }
       
       const commitHistory = response.data;
-      
+      console.log("comit-history-axios");
+      console.log(commitHistory);
       // Procesamos la información del commitHistory
       const commits: CommitDataObject[] = commitHistory.map((commitData: any) => ({
         html_url: commitData.commit.url,
@@ -70,9 +71,10 @@ export class CommitHistoryAdapter implements GithubAPIRepository {
         test_count: commitData.test_count,
         // Añadimos esta propiedad para compatibilidad con el código existente
         // Representa el estado del commit basado en la cobertura
-        conclusion: commitData.coverage !== null && commitData.coverage !== undefined ? "success" : "failure"
+        conclusion: commitData.conclusion
       }));
-      
+      console.log("comit-history-procesado");
+      console.log(commits);
       commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
       
       console.log(commits);
@@ -129,7 +131,6 @@ export class CommitHistoryAdapter implements GithubAPIRepository {
       }
       
       const commitHistory = response.data;
-      
       // Procesamos la información del commitHistory para obtener los ciclos TDD
       const commits: CommitCycle[] = commitHistory.map((commitData: any) => ({
         url: commitData.commit.url,
@@ -137,8 +138,6 @@ export class CommitHistoryAdapter implements GithubAPIRepository {
         tddCycle: commitData.tdd_cycle ?? "null", // No esta en mi archivo
         coverage: commitData.coverage // Añadimos la cobertura para compatibilidad
       }));
-      
-      console.log(commits);
       return commits;
     } catch (error) {
       console.error("Error obtaining commit TDD cycles:", error);

@@ -24,7 +24,8 @@ function TDDCycleList({ commitsInfo }: Readonly<CycleReportViewProps>) {
     const dateB = new Date(b.commit.date).getTime();
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
-
+  console.log("holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  console.log(sortedCommits);
   return (
     <>
       <div style={{ flex: "1", maxWidth: "30px", marginLeft: "20px" }}>
