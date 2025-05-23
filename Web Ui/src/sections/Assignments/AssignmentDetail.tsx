@@ -128,8 +128,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     };
 
     fetchFeatureFlag();
-    const interval = setInterval(fetchFeatureFlag, 2000);
-    return () => clearInterval(interval);
   }, [role]);
 
 
