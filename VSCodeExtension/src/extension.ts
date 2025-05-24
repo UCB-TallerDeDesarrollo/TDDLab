@@ -71,7 +71,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
         const data = JSON.parse(responseString);
 
-        console.log("DATA",data)
+        await vscode.workspace.fs.createDirectory(
+            vscode.Uri.file(extensionFolder)
+        );
+
+        fs.writeFileSync(featureTogglePath, JSON.stringify(data, null, 4));
         
         } catch (error) {
         console.error("Error al parsear los datos que llegaron de la API:", error);
