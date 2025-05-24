@@ -35,7 +35,8 @@ class AIAssistantRepository implements AIAssistantInterface {
       if (response.status === 200) {
         return {
           tddPrompt: response.data.tdd_analysis || "",
-          refactoringPrompt: response.data.refactoring || ""
+          refactoringPrompt: response.data.refactoring || "",
+          evaluateTDDPrompt: response.data.evaluation || ""
         };
       } else {
         throw new Error(`Error al obtener prompts: ${response.status} ${response.statusText}`);
@@ -53,7 +54,8 @@ class AIAssistantRepository implements AIAssistantInterface {
       if (response.status === 200) {
         return {
           tddPrompt: response.data.tdd_analysis || "",
-          refactoringPrompt: response.data.refactoring || ""
+          refactoringPrompt: response.data.refactoring || "",
+          evaluateTDDPrompt: response.data.evaluation || ""
         };
       } else {
         throw new Error(`Error al actualizar prompts: ${response.status} ${response.statusText}`);
