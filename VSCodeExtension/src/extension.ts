@@ -72,11 +72,20 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       const data = JSON.parse(responseString);
-      console.log("DATA", data)
+      const extensionFolder = context.globalStorageUri.fsPath;
+      const filePath = path.join(
+        extensionFolder,
+        "VSCodeExtensionFeatures.json"
+      );
 
+      await vscode.workspace.fs.createDirectory(
+        vscode.Uri.file(extensionFolder)
+      );
+
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
       
     } catch (error) {
-      console.error("Fallo al parsear la data a un objeto javascript", error);
+      console.error("Error al actualizar el archivo de feature toggle:", error);
     }
 
     fs.mkdirSync(context.globalStorageUri.fsPath, { recursive: true });
