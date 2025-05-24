@@ -9,8 +9,8 @@ import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
 
 const PROMPT_OPTIONS = [
-  { label: "Prompt para evaluar la aplicación de TDD", value: "tddPrompt" },
-  { label: "Prompt para evaluar la aplicación de Refactoring", value: "refactoringPrompt" }
+  { label: "Prompt Analizar TDD", value: "tddPrompt" },
+  { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" }
 ];
 const ConfigurationPage = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
