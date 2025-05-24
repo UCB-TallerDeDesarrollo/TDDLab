@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, 
+         Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
 import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
+
+const PROMPT_OPTIONS = [
+  { label: "Prompt Analizar TDD", value: "tddPrompt" },
+  { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" },
+  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" },
+];
 const ConfigurationPage = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
-  const [tddPrompt, setTddPrompt] = useState<string>("");
-  const [refactoringPrompt, setRefactoringPrompt] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,9 +27,9 @@ const ConfigurationPage = () => {
     message: '',
     severity: 'info'
   });
-
-  const [editingTDD, setEditingTDD] = useState<boolean>(false);
-  const [editingRefactoring, setEditingRefactoring] = useState<boolean>(false);
+  const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt: string }>({ tddPrompt: "", refactoringPrompt: "", evaluateTDDPrompt: "" });
+  const [selectedPrompt, setSelectedPrompt] = useState<string>("tddPrompt");
+  const [isEditing, setEditing] = useState(false);
   const getFlagsUseCase = new GetFeatureFlags();
   const updateFlagUseCase = new UpdateFeatureFlag();
   useEffect(() => {
@@ -45,10 +50,13 @@ const ConfigurationPage = () => {
     try {
       setLoading(true);
       const getPromptsUseCase = new GetPrompts();
-      const prompts = await getPromptsUseCase.execute();
+      const promptsData = await getPromptsUseCase.execute();
       
-      setTddPrompt(prompts.tddPrompt);
-      setRefactoringPrompt(prompts.refactoringPrompt);
+      setPrompts({
+        tddPrompt: promptsData.tddPrompt,
+        refactoringPrompt: promptsData.refactoringPrompt,
+        evaluateTDDPrompt: promptsData.evaluateTDDPrompt
+      });
       setError(null);
     } catch (error) {
       console.error("Error al cargar los prompts:", error);
@@ -58,72 +66,48 @@ const ConfigurationPage = () => {
     }
   };
 
-  const handleEditTDD = () => {
-    setEditingTDD(true);
+  const handlePromptChange = (event: any) => {
+    setSelectedPrompt(event.target.value);
+    setEditing(false);
   };
 
-  const handleSaveTDD = async (newPrompt: string) => {
+  const handleEditPrompt = () => {
+    setEditing(true);
+  };
+
+  const handleSavePrompt = async (newPrompt: string) => {
     try {
       setSaving(true);
       const updatePromptsUseCase = new UpdatePrompts();
-      await updatePromptsUseCase.execute(newPrompt, refactoringPrompt);
-      
-      setTddPrompt(newPrompt);
+      let updatePrompts = { ...prompts };
+      updatePrompts[selectedPrompt as keyof typeof prompts] = newPrompt;
+      await updatePromptsUseCase.execute(
+        updatePrompts.tddPrompt,
+        updatePrompts.refactoringPrompt,
+        updatePrompts.evaluateTDDPrompt
+      );
+      setPrompts(updatePrompts);
       setNotification({
         open: true,
-        message: "Prompt de TDD actualizado correctamente",
+        message: "Prompt actualizado correctamente",
         severity: "success"
       });
+      setEditing(false);
     } catch (error) {
-      console.error("Error al actualizar el prompt de TDD:", error);
       setNotification({
         open: true,
-        message: "Error al actualizar el prompt de TDD",
+        message: "Error al actualizar el prompt",
         severity: "error"
       });
     } finally {
       setSaving(false);
-      setEditingTDD(false);
     }
   };
 
-  const handleCancelTDD = () => {
-    setEditingTDD(false);
+  const handleCancelEdit = () => {
+    setEditing(false);
+    loadPrompts();
   };
-
-  const handleEditRefactoring = () => {
-    setEditingRefactoring(true);
-  };
-
-  const handleSaveRefactoring = async (newPrompt: string) => {
-    try {
-      setSaving(true);
-      const updatePromptsUseCase = new UpdatePrompts();
-      await updatePromptsUseCase.execute(tddPrompt, newPrompt);
-      
-      setRefactoringPrompt(newPrompt);
-      setNotification({
-        open: true,
-        message: "Prompt de Refactoring actualizado correctamente",
-        severity: "success"
-      });
-    } catch (error) {
-      console.error("Error al actualizar el prompt de Refactoring:", error);
-      setNotification({
-        open: true,
-        message: "Error al actualizar el prompt de Refactoring",
-        severity: "error"
-      });
-    } finally {
-      setSaving(false);
-      setEditingRefactoring(false);
-    }
-  };
-
-  const handleCancelRefactoring = () => {
-    setEditingRefactoring(false);
-  };
-
   const handleCloseNotification = () => {
     setNotification({
       ...notification,
@@ -151,12 +135,9 @@ const ConfigurationPage = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h4"
-          component="h1"
-        >
+        <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
           Configuración de Prompts
-        </Typography>
+        </div>
       </Box>
 
       {loading ? (
@@ -169,22 +150,28 @@ const ConfigurationPage = () => {
         </Box>
       ) : (
         <>
-          <EditPromptAI
-            title="Prompt de Evaluación TDD"
-            initialPrompt={tddPrompt}
-            isEditing={editingTDD}
-            onEdit={handleEditTDD}
-            onSave={handleSaveTDD}
-            onCancel={handleCancelTDD}
-          />
+          <FormControl sx={{ mb: 2, width: '50%' }}>
+            <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
+            <Select
+              labelId="prompt-select-label"
+              value={selectedPrompt}
+              label="Selecciona el tipo de Prompt"
+              onChange={handlePromptChange}
+            >
+              {PROMPT_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <EditPromptAI
-            title="Prompt de Evaluación Refactoring"
-            initialPrompt={refactoringPrompt}
-            isEditing={editingRefactoring}
-            onEdit={handleEditRefactoring}
-            onSave={handleSaveRefactoring}
-            onCancel={handleCancelRefactoring}
+            initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
+            isEditing={isEditing}
+            onEdit={handleEditPrompt}
+            onSave={handleSavePrompt}
+            onCancel={handleCancelEdit}
           />
 
           <Snackbar 
@@ -222,8 +209,10 @@ const ConfigurationPage = () => {
           )}
         </>
       )}
-      <div style={{ padding: "1rem" }}>
-      <h2>Habilitación de Funcionalidades</h2>
+       
+      <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
+        Habilitación de Funcionalidades
+      </div> 
       {error && <p style={{ color: "red" }}>{error}</p>}
       {flags.map((flag) => (
         <div key={flag.id} style={{ marginBottom: "10px" }}>
@@ -237,7 +226,7 @@ const ConfigurationPage = () => {
           </label>
         </div>
       ))}
-    </div>
+     
     </Container>
     
   );

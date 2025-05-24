@@ -1,116 +1,77 @@
-import { useState, useEffect } from 'react';
-import { Typography, Button, TextField, Box, Paper, Divider } from '@mui/material';
+import { useState, useEffect } from "react";
+import { Box, Button, TextField } from "@mui/material";
 
 interface EditPromptAIProps {
   initialPrompt: string;
-  title: string;
   isEditing: boolean;
-  onSave: (prompt: string) => void;
-  onCancel: () => void;
   onEdit: () => void;
+  onSave: (value: string) => void;
+  onCancel: () => void;
 }
 
-const EditPromptAI = ({ 
-  initialPrompt, 
-  title, 
-  isEditing, 
-  onSave, 
-  onCancel, 
-  onEdit 
+const EditPromptAI = ({
+  initialPrompt,
+  isEditing,
+  onEdit,
+  onSave,
+  onCancel,
 }: EditPromptAIProps) => {
-  const [prompt, setPrompt] = useState<string>(initialPrompt);
+  const [value, setValue] = useState(initialPrompt);
 
   useEffect(() => {
-    setPrompt(initialPrompt);
+    setValue(initialPrompt);
   }, [initialPrompt]);
 
-  const handleSave = () => {
-    onSave(prompt);
-  };
-
-  const handleClear = () => {
-    setPrompt('');
-  };
+  const handleClear = () => setValue("");
 
   return (
-    <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-        <Typography
-          variant="h5"
-          component="h2"
-        >
-          {title}
-        </Typography>
-        {/* Se eliminó el botón "Limpiar" que aparecía cuando no estaba en modo edición */}
-      </Box>
-      <Divider sx={{ mb: 2 }} />
-      
-      {isEditing ? (
+    <Box sx={{ mt: 4, mb: 8, p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+      {!isEditing ? (
         <>
           <TextField
-            fullWidth
+            value={initialPrompt}
             multiline
-            rows={10}
+            fullWidth
+            InputProps={{
+              readOnly: true,
+              style: { background: "#f9f9f9" }
+            }}
             variant="outlined"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            sx={{ mb: 3 }}
+            minRows={8} 
+            maxRows={16}
           />
-          
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <Button
-              variant="outlined"
-              onClick={onCancel}
-              sx={{ textTransform: 'none' }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={handleClear}
-              sx={{ textTransform: 'none' }}
-            >
-              Limpiar
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              sx={{ textTransform: 'none' }}
-            >
-              Guardar
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
+            <Button variant="contained" onClick={onEdit}>
+              Editar Prompt
             </Button>
           </Box>
         </>
       ) : (
         <>
-          <Box 
-            sx={{ 
-              p: 2, 
-              border: '1px solid #e0e0e0', 
-              borderRadius: 1, 
-              mb: 2,
-              minHeight: '150px',
-              whiteSpace: 'pre-wrap',
-              backgroundColor: '#f9f9f9'
-            }}
-          >
-            {initialPrompt}
-          </Box>
-          
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={onEdit}
-              sx={{ textTransform: 'none' }}
-            >
-              Editar Prompt
+          <TextField
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            multiline
+            fullWidth
+            variant="outlined"
+            minRows={8} 
+            maxRows={16}
+            autoFocus
+          />
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
+            <Button variant="contained" color="primary" onClick={() => onSave(value)}>
+              Guardar
+            </Button>
+            <Button variant="contained" color="primary" onClick={onCancel}>
+              Cancelar
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleClear}>
+              Limpiar
             </Button>
           </Box>
         </>
       )}
-    </Paper>
+    </Box>
   );
 };
 
