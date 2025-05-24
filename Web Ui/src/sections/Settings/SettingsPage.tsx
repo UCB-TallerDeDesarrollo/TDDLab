@@ -10,7 +10,8 @@ import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/Update
 
 const PROMPT_OPTIONS = [
   { label: "Prompt Analizar TDD", value: "tddPrompt" },
-  { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" }
+  { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" },
+  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" },
 ];
 const ConfigurationPage = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
@@ -26,7 +27,7 @@ const ConfigurationPage = () => {
     message: '',
     severity: 'info'
   });
-  const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string }>({ tddPrompt: "", refactoringPrompt: "" });
+  const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt: string }>({ tddPrompt: "", refactoringPrompt: "", evaluateTDDPrompt: "" });
   const [selectedPrompt, setSelectedPrompt] = useState<string>("tddPrompt");
   const [isEditing, setEditing] = useState(false);
   const getFlagsUseCase = new GetFeatureFlags();
@@ -53,7 +54,8 @@ const ConfigurationPage = () => {
       
       setPrompts({
         tddPrompt: promptsData.tddPrompt,
-        refactoringPrompt: promptsData.refactoringPrompt 
+        refactoringPrompt: promptsData.refactoringPrompt,
+        evaluateTDDPrompt: promptsData.evaluateTDDPrompt
       });
       setError(null);
     } catch (error) {
@@ -81,7 +83,8 @@ const ConfigurationPage = () => {
       updatePrompts[selectedPrompt as keyof typeof prompts] = newPrompt;
       await updatePromptsUseCase.execute(
         updatePrompts.tddPrompt,
-        updatePrompts.refactoringPrompt
+        updatePrompts.refactoringPrompt,
+        updatePrompts.evaluateTDDPrompt
       );
       setPrompts(updatePrompts);
       setNotification({

@@ -17,7 +17,8 @@ export class GetPrompts {
       console.error("Error al obtener los prompts:", error);
       return {
         tddPrompt: "Error al cargar el prompt de TDD",
-        refactoringPrompt: "Error al cargar el prompt de Refactoring"
+        refactoringPrompt: "Error al cargar el prompt de Refactoring",
+        evaluateTDDPrompt: "Error al cargar el prompt de Evaluación de TDD"
       };
     }
   }
