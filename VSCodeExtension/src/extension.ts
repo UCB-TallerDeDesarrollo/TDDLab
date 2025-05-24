@@ -20,12 +20,13 @@ export async function activate(context: vscode.ExtensionContext) {
     "TDDLabBaseProject"
   );
   const timelineView = new TimelineView(context);
-  const markerFilePath = path.join(
-    context.globalStorageUri.fsPath,
-    "installed.marker"
-  );
+  const extensionFolder = context.globalStorageUri.fsPath;
+      const featureTogglePath = path.join(
+        extensionFolder,
+        "VSCodeExtensionFeatures.json"
+      );
 
-  if (!fs.existsSync(markerFilePath)) {
+  if (!fs.existsSync(featureTogglePath)) {
     const fallbackResponse = `{
             "runTest": true,
             "crearProyecto": true,
@@ -72,25 +73,16 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       const data = JSON.parse(responseString);
-      const extensionFolder = context.globalStorageUri.fsPath;
-      const filePath = path.join(
-        extensionFolder,
-        "VSCodeExtensionFeatures.json"
-      );
 
       await vscode.workspace.fs.createDirectory(
         vscode.Uri.file(extensionFolder)
       );
 
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
+      fs.writeFileSync(featureTogglePath, JSON.stringify(data, null, 4));
       
     } catch (error) {
       console.error("Error al actualizar el archivo de feature toggle:", error);
     }
-
-    fs.mkdirSync(context.globalStorageUri.fsPath, { recursive: true });
-    fs.writeFileSync(markerFilePath, new Date().toISOString());
-
     vscode.window.showInformationMessage("Acabas de instalar la extension");
   }
 
