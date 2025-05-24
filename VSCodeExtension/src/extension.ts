@@ -1,161 +1,268 @@
-import * as vscode from 'vscode';
-import { TimelineView } from './sections/Timeline/TimelineView';
-import * as path from 'path';
-import * as fs from 'fs';
-import { ExecuteTestCommand } from './modules/Button/application/runTest/ExecuteTestCommand';
-import { VSCodeTerminalRepository } from './modules/Button/infraestructure/VSCodeTerminalRepository';
-import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
-import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
-import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
-import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
-
+import * as vscode from "vscode";
+import { TimelineView } from "./sections/Timeline/TimelineView";
+import * as path from "path";
+import * as fs from "fs";
+import { ExecuteTestCommand } from "./modules/Button/application/runTest/ExecuteTestCommand";
+import { VSCodeTerminalRepository } from "./modules/Button/infraestructure/VSCodeTerminalRepository";
+import { ExecutionTreeView } from "./sections/ExecutionTree/ExecutionTreeView";
+import { ExecuteCloneCommand } from "./modules/Button/application/clone/ExecuteCloneCommand";
+import { ExecuteExportCommand } from "./modules/Button/application/export/ExecuteExportCommand";
+import { ExecuteAIAssistant } from "./sections/AIAssistant/ExecuteAIAssistant";
+import * as http from "http";
 
 /**
  * @param {vscode.ExtensionContext} context
  */
-export function activate(context: vscode.ExtensionContext) {
-    const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
-    const timelineView = new TimelineView(context);
+export async function activate(context: vscode.ExtensionContext) {
+  const tddBasePath = path.join(
+    context.extensionPath,
+    "resources",
+    "TDDLabBaseProject"
+  );
+  const timelineView = new TimelineView(context);
+  const markerFilePath = path.join(
+    context.globalStorageUri.fsPath,
+    "installed.marker"
+  );
 
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider('timelineView', timelineView)
+  if (!fs.existsSync(markerFilePath)) {
+    const fallbackResponse = `{
+            "runTest": true,
+            "crearProyecto": true,
+            "asistenteIA": false,
+            "exportarSesion": true
+        }`;
+
+    function getFeaturesFromApi(): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const req = http.request(
+          {
+            hostname: "localhost",
+            port: 3000,
+            path: "/api/AIAssistant/analyze-tdd-extension",
+            method: "GET",
+          },
+          (res) => {
+            let responseData = "";
+            res.on("data", (chunk) => (responseData += chunk));
+            res.on("end", () => resolve(responseData));
+          }
+        );
+
+        req.on("error", (err) => reject(err));
+        req.end();
+      });
+    }
+
+    try {
+      let responseString: string;
+
+      try {
+        responseString = await getFeaturesFromApi();
+      } catch (error) {
+        console.warn(
+          "Fallo al obtener configuración desde API. Usando valores por defecto.",
+          error
+        );
+        vscode.window.showInformationMessage(
+          "Se actualizó el feature toggle a el por defecto"
+        );
+
+        responseString = fallbackResponse;
+      }
+
+      const data = JSON.parse(responseString);
+      console.log("DATA", data)
+
+      
+    } catch (error) {
+      console.error("Fallo al parsear la data a un objeto javascript", error);
+    }
+
+    fs.mkdirSync(context.globalStorageUri.fsPath, { recursive: true });
+    fs.writeFileSync(markerFilePath, new Date().toISOString());
+
+    vscode.window.showInformationMessage("Acabas de instalar la extension");
+  }
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider("timelineView", timelineView)
+  );
+
+  if (timelineView.currentWebview) {
+    timelineView.showTimeline(timelineView.currentWebview);
+  }
+
+  vscode.commands.registerCommand("extension.showTimeline", () => {
+    vscode.commands.executeCommand(
+      "workbench.view.extension.timelineContainer"
     );
-
     if (timelineView.currentWebview) {
-        timelineView.showTimeline(timelineView.currentWebview);
+      timelineView.showTimeline(timelineView.currentWebview);
     }
+  });
 
-    vscode.commands.registerCommand('extension.showTimeline', () => {
-        vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-        if (timelineView.currentWebview) {
-            timelineView.showTimeline(timelineView.currentWebview);
+  const terminalRepository = new VSCodeTerminalRepository();
+  const executeTestCommand = new ExecuteTestCommand(terminalRepository);
+  const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
+  const executeExportCommand = new ExecuteExportCommand();
+  const executeAIAssistant = new ExecuteAIAssistant();
+
+  const runTestCommand = vscode.commands.registerCommand(
+    "TDD.runTest",
+    async () => {
+      const workspaceFolder =
+        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage(
+          "TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado para ejecutar la extensión."
+        );
+        return;
+      }
+
+      const projectJsonPath = path.join(
+        workspaceFolder,
+        "script",
+        "tddScript.js"
+      );
+
+      try {
+        if (!fs.existsSync(projectJsonPath)) {
+          throw new Error(
+            "Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado."
+          );
         }
+
+        const stats = fs.statSync(projectJsonPath);
+        if (!stats.isFile()) {
+          throw new Error('El archivo "tdd_log.json" no es un archivo válido.');
+        }
+
+        await executeTestCommand.execute();
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Se produjo un error desconocido.";
+        vscode.window.showErrorMessage(
+          `TDD Lab: Error al ejecutar la extensión. ${message}`
+        );
+      }
+    }
+  );
+
+  const runTestActivityCommand = vscode.commands.registerCommand(
+    "TDD.runTestActivity",
+    async () => {
+      const workspaceFolder =
+        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage(
+          "TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado y compatible para ejecutar la extensión."
+        );
+        return;
+      }
+
+      try {
+        const projectJsonPath = path.join(
+          workspaceFolder,
+          "script",
+          "tddScript.js"
+        );
+        if (!fs.existsSync(projectJsonPath)) {
+          vscode.window.showErrorMessage(
+            "TDD Lab: Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado."
+          );
+          return;
+        }
+        await executeTestCommand.execute();
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          "Ocurrió un error al intentar ejecutar la prueba."
+        );
+      }
+    }
+  );
+
+  const runCloneCommand = vscode.commands.registerCommand(
+    "TDD.cloneCommand",
+    async () => {
+      try {
+        await executeCloneCommand.execute(tddBasePath);
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          "Error al clonar el proyecto. Por favor, verifica la configuración."
+        );
+      }
+    }
+  );
+
+  const runExportCommand = vscode.commands.registerCommand(
+    "TDD.exportCommand",
+    async () => {
+      try {
+        await executeExportCommand.execute();
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          "Error al exportar los datos. Por favor, intenta nuevamente."
+        );
+      }
+    }
+  );
+
+  const runAsistenteCommand = vscode.commands.registerCommand(
+    "TDD.AsistenteCommand",
+    async () => {
+      try {
+        await executeAIAssistant.execute(context);
+      } catch (error: any) {
+        vscode.window.showErrorMessage(`Error: ${error?.message}`);
+      }
+    }
+  );
+
+  context.subscriptions.push(runTestCommand);
+  context.subscriptions.push(runTestActivityCommand);
+  context.subscriptions.push(runCloneCommand);
+  context.subscriptions.push(runExportCommand);
+  context.subscriptions.push(runAsistenteCommand);
+
+  const testExecutionTreeView = new ExecutionTreeView(context);
+  testExecutionTreeView.initialize();
+
+  const workspaceFolder =
+    vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || "";
+  const jsonFilePath = path.join(workspaceFolder, "script", "tdd_log.json");
+  let isInitialRun = true;
+
+  const updateTimeLine = () => {
+    if (timelineView.currentWebview) {
+      timelineView.showTimeline(timelineView.currentWebview);
+    }
+  };
+
+  const watchFile = () => {
+    fs.watch(jsonFilePath, (eventType, filename) => {
+      if (eventType === "change") {
+        updateTimeLine();
+      }
     });
+    if (isInitialRun) {
+      updateTimeLine();
+      isInitialRun = false;
+    }
+  };
 
-    const terminalRepository = new VSCodeTerminalRepository();
-    const executeTestCommand = new ExecuteTestCommand(terminalRepository);
-    const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
-    const executeExportCommand = new ExecuteExportCommand();
-    const executeAIAssistant = new ExecuteAIAssistant();
-
-
-    const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage(
-                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado para ejecutar la extensión.'
-            );
-            return;
-        }
-
-        const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
-
-        try {
-            if (!fs.existsSync(projectJsonPath)) {
-                throw new Error(
-                    'Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
-                );
-            }
-
-            const stats = fs.statSync(projectJsonPath);
-            if (!stats.isFile()) {
-                throw new Error('El archivo "tdd_log.json" no es un archivo válido.');
-            }
-
-            await executeTestCommand.execute();
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Se produjo un error desconocido.';
-            vscode.window.showErrorMessage(`TDD Lab: Error al ejecutar la extensión. ${message}`);
-        }
-    });
-
-    const runTestActivityCommand = vscode.commands.registerCommand('TDD.runTestActivity', async () => {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage(
-                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado y compatible para ejecutar la extensión.'
-            );
-            return;
-        }
-
-        try {
-            const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
-            if (!fs.existsSync(projectJsonPath)) {
-                vscode.window.showErrorMessage(
-                    'TDD Lab: Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
-                );
-                return;
-            }
-            await executeTestCommand.execute();
-        } catch (error) {
-            vscode.window.showErrorMessage('Ocurrió un error al intentar ejecutar la prueba.');
-        }
-    });
-
-    const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
-        try {
-            await executeCloneCommand.execute(tddBasePath);
-        } catch (error) {
-            vscode.window.showErrorMessage('Error al clonar el proyecto. Por favor, verifica la configuración.');
-        }
-    });
-
-    const runExportCommand = vscode.commands.registerCommand('TDD.exportCommand', async () => {
-        try {
-            await executeExportCommand.execute();
-        } catch (error) {
-            vscode.window.showErrorMessage('Error al exportar los datos. Por favor, intenta nuevamente.');
-        }
-    });
-
-    const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
-        try {
-            await executeAIAssistant.execute(context);
-        } catch (error: any) {
-            vscode.window.showErrorMessage(`Error: ${error?.message}`);
-        }
-    });
-
-    context.subscriptions.push(runTestCommand);
-    context.subscriptions.push(runTestActivityCommand);
-    context.subscriptions.push(runCloneCommand);
-    context.subscriptions.push(runExportCommand);
-    context.subscriptions.push(runAsistenteCommand);
-
-    const testExecutionTreeView = new ExecutionTreeView(context);
-    testExecutionTreeView.initialize();
-
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
-    const jsonFilePath = path.join(workspaceFolder, 'script', 'tdd_log.json');
-    let isInitialRun = true;
-
-    const updateTimeLine = () => {
-        if (timelineView.currentWebview) {
-            timelineView.showTimeline(timelineView.currentWebview); }
-    };
-
-    const watchFile = () => {
-        fs.watch(jsonFilePath, (eventType, filename) => {
-            if (eventType === 'change') {
-                updateTimeLine();
-            }
-        });
-        if (isInitialRun) {
-            updateTimeLine();
-            isInitialRun = false;
-        }
-    };
-
-    if (fs.existsSync(jsonFilePath)) {
+  if (fs.existsSync(jsonFilePath)) {
+    watchFile();
+  } else {
+    const interval = setInterval(() => {
+      if (fs.existsSync(jsonFilePath)) {
+        clearInterval(interval);
         watchFile();
-    } else {
-        const interval = setInterval(() => {
-            if (fs.existsSync(jsonFilePath)) {
-                clearInterval(interval); 
-                watchFile();
-            }
-        }, 1000);
-    }
+      }
+    }, 1000);
+  }
 }
