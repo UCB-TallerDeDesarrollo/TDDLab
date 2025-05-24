@@ -8,14 +8,77 @@ import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
 import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
+import * as http from "http";
 
 
 /**
  * @param {vscode.ExtensionContext} context
  */
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
     const timelineView = new TimelineView(context);
+    const extensionFolder = context.globalStorageUri.fsPath;
+    const featureTogglePath = path.join(
+    extensionFolder,
+    "VSCodeExtensionFeatures.json"
+    );
+
+    if (!fs.existsSync(featureTogglePath)) {
+        const fallbackResponse = `{
+                "runTest": true,
+                "crearProyecto": true,
+                "asistenteIA": false,
+                "exportarSesion": true
+            }`;
+
+        function getFeaturesFromApi(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+            {
+                hostname: "localhost",
+                port: 3000,
+                path: "/api/AIAssistant/analyze-tdd-extension",
+                method: "GET",
+            },
+            (res) => {
+                let responseData = "";
+                res.on("data", (chunk) => (responseData += chunk));
+                res.on("end", () => resolve(responseData));
+            }
+            );
+
+            req.on("error", (err) => reject(err));
+            req.end();
+        });
+        }
+
+        try {
+        let responseString: string;
+
+        try {
+            responseString = await getFeaturesFromApi();
+        } catch (error) {
+            console.warn(
+            "Fallo al obtener configuración desde API. Usando valores por defecto.",
+            error
+            );
+            vscode.window.showInformationMessage(
+            "Se actualizó el feature toggle a el por defecto"
+            );
+
+            responseString = fallbackResponse;
+        }
+
+        const data = JSON.parse(responseString);
+
+        console.log("DATA",data)
+        
+        } catch (error) {
+        console.error("Error al parsear los datos que llegaron de la API:", error);
+        }
+        vscode.window.showInformationMessage("Acabas de instalar la extension");
+    }
+
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('timelineView', timelineView)
