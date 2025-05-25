@@ -10,6 +10,8 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import FileUploadDialog from "./components/FileUploadDialog";
 
 import { UploadTDDLogFile } from "../../modules/Assignments/application/UploadTDDLogFile.ts";
+import { GetFeatureFlagByName } from "../../modules/FeatureFlags/application/GetFeatureFlagByName";
+
 
 
 
@@ -85,22 +87,57 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   );
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
-  const [studentSubmission,setStudentSubmission] = useState<SubmissionDataObject>();
+  const [studentSubmission, setStudentSubmission] = useState<SubmissionDataObject>();
   const [_submissionsError, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
+  const [showIAButton, setShowIAButton] = useState(false);
+
+  useEffect(() => {
+    if (!isStudent(role)) return;
+
+    const getFlagUseCase = new GetFeatureFlagByName();
+
+    const fetchFeatureFlag = async () => {
+      try {
+        const flag = await getFlagUseCase.execute("Boton Asistente IA");
+        setShowIAButton(flag?.is_enabled ?? true);
+      } catch (error) {
+        console.error("Error fetching feature flag IA_ASSISTANT:", error);
+      }
+    };
+
+    fetchFeatureFlag();
+    const interval = setInterval(fetchFeatureFlag, 2000);
+    return () => clearInterval(interval);
+  }, [role]);
+
+
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
 
-  useEffect(()=>{
-    const submissionRepository = new SubmissionRepository();
-    const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
-    submissionData.getSubmisssionByUserandSubmissionId(assignmentid,userid).then((fetchedSubmission) =>{
-      setSubmission(fetchedSubmission);
-    }).catch((error) => {
-      console.error("Error fetching submission:", error);
-    });
-  }, [assignmentid, userid]);
+
+  useEffect(() => {
+    const fetchSubmission = async () => {
+        if (assignmentid && userid && userid !== -1) {
+            try {
+                const submissionRepository = new SubmissionRepository();
+                const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
+
+                if (assignmentid < 0 || userid < 0) {
+                    return; // Validación silenciosa
+                }
+
+                const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
+                setSubmission(fetchedSubmission);
+            } catch (error) {
+              console.error("Error verifying submission status:", error);
+            }
+        }
+    };
+
+    fetchSubmission();
+}, [assignmentid, userid]);
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
@@ -133,32 +170,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   useEffect(() => {
     const checkIfStarted = async () => {
-      if (isStudent(role)) {
-        if (assignmentid && userid && userid !== -1) {
-          try {
-            console.log("the user id is ", userid);
-            const submissionRepository = new SubmissionRepository();
-            const checkSubmissionExists = new CheckSubmissionExists(
-              submissionRepository
-            );
-            const response = await checkSubmissionExists.checkSubmissionExists(
-              assignmentid,
-              userid
-            );
-            console.log("The response is ", response);
-            setSubmissionStatus((prevStatus) => ({
-              ...prevStatus,
-              [userid]: !!response,
-            }));
-          } catch (error) {
-            console.error("Error checking submission status:", error);
-          }
+        if (isStudent(role)) {
+            if (assignmentid && userid && userid !== -1) {
+                try {
+                    const submissionRepository = new SubmissionRepository();
+                    const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
+                    const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
+                    setSubmissionStatus((prevStatus) => ({
+                        ...prevStatus,
+                        [userid]: !!response.hasStarted,
+                    }));
+                } catch (error) {
+                    console.error("Error verifying submission status:", error);
+                    setSubmissionsError("Error verificando el estado de la entrega.");
+                }
+            }
         }
-      }
     };
-
     checkIfStarted();
-  }, [assignmentid, userid]);
+}, [assignmentid, userid]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -214,6 +244,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             }
           } catch (error) {
             console.error("Error fetching student submission:", error);
+            setSubmissionsError("An error occurred while fetching the student submission.");
           }
         }
       }
@@ -224,7 +255,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const handleSendGithubLink = async (repository_link: string) => {
     console.log("I will print the json log") //delete later
-      if (assignmentid) { //means if the assignment id is in memory or somthn
+    if (assignmentid) { //means if the assignment id is in memory or somthn
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
@@ -244,7 +275,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await createSubmission.createSubmission(submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        console.error(error);
+        
+        throw error;
       }
     }
   };
@@ -258,15 +290,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url:string) => {
+  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url: string) => {
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
-  
+
       if (match) {
         const [, user, repo] = match;
         console.log(user, repo);
-  
+
         navigate({
           pathname: url,
           search: createSearchParams({
@@ -300,7 +332,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleOpenFileDialog = () => {
     setIsFileDialogOpen(true);
   };
-  
+
   const handleCloseFileDialog = () => {
     setIsFileDialogOpen(false);
   };
@@ -308,10 +340,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleFileUpload = async (file: File) => {
     await UploadTDDLogFile(file, studentSubmission?.repository_link);
   };
-  
-  
+
+
   const handleSendComment = async (comment: string) => {
-    if (submission){
+    if (submission) {
       setComment(comment);
       const submissionRepository = new SubmissionRepository();
       const finishSubmission = new FinishSubmission(submissionRepository);
@@ -326,12 +358,13 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         status: "delivered",
         end_date: end_date,
         comment: comment
-       };
+      };
       try {
         await finishSubmission.finishSubmission(submission.id, submissionData);
-      handleCloseLinkDialog();
+        handleCloseLinkDialog();
       } catch (error) {
-        console.error(error);
+        
+        throw error;
       }
     }
     handleCloseCommentDialog();
@@ -362,8 +395,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       return "";
     }
   };
-
   const renderStudentRows = async () => {
+
     const rows = await Promise.all(
       submissions.map(async (submission) => {
         const studentEmail = await getStudentEmailById(submission.userid);
@@ -371,7 +404,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         const formattedEndDate = submission.end_date
           ? formatDate(submission.end_date.toString())
           : "N/A";
-  
+
         return (
           <TableRow key={generateUniqueId()}>
             <TableCell>{studentEmail}</TableCell>
@@ -394,7 +427,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")}}
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")
+                }}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -405,13 +439,37 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Ver gráfica
               </Button>
             </TableCell>
+
+            <TableCell>
+
+              <Button
+                variant="contained"
+                disabled={submission.repository_link === ""}
+                onClick={() => {
+                  navigate("/asistente-ia", {
+                    state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
+                  });
+                }}
+                color="primary"
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Asistente IA
+              </Button>
+
+            </TableCell>
+
             <TableCell>
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Complejidad");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id,"/aditionalgraph")}}
+                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
+                }}
                 color="primary"
                 style={{
                   textTransform: "none",
@@ -426,12 +484,13 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         );
       })
     );
-  
+
     setStudentRows(rows);
   };
-  
+
 
   return (
+
     <div
       style={{
         display: "flex",
@@ -619,7 +678,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
                   if (studentSubmission?.repository_link) {
-                    handleRedirectStudent(studentSubmission.repository_link, navigate);
+                    handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate)
                   }
                 }}
                 color="primary"
@@ -660,6 +719,26 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 style={{ textTransform: "none", fontSize: "15px", marginRight: "8px" }}
               >
                 Subir sesión TDD extension
+              </Button>
+            )}
+            {isStudent(role) && showIAButton && (
+              <Button
+                variant="contained"
+                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "AssistantAI");
+                  navigate("/asistente-ia", {
+                    state: { repositoryLink: studentSubmission?.repository_link }
+                  });
+                }}
+                color="primary"
+                style={{
+                  textTransform: "none",
+                  fontSize: "15px",
+                  marginRight: "8px",
+                }}
+              >
+                Asistente IA
               </Button>
             )}
             <CommentDialog
@@ -715,6 +794,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     <TableCell>Fecha de finalización</TableCell>
                     <TableCell>Comentario</TableCell>
                     <TableCell>Gráfica</TableCell>
+                    <TableCell>Asistente</TableCell>
                     <TableCell>Gráficas Adicionales</TableCell>
                   </TableRow>
                 </TableHead>

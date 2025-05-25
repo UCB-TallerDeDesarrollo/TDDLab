@@ -25,18 +25,7 @@ const StyledTable = styled(Table)({
   marginLeft: "auto",
   marginRight: "auto",
 });
-const ButtonContainer = styled("div")({
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: "8px",
-});
-const CustomTableCell1 = styled(TableCell)({
-  width: "80%",
-});
 
-const CustomTableCell2 = styled(TableCell)({
-  width: "10%",
-});
 interface PracticesProps {
   ShowForm: () => void;
   userRole: string;
@@ -142,11 +131,23 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     <Container>
       <section className="Tareas">
         <StyledTable>
-          <TableHead>
+           <TableHead>
             <TableRow>
-              <CustomTableCell1>Tareas</CustomTableCell1>
-              <CustomTableCell2>
-                <ButtonContainer>
+              <TableCell colSpan={2}>
+                <div style={{ fontWeight: 600, fontSize: "16px" }}>Tareas</div>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell colSpan={2}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                    marginBottom: "10px",
+                  }}
+                >
                   <SortingComponent
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleOrderPractices}
@@ -159,8 +160,8 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                   >
                     Crear
                   </Button>
-                </ButtonContainer>
-              </CustomTableCell2>
+                </div>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

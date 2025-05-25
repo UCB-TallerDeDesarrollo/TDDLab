@@ -20,6 +20,7 @@ export const createLinkDialogHandlers = (
 
 export const handleRedirectStudent = (
   link: string,
+  id : number,
   navigate: NavigateFunction
 ) => {
   if (link) {
@@ -34,6 +35,7 @@ export const handleRedirectStudent = (
         search: createSearchParams({
           repoOwner: user,
           repoName: repo,
+          submissionId: id.toString(),
         }).toString(),
       });
     } else {

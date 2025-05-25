@@ -453,6 +453,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 if (practiceSubmissions[0]?.repository_link) {
                   handleRedirectStudent(
                     practiceSubmissions[0]?.repository_link,
+                    practiceSubmissions[0].id,
                     navigate
                   );
                 }

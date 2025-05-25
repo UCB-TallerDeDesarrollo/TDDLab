@@ -43,9 +43,35 @@ const Practice: React.FC<PracticeProps> = ({
         borderBottom: "2px solid #E7E7E7",
       }}
     >
-      <TableCell>{practice.title}</TableCell>
-      <TableCell>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <TableCell
+        sx={{
+          fontSize: "16px",
+          padding: "16px",
+          verticalAlign: "middle",
+          maxWidth: "600px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {practice.title}
+      </TableCell>
+      
+        <TableCell
+      sx={{
+        padding: "16px",
+        verticalAlign: "middle",
+        width: "240px", // Fija el ancho
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          gap: "20px",
+        }}
+      >
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"
