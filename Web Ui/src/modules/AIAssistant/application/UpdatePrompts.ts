@@ -9,13 +9,14 @@ export class UpdatePrompts {
     this.aIAssistantInterface = new AIAssistantRepository();
   }
 
-  async execute(tddPrompt: string, refactoringPrompt: string): Promise<AIPromptResponse> {
+  async execute(tddPrompt: string, refactoringPrompt: string, evaluateTDDPrompt: string): Promise<AIPromptResponse> {
     try {
       const request: UpdatePromptsRequest = {
         analysis_tdd: tddPrompt,
-        refactoring: refactoringPrompt
+        refactoring: refactoringPrompt,
+        evaluate_tdd: evaluateTDDPrompt
       };
-      
+
       const response = await this.aIAssistantInterface.updatePrompts(request);
       return response;
     } catch (error) {
