@@ -1,32 +1,23 @@
 import * as vscode from 'vscode';
 
-export class TerminalPanel {
-  private static panel: vscode.WebviewPanel | undefined;
+export class TerminalViewProvider implements vscode.WebviewViewProvider {
+  public static readonly viewType = 'tddTerminalView';
 
-  public static show(context: vscode.ExtensionContext) {
-    if (TerminalPanel.panel) {
-      TerminalPanel.panel.reveal();
-      return;
-    }
+  constructor(private readonly context: vscode.ExtensionContext) {}
 
-    const panel = vscode.window.createWebviewPanel(
-      'simulatedTerminal',
-      'Terminal Simulada',
-      vscode.ViewColumn.Beside,
-      {
-        enableScripts: true
-      }
-    );
+  resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    _context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken
+  ) {
+    webviewView.webview.options = {
+      enableScripts: true
+    };
 
-    panel.webview.html = TerminalPanel.getHtmlForWebview();
-    TerminalPanel.panel = panel;
-
-    panel.onDidDispose(() => {
-      TerminalPanel.panel = undefined;
-    });
+    webviewView.webview.html = this.getHtml();
   }
 
-  private static getHtmlForWebview(): string {
+  private getHtml(): string {
     return /* html */ `
       <!DOCTYPE html>
       <html lang="en">
@@ -37,13 +28,12 @@ export class TerminalPanel {
         <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
         <style>
           html, body, #terminal {
-            width: 100%;
-            height: 100%;
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
             background: black;
             color: white;
-            font-family: monospace;
           }
         </style>
       </head>

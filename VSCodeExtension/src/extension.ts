@@ -8,7 +8,7 @@ import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
 import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
-import { ExecuteTDDLabTerminal } from './sections/TDDLabTerminal/ExecuteTDDLabTerminal';
+import { TerminalViewProvider } from './sections/TDDLabTerminal/TerminalViewProvider';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -37,17 +37,13 @@ export function activate(context: vscode.ExtensionContext) {
     const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
     const executeExportCommand = new ExecuteExportCommand();
     const executeAIAssistant = new ExecuteAIAssistant();
-    const executeTDDLabTerminal = new ExecuteTDDLabTerminal();
 
-    const runTerminalCommand = vscode.commands.registerCommand('TDD.openTerminal', async () => {
-    try {
-        await executeTDDLabTerminal.execute(context);
-    } catch (error: any) {
-        vscode.window.showErrorMessage(`Error al abrir la terminal: ${error?.message}`);
-    }
-    });
-    context.subscriptions.push(runTerminalCommand);
-
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            TerminalViewProvider.viewType,
+            new TerminalViewProvider(context)
+        )
+    );
 
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
