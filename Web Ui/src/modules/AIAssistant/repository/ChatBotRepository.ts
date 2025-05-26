@@ -1,16 +1,27 @@
 import axios from 'axios';
 import { VITE_API } from "../../../../config";
 
-const API_URL = VITE_API + "/AIAssistant/chatbot";
+const API_URL = `${VITE_API}/AIAssistant/chatbot`;
 
 export class ChatbotRepository {
   async sendMessage(message: string): Promise<string> {
     try {
-      const response = await axios.post(API_URL, { input: message });
-      return response.data.response?.result ?? "No hubo respuesta del asistente.";
+      const { data } = await axios.post(API_URL, { input: message });
+
+      // data.response es { success, response, memoryStatus } o bien { success:false, error, response }
+      const chat = data.response;
+      if (chat?.success) {
+        // devolvemos el texto que mando el asistente
+        return chat.response;
+      } else {
+        // quizá hubo un error en el useCase del backend
+        console.warn("Chatbot no devolvió éxito:", chat);
+        return chat?.response ?? "No hubo respuesta del asistente.";
+      }
     } catch (error) {
       console.error("Error en la API del chatbot:", error);
       throw new Error("Error en la conexión con el servidor");
     }
   }
 }
+
