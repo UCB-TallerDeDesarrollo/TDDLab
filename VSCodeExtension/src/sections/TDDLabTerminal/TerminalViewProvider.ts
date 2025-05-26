@@ -1,11 +1,18 @@
 import * as vscode from 'vscode';
+import { Terminal } from 'xterm';
+import { TimelineView } from '../Timeline/TimelineView';
 
 export class TerminalViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'tddTerminalView';
+  private readonly context: vscode.ExtensionContext;
+  private readonly timelineView: TimelineView;
 
-  constructor(private readonly context: vscode.ExtensionContext) {}
+  constructor(context: vscode.ExtensionContext) {
+    this.context = context;
+    this.timelineView = new TimelineView(context);
+  }
 
-  resolveWebviewView(
+  async resolveWebviewView(
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext,
     _token: vscode.CancellationToken
@@ -14,31 +21,67 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       enableScripts: true
     };
 
-    webviewView.webview.html = this.getHtml();
+    const timelineHtml = await this.timelineView.getTimelineHtml(webviewView.webview);
+    webviewView.webview.html = this.getHtml(timelineHtml);
   }
 
-  private getHtml(): string {
+  private getHtml(timelineContent: string): string {
     return /* html */ `
       <!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <title>Terminal Simulada</title>
+        <title>Terminal + Timeline</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
         <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
         <style>
-          html, body, #terminal {
+          html, body {
             margin: 0;
             padding: 0;
-            width: 100%;
             height: 100%;
-            background: black;
+            display: flex;
+            flex-direction: column;
+            font-family: monospace;
+          }
+          #timeline {
+            flex: 1;
+            background-color: #222;
+            color: #eee;
+            padding: 10px;
+            overflow-y: auto;
+          }
+          #terminal {
+            flex: 1;
+          }
+          .timeline-dot {
+            position: relative;
+            display: inline-block;
+            margin: 3px;
+          }
+          .popup {
+            display: none;
+            position: absolute;
+            background: #333;
             color: white;
+            padding: 5px;
+            border-radius: 5px;
+            z-index: 100;
+          }
+          .timeline-dot:hover .popup {
+            display: block;
           }
         </style>
       </head>
       <body>
+        <div id="timeline">
+          <h2>TDDLab Timeline</h2>
+          <div style="display: flex; flex-wrap: wrap;">
+            ${timelineContent}
+          </div>
+        </div>
+
         <div id="terminal"></div>
+
         <script>
           const term = new Terminal({ cursorBlink: true });
           term.open(document.getElementById('terminal'));
@@ -46,7 +89,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
           const prompt = () => term.write('\\r\\n$ ');
           let command = '';
 
-          term.write('Bienvenido a la terminal simulada. Escribe "help" para ver comandos.');
+          term.write('Bienvenido a la terminal simulada. Escribe \"help\" para ver comandos.');
           prompt();
 
           term.onData(data => {
