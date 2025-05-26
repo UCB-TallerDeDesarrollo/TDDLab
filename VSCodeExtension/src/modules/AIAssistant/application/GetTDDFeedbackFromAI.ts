@@ -11,4 +11,8 @@ export class GetTDDFeedbackFromAI {
    public async fetchResponse(context: vscode.ExtensionContext): Promise<string> {
     return await this.aIAssistantRepository.fetchResponse(context, this.fileRepository);
   }
+  public async getSimpleResponse(prompt: string): Promise<string> {
+    const tddlog = this.fileRepository.getTDDLog();
+    return await this.aIAssistantRepository.getTDDFeedbackFromAI(tddlog, prompt);
+  }
 }
