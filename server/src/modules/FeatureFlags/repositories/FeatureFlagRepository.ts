@@ -4,6 +4,7 @@ import {
   FeatureFlagDataObject,
   FeatureFlagCreationObject,
   FeatureFlagUpdateObject,
+  FeatureFlagsPlainObject,
 } from "../domain/FeatureFlag";
 
 interface QueryResult {
@@ -120,6 +121,15 @@ class FeatureFlagRepository {
     const rows = await this.executeQuery(query, [id]);
     return rows.length > 0;
   }
+
+  async obtainFeatureFlagsPlain(): Promise<FeatureFlagsPlainObject> {
+    const featureFlags = await this.obtainFeatureFlags();
+    const plainObject: FeatureFlagsPlainObject = {};
+    featureFlags.forEach(flag => {
+      plainObject[flag.feature_name] = flag.is_enabled;
+    });
+    return plainObject;
+  }
 }
 
 export default FeatureFlagRepository;
