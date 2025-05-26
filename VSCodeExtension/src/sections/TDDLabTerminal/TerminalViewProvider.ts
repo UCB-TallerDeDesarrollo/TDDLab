@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { Terminal } from 'xterm';
 import { TimelineView } from '../Timeline/TimelineView';
 
 export class TerminalViewProvider implements vscode.WebviewViewProvider {
@@ -21,19 +20,25 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       enableScripts: true
     };
 
+    // Obtiene el HTML del timeline usando el webview actual
     const timelineHtml = await this.timelineView.getTimelineHtml(webviewView.webview);
-    webviewView.webview.html = this.getHtml(timelineHtml);
+
+    // Inyecta el timeline y la terminal en la misma webview
+    webviewView.webview.html = this.getHtml(timelineHtml, webviewView.webview);
   }
 
-  private getHtml(timelineContent: string): string {
+  private getHtml(timelineContent: string, webview: vscode.Webview): string {
+    const xtermCssUri = 'https://cdn.jsdelivr.net/npm/xterm/css/xterm.css';
+    const xtermJsUri = 'https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js';
+
     return /* html */ `
       <!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
         <title>Terminal + Timeline</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
-        <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+        <link rel="stylesheet" href="${xtermCssUri}">
+        <script src="${xtermJsUri}"></script>
         <style>
           html, body {
             margin: 0;
@@ -44,14 +49,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
             font-family: monospace;
           }
           #timeline {
-            flex: 1;
+            flex: 0 0 auto;
             background-color: #222;
             color: #eee;
             padding: 10px;
-            overflow-y: auto;
+            overflow-x: auto;
           }
           #terminal {
-            flex: 1;
+            flex: 1 1 auto;
           }
           .timeline-dot {
             position: relative;
@@ -89,7 +94,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
           const prompt = () => term.write('\\r\\n$ ');
           let command = '';
 
-          term.write('Bienvenido a la terminal simulada. Escribe \"help\" para ver comandos.');
+          term.write('Bienvenido a la terminal simulada. Escribe "help" para ver comandos.');
           prompt();
 
           term.onData(data => {
