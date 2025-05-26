@@ -5,28 +5,19 @@ export class ConversationService {
   private memory = new BufferMemory({ returnMessages: true });
   private repo = new AIAssistantRepository();
 
-  /**
-   * Envía un mensaje del usuario, incluyendo el historial en el prompt,
-   * y guarda la respuesta en la memoria.
-   */
   async sendMessage(userInput: string): Promise<string> {
     try {
-      // 1) Cargamos el historial (mensajes anteriores)
       const memVars = await this.memory.loadMemoryVariables({});
-      
-      // 2) Construimos el historial como string limpio
-      let historyText = "";
+            let historyText = "";
       if (memVars.history && Array.isArray(memVars.history)) {
         historyText = memVars.history
           .map((msg: any) => {
-            // Verificamos el tipo de mensaje correctamente
             const role = msg.constructor.name === 'HumanMessage' || msg._getType() === 'human' ? 'Usuario' : 'Asistente';
             return `${role}: ${msg.content}`;
           })
           .join('\n');
       }
 
-      // 3) Creamos el prompt más limpio y estructurado
       let fullPrompt: string;
       if (historyText) {
         fullPrompt = `Conversación anterior:
@@ -39,12 +30,10 @@ Asistente:`;
 Asistente:`;
       }
 
-      console.log('Prompt enviado:', fullPrompt); // Para debug
+      console.log('Prompt enviado:', fullPrompt); 
 
-      // 4) Llamamos al método del repositorio
       const answerObj = await this.repo.sendChatWithHistory(fullPrompt);
       
-      // Extraemos la respuesta del objeto
       let response: string;
       if (typeof answerObj === 'string') {
         response = answerObj;
@@ -55,12 +44,10 @@ Asistente:`;
         throw new Error('Formato de respuesta inválido del repositorio');
       }
 
-      // Verificamos que la respuesta sea válida
       if (!response || !response.trim()) {
         throw new Error('Respuesta vacía del repositorio');
       }
 
-      // 5) Guardamos en memoria el intercambio
       await this.memory.saveContext(
         { input: userInput },
         { output: response }
@@ -70,7 +57,6 @@ Asistente:`;
     } catch (error) {
       console.error('[ConversationService Error]', error);
       
-      // Proporcionamos más información sobre el error
       if (error instanceof Error) {
         throw new Error(`Error al procesar la conversación: ${error.message}`);
       } else {
@@ -79,9 +65,7 @@ Asistente:`;
     }
   }
 
-  /**
-   * Limpia el historial de conversación
-   */
+ 
   async clearHistory(): Promise<void> {
     try {
       this.memory = new BufferMemory({ returnMessages: true });
@@ -92,9 +76,7 @@ Asistente:`;
     }
   }
 
-  /**
-   * Obtiene el historial actual para debugging
-   */
+  
   async getHistory(): Promise<any[]> {
     try {
       const memVars = await this.memory.loadMemoryVariables({});
@@ -105,9 +87,7 @@ Asistente:`;
     }
   }
 
-  /**
-   * Verifica el estado de la memoria
-   */
+ 
   async getMemoryStatus(): Promise<{ messageCount: number; lastMessage?: string }> {
     try {
       const history = await this.getHistory();

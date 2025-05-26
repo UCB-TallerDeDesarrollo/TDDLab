@@ -81,7 +81,6 @@ export class AIAssistantRepository {
         }
     }
 
-    // Nuevo método para chat con historial
     private async sendRequestToAIAssistantWithHistory(fullPrompt: string): Promise<string> {
         try {
             if (!this.apiUrl) {
@@ -106,7 +105,7 @@ export class AIAssistantRepository {
                             content: fullPrompt 
                         }
                     ],
-                    temperature: 0.7, // Un poco más alta para conversaciones más naturales
+                    temperature: 0.7, 
                     max_tokens: 1024
                 }),
             });
@@ -141,7 +140,6 @@ export class AIAssistantRepository {
         return this.mapToAIAssistantAnswer(raw);
     }  
 
-    // Método original para compatibilidad
     public async sendChat(input: string): Promise<AIAssistantAnswerObject> {
         const code = "Responde como un chatbot";
         const instruction = input;
@@ -151,7 +149,6 @@ export class AIAssistantRepository {
         return this.mapToAIAssistantAnswer(raw);
     }
 
-    // Nuevo método para chat con historial
     public async sendChatWithHistory(fullPrompt: string): Promise<AIAssistantAnswerObject> {
         try {
             console.log('Enviando prompt con historial:', fullPrompt);

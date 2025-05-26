@@ -9,14 +9,12 @@ export class ChatbotCodeUseCase {
 
   async execute(input: string): Promise<any> {
     try {
-      // Validamos que el input no esté vacío
       if (!input || !input.trim()) {
         throw new Error("El mensaje no puede estar vacío");
       }
 
       console.log('Procesando mensaje:', input);
       
-      // Verificamos el estado actual de la memoria para debugging
       const memoryStatus = await this.convo.getMemoryStatus();
       console.log('Estado de memoria:', memoryStatus);
 
@@ -40,9 +38,7 @@ export class ChatbotCodeUseCase {
     }
   }
 
-  /**
-   * Limpia el historial de conversación
-   */
+ 
   async clearHistory(): Promise<void> {
     try {
       await this.convo.clearHistory();
@@ -53,9 +49,7 @@ export class ChatbotCodeUseCase {
     }
   }
 
-  /**
-   * Obtiene información sobre el estado actual
-   */
+  
   async getStatus(): Promise<any> {
     try {
       const memoryStatus = await this.convo.getMemoryStatus();

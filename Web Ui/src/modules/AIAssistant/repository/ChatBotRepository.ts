@@ -8,13 +8,10 @@ export class ChatbotRepository {
     try {
       const { data } = await axios.post(API_URL, { input: message });
 
-      // data.response es { success, response, memoryStatus } o bien { success:false, error, response }
       const chat = data.response;
       if (chat?.success) {
-        // devolvemos el texto que mando el asistente
         return chat.response;
       } else {
-        // quizá hubo un error en el useCase del backend
         console.warn("Chatbot no devolvió éxito:", chat);
         return chat?.response ?? "No hubo respuesta del asistente.";
       }
