@@ -1,5 +1,4 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
@@ -8,29 +7,29 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
-import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
-  jobsByCommit: JobDataObject[] | null;
-  metric: string | null; // Cambié de String a string para mayor consistencia
-  setMetric: (metric: string) => void; // Agregamos una función para actualizar el metric
-  port: GithubAPIRepository;
+  metric: string | null;
+  setMetric: (metric: string) => void;
+  port: CommitHistoryRepository;
   role: string;
-  complexity:ComplexityObject[] | null;
+  complexity: ComplexityObject[] | null;
   commitsTddCycles: CommitCycle[] | null;
   typegraphs: string;
 }
 
-function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, commitsTddCycles,typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  console.log("TDDCHART says: ", typegraphs)
+  console.log("TDDCHART says: ", typegraphs);
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
     return initialMetric;
   });
+
   useEffect(() => {
     const handleStorageChange = () => {
       console.log("storage event triggered");
@@ -57,15 +56,14 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
         // Devolvemos el commit (modificado o no) para que esté en el array
         return commit;
       });
-  
+
       console.log(filteredCommitsObject);
       return filteredCommitsObject;
     }
     return commits;
   })();
-  
-  
-  if (!commits || !jobsByCommit) {
+
+  if (!commits) {
     return <div>No data available</div>;
   }
 
@@ -79,6 +77,7 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
     const storageEvent = new Event("storage");
     window.dispatchEvent(storageEvent);
   };
+
   const options = [
     { value: 'Complejidad', label: 'Lista de Complejidad' },
     { value: 'TddCiclos', label: 'Análisis de distribución de pruebas por commit' },
@@ -88,7 +87,8 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
     { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
     { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
     { value: 'Lista', label: 'Lista de Commits' },
-];
+  ];
+
   return (
     <div className="lineChartContainer">
       <Box>
@@ -102,29 +102,27 @@ function TDDCharts({ commits, jobsByCommit, setMetric,port,role,complexity, comm
             data-testid="select-graph-type"
             label="Métricas"
           >
-             {options.filter(option => {
-        if (typegraphs === 'aditionalgraph') {
-            return ['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
-        } else {
-            return !['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
-        }
-        }).map((option) => (
-            <MenuItem key={option.value} value={option.value}>
+            {options.filter(option => {
+              if (typegraphs === 'aditionalgraph') {
+                return ['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+              } else {
+                return !['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+              }
+            }).map((option) => (
+              <MenuItem key={option.value} value={option.value}>
                 {option.label}
-            </MenuItem>
-        ))}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
-        jobsByCommit={jobsByCommit}
         optionSelected={metricSelected}
-        complexity = {complexity}
+        complexity={complexity}
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}
-        
       />
     </div>
   );
