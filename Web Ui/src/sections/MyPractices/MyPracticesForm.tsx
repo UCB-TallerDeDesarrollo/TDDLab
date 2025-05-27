@@ -90,7 +90,7 @@ function MyPracticesForm({
               margin="dense"
               id="assigment-title"
               name="practiceTitle"
-              label="Nombre de la Tarea*"
+              label="Nombre de la Practica*"
               type="text"
               fullWidth
               value={practiceData.title}

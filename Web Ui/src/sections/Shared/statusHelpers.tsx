@@ -29,3 +29,17 @@ export const getStatusTooltip = (status: string) => {
       return "";
   }
 };
+
+
+export const getStatusTooltipPractice = (status: string) => {
+  switch (status) {
+    case "pending":
+      return "Practica no iniciada";
+    case "in progress":
+      return "Practica en progreso";
+    case "delivered":
+      return "Practica enviada";
+    default:
+      return "";
+  }
+};
