@@ -30,6 +30,16 @@ describe("FeatureFlagRepository", () => {
       expect(mockedAxios.get).toHaveBeenCalledWith(API_URL);
     });
   });
-  
+   describe("getFlagByName", () => {
+    it("debería retornar el feature flag con el nombre especificado", async () => {
+      mockedAxios.get.mockResolvedValue({ status: 200, data: sampleFlag });
+
+      const result = await repo.getFlagByName("Boton Asistente IA");
+
+      expect(result).toEqual(sampleFlag);
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/name/Boton Asistente IA`);
+    });
+  });
+
   
 });
