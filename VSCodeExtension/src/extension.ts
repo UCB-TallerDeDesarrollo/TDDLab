@@ -37,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
             {
                 hostname: "localhost",
                 port: 3000,
-                path: "/api/AIAssistant/analyze-tdd-extension",
+                path: "/api/featureflags/extension/plain",
                 method: "GET",
             },
             (res) => {
