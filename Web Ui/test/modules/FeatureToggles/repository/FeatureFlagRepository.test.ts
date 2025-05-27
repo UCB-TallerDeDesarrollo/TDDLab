@@ -41,5 +41,16 @@ describe("FeatureFlagRepository", () => {
     });
   });
 
-  
+  describe("updateFlag", () => {
+    it("debería actualizar y retornar el feature flag", async () => {
+      const updatedFlag = { ...sampleFlag, is_enabled: false };
+      mockedAxios.put.mockResolvedValue({ status: 200, data: updatedFlag });
+
+      const result = await repo.updateFlag(1, { is_enabled: false });
+
+      expect(result).toEqual(updatedFlag);
+      expect(mockedAxios.put).toHaveBeenCalledWith(`${API_URL}/1`, { is_enabled: false });
+    });
+    });
+
 });
