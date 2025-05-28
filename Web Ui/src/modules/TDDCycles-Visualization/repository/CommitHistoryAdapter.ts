@@ -1,11 +1,12 @@
 import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
-import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
+//import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
+import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
 import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 
-export class CommitHistoryAdapter implements GithubAPIRepository {
+export class CommitHistoryAdapter implements CommitHistoryRepository {
   octokit: Octokit;
   backAPI: string;
   
