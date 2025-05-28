@@ -17,16 +17,16 @@ export class ChatbotAssistantRepository {
           }).join('\n');
       }
 
-      let fullPrompt: string;
+      let chatHistory: string;
       if (historyText) {
-        fullPrompt = `Conversación anterior: ${historyText} Usuario: ${userInput} Asistente:`;
+        chatHistory = `Conversación anterior: ${historyText} Usuario: ${userInput} Asistente:`;
       } else {
-        fullPrompt = `Usuario: ${userInput} Asistente:`;
+        chatHistory = `Usuario: ${userInput} Asistente:`;
       }
 
-      console.log('Prompt enviado:', fullPrompt); 
+      console.log('Prompt enviado:', chatHistory); 
 
-      const answerObj = await this.aiAssistantRepository.sendChatWithHistory(fullPrompt);
+      const answerObj = await this.aiAssistantRepository.sendChat(chatHistory, userInput);
       
       let response: string;
       if (typeof answerObj === 'string') {

@@ -81,53 +81,6 @@ export class AIAssistantRepository {
         }
     }
 
-    private async sendRequestToAIAssistantWithHistory(fullPrompt: string): Promise<string> {
-        try {
-            if (!this.apiUrl) {
-                throw new Error('LLM_API_URL no está definido');
-            }
-
-            const response = await fetch(this.apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.apiKey}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: MODEL,
-                    messages: [
-                        { 
-                            role: 'system', 
-                            content: 'Eres un chatbot útil y amigable. Mantén coherencia con la conversación anterior y responde de manera natural y contextualizada.' 
-                        },
-                        { 
-                            role: 'user', 
-                            content: fullPrompt 
-                        }
-                    ],
-                    temperature: 0.7, 
-                    max_tokens: 1024
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
-
-            if (!data || !data.choices || !data.choices[0]?.message?.content) {
-                throw new Error('No se recibió una respuesta válida del modelo.');
-            }
-
-            return data.choices[0].message.content;
-
-        } catch (error) {
-            console.error('[LLM CHAT ERROR]', error);
-            return 'Error al comunicarse con el modelo de chat.';
-        }
-    }
-
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         const newInstruction = await this.buildPromt(instruction.value);
         const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
@@ -140,28 +93,10 @@ export class AIAssistantRepository {
         return this.mapToAIAssistantAnswer(raw);
     }  
 
-    // Ya no se utiliza el sendChat?
-    public async sendChat(input: string): Promise<AIAssistantAnswerObject> {
-        const code = "Responde como un chatbot";
-        const instruction = input;
+    public async sendChat(chatHistory: string, input: string): Promise<AIAssistantAnswerObject> {
 
-        const raw = await this.sendRequestToAIAssistant(code, instruction);
+        const raw = await this.sendRequestToAIAssistant(chatHistory, input);
 
         return this.mapToAIAssistantAnswer(raw);
-    }
-
-    public async sendChatWithHistory(fullPrompt: string): Promise<AIAssistantAnswerObject> {
-        try {
-            console.log('Enviando prompt con historial:', fullPrompt);
-            
-            const raw = await this.sendRequestToAIAssistantWithHistory(fullPrompt);
-            
-            console.log('Respuesta recibida:', raw);
-            
-            return this.mapToAIAssistantAnswer(raw);
-        } catch (error) {
-            console.error('Error en sendChatWithHistory:', error);
-            return this.mapToAIAssistantAnswer('Error al procesar el chat con historial.');
-        }
     }
 }

@@ -37,8 +37,8 @@ export class ChatbotCodeUseCase {
       };
     }
   }
-
- 
+  
+  /// Estos metodos se usan??
   async clearHistory(): Promise<void> {
     try {
       await this.convo.clearHistory();
