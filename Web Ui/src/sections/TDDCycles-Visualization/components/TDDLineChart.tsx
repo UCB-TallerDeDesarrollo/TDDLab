@@ -159,8 +159,6 @@ function TDDLineCharts({
     return getColorByCoverage(coverage, isRefactor);
   }
 
-  // Función refactorizada para obtener colores directamente del commit
- /* function getColorConclusion() {
     if (filteredCommitsObject != null) {
       const colors = filteredCommitsObject.map((commit) => {
         const coverage = commit.coverage;
