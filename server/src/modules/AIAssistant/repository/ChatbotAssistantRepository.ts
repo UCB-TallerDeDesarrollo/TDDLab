@@ -2,20 +2,19 @@ import { BufferMemory } from "langchain/memory";
 import { AIAssistantRepository } from "./AIAssistantRepositoy";
 
 export class ChatbotAssistantRepository {
-  private memory = new BufferMemory({ returnMessages: true });
-  private repo = new AIAssistantRepository();
+  private bufferMemory = new BufferMemory({ returnMessages: true });
+  private aiAssistantRepository = new AIAssistantRepository();
 
   async sendMessage(userInput: string): Promise<string> {
     try {
-      const memVars = await this.memory.loadMemoryVariables({});
-            let historyText = "";
-      if (memVars.history && Array.isArray(memVars.history)) {
-        historyText = memVars.history
+      const memory = await this.bufferMemory.loadMemoryVariables({});
+      let historyText = "";
+      if (memory.history && Array.isArray(memory.history)) {
+        historyText = memory.history
           .map((msg: any) => {
             const role = msg.constructor.name === 'HumanMessage' || msg._getType() === 'human' ? 'Usuario' : 'Asistente';
             return `${role}: ${msg.content}`;
-          })
-          .join('\n');
+          }).join('\n');
       }
 
       let fullPrompt: string;
@@ -27,7 +26,7 @@ export class ChatbotAssistantRepository {
 
       console.log('Prompt enviado:', fullPrompt); 
 
-      const answerObj = await this.repo.sendChatWithHistory(fullPrompt);
+      const answerObj = await this.aiAssistantRepository.sendChatWithHistory(fullPrompt);
       
       let response: string;
       if (typeof answerObj === 'string') {
@@ -43,7 +42,7 @@ export class ChatbotAssistantRepository {
         throw new Error('Respuesta vacía del repositorio');
       }
 
-      await this.memory.saveContext(
+      await this.bufferMemory.saveContext(
         { input: userInput },
         { output: response }
       );
@@ -63,7 +62,7 @@ export class ChatbotAssistantRepository {
  
   async clearHistory(): Promise<void> {
     try {
-      this.memory = new BufferMemory({ returnMessages: true });
+      this.bufferMemory = new BufferMemory({ returnMessages: true });
       console.log('Historial de conversación limpiado');
     } catch (error) {
       console.error('Error al limpiar historial:', error);
@@ -74,7 +73,7 @@ export class ChatbotAssistantRepository {
   
   async getHistory(): Promise<any[]> {
     try {
-      const memVars = await this.memory.loadMemoryVariables({});
+      const memVars = await this.bufferMemory.loadMemoryVariables({});
       return memVars.history || [];
     } catch (error) {
       console.error('Error al obtener historial:', error);

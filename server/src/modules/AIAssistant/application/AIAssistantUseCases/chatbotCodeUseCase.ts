@@ -1,10 +1,10 @@
-import { ConversationService } from "../../repository/ChatbotAssistantRepository";
+import { ChatbotAssistantRepository } from "../../repository/ChatbotAssistantRepository";
 
 export class ChatbotCodeUseCase {
-  private readonly convo: ConversationService;
+  private readonly convo: ChatbotAssistantRepository;
 
   constructor() {
-    this.convo = new ConversationService();
+    this.convo = new ChatbotAssistantRepository();
   }
 
   async execute(input: string): Promise<any> {
