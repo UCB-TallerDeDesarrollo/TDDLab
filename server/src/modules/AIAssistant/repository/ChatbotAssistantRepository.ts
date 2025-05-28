@@ -28,16 +28,10 @@ export class ChatbotAssistantRepository {
       console.log('Prompt enviado:', chatHistory); 
 
       const answerLLM = await this.aiAssistantRepository.sendChat(chatHistory, userInput);
-      
-      const response = answerLLM.result;
-
-      if (!response || !response.trim()) {
-        throw new Error('Respuesta vacía del modelo');
-      }
 
       await this.bufferMemory.saveContext(
         { input: userInput },
-        { output: response }
+        { output: answerLLM.result }
       );
 
       return answerLLM;
