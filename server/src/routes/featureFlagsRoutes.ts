@@ -44,7 +44,7 @@ featureFlagsRouter.delete(
 
 // Obtiene Feature para la extensión
 featureFlagsRouter.get(
-  "/extension/plain",
+  "/extension",
   async (req, res) => await featureFlagsController.getFeatureFlagsForExtension(req, res)
 );
 
