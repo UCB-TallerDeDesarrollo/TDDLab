@@ -3,7 +3,7 @@ import { AIAssistantRepository } from "./AIAssistantRepositoy";
 
 export class ChatbotAssistantRepository {
   private bufferMemory = new BufferMemory({ returnMessages: true });
-  private aiAssistantRepository = new AIAssistantRepository();
+  private aiAssistantRepository = new AIAssistantRepository;
 
   async sendMessage(userInput: string): Promise<string> {
     try {
@@ -28,15 +28,7 @@ export class ChatbotAssistantRepository {
 
       const answerObj = await this.aiAssistantRepository.sendChat(chatHistory, userInput);
       
-      let response: string;
-      if (typeof answerObj === 'string') {
-        response = answerObj;
-      } else if (answerObj && typeof answerObj.result === 'string') {
-        response = answerObj.result;
-      } else {
-        console.error('Formato de respuesta inesperado:', answerObj);
-        throw new Error('Formato de respuesta inválido del repositorio');
-      }
+      const response = answerObj.result;
 
       if (!response || !response.trim()) {
         throw new Error('Respuesta vacía del repositorio');
