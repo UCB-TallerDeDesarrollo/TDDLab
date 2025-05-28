@@ -140,6 +140,7 @@ export class AIAssistantRepository {
         return this.mapToAIAssistantAnswer(raw);
     }  
 
+    // Ya no se utiliza el sendChat?
     public async sendChat(input: string): Promise<AIAssistantAnswerObject> {
         const code = "Responde como un chatbot";
         const instruction = input;

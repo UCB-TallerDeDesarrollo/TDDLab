@@ -1,7 +1,7 @@
 import { BufferMemory } from "langchain/memory";
-import { AIAssistantRepository } from "../repository/AIAssistantRepositoy";
+import { AIAssistantRepository } from "./AIAssistantRepositoy";
 
-export class ConversationService {
+export class ChatbotAssistantRepository {
   private memory = new BufferMemory({ returnMessages: true });
   private repo = new AIAssistantRepository();
 
@@ -20,14 +20,9 @@ export class ConversationService {
 
       let fullPrompt: string;
       if (historyText) {
-        fullPrompt = `Conversación anterior:
-${historyText}
-
-Usuario: ${userInput}
-Asistente:`;
+        fullPrompt = `Conversación anterior: ${historyText} Usuario: ${userInput} Asistente:`;
       } else {
-        fullPrompt = `Usuario: ${userInput}
-Asistente:`;
+        fullPrompt = `Usuario: ${userInput} Asistente:`;
       }
 
       console.log('Prompt enviado:', fullPrompt); 

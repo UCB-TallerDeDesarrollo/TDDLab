@@ -1,4 +1,4 @@
-import { ConversationService } from "../../repository/ChatbotMemoryRepository";
+import { ConversationService } from "../../repository/ChatbotAssistantRepository";
 
 export class ChatbotCodeUseCase {
   private readonly convo: ConversationService;
