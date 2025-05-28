@@ -1,7 +1,7 @@
 import { TerminalInput, TerminalOutput } from './TerminalIOInterface';
 
 export class TerminalIO implements TerminalInput, TerminalOutput {
-  constructor(private term: any) {}
+  constructor(private readonly term: any) {}
 
   onInput(callback: (data: string) => void): void {
     this.term.onData(callback);

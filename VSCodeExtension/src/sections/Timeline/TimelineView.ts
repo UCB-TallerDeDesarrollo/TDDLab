@@ -41,9 +41,18 @@ export class TimelineView implements vscode.WebviewViewProvider {
             const timeline = await this.getTimeline.execute();
             return this.generateHtmlFragment(timeline, webview);
         } catch (err) {
-            return `<p>Error al cargar la línea de tiempo</p>`;
+            if (err instanceof Error) {
+                vscode.window.showErrorMessage(`Error al cargar la línea de tiempo: ${err.message}`);
+                console.error('[TimelineView] getTimelineHtml error:', err);
+            } else {
+                vscode.window.showErrorMessage(`Error desconocido al cargar la línea de tiempo.`);
+                console.error('[TimelineView] getTimelineHtml unknown error:', err);
+            }
+
+            return `<p style="color: red;">Error al cargar la línea de tiempo</p>`;
         }
     }
+
 
     lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline | undefined {
         for (let i = timeline.length - 1; i >= 0; i--) {

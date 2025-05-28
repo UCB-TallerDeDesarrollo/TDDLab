@@ -4,8 +4,8 @@ export class TerminalService {
   private command = '';
 
   constructor(
-    private input: TerminalInput,
-    private output: TerminalOutput
+    private readonly input: TerminalInput,
+    private readonly output: TerminalOutput
   ) {}
 
   start(): void {
