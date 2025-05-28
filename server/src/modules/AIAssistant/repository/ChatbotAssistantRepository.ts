@@ -25,8 +25,6 @@ export class ChatbotAssistantRepository {
         chatHistory = `Usuario: ${userInput} Asistente:`;
       }
 
-      console.log('Prompt enviado:', chatHistory); 
-
       const answerLLM = await this.aiAssistantRepository.sendChat(chatHistory, userInput);
 
       await this.bufferMemory.saveContext(
