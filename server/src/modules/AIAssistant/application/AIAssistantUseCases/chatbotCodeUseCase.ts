@@ -1,10 +1,10 @@
 import { ChatbotAssistantRepository } from "../../repository/ChatbotAssistantRepository";
 
 export class ChatbotCodeUseCase {
-  private readonly convo: ChatbotAssistantRepository;
+  private readonly adapter: ChatbotAssistantRepository;
 
-  constructor() {
-    this.convo = new ChatbotAssistantRepository();
+  constructor(adapter: ChatbotAssistantRepository) {
+    this.adapter = adapter;
   }
 
   async execute(input: string): Promise<any> {
@@ -15,17 +15,17 @@ export class ChatbotCodeUseCase {
 
       console.log('Procesando mensaje:', input);
       
-      const memoryStatus = await this.convo.getMemoryStatus();
+      const memoryStatus = await this.adapter.getMemoryStatus();
       console.log('Estado de memoria:', memoryStatus);
 
-      const response = await this.convo.sendMessage(input.trim());
+      const response = await this.adapter.sendMessage(input.trim());
       
       console.log('Respuesta generada:', response);
       
       return {
         success: true,
         response: response,
-        memoryStatus: await this.convo.getMemoryStatus()
+        memoryStatus: await this.adapter.getMemoryStatus()
       };
     } catch (error) {
       console.error('Error en ChatbotCodeUseCase:', error);
@@ -41,7 +41,7 @@ export class ChatbotCodeUseCase {
   /// Estos metodos se usan??
   async clearHistory(): Promise<void> {
     try {
-      await this.convo.clearHistory();
+      await this.adapter.clearHistory();
       console.log('Historial limpiado desde UseCase');
     } catch (error) {
       console.error('Error al limpiar historial desde UseCase:', error);
@@ -52,7 +52,7 @@ export class ChatbotCodeUseCase {
   
   async getStatus(): Promise<any> {
     try {
-      const memoryStatus = await this.convo.getMemoryStatus();
+      const memoryStatus = await this.adapter.getMemoryStatus();
       return {
         isHealthy: true,
         memoryStatus

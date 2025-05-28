@@ -26,9 +26,9 @@ export class ChatbotAssistantRepository {
 
       console.log('Prompt enviado:', chatHistory); 
 
-      const answerObj = await this.aiAssistantRepository.sendChat(chatHistory, userInput);
+      const answerLLM = await this.aiAssistantRepository.sendChat(chatHistory, userInput);
       
-      const response = answerObj.result;
+      const response = answerLLM.result;
 
       if (!response || !response.trim()) {
         throw new Error('Respuesta vacía del repositorio');
@@ -50,7 +50,6 @@ export class ChatbotAssistantRepository {
       }
     }
   }
-
  
   async clearHistory(): Promise<void> {
     try {
@@ -61,7 +60,6 @@ export class ChatbotAssistantRepository {
       throw new Error('No se pudo limpiar el historial');
     }
   }
-
   
   async getHistory(): Promise<any[]> {
     try {
@@ -73,7 +71,6 @@ export class ChatbotAssistantRepository {
     }
   }
 
- 
   async getMemoryStatus(): Promise<{ messageCount: number; lastMessage?: string }> {
     try {
       const history = await this.getHistory();

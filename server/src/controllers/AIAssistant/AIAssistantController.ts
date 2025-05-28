@@ -6,6 +6,7 @@ import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/
 import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 import { AnalyzeTDDCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeTDDCodeUseCase';
 import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
+import { ChatbotAssistantRepository } from '../../modules/AIAssistant/repository/ChatbotAssistantRepository';
 
 export default class AIAssistantController {
 
@@ -15,12 +16,16 @@ export default class AIAssistantController {
     private readonly analyzeTDDUseCase: AnalyzeTDDCodeUseCase;
     private readonly chatbotUseCase: ChatbotCodeUseCase;
 
-    constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
+    constructor(
+        repository: AIAssistantRepository,
+        repositoryDB: AIAssistantDataBaseRepository,
+        repositoryChatBot: ChatbotAssistantRepository
+    ) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
         this.analyzeTDDUseCase = new AnalyzeTDDCodeUseCase(repository);
-        this.chatbotUseCase = new ChatbotCodeUseCase();
+        this.chatbotUseCase = new ChatbotCodeUseCase(repositoryChatBot);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -97,7 +102,9 @@ export default class AIAssistantController {
                 error: "Error al analizar el código",
                 details: errorMessage 
             });
-        }}
+        }
+    }
+
     async chatBot(req: Request, res: Response): Promise<void> {
         const userInput = req.body.input;
 
