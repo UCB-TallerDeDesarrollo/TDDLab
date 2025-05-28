@@ -24,7 +24,7 @@ export class ChatbotCodeUseCase {
       
       return {
         success: true,
-        response: response,
+        response: response.result,
         memoryStatus: await this.adapter.getMemoryStatus()
       };
     } catch (error) {

@@ -94,9 +94,7 @@ export class AIAssistantRepository {
     }  
 
     public async sendChat(chatHistory: string, input: string): Promise<AIAssistantAnswerObject> {
-
         const raw = await this.sendRequestToAIAssistant(chatHistory, input);
-
         return this.mapToAIAssistantAnswer(raw);
     }
 }

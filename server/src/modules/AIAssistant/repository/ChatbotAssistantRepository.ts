@@ -1,11 +1,12 @@
 import { BufferMemory } from "langchain/memory";
 import { AIAssistantRepository } from "./AIAssistantRepositoy";
+import { AIAssistantAnswerObject } from "../domain/AIAssistant";
 
 export class ChatbotAssistantRepository {
   private bufferMemory = new BufferMemory({ returnMessages: true });
   private aiAssistantRepository = new AIAssistantRepository;
 
-  async sendMessage(userInput: string): Promise<string> {
+  async sendMessage(userInput: string): Promise<AIAssistantAnswerObject> {
     try {
       const memory = await this.bufferMemory.loadMemoryVariables({});
       let historyText = "";
@@ -31,7 +32,7 @@ export class ChatbotAssistantRepository {
       const response = answerLLM.result;
 
       if (!response || !response.trim()) {
-        throw new Error('Respuesta vacía del repositorio');
+        throw new Error('Respuesta vacía del modelo');
       }
 
       await this.bufferMemory.saveContext(
@@ -39,7 +40,7 @@ export class ChatbotAssistantRepository {
         { output: response }
       );
 
-      return response.trim();
+      return answerLLM;
     } catch (error) {
       console.error('[ConversationService Error]', error);
       
