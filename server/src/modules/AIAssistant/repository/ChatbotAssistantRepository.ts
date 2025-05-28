@@ -55,27 +55,4 @@ export class ChatbotAssistantRepository {
       throw new Error('No se pudo limpiar el historial');
     }
   }
-  
-  async getHistory(): Promise<any[]> {
-    try {
-      const memVars = await this.bufferMemory.loadMemoryVariables({});
-      return memVars.history || [];
-    } catch (error) {
-      console.error('Error al obtener historial:', error);
-      return [];
-    }
-  }
-
-  async getMemoryStatus(): Promise<{ messageCount: number; lastMessage?: string }> {
-    try {
-      const history = await this.getHistory();
-      return {
-        messageCount: history.length,
-        lastMessage: history.length > 0 ? history[history.length - 1]?.content : undefined
-      };
-    } catch (error) {
-      console.error('Error al verificar estado de memoria:', error);
-      return { messageCount: 0 };
-    }
-  }
 }

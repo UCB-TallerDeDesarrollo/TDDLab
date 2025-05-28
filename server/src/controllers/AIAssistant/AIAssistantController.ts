@@ -115,7 +115,7 @@ export default class AIAssistantController {
 
         try {
             const response = await this.chatbotUseCase.execute(userInput);
-            res.json({ response });
+            res.json(response);
         } catch (err) {
             res.status(500).json({ error: 'Error procesando la solicitud del chatbot' });
         }
