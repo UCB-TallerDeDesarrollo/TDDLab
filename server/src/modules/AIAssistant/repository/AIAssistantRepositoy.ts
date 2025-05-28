@@ -156,17 +156,21 @@ export class AIAssistantRepository {
     }
 
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
-        const newInstruction = await this.buildPromt(instruction.value);
-        const instructionValue = instruction.value.toLowerCase();
-        let context;
-        if (instructionValue === "analiza" || instructionValue === "califica") {
-            context = await this.getContextFromCommitHistory(instruction.URL);
-        } else {
-            context = instruction.URL;
+        try {
+            const newInstruction = await this.buildPromt(instruction.value);
+            const instructionValue = instruction.value.toLowerCase();
+            let context: string;
+        
+            if (instructionValue === "analiza" || instructionValue === "califica") {
+                context = await this.getContextFromCommitHistory(instruction.URL);
+            } else context = instruction.URL;
+        
+            const raw = await this.sendRequestToAIAssistant(context, newInstruction);
+            return this.mapToAIAssistantAnswer(raw);
+        } catch (error) {
+            console.error('[sendPrompt ERROR]', error);
+            return { result: 'Error al comunicarse con el modelo.' };
         }
-        console.log(context);
-        const raw = await this.sendRequestToAIAssistant(context, newInstruction);
-        return this.mapToAIAssistantAnswer(raw);
     }
 
     public async sendTDDExtensionPrompt(tddlog: any, promptInstructions: string): Promise<AIAssistantAnswerObject> {
