@@ -1,23 +1,13 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { Card, CardContent, Typography } from "@mui/material";
 import "../styles/TDDCycleCard.css";
 import "../styles/fonts.css";
 
 interface CycleReportViewProps {
   commit: CommitDataObject;
-  jobs: JobDataObject | null;
 }
 
-function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
-  const getBoxStyle = (conclusion: string) => {
-    return conclusion === "success" ? { backgroundColor: "green" } : { backgroundColor: "red" };
-  };
-
-  const traduceConclusion = (conclusion: string) => {
-    return conclusion === "success" ? "exito" : "fallido";
-  };
-
+function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
   function getCommitLink() {
     return (
       <a
@@ -34,10 +24,10 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
   function getCommitStats() {
     const coverageText = commit.coverage
       ? `${commit.coverage}%`
-      : "no se encontró cobertura";
+      : "Sin cobertura";
     const testCountText = commit.test_count
       ? `${commit.test_count}`
-      : "no se encontraron tests";
+      : "Sin tests";
 
     return (
       <div className="commit-stats">
@@ -75,15 +65,15 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
       minute: "2-digit",
       second: "2-digit",
     });
-  
+
     return (
       <Card
         className="dateCard"
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", 
-          alignItems: "center", 
+          justifyContent: "center",
+          alignItems: "center",
           boxShadow: "0 1px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -95,37 +85,25 @@ function TDDCycleCard({ commit, jobs }: Readonly<CycleReportViewProps>) {
       </Card>
     );
   }
-  
-  
 
   return (
     <div
       className="cycleCardWrapper"
       style={{
         display: "flex",
-        flexDirection: "row", 
-        alignItems: "flex-start", 
+        flexDirection: "row",
+        alignItems: "flex-start",
         marginBottom: "16px",
       }}
     >
-      {renderDateCard()} 
+      {renderDateCard()}
       <div className="cycleCardContainer">
-        <span className="title">Commit {commit.commit.message}</span>
+        <span className="title">Commit: {commit.commit.message}</span>
         {getCommitStats()}
-        {jobs ? (
-          <div className="conclusionBox" style={getBoxStyle(jobs.conclusion)}>
-            Acciones: {traduceConclusion(jobs.conclusion)}
-          </div>
-        ) : (
-          <div className="conclusionBox noActionsBox">
-            No se encontraron acciones
-          </div>
-        )}
         {getCommitLink()}
       </div>
     </div>
   );
-  
 }
 
 export default TDDCycleCard;

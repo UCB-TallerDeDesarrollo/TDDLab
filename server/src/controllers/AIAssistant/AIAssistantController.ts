@@ -50,23 +50,17 @@ export default class AIAssistantController {
     }
 
     async updatePrompts(_req: Request, res: Response): Promise<void> {
-        const {
-            analysis_tdd,
-            refactoring
-        } = _req.body;
-
         try {
-            const updatePrompts = await this.updatePromptsUseCase.execute(
-                {
-                    analysis_tdd,
-                    refactoring
-                }
-            );
-            res.status(200).json(updatePrompts);
+            const prompts = _req.body;
+    
+            const updatedPrompts = await this.updatePromptsUseCase.execute(prompts);
+    
+            res.status(200).json(updatedPrompts);
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
     }
+    
 
     async analyzeTDDFromExtension(req: Request, res: Response): Promise<void> {
         const { tddlog, prompt } = req.body;
