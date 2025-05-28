@@ -14,21 +14,13 @@ export class ChatbotCodeUseCase {
         throw new Error("El mensaje no puede estar vacío");
       }
 
-      console.log('Procesando mensaje:', input);
-
       const response = await this.adapter.sendMessage(input.trim());
-      
-      console.log('Respuesta generada:', response);
-      
+
       return response;
     } catch (error) {
       console.error('Error en ChatbotCodeUseCase:', error);
       
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Error en el caso de uso del chatbot",
-        response: "Lo siento, ocurrió un error al procesar tu mensaje. Por favor, inténtalo de nuevo."
-      };
+      throw error;
     }
   }
 }

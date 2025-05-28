@@ -45,14 +45,4 @@ export class ChatbotAssistantRepository {
       }
     }
   }
- 
-  async clearHistory(): Promise<void> {
-    try {
-      this.bufferMemory = new BufferMemory({ returnMessages: true });
-      console.log('Historial de conversación limpiado');
-    } catch (error) {
-      console.error('Error al limpiar historial:', error);
-      throw new Error('No se pudo limpiar el historial');
-    }
-  }
 }
