@@ -213,7 +213,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       if (!isStudent(role)) {
         setLoadingSubmissions(true);
         setSubmissionsError(null);
-        console.log("Entrando a ver la lista de Submissions");
         try {
           const submissionRepository = new SubmissionRepository();
           const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(
@@ -224,7 +223,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               assignmentid
             );
           setSubmissions(fetchedSubmissions);
-          console.log("Lista de submissions: ", fetchedSubmissions);
         } catch (error) {
           setSubmissionsError(
             "Error fetching submissions. Please try again later."
@@ -272,7 +270,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
-    console.log("I will print the json log") //delete later
     if (assignmentid) { //means if the assignment id is in memory or somthn
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
@@ -315,8 +312,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
       if (match) {
         const [, user, repo] = match;
-        console.log(user, repo);
-
         navigate({
           pathname: url,
           search: createSearchParams({
