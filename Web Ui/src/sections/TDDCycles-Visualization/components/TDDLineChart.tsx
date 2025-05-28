@@ -159,31 +159,6 @@ function TDDLineCharts({
     return getColorByCoverage(coverage, isRefactor);
   }
 
-    if (filteredCommitsObject != null) {
-      const colors = filteredCommitsObject.map((commit) => {
-        const coverage = commit.coverage;
-        const commitMessage = commit.commit.message;
-        const testCount = commit.test_count;
-        const isRefactor = containsRefactor(commitMessage);
-        const testPass = commit.conclusion;
-
-        // Si no hay información de cobertura o tests, asumimos que el commit no pasó
-        if (coverage === undefined || coverage === null) {
-          return "black";
-        }
-  
-        if (testCount === 0 || testCount === undefined || coverage === 0 || testPass == "failure") {
-          return "red";
-        }
-  
-        // Si tiene tests y no hay errores, aplicamos la lógica de color basado en cobertura
-        return getColorByCoverage(coverage, isRefactor);
-      });
-      return colors.reverse();
-    } else {
-      return ["white"];
-    }
-  }*/
   
   const getColorByCoverage = (coverage: number, isRefactor: boolean) => {
     let colorValue = 110;
