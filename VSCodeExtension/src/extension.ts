@@ -8,8 +8,8 @@ import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
 import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
+import { TerminalViewProvider } from './sections/TDDLabTerminal/TerminalViewProvider';
 import * as http from "http";
-
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -105,6 +105,12 @@ export async function activate(context: vscode.ExtensionContext) {
     const executeExportCommand = new ExecuteExportCommand();
     const executeAIAssistant = new ExecuteAIAssistant();
 
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            TerminalViewProvider.viewType,
+            new TerminalViewProvider(context)
+        )
+    );
 
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
