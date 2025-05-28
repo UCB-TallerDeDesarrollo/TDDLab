@@ -7,7 +7,6 @@ export class ChatbotRepository {
   async sendMessage(message: string): Promise<string> {
     try {
       const response = await axios.post(API_URL, { input: message });
-      console.log(response);
       return response.data.result ?? "No hubo respuesta del asistente.";
     } catch (error) {
       console.error("Error en la API del chatbot:", error);
