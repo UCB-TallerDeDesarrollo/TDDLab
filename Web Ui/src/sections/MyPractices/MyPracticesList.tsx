@@ -129,12 +129,12 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   };
   return (
     <Container>
-      <section className="Tareas">
+      <section className="Practicas">
         <StyledTable>
            <TableHead>
             <TableRow>
               <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Tareas</div>
+                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
               </TableCell>
             </TableRow>
             <TableRow>

@@ -154,7 +154,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     fetchSubmissions();
   }, [practiceid]);
 
-  useEffect(() => {}, [practiceSubmissions]);
+  useEffect(() => { }, [practiceSubmissions]);
 
   const isTaskInProgress = submission?.status !== "in progress";
 
@@ -452,13 +452,14 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 localStorage.setItem("selectedMetric", "Dashboard");
                 if (practiceSubmissions[0]?.repository_link) {
                   handleRedirectStudent(
-                    practiceSubmissions[0]?.repository_link,
+                    practiceSubmissions[0].repository_link,
                     practiceSubmissions[0].id,
                     navigate
                   );
                 }
               }}
               color="primary"
+              disabled={!practiceSubmissions[0]?.repository_link}
               style={{
                 textTransform: "none",
                 fontSize: "15px",
@@ -467,6 +468,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
             >
               Ver gráfica
             </Button>
+
 
             <GitLinkDialog
               open={linkDialogOpen}

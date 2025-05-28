@@ -8,7 +8,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
-import { getStatusIcon, getStatusTooltip } from "../Shared/statusHelpers";
+import { getStatusIcon, getStatusTooltipPractice } from "../Shared/statusHelpers";
 
 interface PracticeProps {
   practice: PracticeDataObject;
@@ -72,7 +72,7 @@ const Practice: React.FC<PracticeProps> = ({
           gap: "20px",
         }}
       >
-          <Tooltip title="Ver tarea" arrow>
+          <Tooltip title="Ver practica" arrow>
             <IconButton
               aria-label="see"
               onClick={() => handleClickDetail(index)}
@@ -90,13 +90,13 @@ const Practice: React.FC<PracticeProps> = ({
               onClose={handleCloseEditForm}
             />
           ) : (
-            <Tooltip title="Editar tarea" arrow>
+            <Tooltip title="Editar practica" arrow>
               <IconButton aria-label="edit" onClick={handleEditClick}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title="Eliminar tarea" arrow>
+          <Tooltip title="Eliminar practica" arrow>
             <IconButton
               aria-label="delete"
               onClick={() => handleClickDelete(index)}
@@ -107,7 +107,7 @@ const Practice: React.FC<PracticeProps> = ({
             </IconButton>
           </Tooltip>
 
-          <Tooltip title={getStatusTooltip(practice.state)} arrow>
+          <Tooltip title={getStatusTooltipPractice(practice.state)} arrow>
             <IconButton
               aria-label="status"
               onMouseEnter={() => handleRowHover(index)}

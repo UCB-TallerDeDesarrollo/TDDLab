@@ -12,6 +12,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CodeIcon from '@mui/icons-material/Code';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import GradeIcon from '@mui/icons-material/Grade';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 const chatbotUseCase = new ChatbotUseCase();
@@ -25,7 +26,7 @@ const AIAssistantPage = () => {
     { id: generateUniqueId(), from: "bot", text: "¡Hola! Soy tu asistente IA. ¿En qué puedo ayudarte hoy?" }
   ]);
   const [loadingChat, setLoadingChat] = useState(false);
-  const [loadingAction, setLoadingAction] = useState<null | "analiza" | "refactoriza">(null);
+  const [loadingAction, setLoadingAction] = useState<null | "analiza" | "refactoriza"| "califica">(null);
 
   const addBotMessage = (text: string) => {
     setMessages((prev) => [...prev, { id: generateUniqueId(), from: "bot", text }]);
@@ -50,33 +51,46 @@ const AIAssistantPage = () => {
     }    
   };
 
-  const handleApiCall = async (action: "analiza" | "refactoriza") => {
-    if (!repositoryLink || repositoryLink === "No hay enlace disponible") {
-      alert(`No hay un enlace de repositorio válido para ${action}`);
-      return;
-    }
+  const handleApiCall = async (action: "analiza" | "refactoriza" | "califica") => {
+  if (!repositoryLink || repositoryLink === "No hay enlace disponible") {
+    alert(`No hay un enlace de repositorio válido para ${action}`);
+    return;
+  }
 
-    setLoadingAction(action);
-    const loadingText = action === "analiza"
-      ? "Analizando la aplicación de TDD..."
-      : "Evaluando la aplicación de Refactoring...";
-    addBotMessage(loadingText);
+  setLoadingAction(action);
 
-    try {
-      const result = await evaluateWithAIUseCase.execute(repositoryLink, action);
-      setMessages((prev) => [
-        ...prev.filter(msg => msg.text !== loadingText),
-        { id: generateUniqueId(), from: "bot", text: result }
-      ]);
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev.filter(msg => msg.text !== loadingText),
-        { id: generateUniqueId(), from: "bot", text: "Error al comunicarse con el servidor." }
-      ]);
-    } finally {
-      setLoadingAction(null);
-    }
-  };
+  let loadingText = "";
+  switch (action) {
+    case "analiza":
+      loadingText = "Analizando TDD...";
+      break;
+    case "refactoriza":
+      loadingText = "Analizando Refactoring...";
+      break;
+    case "califica":
+      loadingText = "Calificando TDD...";
+      break;
+  }
+
+  addBotMessage(loadingText);
+
+  try {
+    const result = await evaluateWithAIUseCase.execute(repositoryLink, action);
+    setMessages((prev) => [
+      ...prev.filter(msg => msg.text !== loadingText),
+      { id: generateUniqueId(), from: "bot", text: result }
+    ]);
+  } catch (error) {
+    setMessages((prev) => [
+      ...prev.filter(msg => msg.text !== loadingText),
+      { id: generateUniqueId(), from: "bot", text: "Error al comunicarse con el servidor." }
+    ]);
+  } finally {
+    setLoadingAction(null);
+  }
+};
+
+
 
   return (
     <Box sx={{ padding: 4, display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -106,9 +120,12 @@ const AIAssistantPage = () => {
       {/* Contenedor Chat + Botones */}
       <Box sx={{ display: 'flex', flexGrow: 1, gap: 3 }}>
         {/* Chat Section */}
-        <Paper elevation={3} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: 2, borderRadius: 2 }}>
-          {/* Mensajes */}
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Paper
+          elevation={3}
+          sx={{maxWidth: '1100px',flexGrow: 1,display: 'flex',flexDirection: 'column',padding: 2,borderRadius: 2,height: '100%',maxHeight: '80vh', overflow: 'hidden'}}>
+                  {/* Mensajes */}
+        <Box
+          sx={{flexGrow: 1, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 2, height: '100%'}}>
             {messages.map((msg) => (
               <Box
                 key={msg.id}
@@ -145,7 +162,8 @@ const AIAssistantPage = () => {
                       py: 1,
                       borderRadius: 2,
                       maxWidth: '75%',
-                      whiteSpace: 'pre-line'
+                      whiteSpace: 'pre-line',
+                      wordBreak: 'break-word',
                     }}
                   >
                     <Typography variant="body2">{msg.text}</Typography>
@@ -190,7 +208,7 @@ const AIAssistantPage = () => {
             fullWidth
             startIcon={<CodeIcon />}
           >
-            {loadingAction === "analiza" ? <CircularProgress size={20} /> : "TDD"}
+            {loadingAction === "analiza" ? <CircularProgress size={20} /> : " Analizar TDD"}
           </Button>
           <Button
             variant="contained"
@@ -200,8 +218,18 @@ const AIAssistantPage = () => {
             fullWidth
             startIcon={<AutorenewIcon />}
           >
-            {loadingAction === "refactoriza" ? <CircularProgress size={20} /> : "Refactoring"}
+            {loadingAction === "refactoriza" ? <CircularProgress size={20} /> : " Analizar Refactoring"}
           </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleApiCall("califica")}
+            disabled={loadingAction !== null}
+            fullWidth
+            startIcon={<GradeIcon />}
+          >
+            {loadingAction === "califica" ? <CircularProgress size={20} /> : "Evaluar TDD"}
+            </Button>
         </Box>
       </Box>
     </Box>

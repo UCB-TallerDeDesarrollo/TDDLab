@@ -1,44 +1,22 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Bubble, getElementAtEvent, Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-} from "chart.js";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { JobDataObject } from "../../../modules/TDDCycles-Visualization/domain/jobInterfaces";
-import { GithubAPIRepository } from "../../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
+import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
-
 
 import { VITE_API } from "../../../../config";
 import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
 import { useSearchParams } from "react-router-dom";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 
-ChartJS.register(
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement
-);
-
 interface CycleReportViewProps {
   commits: CommitDataObject[];
-  jobsByCommit: JobDataObject[];
-  port: GithubAPIRepository;
+  port: CommitHistoryRepository;
   role: string;
 }
 
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
-  jobsByCommit,
   role,
   port,
 }) => {
@@ -76,7 +54,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     if (repoOwner && repoName) {
       try {
         await UploadTDDLogFile(file, undefined, repoOwner, repoName);
-
       } catch (error) {
         console.error("Error al subir el archivo:", error);
       }
@@ -90,19 +67,44 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     return regex.test(commitMessage);
   }
 
-  const getColorByCoverage = (testCountsColor: number, isRefactor: boolean) => {
-    let colorValue;
-    let opacity = 2;
+  // Nueva función para obtener el color basado directamente en el commit
+  const getCommitColor = (commit: CommitDataObject): string => {
+    const coverage = commit.coverage;
+    const commitMessage = commit.commit.message;
+    const testCount = commit.test_count;
+    const isRefactor = containsRefactor(commitMessage);
+    
+    // Si no hay información de cobertura o tests, asumimos que el commit no pasó
+    if (coverage === undefined || coverage === null) {
+      return "black";
+    }
+
+    if (testCount === 0 || testCount === undefined || coverage === null) {
+      return "red";
+    }
+    
+    // Si tiene tests y no hay errores (asumimos que en commit-history.json solo se guardan commits válidos)
+    return getColorByCoverage(coverage, isRefactor);
+  };
+  
+  const getColorByCoverage = (coverage: number, isRefactor: boolean): string => {
+    let colorValue: number;
+    let opacity: number;
     const baseColor = isRefactor ? 'blue' : 'green';
-    if (testCountsColor >= labels[1]) {
+  
+    if (coverage >= 90) {
       colorValue = 110;
-    } else if (testCountsColor < labels[1] && testCountsColor >= labels[2]) {
+      opacity = 1;
+    } else if (coverage >= 80) {
       colorValue = 110;
-      opacity = 0.5;
-    } else if (testCountsColor < labels[2] && testCountsColor >= labels[3]) {
+      opacity = 0.8;
+    } else if (coverage >= 70) {
       colorValue = 110;
       opacity = 0.6;
-    } else if (testCountsColor < labels[3]) {
+    } else if (coverage >= 60) {
+      colorValue = 110;
+      opacity = 0.4;
+    } else {
       colorValue = 110;
       opacity = 0.2;
     }
@@ -111,20 +113,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       ? `rgba(0, ${colorValue}, 0, ${opacity})`
       : `rgba(0, 100, 255, ${opacity})`;
   };
-
-  const getColorByConclusion = (job: any, coverage: number, commitMessage: string) => {
-  if (job?.conclusion === "success") {
-    const isRefactor = containsRefactor(commitMessage);
-    console.log("commit message", commitMessage);
-    return getColorByCoverage(coverage, isRefactor);
-  } else if (job?.conclusion === "failure") {
-    return "red";
-  } else if (job?.conclusion === null) {
-    return "black";
-  } else {
-    return "black";
-  }
-};
+   
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
     localStorage.setItem("selectedMetric", graphText);
@@ -176,10 +165,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
           data: [...data].reverse(),
           backgroundColor: commits
             .map((commit) => {
-              const job = jobsByCommit.find((job) => job.sha === commit.sha);
-              if (job?.conclusion === "success") return "green";
-              else if (job === undefined) return "black";
-              else return "red";
+              return getCommitColor(commit);
             })
             .reverse(),
           borderColor: "rgba(0, 0, 0, 0.2)",
@@ -326,12 +312,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   .slice()
                   .reverse()
                   .map((commit, index) => {
-                    const job = jobsByCommit.find((job) => job.sha === commit.sha);
-                    const backgroundColor = getColorByConclusion(
-                      job,
-                      commit.coverage,
-                      commit.commit.message
-                    );
+                    const backgroundColor = getCommitColor(commit);
 
                     return {
                       label: `Commit ${index + 1}`,
@@ -488,7 +469,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             port={port}
             role={role}
             filteredCommitsObject={commits}
-            jobsByCommit={jobsByCommit}
             optionSelected={graph}
             complexity={null}
             commitsCycles= {null}
