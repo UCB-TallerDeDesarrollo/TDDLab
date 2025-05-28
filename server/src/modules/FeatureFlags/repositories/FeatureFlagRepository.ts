@@ -4,7 +4,7 @@ import {
   FeatureFlagDataObject,
   FeatureFlagCreationObject,
   FeatureFlagUpdateObject,
-  FeatureFlagsPlainObject,
+  FeatureFlagsForExtension,
 } from "../domain/FeatureFlag";
 
 interface QueryResult {
@@ -122,14 +122,21 @@ class FeatureFlagRepository {
     return rows.length > 0;
   }
 
-  async obtainFeatureFlagsPlain(): Promise<FeatureFlagsPlainObject> {
-    const featureFlags = await this.obtainFeatureFlags();
-    const plainObject: FeatureFlagsPlainObject = {};
-    featureFlags.forEach(flag => {
-      plainObject[flag.feature_name] = flag.is_enabled;
-    });
-    return plainObject;
-  }
+  async obtainFeatureFlagsForExtension(): Promise<FeatureFlagsForExtension> {
+    const query = `
+      SELECT feature_name, is_enabled 
+      FROM feature_flags 
+      WHERE feature_name LIKE 'extension_%'
+    `;
+    
+    const rows = await this.executeQuery(query);
+    
+    return rows.reduce((acc, row) => {
+      const featureName = row.feature_name.replace('extension_', '');
+      acc[featureName] = row.is_enabled;
+      return acc;
+    }, {} as FeatureFlagsForExtension);
+  }
 }
 
 export default FeatureFlagRepository;

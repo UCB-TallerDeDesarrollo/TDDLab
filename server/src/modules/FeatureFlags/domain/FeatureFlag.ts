@@ -14,6 +14,6 @@ export interface FeatureFlagUpdateObject {
   is_enabled?: boolean;
 }
 
-export interface FeatureFlagsPlainObject {
+export interface FeatureFlagsForExtension {
   [key: string]: boolean;
 }
