@@ -69,20 +69,31 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
 
   // Nueva función para obtener el color basado directamente en el commit
   const getCommitColor = (commit: CommitDataObject): string => {
-    const coverage = commit.coverage;
-    const commitMessage = commit.commit.message;
-    const testCount = commit.test_count;
-    const isRefactor = containsRefactor(commitMessage);
+   if (
+    !commit || typeof commit !== "object" ||
+    !commit.commit || typeof commit.commit.message !== "string"
+    ) {
+    return "red";
+    }
+    
+    const { coverage, test_count, conclusion, commit: { message } } = commit;
     
     // Si no hay información de cobertura o tests, asumimos que el commit no pasó
-    if (coverage === undefined || coverage === null) {
+    if (
+    coverage === undefined || coverage === null
+    ) {
       return "black";
     }
 
-    if (testCount === 0 || testCount === undefined || coverage === null) {
+     // Casos de error: sin cobertura, sin tests o tests fallidos
+    if (
+    test_count === undefined || test_count === 0 ||
+    conclusion === "failure"
+    ) {
       return "red";
     }
     
+     const isRefactor = containsRefactor(message);
     // Si tiene tests y no hay errores (asumimos que en commit-history.json solo se guardan commits válidos)
     return getColorByCoverage(coverage, isRefactor);
   };

@@ -14,7 +14,15 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
         href={commit.html_url}
         target="_blank"
         rel="noopener noreferrer"
-        className="commit-link"
+        style={{
+          backgroundColor: '#007bff',
+          color: 'white',
+          padding: '16px 28px',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textDecoration: 'none',
+          fontSize: '16px'
+        }}
       >
         Ver commit
       </a>
@@ -55,9 +63,34 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
     );
   }
 
+  function getCommitStatus() {
+    let testCount = commit.test_count || 0;
+    let conclusion = commit.conclusion || "failure";
+    let isSuccessful = testCount > 0 && conclusion === "success";
+
+    return (
+      <div
+        style={{
+          backgroundColor: isSuccessful ? '#28a745' : '#dc3545',
+          color: 'white',
+          padding: '16px 28px',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          fontSize: '16px'
+        }}
+      >
+        <span style={{ marginRight: '8px' }}>{isSuccessful ? '✔️' : '❌'}</span>
+        {isSuccessful ? 'Resultado: Exitoso' : 'Resultado: Fallido'}
+      </div>
+    );
+  }
+
   function renderDateCard() {
     const date = new Date(commit.commit.date).toLocaleString("es-ES", {
-      hour12: false, // Desactiva el formato de 12 horas
+      hour12: false,
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -100,7 +133,11 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
       <div className="cycleCardContainer">
         <span className="title">Commit: {commit.commit.message}</span>
         {getCommitStats()}
-        {getCommitLink()}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '10px' }}>
+          {getCommitStatus()}
+          {getCommitLink()}
+        </div>
       </div>
     </div>
   );

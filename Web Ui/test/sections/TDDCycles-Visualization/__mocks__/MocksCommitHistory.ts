@@ -21,7 +21,8 @@ export function convertToCommitDataObject(commitData: CommitData): CommitDataObj
       comment_count: commitData.commit.comment_count || 0
     },
     coverage: commitData.coverage,
-    test_count: commitData.test_count
+    test_count: commitData.test_count,
+    conclusion: commitData.conclusion,
   };
 }
 
