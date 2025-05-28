@@ -12,7 +12,6 @@ export const UploadTDDLogFile = async (
 
 ): Promise<void> => {
   try {
-    console.log("Archivo recibido:", file);
     const reader = new FileReader();
 
     reader.onload = async () => {
