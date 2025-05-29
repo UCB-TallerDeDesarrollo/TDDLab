@@ -10,7 +10,7 @@ export class ChatbotCodeUseCase {
 
   async execute(input: string): Promise<AIAssistantAnswerObject | any> {
     try {
-      if (!input || !input.trim()) {
+      if (!input?.trim()) {
         throw new Error("El mensaje no puede estar vacío");
       }
 
