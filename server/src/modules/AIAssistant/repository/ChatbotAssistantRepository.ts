@@ -3,8 +3,8 @@ import { AIAssistantRepository } from "./AIAssistantRepositoy";
 import { AIAssistantAnswerObject } from "../domain/AIAssistant";
 
 export class ChatbotAssistantRepository {
-  private bufferMemory = new BufferMemory({ returnMessages: true });
-  private aiAssistantRepository = new AIAssistantRepository;
+  private readonly bufferMemory = new BufferMemory({ returnMessages: true });
+  private readonly aiAssistantRepository = new AIAssistantRepository;
 
   async sendMessage(userInput: string): Promise<AIAssistantAnswerObject> {
     try {
