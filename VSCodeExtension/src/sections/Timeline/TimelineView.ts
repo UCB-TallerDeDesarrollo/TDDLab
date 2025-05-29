@@ -69,7 +69,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
         );
         const regex = /refactor/i;
 
-        return timeline.map(point => {
+        return timeline.slice().reverse().map(point => {
             if (point instanceof Timeline) {
                 const color = point.getColor();
                 const date = point.timestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'});

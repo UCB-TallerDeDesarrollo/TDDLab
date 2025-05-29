@@ -6,6 +6,7 @@ import GetFeatureFlagById from "../../modules/FeatureFlags/application/GetFeatur
 import GetFeatureFlagByName from "../../modules/FeatureFlags/application/GetFeatureFlagByNameUseCase";
 import UpdateFeatureFlag from "../../modules/FeatureFlags/application/UpdateFeatureFlagUseCase";
 import FeatureFlagRepository from "../../modules/FeatureFlags/repositories/FeatureFlagRepository";
+import GetFeatureFlagsForExtension from "../../modules/FeatureFlags/application/GetFeatureFlagsForExtensionUseCase";
 
 class FeatureFlagsController {
   private readonly createFeatureFlagUseCase: CreateFeatureFlag;
@@ -14,6 +15,7 @@ class FeatureFlagsController {
   private readonly getFeatureFlagsUseCase: GetFeatureFlags;
   private readonly getFeatureFlagByIdUseCase: GetFeatureFlagById;
   private readonly getFeatureFlagByNameUseCase: GetFeatureFlagByName;
+  private readonly getFeatureFlagsForExtensionUseCase: GetFeatureFlagsForExtension;
 
   constructor(repository: FeatureFlagRepository) {
     this.createFeatureFlagUseCase = new CreateFeatureFlag(repository);
@@ -22,6 +24,7 @@ class FeatureFlagsController {
     this.getFeatureFlagByNameUseCase = new GetFeatureFlagByName(repository);
     this.getFeatureFlagsUseCase = new GetFeatureFlags(repository);
     this.updateFeatureFlagUseCase = new UpdateFeatureFlag(repository);
+    this.getFeatureFlagsForExtensionUseCase = new GetFeatureFlagsForExtension(repository);
   }
 
   async getFeatureFlags(_req: Request, res: Response): Promise<void> {
@@ -152,6 +155,16 @@ class FeatureFlagsController {
       } else {
         res.status(500).json({ error: "Error del servidor" });
       }
+    }
+  }
+
+  async getFeatureFlagsForExtension(_req: Request, res: Response): Promise<void> {
+    try {
+      const featureFlags = await this.getFeatureFlagsForExtensionUseCase.execute();
+      res.status(200).json(featureFlags);
+    } catch (error) {
+      console.error("Error getting feature flags for extension:", error);
+      res.status(500).json({ error: "Error del servidor" });
     }
   }
 }
