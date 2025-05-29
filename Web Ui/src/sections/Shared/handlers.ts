@@ -29,7 +29,6 @@ export const handleRedirectStudent = (
 
     if (match) {
       const [, user, repo] = match;
-      console.log(user, repo);
       navigate({
         pathname: "/graph",
         search: createSearchParams({

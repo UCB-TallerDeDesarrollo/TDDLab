@@ -90,9 +90,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   };
 
   const obtainComments = async () => {
-    console.log("ID del submission: ", submissionIdcomments);
     try {
-      console.log("Intentando conectar para comentarios: ");
       const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionIdcomments);
       const emailMap: { [key: number]: string } = {};
       for (const comment of commentsData) {
@@ -104,7 +102,6 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
         }
       }
       setEmails(emailMap);
-      console.log("Siguiente paso comentarios");
       setComments(commentsData);
     } catch (error) {
       console.error("Error obtaining comments:", error);
@@ -121,7 +118,6 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
 
   const handleSubmitFeedback = async () => {
     if (!feedback.trim()) {
-      console.log("El feedback está vacío.");
       return;
     }
 
@@ -134,10 +130,8 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
         content: feedback,
       };
 
-      console.log("Datos del comentario a enviar:", commentData);
 
       await commentsRepo.createComment(commentData);
-      console.log("Retroalimentación enviada:", feedback);
 
       setFeedback("");
       obtainComments();
