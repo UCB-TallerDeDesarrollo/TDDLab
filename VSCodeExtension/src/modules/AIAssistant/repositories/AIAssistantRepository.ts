@@ -1,6 +1,7 @@
-import * as http from "http";
+import * as https from "https";
 import FileRepository from "./FileRepository";
 import * as vscode from "vscode";
+import { IncomingMessage } from "http"; // <--- IMPORTANTE
 
 class AIAssistantRepository {
   private createApiRequestBody(tddLog: any, prompt: string): string {
@@ -10,7 +11,7 @@ class AIAssistantRepository {
     });
   }
 
-  private handleApiResponseStream(res: http.IncomingMessage, resolve: (value: string) => void): void {
+  private handleApiResponseStream(res: IncomingMessage, resolve: (value: string) => void): void {
     let responseData = "";
 
     res.on("data", (chunk) => (responseData += chunk));
@@ -24,11 +25,10 @@ class AIAssistantRepository {
     });
   }
 
-  private createApiRequest(data: string, resolve: (value: string) => void, reject: (reason?: any) => void): http.ClientRequest {
-    return http.request(
+  private createApiRequest(data: string,resolve: (value: string) => void,reject: (reason?: any) => void): ReturnType<typeof https.request> {
+    return https.request(
       {
-        hostname: "localhost",
-        port: 3000,
+        hostname: "tdd-lab-api-staging.vercel.app",
         path: "/api/AIAssistant/analyze-tdd-extension",
         method: "POST",
         headers: {
@@ -37,7 +37,7 @@ class AIAssistantRepository {
         },
       },
       (res) => this.handleApiResponseStream(res, resolve)
-    );
+    ).on("error", reject);
   }
 
   private getTDDFeedback(data: string): Promise<string> {
