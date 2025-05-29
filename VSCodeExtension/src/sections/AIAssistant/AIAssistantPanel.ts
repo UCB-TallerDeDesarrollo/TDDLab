@@ -158,7 +158,7 @@ export class AIAssistantPanel {
 
   public async getTDDFeedbackFromAI() {
     try {
-      const response = await this.feedbackAssistant.fetchResponse(this.context);
+      const response = await this.feedbackAssistant.sendTDDLogAndGetFeedback(this.context);
       this.handleApiResponse(response);
     } catch (err) {
       this.handleError(err);
