@@ -12,9 +12,9 @@ export class UpdatePrompts {
   async execute(tddPrompt: string, refactoringPrompt: string, evaluateTDDPrompt: string): Promise<AIPromptResponse> {
     try {
       const request: UpdatePromptsRequest = {
-        analysis_tdd: tddPrompt,
+        tdd_analysis: tddPrompt,
         refactoring: refactoringPrompt,
-        evaluate_tdd: evaluateTDDPrompt
+        evaluation: evaluateTDDPrompt
       };
 
       const response = await this.aIAssistantInterface.updatePrompts(request);
