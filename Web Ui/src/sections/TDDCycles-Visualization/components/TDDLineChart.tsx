@@ -82,7 +82,6 @@ function TDDLineCharts({
               }
             );
 
-            console.log("Contenido de la respuesta:", response.data.metrics);
             responses.push(JSON.stringify(response.data));
             
           } catch (error) {
@@ -90,7 +89,6 @@ function TDDLineCharts({
           }
         }
 
-        console.log("RESPONSES", responses);
         setAnalyzeData(responses);
       };
 
@@ -305,7 +303,7 @@ function TDDLineCharts({
               );
 
               const complexityResponse = analyzeData[context[0].dataIndex];
-              console.log("EX1M"+complexityResponse)
+              //console.log("EX1M"+complexityResponse)
               if (complexityResponse) {
                 afterBodyContent.push(`Complejidad Ciclomática: ${complexityResponse}`);
               }
@@ -318,14 +316,12 @@ function TDDLineCharts({
     return optionsLineChart;
   }
   
-  console.log(complexity);
   
   const onClick = (event: any) => {
     if (getElementAtEvent(chartRef.current, event).length >= 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
         .datasetIndex;
       const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
-      console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
       window.open(
         dataChart.datasets[dataSetIndexNum].links[dataPoint],
         "_blank"
