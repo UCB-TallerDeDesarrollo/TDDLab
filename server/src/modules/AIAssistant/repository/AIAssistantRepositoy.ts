@@ -143,7 +143,7 @@ export class AIAssistantRepository {
 
             const data = await response.json();
 
-            if (!data || !data.choices || !data.choices[0]?.message?.content) {
+            if (!data?.choices?.[0]?.message?.content) {
                 throw new Error('No se recibió una respuesta válida del modelo.');
             }
 
