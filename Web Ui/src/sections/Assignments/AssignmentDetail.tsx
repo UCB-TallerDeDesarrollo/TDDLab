@@ -54,6 +54,7 @@ import {
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
 
+
 interface AssignmentDetailProps {
   role: string;
   userid: number;
@@ -92,6 +93,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const [showIAButton, setShowIAButton] = useState(false);
+  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
+
+
+  useEffect(() => {
+    const fetchFlag = async () => {
+      if (!isStudent(role)) {
+        const getFlagUseCase = new GetFeatureFlagByName();
+        try {
+          const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
+          setDisableAdditionalGraphs(!(flag?.is_enabled));
+        } catch (error) {
+          console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
+          setDisableAdditionalGraphs(true); // por precaución
+        }
+      }
+    };
+
+    fetchFlag();
+  }, [role]);
 
   useEffect(() => {
     if (!isStudent(role)) return;
@@ -108,8 +128,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     };
 
     fetchFeatureFlag();
-    const interval = setInterval(fetchFeatureFlag, 2000);
-    return () => clearInterval(interval);
   }, [role]);
 
 
@@ -119,25 +137,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   useEffect(() => {
     const fetchSubmission = async () => {
-        if (assignmentid && userid && userid !== -1) {
-            try {
-                const submissionRepository = new SubmissionRepository();
-                const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
+      if (assignmentid && userid && userid !== -1) {
+        try {
+          const submissionRepository = new SubmissionRepository();
+          const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
 
-                if (assignmentid < 0 || userid < 0) {
-                    return; // Validación silenciosa
-                }
+          if (assignmentid < 0 || userid < 0) {
+            return; // Validación silenciosa
+          }
 
-                const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
-                setSubmission(fetchedSubmission);
-            } catch (error) {
-              console.error("Error verifying submission status:", error);
-            }
+          const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
+          setSubmission(fetchedSubmission);
+        } catch (error) {
+          console.error("Error verifying submission status:", error);
         }
+      }
     };
 
     fetchSubmission();
-}, [assignmentid, userid]);
+  }, [assignmentid, userid]);
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
@@ -170,25 +188,25 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   useEffect(() => {
     const checkIfStarted = async () => {
-        if (isStudent(role)) {
-            if (assignmentid && userid && userid !== -1) {
-                try {
-                    const submissionRepository = new SubmissionRepository();
-                    const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
-                    const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
-                    setSubmissionStatus((prevStatus) => ({
-                        ...prevStatus,
-                        [userid]: !!response.hasStarted,
-                    }));
-                } catch (error) {
-                    console.error("Error verifying submission status:", error);
-                    setSubmissionsError("Error verificando el estado de la entrega.");
-                }
-            }
+      if (isStudent(role)) {
+        if (assignmentid && userid && userid !== -1) {
+          try {
+            const submissionRepository = new SubmissionRepository();
+            const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
+            const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
+            setSubmissionStatus((prevStatus) => ({
+              ...prevStatus,
+              [userid]: !!response.hasStarted,
+            }));
+          } catch (error) {
+            console.error("Error verifying submission status:", error);
+            setSubmissionsError("Error verificando el estado de la entrega.");
+          }
         }
+      }
     };
     checkIfStarted();
-}, [assignmentid, userid]);
+  }, [assignmentid, userid]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -275,7 +293,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await createSubmission.createSubmission(submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        
+
         throw error;
       }
     }
@@ -363,7 +381,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         await finishSubmission.finishSubmission(submission.id, submissionData);
         handleCloseLinkDialog();
       } catch (error) {
-        
+
         throw error;
       }
     }
@@ -461,25 +479,26 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               </Button>
 
             </TableCell>
-
-            <TableCell>
-              <Button
-                variant="contained"
-                disabled={submission.repository_link === ""}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Complejidad");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Ver gráficas adicionales
-              </Button>
-            </TableCell>
+            {!isStudent(role) && (
+              <TableCell>
+                <Button
+                  variant="contained"
+                  disabled={submission.repository_link === "" || disableAdditionalGraphs}
+                  onClick={() => {
+                    localStorage.setItem("selectedMetric", "Complejidad");
+                    handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
+                  }}
+                  color="primary"
+                  style={{
+                    textTransform: "none",
+                    fontSize: "15px",
+                    marginRight: "7px",
+                  }}
+                >
+                  Ver gráficas adicionales
+                </Button>
+              </TableCell>
+            )}
           </TableRow>
         );
       })

@@ -36,7 +36,25 @@ export class TimelineView implements vscode.WebviewViewProvider {
         }
     }
 
-    lastTestPoint(timeline: Array<Timeline | CommitPoint >): Timeline | undefined {
+    public async getTimelineHtml(webview: vscode.Webview): Promise<string> {
+        try {
+            const timeline = await this.getTimeline.execute();
+            return this.generateHtmlFragment(timeline, webview);
+        } catch (err) {
+            if (err instanceof Error) {
+                vscode.window.showErrorMessage(`Error al cargar la línea de tiempo: ${err.message}`);
+                console.error('[TimelineView] getTimelineHtml error:', err);
+            } else {
+                vscode.window.showErrorMessage(`Error desconocido al cargar la línea de tiempo.`);
+                console.error('[TimelineView] getTimelineHtml unknown error:', err);
+            }
+
+            return `<p style="color: red;">Error al cargar la línea de tiempo</p>`;
+        }
+    }
+
+
+    lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline | undefined {
         for (let i = timeline.length - 1; i >= 0; i--) {
             if (timeline[i] instanceof Timeline && timeline[i] !== undefined) {
                 return timeline[i] as Timeline;
@@ -45,24 +63,17 @@ export class TimelineView implements vscode.WebviewViewProvider {
         return undefined;
     }
 
-    generateHtml(timeline: Array<Timeline | CommitPoint >, webview: vscode.Webview): string {
+    private generateHtmlFragment(timeline: Array<Timeline | CommitPoint>, webview: vscode.Webview): string {
         const gitLogoUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this.context.extensionUri, 'images', 'git.png')
         );
-        const githubLogoUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, 'images', 'github-color.png')
-        );
-        const styleUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, 'media', 'style.css')
-        );
         const regex = /refactor/i;
-    
-        const timelineHtml = timeline.slice().reverse().map(point => {
+
+        return timeline.slice().reverse().map(point => {
             if (point instanceof Timeline) {
                 const color = point.getColor();
-                const date = point.timestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'})
+                const date = point.timestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'});
                 const time = point.timestamp.toLocaleTimeString();
-                
                 return `
                     <div class="timeline-dot" style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;">
                         <span class="popup">
@@ -76,32 +87,42 @@ export class TimelineView implements vscode.WebviewViewProvider {
                 let htmlPoint = '';
                 if (point.commitName && regex.test(point.commitName)) {
                     htmlPoint += `
-                    <div class="timeline-dot" style="margin: 3px; background-color: skyblue; width: 25px; height: 25px; border-radius: 50px;">
-                        <span class="popup">
-                            <center><strong>Punto de Refactoring</strong></center>
-                        </span>
-                    </div>
-                `; }
-                const date = point.commitTimestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'})
+                        <div class="timeline-dot" style="margin: 3px; background-color: skyblue; width: 25px; height: 25px; border-radius: 50px;">
+                            <span class="popup">
+                                <center><strong>Punto de Refactoring</strong></center>
+                            </span>
+                        </div>
+                    `;
+                }
+                const date = point.commitTimestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'});
                 const time = point.commitTimestamp.toLocaleTimeString();
                 htmlPoint += `
                     <div class="timeline-dot">
                         <img src="${gitLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
                         <span class="popup">
-                            <strong>Nombre:</strong> ${point.commitName ? point.commitName : ''}<br>
+                            <strong>Nombre:</strong> ${point.commitName ?? ''}<br>
                             <strong>Fecha:</strong> ${date} ${time}
                         </span>
                     </div>
                 `;
                 return htmlPoint;
-            }      
+            }
+            return '';
         }).join('');
-    
-        let lastPoint = this.lastTestPoint(timeline);
+    }
+
+    generateHtml(timeline: Array<Timeline | CommitPoint>, webview: vscode.Webview): string {
+        const styleUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, 'media', 'style.css')
+        );
+
+        const timelineHtml = this.generateHtmlFragment(timeline, webview);
+
+        const lastPoint = this.lastTestPoint(timeline);
         if (lastPoint !== undefined) {
             this.getLastPoint.execute(lastPoint.getColor());
         }
-    
+
         return `
             <!DOCTYPE html>
             <html lang="en">
@@ -120,6 +141,4 @@ export class TimelineView implements vscode.WebviewViewProvider {
             </html>
         `;
     }
-    
-    
 }

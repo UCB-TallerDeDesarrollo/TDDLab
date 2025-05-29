@@ -12,7 +12,9 @@
   ],
   "activationEvents": [
     "onView:tddTestExecution",
-    "onCommand:TDD.runTest"
+    "onCommand:TDD.runTest",
+    "onCommand:TDD.openTerminal",
+    "onView:tddTerminalView"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -46,6 +48,10 @@
       {
         "command": "TDD.AsistenteCommand",
         "title": "Asistente de IA"
+      },
+      {
+        "command": "TDD.openTerminal",
+        "title": "Abrir Terminal Simulada"
       }
     ],
     "viewsContainers": {
@@ -61,6 +67,11 @@
           "id": "timelineContainer",
           "title": "TDDLAB",
           "icon": ""
+        },
+        {
+          "id": "tddTerminalPanel",
+          "title": "Terminal TDD",
+          "icon": "resources/TddLab_v2.png"
         }
       ]
     },
@@ -69,6 +80,10 @@
         {
           "id": "tddTestExecution",
           "name": "TDD test execution"
+        },
+        {
+          "id": "abrirTerminal",
+          "name": "Abrir Terminal"
         }
       ],
       "timelineContainer": [
@@ -77,12 +92,26 @@
           "name": "Timeline",
           "type": "webview"
         }
+      ],
+      "tddTerminalPanel": [
+        {
+          "id": "tddTerminalView",
+          "name": "Terminal Simulada",
+          "type": "webview"
+        }
       ]
     },
     "menus": {
       "editor/title": [
         {
           "command": "TDD.runTestActivity",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "TDD.openTerminal",
+          "when": "view == abrirTerminal",
           "group": "navigation"
         }
       ]
@@ -102,6 +131,7 @@
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
     "@types/vscode": "^1.94.0",
+    "@types/xterm": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
     "@vscode/test-cli": "^0.0.10",
@@ -116,6 +146,7 @@
     "extension": "file:",
     "node-fetch": "^3.3.2",
     "simple-git": "^3.27.0",
-    "tdd-extension-taller": "file:"
+    "tdd-extension-taller": "file:",
+    "xterm": "^5.3.0"
   }
 }

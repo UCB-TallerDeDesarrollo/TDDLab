@@ -1,4 +1,6 @@
 import * as http from "http";
+import FileRepository from "./FileRepository";
+import * as vscode from "vscode";
 
 class AIAssistantRepository {
   private createApiRequestBody(tddLog: any, prompt: string): string {
@@ -51,6 +53,16 @@ class AIAssistantRepository {
     console.log("BODY", body);
     const response = await this.getTDDFeedback(body);
     return response;
+  }
+  public async fetchResponse(context: vscode.ExtensionContext, fileRepo: FileRepository): Promise<string> {
+    try {
+      const tddLog = fileRepo.getTDDLog();
+      const prompt = fileRepo.getPrompt();
+      return await this.getTDDFeedbackFromAI(tddLog, prompt);
+    } catch (error) {
+      console.error("Error en fetchResponse:", error);
+      throw error;
+    }
   }
 }
 

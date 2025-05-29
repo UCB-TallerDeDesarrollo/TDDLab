@@ -6,6 +6,7 @@ import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/
 import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
 import { AnalyzeTDDCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeTDDCodeUseCase';
 import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
+import { ChatbotAssistantRepository } from '../../modules/AIAssistant/repository/ChatbotAssistantRepository';
 
 export default class AIAssistantController {
 
@@ -15,12 +16,16 @@ export default class AIAssistantController {
     private readonly analyzeTDDUseCase: AnalyzeTDDCodeUseCase;
     private readonly chatbotUseCase: ChatbotCodeUseCase;
 
-    constructor(repository: AIAssistantRepository, repositoryDB: AIAssistantDataBaseRepository) {
+    constructor(
+        repository: AIAssistantRepository,
+        repositoryDB: AIAssistantDataBaseRepository,
+        repositoryChatBot: ChatbotAssistantRepository
+    ) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
         this.analyzeTDDUseCase = new AnalyzeTDDCodeUseCase(repository);
-        this.chatbotUseCase = new ChatbotCodeUseCase(repository);
+        this.chatbotUseCase = new ChatbotCodeUseCase(repositoryChatBot);
     }
 
     async analyzeOrRefactor(req: Request, res: Response): Promise<void> {
@@ -50,23 +55,17 @@ export default class AIAssistantController {
     }
 
     async updatePrompts(_req: Request, res: Response): Promise<void> {
-        const {
-            analysis_tdd,
-            refactoring
-        } = _req.body;
-
         try {
-            const updatePrompts = await this.updatePromptsUseCase.execute(
-                {
-                    analysis_tdd,
-                    refactoring
-                }
-            );
-            res.status(200).json(updatePrompts);
+            const prompts = _req.body;
+    
+            const updatedPrompts = await this.updatePromptsUseCase.execute(prompts);
+    
+            res.status(200).json(updatedPrompts);
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
     }
+    
 
     async analyzeTDDFromExtension(req: Request, res: Response): Promise<void> {
         const { tddlog, prompt } = req.body;
@@ -97,7 +96,9 @@ export default class AIAssistantController {
                 error: "Error al analizar el código",
                 details: errorMessage 
             });
-        }}
+        }
+    }
+
     async chatBot(req: Request, res: Response): Promise<void> {
         const userInput = req.body.input;
 
@@ -108,7 +109,7 @@ export default class AIAssistantController {
 
         try {
             const response = await this.chatbotUseCase.execute(userInput);
-            res.json({ response });
+            res.json(response);
         } catch (err) {
             res.status(500).json({ error: 'Error procesando la solicitud del chatbot' });
         }

@@ -5,7 +5,7 @@ import {
   MockGithubAPI,
   MockGithubAPIEmpty,
   MockGithubAPIError,
-} from "./__mocks__/MocksGithubAPI";
+} from "./__mocks__/MocksCommitHistory";
 
 // Mock de `useNavigate` con tipo explícito
 jest.mock("react-router-dom", () => ({

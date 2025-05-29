@@ -20,44 +20,31 @@ export class AIAssistantDataBaseRepository {
         }
     }
 
-    public mapRowToPromptAIAssistant(row: any): AIAssistantPromptObject {
-        return {
-            analysis_tdd: row.analysis_tdd,
-            refactoring: row.refactoring,
-        };
+    public mapRowsToPromptAIAssistant(rows: any[]): AIAssistantPromptObject {
+        const result: AIAssistantPromptObject = {};
+        for (const row of rows) {
+            result[row.name] = row.prompt;
+        }
+        return result;
+    }
+    
+
+    public async getPrompts(): Promise<AIAssistantPromptObject> {
+        const query = 'SELECT name, prompt FROM prompts_ia_temp_v2';
+        const rows = await this.executeQuery(query);
+    
+        return this.mapRowsToPromptAIAssistant(rows);
     }
 
-    public async getPrompts(): Promise<AIAssistantPromptObject | null> {
-        const query = 'SELECT analysis_tdd, refactoring FROM prompts_ia WHERE id = $1';
-        const values = [1];
-
-        const rows = await this.executeQuery(query, values);
-
-        if (rows.length === 1) {
-            return this.mapRowToPromptAIAssistant(rows[0]);
+    public async updatePrompts(prompt: AIAssistantPromptObject): Promise<AIAssistantPromptObject> {
+        const entries = Object.entries(prompt);
+    
+        for (const [name, newPrompt] of entries) {
+            const query = `UPDATE prompts_ia_temp_v2 SET prompt = $1 WHERE name = $2`;
+            const values = [newPrompt, name];
+            await this.executeQuery(query, values);
         }
-        return null;
-    }
-
-    public async updatePrompts(prompt: AIAssistantPromptObject): Promise<AIAssistantPromptObject | null> {
-        const {
-            analysis_tdd,
-            refactoring
-        } = prompt;
-
-        const query = `UPDATE prompts_ia SET analysis_tdd = $1, refactoring = $2 WHERE id = $3 RETURNING analysis_tdd, refactoring`;
-        const values = [
-            analysis_tdd,
-            refactoring,
-            1
-        ];
-
-        const rows = await this.executeQuery(query, values);
-
-        if (rows.length === 1) {
-            return this.mapRowToPromptAIAssistant(rows[0]);
-        }
-
-        return null;
+    
+        return await this.getPrompts();
     }
 }

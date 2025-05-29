@@ -1,5 +1,4 @@
-
-import React, {useRef} from "react";
+import React, { useRef } from "react";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,12 +9,17 @@ import {
 
 ChartJS.register(Tooltip, Legend, ArcElement);
 
-interface TDDPieProps {
-  commits: { sha: string; commit: { message: string } }[];
-  jobsByCommit: { sha: string; conclusion: string }[];
+interface CommitDataObject {
+  sha: string;
+  commit: { message: string };
+  coverage?: number | null;
 }
 
-const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
+interface TDDPieProps {
+  commits: CommitDataObject[];
+}
+
+const TDDPie: React.FC<TDDPieProps> = ({ commits }) => {
   const chartRef = useRef<any>(null);
 
   function containsRefactor(commitMessage: string): boolean {
@@ -23,25 +27,27 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
     return regex.test(commitMessage);
   }
   
-  function getColorConclusion() {
+  function getColorCategories() {
     let categories = { green: 0, red: 0, blue: 0, black: 0 };
 
     commits.forEach((commit) => {
-      const job = jobsByCommit.find((job) => job.sha === commit.sha);
-      if (job?.conclusion === "success") {
-        categories.green++;
+      // Success: Has coverage data
+      if (commit.coverage !== null && commit.coverage !== undefined) {
+        if (containsRefactor(commit.commit.message)) {
+          categories.blue++; // Refactoring commit with coverage
+        } else {
+          categories.green++; // Normal successful commit with coverage
+        }
       } else if (containsRefactor(commit.commit.message)) {
-        categories.blue++;
-      } else if (job) {
-        categories.red++;
+        categories.blue++; // Refactoring commit (even without coverage)
       } else {
-        categories.black++;
+        categories.red++; // Failed commit (no coverage, not refactoring)
       }
     });
     return categories;
   }
 
-  const categories = getColorConclusion();
+  const categories = getColorCategories();
   const totalCommits = commits.length;
 
   const rawData = [
@@ -60,15 +66,21 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
 
   const allColors = ["#00ff00", "#ff0000", "#0000ff", "#000000"];
 
-  const filteredData = rawData.filter((value) => value > 0);
-  const filteredColors = allColors.filter((_, index) => rawData[index] > 0);
+  // Filter out categories with zero values
+  const filteredIndices = rawData.map((value, index) => ({ value, index }))
+    .filter(item => item.value > 0)
+    .map(item => item.index);
+  
+  const filteredData = filteredIndices.map(index => rawData[index]);
+  const filteredLabels = filteredIndices.map(index => allLabels[index]);
+  const filteredColors = filteredIndices.map(index => allColors[index]);
 
   const data = {
-    labels: allLabels,
+    labels: filteredLabels,
     datasets: [
       {
         label: "Porcentaje de Commits",
-        data: filteredData, 
+        data: filteredData,
         backgroundColor: filteredColors,
       },
     ],
@@ -81,10 +93,10 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
         position: "top" as const,
         labels: {
           generateLabels: () => {
-            return allLabels.map((label: string, index: number) => {
+            return filteredIndices.map((index) => {
               const value = rawData[index];
               return {
-                text: `${label}: ${value.toFixed(2)}%`,
+                text: `${allLabels[index]}: ${value.toFixed(2)}%`,
                 fillStyle: allColors[index],
               };
             });
@@ -92,16 +104,14 @@ const TDDPie: React.FC<TDDPieProps> = ({ commits, jobsByCommit }) => {
         },
       },
       tooltip: {
-        enabled: false, 
+        callbacks: {
+          label: function(context: any) {
+            const value = context.raw || 0;
+            return `${value.toFixed(2)}%`;
+          }
+        }
       },
     },
-    hover: {
-      mode: undefined,
-    },
-    interaction: {
-      mode: undefined, 
-    },
-    events: [], 
     animation: {
       onComplete: function () {
         const chart = chartRef.current;
