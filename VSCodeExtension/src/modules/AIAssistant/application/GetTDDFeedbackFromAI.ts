@@ -8,7 +8,7 @@ export class GetTDDFeedbackFromAI {
     private readonly aIAssistantRepository: AIAssistantRepository = new AIAssistantRepository()
   ) {}
   
-   public async fetchResponse(context: vscode.ExtensionContext): Promise<string> {
+   public async sendTDDLogAndGetFeedback(context: vscode.ExtensionContext): Promise<string> {
     return await this.aIAssistantRepository.fetchResponse(context, this.fileRepository);
   }
   public async getSimpleResponse(prompt: string): Promise<string> {
