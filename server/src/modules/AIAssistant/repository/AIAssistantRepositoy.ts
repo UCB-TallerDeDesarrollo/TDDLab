@@ -93,12 +93,9 @@ export class AIAssistantRepository {
         const raw = await this.sendRequestToAIAssistant(prompt, '');
         return this.mapToAIAssistantAnswer(raw);
     }  
-    public async sendChat(input: string): Promise<AIAssistantAnswerObject> {
-        const code = "Responde como un chatbot";
-        const instruction = input;
 
-        const raw = await this.sendRequestToAIAssistant(code, instruction);
-
+    public async sendChat(chatHistory: string, input: string): Promise<AIAssistantAnswerObject> {
+        const raw = await this.sendRequestToAIAssistant(chatHistory, input);
         return this.mapToAIAssistantAnswer(raw);
     }
 }
