@@ -17,7 +17,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   }
   // Función para generar la URL del historial de commits
   private getCommitHistoryUrl(owner: string, repoName: string): string {
-    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
+    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`; //en esta parte cambie la dirrecion para poder referencias a el commit-history
   }
 
   async obtainUserName(owner: string): Promise<string> {
