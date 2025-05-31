@@ -131,13 +131,13 @@ function TDDLineCharts({
         const commitMessage = commit.commit.message;
         const testCount = commit.test_count;
         const isRefactor = containsRefactor(commitMessage);
-  
+        const testPass = commit.conclusion;
         // Si no hay información de cobertura o tests, asumimos que el commit no pasó
         if (coverage === undefined || coverage === null) {
           return "black";
         }
   
-        if (testCount === 0 || testCount === undefined || coverage === 0) {
+        if (testCount === 0 || testCount === undefined || coverage === 0 || testPass == "failure") {
           return "red";
         }
   
