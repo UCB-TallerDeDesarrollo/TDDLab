@@ -123,8 +123,42 @@ function TDDLineCharts({
     return regex.test(commitMessage);
   }
 
+  function getColorConclusion(): string[] {
+  if (!filteredCommitsObject) return ["white"];
+
+  return filteredCommitsObject
+    .map(getCommitColor)
+    .reverse();
+  }
+
+  function getCommitColor(commit: CommitDataObject): string {
+    if (
+    !commit || typeof commit !== "object" ||
+    !commit.commit || typeof commit.commit.message !== "string"
+    ) {
+    return "red"; // Valor por defecto en caso de datos malformados
+    }
+    const { coverage, test_count, conclusion, commit: commitInfo } = commit;
+
+    if (
+    coverage === undefined || 
+    coverage === null
+    ) return "black";
+
+    const hasNoTestsOrCoverageFailed = 
+      test_count === 0 || 
+      test_count === undefined || 
+      coverage === 0 || 
+      conclusion === "failure";
+
+    if (hasNoTestsOrCoverageFailed) return "red";
+
+    const isRefactor = containsRefactor(commitInfo.message);
+    return getColorByCoverage(coverage, isRefactor);
+  }
+
   // Función refactorizada para obtener colores directamente del commit
-  function getColorConclusion() {
+  /*function getColorConclusion() {
     if (filteredCommitsObject != null) {
       const colors = filteredCommitsObject.map((commit) => {
         const coverage = commit.coverage;
@@ -148,7 +182,7 @@ function TDDLineCharts({
     } else {
       return ["white"];
     }
-  }
+  }*/
   
   const getColorByCoverage = (coverage: number, isRefactor: boolean) => {
     let colorValue = 110;
