@@ -129,7 +129,7 @@ export class AIAssistantRepository {
                 body: JSON.stringify({
                     model: MODEL,
                     messages: [
-                        { role: 'system', content: 'Eres un experto en desarrollo de software.' },
+                        { role: 'system', content: 'Eres un experto en desarrollo de software, responde todo en español latino.' },
                         { role: 'user', content: userContent }
                     ],
                     temperature: 0.2,
