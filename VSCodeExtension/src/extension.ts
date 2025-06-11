@@ -35,54 +35,54 @@ export async function activate(context: vscode.ExtensionContext) {
         );
     }
     
-    if (features.timelineView) {
-        const timelineView = new TimelineView(context);
-        context.subscriptions.push(
-            vscode.window.registerWebviewViewProvider('timelineView', timelineView)
-        );
 
-        vscode.commands.registerCommand('extension.showTimeline', () => {
-            vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-            if (timelineView.currentWebview) {
-                timelineView.showTimeline(timelineView.currentWebview);
+    const timelineView = new TimelineView(context);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider('timelineView', timelineView)
+    );
+
+    vscode.commands.registerCommand('extension.showTimeline', () => {
+        vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
+        if (timelineView.currentWebview) {
+            timelineView.showTimeline(timelineView.currentWebview);
+        }
+    });
+
+    const jsonFilePath = path.join(
+        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
+        'script',
+        'tdd_log.json'
+    );
+
+    const updateTimeLine = () => {
+        if (timelineView.currentWebview) {
+            timelineView.showTimeline(timelineView.currentWebview);
+        }
+    };
+
+    const watchFile = () => {
+        fs.watch(jsonFilePath, (eventType, filename) => {
+            if (eventType === 'change') {
+                updateTimeLine();
             }
         });
-
-        const jsonFilePath = path.join(
-            vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
-            'script',
-            'tdd_log.json'
-        );
-
-        const updateTimeLine = () => {
-            if (timelineView.currentWebview) {
-                timelineView.showTimeline(timelineView.currentWebview);
-            }
-        };
-
-        const watchFile = () => {
-            fs.watch(jsonFilePath, (eventType, filename) => {
-                if (eventType === 'change') {
-                    updateTimeLine();
-                }
-            });
-            if (isInitialRun) {
-                updateTimeLine();
-                isInitialRun = false;
-            }
-        };
-
-        if (fs.existsSync(jsonFilePath)) {
-            watchFile();
-        } else {
-            const interval = setInterval(() => {
-                if (fs.existsSync(jsonFilePath)) {
-                    clearInterval(interval);
-                    watchFile();
-                }
-            }, 1000);
+        if (isInitialRun) {
+            updateTimeLine();
+            isInitialRun = false;
         }
+    };
+
+    if (fs.existsSync(jsonFilePath)) {
+        watchFile();
+    } else {
+        const interval = setInterval(() => {
+            if (fs.existsSync(jsonFilePath)) {
+                clearInterval(interval);
+                watchFile();
+            }
+        }, 1000);
     }
+
 
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
