@@ -10,21 +10,18 @@ export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<Execut
     this.loadFeatureConfig(context);
   }
 
+
   private loadFeatureConfig(context: vscode.ExtensionContext): void {
-  try {
-    const extensionFolder = context.globalStorageUri.fsPath;
-    const storagePath = path.join(extensionFolder, 'VSCodeExtensionFeatures.json');
-
-    let rawData: string;
-
-    rawData = fs.readFileSync(storagePath, 'utf8');
-    
-
-    this.features = JSON.parse(rawData);
-  } catch (error) {
-    console.error('Error al cargar VSCodeExtensionFeatures.json:', error);
+    try {
+      const configPath = path.join(context.extensionPath, 'resources', 'features.json');
+      const rawData = fs.readFileSync(configPath, 'utf8');
+      this.features = JSON.parse(rawData);
+    } catch (error) {
+      console.error('Error al cargar features.json:', error);
+    }
   }
-}
+
+
 
   getTreeItem(element: ExecutionButton): vscode.TreeItem {
     return element;
