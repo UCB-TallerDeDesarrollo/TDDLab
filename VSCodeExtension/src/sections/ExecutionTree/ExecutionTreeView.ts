@@ -1,26 +1,12 @@
 import * as vscode from 'vscode';
 import { ExecutionButton } from '../../modules/Button/model/ExecutionButton';
-import * as fs from 'fs';
-import * as path from 'path';
 
 export class ExecutionTreeDataProvider implements vscode.TreeDataProvider<ExecutionButton> {
   private features: { [key: string]: boolean } = {};
 
-  constructor(private readonly context: vscode.ExtensionContext) {
-    this.loadFeatureConfig(context);
+  constructor(private readonly context: vscode.ExtensionContext, features: { [key: string]: boolean }) {
+    this.features = features;
   }
-
-
-  private loadFeatureConfig(context: vscode.ExtensionContext): void {
-    try {
-      const configPath = path.join(context.extensionPath, 'resources', 'features.json');
-      const rawData = fs.readFileSync(configPath, 'utf8');
-      this.features = JSON.parse(rawData);
-    } catch (error) {
-      console.error('Error al cargar features.json:', error);
-    }
-  }
-
 
 
   getTreeItem(element: ExecutionButton): vscode.TreeItem {
@@ -83,8 +69,8 @@ export class ExecutionTreeView {
   private readonly treeView: vscode.TreeView<ExecutionButton>;
   private readonly treeDataProvider: ExecutionTreeDataProvider;
 
-  constructor(private readonly context: vscode.ExtensionContext) {
-    this.treeDataProvider = new ExecutionTreeDataProvider(context);
+  constructor(private readonly context: vscode.ExtensionContext, features: { [key: string]: boolean }) {
+    this.treeDataProvider = new ExecutionTreeDataProvider(context, features);
     this.treeView = vscode.window.createTreeView('tddTestExecution', {
       treeDataProvider: this.treeDataProvider
     });

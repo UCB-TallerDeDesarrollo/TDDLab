@@ -9,7 +9,7 @@ import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteC
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
 import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
 import { TerminalViewProvider } from './sections/TDDLabTerminal/TerminalViewProvider';
-import * as https from 'https';
+import { FeatureConfigLoader } from './FeatureConfigLoader';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -18,19 +18,7 @@ import * as https from 'https';
 export async function activate(context: vscode.ExtensionContext) {
     const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
     let isInitialRun = true;
-    let features: { [key: string]: boolean } = {};
-
-    function loadFeatureConfig(context: vscode.ExtensionContext): void {
-    try {
-      const configPath = path.join(context.extensionPath, 'resources', 'features.json');
-      const rawData = fs.readFileSync(configPath, 'utf8');
-      features = JSON.parse(rawData);
-    } catch (error) {
-      console.error('Error al cargar features.json:', error);
-    }
-  }
-
-    loadFeatureConfig(context)
+    let features: { [key: string]: boolean } = FeatureConfigLoader.load(context);
 
     const terminalRepository = new VSCodeTerminalRepository();
     const executeTestCommand = new ExecuteTestCommand(terminalRepository);
@@ -181,7 +169,7 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(runExportCommand);
     context.subscriptions.push(runAsistenteCommand);
 
-    const testExecutionTreeView = new ExecutionTreeView(context);
+    const testExecutionTreeView = new ExecutionTreeView(context, features);
     testExecutionTreeView.initialize();
 
 
