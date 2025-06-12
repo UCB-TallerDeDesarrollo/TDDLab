@@ -673,7 +673,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                disabled={submissionStatus[userid.toString()] || false}
+                disabled={submissionStatus[userid.toString()] || !!studentSubmission?.repository_link}
                 onClick={handleOpenLinkDialog}
                 style={{
                   textTransform: "none",
