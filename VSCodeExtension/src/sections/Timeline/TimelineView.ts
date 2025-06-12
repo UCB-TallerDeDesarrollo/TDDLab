@@ -72,7 +72,9 @@ export class TimelineView implements vscode.WebviewViewProvider {
         return timeline.slice().reverse().map(point => {
             if (point instanceof Timeline) {
                 const color = point.getColor();
-                const date = point.timestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'});
+                const date = point.timestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'
+                });
+
                 const time = point.timestamp.toLocaleTimeString();
                 return `
                     <div class="timeline-dot" style="margin: 3px; background-color: ${color}; width: 25px; height: 25px; border-radius: 50px;">
@@ -83,18 +85,10 @@ export class TimelineView implements vscode.WebviewViewProvider {
                         </span>
                     </div>
                 `;
+                
             } else if (point instanceof CommitPoint) {
                 let htmlPoint = '';
-                if (point.commitName && regex.test(point.commitName)) {
-                    htmlPoint += `
-                        <div class="timeline-dot" style="margin: 3px; background-color: skyblue; width: 25px; height: 25px; border-radius: 50px;">
-                            <span class="popup">
-                                <center><strong>Punto de Refactoring</strong></center>
-                            </span>
-                        </div>
-                    `;
-                }
-                const date = point.commitTimestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'});
+                  const date = point.commitTimestamp.toLocaleDateString('es-Es',{day:'2-digit',month:'2-digit',year:'numeric'});
                 const time = point.commitTimestamp.toLocaleTimeString();
                 htmlPoint += `
                     <div class="timeline-dot">
@@ -105,6 +99,16 @@ export class TimelineView implements vscode.WebviewViewProvider {
                         </span>
                     </div>
                 `;
+                if (point.commitName && regex.test(point.commitName)) {
+                    htmlPoint += `
+                        <div class="timeline-dot" style="margin: 3px; background-color: skyblue; width: 25px; height: 25px; border-radius: 50px;">
+                            <span class="popup">
+                                <center><strong>Punto de Refactoring</strong></center>
+                            </span>
+                        </div>
+                    `;
+                }
+              
                 return htmlPoint;
             }
             return '';
