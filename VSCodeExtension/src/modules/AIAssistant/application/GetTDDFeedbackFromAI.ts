@@ -12,7 +12,7 @@ export class GetTDDFeedbackFromAI {
     return await this.aIAssistantRepository.fetchResponse(context, this.fileRepository);
   }
   public async getSimpleResponse(prompt: string): Promise<string> {
-    const tddlog = this.fileRepository.getTDDLog();
+    const tddlog = {};
     return await this.aIAssistantRepository.getTDDFeedbackFromAI(tddlog, prompt);
   }
 }
