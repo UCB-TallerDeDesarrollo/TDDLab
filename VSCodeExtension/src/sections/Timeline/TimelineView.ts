@@ -59,7 +59,35 @@ export class TimelineView implements vscode.WebviewViewProvider {
             return `<p style="color: red;">Error al cargar la línea de tiempo</p>`;
         }
     }
+    // Método para verificar si el timeline ha cambiado
+    private hasTimelineChanged(newTimeline: Array<Timeline | CommitPoint>): boolean {
+        if (newTimeline.length !== this.lastTimelineData.length) {
+            return true;
+        }
 
+        // Comparación simple por longitud y últimos elementos
+        for (let i = 0; i < newTimeline.length; i++) {
+            const newItem = newTimeline[i];
+            const oldItem = this.lastTimelineData[i];
+            
+            if (newItem instanceof Timeline && oldItem instanceof Timeline) {
+                if (newItem.numPassedTests !== oldItem.numPassedTests || 
+                    newItem.numTotalTests !== oldItem.numTotalTests ||
+                    newItem.timestamp.getTime() !== oldItem.timestamp.getTime()) {
+                    return true;
+                }
+            } else if (newItem instanceof CommitPoint && oldItem instanceof CommitPoint) {
+                if (newItem.commitName !== oldItem.commitName ||
+                    newItem.commitTimestamp.getTime() !== oldItem.commitTimestamp.getTime()) {
+                    return true;
+                }
+            } else if (newItem.constructor !== oldItem.constructor) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
     lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline | undefined {
         for (let i = timeline.length - 1; i >= 0; i--) {
