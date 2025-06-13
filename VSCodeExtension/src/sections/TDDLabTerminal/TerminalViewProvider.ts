@@ -42,6 +42,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         }
       });
 
+      // Manejar mensajes desde la webview
+      webviewView.webview.onDidReceiveMessage(async (message) => {
+          if (message.command === 'requestTimelineUpdate') {
+              console.log('[TerminalViewProvider] Webview solicita actualización de timeline');
+              await this.updateTimelineInWebview();
+          }
+      });
+
       console.log('[TerminalViewProvider] Webview inicializada y suscrita a cambios');
   }
 
