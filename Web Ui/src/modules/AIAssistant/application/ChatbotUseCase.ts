@@ -12,9 +12,8 @@ export class ChatbotUseCase {
       const response = await this.chatbotRepository.sendMessage(message);
       return response;
     } catch (error: any) {
-        throw new Error(`Error al enviar el mensaje al chatbot: ${error.message || error}`);
-      }
+      throw new Error(`Error al enviar el mensaje al chatbot: ${error.message ?? error}`);
+    }
   }
 }
 
-  
