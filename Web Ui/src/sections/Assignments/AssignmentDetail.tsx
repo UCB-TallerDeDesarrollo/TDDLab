@@ -225,7 +225,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
             const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
             const userSubmission = allSubmissions.find(submission => submission.userid === userid);
-            // Ya no necesitas setSubmissionStatus aquí
             if (userSubmission) {
               setStudentSubmission(userSubmission);
             }
