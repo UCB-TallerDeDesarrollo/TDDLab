@@ -33,6 +33,24 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     webviewView.webview.html = this.getHtml(timelineHtml, webviewView.webview);
   }
 
+  private async updateTimelineInWebview() {
+    if (this.webviewView) {
+        try {
+            const newTimelineHtml = await this.timelineView.getTimelineHtml(this.webviewView.webview);
+            
+            // Enviar mensaje a la webview para actualizar solo el timeline
+            this.webviewView.webview.postMessage({
+                command: 'updateTimeline',
+                html: newTimelineHtml
+            });
+            
+            console.log('[TerminalViewProvider] Timeline actualizado en terminal');
+        } catch (error) {
+            console.error('[TerminalViewProvider] Error actualizando timeline:', error);
+        }
+    }
+  }
+  
   private getHtml(timelineContent: string, webview: vscode.Webview): string {
     const xtermCssUri = 'https://cdn.jsdelivr.net/npm/xterm/css/xterm.css';
     const xtermJsUri = 'https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js';
@@ -147,4 +165,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       </html>
     `;
   }
+
+  
 }
