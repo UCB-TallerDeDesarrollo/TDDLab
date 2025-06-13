@@ -22,6 +22,9 @@ export class TimelineView implements vscode.WebviewViewProvider {
         const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
         this.getTimeline = new GetTimeline(rootPath);
         this.getLastPoint = new GetLastPoint(context);
+        
+        // Iniciar el polling para detectar cambios
+        this.startTimelinePolling();
     }
 
     resolveWebviewView(webviewView: vscode.WebviewView): void {
@@ -61,6 +64,25 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
             return `<p style="color: red;">Error al cargar la línea de tiempo</p>`;
         }
+    }
+    private startTimelinePolling(): void {
+        setInterval(async () => {
+            try {
+                const currentTimeline = await this.getTimeline.execute();
+                
+                // Verificar si hay cambios comparando con el cache
+                if (this.hasTimelineChanged(currentTimeline)) {
+                    this.updateTimelineCache(currentTimeline);
+                    
+                    // Actualizar el webview principal si existe
+                    if (this.currentWebview) {
+                        this.currentWebview.html = this.generateHtml(currentTimeline, this.currentWebview);
+                    }
+                }
+            } catch (err) {
+                console.error('[TimelineView] Error en polling:', err);
+            }
+        }, 2000); // Verificar cada 2 segundos
     }
     // Método para verificar si el timeline ha cambiado
     private hasTimelineChanged(newTimeline: Array<Timeline | CommitPoint>): boolean {
