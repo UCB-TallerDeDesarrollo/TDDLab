@@ -44,7 +44,6 @@ import {
   SubmissionDataObject,
   SubmissionUpdateObject,
 } from "../../modules/Submissions/Domain/submissionInterfaces";
-import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
@@ -80,9 +79,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [submissionStatus, setSubmissionStatus] = useState<{
-    [key: string]: boolean;
-  }>({});
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(
     null
   );
@@ -187,28 +183,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignment]);
 
   useEffect(() => {
-    const checkIfStarted = async () => {
-      if (isStudent(role)) {
-        if (assignmentid && userid && userid !== -1) {
-          try {
-            const submissionRepository = new SubmissionRepository();
-            const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
-            const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
-            setSubmissionStatus((prevStatus) => ({
-              ...prevStatus,
-              [userid]: !!response.hasStarted,
-            }));
-          } catch (error) {
-            console.error("Error verifying submission status:", error);
-            setSubmissionsError("Error verificando el estado de la entrega.");
-          }
-        }
-      }
-    };
-    checkIfStarted();
-  }, [assignmentid, userid]);
-
-  useEffect(() => {
     const fetchSubmissions = async () => {
       if (!isStudent(role)) {
         setLoadingSubmissions(true);
@@ -251,10 +225,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
             const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
             const userSubmission = allSubmissions.find(submission => submission.userid === userid);
-            setSubmissionStatus((prevStatus) => ({
-              ...prevStatus,
-              [userid]: !!userSubmission,
-            }));
+            // Ya no necesitas setSubmissionStatus aquí
             if (userSubmission) {
               setStudentSubmission(userSubmission);
             }
@@ -673,7 +644,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                disabled={submissionStatus[userid.toString()] || !!studentSubmission?.repository_link}
+                disabled={!!studentSubmission}
                 onClick={handleOpenLinkDialog}
                 style={{
                   textTransform: "none",
