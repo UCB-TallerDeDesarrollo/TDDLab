@@ -34,6 +34,9 @@ export class TimelineView implements vscode.WebviewViewProvider {
         try {
             const timeline = await this.getTimeline.execute();
             webview.html = this.generateHtml(timeline, webview);
+            
+            // Actualizar cache y notificar si hay cambios
+            this.updateTimelineCache(timeline);
         } catch (err) {
             if (err instanceof Error) {
                 vscode.window.showErrorMessage(`Error al mostrar la línea de tiempo: ${err.message}`);
