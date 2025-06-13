@@ -4,7 +4,6 @@ import {
   FeatureFlagDataObject,
   FeatureFlagCreationObject,
   FeatureFlagUpdateObject,
-  FeatureFlagsForExtension,
 } from "../domain/FeatureFlag";
 
 interface QueryResult {
@@ -120,22 +119,6 @@ class FeatureFlagRepository {
     const query = "DELETE FROM feature_flags WHERE id = $1 RETURNING *";
     const rows = await this.executeQuery(query, [id]);
     return rows.length > 0;
-  }
-
-  async obtainFeatureFlagsForExtension(): Promise<FeatureFlagsForExtension> {
-    const query = `
-      SELECT feature_name, is_enabled 
-      FROM feature_flags 
-      WHERE feature_name LIKE 'extension_%'
-    `;
-    
-    const rows = await this.executeQuery(query);
-    
-    return rows.reduce((acc, row) => {
-      const featureName = row.feature_name.replace('extension_', '');
-      acc[featureName] = row.is_enabled;
-      return acc;
-    }, {} as FeatureFlagsForExtension);
   }
 }
 
