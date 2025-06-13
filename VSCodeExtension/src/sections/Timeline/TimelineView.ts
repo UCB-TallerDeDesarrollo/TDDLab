@@ -97,7 +97,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
                     year:'numeric'});
 
                 const time = point.commitTimestamp.toLocaleTimeString();
-                
+
                 htmlPoint += `
                     <div class="timeline-dot">
                         <img src="${gitLogoUri}" style="margin: 3px; width: 25px; height: 25px; border-radius: 50px;">
@@ -107,6 +107,8 @@ export class TimelineView implements vscode.WebviewViewProvider {
                         </span>
                     </div>
                 `;
+
+                
                 if (point.commitName && regex.test(point.commitName)) {
                     htmlPoint += `
                         <div class="timeline-dot" style="margin: 3px; background-color: skyblue; width: 25px; height: 25px; border-radius: 50px;">
