@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import { AIAssistantAnswerObject, AIAssistantInstructionObject } from '../domain/AIAssistant';
-import { AIAssistantDataBaseRepository } from './AiAssistantDataBaseRepository';
-import { CommitDataObject } from '../domain/commitHistory';
+import { AIAssistantAnswerObject /*, AIAssistantInstructionObject*/ } from '../domain/AIAssistant';
+// import { AIAssistantDataBaseRepository } from './AiAssistantDataBaseRepository';
+// import { CommitDataObject } from '../domain/commitHistory';
 
 dotenv.config();
 const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
@@ -9,7 +9,7 @@ const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
 export class AIAssistantRepository {
     private readonly apiKey = process.env.TOGETHER_API_KEY;
     private readonly apiUrl = process.env.LLM_API_URL || '';
-    private readonly aiAssistantDB = new AIAssistantDataBaseRepository;
+    // private readonly aiAssistantDB = new AIAssistantDataBaseRepository;
 
     private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
         if (!data) {
@@ -23,30 +23,32 @@ export class AIAssistantRepository {
         return { result: data };
     }
 
+    /*
     private async getCommitHistoryUrl(URL: string): Promise<string> {
         try {
             const match = URL.match(/github\.com\/([^/]+)\/([^/]+)/);
             if (!match || match.length < 3) {
-              throw new Error('URL del repositorio inválida');
+                throw new Error('URL del repositorio inválida');
             }
-        
+
             const owner = match[1];
             const repoName = match[2];
-        
+
             return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
-          } catch (error) {
+        } catch (error) {
             console.error('Error construyendo la URL de commit history:', error);
             throw error;
-          }
+        }
     }
 
+    /*
     private serializeCommits(commits: CommitDataObject[]): any[] {
         return commits.map(commit => ({
-          ...commit,
-          commit: {
-            ...commit.commit,
-            date: commit.commit.date.toISOString(),
-          }
+            ...commit,
+            commit: {
+                ...commit.commit,
+                date: commit.commit.date.toISOString(),
+            }
         }));
     }
 
@@ -54,13 +56,13 @@ export class AIAssistantRepository {
         try {
             const fullUrl = await this.getCommitHistoryUrl(URL);
             const response = await fetch(fullUrl);
-      
+
             if (!response.ok) {
                 throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
             }
-        
+
             const commitHistory = await response.json();
-        
+
             const commits: CommitDataObject[] = commitHistory.map((commitData: any) => ({
                 sha: commitData.sha,
                 author: commitData.author,
@@ -82,7 +84,7 @@ export class AIAssistantRepository {
             }));
 
             commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
-            
+
             return commits;
         } catch (error) {
             console.error("Error obteniendo commits desde el archivo JSON:", error);
@@ -90,6 +92,7 @@ export class AIAssistantRepository {
         }
     }
 
+    /*
     private async getContextFromCommitHistory(URL: string): Promise<string> {
         const commits = await this.getCommitHistory(URL);
         const serializableCommits = this.serializeCommits(commits);
@@ -103,16 +106,17 @@ export class AIAssistantRepository {
         if (instructionValue.includes('califica')) return prompts?.evaluation || 'Prompt no disponible para la calificacion de TDD.';
         return 'interpreta el siguiente código';
     }
-  
-    public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
-          const tddlogString = JSON.stringify(tddlog, null, 2);
+    */
 
-          return `
+    public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
+        const tddlogString = JSON.stringify(tddlog, null, 2);
+
+        return `
                   ${promptInstructions}
                   ${tddlogString}`;
-     }
+    }
 
-    private async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
+    public async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
             const userContent = `${instruction}\n\n${code}`;
 
@@ -155,16 +159,17 @@ export class AIAssistantRepository {
         }
     }
 
+    /*
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         try {
             const newInstruction = await this.buildPromt(instruction.value);
             const instructionValue = instruction.value.toLowerCase();
             let context: string;
-        
+
             if (instructionValue === "analiza" || instructionValue === "califica") {
                 context = await this.getContextFromCommitHistory(instruction.URL);
             } else context = instruction.URL;
-        
+
             const raw = await this.sendRequestToAIAssistant(context, newInstruction);
             return this.mapToAIAssistantAnswer(raw);
         } catch (error) {
@@ -172,12 +177,13 @@ export class AIAssistantRepository {
             return { result: 'Error al comunicarse con el modelo.' };
         }
     }
+    */
 
     public async sendTDDExtensionPrompt(tddlog: any, promptInstructions: string): Promise<AIAssistantAnswerObject> {
         const prompt = this.buildPromptByTestExecuted(tddlog, promptInstructions);
         const raw = await this.sendRequestToAIAssistant(prompt, '');
         return this.mapToAIAssistantAnswer(raw);
-    }  
+    }
 
     public async sendChat(chatHistory: string, input: string): Promise<AIAssistantAnswerObject> {
         const raw = await this.sendRequestToAIAssistant(chatHistory, input);

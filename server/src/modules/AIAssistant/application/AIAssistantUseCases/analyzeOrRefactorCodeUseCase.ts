@@ -1,10 +1,11 @@
 import { AIAssistantAnswerObject, AIAssistantInstructionObject } from "../../domain/AIAssistant";
-import { AIAssistantRepository } from "../../repository/AIAssistantRepositoy";
+// import { AIAssistantRepository } from "../../repository/AIAssistantRepositoy";
+import { ChatbotAssistantRepository } from "../../repository/ChatbotAssistantRepository";
 
 export class AnalyzeOrRefactorCodeUseCase {
-    private readonly adapter: AIAssistantRepository;
+    private readonly adapter: ChatbotAssistantRepository;
 
-    constructor(adapter: AIAssistantRepository) {
+    constructor(adapter: ChatbotAssistantRepository) {
         this.adapter = adapter;
     }
 
