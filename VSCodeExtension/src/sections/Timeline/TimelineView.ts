@@ -89,6 +89,14 @@ export class TimelineView implements vscode.WebviewViewProvider {
         return false;
     }
 
+    // Método para actualizar el cache y notificar cambios
+    private updateTimelineCache(timeline: Array<Timeline | CommitPoint>): void {
+        this.lastTimelineData = [...timeline]; // Crear copia del array
+        
+        // Emitir evento de actualización
+        TimelineView._onTimelineUpdated.fire(timeline);
+    }
+
     lastTestPoint(timeline: Array<Timeline | CommitPoint>): Timeline | undefined {
         for (let i = timeline.length - 1; i >= 0; i--) {
             if (timeline[i] instanceof Timeline && timeline[i] !== undefined) {
