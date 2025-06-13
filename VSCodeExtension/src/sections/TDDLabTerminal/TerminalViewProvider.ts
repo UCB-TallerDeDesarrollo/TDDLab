@@ -5,10 +5,16 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'tddTerminalView';
   private readonly context: vscode.ExtensionContext;
   private readonly timelineView: TimelineView;
+  private webviewView?: vscode.WebviewView;
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     this.timelineView = new TimelineView(context);
+    
+    // Suscribirse a los cambios del timeline
+    TimelineView.onTimelineUpdated(async (timelineData) => {
+      //await this.updateTimelineInWebview();
+    });
   }
 
   async resolveWebviewView(
