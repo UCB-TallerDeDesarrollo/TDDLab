@@ -18,19 +18,23 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   async resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    _context: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken
+      webviewView: vscode.WebviewView,
+      _context: vscode.WebviewViewResolveContext,
+      _token: vscode.CancellationToken
   ) {
-    webviewView.webview.options = {
-      enableScripts: true
-    };
+      this.webviewView = webviewView;
+      
+      webviewView.webview.options = {
+          enableScripts: true
+      };
 
-    // Obtiene el HTML del timeline usando el webview actual
-    const timelineHtml = await this.timelineView.getTimelineHtml(webviewView.webview);
+      // Obtiene el HTML del timeline usando el webview actual
+      const timelineHtml = await this.timelineView.getTimelineHtml(webviewView.webview);
 
-    // Inyecta el timeline y la terminal en la misma webview
-    webviewView.webview.html = this.getHtml(timelineHtml, webviewView.webview);
+      // Inyecta el timeline y la terminal en la misma webview
+      webviewView.webview.html = this.getHtml(timelineHtml, webviewView.webview);
+      
+      console.log('[TerminalViewProvider] Webview inicializada y suscrita a cambios');
   }
 
   private async updateTimelineInWebview() {
