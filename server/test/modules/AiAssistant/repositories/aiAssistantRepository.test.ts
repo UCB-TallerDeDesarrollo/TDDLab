@@ -1,5 +1,5 @@
-import { AIAssistantRepository } from '../../../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
 import { AIAssistantInstructionObject } from '../../../../src/modules/AIAssistant/domain/AIAssistant';
+import { ChatbotAssistantRepository } from '../../../../src/modules/AIAssistant/repository/ChatbotAssistantRepository';
 
 jest.mock('axios');
 
@@ -21,7 +21,7 @@ describe('AIAssistantRepository', () => {
     });
     global.fetch = mockFetch as any;
 
-    const repository = new AIAssistantRepository();
+    const repository = new ChatbotAssistantRepository();
 
     jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
       analysis_tdd: 'Evalúa la cobertura de pruebas y si se aplican principios de TDD. ¿Qué áreas podrían mejorarse?',
@@ -43,7 +43,7 @@ describe('AIAssistantRepository', () => {
     const mockFetch = jest.fn().mockRejectedValue(new Error('Falló el fetch'));
     global.fetch = mockFetch as any;
 
-    const repository = new AIAssistantRepository();
+    const repository = new ChatbotAssistantRepository();
 
     jest.spyOn(repository['aiAssistantDB'], 'getPrompts').mockResolvedValue({
       analysis_tdd: 'fake prompt',

@@ -45,7 +45,7 @@ describe('AIAssitantController', () => {
   it('debería retornar resultado del LLM', async () => {
     await controller.analyzeOrRefactor(req as Request, res as Response);
 
-    expect(mockAiAssistantRepository.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
+    expect(mockChatbotAssistantRepository.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
     expect(res?.json).toHaveBeenCalledWith({ result: 'Respuesta del Asistente' });
   });
 
@@ -59,7 +59,7 @@ describe('AIAssitantController', () => {
   });
 
   it('debería retornar error 500 si ocurre una excepción', async () => {
-    (mockAiAssistantRepository.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
+    (mockChatbotAssistantRepository.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
 
     await controller.analyzeOrRefactor(req as Request, res as Response);
 

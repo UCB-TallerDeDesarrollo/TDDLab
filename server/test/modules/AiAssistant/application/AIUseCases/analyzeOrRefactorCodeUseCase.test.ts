@@ -1,11 +1,11 @@
 import { AnalyzeOrRefactorCodeUseCase } from '../../../../../src/modules/AIAssistant/application/AIAssistantUseCases/analyzeOrRefactorCodeUseCase';
 import { AIAssistantInstructionObject, AIAssistantAnswerObject } from '../../../../../src/modules/AIAssistant/domain/AIAssistant';
-import { AIAssistantRepository } from '../../../../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
+import { ChatbotAssistantRepository } from '../../../../../src/modules/AIAssistant/repository/ChatbotAssistantRepository';
 
 describe('AnalyzeOrRefactorCodeUseCase', () => {
-  const mockRepository: jest.Mocked<AIAssistantRepository> = {
+  const mockRepository: jest.Mocked<ChatbotAssistantRepository> = {
     sendPrompt: jest.fn()
-  } as unknown as jest.Mocked<AIAssistantRepository>;
+  } as unknown as jest.Mocked<ChatbotAssistantRepository>;
 
   const useCase = new AnalyzeOrRefactorCodeUseCase(mockRepository);
 
