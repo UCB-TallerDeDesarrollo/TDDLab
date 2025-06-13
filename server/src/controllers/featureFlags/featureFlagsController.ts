@@ -157,16 +157,6 @@ class FeatureFlagsController {
       }
     }
   }
-
-  async getFeatureFlagsForExtension(_req: Request, res: Response): Promise<void> {
-    try {
-      const featureFlags = await this.getFeatureFlagsForExtensionUseCase.execute();
-      res.status(200).json(featureFlags);
-    } catch (error) {
-      console.error("Error getting feature flags for extension:", error);
-      res.status(500).json({ error: "Error del servidor" });
-    }
-  }
 }
 
 export default FeatureFlagsController;
