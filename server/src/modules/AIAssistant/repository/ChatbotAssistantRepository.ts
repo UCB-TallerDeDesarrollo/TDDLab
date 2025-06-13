@@ -21,6 +21,25 @@ export class ChatbotAssistantRepository {
         return { result: data };
     }
 
+    private async buildConversationContext(userInput: string): Promise<{ prompt: string }> {
+        const memoryVars = await this.bufferMemory.loadMemoryVariables({});
+        let historyText = "";
+
+        if (memoryVars.history && Array.isArray(memoryVars.history)) {
+            historyText = memoryVars.history
+                .map((msg: any) => {
+                    const role = msg.constructor.name === 'HumanMessage' || msg._getType() === 'human' ? 'Usuario' : 'Asistente';
+                    return `${role}: ${msg.content}`;
+                }).join('\n');
+        }
+
+        const prompt = historyText
+            ? `Conversación anterior:\n${historyText}\n\nUsuario: ${userInput}\nAsistente:`
+            : `Usuario: ${userInput}\nAsistente:`;
+
+        return { prompt };
+    }
+
     private async getCommitHistoryUrl(URL: string): Promise<string> {
         try {
             const match = URL.match(/github\.com\/([^/]+)\/([^/]+)/);
@@ -104,24 +123,9 @@ export class ChatbotAssistantRepository {
 
     async sendMessage(userInput: string): Promise<AIAssistantAnswerObject> {
         try {
-            const memory = await this.bufferMemory.loadMemoryVariables({});
-            let historyText = "";
-            if (memory.history && Array.isArray(memory.history)) {
-                historyText = memory.history
-                    .map((msg: any) => {
-                        const role = msg.constructor.name === 'HumanMessage' || msg._getType() === 'human' ? 'Usuario' : 'Asistente';
-                        return `${role}: ${msg.content}`;
-                    }).join('\n');
-            }
+            const { prompt } = await this.buildConversationContext(userInput);
 
-            let chatHistory: string;
-            if (historyText) {
-                chatHistory = `Conversación anterior: ${historyText} Usuario: ${userInput} Asistente:`;
-            } else {
-                chatHistory = `Usuario: ${userInput} Asistente:`;
-            }
-
-            const answerLLM = await this.aiAssistantRepository.sendChat(chatHistory, userInput);
+            const answerLLM = await this.aiAssistantRepository.sendChat(prompt, userInput);
 
             await this.bufferMemory.saveContext(
                 { input: userInput },
@@ -131,14 +135,10 @@ export class ChatbotAssistantRepository {
             return answerLLM;
         } catch (error) {
             console.error('[ConversationService Error]', error);
-
-            if (error instanceof Error) {
-                throw new Error(`Error al procesar la conversación: ${error.message}`);
-            } else {
-                throw new Error("Error desconocido al procesar la conversación");
-            }
+            throw new Error("Error al procesar la conversación");
         }
     }
+
 
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         try {
@@ -148,10 +148,20 @@ export class ChatbotAssistantRepository {
 
             if (instructionValue === "analiza" || instructionValue === "califica") {
                 context = await this.getContextFromCommitHistory(instruction.URL);
-            } else context = instruction.URL;
+            } else {
+                context = instruction.URL;
+            }
 
-            const raw = await this.aiAssistantRepository.sendRequestToAIAssistant(context, newInstruction);
-            this.sendMessage(raw);
+            const fullInput = `${newInstruction}\n\nContexto:\n${context}`;
+            const { prompt } = await this.buildConversationContext(fullInput);
+
+            const raw = await this.aiAssistantRepository.sendRequestToAIAssistant(prompt, newInstruction);
+
+            await this.bufferMemory.saveContext(
+                { input: newInstruction },
+                { output: raw }
+            );
+
             return this.mapToAIAssistantAnswer(raw);
         } catch (error) {
             console.error('[sendPrompt ERROR]', error);
