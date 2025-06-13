@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import { useGitHubLinkValidation } from "./GitValidationHook";
+import { useState } from "react";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -25,10 +26,17 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     handleLinkChange,
   } = useGitHubLinkValidation("");
 
+  const [sending, setSending] = useState(false);
 
-  const handleSend = () => {
-    if (validLink) {
-      onSend(link);
+  const handleSend = async () => {
+    // ya estoy enviando o el link no es válido → salgo
+    if (sending || !validLink) return;
+
+    setSending(true);
+    try {
+      await onSend(link);
+    } finally {
+      setSending(false);
     }
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +73,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <TextField
           label="Enlace de Github"
           variant="outlined"
-          color={ getInputColor() }
+          color={getInputColor()}
           value={link}
           onChange={handleInputChange}
           fullWidth
@@ -89,7 +97,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <Button
           onClick={handleSend}
           color="primary"
-          disabled={!validLink || link == ""}
+          disabled={sending || !validLink || link === ""}
           style={{ textTransform: "none" }}
         >
           Enviar
