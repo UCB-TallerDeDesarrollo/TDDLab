@@ -13,7 +13,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     
     // Suscribirse a los cambios del timeline
     TimelineView.onTimelineUpdated(async (timelineData) => {
-      //await this.updateTimelineInWebview();
+      await this.updateTimelineInWebview();
     });
   }
 
@@ -50,7 +50,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         }
     }
   }
-  
+
   private getHtml(timelineContent: string, webview: vscode.Webview): string {
     const xtermCssUri = 'https://cdn.jsdelivr.net/npm/xterm/css/xterm.css';
     const xtermJsUri = 'https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js';
@@ -104,7 +104,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       <body>
         <div id="timeline">
           <h2>TDDLab Timeline</h2>
-          <div style="display: flex; flex-wrap: wrap;">
+          <div id="timeline-content" style="display: flex; flex-wrap: wrap;">
             ${timelineContent}
           </div>
         </div>
@@ -120,6 +120,40 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
           term.write('Bienvenido a la terminal simulada. Escribe "help" para ver comandos.');
           prompt();
+
+          // Escuchar mensajes del extension host para actualizar el timeline
+          window.addEventListener('message', event => {
+            const message = event.data;
+            if (message.command === 'updateTimeline') {
+              const timelineContent = document.getElementById('timeline-content');
+              if (timelineContent) {
+                timelineContent.innerHTML = message.html;
+                console.log('[Terminal WebView] Timeline actualizado');
+              }
+            }
+          });
+
+          // Solicitar actualización del timeline cuando la página se carga
+          window.addEventListener('load', () => {
+            console.log('[Terminal WebView] Página cargada, solicitando timeline actual...');
+            // Pequeño delay para asegurar que todo esté inicializado
+            setTimeout(() => {
+              const vscode = acquireVsCodeApi();
+              vscode.postMessage({ command: 'requestTimelineUpdate' });
+            }, 500);
+          });
+
+          // También solicitar cuando el documento esté listo
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+              const vscode = acquireVsCodeApi();
+              vscode.postMessage({ command: 'requestTimelineUpdate' });
+            });
+          } else {
+            // Ya está cargado
+            const vscode = acquireVsCodeApi();
+            vscode.postMessage({ command: 'requestTimelineUpdate' });
+          }
 
           term.onData(data => {
             const code = data.charCodeAt(0);
@@ -140,7 +174,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
           function handleCommand(cmd) {
             switch (cmd) {
               case 'help':
-                term.write('\\r\\nComandos disponibles: help, clear, echo, about');
+                term.write('\\r\\nComandos disponibles: help, clear, echo, about, timeline, refresh');
                 break;
               case 'clear':
                 term.clear();
@@ -148,13 +182,21 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
               case 'about':
                 term.write('\\r\\nEsta es una consola simulada hecha con xterm.js');
                 break;
+              case 'timeline':
+                term.write('\\r\\nTimeline sincronizado automáticamente con la vista principal');
+                break;
+              case 'refresh':
+                term.write('\\r\\nSolicitando actualización del timeline...');
+                const vscode = acquireVsCodeApi();
+                vscode.postMessage({ command: 'requestTimelineUpdate' });
+                break;
               case '':
                 break;
               default:
                 if (cmd.startsWith('echo ')) {
                   term.write('\\r\\n' + cmd.slice(5));
                 } else {
-                  term.write('\\r\\nComando no reconocido: ' + cmd);
+                  term.write('\\r\\nComando no reconocido: ' + cmd + '. Escribe "help" para ver comandos disponibles.');
                 }
                 break;
             }
@@ -165,6 +207,4 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       </html>
     `;
   }
-
-  
 }
