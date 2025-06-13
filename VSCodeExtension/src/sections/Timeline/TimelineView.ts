@@ -10,6 +10,13 @@ export class TimelineView implements vscode.WebviewViewProvider {
     private readonly getTimeline: GetTimeline;
     private readonly getLastPoint: GetLastPoint;
 
+    // EventEmitter para notificar cambios en el timeline
+    private static _onTimelineUpdated: vscode.EventEmitter<Array<Timeline | CommitPoint>> = new vscode.EventEmitter<Array<Timeline | CommitPoint>>();
+    public static readonly onTimelineUpdated: vscode.Event<Array<Timeline | CommitPoint>> = TimelineView._onTimelineUpdated.event;
+    
+    // Cache del timeline para detectar cambios
+    private lastTimelineData: Array<Timeline | CommitPoint> = [];
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
