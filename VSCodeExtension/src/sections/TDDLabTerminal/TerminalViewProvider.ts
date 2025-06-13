@@ -34,7 +34,34 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       // Inyecta el timeline y la terminal en la misma webview
       webviewView.webview.html = this.getHtml(timelineHtml, webviewView.webview);
       
+      // Manejar cuando la webview se vuelve visible (importante para cuando se cambia de terminal)
+      webviewView.onDidChangeVisibility(() => {
+        if (webviewView.visible) {
+          console.log('[TerminalViewProvider] Webview visible, actualizando timeline...');
+          this.refreshTimelineOnVisible();
+        }
+      });
+
       console.log('[TerminalViewProvider] Webview inicializada y suscrita a cambios');
+  }
+
+  private async refreshTimelineOnVisible() {
+      if (this.webviewView && this.webviewView.visible) {
+          try {
+              setTimeout(async () => {
+                  const newTimelineHtml = await this.timelineView.getTimelineHtml(this.webviewView!.webview);
+                  
+                  this.webviewView!.webview.postMessage({
+                      command: 'updateTimeline',
+                      html: newTimelineHtml
+                  });
+                  
+                  console.log('[TerminalViewProvider] Timeline refrescado al volverse visible');
+              }, 100);
+          } catch (error) {
+              console.error('[TerminalViewProvider] Error refrescando timeline:', error);
+          }
+      }
   }
 
   private async updateTimelineInWebview() {
