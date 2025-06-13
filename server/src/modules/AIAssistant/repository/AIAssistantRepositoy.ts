@@ -27,26 +27,26 @@ export class AIAssistantRepository {
         try {
             const match = URL.match(/github\.com\/([^/]+)\/([^/]+)/);
             if (!match || match.length < 3) {
-              throw new Error('URL del repositorio inválida');
+                throw new Error('URL del repositorio inválida');
             }
-        
+
             const owner = match[1];
             const repoName = match[2];
-        
+
             return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
-          } catch (error) {
+        } catch (error) {
             console.error('Error construyendo la URL de commit history:', error);
             throw error;
-          }
+        }
     }
 
     private serializeCommits(commits: CommitDataObject[]): any[] {
         return commits.map(commit => ({
-          ...commit,
-          commit: {
-            ...commit.commit,
-            date: commit.commit.date.toISOString(),
-          }
+            ...commit,
+            commit: {
+                ...commit.commit,
+                date: commit.commit.date.toISOString(),
+            }
         }));
     }
 
@@ -54,13 +54,13 @@ export class AIAssistantRepository {
         try {
             const fullUrl = await this.getCommitHistoryUrl(URL);
             const response = await fetch(fullUrl);
-      
+
             if (!response.ok) {
                 throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
             }
-        
+
             const commitHistory = await response.json();
-        
+
             const commits: CommitDataObject[] = commitHistory.map((commitData: any) => ({
                 sha: commitData.sha,
                 author: commitData.author,
@@ -82,7 +82,7 @@ export class AIAssistantRepository {
             }));
 
             commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
-            
+
             return commits;
         } catch (error) {
             console.error("Error obteniendo commits desde el archivo JSON:", error);
@@ -91,9 +91,21 @@ export class AIAssistantRepository {
     }
 
     private async getContextFromCommitHistory(URL: string): Promise<string> {
-        const commits = await this.getCommitHistory(URL);
-        const serializableCommits = this.serializeCommits(commits);
-        return JSON.stringify(serializableCommits, null, 2);
+        try {
+            const commits = await this.getCommitHistory(URL);
+
+            if (!commits || commits.length === 0) {
+                console.warn("No se encontraron commits. Usando la URL como contexto.");
+                return URL;
+            }
+
+            const serializableCommits = this.serializeCommits(commits);
+            return JSON.stringify(serializableCommits, null, 2);
+
+        } catch (error) {
+            console.warn("Error al obtener commits. Usando la URL como contexto:", error);
+            return URL;
+        }
     }
 
     private async buildPromt(instructionValue: string): Promise<string> {
@@ -103,14 +115,14 @@ export class AIAssistantRepository {
         if (instructionValue.includes('califica')) return prompts?.evaluation || 'Prompt no disponible para la calificacion de TDD.';
         return 'interpreta el siguiente código';
     }
-  
-    public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
-          const tddlogString = JSON.stringify(tddlog, null, 2);
 
-          return `
+    public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
+        const tddlogString = JSON.stringify(tddlog, null, 2);
+
+        return `
                   ${promptInstructions}
                   ${tddlogString}`;
-     }
+    }
 
     private async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
@@ -160,11 +172,11 @@ export class AIAssistantRepository {
             const newInstruction = await this.buildPromt(instruction.value);
             const instructionValue = instruction.value.toLowerCase();
             let context: string;
-        
+
             if (instructionValue === "analiza" || instructionValue === "califica") {
                 context = await this.getContextFromCommitHistory(instruction.URL);
             } else context = instruction.URL;
-        
+
             const raw = await this.sendRequestToAIAssistant(context, newInstruction);
             return this.mapToAIAssistantAnswer(raw);
         } catch (error) {
@@ -177,7 +189,7 @@ export class AIAssistantRepository {
         const prompt = this.buildPromptByTestExecuted(tddlog, promptInstructions);
         const raw = await this.sendRequestToAIAssistant(prompt, '');
         return this.mapToAIAssistantAnswer(raw);
-    }  
+    }
 
     public async sendChat(chatHistory: string, input: string): Promise<AIAssistantAnswerObject> {
         const raw = await this.sendRequestToAIAssistant(chatHistory, input);
