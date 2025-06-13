@@ -30,7 +30,6 @@ export function getFeatureFlagRepositoryMock() {
     updateFeatureFlag: jest.fn(),
     deleteFeatureFlag: jest.fn(async (id) => {
       return id === 1 || id === 2;
-    }),
-    obtainFeatureFlagsForExtension: jest.fn(),
+    })
   };
 }

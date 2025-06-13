@@ -82,7 +82,6 @@ function TDDLineCharts({
               }
             );
 
-            console.log("Contenido de la respuesta:", response.data.metrics);
             responses.push(JSON.stringify(response.data));
             
           } catch (error) {
@@ -90,7 +89,6 @@ function TDDLineCharts({
           }
         }
 
-        console.log("RESPONSES", responses);
         setAnalyzeData(responses);
       };
 
@@ -125,33 +123,40 @@ function TDDLineCharts({
     return regex.test(commitMessage);
   }
 
-  // Función refactorizada para obtener colores directamente del commit
-  function getColorConclusion() {
-    if (filteredCommitsObject != null) {
-      const colors = filteredCommitsObject.map((commit) => {
-        const coverage = commit.coverage;
-        const commitMessage = commit.commit.message;
-        const testCount = commit.test_count;
-        const isRefactor = containsRefactor(commitMessage);
-  
-        // Si no hay información de cobertura o tests, asumimos que el commit no pasó
-        if (coverage === undefined || coverage === null) {
-          return "black";
-        }
-  
-        if (testCount === 0 || testCount === undefined || coverage === 0) {
-          return "red";
-        }
-  
-        // Si tiene tests y no hay errores, aplicamos la lógica de color basado en cobertura
-        return getColorByCoverage(coverage, isRefactor);
-      });
-      return colors.reverse();
-    } else {
-      return ["white"];
-    }
+  function getColorConclusion(): string[] {
+  if (!filteredCommitsObject) return ["white"];
+
+  return filteredCommitsObject
+    .map(getCommitColor)
+    .reverse();
   }
-  
+
+  function getCommitColor(commit: CommitDataObject): string {
+    if (
+    !commit || typeof commit !== "object" ||
+    !commit.commit || typeof commit.commit.message !== "string"
+    ) {
+    return "red"; // Valor por defecto en caso de datos malformados
+    }
+    const { coverage, test_count, conclusion, commit: commitInfo } = commit;
+
+    if (
+    coverage === undefined || 
+    coverage === null
+    ) return "black";
+
+    const hasNoTestsOrCoverageFailed = 
+      test_count === 0 || 
+      test_count === undefined || 
+      coverage === 0 || 
+      conclusion === "failure";
+
+    if (hasNoTestsOrCoverageFailed) return "red";
+
+    const isRefactor = containsRefactor(commitInfo.message);
+    return getColorByCoverage(coverage, isRefactor);
+  }
+
   const getColorByCoverage = (coverage: number, isRefactor: boolean) => {
     let colorValue = 110;
     let opacity;
@@ -305,7 +310,7 @@ function TDDLineCharts({
               );
 
               const complexityResponse = analyzeData[context[0].dataIndex];
-              console.log("EX1M"+complexityResponse)
+              //console.log("EX1M"+complexityResponse)
               if (complexityResponse) {
                 afterBodyContent.push(`Complejidad Ciclomática: ${complexityResponse}`);
               }
@@ -318,14 +323,12 @@ function TDDLineCharts({
     return optionsLineChart;
   }
   
-  console.log(complexity);
   
   const onClick = (event: any) => {
     if (getElementAtEvent(chartRef.current, event).length >= 0) {
       const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
         .datasetIndex;
       const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
-      console.log(dataChart.datasets[dataSetIndexNum].links[dataPoint]);
       window.open(
         dataChart.datasets[dataSetIndexNum].links[dataPoint],
         "_blank"

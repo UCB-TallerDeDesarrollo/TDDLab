@@ -9,7 +9,7 @@ import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteC
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
 import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
 import { TerminalViewProvider } from './sections/TDDLabTerminal/TerminalViewProvider';
-import * as http from "http";
+import * as https from 'https';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -32,24 +32,23 @@ export async function activate(context: vscode.ExtensionContext) {
             }`;
 
         function getFeaturesFromApi(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const req = http.request(
-            {
-                hostname: "localhost",
-                port: 3000,
-                path: "/api/featureflags/extension/plain",
-                method: "GET",
-            },
-            (res) => {
-                let responseData = "";
-                res.on("data", (chunk) => (responseData += chunk));
-                res.on("end", () => resolve(responseData));
-            }
-            );
+            return new Promise((resolve, reject) => {
+                const req = https.request(
+                    {
+                        hostname: "tdd-lab-api-staging.vercel.app",
+                        path: "/api/featureFlags/extension",
+                        method: "GET",
+                    },
+                    (res) => {
+                        let responseData = "";
+                        res.on("data", (chunk) => (responseData += chunk));
+                        res.on("end", () => resolve(responseData));
+                    }
+                );
 
-            req.on("error", (err) => reject(err));
-            req.end();
-        });
+                req.on("error", (err) => reject(err));
+                req.end();
+            });
         }
 
         try {

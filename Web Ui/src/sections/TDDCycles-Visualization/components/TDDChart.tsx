@@ -24,7 +24,6 @@ interface CycleReportViewProps {
 
 function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  console.log("TDDCHART says: ", typegraphs);
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
     return initialMetric;
@@ -32,11 +31,9 @@ function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycle
 
   useEffect(() => {
     const handleStorageChange = () => {
-      console.log("storage event triggered");
       const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
       setMetricSelected(storedMetric);
       setMetric(storedMetric);
-      console.log("Detected localStorage change, new metric:", storedMetric);
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -57,7 +54,6 @@ function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycle
         return commit;
       });
 
-      console.log(filteredCommitsObject);
       return filteredCommitsObject;
     }
     return commits;

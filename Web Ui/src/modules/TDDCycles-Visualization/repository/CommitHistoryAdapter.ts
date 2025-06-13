@@ -17,7 +17,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   }
   // Función para generar la URL del historial de commits
   private getCommitHistoryUrl(owner: string, repoName: string): string {
-    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
+    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`; //en esta parte cambie la dirrecion para poder referencias a el commit-history
   }
 
   async obtainUserName(owner: string): Promise<string> {
@@ -50,9 +50,6 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       }
       
       const commitHistory = response.data;
-      console.log("comit-history-axios");
-      console.log(commitHistory);
-      // Procesamos la información del commitHistory
       const commits: CommitDataObject[] = commitHistory.map((commitData: any) => ({
         html_url: commitData.commit.url,
         sha: commitData.sha,
@@ -74,11 +71,9 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
         // Representa el estado del commit basado en la cobertura
         conclusion: commitData.conclusion
       }));
-      console.log("comit-history-procesado");
-      console.log(commits);
       commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
       
-      console.log(commits);
+     
       return commits;
     } catch (error) {
       console.error("Error obteniendo commits desde GitHub:", error);
@@ -89,7 +84,6 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   async obtainComplexityOfRepo(owner: string, repoName: string) {
   try {
     const repoUrl = `https://github.com/${owner}/${repoName}`;
-    console.log("Requesting complexity data for repo:", repoUrl);
 
     const response = await axios.post("https://api-ccn.vercel.app/analyzeAvgCcn", {
       repoUrl,

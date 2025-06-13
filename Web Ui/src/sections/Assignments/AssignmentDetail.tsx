@@ -44,7 +44,6 @@ import {
   SubmissionDataObject,
   SubmissionUpdateObject,
 } from "../../modules/Submissions/Domain/submissionInterfaces";
-import { CheckSubmissionExists } from "../../modules/Submissions/Aplication/checkSubmissionExists";
 import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
@@ -80,9 +79,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [submissionStatus, setSubmissionStatus] = useState<{
-    [key: string]: boolean;
-  }>({});
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(
     null
   );
@@ -187,33 +183,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignment]);
 
   useEffect(() => {
-    const checkIfStarted = async () => {
-      if (isStudent(role)) {
-        if (assignmentid && userid && userid !== -1) {
-          try {
-            const submissionRepository = new SubmissionRepository();
-            const checkSubmissionExists = new CheckSubmissionExists(submissionRepository);
-            const response = await checkSubmissionExists.checkSubmissionExists(assignmentid, userid);
-            setSubmissionStatus((prevStatus) => ({
-              ...prevStatus,
-              [userid]: !!response.hasStarted,
-            }));
-          } catch (error) {
-            console.error("Error verifying submission status:", error);
-            setSubmissionsError("Error verificando el estado de la entrega.");
-          }
-        }
-      }
-    };
-    checkIfStarted();
-  }, [assignmentid, userid]);
-
-  useEffect(() => {
     const fetchSubmissions = async () => {
       if (!isStudent(role)) {
         setLoadingSubmissions(true);
         setSubmissionsError(null);
-        console.log("Entrando a ver la lista de Submissions");
         try {
           const submissionRepository = new SubmissionRepository();
           const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(
@@ -224,7 +197,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               assignmentid
             );
           setSubmissions(fetchedSubmissions);
-          console.log("Lista de submissions: ", fetchedSubmissions);
         } catch (error) {
           setSubmissionsError(
             "Error fetching submissions. Please try again later."
@@ -253,10 +225,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
             const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
             const userSubmission = allSubmissions.find(submission => submission.userid === userid);
-            setSubmissionStatus((prevStatus) => ({
-              ...prevStatus,
-              [userid]: !!userSubmission,
-            }));
             if (userSubmission) {
               setStudentSubmission(userSubmission);
             }
@@ -272,7 +240,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
-    console.log("I will print the json log") //delete later
     if (assignmentid) { //means if the assignment id is in memory or somthn
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
@@ -315,8 +282,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
       if (match) {
         const [, user, repo] = match;
-        console.log(user, repo);
-
         navigate({
           pathname: url,
           search: createSearchParams({
@@ -678,7 +643,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <Button
                 variant="contained"
-                disabled={submissionStatus[userid.toString()] || false}
+                disabled={!!studentSubmission}
                 onClick={handleOpenLinkDialog}
                 style={{
                   textTransform: "none",

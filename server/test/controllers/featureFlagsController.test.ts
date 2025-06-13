@@ -261,3 +261,33 @@ describe("Update feature flag", () => {
     expect(res.json).toHaveBeenCalledWith({ error: "Error del servidor" });
   });
 });
+
+describe('Get feature flags for extension', () => {
+  it('should respond with status 200 and extension feature flags', async () => {
+    const req = createRequest();
+    const res = createResponse();
+    const expectedFlags = {
+      "runTest": true,
+      "crearProyecto": true,
+      "asistenteIA": true,
+      "exportarSesion": true
+    };
+    featureFlagRepositoryMock.obtainFeatureFlagsForExtension.mockResolvedValue(expectedFlags);
+
+    await controller.getFeatureFlagsForExtension(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expectedFlags);
+  });
+
+  it('should respond with status 500 when obtaining extension flags fails', async () => {
+    const req = createRequest();
+    const res = createResponse();
+    featureFlagRepositoryMock.obtainFeatureFlagsForExtension.mockRejectedValue(new Error());
+
+    await controller.getFeatureFlagsForExtension(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Error del servidor" });
+  });
+});
