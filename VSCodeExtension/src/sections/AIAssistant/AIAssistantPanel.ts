@@ -75,7 +75,21 @@ export class AIAssistantPanel {
   }
 
   private createMessagesHtml(): string {
-    return this.messages.map((msg) => `<p>${msg}</p>`).join("");
+     return this.messages
+    .map((msg) => {
+      const isUser = msg.startsWith("💬 Usuario:");
+      const cleanMsg = msg.replace("💬 Usuario: ", "").replace("🤖 IA: ", "");
+      const formattedMsg = cleanMsg
+        .split("\n")
+        .map((line) => `<div>${line}</div>`)
+        .join("");
+      return `
+        <div class="${isUser ? "user-message" : "ai-message"}">
+          ${formattedMsg}
+        </div>
+      `;
+    })
+    .join("");
   }
 
   private generateHtmlContent(messagesHtml: string): string {
