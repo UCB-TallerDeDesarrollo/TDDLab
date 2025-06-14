@@ -106,6 +106,21 @@ export class AIAssistantPanel {
           form { display: flex; gap: 0.5rem; }
           input[type="text"] { flex: 1; padding: 0.5rem; }
           button { padding: 0.5rem 1rem; }
+          .user-message {
+            background-color: #e0f7fa;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+          }
+
+          .ai-message {
+            background-color: #f1f8e9;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            white-space: pre-wrap;
+          }
         </style>
       </head>
       <body>
