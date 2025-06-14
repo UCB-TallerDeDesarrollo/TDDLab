@@ -32,24 +32,29 @@ const AIAssistantPage = () => {
     setMessages((prev) => [...prev, { id: generateUniqueId(), from: "bot", text }]);
   };
 
-  const handleChatSubmit = async () => {
-    if (!userMessage.trim()) return;
-    setLoadingChat(true);
+ const handleChatSubmit = async () => {
+  if (!userMessage.trim()) return;
 
-    const newMessages = [...messages, { id: generateUniqueId(), from: "user" as "user", text: userMessage }];
-    setMessages(newMessages);
+  const currentUserMessage = userMessage;
+  setUserMessage(""); // Borrar el mensaje inmediatamente
+  setLoadingChat(true);
 
-    try {
-      const botReply = await chatbotUseCase.sendMessage(userMessage);
-      setMessages([...newMessages, {id: generateUniqueId(), from: 'bot', text: botReply }]);
-    } catch (error) {
-      console.error("Error al enviar mensaje al chatbot:", error);
-      setMessages([...newMessages, {id: generateUniqueId(), from: 'bot', text: "Error de conexión con el servidor." }]);
-    } finally {
-      setUserMessage("");
-      setLoadingChat(false);
-    }    
-  };
+  const newMessages = [...messages, { id: generateUniqueId(), from: "user" as "user", text: currentUserMessage }];
+  setMessages(newMessages);
+
+  try {
+    const botReply = await chatbotUseCase.sendMessage(currentUserMessage);
+    setMessages([...newMessages, { id: generateUniqueId(), from: "bot" as "bot", text: botReply }]);
+  } catch (error) {
+    console.error("Error al enviar mensaje al chatbot:", error);
+    setMessages([
+      ...newMessages,
+      { id: generateUniqueId(), from: "bot" as "bot", text: "Error de conexión con el servidor." }
+    ]);
+  } finally {
+    setLoadingChat(false);
+  }
+};
 
   const handleApiCall = async (action: "analiza" | "refactoriza" | "califica") => {
   if (!repositoryLink || repositoryLink === "No hay enlace disponible") {
