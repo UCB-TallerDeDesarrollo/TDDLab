@@ -108,9 +108,21 @@ export class ChatbotAssistantRepository {
     }
 
     private async getContextFromCommitHistory(URL: string): Promise<string> {
-        const commits = await this.getCommitHistory(URL);
-        const serializableCommits = this.serializeCommits(commits);
-        return JSON.stringify(serializableCommits, null, 2);
+        try {
+            const commits = await this.getCommitHistory(URL);
+
+            if (!commits || commits.length === 0) {
+                console.warn("No se encontraron commits. Usando la URL como contexto.");
+                return URL;
+            }
+
+            const serializableCommits = this.serializeCommits(commits);
+            return JSON.stringify(serializableCommits, null, 2);
+
+        } catch (error) {
+            console.warn("Error al obtener commits. Usando la URL como contexto:", error);
+            return URL;
+        }
     }
 
     private async buildPromt(instructionValue: string): Promise<string> {
