@@ -21,7 +21,7 @@ export default class AIAssistantController {
         repositoryDB: AIAssistantDataBaseRepository,
         repositoryChatBot: ChatbotAssistantRepository
     ) {
-        this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repository);
+        this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repositoryChatBot);
         this.getPromptsUseCase = new GetPromptsCodeUseCase(repositoryDB);
         this.updatePromptsUseCase = new UpdatePromptsCodeUseCase(repositoryDB);
         this.analyzeTDDUseCase = new AnalyzeTDDCodeUseCase(repository);
@@ -57,21 +57,21 @@ export default class AIAssistantController {
     async updatePrompts(_req: Request, res: Response): Promise<void> {
         try {
             const prompts = _req.body;
-    
+
             const updatedPrompts = await this.updatePromptsUseCase.execute(prompts);
-    
+
             res.status(200).json(updatedPrompts);
         } catch (error) {
             res.status(500).json({ error: "Server error" });
         }
     }
-    
+
 
     async analyzeTDDFromExtension(req: Request, res: Response): Promise<void> {
         const { tddlog, prompt } = req.body;
-    
+
         if (!tddlog || !prompt) {
-            res.status(400).json({ 
+            res.status(400).json({
                 error: 'Se requieren tddlog y prompt en el cuerpo de la solicitud',
                 details: {
                     received: {
@@ -82,19 +82,19 @@ export default class AIAssistantController {
             });
             return;
         }
-    
+
         try {
             const result = await this.analyzeTDDUseCase.execute(tddlog, prompt);
-            res.json({ 
+            res.json({
                 success: true,
-                analysis: result 
+                analysis: result
             });
         } catch (error: unknown) {
             console.error('[CONTROLLER ERROR] analyzeTDDFromExtension:', error);
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido al analizar el código';
-            res.status(500).json({ 
+            res.status(500).json({
                 error: "Error al analizar el código",
-                details: errorMessage 
+                details: errorMessage
             });
         }
     }
