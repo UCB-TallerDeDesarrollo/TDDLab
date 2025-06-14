@@ -13,7 +13,3 @@ export interface FeatureFlagUpdateObject {
   feature_name?: string;
   is_enabled?: boolean;
 }
-
-export interface FeatureFlagsForExtension {
-  [key: string]: boolean;
-}

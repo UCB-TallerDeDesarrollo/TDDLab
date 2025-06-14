@@ -31,11 +31,7 @@ export function getFeatureFlagRepositoryMock() {
     deleteFeatureFlag: jest.fn(async (id) => {
       return id === 1 || id === 2;
     }),
-    obtainFeatureFlagsForExtension: jest.fn().mockResolvedValue({
-      "runTest": true,
-      "crearProyecto": true,
-      "asistenteIA": true,
-      "exportarSesion": true
-    })
+    obtainFeatureFlagsForExtension: jest.fn(),
+
   };
 }

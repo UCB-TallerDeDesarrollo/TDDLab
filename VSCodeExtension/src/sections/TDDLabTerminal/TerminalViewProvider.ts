@@ -5,26 +5,89 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'tddTerminalView';
   private readonly context: vscode.ExtensionContext;
   private readonly timelineView: TimelineView;
+  private webviewView?: vscode.WebviewView;
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     this.timelineView = new TimelineView(context);
+    
+    // Suscribirse a los cambios del timeline
+    TimelineView.onTimelineUpdated(async (timelineData) => {
+      await this.updateTimelineInWebview();
+    });
   }
 
   async resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    _context: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken
+      webviewView: vscode.WebviewView,
+      _context: vscode.WebviewViewResolveContext,
+      _token: vscode.CancellationToken
   ) {
-    webviewView.webview.options = {
-      enableScripts: true
-    };
+      this.webviewView = webviewView;
+      
+      webviewView.webview.options = {
+          enableScripts: true
+      };
 
-    // Obtiene el HTML del timeline usando el webview actual
-    const timelineHtml = await this.timelineView.getTimelineHtml(webviewView.webview);
+      // Obtiene el HTML del timeline usando el webview actual
+      const timelineHtml = await this.timelineView.getTimelineHtml(webviewView.webview);
 
-    // Inyecta el timeline y la terminal en la misma webview
-    webviewView.webview.html = this.getHtml(timelineHtml, webviewView.webview);
+      // Inyecta el timeline y la terminal en la misma webview
+      webviewView.webview.html = this.getHtml(timelineHtml, webviewView.webview);
+      
+      // Manejar cuando la webview se vuelve visible (importante para cuando se cambia de terminal)
+      webviewView.onDidChangeVisibility(() => {
+        if (webviewView.visible) {
+          console.log('[TerminalViewProvider] Webview visible, actualizando timeline...');
+          this.refreshTimelineOnVisible();
+        }
+      });
+
+      // Manejar mensajes desde la webview
+      webviewView.webview.onDidReceiveMessage(async (message) => {
+          if (message.command === 'requestTimelineUpdate') {
+              console.log('[TerminalViewProvider] Webview solicita actualización de timeline');
+              await this.updateTimelineInWebview();
+          }
+      });
+
+      console.log('[TerminalViewProvider] Webview inicializada y suscrita a cambios');
+  }
+
+  private async refreshTimelineOnVisible() {
+      if (this.webviewView && this.webviewView.visible) {
+          try {
+              setTimeout(async () => {
+                  const newTimelineHtml = await this.timelineView.getTimelineHtml(this.webviewView!.webview);
+                  
+                  this.webviewView!.webview.postMessage({
+                      command: 'updateTimeline',
+                      html: newTimelineHtml
+                  });
+                  
+                  console.log('[TerminalViewProvider] Timeline refrescado al volverse visible');
+              }, 100);
+          } catch (error) {
+              console.error('[TerminalViewProvider] Error refrescando timeline:', error);
+          }
+      }
+  }
+
+  private async updateTimelineInWebview() {
+    if (this.webviewView) {
+        try {
+            const newTimelineHtml = await this.timelineView.getTimelineHtml(this.webviewView.webview);
+            
+            // Enviar mensaje a la webview para actualizar solo el timeline
+            this.webviewView.webview.postMessage({
+                command: 'updateTimeline',
+                html: newTimelineHtml
+            });
+            
+            console.log('[TerminalViewProvider] Timeline actualizado en terminal');
+        } catch (error) {
+            console.error('[TerminalViewProvider] Error actualizando timeline:', error);
+        }
+    }
   }
 
   private getHtml(timelineContent: string, webview: vscode.Webview): string {
@@ -80,7 +143,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       <body>
         <div id="timeline">
           <h2>TDDLab Timeline</h2>
-          <div style="display: flex; flex-wrap: wrap;">
+          <div id="timeline-content" style="display: flex; flex-wrap: wrap;">
             ${timelineContent}
           </div>
         </div>
@@ -96,6 +159,40 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
           term.write('Bienvenido a la terminal simulada. Escribe "help" para ver comandos.');
           prompt();
+
+          // Escuchar mensajes del extension host para actualizar el timeline
+          window.addEventListener('message', event => {
+            const message = event.data;
+            if (message.command === 'updateTimeline') {
+              const timelineContent = document.getElementById('timeline-content');
+              if (timelineContent) {
+                timelineContent.innerHTML = message.html;
+                console.log('[Terminal WebView] Timeline actualizado');
+              }
+            }
+          });
+
+          // Solicitar actualización del timeline cuando la página se carga
+          window.addEventListener('load', () => {
+            console.log('[Terminal WebView] Página cargada, solicitando timeline actual...');
+            // Pequeño delay para asegurar que todo esté inicializado
+            setTimeout(() => {
+              const vscode = acquireVsCodeApi();
+              vscode.postMessage({ command: 'requestTimelineUpdate' });
+            }, 500);
+          });
+
+          // También solicitar cuando el documento esté listo
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+              const vscode = acquireVsCodeApi();
+              vscode.postMessage({ command: 'requestTimelineUpdate' });
+            });
+          } else {
+            // Ya está cargado
+            const vscode = acquireVsCodeApi();
+            vscode.postMessage({ command: 'requestTimelineUpdate' });
+          }
 
           term.onData(data => {
             const code = data.charCodeAt(0);
@@ -116,7 +213,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
           function handleCommand(cmd) {
             switch (cmd) {
               case 'help':
-                term.write('\\r\\nComandos disponibles: help, clear, echo, about');
+                term.write('\\r\\nComandos disponibles: help, clear, echo, about, timeline, refresh');
                 break;
               case 'clear':
                 term.clear();
@@ -124,13 +221,21 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
               case 'about':
                 term.write('\\r\\nEsta es una consola simulada hecha con xterm.js');
                 break;
+              case 'timeline':
+                term.write('\\r\\nTimeline sincronizado automáticamente con la vista principal');
+                break;
+              case 'refresh':
+                term.write('\\r\\nSolicitando actualización del timeline...');
+                const vscode = acquireVsCodeApi();
+                vscode.postMessage({ command: 'requestTimelineUpdate' });
+                break;
               case '':
                 break;
               default:
                 if (cmd.startsWith('echo ')) {
                   term.write('\\r\\n' + cmd.slice(5));
                 } else {
-                  term.write('\\r\\nComando no reconocido: ' + cmd);
+                  term.write('\\r\\nComando no reconocido: ' + cmd + '. Escribe "help" para ver comandos disponibles.');
                 }
                 break;
             }
