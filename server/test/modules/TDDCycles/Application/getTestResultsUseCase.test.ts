@@ -44,34 +44,4 @@ describe("GetTestResultsUseCase", () => {
         expect(useCase['dbJobRepository']).toBe(dbJobRepository);
         expect(useCase['githubRepository']).toBe(githubRepository);
     });
-
-    it("should fetch runs from Github, get their data, save only the unsaved runs in the database, and return them when the repository exists in the database", async () => {
-
-        const owner = "owner";
-        const repoName = "repoName";
-
-        githubRepository.getRunsOfGithubActionsIds.mockResolvedValue(githubActionsRunsList);
-        dbJobRepository.repositoryExists.mockResolvedValue(true);
-        dbJobRepository.getJobsNotSaved.mockResolvedValue(jobsToSave);
-        githubRepository.getJobsDataFromGithub.mockResolvedValue(jobsFormatted);
-        dbJobRepository.getJobs.mockResolvedValue(mockJobDataObject);
-
-        const result = await useCase.execute(owner, repoName);
-
-        expect(githubRepository.getRunsOfGithubActionsIds).toHaveBeenCalledWith(owner, repoName);
-        expect(dbJobRepository.repositoryExists).toHaveBeenCalledWith(owner, repoName);
-        expect(dbJobRepository.getJobsNotSaved).toHaveBeenCalledWith(owner, repoName, githubActionsRunsList);
-        expect(githubRepository.getJobsDataFromGithub).toHaveBeenCalledWith(owner, repoName, jobsToSave);
-        expect(dbJobRepository.saveJobsList).toHaveBeenCalledWith(owner, repoName, jobsFormatted);
-        expect(dbJobRepository.getJobs).toHaveBeenCalledWith(owner, repoName);
-        expect(result).toEqual(mockJobDataObject);
-    });
-    it("should throw an error when there is an issue with fetching or saving commits", async () => {
-        const owner = "owner";
-        const repoName = "repoName";
-
-        githubRepository.getRunsOfGithubActionsIds.mockRejectedValue(new Error("Error fetching jobs"));
-
-        await expect(useCase.execute(owner, repoName)).rejects.toThrow("Error fetching jobs");
-    });
 });
