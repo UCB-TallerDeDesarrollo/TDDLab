@@ -19,7 +19,6 @@ function isAdmin(role: string): boolean {
 interface AssignmentProps {
   assignment: AssignmentDataObject;
   index: number;
-  handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
   handleRowHover: (index: number | null) => void;
   role: string;
@@ -28,7 +27,6 @@ interface AssignmentProps {
 const Assignment: React.FC<AssignmentProps> = ({
   assignment,
   index,
-  handleClickDetail,
   handleClickDelete,
   handleRowHover,
   role,
