@@ -14,6 +14,8 @@ function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
 }
 
+
+
 interface AssignmentProps {
   assignment: AssignmentDataObject;
   index: number;
@@ -65,11 +67,11 @@ const Assignment: React.FC<AssignmentProps> = ({
   const statusIcon = getStatusIcon(assignment.state);
 
   return (
-    <TableRow 
-    key={assignment.id}
-    sx={{ 
-      borderBottom: "2px solid #E7E7E7" 
-    }}>
+    <TableRow
+      key={assignment.id}
+      sx={{
+        borderBottom: "2px solid #E7E7E7"
+      }}>
       <TableCell
         style={{
           width: "20%",
@@ -81,18 +83,22 @@ const Assignment: React.FC<AssignmentProps> = ({
         {assignment.title}
       </TableCell>
       <TableCell style={{ width: "30%", maxWidth: "300px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              flexWrap: "nowrap",
-            }}
-          >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexWrap: "nowrap",
+          }}
+        >
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"
-              onClick={() => handleClickDetail(index)}
+              onClick={() => {
+                const assignmentId = assignment.id;
+                window.location.href = `/assignment/${assignmentId}`;
+              }}
+
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
             >

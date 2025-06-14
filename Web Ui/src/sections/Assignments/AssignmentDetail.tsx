@@ -206,7 +206,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       }
     };
     checkIfStarted();
-  }, [assignmentid, userid]);
+  }, [assignmentid, role, userid]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -305,7 +305,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
-    window.location.reload();
+    window.location.reload()  
   };
 
   const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url: string) => {
@@ -363,31 +363,43 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleSendComment = async (comment: string) => {
     if (submission) {
       setComment(comment);
+
       const submissionRepository = new SubmissionRepository();
       const finishSubmission = new FinishSubmission(submissionRepository);
+
       const endDate = new Date();
       const end_date = new Date(
         endDate.getFullYear(),
         endDate.getMonth(),
         endDate.getDate()
       );
+
       const submissionData: SubmissionUpdateObject = {
-        id: submission?.id,
+        id: submission.id,
         status: "delivered",
         end_date: end_date,
         comment: comment
       };
+
       try {
         await finishSubmission.finishSubmission(submission.id, submissionData);
-        handleCloseLinkDialog();
-      } catch (error) {
 
-        throw error;
+        // ✅ Actualizar estado local para deshabilitar botón "Iniciar tarea"
+        setSubmissionStatus(prev => ({
+          ...prev,
+          [userid.toString()]: true
+        }));
+
+        // Cerrar diálogos
+        handleCloseCommentDialog();
+        handleCloseLinkDialog();
+
+      } catch (error) {
+        console.error("Error al finalizar la tarea:", error);
       }
     }
-    handleCloseCommentDialog();
-    window.location.reload();
   };
+
 
   const getDisplayStatus = (status: string | undefined) => {
     switch (status) {
@@ -453,7 +465,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   fontSize: "15px",
                   marginRight: "8px",
                 }}
-              >
+              >z
                 Ver gráfica
               </Button>
             </TableCell>
@@ -675,6 +687,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   </div>
                 ) : null)}
             </div>
+
             {isStudent(role) && (
               <Button
                 variant="contained"
@@ -730,6 +743,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Finalizar tarea
               </Button>
             )}
+
             {isStudent(role) && (
               <Button
                 variant="contained"

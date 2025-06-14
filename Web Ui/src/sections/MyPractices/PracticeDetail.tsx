@@ -159,7 +159,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   const isTaskInProgress = submission?.status !== "in progress";
 
   const handleSendGithubLink = async (repository_link: string) => {
-    console.log("I will print the json log"); //delete later
     if (practiceid) {
       const practiceSubmissionsRepository = new PracticeSubmissionRepository();
       const createPracticeSubmission = new CreatePracticeSubmission(
@@ -178,16 +177,30 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         repository_link: repository_link,
         start_date: start_date,
       };
+
       try {
         await createPracticeSubmission.createPracticeSubmission(
           practiceSubmissionData
         );
-        handleCloseLinkDialog();
+
+        // 🔁 Obtener la nueva submission y actualizar estado
+        const getSubmission = new GetPracticeSubmissionByUserandPracticeSubmissionId(
+          practiceSubmissionsRepository
+        );
+        const updatedSubmission =
+          await getSubmission.getPracticeSubmisssionByUserandPracticeSubmissionId(
+            practiceid,
+            userid
+          );
+        setPracticeSubmission(updatedSubmission); // ✅ Actualiza el estado
+
+        handleCloseLinkDialog(); // sin reload
       } catch (error) {
         console.error(error);
       }
     }
   };
+
 
   const handleOpenLinkDialog = () => {
     setLinkDialogOpen(true);

@@ -64,7 +64,7 @@ export const useGitHubLinkValidation = (
   };
 
   useEffect(() => {
-    if (initialRepo !== undefined) {
+    if (initialRepo !== undefined && initialRepo !== repo) {
       setRepo(initialRepo);
       const { isValid, error } = validateGitHubLink(initialRepo);
       setValidLink(isValid);
@@ -73,22 +73,33 @@ export const useGitHubLinkValidation = (
   }, [initialRepo]);
 
 
+
+
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
     const newLink = typeof e === "string" ? e : e.target.value;
+    console.log("Nuevo link en handleLinkChange (hook):", newLink);
     setIsLoading(true);
-    setRepo(newLink);
-
     try {
       const { isValid, error } = validateGitHubLink(newLink);
       setValidLink(isValid);
       setErrorMessage(error);
+      console.log("Nuevo link en handleLinkChange (hook):", newLink);
     } catch (error) {
       setValidLink(false);
       setErrorMessage("Error inesperado al validar el enlace.");
       console.error("Error validating GitHub link:", error);
+      console.log("Nuevo link en handleLinkChange (hook):", newLink);
     }
 
+    setRepo(prev => {
+      if (prev === newLink) return prev; // ⚠️ Esto evita renders innecesarios, opcional
+      console.log("Nuevo link en handleLinkChange (hook):", newLink);
+      return newLink;
+      
+    });
+
     setIsLoading(false);
+    console.log("Nuevo link en handleLinkChange (hook):", newLink);
   };
 
   return { repo, validLink, isLoading, errorMessage, handleLinkChange };

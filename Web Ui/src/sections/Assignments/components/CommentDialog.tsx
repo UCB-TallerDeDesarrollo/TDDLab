@@ -30,27 +30,26 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
   const [edit, setEdit] = useState(false);
   const [originalLink] = useState(link);
-  const [inputLink, setInputLink] = useState(link || "");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);  // El estado "Cargando" al abrir el diálogo
 
   useEffect(() => {
     if (link) {
-      setIsLoading(false);
-      setInputLink(link); // <- actualiza el input editable
-      handleLinkChange({ target: { value: link } } as React.ChangeEvent<HTMLInputElement>);
+      setIsLoading(false); // Cuando el diálogo se abre, desactivamos "Cargando..."
+      handleLinkChange(link);  // Recuperamos el enlace
     } else {
-      setInputLink("");
-      setIsLoading(true);
+      setIsLoading(true);  // Si no hay enlace, activamos "Cargando..."
     }
-  }, [link, open]);
+  }, [link, open]);  // Se activa cuando se abre el diálogo o el link cambia
 
   useEffect(() => {
+    // Cuando el enlace es validado o ya está listo, desactivamos "Cargando..."
     if (repo || !link) {
       setIsLoading(false);
     }
   }, [repo, link]);
 
   useEffect(() => {
+    // Si se cambia el enlace o se comienza a editar, salimos del estado de carga.
     if (repo || !isLinkLoading) {
       setIsLoading(false);
     }
@@ -58,19 +57,14 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
 
   const handleCancel = () => {
     if (originalLink) {
-      handleLinkChange({ target: { value: originalLink } } as React.ChangeEvent<HTMLInputElement>);
-      setInputLink(originalLink);
+      handleLinkChange(originalLink);
     }
     setComment("");
     onClose();
   };
 
   const handleSend = () => {
-    if (validLink && repo) {
-      onSend(comment, repo);
-      setEdit(false);
-      onClose();
-    }
+    onSend(comment, edit ? repo?.trim() ?? "" : originalLink ?? "");
   };
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,16 +72,13 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLink = e.target.value;
-    setInputLink(newLink);
-    handleLinkChange({ target: { value: newLink } } as React.ChangeEvent<HTMLInputElement>);
+    handleLinkChange(e);
   };
 
   const dialogContentStyle = {
     fontSize: "15px",
     backgroundColor: "transparent",
   };
-
   const titleStyle = {
     fontSize: "1.1rem",
     fontWeight: "bold",
@@ -125,7 +116,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
             label="Enlace del Repositorio"
             type="text"
             fullWidth
-            value={edit ? inputLink : repo}
+            value={repo}
             onChange={handleInputChange}
             disabled={!edit}
             color={getInputColor()}
@@ -134,13 +125,12 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
             }}
           />
         )}
-        {!validLink && inputLink !== "" && !isLoading && (
+        {!validLink && repo !== "" && !isLoading && (
           <Typography variant="body2" color="error">
-            Advertencia: Link inválido
+            Advertencia: Link invalido
           </Typography>
         )}
       </DialogContent>
-
       <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
       <DialogContent>
         <DialogContentText style={dialogContentStyle}>
