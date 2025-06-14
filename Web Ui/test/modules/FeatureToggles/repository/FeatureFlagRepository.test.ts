@@ -52,5 +52,12 @@ describe("FeatureFlagRepository", () => {
       expect(mockedAxios.put).toHaveBeenCalledWith(`${API_URL}/1`, { is_enabled: false });
     });
     });
+    it("debería retornar null si ocurre un error al buscar por nombre", async () => {
+      mockedAxios.get.mockRejectedValue(new Error("Network error"));
 
+      const result = await repo.getFlagByName("noExiste");
+
+     expect(result).toBeNull();
+     expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/name/noExiste`);
+    });
 });
