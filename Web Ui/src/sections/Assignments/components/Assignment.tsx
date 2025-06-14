@@ -19,6 +19,7 @@ function isAdmin(role: string): boolean {
 interface AssignmentProps {
   assignment: AssignmentDataObject;
   index: number;
+  handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
   handleRowHover: (index: number | null) => void;
   role: string;
