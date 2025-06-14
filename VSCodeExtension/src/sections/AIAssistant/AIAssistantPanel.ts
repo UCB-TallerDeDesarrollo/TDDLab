@@ -135,7 +135,9 @@ export class AIAssistantPanel {
         <script>
           const vscode = acquireVsCodeApi();
           const chatBox = document.getElementById('chat-box');
-          document.getElementById('chat-form').addEventListener('submit', event => {
+          const form = document.getElementById('chat-form');
+
+          form.addEventListener('submit', event => {
             event.preventDefault();
             const input = document.getElementById('user-input');
             const message = input.value;
@@ -146,7 +148,9 @@ export class AIAssistantPanel {
           });
 
           // Scroll automático al final cuando carga el HTML
-          chatBox.scrollTop = chatBox.scrollHeight;
+          window.addEventListener('load', () => {
+            chatBox.scrollTop = chatBox.scrollHeight;
+          });
         </script>
       </body>
       </html>
