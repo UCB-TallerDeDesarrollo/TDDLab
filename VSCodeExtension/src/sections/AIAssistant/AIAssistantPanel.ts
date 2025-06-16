@@ -100,14 +100,49 @@ export class AIAssistantPanel {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>
-          body { font-family: sans-serif; padding: 1rem; }
-          h1 { color: #007acc; }
-          #chat-box { margin-bottom: 1rem; max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 0.5rem; }
-          form { display: flex; gap: 0.5rem; }
-          input[type="text"] { flex: 1; padding: 0.5rem; }
-          button { padding: 0.5rem 1rem; }
+          body, html {
+          padding: 1rem;
+          margin: 0;
+          height: 100%;
+          background-color: black !important;
+          color: white !important;
+          font-family: sans-serif;
+          }
+
+          h1 {
+            color: #00bfff;
+          }
+
+          #chat-box {
+            margin-bottom: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #444;
+            padding: 0.5rem;
+          }
+
+          form {
+            display: flex;
+            gap: 0.5rem;
+          }
+
+          input[type="text"] {
+            flex: 1;
+            padding: 0.5rem;
+            background-color: #222;
+            color: white;
+            border: 1px solid #555;
+          }
+
+          button {
+            padding: 0.5rem 1rem;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+          }
+
           .user-message {
-            background-color: #e0f7fa;
+            background-color: #004d4d;
             padding: 0.75rem;
             border-radius: 0.5rem;
             margin-bottom: 0.5rem;
@@ -115,7 +150,7 @@ export class AIAssistantPanel {
           }
 
           .ai-message {
-            background-color: #f1f8e9;
+            background-color: #333300;
             padding: 0.75rem;
             border-radius: 0.5rem;
             margin-bottom: 0.5rem;
