@@ -75,7 +75,21 @@ export class AIAssistantPanel {
   }
 
   private createMessagesHtml(): string {
-    return this.messages.map((msg) => `<p>${msg}</p>`).join("");
+     return this.messages
+    .map((msg) => {
+      const isUser = msg.startsWith("💬 Usuario:");
+      const cleanMsg = msg.replace("💬 Usuario: ", "").replace("🤖 IA: ", "");
+      const formattedMsg = cleanMsg
+        .split("\n")
+        .map((line) => `<div>${line}</div>`)
+        .join("");
+      return `
+        <div class="${isUser ? "user-message" : "ai-message"}">
+          ${formattedMsg}
+        </div>
+      `;
+    })
+    .join("");
   }
 
   private generateHtmlContent(messagesHtml: string): string {
@@ -92,6 +106,21 @@ export class AIAssistantPanel {
           form { display: flex; gap: 0.5rem; }
           input[type="text"] { flex: 1; padding: 0.5rem; }
           button { padding: 0.5rem 1rem; }
+          .user-message {
+            background-color: #e0f7fa;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+          }
+
+          .ai-message {
+            background-color: #f1f8e9;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            white-space: pre-wrap;
+          }
         </style>
       </head>
       <body>
@@ -106,7 +135,9 @@ export class AIAssistantPanel {
         <script>
           const vscode = acquireVsCodeApi();
           const chatBox = document.getElementById('chat-box');
-          document.getElementById('chat-form').addEventListener('submit', event => {
+          const form = document.getElementById('chat-form');
+
+          form.addEventListener('submit', event => {
             event.preventDefault();
             const input = document.getElementById('user-input');
             const message = input.value;
@@ -117,7 +148,9 @@ export class AIAssistantPanel {
           });
 
           // Scroll automático al final cuando carga el HTML
-          chatBox.scrollTop = chatBox.scrollHeight;
+          window.addEventListener('load', () => {
+            chatBox.scrollTop = chatBox.scrollHeight;
+          });
         </script>
       </body>
       </html>
