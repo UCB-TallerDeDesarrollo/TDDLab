@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
-import { AIAssistantAnswerObject, AIAssistantInstructionObject } from '../domain/AIAssistant';
-import { AIAssistantDataBaseRepository } from './AiAssistantDataBaseRepository';
+import { AIAssistantAnswerObject } from '../domain/AIAssistant';
 
 dotenv.config();
 const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
@@ -8,7 +7,6 @@ const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
 export class AIAssistantRepository {
     private readonly apiKey = process.env.TOGETHER_API_KEY;
     private readonly apiUrl = process.env.LLM_API_URL || '';
-    private readonly aiAssistantDB = new AIAssistantDataBaseRepository;
 
     private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
         if (!data) {
@@ -22,24 +20,15 @@ export class AIAssistantRepository {
         return { result: data };
     }
 
-    private async buildPromt(instructionValue: string): Promise<string> {
-        const prompts = await this.aiAssistantDB.getPrompts();
-        const lower = instructionValue.toLowerCase();
-        if (lower.includes('analiza')) return prompts?.tdd_analysis || 'Prompt no disponible para la evaluación de la aplicación de TDD.';
-        if (lower.includes('refactoriza')) return prompts?.refactoring || 'Prompt no disponible para la evaluación de la aplicación de refactoring.';
-        if (lower.includes('califica')) return prompts?.evaluation || 'Prompt no disponible para la calificacion de TDD.';
-        return 'interpreta el siguiente código';
-    }
-  
     public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
-          const tddlogString = JSON.stringify(tddlog, null, 2);
+        const tddlogString = JSON.stringify(tddlog, null, 2);
 
-          return `
+        return `
                   ${promptInstructions}
                   ${tddlogString}`;
-     }
+    }
 
-    private async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
+    public async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
             const userContent = `${instruction}\n\n${code}`;
 
@@ -56,7 +45,7 @@ export class AIAssistantRepository {
                 body: JSON.stringify({
                     model: MODEL,
                     messages: [
-                        { role: 'system', content: 'Eres un experto en desarrollo de software.' },
+                        { role: 'system', content: 'Eres un experto en desarrollo de software, responde todo en español latino.' },
                         { role: 'user', content: userContent }
                     ],
                     temperature: 0.2,
@@ -70,7 +59,7 @@ export class AIAssistantRepository {
 
             const data = await response.json();
 
-            if (!data || !data.choices || !data.choices[0]?.message?.content) {
+            if (!data?.choices?.[0]?.message?.content) {
                 throw new Error('No se recibió una respuesta válida del modelo.');
             }
 
@@ -82,23 +71,14 @@ export class AIAssistantRepository {
         }
     }
 
-    public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
-        const newInstruction = await this.buildPromt(instruction.value);
-        const raw = await this.sendRequestToAIAssistant(instruction.URL, newInstruction);
-        return this.mapToAIAssistantAnswer(raw);
-    }
-
     public async sendTDDExtensionPrompt(tddlog: any, promptInstructions: string): Promise<AIAssistantAnswerObject> {
         const prompt = this.buildPromptByTestExecuted(tddlog, promptInstructions);
         const raw = await this.sendRequestToAIAssistant(prompt, '');
         return this.mapToAIAssistantAnswer(raw);
-    }  
-    public async sendChat(input: string): Promise<AIAssistantAnswerObject> {
-        const code = "Responde como un chatbot";
-        const instruction = input;
+    }
 
-        const raw = await this.sendRequestToAIAssistant(code, instruction);
-
+    public async sendChat(chatHistory: string, input: string): Promise<AIAssistantAnswerObject> {
+        const raw = await this.sendRequestToAIAssistant(chatHistory, input);
         return this.mapToAIAssistantAnswer(raw);
     }
 }

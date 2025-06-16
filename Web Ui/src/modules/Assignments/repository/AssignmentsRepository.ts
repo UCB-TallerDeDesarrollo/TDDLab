@@ -1,7 +1,7 @@
 import axios from "axios"; // Import Axios or your preferred HTTP library
 import { AssignmentDataObject } from "../domain/assignmentInterfaces"; // Import your assignment model
 import AssignmentsRepositoryInterface from "../domain/AssignmentsRepositoryInterface";
-import {VITE_API} from "../../../../config.ts";
+import { VITE_API } from "../../../../config.ts";
 
 const API_URL = VITE_API + "/assignments";
 
@@ -70,7 +70,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
       await axios.post(API_URL, assignmentData);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data.message || "Error al crear la tarea");
+        throw new Error(error.response.data.message ?? "Error al crear la tarea");
       } else {
         throw new Error("Error de red o desconocido al crear la tarea");
       }
@@ -108,7 +108,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    
+
 
     await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData);
   }

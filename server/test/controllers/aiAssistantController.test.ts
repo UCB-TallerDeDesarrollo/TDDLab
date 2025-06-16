@@ -2,6 +2,7 @@ import AIAssistantController from '../../src/controllers/AIAssistant/AIAssistant
 import { Request, Response } from 'express';
 import { AIAssistantRepository } from '../../src/modules/AIAssistant/repository/AIAssistantRepositoy';
 import { AIAssistantDataBaseRepository } from '../../src/modules/AIAssistant/repository/AiAssistantDataBaseRepository';
+import { ChatbotAssistantRepository } from '../../src/modules/AIAssistant/repository/ChatbotAssistantRepository';
 
 describe('AIAssitantController', () => {
   let controller: AIAssistantController;
@@ -9,6 +10,7 @@ describe('AIAssitantController', () => {
   let res: Partial<Response>;
   let mockAiAssistantRepository: AIAssistantRepository;
   let mockAiAssistantDBRepository: AIAssistantDataBaseRepository;
+  let mockChatbotAssistantRepository: ChatbotAssistantRepository;
 
   beforeEach(() => {
     mockAiAssistantRepository = {
@@ -19,7 +21,11 @@ describe('AIAssitantController', () => {
       sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del Asistente' }),
     } as unknown as AIAssistantDataBaseRepository;
 
-    controller = new AIAssistantController(mockAiAssistantRepository, mockAiAssistantDBRepository);
+    mockChatbotAssistantRepository = {
+      sendPrompt: jest.fn().mockResolvedValue({ result: 'Respuesta del Asistente' }),
+    } as unknown as ChatbotAssistantRepository;
+
+    controller = new AIAssistantController(mockAiAssistantRepository, mockAiAssistantDBRepository, mockChatbotAssistantRepository);
 
     req = {
       body: {
@@ -39,7 +45,7 @@ describe('AIAssitantController', () => {
   it('debería retornar resultado del LLM', async () => {
     await controller.analyzeOrRefactor(req as Request, res as Response);
 
-    expect(mockAiAssistantRepository.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
+    expect(mockChatbotAssistantRepository.sendPrompt).toHaveBeenCalledWith(req.body.instruction);
     expect(res?.json).toHaveBeenCalledWith({ result: 'Respuesta del Asistente' });
   });
 
@@ -53,7 +59,7 @@ describe('AIAssitantController', () => {
   });
 
   it('debería retornar error 500 si ocurre una excepción', async () => {
-    (mockAiAssistantRepository.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
+    (mockChatbotAssistantRepository.sendPrompt as jest.Mock).mockRejectedValueOnce(new Error('Error LLM'));
 
     await controller.analyzeOrRefactor(req as Request, res as Response);
 

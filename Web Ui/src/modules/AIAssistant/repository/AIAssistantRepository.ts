@@ -10,7 +10,7 @@ class AIAssistantRepository implements AIAssistantInterface {
     try {
       const backendRequest = {
         instruction: {
-          URL: request.repoUrl || "",
+          URL: request.repoUrl ?? "",
           value: request.query
         }
       };
@@ -31,12 +31,12 @@ class AIAssistantRepository implements AIAssistantInterface {
   async getPrompts(): Promise<AIPromptResponse> {
     try {
       const response = await axios.get(API_URL);
-      
+
       if (response.status === 200) {
         return {
-          tddPrompt: response.data.tdd_analysis || "",
-          refactoringPrompt: response.data.refactoring || "",
-          evaluateTDDPrompt: response.data.evaluation || ""
+          tddPrompt: response.data.tdd_analysis ?? "",
+          refactoringPrompt: response.data.refactoring ?? "",
+          evaluateTDDPrompt: response.data.evaluation ?? ""
         };
       } else {
         throw new Error(`Error al obtener prompts: ${response.status} ${response.statusText}`);
@@ -50,12 +50,12 @@ class AIAssistantRepository implements AIAssistantInterface {
   async updatePrompts(request: UpdatePromptsRequest): Promise<AIPromptResponse> {
     try {
       const response = await axios.put(API_URL, request);
-      
+
       if (response.status === 200) {
         return {
-          tddPrompt: response.data.tdd_analysis || "",
-          refactoringPrompt: response.data.refactoring || "",
-          evaluateTDDPrompt: response.data.evaluation || ""
+          tddPrompt: response.data.tdd_analysis ?? "",
+          refactoringPrompt: response.data.refactoring ?? "",
+          evaluateTDDPrompt: response.data.evaluation ?? ""
         };
       } else {
         throw new Error(`Error al actualizar prompts: ${response.status} ${response.statusText}`);

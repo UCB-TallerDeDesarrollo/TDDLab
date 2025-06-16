@@ -105,10 +105,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleConfirmDelete = async () => {
     try {
       if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
-        console.log(
-          "ID de la practica a eliminar:",
-          practices[selectedPracticeIndex].id
-        );
+        
         await deletePractice.DeletePractice(
           practices[selectedPracticeIndex].id
         );

@@ -1,18 +1,26 @@
-import { AIAssistantRepository } from '../../repository/AIAssistantRepositoy';
+import { AIAssistantAnswerObject } from "../../domain/AIAssistant";
+import { ChatbotAssistantRepository } from "../../repository/ChatbotAssistantRepository";
 
 export class ChatbotCodeUseCase {
-    private readonly repository: AIAssistantRepository;
+  private readonly adapter: ChatbotAssistantRepository;
 
-    constructor(repository: AIAssistantRepository) {
-        this.repository = repository;
-    }
+  constructor(adapter: ChatbotAssistantRepository) {
+    this.adapter = adapter;
+  }
 
-    async execute(input: string): Promise<any> {
-        try {
-            const response = await this.repository.sendChat(input);
-            return response;
-        } catch (error) {
-            throw new Error("Error en el caso de uso del chatbot");
-        }
+  async execute(input: string): Promise<AIAssistantAnswerObject | any> {
+    try {
+      if (!input?.trim()) {
+        throw new Error("El mensaje no puede estar vacío");
+      }
+
+      const response = await this.adapter.sendMessage(input.trim());
+
+      return response;
+    } catch (error) {
+      console.error('Error en ChatbotCodeUseCase:', error);
+      
+      throw error;
     }
+  }
 }

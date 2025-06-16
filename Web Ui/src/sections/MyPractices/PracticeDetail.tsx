@@ -96,13 +96,10 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         console.error("Error fetching practice:", error);
       });
   }, [practiceid]);
-  console.log("fehca " + datePrac);
-
   useEffect(() => {
     const checkIfStarted = async () => {
       if (userid && userid !== -1) {
         try {
-          console.log("the user id is ", userid);
           const practiceSubmissionRepository =
             new PracticeSubmissionRepository();
           const checkPracticeSubmissionExists =
@@ -112,7 +109,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               practiceid,
               userid
             );
-          console.log("The response is ", response);
           setSubmissionStatus((prevStatus) => ({
             ...prevStatus,
             [userid]: !!response,
@@ -137,7 +133,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
             practiceid
           );
         setPracticeSubmissions(fetchedSubmissions);
-        console.log("Lista de practice submissions: ", fetchedSubmissions);
       } catch (error) {
         setSubmissionsError(
           "Error fetching practice submissions. Please try again later."
@@ -234,7 +229,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
 
   const handleUploadFile = async (file: File) => {
     try {
-      console.log("Archivo recibido:", file);
       const reader = new FileReader();
       reader.onload = async () => {
         const encryptedContent = reader.result as string;
@@ -251,7 +245,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
           jsonData,
           practiceSubmission?.repository_link
         );
-        console.log("JSON actualizado:", updatedData);
 
         const API_URL = `${VITE_API}/TDDCycles/upload-log`;
 
@@ -461,7 +454,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
             <Button
               variant="contained"
               onClick={() => {
-                console.log(practiceSubmissions);
                 localStorage.setItem("selectedMetric", "Dashboard");
                 if (practiceSubmissions[0]?.repository_link) {
                   handleRedirectStudent(

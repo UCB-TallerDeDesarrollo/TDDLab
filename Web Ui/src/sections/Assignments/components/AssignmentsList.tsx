@@ -254,10 +254,7 @@ function Assignments({
           selectedAssignmentIndex !== null &&
           assignments[selectedAssignmentIndex]
       ) {
-        console.log(
-            "ID de la tarea a eliminar:",
-            assignments[selectedAssignmentIndex].id,
-        );
+        
         await deleteAssignment.deleteAssignment(
             assignments[selectedAssignmentIndex].id,
         );

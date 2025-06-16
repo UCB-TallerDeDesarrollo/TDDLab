@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
 import TDDCharts from "./components/TDDChart";
-import { JobDataObject } from "../../modules/TDDCycles-Visualization/domain/jobInterfaces";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
-import { GithubAPIRepository } from "../../modules/TDDCycles-Visualization/domain/GithubAPIRepositoryInterface";
-import { GithubAPIAdapter } from "../../modules/TDDCycles-Visualization/repository/GithubAPIAdapter";
+import { CommitHistoryRepository } from "../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import { CommitHistoryAdapter } from "../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
-import { CommentDataObject,CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
+import { CommentDataObject, CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 
 interface CycleReportViewProps {
-  port: GithubAPIRepository;
+  port: CommitHistoryRepository;
   role: string;
   teacher_id: number;
-  graphs:string;
+  graphs: string;
 }
 
 interface Submission {
@@ -30,17 +29,14 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportViewProps>) {
-  let DefaultItem="";
-  if(graphs==="graph")
-  {
-    DefaultItem="Dashboard";
+function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportViewProps>) {
+  let DefaultItem = "";
+  if (graphs === "graph") {
+    DefaultItem = "Dashboard";
+  } else {
+    DefaultItem = "Complejidad";
   }
-  else
-  {
-    DefaultItem="Complejidad";
-  }
-  
+
   const [searchParams] = useSearchParams();
   const commentsRepo = new TeacherCommentsRepository();
   const navigate = useNavigate();
@@ -64,59 +60,54 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
 
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
-  const [jobsByCommit, setJobsByCommit] = useState<JobDataObject[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
-  const [complexity,setComplexity] = useState<ComplexityObject[] | null>(null);
+  const [complexity, setComplexity] = useState<ComplexityObject[] | null>(null);
   const [emails, setEmails] = useState<{ [key: number]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getTDDCycles = new PortGetTDDCycles(port);
-  const githubAPIAdapter = new GithubAPIAdapter();
+  const commitHistoryAdapter = new CommitHistoryAdapter();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const jobsData = await getTDDCycles.obtainJobsData(repoOwner, repoName);
-      setJobsByCommit(jobsData);
-
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       setCommitsInfo(commits);
 
       const tddCycles = await getTDDCycles.obtainCommitTddCycle(repoOwner, repoName);
       setCommitsTddCycles(tddCycles);
 
-      const complexityList = await getTDDCycles.obtainComplexityData(repoOwner,repoName); // Problema de CORS
-      setComplexity(complexityList)
+      const complexityList = await getTDDCycles.obtainComplexityData(repoOwner, repoName);
+      setComplexity(complexityList);
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
       setLoading(false);
     }
   };
+
   const obtainComments = async () => {
-    console.log("ID delsubmission: ",submissionIdcomments)
     try {
-      console.log("intentando conectar para comentarios: ")
       const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionIdcomments);
       const emailMap: { [key: number]: string } = {};
       for (const comment of commentsData) {
-      try {
-        const email = await getUserEmailById(comment.teacher_id);
-        emailMap[comment.teacher_id] = email;
-      } catch {
-        emailMap[comment.teacher_id] = "Correo no disponible";
+        try {
+          const email = await getUserEmailById(comment.teacher_id);
+          emailMap[comment.teacher_id] = email;
+        } catch {
+          emailMap[comment.teacher_id] = "Correo no disponible";
+        }
       }
-    }
-    setEmails(emailMap);
-      console.log("siguiente paso comentarios")
-      setComments(commentsData);  
+      setEmails(emailMap);
+      setComments(commentsData);
     } catch (error) {
       console.error("Error obtaining comments:", error);
     }
   };
+
   useEffect(() => {
     obtainComments();
   }, [submissionIdcomments]);
@@ -127,11 +118,10 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
 
   const handleSubmitFeedback = async () => {
     if (!feedback.trim()) {
-      console.log("El feedback está vacío.");
       return;
     }
 
-    setIsSubmitting(true); 
+    setIsSubmitting(true);
 
     try {
       const commentData: CommentsCreationObject = {
@@ -139,25 +129,23 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
         teacher_id,
         content: feedback,
       };
-  
-      console.log("Datos del comentario a enviar:", commentData); 
-  
+
+
       await commentsRepo.createComment(commentData);
-      console.log("Retroalimentación enviada:", feedback);
-  
+
       setFeedback("");
       obtainComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
     } finally {
-    setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
   useEffect(() => {
     const fetchOwnerName = async () => {
       try {
-        const name = await githubAPIAdapter.obtainUserName(repoOwner);
+        const name = await commitHistoryAdapter.obtainUserName(repoOwner);
         setOwnerName(name);
       } catch (error) {
         console.error("Error obtaining owner name:", error);
@@ -191,18 +179,19 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
       setCurrentIndex(nextIndex);
     }
   };
-  
-  const getUserEmailById =   async (userId: number): Promise<string> =>{
-    try{
-      const user= await usersRepository.getUserById(userId);
-      return user.email.toString();
 
-    }catch(error){
+  const getUserEmailById = async (userId: number): Promise<string> => {
+    try {
+      const user = await usersRepository.getUserById(userId);
+      return user.email.toString();
+    } catch (error) {
       console.error("Error fetching student email:", error);
       return "";
     }
-  }
-  const [metric, setMetric] = useState<string | null>(null); 
+  };
+
+  const [metric, setMetric] = useState<string | null>(null);
+
   return (
     <div className="container">
       <h1 data-testid="repoNameTitle">Tarea: {repoName}</h1>
@@ -244,7 +233,7 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
                 data-testid="next-student"
                 className="nav-button"
                 onClick={() => {
-                  localStorage.setItem("selectedMetric",DefaultItem);
+                  localStorage.setItem("selectedMetric", DefaultItem);
                   goToNextStudent();
                 }}
                 disabled={currentIndex === fetchedSubmissions.length - 1}
@@ -260,13 +249,11 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
             </div>
           )}
           <div className="mainInfoContainer">
-        
             <TDDCharts
               data-testId="cycle-chart"
               commits={commitsInfo}
-              jobsByCommit={jobsByCommit}
-              complexity = {complexity}
-              commitsTddCycles = {commitsTddCycles}
+              complexity={complexity}
+              commitsTddCycles={commitsTddCycles}
               port={port}
               role={role}
               metric={metric}
@@ -276,49 +263,49 @@ function TDDChartPage({ port, role, teacher_id,graphs}: Readonly<CycleReportView
           </div>
         </React.Fragment>
       )}
-      {role != "student" && (
-    <div className="feedback-container">
-      <h2 className="comments-title">Escribe un comentario:</h2>
-    <textarea
-      id="feedback"
-      value={feedback}
-      onChange={handleFeedbackChange}
-      placeholder="Ingrese su retroalimentación aquí"
-    />
-    <button
-      onClick={handleSubmitFeedback}
-      disabled={isSubmitting}
-    >
-      {isSubmitting ? (
-    <PropagateLoader color="#fff" size={5} />
-  ) : (
-    "Enviar"
-  )}
-    </button>
-    </div>
-  )}
-  {!loading && comments && comments.length > 0 && (
-        <div className="comments-section">
-        <h2 className="comments-title">Comentarios</h2>
-        <div className="comments-list">
-          {comments.map((comment, index) => (
-            <div key={index} className="comment-card">
-              <div className="comment-header">
-                <strong className="comment-author">
-                  {emails[comment.teacher_id] || "Cargando..."}
-                </strong>
-                <span className="comment-date">
-                  {new Date(comment.created_at).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="comment-body">
-                <p>{comment.content}</p>
-              </div>
-            </div>
-          ))}
+      {role !== "student" && (
+        <div className="feedback-container">
+          <h2 className="comments-title">Escribe un comentario:</h2>
+          <textarea
+            id="feedback"
+            value={feedback}
+            onChange={handleFeedbackChange}
+            placeholder="Ingrese su retroalimentación aquí"
+          />
+          <button
+            onClick={handleSubmitFeedback}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <PropagateLoader color="#fff" size={5} />
+            ) : (
+              "Enviar"
+            )}
+          </button>
         </div>
-      </div>
-    )}
+      )}
+      {!loading && comments && comments.length > 0 && (
+        <div className="comments-section">
+          <h2 className="comments-title">Comentarios</h2>
+          <div className="comments-list">
+            {comments.map((comment, index) => (
+              <div key={index} className="comment-card">
+                <div className="comment-header">
+                  <strong className="comment-author">
+                    {emails[comment.teacher_id] || "Cargando..."}
+                  </strong>
+                  <span className="comment-date">
+                    {new Date(comment.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="comment-body">
+                  <p>{comment.content}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

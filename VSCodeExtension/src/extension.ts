@@ -8,22 +8,38 @@ import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
 import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
 import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
 import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
-
+import { TerminalViewProvider } from './sections/TDDLabTerminal/TerminalViewProvider';
+import { FeatureConfigLoader } from './FeatureConfigLoader';
 
 /**
  * @param {vscode.ExtensionContext} context
  */
-export function activate(context: vscode.ExtensionContext) {
-    const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
-    const timelineView = new TimelineView(context);
 
+export async function activate(context: vscode.ExtensionContext) {
+    const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
+    let isInitialRun = true;
+    let features: { [key: string]: boolean } = FeatureConfigLoader.load(context);
+
+    const terminalRepository = new VSCodeTerminalRepository();
+    const executeTestCommand = new ExecuteTestCommand(terminalRepository);
+    const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
+    const executeExportCommand = new ExecuteExportCommand();
+    const executeAIAssistant = new ExecuteAIAssistant();
+
+    if (features.tddTerminalView) {
+        context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(
+                TerminalViewProvider.viewType,
+                new TerminalViewProvider(context)
+            )
+        );
+    }
+    
+
+    const timelineView = new TimelineView(context);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('timelineView', timelineView)
     );
-
-    if (timelineView.currentWebview) {
-        timelineView.showTimeline(timelineView.currentWebview);
-    }
 
     vscode.commands.registerCommand('extension.showTimeline', () => {
         vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
@@ -32,11 +48,40 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    const terminalRepository = new VSCodeTerminalRepository();
-    const executeTestCommand = new ExecuteTestCommand(terminalRepository);
-    const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
-    const executeExportCommand = new ExecuteExportCommand();
-    const executeAIAssistant = new ExecuteAIAssistant();
+    const jsonFilePath = path.join(
+        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
+        'script',
+        'tdd_log.json'
+    );
+
+    const updateTimeLine = () => {
+        if (timelineView.currentWebview) {
+            timelineView.showTimeline(timelineView.currentWebview);
+        }
+    };
+
+    const watchFile = () => {
+        fs.watch(jsonFilePath, (eventType, filename) => {
+            if (eventType === 'change') {
+                updateTimeLine();
+            }
+        });
+        if (isInitialRun) {
+            updateTimeLine();
+            isInitialRun = false;
+        }
+    };
+
+    if (fs.existsSync(jsonFilePath)) {
+        watchFile();
+    } else {
+        const interval = setInterval(() => {
+            if (fs.existsSync(jsonFilePath)) {
+                clearInterval(interval);
+                watchFile();
+            }
+        }, 1000);
+    }
 
 
     const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
@@ -124,38 +169,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(runExportCommand);
     context.subscriptions.push(runAsistenteCommand);
 
-    const testExecutionTreeView = new ExecutionTreeView(context);
+    const testExecutionTreeView = new ExecutionTreeView(context, features);
     testExecutionTreeView.initialize();
 
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
-    const jsonFilePath = path.join(workspaceFolder, 'script', 'tdd_log.json');
-    let isInitialRun = true;
 
-    const updateTimeLine = () => {
-        if (timelineView.currentWebview) {
-            timelineView.showTimeline(timelineView.currentWebview); }
-    };
 
-    const watchFile = () => {
-        fs.watch(jsonFilePath, (eventType, filename) => {
-            if (eventType === 'change') {
-                updateTimeLine();
-            }
-        });
-        if (isInitialRun) {
-            updateTimeLine();
-            isInitialRun = false;
-        }
-    };
-
-    if (fs.existsSync(jsonFilePath)) {
-        watchFile();
-    } else {
-        const interval = setInterval(() => {
-            if (fs.existsSync(jsonFilePath)) {
-                clearInterval(interval); 
-                watchFile();
-            }
-        }, 1000);
-    }
+  
 }

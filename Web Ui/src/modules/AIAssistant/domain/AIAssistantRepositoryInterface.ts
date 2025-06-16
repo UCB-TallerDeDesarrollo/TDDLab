@@ -14,7 +14,7 @@ export interface AIPromptResponse {
 }
 
 export interface UpdatePromptsRequest {
-  analysis_tdd: string;
+  tdd_analysis: string;
   refactoring: string;
-  evaluate_tdd: string;
+  evaluation: string;
 }
