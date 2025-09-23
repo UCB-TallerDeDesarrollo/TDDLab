@@ -19,4 +19,12 @@ describe("authenticateJWT middleware", () => {
     authenticateJWT(mockReq);
     expect(AuthenticateUser.prototype.verifyToken).toHaveBeenCalledWith("token_valido");
   });
+
+    it("Verificar que el token es decifrado correctamente", () => {
+    mockReq.cookies.userSession = "token_valido";
+    const mockDecoded = { userId: 123 };
+    (AuthenticateUser.prototype.verifyToken as jest.Mock).mockReturnValue(mockDecoded);
+    authenticateJWT(mockReq);
+    expect((mockReq as any).user).toEqual(mockDecoded);
+  });
 });
