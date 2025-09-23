@@ -37,7 +37,7 @@ describe("authenticateJWT middleware", () => {
       mockDecoded
     );
     authenticateJWT(mockReq, mockRes, mockNext);
-    expect((mockReq as any).user).toEqual(mockDecoded);
+    expect((mockReq).user).toEqual(mockDecoded);
   });
 
   it("Verificar que devuelve 200 cuando la autenticacion es exitosa", () => {
