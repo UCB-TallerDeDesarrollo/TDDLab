@@ -4,10 +4,17 @@ import { AuthenticateUser } from "../modules/Users/Application/authenticateUser"
 const JWT_SECRET = process.env.JWT_SECRET || "supersecreto";
 const authUser = new AuthenticateUser(JWT_SECRET);
 
-export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
+export function authenticateJWT(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const token = req.cookies?.userSession;
+  if (!token) {
+    return res.status(401).json({ message: "No autorizado: falta token" });
+  }
   const decoded = authUser.verifyToken(token);
   (req as any).user = decoded;
   next();
-  res.status(200);
+  return res.status(200);
 }

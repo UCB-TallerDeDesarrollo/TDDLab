@@ -24,7 +24,7 @@ describe("authenticateJWT middleware", () => {
     (AuthenticateUser.prototype.verifyToken as jest.Mock).mockReturnValue(
       mockDecoded
     );
-    authenticateJWT(mockReq,mockRes,mockNext);
+    authenticateJWT(mockReq, mockRes, mockNext);
     expect(AuthenticateUser.prototype.verifyToken).toHaveBeenCalledWith(
       "token_valido"
     );
@@ -36,7 +36,7 @@ describe("authenticateJWT middleware", () => {
     (AuthenticateUser.prototype.verifyToken as jest.Mock).mockReturnValue(
       mockDecoded
     );
-    authenticateJWT(mockReq,mockRes,mockNext);
+    authenticateJWT(mockReq, mockRes, mockNext);
     expect((mockReq as any).user).toEqual(mockDecoded);
   });
 
@@ -46,7 +46,13 @@ describe("authenticateJWT middleware", () => {
     (AuthenticateUser.prototype.verifyToken as jest.Mock).mockReturnValue(
       mockDecoded
     );
-    authenticateJWT(mockReq,mockRes,mockNext);
+    authenticateJWT(mockReq, mockRes, mockNext);
     expect(mockRes.status).toHaveBeenCalledWith(200);
+  });
+
+  it("Verificar que devuelve 401 cuando no se manda el token", () => {
+    mockReq.cookies.userSession = undefined;
+    authenticateJWT(mockReq, mockRes, mockNext);
+    expect(mockRes.status).toHaveBeenCalledWith(401);
   });
 });
