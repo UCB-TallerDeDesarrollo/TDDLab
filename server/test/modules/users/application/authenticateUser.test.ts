@@ -18,4 +18,12 @@ describe("AuthenticateUser", () => {
     expect(jwt.verify).toHaveBeenCalledWith("token_valido", secret);
     expect(result).toEqual(mockPayload);
   });
+
+  it("Devolver error si el token es inválido", () => {
+    (jwt.verify as jest.Mock).mockImplementation(() => {
+      throw new Error("invalid token");
+    });
+    expect(() => authUser.verifyToken("token_invalido")).toThrow("Token inválido");
+    expect(jwt.verify).toHaveBeenCalledWith("token_invalido", secret);
+  });
 });
