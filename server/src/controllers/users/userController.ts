@@ -6,6 +6,13 @@ import { UserRepository } from "../../modules/Users/Repositories/UserRepository"
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
+import admin from "firebase-admin";
+import * as dotenv from "dotenv";
+dotenv.config();
+
+admin.initializeApp({
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+});
 
 class UserController {
   private readonly userRepository: UserRepository;
@@ -54,6 +61,11 @@ class UserController {
       res.status(500).json({ error: "Server error while fetching user" });
     }
   }
+
+   async getUserControllerGithub(req: Request): Promise<void> {
+     const { idToken } = req.body;
+     await admin.auth().verifyIdToken(idToken);
+   }
 
   async getUserGroupsController(req: Request, res: Response): Promise<void> {
     const id = parseInt(req.params.id);

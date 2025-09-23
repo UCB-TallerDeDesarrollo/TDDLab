@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import UserController from "../../src/controllers/users/userController";
 import { UserRepository } from "../../src/modules/Users/Repositories/UserRepository";
-
+import admin from "firebase-admin";
 // Crear un mock de UserRepository
 jest.mock("../../src/modules/Users/Repositories/UserRepository");
+jest.mock("firebase-admin", () => ({
+  initializeApp: jest.fn(), // <--- agregar
+  auth: jest.fn(),
+}));
+
 
 describe("UserController", () => {
   let controller: UserController;
@@ -44,7 +49,9 @@ describe("UserController", () => {
         json: jest.fn(),
       } as unknown as Response;
 
-      userRepositoryMock.removeUserFromGroup = jest.fn().mockResolvedValue(undefined);
+      userRepositoryMock.removeUserFromGroup = jest
+        .fn()
+        .mockResolvedValue(undefined);
 
       await controller.removeUserFromGroup(req, res);
 
@@ -52,6 +59,29 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith({
         message: "Usuario eliminado del grupo exitosamente.",
       });
+    });
+  });
+
+  describe("getUserControllerGithub", () => {
+    let mockReq: any;
+    let controller: UserController;
+    let userRepositoryMock: UserRepository;
+
+    beforeEach(() => {
+      mockReq = { body: { idToken: "validToken" } };
+      jest.clearAllMocks();
+      userRepositoryMock = new UserRepository() as jest.Mocked<UserRepository>;
+      controller = new UserController(userRepositoryMock);
+    });
+
+    it("Verificar el token con firebase", async () => {
+      const fakeDecoded = { email: "test@example.com" };
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      await controller.getUserControllerGithub(mockReq);
+      expect(verifyIdTokenMock).toHaveBeenCalledWith("validToken");
     });
   });
 });
