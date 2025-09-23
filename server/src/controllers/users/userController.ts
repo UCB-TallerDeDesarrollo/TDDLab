@@ -6,6 +6,7 @@ import { UserRepository } from "../../modules/Users/Repositories/UserRepository"
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
+import { User } from "../../modules/Users/Domain/User";
 import admin from "firebase-admin";
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -62,9 +63,12 @@ class UserController {
     }
   }
 
-   async getUserControllerGithub(req: Request): Promise<void> {
+   async getUserControllerGithub(req: Request,res:Response): Promise<void> {
      const { idToken } = req.body;
-     await admin.auth().verifyIdToken(idToken);
+     const decoded=await admin.auth().verifyIdToken(idToken);
+     const email = decoded.email;
+     let user = await getUserByemail(email || "") as User;
+     res.status(200).json(user);
    }
 
   async getUserGroupsController(req: Request, res: Response): Promise<void> {

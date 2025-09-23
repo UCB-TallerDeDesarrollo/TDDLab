@@ -8,7 +8,10 @@ jest.mock("firebase-admin", () => ({
   initializeApp: jest.fn(), // <--- agregar
   auth: jest.fn(),
 }));
-
+jest.mock("../../src/modules/Users/Application/getUserByemailUseCase", () => ({
+  getUserByemail: jest.fn(),
+}));
+import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
 
 describe("UserController", () => {
   let controller: UserController;
@@ -66,9 +69,14 @@ describe("UserController", () => {
     let mockReq: any;
     let controller: UserController;
     let userRepositoryMock: UserRepository;
+    let mockRes: any;
 
     beforeEach(() => {
       mockReq = { body: { idToken: "validToken" } };
+      mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
       jest.clearAllMocks();
       userRepositoryMock = new UserRepository() as jest.Mocked<UserRepository>;
       controller = new UserController(userRepositoryMock);
@@ -80,8 +88,21 @@ describe("UserController", () => {
       (admin.auth as jest.Mock).mockReturnValue({
         verifyIdToken: verifyIdTokenMock,
       });
-      await controller.getUserControllerGithub(mockReq);
+      await controller.getUserControllerGithub(mockReq, mockRes);
       expect(verifyIdTokenMock).toHaveBeenCalledWith("validToken");
+    });
+
+    it("Verificar que devuelve el usuario cuando el token es valido", async () => {
+      const fakeDecoded = { email: "test@example.com" };
+      const fakeUser = { id: 1, role: "admin", groupid: 10 };
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
+      await controller.getUserControllerGithub(mockReq, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(fakeUser);
     });
   });
 });
