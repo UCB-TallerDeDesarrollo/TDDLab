@@ -13,8 +13,12 @@ export function authenticateJWT(
   if (!token) {
     return res.status(401).json({ message: "No autorizado: falta token" });
   }
-  const decoded = authUser.verifyToken(token);
-  (req as any).user = decoded;
-  next();
-  return res.status(200);
+  try {
+    const decoded = authUser.verifyToken(token);
+    (req as any).user = decoded;
+    next();
+    return res.status(200);
+  } catch (err) {
+    return res.status(403).json({ message: "Token inválido" });
+  }
 }

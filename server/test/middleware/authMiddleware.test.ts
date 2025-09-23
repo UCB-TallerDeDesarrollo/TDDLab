@@ -55,4 +55,15 @@ describe("authenticateJWT middleware", () => {
     authenticateJWT(mockReq, mockRes, mockNext);
     expect(mockRes.status).toHaveBeenCalledWith(401);
   });
+
+  it("Verificar que devuelve 403 cuando se envia token invalido", () => {
+    mockReq.cookies.userSession = "token_invalido";
+    (AuthenticateUser.prototype.verifyToken as jest.Mock).mockImplementation(
+      () => {
+        throw new Error("Token inválido");
+      }
+    );
+    authenticateJWT(mockReq, mockRes, mockNext);
+    expect(mockRes.status).toHaveBeenCalledWith(403);
+  });
 });
