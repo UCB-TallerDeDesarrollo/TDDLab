@@ -12,6 +12,7 @@ import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 3000;
@@ -24,6 +25,8 @@ app.use(cors({
 app.use(express.json()); 
 
 app.use(bodyParser.json());
+
+app.use(cookieParser());
 
 // Define routes
 app.use("/api/user", router);

@@ -1,4 +1,7 @@
-import { authenticateJWT } from "../../src/middleware/authMiddleware";
+import {
+  authenticateJWT,
+  authorizeRoles,
+} from "../../src/middleware/authMiddleware";
 import { AuthenticateUser } from "../../src/modules/Users/Application/authenticateUser";
 
 jest.mock("../../src/modules/Users/Application/authenticateUser");
@@ -37,7 +40,7 @@ describe("authenticateJWT middleware", () => {
       mockDecoded
     );
     authenticateJWT(mockReq, mockRes, mockNext);
-    expect((mockReq).user).toEqual(mockDecoded);
+    expect(mockReq.user).toEqual(mockDecoded);
   });
 
   it("Verificar que devuelve 200 cuando la autenticacion es exitosa", () => {
@@ -65,5 +68,44 @@ describe("authenticateJWT middleware", () => {
     );
     authenticateJWT(mockReq, mockRes, mockNext);
     expect(mockRes.status).toHaveBeenCalledWith(403);
+  });
+});
+
+describe("authorizeRoles middleware", () => {
+  let mockReq: any;
+  let mockRes: any;
+  let mockNext: jest.Mock;
+
+  beforeEach(() => {
+    mockReq = {};
+    mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    mockNext = jest.fn();
+    jest.clearAllMocks();
+  });
+
+  it("Verificar que pasa si el rol está permitido", () => {
+    mockReq.user = { role: "admin" };
+    const middleware = authorizeRoles("admin", "user");
+
+    middleware(mockReq, mockRes, mockNext);
+
+    expect(mockNext).toHaveBeenCalled();
+    expect(mockRes.status).toHaveBeenCalledWith(200);
+  });
+
+  it("Verificar que devuelve 403 si el rol no está permitido", () => {
+    mockReq.user = { role: "guest" };
+    const middleware = authorizeRoles("admin", "user");
+
+    middleware(mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(403);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: "No tienes permisos para acceder a esta ruta",
+    });
+    expect(mockNext).not.toHaveBeenCalled();
   });
 });
