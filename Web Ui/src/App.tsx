@@ -61,27 +61,33 @@ const navArrayLinks = [
 ];
 
 function App() {
-  useEffect(() => {
-    const storedSession = getSessionCookie();
-    if (storedSession) {
-      setGlobalState("authData", {
-        userid: storedSession.id,
-        userProfilePic: storedSession.userData.photoURL,
-        userEmail: storedSession.userData.email,
-        usergroupid: storedSession.groupid,
-        userRole: storedSession.role,
-      });
-    } else {
+  const authData = useGlobalState("authData")[0];
+useEffect(() => {
+  getSessionCookie().then((storedSession) => {
+    const savedImage = localStorage.getItem("userProfilePic") || "";
+    if (!storedSession) {
       setGlobalState("authData", {
         userid: -1,
-        userProfilePic: "",
+        userProfilePic: savedImage,
         userEmail: "",
         usergroupid: -1,
         userRole: "",
       });
+    } else {
+      setGlobalState("authData", {
+        userid: storedSession.id,
+        userProfilePic: savedImage,
+        userEmail: storedSession.email,
+        usergroupid: storedSession.groupid,
+        userRole: storedSession.role,
+      });
     }
-  }, []);
-  const authData = useGlobalState("authData")[0];
+  });
+}, []);
+
+  if (authData.userid === undefined) {
+    return <div>Cargando sesión...</div>;
+  }
   return (
     <Router>
       {authData.userEmail != "" && authData.userRole !== undefined && (
