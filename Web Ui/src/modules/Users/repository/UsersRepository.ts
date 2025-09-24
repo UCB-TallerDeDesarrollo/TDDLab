@@ -18,7 +18,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
   async getUsers(): Promise<UserDataObject[]> {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL,{ withCredentials: true });
       return response.data;
     } catch (error) {
       console.error("Error fetching users:", error);

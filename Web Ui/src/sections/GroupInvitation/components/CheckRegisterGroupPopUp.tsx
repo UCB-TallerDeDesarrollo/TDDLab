@@ -14,8 +14,9 @@ function CheckRegisterGroupPopUp() {
     setOpen(false);
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
+      const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAccount(userData.email);
+      const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
       setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
