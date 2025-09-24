@@ -83,6 +83,7 @@ class UserController {
     }
   }
 
+
   async getUserGroupsController(req: Request, res: Response): Promise<void> {
     const id = parseInt(req.params.id);
 
