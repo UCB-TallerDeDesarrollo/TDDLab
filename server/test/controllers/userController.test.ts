@@ -2,11 +2,23 @@ import { Request, Response } from "express";
 import UserController from "../../src/controllers/users/userController";
 import { UserRepository } from "../../src/modules/Users/Repositories/UserRepository";
 import admin from "firebase-admin";
+import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
+import { getUserToken } from "../../src/modules/Users/Application/getUserToken";
+import { saveUserCookie } from "../../src/modules/Users/Application/saveUserCookie";
+import { decodeUserTokenFromCookie } from "../../src/modules/Users/Application/decodeUserTokenFromCookie";
+import { getUser } from "../../src/modules/Users/Application/getUser";
+
 // Crear un mock de UserRepository
 jest.mock("../../src/modules/Users/Repositories/UserRepository");
 jest.mock("firebase-admin", () => ({
   initializeApp: jest.fn(),
   auth: jest.fn(),
+}));
+jest.mock("../../src/modules/Users/Application/getUser", () => ({
+  getUser: jest.fn(),
+}));
+jest.mock("../../src/modules/Users/Application/decodeUserTokenFromCookie", () => ({
+  decodeUserTokenFromCookie: jest.fn(),
 }));
 jest.mock("../../src/modules/Users/Application/getUserToken", () => ({
   getUserToken: jest.fn(),
@@ -17,9 +29,6 @@ jest.mock("../../src/modules/Users/Application/getUserByemailUseCase", () => ({
 jest.mock("../../src/modules/Users/Application/saveUserCookie", () => ({
   saveUserCookie: jest.fn(),
 }));
-import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
-import { getUserToken } from "../../src/modules/Users/Application/getUserToken";
-import { saveUserCookie } from "../../src/modules/Users/Application/saveUserCookie";
 
 describe("UserController", () => {
   let controller: UserController;
@@ -165,4 +174,36 @@ describe("UserController", () => {
     });
   });
   });
+
+  describe("getMeController", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let statusMock: jest.Mock;
+  let jsonMock: jest.Mock;
+
+  beforeEach(() => {
+    statusMock = jest.fn().mockReturnThis();
+    jsonMock = jest.fn();
+    res = {
+      status: statusMock,
+      json: jsonMock,
+      cookies: {},
+    } as any;
+  });
+
+
+  it("Verificar que se devuelve 200 y el usuario si el token es valido", async () => {
+    const fakePayload = { id: 1, role: "admin", groupid: 2 };
+    const fakeUser = { id: 1, name: "Test User" };
+
+    req = { cookies: { userSession: "validtoken" } };
+    (decodeUserTokenFromCookie as jest.Mock).mockReturnValue(fakePayload);
+    (getUser as jest.Mock).mockResolvedValue(fakeUser);
+
+    await controller.getMeController(req as Request, res as Response);
+
+    expect(statusMock).toHaveBeenCalledWith(200);
+    expect(jsonMock).toHaveBeenCalledWith(fakeUser);
+  });
+});
 });

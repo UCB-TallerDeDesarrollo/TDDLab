@@ -6,6 +6,7 @@ import { UserRepository } from "../../modules/Users/Repositories/UserRepository"
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 import { getUserToken } from "../../modules/Users/Application/getUserToken";
 import { saveUserCookie } from "../../modules/Users/Application/saveUserCookie";
+import { decodeUserTokenFromCookie } from "../../modules/Users/Application/decodeUserTokenFromCookie";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
 import { User } from "../../modules/Users/Domain/User";
@@ -83,6 +84,12 @@ class UserController {
     }
   }
 
+  async getMeController(req: Request, res: Response): Promise<void> {
+    const token = req.cookies.userSession;
+    const decoded = decodeUserTokenFromCookie(token);
+    const userData = await getUser(decoded.id);
+    res.status(200).json(userData);
+  }
 
   async getUserGroupsController(req: Request, res: Response): Promise<void> {
     const id = parseInt(req.params.id);
