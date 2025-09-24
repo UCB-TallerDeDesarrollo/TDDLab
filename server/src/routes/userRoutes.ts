@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post("/register", (req, res) => userController.registerUserController(req, res));
 router.post("/login", (req, res) => userController.getUserController(req, res));
+router.post("/github", (req, res) => userController.getUserControllerGithub(req, res));
 router.post("/verifyPassword", (req, res) => userController.verifyPassword(req, res));
 router.get("/users", (req, res) => userController.getUsersController(req, res));
 router.get("/groups/:id", (req, res) => userController.getUserGroupsController(req, res));

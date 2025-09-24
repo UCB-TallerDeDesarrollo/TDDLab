@@ -67,6 +67,9 @@ class UserController {
      const { idToken } = req.body;
      const decoded=await admin.auth().verifyIdToken(idToken);
      const email = decoded.email;
+     if (!email) {
+      res.status(400).json({ error: "No se pudo obtener email de Firebase" });
+    }
      let user = await getUserByemail(email || "") as User;
      res.status(200).json(user);
    }

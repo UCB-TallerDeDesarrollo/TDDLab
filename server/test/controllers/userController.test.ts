@@ -104,5 +104,19 @@ describe("UserController", () => {
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(fakeUser);
     });
+
+     it("Verificar que devuelve error si no se obtiene email del token", async () => {
+    const fakeDecoded = {}; 
+    const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+    (admin.auth as jest.Mock).mockReturnValue({
+      verifyIdToken: verifyIdTokenMock,
+    });
+
+    await controller.getUserControllerGithub(mockReq, mockRes);
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "No se pudo obtener email de Firebase",
+    });
+  });
   });
 });
