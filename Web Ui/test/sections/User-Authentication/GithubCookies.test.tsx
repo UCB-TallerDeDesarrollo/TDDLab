@@ -58,12 +58,12 @@ describe("getSessionCookie", () => {
     expect(result).toEqual(userData);
   });
 
-  it("returns null if the session cookie is not present", () => {
-    (Cookies.get as jest.Mock).mockReturnValueOnce(null);
+  it("returns null if the session cookie is not present", async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({ data: null });
 
-    const result = getSessionCookie();
+    const result = await getSessionCookie();
 
-    expect(Cookies.get).toHaveBeenCalledWith("userSession");
+    expect(axios.get).toHaveBeenCalledWith(API_URL + "/user/me", { withCredentials: true });
     expect(result).toBeNull();
   });
 
