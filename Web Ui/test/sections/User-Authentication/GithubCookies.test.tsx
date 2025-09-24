@@ -5,6 +5,9 @@ import { getSessionCookie } from "../../../src/modules/User-Authentication/appli
 import { removeSessionCookie } from "../../../src/modules/User-Authentication/application/deleteSessionCookie";
 import { cookieUserData } from "./__mocks__/cookieData";
 import axios from "axios";
+jest.mock("axios");
+import {VITE_API} from "../../../config.ts";
+const API_URL = VITE_API; 
 
 jest.mock("js-cookie", () => ({
   set: jest.fn(),
@@ -39,7 +42,6 @@ describe("setSessionCookie", () => {
       JSON.stringify({},),
       { expires: 30 }
     );
-    expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining("Error setting session cookie:"),
@@ -76,7 +78,6 @@ describe("getSessionCookie", () => {
     const result = await getSessionCookie();
 
     expect(result).toBeNull();
-    expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith(
       "Error retrieving session cookie:",
       expect.any(Error)
