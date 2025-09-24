@@ -203,11 +203,21 @@ describe("UserController", () => {
     expect(jsonMock).toHaveBeenCalledWith(fakeUser);
   });
 
-  it("Verificar que devuelve 400 si no hay cookie", async () => {
+  it("Verificar que devuelve 401 si no hay cookie", async () => {
     req = { cookies: {} };
     await controller.getMeController(req as Request, res as Response);
-    expect(statusMock).toHaveBeenCalledWith(400);
+    expect(statusMock).toHaveBeenCalledWith(401);
     expect(jsonMock).toHaveBeenCalledWith({ error: "Usuario no autenticado" });
+  });
+
+  it("Verificar que devuelve 404 si el usuario no se encuentra", async () => {
+    const fakePayload = { id: 1, role: "admin", groupid: 2 };
+    req = { cookies: { userSession: "validtoken" } };
+    (decodeUserTokenFromCookie as jest.Mock).mockReturnValue(fakePayload);
+    (getUser as jest.Mock).mockResolvedValue(null);
+    await controller.getMeController(req as Request, res as Response);
+    expect(statusMock).toHaveBeenCalledWith(404);
+    expect(jsonMock).toHaveBeenCalledWith({ error: "Usuario no encontrado" });
   });
 });
 });
