@@ -14,8 +14,12 @@ jest.mock("../../src/modules/Users/Application/getUserToken", () => ({
 jest.mock("../../src/modules/Users/Application/getUserByemailUseCase", () => ({
   getUserByemail: jest.fn(),
 }));
+jest.mock("../../src/modules/Users/Application/saveUserCookie", () => ({
+  saveUserCookie: jest.fn(),
+}));
 import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
 import { getUserToken } from "../../src/modules/Users/Application/getUserToken";
+import { saveUserCookie } from "../../src/modules/Users/Application/saveUserCookie";
 
 describe("UserController", () => {
   let controller: UserController;
@@ -134,5 +138,19 @@ describe("UserController", () => {
       await controller.getUserControllerGithub(mockReq, mockRes);
       expect(getUserToken).toHaveBeenCalledWith(fakeUser);
     });
+
+    it("Verificar que se guarda la cookie correctamente", async () => {
+    const fakeDecoded = { email: "test@example.com" };
+    const fakeUser = { id: 1, role: "admin", groupid: 10 };
+    const fakeToken = "fake.jwt.token";
+    const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+    (admin.auth as jest.Mock).mockReturnValue({
+      verifyIdToken: verifyIdTokenMock,
+    });
+    (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
+    (getUserToken as jest.Mock).mockResolvedValue(fakeToken);
+    await controller.getUserControllerGithub(mockReq, mockRes);
+    expect(saveUserCookie).toHaveBeenCalledWith(fakeToken, mockRes);
+  });
   });
 });

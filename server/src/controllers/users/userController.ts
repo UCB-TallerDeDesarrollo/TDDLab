@@ -5,6 +5,7 @@ import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 import { getUserToken } from "../../modules/Users/Application/getUserToken";
+import { saveUserCookie } from "../../modules/Users/Application/saveUserCookie";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
 import { User } from "../../modules/Users/Domain/User";
@@ -36,10 +37,11 @@ class UserController {
       await registerUser({ email, groupid, role });
       res.status(201).json({ message: "Usuario registrado con éxito." });
     } catch (error: any) {
-      if(error.message === "UserAlreadyExistsInThatGroup"){
-        res.status(409).json({error: "The user is already registered in that group."});
-      }
-      else{
+      if (error.message === "UserAlreadyExistsInThatGroup") {
+        res
+          .status(409)
+          .json({ error: "The user is already registered in that group." });
+      } else {
         res.status(500).json({ error: "Server error while registering user" });
       }
     }
@@ -64,17 +66,18 @@ class UserController {
     }
   }
 
-   async getUserControllerGithub(req: Request,res:Response): Promise<void> {
-     const { idToken } = req.body;
-     const decoded=await admin.auth().verifyIdToken(idToken);
-     const email = decoded.email;
-     if (!email) {
+  async getUserControllerGithub(req: Request, res: Response): Promise<void> {
+    const { idToken } = req.body;
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    const email = decoded.email;
+    if (!email) {
       res.status(400).json({ error: "No se pudo obtener email de Firebase" });
     }
-     let user = await getUserByemail(email || "") as User;
-     await getUserToken(user);
-     res.status(200).json(user);
-   }
+    let user = (await getUserByemail(email || "")) as User;
+    const token = await getUserToken(user);
+    await saveUserCookie(token, res);
+    res.status(200).json(user);
+  }
 
   async getUserGroupsController(req: Request, res: Response): Promise<void> {
     const id = parseInt(req.params.id);
@@ -92,19 +95,17 @@ class UserController {
       if (userData == null)
         res.status(404).json({ message: "Usuario no encontrado" });
       else if ("email" in userData) {
-            let userGroups = await getUserByemail(userData.email);
-            if (userGroups != null && "groupid" in userGroups) {
-              res.status(200).json(userGroups.groupid);
-            }
-          }
-          else{
-            res.status(404).json({ message: "Usuario no encontrado" });
-          }
+        let userGroups = await getUserByemail(userData.email);
+        if (userGroups != null && "groupid" in userGroups) {
+          res.status(200).json(userGroups.groupid);
+        }
+      } else {
+        res.status(404).json({ message: "Usuario no encontrado" });
+      }
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching user" });
     }
   }
-
 
   async verifyPassword(req: Request, res: Response): Promise<void> {
     try {
@@ -188,15 +189,17 @@ class UserController {
     const userId = parseInt(req.params.userId);
 
     if (!userId) {
-        res.status(400).json({
-          error: "Debes proporcionar un id de usuario valido:",
-        });
-        return;
-      }
+      res.status(400).json({
+        error: "Debes proporcionar un id de usuario valido:",
+      });
+      return;
+    }
     try {
-      console.log(userId)
+      console.log(userId);
       await removeUser(userId);
-      res.status(200).json({ message: "Usuario eliminado del grupo exitosamente." });
+      res
+        .status(200)
+        .json({ message: "Usuario eliminado del grupo exitosamente." });
     } catch (error) {
       console.error("Error al eliminar usuario del grupo:", error);
       if (error === "Usuario o grupo no encontrado") {
