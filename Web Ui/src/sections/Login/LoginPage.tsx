@@ -20,13 +20,16 @@ const Login = () => {
   const handleGitHubLogin = async () => {
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
+      const idToken = await userData.getIdToken();
+      console.log("ID Token:", idToken);
       const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAccount(userData.email);
+      const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
       setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
         }),
       );
+      localStorage.setItem("userProfilePic", userData.photoURL||"");
     } else {
       alert("Disculpa, tu usuario no esta registrado");
     }
