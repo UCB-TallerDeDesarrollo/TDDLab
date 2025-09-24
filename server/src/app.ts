@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Define routes
-app.use("/api/user", router);
+app.use("/api/user", router,);
 app.use("/api/assignments", assignmentsRouter);
 app.use("/api/TDDCycles", TDDCyclesRouter);
 app.use("/api/groups", groupsRouter);
