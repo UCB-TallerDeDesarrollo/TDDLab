@@ -153,7 +153,7 @@ describe("UserController", () => {
     expect(saveUserCookie).toHaveBeenCalledWith(fakeToken, mockRes);
   });
 
-  it("Debe devolver 401 en caso de error", async () => {
+  it("Verificar que devuelve 401 en caso de error", async () => {
     const verifyIdTokenMock = jest.fn().mockRejectedValue(new Error("invalid"));
     (admin.auth as jest.Mock).mockReturnValue({
       verifyIdToken: verifyIdTokenMock,

@@ -1,6 +1,7 @@
 import express from "express";
 import { UserRepository } from "../modules/Users/Repositories/UserRepository";
 import UserController from "../controllers/users/userController";
+import {authenticateJWT} from "../../src/middleware/authMiddleware"
 
 const userRepository = new UserRepository();
 const userController = new UserController(userRepository);
@@ -11,7 +12,7 @@ router.post("/register", (req, res) => userController.registerUserController(req
 router.post("/login", (req, res) => userController.getUserController(req, res));
 router.post("/github", (req, res) => userController.getUserControllerGithub(req, res));
 router.post("/verifyPassword", (req, res) => userController.verifyPassword(req, res));
-router.get("/users", (req, res) => userController.getUsersController(req, res));
+router.get("/users", authenticateJWT,  (req, res) => userController.getUsersController(req, res));
 router.get("/groups/:id", (req, res) => userController.getUserGroupsController(req, res));
 router.get("/users/groupid/:groupid", (req, res) => userController.getUsersByGroupid(req, res));
 router.get("/users/:id", (req, res) => userController.getUserbyid(req, res));
