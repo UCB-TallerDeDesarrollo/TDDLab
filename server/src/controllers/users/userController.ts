@@ -85,18 +85,23 @@ class UserController {
   }
 
   async getMeController(req: Request, res: Response): Promise<void> {
-    const token = req.cookies.userSession;
-     if (!token) {
-      res.status(401).json({ error: "Usuario no autenticado" });
-      return;
+    try {
+      const token = req.cookies.userSession;
+      if (!token) {
+        res.status(401).json({ error: "Usuario no autenticado" });
+        return;
+      }
+      const decoded = decodeUserTokenFromCookie(token);
+      const userData = await getUser(decoded.id);
+      if (!userData) {
+        res.status(404).json({ error: "Usuario no encontrado" });
+        return;
+      }
+      res.status(200).json(userData);
+    } catch (error) {
+      console.error("Error en /me:", error);
+      res.status(401).json({ error: "Token inválido o expirado" });
     }
-    const decoded = decodeUserTokenFromCookie(token);
-    const userData = await getUser(decoded.id);
-    if (!userData) {
-      res.status(404).json({ error: "Usuario no encontrado" });
-      return;
-    }
-    res.status(200).json(userData);
   }
 
   async getUserGroupsController(req: Request, res: Response): Promise<void> {

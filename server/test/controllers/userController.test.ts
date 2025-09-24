@@ -219,5 +219,15 @@ describe("UserController", () => {
     expect(statusMock).toHaveBeenCalledWith(404);
     expect(jsonMock).toHaveBeenCalledWith({ error: "Usuario no encontrado" });
   });
+
+   it("Verificar que devuelve 401 si ocurre un error", async () => {
+    req = { cookies: { userSession: "invalidtoken" } };
+    (decodeUserTokenFromCookie as jest.Mock).mockImplementation(() => {
+      throw new Error("Token inválido");
+    });
+    await controller.getMeController(req as Request, res as Response);
+    expect(statusMock).toHaveBeenCalledWith(401);
+    expect(jsonMock).toHaveBeenCalledWith({ error: "Token inválido o expirado" });
+  });
 });
 });
