@@ -5,13 +5,17 @@ import admin from "firebase-admin";
 // Crear un mock de UserRepository
 jest.mock("../../src/modules/Users/Repositories/UserRepository");
 jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(), // <--- agregar
+  initializeApp: jest.fn(),
   auth: jest.fn(),
+}));
+jest.mock("../../src/modules/Users/Application/getUserToken", () => ({
+  getUserToken: jest.fn(),
 }));
 jest.mock("../../src/modules/Users/Application/getUserByemailUseCase", () => ({
   getUserByemail: jest.fn(),
 }));
 import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
+import { getUserToken } from "../../src/modules/Users/Application/getUserToken";
 
 describe("UserController", () => {
   let controller: UserController;
@@ -105,18 +109,30 @@ describe("UserController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(fakeUser);
     });
 
-     it("Verificar que devuelve error si no se obtiene email del token", async () => {
-    const fakeDecoded = {}; 
-    const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-    (admin.auth as jest.Mock).mockReturnValue({
-      verifyIdToken: verifyIdTokenMock,
+    it("Verificar que devuelve error si no se obtiene email del token", async () => {
+      const fakeDecoded = {};
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      await controller.getUserControllerGithub(mockReq, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "No se pudo obtener email de Firebase",
+      });
     });
 
-    await controller.getUserControllerGithub(mockReq, mockRes);
-    expect(mockRes.status).toHaveBeenCalledWith(400);
-    expect(mockRes.json).toHaveBeenCalledWith({
-      error: "No se pudo obtener email de Firebase",
+    it("Verificar que se obtiene el token generado del usuario", async () => {
+      const fakeDecoded = { email: "test@example.com" };
+      const fakeUser = { id: 1, role: "admin", groupid: 10 };
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
+      (getUserToken as jest.Mock).mockResolvedValue("fake.jwt.token");
+      await controller.getUserControllerGithub(mockReq, mockRes);
+      expect(getUserToken).toHaveBeenCalledWith(fakeUser);
     });
-  });
   });
 });
