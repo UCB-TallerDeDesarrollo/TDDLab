@@ -68,15 +68,19 @@ class UserController {
 
   async getUserControllerGithub(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
-    const decoded = await admin.auth().verifyIdToken(idToken);
-    const email = decoded.email;
-    if (!email) {
-      res.status(400).json({ error: "No se pudo obtener email de Firebase" });
+    try {
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      const email = decoded.email;
+      if (!email) {
+        res.status(400).json({ error: "No se pudo obtener email de Firebase" });
+      }
+      let user = (await getUserByemail(email || "")) as User;
+      const token = await getUserToken(user);
+      await saveUserCookie(token, res);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(401).json({ error: "Token inválido o expirado" });
     }
-    let user = (await getUserByemail(email || "")) as User;
-    const token = await getUserToken(user);
-    await saveUserCookie(token, res);
-    res.status(200).json(user);
   }
 
   async getUserGroupsController(req: Request, res: Response): Promise<void> {

@@ -152,5 +152,17 @@ describe("UserController", () => {
     await controller.getUserControllerGithub(mockReq, mockRes);
     expect(saveUserCookie).toHaveBeenCalledWith(fakeToken, mockRes);
   });
+
+  it("Debe devolver 401 en caso de error", async () => {
+    const verifyIdTokenMock = jest.fn().mockRejectedValue(new Error("invalid"));
+    (admin.auth as jest.Mock).mockReturnValue({
+      verifyIdToken: verifyIdTokenMock,
+    });
+    await controller.getUserControllerGithub(mockReq, mockRes);
+    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "Token inválido o expirado",
+    });
+  });
   });
 });
