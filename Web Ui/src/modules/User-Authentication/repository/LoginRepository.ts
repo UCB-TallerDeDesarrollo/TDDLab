@@ -22,6 +22,23 @@ class AuthRepository implements AuthDBRepositoryInterface {
       throw error;
     }
   }
+
+  async getAccountInfoWithToken(idToken: string): Promise<UserOnDb> {
+    try {
+      const response = await axios.post(API_URL + "/user/github",
+      { idToken },
+      { withCredentials: true } );
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error("Failed to get user Course");
+      }
+    } catch (error) {
+      console.error("Error fetching user course:", error);
+      throw error;
+    }
+  }
+
   async registerAccount(user: UserOnDb): Promise<void> {
     try {
       return await axios.post(API_URL + "/user/register", user);
