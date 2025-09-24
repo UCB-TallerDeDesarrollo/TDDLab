@@ -86,6 +86,10 @@ class UserController {
 
   async getMeController(req: Request, res: Response): Promise<void> {
     const token = req.cookies.userSession;
+     if (!token) {
+      res.status(400).json({ error: "Usuario no autenticado" });
+      return;
+    }
     const decoded = decodeUserTokenFromCookie(token);
     const userData = await getUser(decoded.id);
     res.status(200).json(userData);

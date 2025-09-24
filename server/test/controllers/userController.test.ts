@@ -195,15 +195,19 @@ describe("UserController", () => {
   it("Verificar que se devuelve 200 y el usuario si el token es valido", async () => {
     const fakePayload = { id: 1, role: "admin", groupid: 2 };
     const fakeUser = { id: 1, name: "Test User" };
-
     req = { cookies: { userSession: "validtoken" } };
     (decodeUserTokenFromCookie as jest.Mock).mockReturnValue(fakePayload);
     (getUser as jest.Mock).mockResolvedValue(fakeUser);
-
     await controller.getMeController(req as Request, res as Response);
-
     expect(statusMock).toHaveBeenCalledWith(200);
     expect(jsonMock).toHaveBeenCalledWith(fakeUser);
+  });
+
+  it("Verificar que devuelve 400 si no hay cookie", async () => {
+    req = { cookies: {} };
+    await controller.getMeController(req as Request, res as Response);
+    expect(statusMock).toHaveBeenCalledWith(400);
+    expect(jsonMock).toHaveBeenCalledWith({ error: "Usuario no autenticado" });
   });
 });
 });
