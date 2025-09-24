@@ -66,4 +66,5 @@ router.delete(
   authorizeRoles("admin", "teacher"),
   (req, res) => userController.removeUserFromGroup(req, res)
 );
+router.post("/logout", authenticateJWT,   (req, res) => userController.logoutController(req, res));
 export default router;

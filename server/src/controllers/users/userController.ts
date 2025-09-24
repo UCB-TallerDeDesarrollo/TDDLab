@@ -84,6 +84,12 @@ class UserController {
     }
   }
 
+
+async  logoutController (res: Response): Promise<void> {
+  res.clearCookie("userSession", { path: "/" });
+  res.status(200).json({ message: "Sesión cerrada correctamente" });
+};
+
   async getMeController(req: Request, res: Response): Promise<void> {
     try {
       const token = req.cookies.userSession;
