@@ -9,7 +9,7 @@ export class UsersRepository implements UsersRepositoryInterface {
 
   async getUserById(id: number): Promise<UserDataObject> {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
+      const response = await axios.get(`${API_URL}/${id}`,{ withCredentials: true });
       return response.data;
     } catch (error) {
       console.error("Error fetching user by ID:", error);
@@ -27,7 +27,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
   async getUsersByGroupid(groupid: number): Promise<UserDataObject[]>{
     try{
-      const response = await axios.get(`${API_URL}/groupid/${groupid}`);
+      const response = await axios.get(`${API_URL}/groupid/${groupid}`,{ withCredentials: true });
       return response.data;
     }catch(error){
       console.error("Error fetching users by group ID:", error);
@@ -36,7 +36,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
   async getUserByEmail(email: string): Promise<UserDataObject | null> {
     try {
-      const response = await axios.get(`${API_URL}/${email}`);
+      const response = await axios.get(`${API_URL}/${email}`,{ withCredentials: true });
       return response.data;
     } catch (error) {
       console.error("Error fetching user by ID:", error);
@@ -45,7 +45,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
   async updateUser(id: number, groupid: number): Promise<void> {
     try {
-      await axios.put(`${API_URL}/${id}`,{groupid});
+      await axios.put(`${API_URL}/${id}`,{groupid},{ withCredentials: true });
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;
@@ -53,7 +53,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
   async getUserEmailById(id: number): Promise<string> {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
+      const response = await axios.get(`${API_URL}/${id}`,{ withCredentials: true });
       return response.data.email;
     } catch (error) {
       console.error("Error fetching user email by ID:", error);
@@ -68,7 +68,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   
     try {
       console.log("repository"+userId)
-      await axios.delete(`${API_URL}/delete/${userId}`);
+      await axios.delete(`${API_URL}/delete/${userId}`,{ withCredentials: true });
       
       console.log(`Usuario con ID ${userId} eliminado exitosamente.`);
     } catch (error) {

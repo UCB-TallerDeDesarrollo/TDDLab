@@ -22,7 +22,7 @@ describe('UsersRepository', () => {
 
       const result = await repository.getUserById(1);
       expect(result).toEqual(mockUser);
-      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`);
+      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`,{withCredentials: true});
     });
 
     it('should handle fetch error', async () => {
@@ -59,7 +59,7 @@ describe('UsersRepository', () => {
 
       const result = await repository.getUsersByGroupid(70);
       expect(result).toEqual(mockUsers);
-      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/groupid/70`);
+      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/groupid/70`,{withCredentials: true});
     });
     it('should handle fetch error', async () => {
         axiosGetSpy.mockRejectedValue(new Error('Network Error'));
@@ -73,7 +73,7 @@ describe('UsersRepository', () => {
 
       const result = await repository.getUserByEmail('john@example.com');
       expect(result).toEqual(mockUser);
-      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/john@example.com`);
+      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/john@example.com`,{withCredentials: true});
     });
     it('should handle fetch error', async () => {
         axiosGetSpy.mockRejectedValue(new Error('Network Error'));
@@ -85,7 +85,7 @@ describe('UsersRepository', () => {
       axiosPutSpy.mockResolvedValue({ status: 200 });
 
       await expect(repository.updateUser(1, 70)).resolves.not.toThrowError();
-      expect(axiosPutSpy).toHaveBeenCalledWith(`${API_URL}/1`, { groupid: 70 });
+      expect(axiosPutSpy).toHaveBeenCalledWith(`${API_URL}/1`, { groupid: 70 },{withCredentials: true});
     });
   
     it('should handle update error', async () => {
@@ -100,7 +100,7 @@ describe('UsersRepository', () => {
 
       const result = await repository.getUserEmailById(1);
       expect(result).toEqual('john@example.com');
-      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`);
+      expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`,{withCredentials: true});
     });
     it('should handle fetch error', async () => {
         axiosGetSpy.mockRejectedValue(new Error('Network Error'));
@@ -113,7 +113,7 @@ describe('UsersRepository', () => {
   
       await repository.removeUserFromGroup(1);
   
-      expect(axios.delete).toHaveBeenCalledWith(`${API_URL}/delete/1`);
+      expect(axios.delete).toHaveBeenCalledWith(`${API_URL}/delete/1`,{withCredentials: true});
     });
   
     it('should handle error when removing user from group', async () => {
