@@ -4,6 +4,7 @@ import { setSessionCookie } from "../../../src/modules/User-Authentication/appli
 import { getSessionCookie } from "../../../src/modules/User-Authentication/application/getSessionCookie";
 import { removeSessionCookie } from "../../../src/modules/User-Authentication/application/deleteSessionCookie";
 import { cookieUserData } from "./__mocks__/cookieData";
+import axios from "axios";
 
 jest.mock("js-cookie", () => ({
   set: jest.fn(),
@@ -67,25 +68,17 @@ describe("getSessionCookie", () => {
     expect(result).toBeNull();
   });
 
-  it("logs an error if retrieving the session cookie fails", () => {
+  it("logs an error if retrieving the session cookie fails", async () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
 
-    (Cookies.get as jest.Mock).mockImplementationOnce(() => {
-      throw new Error("Test error");
-    });
+    (axios.get as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
-    const result = getSessionCookie();
+    const result = await getSessionCookie();
 
     expect(result).toBeNull();
-    expect(console.error).toHaveBeenCalledTimes(2);
-    expect(console.error).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining("Error setting session cookie:"),
-      expect.any(Error)
-    );
-    expect(console.error).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining("Error retrieving session cookie:"),
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(
+      "Error retrieving session cookie:",
       expect.any(Error)
     );
   });
