@@ -48,13 +48,13 @@ describe("setSessionCookie", () => {
 });
 
 describe("getSessionCookie", () => {
-  it("retrieves the session cookie successfully", () => {
+    it("retrieves the session cookie successfully", async () => {
     const userData = { cookieUserData };
-    (Cookies.get as jest.Mock).mockReturnValueOnce(JSON.stringify(userData));
+    (axios.get as jest.Mock).mockResolvedValueOnce({ data: userData });
 
-    const result = getSessionCookie();
+    const result = await getSessionCookie();
 
-    expect(Cookies.get).toHaveBeenCalledWith("userSession");
+    expect(axios.get).toHaveBeenCalledWith(API_URL + "/user/me", { withCredentials: true });
     expect(result).toEqual(userData);
   });
 

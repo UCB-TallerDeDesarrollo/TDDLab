@@ -40,7 +40,7 @@ describe('UsersRepository', () => {
 
       const result = await repository.getUsers();
       expect(result).toEqual(mockUsers);
-      expect(axiosGetSpy).toHaveBeenCalledWith(API_URL);
+      expect(axiosGetSpy).toHaveBeenCalledWith(API_URL,{"withCredentials": true});
     });
     
   
