@@ -5,11 +5,12 @@ import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterf
 import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
+import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
   octokit: Octokit;
   backAPI: string;
-  
+
   constructor() {
     this.octokit = new Octokit();
     //auth: 'coloca tu token github para mas requests'
@@ -20,14 +21,19 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`; //en esta parte cambie la dirrecion para poder referencias a el commit-history
   }
 
+  // function for obtain TDD_log.json
+  private getTDDLogUrl(owner: string, repoName: string): string {
+    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+  }
+
   async obtainUserName(owner: string): Promise<string> {
     try {
       const response = await this.octokit.request(`GET /users/${owner}`);
-      
+
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const userName = response.data.name;
       return userName || owner; // Retorna el nombre o un mensaje si no está disponible
     } catch (error) {
@@ -42,13 +48,13 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   ): Promise<CommitDataObject[]> {
     try {
       // Obtenemos la URL dinámica usando las variables owner y repoName
-      const commitHistoryUrl = this.getCommitHistoryUrl(owner, repoName);      
+      const commitHistoryUrl = this.getCommitHistoryUrl(owner, repoName);
       const response = await axios.get(commitHistoryUrl);
-      
+
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const commitHistory = response.data;
       const commits: CommitDataObject[] = commitHistory.map((commitData: any) => ({
         html_url: commitData.commit.url,
@@ -60,7 +66,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
           date: commitData.stats.date
         },
         commit: {
-          date: new Date(commitData.commit.date), 
+          date: new Date(commitData.commit.date),
           message: commitData.commit.message,
           url: commitData.commit.url,
           comment_count: commitData.commit.comment_count, // No esta en mi archivo
@@ -72,8 +78,8 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
         conclusion: commitData.conclusion
       }));
       commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
-      
-     
+
+
       return commits;
     } catch (error) {
       console.error("Error obteniendo commits desde GitHub:", error);
@@ -82,35 +88,35 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   }
 
   async obtainComplexityOfRepo(owner: string, repoName: string) {
-  try {
-    const repoUrl = `https://github.com/${owner}/${repoName}`;
+    try {
+      const repoUrl = `https://github.com/${owner}/${repoName}`;
 
-    const response = await axios.post("https://api-ccn.vercel.app/analyzeAvgCcn", {
-      repoUrl,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+      const response = await axios.post("https://api-ccn.vercel.app/analyzeAvgCcn", {
+        repoUrl,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (response.status !== 200) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = response.data.results;
+      return responseData.map((complexity: any) => ({
+        ciclomaticComplexity: Math.round(complexity.average_cyclomatic_complexity),
+        commit: complexity.commit,
+      }));
+    } catch (error) {
+      console.error("Error obtaining complexity data:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Server responded with status:", error.response.status);
+        console.error("Server response data:", error.response.data);
+      }
+      throw error;
     }
-
-    const responseData = response.data.results;
-    return responseData.map((complexity: any) => ({
-      ciclomaticComplexity: Math.round(complexity.average_cyclomatic_complexity),
-      commit: complexity.commit,
-    }));
-  } catch (error) {
-    console.error("Error obtaining complexity data:", error);
-    if (axios.isAxiosError(error) && error.response) {
-      console.error("Server responded with status:", error.response.status);
-      console.error("Server response data:", error.response.data);
-    }
-    throw error;
   }
-}
 
   async obtainCommitTddCycle(
     owner: string,
@@ -118,13 +124,13 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   ): Promise<CommitCycle[]> {
     try {
       // Obtenemos la URL dinámica usando las variables owner y repoName
-      const commitHistoryUrl = this.getCommitHistoryUrl(owner, repoName);      
+      const commitHistoryUrl = this.getCommitHistoryUrl(owner, repoName);
       const response = await axios.get(commitHistoryUrl);
-      
+
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const commitHistory = response.data;
       // Procesamos la información del commitHistory para obtener los ciclos TDD
       const commits: CommitCycle[] = commitHistory.map((commitData: any) => ({
@@ -136,6 +142,26 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       return commits;
     } catch (error) {
       console.error("Error obtaining commit TDD cycles:", error);
+      throw error;
+    }
+  }
+
+  async obtainTDDLogs(
+    owner: string,
+    repoName: string,
+  ): Promise<TDDLogEntry[]> {
+    try {
+      const tddLogUrl = this.getTDDLogUrl(owner, repoName);
+      const response = await axios.get<TDDLogEntry[]>(tddLogUrl);
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return response.data;
+
+    } catch (error) {
+      console.error("Error obtaining TDD logs:", error);
       throw error;
     }
   }
