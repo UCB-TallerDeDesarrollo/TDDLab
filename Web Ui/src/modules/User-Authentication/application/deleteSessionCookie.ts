@@ -1,4 +1,7 @@
 import Cookies from "js-cookie";
+import axios from "axios";
+import { VITE_API } from "../../../../config";
+const API_URL = VITE_API;
 
 export const removeSessionCookie = async  () => {
   try {
