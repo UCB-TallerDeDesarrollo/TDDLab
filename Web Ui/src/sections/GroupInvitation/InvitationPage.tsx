@@ -37,7 +37,6 @@ function InvitationPage() {
   const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [isLoading, setIsLoading] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
-  
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -104,6 +103,7 @@ function InvitationPage() {
   const handleAcceptInvitation = async (type: string) => {
     setIsLoading(true);
     try {
+      
       if (user?.email) {
         const userObj: UserOnDb = {
           email: user.email,

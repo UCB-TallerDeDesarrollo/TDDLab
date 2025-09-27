@@ -31,6 +31,9 @@ function SuccessfulEnrollmentPopUp() {
       localStorage.clear();
       localStorage.setItem("userGroups", "[0]")
       console.log(open);
+      if (userData.photoURL) {
+      localStorage.setItem("userProfilePic", userData.photoURL);
+    }
     } else {
       alert("Disculpa, tu usuario no esta registrado");
     }

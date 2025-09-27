@@ -8,7 +8,7 @@ const API_URL = VITE_API + "/groups";
 class GroupsRepository implements GroupsRepositoryInterface {
   async getGroups(): Promise<GroupDataObject[]> {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL,{withCredentials: true});
       return response.data;
     } catch (error) {
       console.error("Error fetching groups:", error);
@@ -18,7 +18,7 @@ class GroupsRepository implements GroupsRepositoryInterface {
 
   async getGroupsByUserId(id: number): Promise<number[]>{
     try {
-      const response = await axios.get(`${VITE_API}/user/groups/${id}`);
+      const response = await axios.get(`${VITE_API}/user/groups/${id}`,{withCredentials: true});
       return response.data;
     } catch (error) {
       console.error("Error fetching groups by user email:", error);
@@ -28,7 +28,7 @@ class GroupsRepository implements GroupsRepositoryInterface {
 
   async getGroupById(id: number): Promise<GroupDataObject | null> {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
+      const response = await axios.get(`${API_URL}/${id}`,{withCredentials: true});
       return response.data;
     } catch (error) {
       console.error("Error fetching group by ID:", error);
@@ -38,7 +38,7 @@ class GroupsRepository implements GroupsRepositoryInterface {
 
   async createGroup(groupData: GroupDataObject): Promise<void> {
     try {
-      await axios.post(API_URL, groupData);
+      await axios.post(API_URL, groupData,{withCredentials: true});
     } catch (error) {
       console.error("Error creating group:", error);
       throw error;
@@ -47,7 +47,7 @@ class GroupsRepository implements GroupsRepositoryInterface {
 
   async deleteGroup(id: number): Promise<void> {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await axios.delete(`${API_URL}/${id}`,{withCredentials: true});
     } catch (error) {
       console.error("Error deleting group:", error);
       throw error;
