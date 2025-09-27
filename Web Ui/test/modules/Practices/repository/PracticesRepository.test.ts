@@ -38,12 +38,27 @@ describe("PracticesRepository", () => {
 
   describe("getPracticeById", () => {
     it("should fetch practice by ID successfully", async () => {
-      const mockPractice: PracticeDataObject = { id: 2, name: "Practice 2" } as any;
-      (axios.get as jest.Mock).mockResolvedValue({ status: 200, data: mockPractice });
+      const mockPractice: PracticeDataObject = {
+        id: 2,
+        name: "Practice 2",
+      } as any;
+      (axios.get as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: mockPractice,
+      });
 
       const result = await repository.getPracticeById(2);
-      expect(axios.get).toHaveBeenCalledWith(`${API_URL}/2`, { withCredentials: true });
+      expect(axios.get).toHaveBeenCalledWith(`${API_URL}/2`, {
+        withCredentials: true,
+      });
       expect(result).toEqual(mockPractice);
+    });
+
+    it("should handle fetch by ID error", async () => {
+      (axios.get as jest.Mock).mockRejectedValue(new Error("Not Found"));
+      await expect(repository.getPracticeById(999)).rejects.toThrow(
+        "Not Found"
+      );
     });
   });
 });
