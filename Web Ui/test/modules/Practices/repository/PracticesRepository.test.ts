@@ -110,5 +110,11 @@ describe("PracticesRepository", () => {
         withCredentials: true,
       });
     });
+    it("should handle deletion error", async () => {
+      (axios.delete as jest.Mock).mockRejectedValue(new Error("Delete Error"));
+      await expect(repository.deletePractice(9)).rejects.toThrow(
+        "Delete Error"
+      );
+    });
   });
 });
