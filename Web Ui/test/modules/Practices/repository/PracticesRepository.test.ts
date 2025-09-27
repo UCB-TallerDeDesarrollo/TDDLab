@@ -102,4 +102,13 @@ describe("PracticesRepository", () => {
       );
     });
   });
+  describe("deletePractice", () => {
+    it("should delete a practice successfully", async () => {
+      (axios.delete as jest.Mock).mockResolvedValue({ status: 200, data: {} });
+      await expect(repository.deletePractice(8)).resolves.not.toThrow();
+      expect(axios.delete).toHaveBeenCalledWith(`${API_URL}/8`, {
+        withCredentials: true,
+      });
+    });
+  });
 });
