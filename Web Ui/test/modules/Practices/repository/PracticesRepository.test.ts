@@ -35,4 +35,15 @@ describe("PracticesRepository", () => {
     (axios.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
     await expect(repository.getPractices()).rejects.toThrow("Network Error");
   });
+
+  describe("getPracticeById", () => {
+    it("should fetch practice by ID successfully", async () => {
+      const mockPractice: PracticeDataObject = { id: 2, name: "Practice 2" } as any;
+      (axios.get as jest.Mock).mockResolvedValue({ status: 200, data: mockPractice });
+
+      const result = await repository.getPracticeById(2);
+      expect(axios.get).toHaveBeenCalledWith(`${API_URL}/2`, { withCredentials: true });
+      expect(result).toEqual(mockPractice);
+    });
+  });
 });
