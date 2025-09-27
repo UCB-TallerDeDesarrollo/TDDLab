@@ -94,5 +94,12 @@ describe("PracticesRepository", () => {
         withCredentials: true,
       });
     });
+    it("should handle creation error", async () => {
+      (axios.post as jest.Mock).mockRejectedValue(new Error("Create Error"));
+      const practice: PracticeDataObject = { id: 5, name: "Practice 5" } as any;
+      await expect(repository.createPractice(practice)).rejects.toThrow(
+        "Create Error"
+      );
+    });
   });
 });
