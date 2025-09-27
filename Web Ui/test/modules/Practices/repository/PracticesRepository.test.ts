@@ -116,5 +116,19 @@ describe("PracticesRepository", () => {
         "Delete Error"
       );
     });
+    it("should throw error if getPracticeById returns non-200 status", async () => {
+    (axios.get as jest.Mock).mockResolvedValue({ status: 404, data: null });
+    await expect(repository.getPracticeById(123)).rejects.toThrow("Failed to fetch practices by ID");
+  });
+  });
+
+  describe("updatePractice", () => {
+    it("should update a practice successfully", async () => {
+      (axios.put as jest.Mock).mockResolvedValue({ status: 200 });
+      const practice: PracticeDataObject = { id: 6, name: "Practice 6" } as any;
+      await expect(repository.updatePractice(6, practice)).resolves.not.toThrow();
+      expect(axios.put).toHaveBeenCalledWith(`${API_URL}/6`, practice, { withCredentials: true });
+    });
+
   });
 });
