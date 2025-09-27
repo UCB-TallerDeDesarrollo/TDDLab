@@ -85,4 +85,14 @@ describe("PracticesRepository", () => {
       );
     });
   });
+  describe("createPractice", () => {
+    it("should create a practice successfully", async () => {
+      (axios.post as jest.Mock).mockResolvedValue({ status: 201 });
+      const practice: PracticeDataObject = { id: 4, name: "Practice 4" } as any;
+      await expect(repository.createPractice(practice)).resolves.not.toThrow();
+      expect(axios.post).toHaveBeenCalledWith(API_URL, practice, {
+        withCredentials: true,
+      });
+    });
+  });
 });
