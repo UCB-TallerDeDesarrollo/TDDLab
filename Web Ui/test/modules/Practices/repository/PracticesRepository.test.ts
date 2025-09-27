@@ -16,12 +16,23 @@ describe("PracticesRepository", () => {
 
   describe("getPractices", () => {
     it("should fetch all practices successfully", async () => {
-      const mockData: PracticeDataObject[] = [{ id: 1, name: "Practice 1" } as any];
-      (axios.get as jest.Mock).mockResolvedValue({ status: 200, data: mockData });
+      const mockData: PracticeDataObject[] = [
+        { id: 1, name: "Practice 1" } as any,
+      ];
+      (axios.get as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: mockData,
+      });
 
       const result = await repository.getPractices();
-      expect(axios.get).toHaveBeenCalledWith(API_URL, { withCredentials: true });
+      expect(axios.get).toHaveBeenCalledWith(API_URL, {
+        withCredentials: true,
+      });
       expect(result).toEqual(mockData);
     });
+  });
+  it("should handle fetch error", async () => {
+    (axios.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+    await expect(repository.getPractices()).rejects.toThrow("Network Error");
   });
 });
