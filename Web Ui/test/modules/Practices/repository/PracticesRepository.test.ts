@@ -64,12 +64,25 @@ describe("PracticesRepository", () => {
 
   describe("getPracticeByUserId", () => {
     it("should fetch practices by user ID successfully", async () => {
-      const mockData: PracticeDataObject[] = [{ id: 3, name: "Practice 3" } as any];
-      (axios.get as jest.Mock).mockResolvedValue({ status: 200, data: mockData });
+      const mockData: PracticeDataObject[] = [
+        { id: 3, name: "Practice 3" } as any,
+      ];
+      (axios.get as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: mockData,
+      });
 
       const result = await repository.getPracticeByUserId(5);
-      expect(axios.get).toHaveBeenCalledWith(`${API_URL}/user/5`, { withCredentials: true });
+      expect(axios.get).toHaveBeenCalledWith(`${API_URL}/user/5`, {
+        withCredentials: true,
+      });
       expect(result).toEqual(mockData);
+    });
+    it("should handle fetch by user ID error", async () => {
+      (axios.get as jest.Mock).mockRejectedValue(new Error("User Not Found"));
+      await expect(repository.getPracticeByUserId(999)).rejects.toThrow(
+        "User Not Found"
+      );
     });
   });
 });
