@@ -23,7 +23,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 }) => {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [groupId] = useState(Number);
+  //const [groupId] = useState(Number);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const groupRepository = new GroupsRepository();
@@ -33,27 +33,31 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   };
 
   const handleCreate = async () => {
-    setSave(true);
-    if (formInvalid()) {
-      return;
-    }
+  setSave(true);
+  if (formInvalid()) return;
 
-    const createGroup = new CreateGroup(groupRepository);
-    const payload: GroupDataObject = {
-      id: groupId,
-      groupName: groupName,
-      groupDetail: groupDescription,
-      creationDate: new Date(),
-    };
-    try {
-      await createGroup.createGroup(payload);
-    } catch (error) {
-      console.error("Error al crear el grupo:", error);
-    } finally {
-      setSave(false);
+  const createGroup = new CreateGroup(groupRepository);
+  const payload: GroupDataObject = {
+    // si el backend genera el id, puedes mandar 0 o no mandarlo si el tipo lo permite
+    id: 0 as unknown as number,
+    groupName,
+    groupDetail: groupDescription,
+    creationDate: new Date(),
+  };
+
+  try {
+    const newGroup = await createGroup.createGroup(payload); // ⬅️ ahora devuelve el grupo
+    if (newGroup?.id) {
+      localStorage.setItem("selectedGroup", String(newGroup.id)); // ⬅️ clave del bug
     }
     setValidationDialogOpen(true);
-  };
+  } catch (error) {
+    console.error("Error al crear el grupo:", error);
+  } finally {
+    setSave(false);
+  }
+};
+
 
   const formInvalid = () => {
     return groupName === "";

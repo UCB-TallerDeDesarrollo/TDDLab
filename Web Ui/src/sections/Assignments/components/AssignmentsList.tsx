@@ -146,11 +146,11 @@ function Assignments({
       let groupIdToUse: number | null = null;
       if (groupIdFromURL) {
         groupIdToUse = parseInt(groupIdFromURL, 10);
-      } else if (authGroupId) {
-        groupIdToUse = authGroupId;
       } else if (savedSelectedGroup) {
         groupIdToUse = parseInt(savedSelectedGroup, 10);
-      }
+      } else if (authGroupId) {
+        groupIdToUse = authGroupId;
+}
 
       if (groupIdToUse !== undefined && groupIdToUse !== null) {
         const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
