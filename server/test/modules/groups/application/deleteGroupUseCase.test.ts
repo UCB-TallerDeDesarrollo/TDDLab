@@ -59,12 +59,12 @@ describe('DeleteGroupUseCase', () => {
     assignmentRepositoryMock.obtainAssignmentsByGroupId.mockResolvedValueOnce(assignmentsToDelete)
 
     for (const assignment of assignmentsToDelete) {
-      await deleteAssignment.execute(assignment.id);
+      await deleteAssignment.execute(Number(assignment.id));
     }
     await deleteGroupUseCase.execute(groupid);
 
     assignmentsToDelete.forEach(assignment => {
-      expect(assignmentRepositoryMock.deleteAssignment).toHaveBeenCalledWith(assignment.id);
+      expect(assignmentRepositoryMock.deleteAssignment).toHaveBeenCalledWith(Number(assignment.id));
     });
     expect(groupRepositoryMock.deleteGroup).toHaveBeenCalledWith(groupid);
   });

@@ -140,15 +140,57 @@ async createAssignment(req: Request, res: Response): Promise<void> {
 
 
 
-  async deleteAssignment(req: Request, res: Response): Promise<void> {
+ async deleteAssignment(req: any, res: Response): Promise<void> {
     try {
-      const assignmentId = req.params.id;
+      const assignmentId = parseInt(req.params.id, 10);
+
+      if (!assignmentId) {
+        res.status(400).json({
+          success: false,
+          error: 'ID de tarea es requerido'
+        });
+        return;
+      }
+
+      const existingAssignment = await this.getAssignmentByIdUseCase.execute(String(assignmentId));
+
+      if (!existingAssignment) {
+        res.status(404).json({
+          success: false,
+          error: 'Tarea no encontrada'
+        });
+        return;
+      }
+
       await this.deleteAssignmentUseCase.execute(assignmentId);
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ error: "Server error" });
+
+      res.status(200).json({
+        success: true,
+        message: 'Tarea eliminada correctamente'
+      });
+
+    } catch (error: any) {
+
+      if (error.message === "Tarea no encontrada") {
+        res.status(404).json({
+          success: false,
+          error: error.message
+        });
+      } else if (error.message === "ID de tarea invalido") {
+        res.status(400).json({
+          success: false,
+          error: error.message
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Error interno del servidor al eliminar la tarea',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+      }
     }
   }
+
 
   async deliverAssignment(req: Request, res: Response): Promise<void> {
     try {

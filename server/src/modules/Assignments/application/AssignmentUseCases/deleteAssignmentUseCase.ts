@@ -7,7 +7,7 @@ class DeleteAssignment {
     this.adapter = adapter;
   }
 
-  async execute(assignmentId: string): Promise<void> {
+  async execute(assignmentId: number): Promise<void> {
     try {
       await this.adapter.deleteAssignment(assignmentId);
     } catch (error) {
