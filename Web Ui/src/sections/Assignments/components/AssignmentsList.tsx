@@ -287,7 +287,17 @@ function Assignments({
   <Container>
     {isLoading ? (
       <LoadingContainer>
-        <CircularProgress />
+         <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <CircularProgress />
+    </div>
       </LoadingContainer>
     ) : (
       <section className="Tareas">
