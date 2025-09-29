@@ -11,6 +11,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { useNavigate } from "react-router-dom";
 
 interface CreateGroupPopupProps {
   open: boolean;
@@ -23,49 +24,63 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 }) => {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  //const [groupId] = useState(Number);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
+  const [lastCreatedId, setLastCreatedId] = useState<number | null>(null);
+
   const groupRepository = new GroupsRepository();
+  const navigate = useNavigate();
+
+  const formInvalid = () => groupName.trim() === "";
 
   const handleCancel = () => {
     handleClose();
+    setGroupName("");
+    setGroupDescription("");
   };
 
   const handleCreate = async () => {
-  setSave(true);
-  if (formInvalid()) return;
+    setSave(true);
+    if (formInvalid()) return;
 
-  const createGroup = new CreateGroup(groupRepository);
-  const payload: GroupDataObject = {
-    // si el backend genera el id, puedes mandar 0 o no mandarlo si el tipo lo permite
-    id: 0 as unknown as number,
-    groupName,
-    groupDetail: groupDescription,
-    creationDate: new Date(),
-  };
+    const createGroup = new CreateGroup(groupRepository);
+    const payload: GroupDataObject = {
+      id: 0 as unknown as number, // el backend genera el id real
+      groupName,
+      groupDetail: groupDescription,
+      creationDate: new Date(),
+    };
 
-  try {
-    const newGroup = await createGroup.createGroup(payload); // ⬅️ ahora devuelve el grupo
-    if (newGroup?.id) {
-      localStorage.setItem("selectedGroup", String(newGroup.id)); // ⬅️ clave del bug
+    try {
+      const newGroup = await createGroup.createGroup(payload);
+      if (newGroup?.id) {
+        localStorage.setItem("selectedGroup", String(newGroup.id));
+        setLastCreatedId(newGroup.id);
+      }
+      setValidationDialogOpen(true);
+    } catch (error) {
+      console.error("Error al crear el grupo:", error);
+    } finally {
+      setSave(false);
     }
-    setValidationDialogOpen(true);
-  } catch (error) {
-    console.error("Error al crear el grupo:", error);
-  } finally {
-    setSave(false);
-  }
-};
-
-
-  const formInvalid = () => {
-    return groupName === "";
   };
 
   useEffect(() => {
     setSave(false);
   }, [open]);
+
+  const handleSuccessClose = () => {
+    setValidationDialogOpen(false);
+    handleClose();
+    const gid =
+      lastCreatedId ?? Number(localStorage.getItem("selectedGroup") ?? NaN);
+
+    if (Number.isFinite(gid)) {
+      navigate(`/groups?groupId=${gid}`); // <- clave para que la lista sepa cuál marcar
+    } else {
+      navigate("/groups");
+    }
+  };
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -85,6 +100,9 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              helperText={
+                formInvalid() && !!save ? "El nombre no puede estar vacío" : ""
+              }
             />
             <TextField
               multiline
@@ -122,7 +140,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
           open={validationDialogOpen}
           title="Grupo creado exitosamente"
           closeText="Cerrar"
-          onClose={() => window.location.reload()}
+          onClose={handleSuccessClose}
         />
       )}
     </Dialog>
