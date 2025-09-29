@@ -39,6 +39,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
       throw error;
     }
   }
+  
 
   // Define a function to fetch an assignment by its ID
   async getAssignmentById(
@@ -87,7 +88,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   async deleteAssignment(assignmentId: number): Promise<void> {
     try {
       // Send a GET request to fetch a specific assignment by ID
-      const response = await axios.delete(`${API_URL}/${assignmentId}`);
+      const response = await axios.delete(`${API_URL}/${assignmentId}`,{withCredentials: true});
 
       // Check if the response status is successful (e.g., 200 OK)
       if (response.status === 200) {
