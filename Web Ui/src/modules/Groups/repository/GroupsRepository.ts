@@ -36,13 +36,9 @@ class GroupsRepository implements GroupsRepositoryInterface {
     }
   }
 
-  async createGroup(groupData: GroupDataObject): Promise<void> {
-    try {
-      await axios.post(API_URL, groupData,{withCredentials: true});
-    } catch (error) {
-      console.error("Error creating group:", error);
-      throw error;
-    }
+  async createGroup(groupData: GroupDataObject): Promise<GroupDataObject> {
+    const response = await axios.post<GroupDataObject>(API_URL, groupData,{withCredentials: true});
+    return response.data; 
   }
 
   async deleteGroup(id: number): Promise<void> {

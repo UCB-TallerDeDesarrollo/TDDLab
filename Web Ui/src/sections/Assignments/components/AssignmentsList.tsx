@@ -146,11 +146,11 @@ function Assignments({
       let groupIdToUse: number | null = null;
       if (groupIdFromURL) {
         groupIdToUse = parseInt(groupIdFromURL, 10);
-      } else if (authGroupId) {
-        groupIdToUse = authGroupId;
       } else if (savedSelectedGroup) {
         groupIdToUse = parseInt(savedSelectedGroup, 10);
-      }
+      } else if (authGroupId) {
+        groupIdToUse = authGroupId;
+}
 
       if (groupIdToUse !== undefined && groupIdToUse !== null) {
         const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
@@ -170,32 +170,42 @@ function Assignments({
     fetchData();
   }, [location, authData]);
 
+  // Refrescar lista si alguna edición avisa globalmente
+  useEffect(() => {
+    const handler = () => {
+      const savedSelectedGroup = localStorage.getItem("selectedGroup");
+      const groupId = savedSelectedGroup ? parseInt(savedSelectedGroup, 10) : selectedGroup;
+      if (groupId) {
+        loadAssignmentsByGroupId(groupId);
+      }
+    };
+    window.addEventListener('assignment-updated', handler as EventListener);
+    return () => window.removeEventListener('assignment-updated', handler as EventListener);
+  }, [selectedGroup]);
+
   useEffect(() => {
     const fetchAssignmentsByGroup = async () => {
       try {
-        if (!authData || authData.usergroupid === undefined) {
-          console.warn("authData aún no está disponible. Esperando a que se cargue...");
+        // Preferir grupo seleccionado guardado
+        const savedSelectedGroup = localStorage.getItem("selectedGroup");
+        const preferredGroupId = savedSelectedGroup
+          ? parseInt(savedSelectedGroup, 10)
+          : authData?.usergroupid;
+
+        if (preferredGroupId === undefined || preferredGroupId === null) {
           return;
         }
 
-        const authGroupId = authData.usergroupid;
-
-        if (authGroupId !== undefined && authGroupId !== null) {
-          const data = await assignmentsRepository.getAssignmentsByGroupid(authGroupId);
-          setAssignments(data);
-          orderAssignments([...data], selectedSorting);
-
-        } else {
-          console.warn("No se encontró un groupId válido para utilizar.");
-        }
+        const data = await assignmentsRepository.getAssignmentsByGroupid(preferredGroupId);
+        setSelectedGroup(preferredGroupId);
+        setAssignments(data);
+        orderAssignments([...data], selectedSorting);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
 
-    if (authData && authData.usergroupid !== undefined) {
-      fetchAssignmentsByGroup();
-    }
+    fetchAssignmentsByGroup();
   }, [authData, selectedSorting]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
@@ -384,7 +394,15 @@ function Assignments({
             open={validationDialogOpen}
             title="Tarea eliminada exitosamente"
             closeText="Cerrar"
-            onClose={() => window.location.reload()}
+            onClose={() => {
+              setValidationDialogOpen(false);
+              // Refrescar datos del grupo actual sin recargar página
+              if (selectedGroup) {
+                loadAssignmentsByGroupId(selectedGroup);
+              } else if (authData?.usergroupid) {
+                loadAssignmentsByGroupId(authData.usergroupid);
+              }
+            }}
           />
         )}
       </section>

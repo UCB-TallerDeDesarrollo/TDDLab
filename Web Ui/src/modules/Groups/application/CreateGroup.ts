@@ -4,7 +4,7 @@ import GroupsRepositoryInterface from "../domain/GroupsRepositoryInterface";
 class CreateGroup {
   constructor(private readonly groupsRepository: GroupsRepositoryInterface) {}
 
-  async createGroup(groupData: GroupDataObject): Promise<void> {
+  async createGroup(groupData: GroupDataObject): Promise<GroupDataObject> {
     return await this.groupsRepository.createGroup(groupData);
   }
 }

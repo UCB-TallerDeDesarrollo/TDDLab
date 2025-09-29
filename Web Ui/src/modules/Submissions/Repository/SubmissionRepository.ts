@@ -8,7 +8,7 @@ const API_URL = VITE_API + "/submissions";
 class SubmissionRepository implements SubmissionRepositoryInterface {
 
     async createSubmission(submissionData: SubmissionCreationObject): Promise<void> {
-        await axios.post(API_URL, submissionData);
+        await axios.post(API_URL, submissionData,{withCredentials: true});
     }
     async checkSubmissionExists(assignmentid: number, userid: number): Promise<{ hasStarted: boolean }> {
         try {
