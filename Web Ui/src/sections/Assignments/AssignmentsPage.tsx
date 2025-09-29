@@ -42,12 +42,16 @@ function AssignmentManager({
         />
       </AssignmentsContainer>
       <FormsContainer>
-        {createAssignmentPopupOpen && (
-          <Form
-            data-testid="form-container"
-            open={createAssignmentPopupOpen}
-            handleClose={() => setCreateAssignmentPopupOpen(false)}
-            groupid={selectedGroupId || userGroupid}
+      {createAssignmentPopupOpen && (
+        <Form
+          data-testid="form-container"
+          open={createAssignmentPopupOpen}
+          handleClose={() => setCreateAssignmentPopupOpen(false)}
+          // ⬇⬇⬇  usa localStorage como respaldo antes de userGroupid
+          groupid={
+            selectedGroupId ??
+            (Number(localStorage.getItem("selectedGroup") ?? NaN) || userGroupid)
+          }
           />
         )}
       </FormsContainer>

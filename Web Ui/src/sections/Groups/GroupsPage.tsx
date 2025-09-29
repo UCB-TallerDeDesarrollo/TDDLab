@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -6,16 +7,7 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
-import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
-import { ValidationDialog } from "../Shared/Components/ValidationDialog";
-import CreateGroupPopup from "../Groups/components/GroupsForm";
-import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
-import GetGroups from "../../modules/Groups/application/GetGroups";
-import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
-import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
-import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
   Table,
   TableHead,
@@ -27,8 +19,20 @@ import {
   Collapse,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { PiChalkboardTeacherFill } from "react-icons/pi";
+
+import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import CreateGroupPopup from "../Groups/components/GroupsForm";
+
+import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
+import GetGroups from "../../modules/Groups/application/GetGroups";
+import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
+import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
+
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
@@ -55,32 +59,53 @@ const StyledTable = styled(Table)({
 
 function Groups() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
+
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+
+  const [selectedGroup, setSelectedGroup] = useState<number>(0);
+
   const groupRepository = new GroupsRepository();
-  let [selectedGroup] = useState<number | null>(null);
 
   const userRepository = new UsersRepository();
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
+  // Cargar grupos
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       const allGroups = await getGroups.getGroups();
-      console.log(selectedGroup);
       setGroups(allGroups);
     };
-    const savedSelectedGroup = authData?.usergroupid ?? 67; // Asegúrate de que esto no sea null
-    selectedGroup = savedSelectedGroup;
     fetchGroups();
-  }, [authData]);
+  }, []);
+
+  // Selección inicial: URL > localStorage > authData
+  useEffect(() => {
+    const urlGroupId = new URLSearchParams(location.search).get("groupId");
+    const saved = Number(localStorage.getItem("selectedGroup") ?? NaN);
+    const fromAuth = authData?.usergroupid ?? 0;
+
+    let initial = 0;
+    if (urlGroupId) {
+      const parsed = parseInt(urlGroupId, 10);
+      if (!Number.isNaN(parsed)) initial = parsed;
+    } else if (Number.isFinite(saved)) {
+      initial = saved;
+    } else if (fromAuth) {
+      initial = fromAuth;
+    }
+    setSelectedGroup(initial);
+  }, [location.search, authData?.usergroupid]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -108,42 +133,38 @@ function Groups() {
             new Date(a.creationDate).getTime()
         ),
     };
-    console.log(typeof groups[0].creationDate);
 
     const sortedGroups = sortings[selectedSortingLocal]();
     setGroups(sortedGroups);
   };
-  const handleUpdateUser = async (
-    updatedUser: UserDataObject
-  ) => {
-    const userRepository = new UsersRepository();
-    const submitUser = new UpdateUser(userRepository);
 
+  const handleUpdateUser = async (updatedUser: UserDataObject) => {
+    const submitUser = new UpdateUser(userRepository);
     try {
-      await submitUser.updateUser(
-        updatedUser.id,
-        updatedUser.groupid
-      );
+      await submitUser.updateUser(updatedUser.id, updatedUser.groupid);
     } catch (error) {
       console.error(error);
     }
   };
-  const handleRowClick = async(index: number) => {
+
+  // Seleccionar fila
+  const handleRowClick = async (index: number) => {
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
       setExpandedRows([index]);
     }
 
-    const clickedGroup = groups.find((_group, i) => i === index);
-    if (clickedGroup && clickedGroup.id !== undefined) {
-      selectedGroup = clickedGroup.id;
-      const uptdatedAuthData = { ...authData, usergroupid: clickedGroup.id };
-      
-      setAuthData(uptdatedAuthData);
-      
-      const datosParaGuardar = adaptarDatos(uptdatedAuthData);
-        await handleUpdateUser(datosParaGuardar);
+    const clickedGroup = groups[index];
+    if (clickedGroup?.id) {
+      setSelectedGroup(clickedGroup.id);
+      localStorage.setItem("selectedGroup", String(clickedGroup.id));
+
+      const updatedAuthData = { ...authData, usergroupid: clickedGroup.id };
+      setAuthData(updatedAuthData);
+
+      const datosParaGuardar = adaptarDatos(updatedAuthData);
+      await handleUpdateUser(datosParaGuardar);
     }
   };
 
@@ -151,9 +172,8 @@ function Groups() {
     setHoveredRow(index);
   };
 
-  const isRowSelected = (index: number) => {
-    return index === selectedRow || index === hoveredRow;
-  };
+  const isRowSelected = (index: number) =>
+    index === selectedRow || index === hoveredRow;
 
   const handleHomeworksClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -161,19 +181,10 @@ function Groups() {
   ) => {
     event.stopPropagation();
     const clickedGroup = groups[index];
-    console.log("Boton de Tareas Iniciado");
-    if (clickedGroup) {
-      try {
-        // Navegacion con el grupo seleccionado temporalmente en la URL
-        const groupId = clickedGroup.id;
-        console.log("El click de Group: ", groupId);
-        navigate(`/?groupId=${groupId}`);
-      } catch (error) {
-        console.error("Hay un problema en el botón de Tareas", error);
-      }
+    if (clickedGroup?.id) {
+      navigate(`/?groupId=${clickedGroup.id}`);
     }
   };
-
 
   const handleStudentsClick = async (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -183,8 +194,7 @@ function Groups() {
     const groupid = groups[index].id;
     if (groupid) {
       try {
-        const usersBygroup = await getUsersByGroupId.execute(groupid);
-        console.log(usersBygroup);
+        await getUsersByGroupId.execute(groupid);
         navigate(`/users/group/${groupid}`);
       } catch (error) {
         console.error("Failed to fetch users for group:", error);
@@ -232,7 +242,12 @@ function Groups() {
           const deleteGroup = new DeleteGroup(groupRepository);
           await deleteGroup.deleteGroup(itemFound.id || 0);
           setValidationDialogOpen(true);
-          delete groups[selectedRow];
+          const newList = groups.filter((_, i) => i !== selectedRow);
+          setGroups(newList);
+          if (selectedGroup === itemFound.id) {
+            setSelectedGroup(0);
+            localStorage.removeItem("selectedGroup");
+          }
         }
       }
     } catch (error) {
@@ -246,20 +261,27 @@ function Groups() {
     setValidationDialogOpen(false);
   };
 
+  /** ⬅️ NUEVO: cuando el popup crea un grupo */
+  const handleGroupCreated = (newGroup: GroupDataObject) => {
+    setGroups((prev) => {
+      if (prev.some((g) => g.id === newGroup.id)) return prev;
+      return [...prev, newGroup];
+    });
+    setSelectedGroup(newGroup.id);
+    localStorage.setItem("selectedGroup", String(newGroup.id));
+    setAuthData({ ...authData, usergroupid: newGroup.id });
+  };
+
   return (
     <CenteredContainer>
       <section className="Grupos">
         <StyledTable>
           <TableHead>
-            <TableRow
-              sx={{
-                borderBottom: "2px solid #E7E7E7",
-              }}
-            >
+            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
               <TableCell
                 sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
               >
-                Grupos{" "}
+                Grupos
               </TableCell>
               <TableCell>
                 <ButtonContainer>
@@ -295,7 +317,7 @@ function Groups() {
                 >
                   <TableCell>
                     <Checkbox
-                      checked={authData.usergroupid == group.id}
+                      checked={selectedGroup === group.id}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
@@ -305,9 +327,7 @@ function Groups() {
                       <Tooltip title="Tareas" arrow>
                         <IconButton
                           aria-label="tareas"
-                          onClick={(event) =>
-                            handleHomeworksClick(event, index)
-                          }
+                          onClick={(event) => handleHomeworksClick(event, index)}
                         >
                           <AutoAwesomeMotionIcon />
                         </IconButton>
@@ -334,7 +354,7 @@ function Groups() {
                           aria-label="enlace"
                           onClick={(event) => handleLinkClickTeacher(event, index)}
                         >
-                          <PiChalkboardTeacherFill  />
+                          <PiChalkboardTeacherFill />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Eliminar grupo" arrow>
@@ -349,15 +369,8 @@ function Groups() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell
-                    style={{ width: "100%", padding: 0, margin: 0 }}
-                    colSpan={2}
-                  >
-                    <Collapse
-                      in={expandedRows.includes(index)}
-                      timeout="auto"
-                      unmountOnExit
-                    >
+                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
+                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
                       <div
                         style={{
                           boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
@@ -383,8 +396,7 @@ function Groups() {
           title="¿Eliminar el grupo?"
           content={
             <>
-              Ten en cuenta que esta acción también eliminará <br /> todas las
-              tareas asociadas.
+              Ten en cuenta que esta acción también eliminará <br /> todas las tareas asociadas.
             </>
           }
           cancelText="Cancelar"
@@ -402,9 +414,11 @@ function Groups() {
           onClose={handleValidationDialogClose}
         />
       )}
+
       <CreateGroupPopup
         open={createGroupPopupOpen}
         handleClose={() => setCreateGroupPopupOpen(false)}
+        onCreated={handleGroupCreated}  
       />
     </CenteredContainer>
   );
