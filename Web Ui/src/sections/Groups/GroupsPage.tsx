@@ -71,7 +71,6 @@ function Groups() {
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
-  // 👇 AHORA SÍ: state REAL para el grupo seleccionado
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
 
   const groupRepository = new GroupsRepository();
@@ -80,7 +79,7 @@ function Groups() {
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
-  // 1) Traer grupos
+  // Cargar grupos
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -90,7 +89,7 @@ function Groups() {
     fetchGroups();
   }, []);
 
-  // 2) Inicializar selección: URL > localStorage > authData
+  // Selección inicial: URL > localStorage > authData
   useEffect(() => {
     const urlGroupId = new URLSearchParams(location.search).get("groupId");
     const saved = Number(localStorage.getItem("selectedGroup") ?? NaN);
@@ -105,7 +104,6 @@ function Groups() {
     } else if (fromAuth) {
       initial = fromAuth;
     }
-
     setSelectedGroup(initial);
   }, [location.search, authData?.usergroupid]);
 
@@ -149,7 +147,7 @@ function Groups() {
     }
   };
 
-  // 3) Al hacer click en una fila, selecciona y sincroniza estados
+  // Seleccionar fila
   const handleRowClick = async (index: number) => {
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
@@ -174,9 +172,8 @@ function Groups() {
     setHoveredRow(index);
   };
 
-  const isRowSelected = (index: number) => {
-    return index === selectedRow || index === hoveredRow;
-  };
+  const isRowSelected = (index: number) =>
+    index === selectedRow || index === hoveredRow;
 
   const handleHomeworksClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -185,7 +182,7 @@ function Groups() {
     event.stopPropagation();
     const clickedGroup = groups[index];
     if (clickedGroup?.id) {
-      navigate(`/?groupId=${clickedGroup.id}`); // si quieres /assignments?groupId=... cámbialo aquí
+      navigate(`/?groupId=${clickedGroup.id}`);
     }
   };
 
@@ -264,13 +261,26 @@ function Groups() {
     setValidationDialogOpen(false);
   };
 
+  /** ⬅️ NUEVO: cuando el popup crea un grupo */
+  const handleGroupCreated = (newGroup: GroupDataObject) => {
+    setGroups((prev) => {
+      if (prev.some((g) => g.id === newGroup.id)) return prev;
+      return [...prev, newGroup];
+    });
+    setSelectedGroup(newGroup.id);
+    localStorage.setItem("selectedGroup", String(newGroup.id));
+    setAuthData({ ...authData, usergroupid: newGroup.id });
+  };
+
   return (
     <CenteredContainer>
       <section className="Grupos">
         <StyledTable>
           <TableHead>
             <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
+              <TableCell
+                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+              >
                 Grupos
               </TableCell>
               <TableCell>
@@ -307,7 +317,7 @@ function Groups() {
                 >
                   <TableCell>
                     <Checkbox
-                      checked={selectedGroup === group.id} // ✅ ahora depende del state real
+                      checked={selectedGroup === group.id}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
@@ -330,6 +340,7 @@ function Groups() {
                           <GroupsIcon />
                         </IconButton>
                       </Tooltip>
+
                       <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
                         <IconButton
                           aria-label="enlace"
@@ -407,6 +418,7 @@ function Groups() {
       <CreateGroupPopup
         open={createGroupPopupOpen}
         handleClose={() => setCreateGroupPopupOpen(false)}
+        onCreated={handleGroupCreated}  
       />
     </CenteredContainer>
   );
