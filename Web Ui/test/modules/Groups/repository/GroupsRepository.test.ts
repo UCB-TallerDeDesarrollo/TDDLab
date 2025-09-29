@@ -26,7 +26,7 @@ describe('GroupsRepository', () => {
 
       const result = await repository.getGroups();
       expect(result).toEqual(mockGroups);
-      expect(axiosGetSpy).toHaveBeenCalledWith(API_URL);
+      expect(axiosGetSpy).toHaveBeenCalledWith(API_URL,{withCredentials: true});
     });
     it('should handle fetch error', async () => {
         axiosGetSpy.mockRejectedValue(new Error('Network Error'));
@@ -39,7 +39,7 @@ describe('GroupsRepository', () => {
     
         const result = await repository.getGroupById(1);
         expect(result).toEqual(mockGroup);
-        expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`);
+        expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`,{withCredentials: true});
       });
       it('should handle fetch error', async () => {
         axiosGetSpy.mockRejectedValue(new Error('Network Error'));
@@ -53,7 +53,7 @@ describe('GroupsRepository', () => {
       axiosPostSpy.mockResolvedValue({ status: 201 });
 
       await expect(repository.createGroup(mockGroup)).resolves.not.toThrowError();
-      expect(axiosPostSpy).toHaveBeenCalledWith(API_URL, mockGroup);
+      expect(axiosPostSpy).toHaveBeenCalledWith(API_URL, mockGroup,{withCredentials: true});
     });
     it('should handle creation error', async () => {
         axiosPostSpy.mockRejectedValue(new Error('Network Error'));
@@ -66,7 +66,7 @@ describe('GroupsRepository', () => {
       axiosDeleteSpy.mockResolvedValue({ status: 200 });
 
       await expect(repository.deleteGroup(1)).resolves.not.toThrowError();
-      expect(axiosDeleteSpy).toHaveBeenCalledWith(`${API_URL}/1`);
+      expect(axiosDeleteSpy).toHaveBeenCalledWith(`${API_URL}/1`,{withCredentials: true});
     });
     it('should handle deletion error', async () => {
         axiosDeleteSpy.mockRejectedValue(new Error('Network Error'));

@@ -15,14 +15,14 @@ class PracticeSubmissionRepository
   async createPracticeSubmission(
     practiceSubmissionData: PracticeSubmissionCreationObject
   ): Promise<void> {
-    await axios.post(API_URL, practiceSubmissionData);
+    await axios.post(API_URL, practiceSubmissionData,{withCredentials: true});
   }
   async checkPracticeSubmissionExists(
     practiceid: number,
     userid: number
   ): Promise<{ hasStarted: boolean }> {
     try {
-      const response = await axios.get(`${API_URL}/${practiceid}/${userid}`);
+      const response = await axios.get(`${API_URL}/${practiceid}/${userid}`,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {
@@ -38,7 +38,7 @@ class PracticeSubmissionRepository
     assignmentid: number
   ): Promise<PracticeSubmissionDataObject[]> {
     try {
-      const response = await axios.get(`${API_URL}/${assignmentid}`);
+      const response = await axios.get(`${API_URL}/${assignmentid}`,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {
@@ -57,7 +57,7 @@ class PracticeSubmissionRepository
     console.log(submissionData);
     console.log(submissionid);
     console.log(`${API_URL}/${submissionid}`);
-    await axios.put(`${API_URL}/${submissionid}`, submissionData);
+    await axios.put(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
   }
 
   async getPracticeSubmissionbyUserandSubmissionId(
@@ -65,7 +65,7 @@ class PracticeSubmissionRepository
     userid: number
   ): Promise<PracticeSubmissionDataObject> {
     try {
-      const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`);
+      const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {

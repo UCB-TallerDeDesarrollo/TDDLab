@@ -27,7 +27,7 @@ describe("FeatureFlagRepository", () => {
       const result = await repo.getFlags();
 
       expect(result).toEqual([sampleFlag]);
-      expect(mockedAxios.get).toHaveBeenCalledWith(API_URL);
+      expect(mockedAxios.get).toHaveBeenCalledWith(API_URL,{withCredentials: true});
     });
   });
    describe("getFlagByName", () => {
@@ -37,7 +37,7 @@ describe("FeatureFlagRepository", () => {
       const result = await repo.getFlagByName("Boton Asistente IA");
 
       expect(result).toEqual(sampleFlag);
-      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/name/Boton Asistente IA`);
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/name/Boton Asistente IA`,{withCredentials: true});
     });
   });
 
@@ -49,7 +49,7 @@ describe("FeatureFlagRepository", () => {
       const result = await repo.updateFlag(1, { is_enabled: false });
 
       expect(result).toEqual(updatedFlag);
-      expect(mockedAxios.put).toHaveBeenCalledWith(`${API_URL}/1`, { is_enabled: false });
+      expect(mockedAxios.put).toHaveBeenCalledWith(`${API_URL}/1`, { is_enabled: false },{withCredentials: true});
     });
     });
     it("debería retornar null si ocurre un error al buscar por nombre", async () => {
@@ -58,6 +58,6 @@ describe("FeatureFlagRepository", () => {
       const result = await repo.getFlagByName("noExiste");
 
      expect(result).toBeNull();
-     expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/name/noExiste`);
+     expect(mockedAxios.get).toHaveBeenCalledWith(`${API_URL}/name/noExiste`,{withCredentials: true});
     });
 });

@@ -4,6 +4,10 @@ import { setSessionCookie } from "../../../src/modules/User-Authentication/appli
 import { getSessionCookie } from "../../../src/modules/User-Authentication/application/getSessionCookie";
 import { removeSessionCookie } from "../../../src/modules/User-Authentication/application/deleteSessionCookie";
 import { cookieUserData } from "./__mocks__/cookieData";
+import axios from "axios";
+jest.mock("axios");
+import {VITE_API} from "../../../config.ts";
+const API_URL = VITE_API; 
 
 jest.mock("js-cookie", () => ({
   set: jest.fn(),
@@ -38,7 +42,6 @@ describe("setSessionCookie", () => {
       JSON.stringify({},),
       { expires: 30 }
     );
-    expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining("Error setting session cookie:"),
@@ -48,44 +51,35 @@ describe("setSessionCookie", () => {
 });
 
 describe("getSessionCookie", () => {
-  it("retrieves the session cookie successfully", () => {
+    it("retrieves the session cookie successfully", async () => {
     const userData = { cookieUserData };
-    (Cookies.get as jest.Mock).mockReturnValueOnce(JSON.stringify(userData));
+    (axios.get as jest.Mock).mockResolvedValueOnce({ data: userData });
 
-    const result = getSessionCookie();
+    const result = await getSessionCookie();
 
-    expect(Cookies.get).toHaveBeenCalledWith("userSession");
+    expect(axios.get).toHaveBeenCalledWith(API_URL + "/user/me", { withCredentials: true });
     expect(result).toEqual(userData);
   });
 
-  it("returns null if the session cookie is not present", () => {
-    (Cookies.get as jest.Mock).mockReturnValueOnce(null);
+  it("returns null if the session cookie is not present", async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({ data: null });
 
-    const result = getSessionCookie();
+    const result = await getSessionCookie();
 
-    expect(Cookies.get).toHaveBeenCalledWith("userSession");
+    expect(axios.get).toHaveBeenCalledWith(API_URL + "/user/me", { withCredentials: true });
     expect(result).toBeNull();
   });
 
-  it("logs an error if retrieving the session cookie fails", () => {
+  it("logs an error if retrieving the session cookie fails", async () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
 
-    (Cookies.get as jest.Mock).mockImplementationOnce(() => {
-      throw new Error("Test error");
-    });
+    (axios.get as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
-    const result = getSessionCookie();
+    const result = await getSessionCookie();
 
     expect(result).toBeNull();
-    expect(console.error).toHaveBeenCalledTimes(2);
-    expect(console.error).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining("Error setting session cookie:"),
-      expect.any(Error)
-    );
-    expect(console.error).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining("Error retrieving session cookie:"),
+    expect(console.error).toHaveBeenCalledWith(
+      "Error retrieving session cookie:",
       expect.any(Error)
     );
   });

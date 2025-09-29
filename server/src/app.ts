@@ -12,18 +12,24 @@ import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 3000;
 
 // Enable CORS for all routes
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 app.use(express.json()); 
 
 app.use(bodyParser.json());
 
+app.use(cookieParser());
+
 // Define routes
-app.use("/api/user", router);
+app.use("/api/user", router,);
 app.use("/api/assignments", assignmentsRouter);
 app.use("/api/TDDCycles", TDDCyclesRouter);
 app.use("/api/groups", groupsRouter);

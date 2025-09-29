@@ -26,6 +26,9 @@ import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
+import {
+  CircularProgress,
+} from "@mui/material";
 
 const navArrayLinks = [
   {
@@ -61,27 +64,44 @@ const navArrayLinks = [
 ];
 
 function App() {
-  useEffect(() => {
-    const storedSession = getSessionCookie();
-    if (storedSession) {
-      setGlobalState("authData", {
-        userid: storedSession.id,
-        userProfilePic: storedSession.userData.photoURL,
-        userEmail: storedSession.userData.email,
-        usergroupid: storedSession.groupid,
-        userRole: storedSession.role,
-      });
-    } else {
+  const authData = useGlobalState("authData")[0];
+useEffect(() => {
+  getSessionCookie().then((storedSession) => {
+    const savedImage = localStorage.getItem("userProfilePic") || "";
+    if (!storedSession) {
       setGlobalState("authData", {
         userid: -1,
-        userProfilePic: "",
+        userProfilePic: savedImage,
         userEmail: "",
         usergroupid: -1,
         userRole: "",
       });
+    } else {
+      setGlobalState("authData", {
+        userid: storedSession.id,
+        userProfilePic: savedImage,
+        userEmail: storedSession.email,
+        usergroupid: storedSession.groupid,
+        userRole: storedSession.role,
+      });
     }
-  }, []);
-  const authData = useGlobalState("authData")[0];
+  });
+}, []);
+  if (authData.userid === undefined) {
+     return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <CircularProgress />
+    </div>
+  );
+  }
   return (
     <Router>
       {authData.userEmail != "" && authData.userRole !== undefined && (

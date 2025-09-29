@@ -10,7 +10,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   async getAssignments(): Promise<AssignmentDataObject[]> {
     try {
       // Send a GET request to fetch assignments from the backend
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL,{withCredentials: true});
 
       // Check if the response status is successful (e.g., 200 OK)
       if (response.status === 200) {
@@ -28,7 +28,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   }
   async getAssignmentsByGroupid(groupid: number): Promise<AssignmentDataObject[]> {
     try {
-      const response = await axios.get(`${API_URL}/groupid/${groupid}`);
+      const response = await axios.get(`${API_URL}/groupid/${groupid}`,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {
@@ -46,7 +46,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   ): Promise<AssignmentDataObject | null> {
     try {
       // Send a GET request to fetch a specific assignment by ID
-      const response = await axios.get(`${API_URL}/${assignmentId}`);
+      const response = await axios.get(`${API_URL}/${assignmentId}`,{withCredentials: true});
       // Check if the response status is successful (e.g., 200 OK)
       if (response.status === 200) {
         // Return the assignment data from the response
@@ -67,7 +67,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   async createAssignment(assignmentData: AssignmentDataObject): Promise<void> {
     try {
-      await axios.post(API_URL, assignmentData);
+      await axios.post(API_URL, assignmentData,{withCredentials: true});
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         throw new Error(error.response.data.message ?? "Error al crear la tarea");
@@ -81,7 +81,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
+    await axios.put(`${API_URL}/${assignmentId}`, assignmentData,{withCredentials: true});
   }
 
   async deleteAssignment(assignmentId: number): Promise<void> {
@@ -110,7 +110,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   ): Promise<void> {
 
 
-    await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData);
+    await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData,{withCredentials: true});
   }
 }
 
