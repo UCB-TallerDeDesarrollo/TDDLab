@@ -76,8 +76,36 @@ async createAssignment(req: Request, res: Response): Promise<void> {
       end_date,
       link,
       comment,
-      groupid,
+      groupid: rawGroupId,
     } = req.body;
+
+    // Normalizar groupid (acepta number, string, array, o literales con {}[])
+    let groupid: number;
+    if (Array.isArray(rawGroupId)) {
+      // si viene ["100"] o [{...}]
+      groupid = Number(rawGroupId[0]);
+    } else if (typeof rawGroupId === "string") {
+      // quitar llaves, corchetes y comillas si vienen: '{"100"}' o '{100}'
+      const cleaned = rawGroupId.replace(/[\[\]\{\}"]/g, "");
+      groupid = Number(cleaned);
+    } else {
+      groupid = Number(rawGroupId);
+    }
+
+    if (!Number.isFinite(groupid) || Number.isNaN(groupid)) {
+      console.warn("createAssignment: invalid groupid received:", rawGroupId);
+      res.status(400).json({ error: "Invalid groupid" });
+      return;
+    }
+
+    // DEBUG: ver qué llega antes de llamar al use case
+    console.log("createAssignment payload:", {
+      title,
+      groupid,
+      rawGroupId,
+      typeof_rawGroupId: typeof rawGroupId,
+    });
+
     const newAssignment = await this.createAssignmentUseCase.execute({
       title,
       description,
@@ -88,6 +116,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
       comment,
       groupid,
     });
+
     res.status(201).json(newAssignment);
   } catch (error) {
     if (error instanceof Error) {
@@ -96,7 +125,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
       } else if (error.message.includes("Limite de caracteres excedido")) {
         res.status(400).json({
           error: error.message,
-          message: `El titulo no puede tener mas de 50 caracteres.`
+          message: `El titulo no puede tener mas de 50 caracteres.`,
         });
       } else {
         console.error("Unexpected error: ", error);
