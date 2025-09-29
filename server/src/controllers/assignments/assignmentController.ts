@@ -144,6 +144,13 @@ async createAssignment(req: Request, res: Response): Promise<void> {
     try {
       const assignmentId = parseInt(req.params.id, 10);
 
+      console.log('=== INICIANDO ELIMINACIÓN ===');
+      console.log('Assignment ID:', assignmentId);
+      console.log('Tipo de ID:', typeof assignmentId);
+      console.log('URL completa:', req.url);
+
+      console.log('Intentando eliminar assignment ID:', assignmentId);
+
       if (!assignmentId) {
         res.status(400).json({
           success: false,
@@ -162,7 +169,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
         return;
       }
 
-      await this.deleteAssignmentUseCase.execute(assignmentId);
+      await this.deleteAssignmentUseCase.execute(String(assignmentId));
 
       res.status(200).json({
         success: true,
@@ -170,6 +177,11 @@ async createAssignment(req: Request, res: Response): Promise<void> {
       });
 
     } catch (error: any) {
+      console.error('Error eliminando assignment:', error);
+      console.error('=== ERROR EN ELIMINACIÓN ===');
+      console.error('Mensaje:', error.message);
+      console.error('Stack:', error.stack);
+      console.error('Código PostgreSQL:', error.code);
 
       if (error.message === "Tarea no encontrada") {
         res.status(404).json({

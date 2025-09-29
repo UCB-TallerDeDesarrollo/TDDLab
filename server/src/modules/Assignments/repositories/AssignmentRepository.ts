@@ -106,24 +106,24 @@ class AssignmentRepository {
 
   async deleteAssignment(assignmentId: number): Promise<void> {
     const client = await pool.connect();
-    console.log("🗑️ Eliminando assignment de BD, ID:", assignmentId);
+    console.log("Eliminando assignment de BD, ID:", assignmentId);
 
     try {
-      // 1.Intentar eliminar entregas relacionadas (si existen)
+      // 1. Intentar eliminar entregas relacionadas (si existen)
       try {
         await client.query('DELETE FROM submissions WHERE assignmentid = $1', [assignmentId]);
       } catch (error: any) {
         console.warn("Tabla submissions no existe, continuando...");
       }
 
-      // 2.Intentar eliminar deliveries si existen
+      // 2. Intentar eliminar deliveries si existen
       try {
         await client.query('DELETE FROM deliveries WHERE assignmentid = $1', [assignmentId]);
       } catch (error: any) {
         console.warn("Tabla deliveries no existe, continuando...");
       }
 
-      // 3.Finalmente eliminar el assignment
+      // 3. Finalmente eliminar el assignment
       await client.query('DELETE FROM assignments WHERE id = $1', [assignmentId]);
 
     } catch (error: any) {
