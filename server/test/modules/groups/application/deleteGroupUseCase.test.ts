@@ -1,7 +1,6 @@
 import DeleteGroupUseCase from '../../../../src/modules/Groups/application/GroupUseCases/deleteGroupUseCase';
 import { getGroupsRepositoryMock } from '../../../__mocks__/groups/repositoryMock';
 import { getDataGroupMock, getDataListOfGroupsMock } from '../../../__mocks__/groups/dataTypeMocks/groupData';
-import { getAssignmentListMock } from '../../../__mocks__/assignments/dataTypeMocks/assignmentData';
 import { getAssignmentRepositoryMock } from '../../../__mocks__/assignments/repositoryMock';
 import DeleteAssignment from '../../../../src/modules/Assignments/application/AssignmentUseCases/deleteAssignmentUseCase';
 
@@ -53,10 +52,16 @@ describe('DeleteGroupUseCase', () => {
 
   it('should delete all related assignments when a group is deleted', async ()=>{
     const groupid = 1;
-    const assignmentsToDelete = getAssignmentListMock().filter(assignment => assignment.groupid === groupid);
+    const assignmentsToDelete = [
+      { id: "id_assignment_pending", groupid },
+      { id: "id_assignment_in_progress", groupid }
+    ];
 
-    groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(getDataListOfGroupsMock.find(group => group.id === groupid));
-    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockResolvedValueOnce(assignmentsToDelete)
+    groupRepositoryMock.obtainGroupById.mockResolvedValueOnce(
+      getDataListOfGroupsMock.find(group => group.id === groupid)
+    );
+
+    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockResolvedValueOnce(assignmentsToDelete);
 
     for (const assignment of assignmentsToDelete) {
       await deleteAssignment.execute(assignment.id);
@@ -64,7 +69,7 @@ describe('DeleteGroupUseCase', () => {
     await deleteGroupUseCase.execute(groupid);
 
     assignmentsToDelete.forEach(assignment => {
-      expect(assignmentRepositoryMock.deleteAssignment).toHaveBeenCalledWith(assignment.id);
+      expect(assignmentRepositoryMock.deleteAssignment).toHaveBeenCalledWith(Number(assignment.id));
     });
     expect(groupRepositoryMock.deleteGroup).toHaveBeenCalledWith(groupid);
   });

@@ -140,15 +140,69 @@ async createAssignment(req: Request, res: Response): Promise<void> {
 
 
 
-  async deleteAssignment(req: Request, res: Response): Promise<void> {
+ async deleteAssignment(req: any, res: Response): Promise<void> {
     try {
-      const assignmentId = req.params.id;
-      await this.deleteAssignmentUseCase.execute(assignmentId);
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ error: "Server error" });
+      const assignmentId = parseInt(req.params.id, 10);
+
+      console.log('=== INICIANDO ELIMINACIÓN ===');
+      console.log('Assignment ID:', assignmentId);
+      console.log('Tipo de ID:', typeof assignmentId);
+      console.log('URL completa:', req.url);
+
+      console.log('Intentando eliminar assignment ID:', assignmentId);
+
+      if (!assignmentId) {
+        res.status(400).json({
+          success: false,
+          error: 'ID de tarea es requerido'
+        });
+        return;
+      }
+
+      const existingAssignment = await this.getAssignmentByIdUseCase.execute(String(assignmentId));
+
+      if (!existingAssignment) {
+        res.status(404).json({
+          success: false,
+          error: 'Tarea no encontrada'
+        });
+        return;
+      }
+
+      await this.deleteAssignmentUseCase.execute(String(assignmentId));
+
+      res.status(200).json({
+        success: true,
+        message: 'Tarea eliminada correctamente'
+      });
+
+    } catch (error: any) {
+      console.error('Error eliminando assignment:', error);
+      console.error('=== ERROR EN ELIMINACIÓN ===');
+      console.error('Mensaje:', error.message);
+      console.error('Stack:', error.stack);
+      console.error('Código PostgreSQL:', error.code);
+
+      if (error.message === "Tarea no encontrada") {
+        res.status(404).json({
+          success: false,
+          error: error.message
+        });
+      } else if (error.message === "ID de tarea invalido") {
+        res.status(400).json({
+          success: false,
+          error: error.message
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Error interno del servidor al eliminar la tarea',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+      }
     }
   }
+
 
   async deliverAssignment(req: Request, res: Response): Promise<void> {
     try {

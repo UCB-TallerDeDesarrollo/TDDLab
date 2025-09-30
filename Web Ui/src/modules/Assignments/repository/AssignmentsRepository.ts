@@ -87,21 +87,41 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   async deleteAssignment(assignmentId: number): Promise<void> {
     try {
-      // Send a GET request to fetch a specific assignment by ID
-      const response = await axios.delete(`${API_URL}/${assignmentId}`,{withCredentials: true});
+      console.log('Enviando DELETE a:', `${API_URL}/${assignmentId}`);
 
-      // Check if the response status is successful (e.g., 200 OK)
+      const response = await axios.delete(`${API_URL}/${assignmentId}`, {
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Delete response status:', response.status);
+      console.log('Delete response data:', response.data);
+
       if (response.status === 200) {
-        // Return the assignment data from the response
         return response.data;
       } else {
-        // Handle other response status codes or errors here if needed
-        throw new Error("Failed to delete assignment by ID");
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
-      // Handle any network errors or exceptions that may occur
-      console.error("Error deleting assignment by ID:", error);
-      throw error;
+
+    } catch (error: any) {  
+      console.error('Error en deleteAssignment (frontend):', error);
+
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const serverError = error.response.data;
+          console.error('Error del servidor:', serverError);
+
+          const errorMessage = serverError?.error || serverError?.message || `Error ${error.response.status}: ${error.response.statusText}`;
+
+          throw new Error(errorMessage);
+        } else if (error.request) {
+          throw new Error('Error de conexion: No se pudo conactar al servidor');
+        }
+      }
+
+      throw new Error(error.message || 'Error desconocido al eliminar la tarea');    
     }
   }
 

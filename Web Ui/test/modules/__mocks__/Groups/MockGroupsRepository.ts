@@ -16,8 +16,9 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
     throw new Error("Method not implemented.");
   }
 
-  createGroup(_groupData: GroupDataObject): Promise<void> {
-    throw new Error("Method not implemented.");
+  createGroup(_groupData: GroupDataObject): Promise<GroupDataObject> {
+    this.groups.push(_groupData);
+    return Promise.resolve(_groupData);
   }
 
   deleteGroup(_id: number): Promise<void> {

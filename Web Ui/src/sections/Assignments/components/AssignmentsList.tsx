@@ -64,6 +64,7 @@ function Assignments({
       number | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,7 +72,7 @@ function Assignments({
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
 
-  const deleteAssignment = new DeleteAssignment(assignmentsRepository);
+  const deleteAssignmentUseCase = new DeleteAssignment(assignmentsRepository);
 
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
@@ -259,26 +260,30 @@ function Assignments({
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      if (
-          selectedAssignmentIndex !== null &&
-          assignments[selectedAssignmentIndex]
-      ) {
-        
-        await deleteAssignment.deleteAssignment(
-            assignments[selectedAssignmentIndex].id,
-        );
-        const updatedAssignments = [...assignments];
-        updatedAssignments.splice(selectedAssignmentIndex, 1);
-        setAssignments(updatedAssignments);
-      }
+    if (selectedAssignmentIndex === null || !assignments[selectedAssignmentIndex]) {
       setConfirmationOpen(false);
-    } catch (error) {
-      console.error(error);
+      return;
     }
-    setValidationDialogOpen(true);
-    setConfirmationOpen(false);
+
+    setDeleteLoading(true);
+
+    try {
+      const assignmentToDelete = assignments[selectedAssignmentIndex];
+      console.log('Eliminando assignment:', assignmentToDelete);
+
+      const resutlt = await deleteAssignmentUseCase.deleteAssignment(assignmentToDelete.id);
+      console.log('Resultado obtenido al intentar eliminar eliminar:', resutlt);
+
+      const updatedAssignments = assignments.filter((_, index) => index !== selectedAssignmentIndex);
+      setAssignments(updatedAssignments);
+    } catch (error: any) {
+      console.error('Error eliminando assignment:', error);
+    } finally {
+      setDeleteLoading(false);
+      setSelectedAssignmentIndex(null);
+    }
   };
+
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
