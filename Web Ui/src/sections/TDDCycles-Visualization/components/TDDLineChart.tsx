@@ -26,6 +26,7 @@ import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domai
 import axios from "axios";
 import TDDCycleChart from "./TDDCycleChart";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
+import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
   CategoryScale,
