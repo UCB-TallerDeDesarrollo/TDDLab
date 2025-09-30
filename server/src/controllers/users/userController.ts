@@ -52,7 +52,7 @@ class UserController {
 
     if (!email) {
       res.status(400).json({
-        error: "Debes proporcionar un id valido:",
+        error: "Debes proporcionar un email valido:",
       });
       return;
     }
@@ -74,6 +74,7 @@ class UserController {
       const email = decoded.email;
       if (!email) {
         res.status(400).json({ error: "No se pudo obtener email de Firebase" });
+        return;
       }
       let user = (await getUserByemail(email || "")) as User;
       const token = await getUserToken(user);
@@ -123,12 +124,14 @@ async  logoutController (res: Response): Promise<void> {
     try {
       let userData = await getUser(id);
 
-      if (userData == null)
+      if (userData == null) {
         res.status(404).json({ message: "Usuario no encontrado" });
-      else if ("email" in userData) {
+      } else if ("email" in userData) {
         let userGroups = await getUserByemail(userData.email);
         if (userGroups != null && "groupid" in userGroups) {
           res.status(200).json(userGroups.groupid);
+        } else {
+          res.status(404).json({ message: "Usuario no encontrado" });
         }
       } else {
         res.status(404).json({ message: "Usuario no encontrado" });
@@ -154,11 +157,15 @@ async  logoutController (res: Response): Promise<void> {
   }
   async getUsersByGroupid(req: Request, res: Response): Promise<void> {
     const { groupid } = req.params;
+    const gid = parseInt(groupid);
+
+    if (Number.isNaN(gid)) {
+      res.status(400).json({ error: "Debes proporcionar un groupid válido" });
+    return;
+    }
 
     try {
-      const users = await this.userRepository.getUsersByGroupid(
-        parseInt(groupid)
-      );
+      const users = await this.userRepository.getUsersByGroupid(gid)
       res.json(users);
     } catch (error) {
       res
@@ -231,13 +238,14 @@ async  logoutController (res: Response): Promise<void> {
       res
         .status(200)
         .json({ message: "Usuario eliminado del grupo exitosamente." });
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error al eliminar usuario del grupo:", error);
-      if (error === "Usuario o grupo no encontrado") {
-        res.status(404).json({ error: error });
+      const msg = typeof error === "string" ? error : error?.message;
+      if (msg === "Usuario o grupo no encontrado") {
+        res.status(404).json({ error: msg });
       } else {
         res.status(500).json({ error: "Error interno del servidor." });
-      }
+        }
     }
   }
 }
