@@ -157,11 +157,15 @@ async  logoutController (res: Response): Promise<void> {
   }
   async getUsersByGroupid(req: Request, res: Response): Promise<void> {
     const { groupid } = req.params;
+    const gid = parseInt(groupid);
+
+    if (Number.isNaN(gid)) {
+      res.status(400).json({ error: "Debes proporcionar un groupid válido" });
+    return;
+    }
 
     try {
-      const users = await this.userRepository.getUsersByGroupid(
-        parseInt(groupid)
-      );
+      const users = await this.userRepository.getUsersByGroupid(gid)
       res.json(users);
     } catch (error) {
       res
