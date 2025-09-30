@@ -52,7 +52,7 @@ class UserController {
 
     if (!email) {
       res.status(400).json({
-        error: "Debes proporcionar un id valido:",
+        error: "Debes proporcionar un email valido:",
       });
       return;
     }
