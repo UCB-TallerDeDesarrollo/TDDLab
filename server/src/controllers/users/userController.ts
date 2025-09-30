@@ -238,13 +238,14 @@ async  logoutController (res: Response): Promise<void> {
       res
         .status(200)
         .json({ message: "Usuario eliminado del grupo exitosamente." });
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error al eliminar usuario del grupo:", error);
-      if (error === "Usuario o grupo no encontrado") {
-        res.status(404).json({ error: error });
+      const msg = typeof error === "string" ? error : error?.message;
+      if (msg === "Usuario o grupo no encontrado") {
+        res.status(404).json({ error: msg });
       } else {
         res.status(500).json({ error: "Error interno del servidor." });
-      }
+        }
     }
   }
 }
