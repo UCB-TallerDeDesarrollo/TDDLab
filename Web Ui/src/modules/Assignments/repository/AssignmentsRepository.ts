@@ -93,7 +93,8 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
         timeout: 10000,
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        withCredentials: true
       });
 
       console.log('Delete response status:', response.status);
