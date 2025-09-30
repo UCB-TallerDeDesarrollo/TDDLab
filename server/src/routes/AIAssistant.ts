@@ -29,19 +29,21 @@ aiAssistantRouter.post(
 aiAssistantRouter.get(
   "/",
   authenticateJWT,
-  authorizeRoles("admin", "teacher","student"),
+  authorizeRoles("admin", "teacher"),
   async (req, res) => await aiAssistantController.getPrompts(req, res)
 );
 
 aiAssistantRouter.put(
   "/",
   authenticateJWT,
-  authorizeRoles("admin", "teacher","student"),
+  authorizeRoles("admin", "teacher"),
   async (req, res) => await aiAssistantController.updatePrompts(req, res)
 );
 
 aiAssistantRouter.post(
   "/analyze-tdd-extension",
+    authenticateJWT,
+  authorizeRoles("admin", "teacher","student"),
   async (req, res) =>
     await aiAssistantController.analyzeTDDFromExtension(req, res)
 );
