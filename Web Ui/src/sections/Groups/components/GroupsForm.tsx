@@ -27,11 +27,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  const [lastCreated, setLastCreated] = useState<GroupDataObject | null>(null);
-
   const groupRepository = new GroupsRepository();
-
-  const formInvalid = () => groupName.trim() === "";
 
   const handleCancel = () => {
     handleClose();
@@ -39,13 +35,15 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     setGroupDescription("");
   };
 
+  const formInvalid = () => groupName.trim() === "";
+
   const handleCreate = async () => {
     setSave(true);
     if (formInvalid()) return;
 
     const createGroup = new CreateGroup(groupRepository);
     const payload: GroupDataObject = {
-      id: 0 as unknown as number, 
+      id: 0 as unknown as number,
       groupName,
       groupDetail: groupDescription,
       creationDate: new Date(),
@@ -53,10 +51,8 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
     try {
       const newGroup = await createGroup.createGroup(payload);
-      if (newGroup?.id) {
-        localStorage.setItem("selectedGroup", String(newGroup.id));
-        setLastCreated(newGroup);
-      }
+      // avisa al padre
+      onCreated?.(newGroup);
       setValidationDialogOpen(true);
     } catch (error) {
       console.error("Error al crear el grupo:", error);
@@ -66,18 +62,13 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   };
 
   useEffect(() => {
-    setSave(false);
+    if (!open) {
+      setSave(false);
+      setValidationDialogOpen(false);
+      setGroupName("");
+      setGroupDescription("");
+    }
   }, [open]);
-
-  const handleSuccessClose = () => {
-    setValidationDialogOpen(false);
-    //actualizará la lista y selección.
-    if (lastCreated && onCreated) onCreated(lastCreated);
-    handleClose();
-    setGroupName("");
-    setGroupDescription("");
-    setLastCreated(null);
-  };
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -97,9 +88,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
-              helperText={
-                formInvalid() && !!save ? "El nombre no puede estar vacío" : ""
-              }
+              helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
               multiline
@@ -116,29 +105,25 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button
-              onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
-            >
+            <Button onClick={handleCancel} style={{ color: "#555", textTransform: "none" }}>
               Cancelar
             </Button>
-            <Button
-              onClick={handleCreate}
-              color="primary"
-              style={{ textTransform: "none" }}
-            >
+            <Button onClick={handleCreate} color="primary" style={{ textTransform: "none" }}>
               Crear
             </Button>
           </DialogActions>
         </>
       )}
 
-      {!!validationDialogOpen && (
+      {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
           title="Grupo creado exitosamente"
           closeText="Cerrar"
-          onClose={handleSuccessClose}
+          onClose={() => {
+            setValidationDialogOpen(false);
+            handleClose(); // cierra el popup después de mostrar el mensaje
+          }}
         />
       )}
     </Dialog>
