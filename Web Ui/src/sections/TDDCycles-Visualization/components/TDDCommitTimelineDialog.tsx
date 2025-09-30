@@ -32,6 +32,26 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
   commitTimelineData,
   commits,
 }) => {
+
+  // Preparar los datos para la visualización
+  const prepareTimelineData = () => {
+    if (!commitTimelineData || commitTimelineData.length === 0) return [];
+    
+    return commitTimelineData.map((item, index) => ({
+      x: index + 1,
+      y: 1,
+      r: 15,
+      // Si el dato viene del tdd_log.json:
+      isPassed: item.success ?? (item.color === "green"),
+      numTests: item.numTotalTests ?? item.number_of_tests,
+      passedTests: item.numPassedTests ?? item.passed_tests,
+      failedTests: item.failedTests,
+      date: item.timestamp ? new Date(item.timestamp) : item.execution_timestamp,
+    }));
+  };
+
+  const timelineData = prepareTimelineData();
+
   return (
     <Dialog
       open={open}
@@ -55,7 +75,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
         } `}
       </DialogTitle>
       <DialogContent>
-        {selectedCommit?.commit?.message && (
+        {selectedCommit?.sha && (
           <div style={{ textAlign: "center", marginBottom: "10px" }}>
             <div
               style={{
@@ -64,37 +84,26 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                 marginBottom: "10px",
               }}
             >
-              ({selectedCommit?.sha})
+              ({selectedCommit.sha})
             </div>
           </div>
         )}
-        {commitTimelineData.length > 0 ? (
+        {timelineData.length > 0 ? (
           <div>
             <div style={{ width: "100%", height: "300px" }}>
               <Bubble
                 data={{
                   datasets: [
                     {
-                      label: "Ejecución",
-                      data: commitTimelineData.map((item, index) => ({
-                        x: index + 1,
-                        y: 1,
-                        r: 15,
-                        backgroundColor:
-                          item.color === "green" ? "#28A745" : "#D73A49",
-                        borderColor:
-                          item.color === "green" ? "#28A745" : "#D73A49",
-                        numTests: item.number_of_tests,
-                        passedTests: item.passed_tests,
-                        date: item.execution_timestamp,
-                      })),
-                      backgroundColor: commitTimelineData.map((item) =>
-                        item.color === "green" ? "#28A745" : "#D73A49"
+                      label: "Ejecuciones de Tests",
+                      data: timelineData,
+                      backgroundColor: timelineData.map((item) =>
+                        item.isPassed ? "#28A745" : "#D73A49"
                       ),
-                      borderColor: commitTimelineData.map((item) =>
-                        item.color === "green" ? "#28A745" : "#D73A49"
+                      borderColor: timelineData.map((item) =>
+                        item.isPassed ? "#28A745" : "#D73A49"
                       ),
-                      borderWidth: 1,
+                      borderWidth: 2,
                     },
                   ],
                 }}
@@ -103,14 +112,15 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                     x: {
                       title: {
                         display: true,
+                        text: "Ejecuciones de pruebas en este commit",
                       },
                       ticks: {
-                        display: false,
+                        stepSize: 1,
                       },
                     },
                     y: {
                       title: {
-                        display: true,
+                        display: false,
                       },
                       ticks: {
                         display: false,
@@ -125,43 +135,32 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                       enabled: true,
                       callbacks: {
                         label: function (context: any) {
-                            const dataPoint = context.raw;
-                            const formatDate = (date: string | Date): string => {
-                              const d = new Date(date);
-                              const day = String(d.getDate()).padStart(2, '0');
-                              const month = String(d.getMonth() + 1).padStart(2, '0');
-                              const year = d.getFullYear();
-                              return `${day}/${month}/${year}`;
-                            };
-                          
-                            const formatTime = (date: string | Date): string => {
-                              const d = new Date(date);
-                              const hours = String(d.getHours()).padStart(2, '0');
-                              const minutes = String(d.getMinutes()).padStart(2, '0');
-                              return `${hours}:${minutes}`;
-                            };
-                          
-                            return [
-                              `Number of Tests: ${dataPoint.numTests}`,
-                              `Passed Tests: ${dataPoint.passedTests}`,
-                              `Fecha: ${formatDate(dataPoint.date)}`,
-                              `Hora: ${formatTime(dataPoint.date)}`,
-                            ];
-                          },                          
+                          const dataPoint = context.raw;
+                          const formatDate = (date: Date): string => {
+                            const day = String(date.getDate()).padStart(2, "0");
+                            const month = String(date.getMonth() + 1).padStart(2, "0");
+                            const year = date.getFullYear();
+                            return `${day}/${month}/${year}`;
+                          };
+
+                          const formatTime = (date: Date): string => {
+                            const hours = String(date.getHours()).padStart(2, "0");
+                            const minutes = String(date.getMinutes()).padStart(2, "0");
+                            const seconds = String(date.getSeconds()).padStart(2, "0");
+                            return `${hours}:${minutes}:${seconds}`;
+                          };
+
+                          return [
+                            `Ejecución ${context.dataIndex + 1}`,
+                            `Total Tests: ${dataPoint.numTests}`,
+                            `Tests Pasados: ${dataPoint.passedTests}`,
+                            `Tests Fallidos: ${dataPoint.failedTests || 0}`,
+                            `Estado: ${dataPoint.isPassed ? "✓ Exitoso" : "✗ Fallido"}`,
+                            `Fecha: ${formatDate(dataPoint.date)}`,
+                            `Hora: ${formatTime(dataPoint.date)}`,
+                          ];
+                        },
                       },
-                    },
-                  },
-                  elements: {
-                    point: {
-                      backgroundColor: (context: any) =>
-                        context.raw.backgroundColor,
-                      borderColor: (context: any) =>
-                        context.raw.borderColor,
-                      hoverBackgroundColor: (context: any) =>
-                        context.raw.backgroundColor,
-                      hoverBorderColor: (context: any) =>
-                        context.raw.borderColor,
-                      hoverRadius: 8,
                     },
                   },
                 }}
@@ -171,8 +170,16 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
         ) : (
           <div>
             <p style={{ textAlign: "center", margin: "2em 0px 2em 0px" }}>
-              No hay un registro de ejecución vinculante para este commit.
+              No hay registros de ejecución para este commit.
             </p>
+            <Button
+              onClick={handleOpenFileDialog}
+              variant="outlined"
+              fullWidth
+              style={{ marginTop: "1em" }}
+            >
+              Subir archivo tdd_log.json
+            </Button>
             <FileUploadDialog
               open={isFileDialogOpen}
               onClose={handleCloseFileDialog}
@@ -181,11 +188,11 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
           </div>
         )}
         {selectedCommit?.commit?.message && (
-          <div style={{ textAlign: "center", marginBottom: "10px" }}>
-            <strong>Mensaje:</strong>
-            <span style={{ fontStyle: "italic" }}>
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <strong>Mensaje del commit:</strong>
+            <p style={{ fontStyle: "italic", marginTop: "5px" }}>
               {selectedCommit.commit.message}
-            </span>
+            </p>
           </div>
         )}
       </DialogContent>
@@ -202,7 +209,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
           color="primary"
           variant="contained"
         >
-          Ir al Commit
+          Ir al Commit en GitHub
         </Button>
       </DialogActions>
     </Dialog>

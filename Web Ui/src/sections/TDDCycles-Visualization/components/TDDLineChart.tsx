@@ -25,6 +25,7 @@ import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domai
 import axios from "axios";
 import TDDBar from "./Graficas-Adicionales/TDDBarCycle";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
+import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
   CategoryScale,
@@ -41,6 +42,7 @@ ChartJS.register(
 
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
+  tddLogs: TDDLogEntry [] | null;
   optionSelected: string;
   port: CommitHistoryRepository;
   role: string;
@@ -50,6 +52,7 @@ interface LineChartProps {
 
 function TDDLineCharts({
   filteredCommitsObject,
+  tddLogs,
   optionSelected,
   port,
   role,
@@ -365,7 +368,7 @@ function TDDLineCharts({
       case "Lista":
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} port={port} role={role}/>;
+          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
       case "Complejidad":
             if (complexity != null) {
                 dataChart = getDataChart(
