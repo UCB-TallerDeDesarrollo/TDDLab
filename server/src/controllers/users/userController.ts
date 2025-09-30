@@ -74,6 +74,7 @@ class UserController {
       const email = decoded.email;
       if (!email) {
         res.status(400).json({ error: "No se pudo obtener email de Firebase" });
+        return;
       }
       let user = (await getUserByemail(email || "")) as User;
       const token = await getUserToken(user);
