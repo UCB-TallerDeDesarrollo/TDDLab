@@ -24,7 +24,7 @@ interface CommitTimelineDialogProps {
 const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
   open,
   handleCloseModal,
-  handleOpenFileDialog,
+  handleOpenFileDialog: _handleOpenFileDialog,
   handleCloseFileDialog,
   handleFileUpload,
   isFileDialogOpen,
