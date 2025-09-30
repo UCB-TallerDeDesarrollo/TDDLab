@@ -64,7 +64,7 @@ function Assignments({
       number | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 

@@ -10,8 +10,8 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
   getGroupById(_id: number): Promise<GroupDataObject | null> {
     throw new Error("Method not implemented.");
   }
-  createGroup(_groupData: GroupDataObject): Promise<void> {
-    throw new Error("Method not implemented.");
+  createGroup(_groupData: GroupDataObject): Promise<GroupDataObject> {
+    return Promise.resolve(_groupData);
   }
   async deleteGroup(id: number): Promise<void> {
     try {
