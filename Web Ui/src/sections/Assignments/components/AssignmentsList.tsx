@@ -279,6 +279,7 @@ function Assignments({
     } catch (error: any) {
       console.error('Error eliminando assignment:', error);
     } finally {
+      setConfirmationOpen(false);
       setDeleteLoading(false);
       setSelectedAssignmentIndex(null);
     }
