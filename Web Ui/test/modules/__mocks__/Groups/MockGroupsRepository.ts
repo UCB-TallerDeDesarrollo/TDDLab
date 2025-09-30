@@ -2,30 +2,42 @@ import { GroupDataObject } from "../../../../src/modules/Groups/domain/GroupInte
 import GroupsRepositoryInterface from "../../../../src/modules/Groups/domain/GroupsRepositoryInterface";
 
 class MockGroupsRepository implements GroupsRepositoryInterface {
-  private readonly groups: GroupDataObject[];
+  private groups: GroupDataObject[];
+  private nextId: number;
 
-  constructor(groups: GroupDataObject[] = []) {
-    this.groups = groups;
+  constructor(initialGroups: GroupDataObject[] = []) {
+    this.groups = initialGroups;
+    this.nextId =
+      initialGroups.length > 0
+        ? Math.max(...initialGroups.map(g => g.id ?? 0)) + 1
+        : 1;
   }
 
-  getGroups(): Promise<GroupDataObject[]> {
-    return Promise.resolve(this.groups);
+  async getGroups(): Promise<GroupDataObject[]> {
+    return this.groups;
   }
 
-  getGroupById(_id: number): Promise<GroupDataObject | null> {
-    throw new Error("Method not implemented.");
+  async getGroupById(id: number): Promise<GroupDataObject | null> {
+    return this.groups.find(g => g.id === id) || null;
   }
 
-  createGroup(_groupData: GroupDataObject): Promise<void> {
-    throw new Error("Method not implemented.");
+  async createGroup(groupData: GroupDataObject): Promise<GroupDataObject> {
+    const newGroup: GroupDataObject = {
+      ...groupData,
+      id: groupData.id ?? this.nextId++,
+    };
+    this.groups.push(newGroup);
+    return newGroup;
   }
 
-  deleteGroup(_id: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  async deleteGroup(id: number): Promise<void> {
+    this.groups = this.groups.filter(g => g.id !== id);
   }
 
-  getGroupsByUserId(_id: number): Promise<number[]>{
-    throw new Error("Method not implemented.");
+  async getGroupsByUserId(userId: number): Promise<number[]> {
+    return this.groups
+      .filter(g => g.id === userId)
+      .map(g => g.id);
   }
 }
 
