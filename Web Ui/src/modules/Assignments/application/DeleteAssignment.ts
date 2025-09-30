@@ -5,13 +5,19 @@ export class DeleteAssignment {
     private readonly assignmentsRepository: AssignmentsRepositoryInterface
   ) {}
 
-  async deleteAssignment(assignmentId: number) {
+  async deleteAssignment(assignmentId: number): Promise<string> {
     try {
+      console.log('Deleting assignment with ID:', assignmentId);
+
       await this.assignmentsRepository.deleteAssignment(assignmentId);
-      return "Succesful deletion";
-    } catch (error) {
-      console.error("Error deleting assignment by ID:", error);
-      throw error;
+
+      console.log('Assignment deleted successfully');
+      return "Tarea eliminada correctamente";
+
+    } catch (error: any) {
+      console.error("Error deleting assignment:", error);
+      
+      throw new Error(error.message || "Error al eliminar la tarea");
     }
   }
 }

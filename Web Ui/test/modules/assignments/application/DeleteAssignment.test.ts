@@ -24,7 +24,7 @@ describe("Delete Assignment", () => {
     };
     mockRepository.createAssignment(assignment);
     const obtainedAssignment = await deleteAssignment.deleteAssignment(1);
-    expect(obtainedAssignment).toEqual("Succesful deletion");
+    expect(obtainedAssignment).toEqual("Tarea eliminada correctamente");
   });
   it("Should handle an exception if an error occurs", async () => {
     mockRepository.deleteAssignment.mockRejectedValue(
