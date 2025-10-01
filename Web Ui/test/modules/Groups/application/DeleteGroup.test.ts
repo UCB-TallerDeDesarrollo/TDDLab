@@ -58,4 +58,15 @@ describe("DeleteGroup", () => {
       mockError
     );
   });
+
+  it("should throw a standardized error message when repository fails", async () => {
+  const groupId = 1;
+  groupsRepositoryMock.deleteGroup = jest
+    .fn()
+    .mockRejectedValueOnce(new Error("DB down"));
+
+  await expect(deleteGroupInstance.deleteGroup(groupId))
+    .rejects.toThrow("Failed to delete group");
+});
+
 });

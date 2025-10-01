@@ -48,7 +48,15 @@ describe('GetGroups', () => {
         groupName: "",
         groupDetail: "",
         creationDate: expect.any(Date),
+    });
   });
-});
-    
+
+      it("should return [-1] when repository returns null in getGroupsByUserId", async () => {
+      groupsRepositoryMock.getGroupsByUserId = jest.fn().mockResolvedValueOnce(null);
+
+      const result = await getGroupsInstance.getGroupsByUserId(123);
+
+      expect(result).toEqual([-1]);
+    });
+        
   });
