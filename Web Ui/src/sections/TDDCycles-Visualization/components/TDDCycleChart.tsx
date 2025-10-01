@@ -213,7 +213,6 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '20px',
     backgroundColor: '#ffffff',
     borderRadius: '8px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
     maxWidth: '1300px',
     margin: '20px auto',
   },
