@@ -9,6 +9,7 @@ import { UploadTDDLogFile } from "../../../modules/Assignments/application/Uploa
 import { useSearchParams } from "react-router-dom";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry,  TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import TDDCycleChart from "./TDDCycleChart";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
@@ -530,7 +531,8 @@ const getTestsForCommit = (commitSha: string): TestExecutionLog[] => {
         </>
 
       )}
-    </>
+      <TDDCycleChart data={tddLogs} />
+    </>    
   );
 };
 

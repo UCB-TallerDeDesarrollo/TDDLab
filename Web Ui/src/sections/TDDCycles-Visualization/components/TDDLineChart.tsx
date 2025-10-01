@@ -3,6 +3,7 @@ import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/Tdd
 import { getElementAtEvent, Line } from "react-chartjs-2";
 import { useEffect, useRef, useState } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
+import { GetTDDLogsUseCase } from "../../../modules/TDDCycles-Visualization/application/GetTDDLogUseCase";
 
 import {
   Chart as ChartJS,
@@ -23,7 +24,7 @@ import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import axios from "axios";
-import TDDBar from "./Graficas-Adicionales/TDDBarCycle";
+import TDDCycleChart from "./TDDCycleChart";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
@@ -380,8 +381,12 @@ function TDDLineCharts({
             }
             break;
           
-      case "TddCiclos":
-        return <TDDBar CommitsCycles={commitsCycles || []}></TDDBar>
+      case "Ciclo de ejecución de pruebas": {
+        console.log(tddLogs)
+        return <TDDCycleChart data={tddLogs} />;
+      }
+
+
       case "Pie":
         return <TDDPie commits={filteredCommitsObject || []} />;     
     }

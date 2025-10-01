@@ -78,13 +78,13 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, complexity, commit
 
   const options = [
     { value: 'Complejidad', label: 'Lista de Complejidad' },
-    { value: 'TddCiclos', label: 'Análisis de distribución de pruebas por commit' },
     { value: 'Pie', label: 'Distribución de Commits' },
     { value: 'Dashboard', label: 'Dashboard' },
     { value: 'Total Número de Tests', label: 'Total Número de Tests' },
     { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
     { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
     { value: 'Lista', label: 'Lista de Commits' },
+    { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
   ];
 
   return (
@@ -102,9 +102,9 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, complexity, commit
           >
             {options.filter(option => {
               if (typegraphs === 'aditionalgraph') {
-                return ['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+                return ['Complejidad', 'Pie'].includes(option.value);
               } else {
-                return !['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+                return !['Complejidad', 'Pie'].includes(option.value);
               }
             }).map((option) => (
               <MenuItem key={option.value} value={option.value}>
