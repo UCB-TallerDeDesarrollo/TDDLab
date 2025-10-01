@@ -274,8 +274,8 @@ function Assignments({
       const resutlt = await deleteAssignmentUseCase.deleteAssignment(assignmentToDelete.id);
       console.log('Resultado obtenido al intentar eliminar eliminar:', resutlt);
 
-      const updatedAssignments = assignments.filter((_, index) => index !== selectedAssignmentIndex);
-      setAssignments(updatedAssignments);
+      setValidationDialogOpen(true);
+
     } catch (error: any) {
       console.error('Error eliminando assignment:', error);
     } finally {
