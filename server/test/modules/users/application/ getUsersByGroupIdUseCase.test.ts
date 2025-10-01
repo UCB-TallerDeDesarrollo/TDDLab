@@ -1,29 +1,57 @@
-import { getUserRepositoryMock } from "../../../__mocks__/users/userRepositoryMock";
-import GetUsersByGroupidUseCase from "../../../../src/modules/Users/Application/getUsersByGroupidUseCase";
-import { mockUsers } from "../../../__mocks__/users/dataTypeMocks/mockUsers";
+import UserController from "../../../../src/controllers/users/userController";
+import * as getUserByEmailModule from "../../../../src/modules/Users/Application/getUserByemailUseCase";
+import { UserRepository } from "../../../../src/modules/Users/Repositories/UserRepository";
 
-let userRepositoryMock: any
-let getUsersByGroupid: any;
+describe("UserController - getUserController", () => {
+  let userController: UserController;
+  let mockRes: any;
 
-beforeEach(() => {
-    userRepositoryMock = getUserRepositoryMock();
-    getUsersByGroupid = new GetUsersByGroupidUseCase(userRepositoryMock);
+  beforeEach(() => {
+    userController = new UserController(new UserRepository());
+    mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
   });
 
-describe('GetUsersByGroupIdUseCase', () => {
-  
-    it('should retrieve users by group ID', async () => {
-      const groupId = 70;
-      const expectedUsers = mockUsers.filter((user) => user.groupid.includes(groupId));
-  
-      const result = await getUsersByGroupid.execute(groupId);
-  
-      expect(result).toEqual(expectedUsers);
-      expect(userRepositoryMock.getUsersByGroupid).toHaveBeenCalledWith(groupId);
+  it("Debe devolver 400 si no se pasa email", async () => {
+    const mockReq = { body: {} };
+
+    await userController.getUserController(mockReq as any, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "Debes proporcionar un email valido:",
     });
-    it("should throw an error when repository throws an error", async () => {
-      userRepositoryMock.getUsersByGroupid.mockRejectedValue(new Error("Failed to retrieve users by group"));
-      await expect(getUsersByGroupid.execute(1)).rejects.toThrow("Failed to retrieve users by group");
-    });
-  
   });
+
+  it("Debe devolver 404 si el usuario no existe", async () => {
+    const mockReq = { body: { email: "no@existe.com" } };
+    jest.spyOn(getUserByEmailModule, "getUserByemail").mockResolvedValue(null);
+
+    await userController.getUserController(mockReq as any, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(404);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: "Usuario no encontrado",
+    });
+  });
+
+ it("Debe devolver 200 si el usuario existe", async () => {
+  const mockReq = { body: { email: "si@existe.com" } };
+  const fakeUser = { 
+    id: 1, 
+    email: "si@existe.com", 
+    groupid: [1], 
+    role: "admin" 
+  };
+
+  jest.spyOn(getUserByEmailModule, "getUserByemail").mockResolvedValue(fakeUser);
+
+  await userController.getUserController(mockReq as any, mockRes);
+
+  expect(mockRes.status).toHaveBeenCalledWith(200);
+  expect(mockRes.json).toHaveBeenCalledWith(fakeUser);
+});
+
+});
