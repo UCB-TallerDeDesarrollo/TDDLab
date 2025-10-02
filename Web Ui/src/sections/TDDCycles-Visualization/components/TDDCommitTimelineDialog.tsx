@@ -172,14 +172,6 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
             <p style={{ textAlign: "center", margin: "2em 0px 2em 0px" }}>
               No hay registros de ejecución para este commit.
             </p>
-            <Button
-              onClick={handleOpenFileDialog}
-              variant="outlined"
-              fullWidth
-              style={{ marginTop: "1em" }}
-            >
-              Subir archivo tdd_log.json
-            </Button>
             <FileUploadDialog
               open={isFileDialogOpen}
               onClose={handleCloseFileDialog}
