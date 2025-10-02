@@ -44,7 +44,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         }
         
         const commit = commitMap.get(currentCommit)!;
-        const passed = log.failedTests === 0 && log.success;
+        const passed = (log.failedTests === 0) && (log.success === true);
         commit.tests.push({ passed, size: 1 });
       }
     });
@@ -52,7 +52,6 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     return Array.from(commitMap.values());
   }, [data]);
 
-  const maxTests = Math.max(...processedData.map(c => c.tests.length), 1);
   const chartHeight = 400;
   const chartWidth = 1200;
   const leftPadding = 60;

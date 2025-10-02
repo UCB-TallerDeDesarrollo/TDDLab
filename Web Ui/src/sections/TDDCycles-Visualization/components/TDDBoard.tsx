@@ -8,7 +8,7 @@ import { VITE_API } from "../../../../config";
 import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
 import { useSearchParams } from "react-router-dom";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
-import { TDDLogEntry,  TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { TDDLogEntry, TestExecutionLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
 
 interface CycleReportViewProps {
@@ -243,7 +243,7 @@ const getTestsForCommit = (commitSha: string): TestExecutionLog[] => {
             );
   
             if (response.ok) {
-              const data = await response.json();
+              await response.json();
               // Filtrar los tests del commit específico usando el tdd_log.json local
               const testsForCommit = getTestsForCommit(sha);
 

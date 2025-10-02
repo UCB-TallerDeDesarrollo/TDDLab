@@ -3,7 +3,6 @@ import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/Tdd
 import { getElementAtEvent, Line } from "react-chartjs-2";
 import { useEffect, useRef, useState } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
-import { GetTDDLogsUseCase } from "../../../modules/TDDCycles-Visualization/application/GetTDDLogUseCase";
 
 import {
   Chart as ChartJS,
@@ -58,7 +57,7 @@ function TDDLineCharts({
   port,
   role,
   complexity,
-  commitsCycles
+  commitsCycles: _
 }: LineChartProps) {
   
   let dataChart: any = {};
@@ -383,7 +382,30 @@ function TDDLineCharts({
           
       case "Ciclo de ejecución de pruebas": {
         console.log(tddLogs)
-        return <TDDCycleChart data={tddLogs} />;
+        // Convert TDDLogEntry[] to TestLog[] format and handle null case
+        const testLogs = tddLogs?.map(log => {
+          // TDDLogEntry is a union type, so we need to handle both TestExecutionLog and CommitLog
+          if ('numPassedTests' in log) {
+            // This is a TestExecutionLog
+            return {
+              numPassedTests: log.numPassedTests,
+              failedTests: log.failedTests,
+              numTotalTests: log.numTotalTests,
+              timestamp: log.timestamp,
+              success: log.success,
+              testId: log.testId
+            };
+          } else {
+            // This is a CommitLog
+            return {
+              commitId: log.commitId,
+              commitName: log.commitName,
+              commitTimestamp: log.commitTimestamp,
+              testId: log.testId
+            };
+          }
+        }) || [];
+        return <TDDCycleChart data={testLogs} />;
       }
 
 
