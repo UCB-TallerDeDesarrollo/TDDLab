@@ -197,14 +197,15 @@ jobs:
       - name: Set Environment Variables
         working-directory: Web Ui
         run: |
-          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
-          echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> ./.env
-          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./.env
-          echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> ./.env
-          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> ./.env
-          echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> ./.env
-          echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
-          echo "VITE_DECRYPTION_KEY=${{ secrets.VITE_DECRYPTION_KEY }}" >> ./.env
+          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > .env
+          echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> .env
+          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> .env
+          echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> .env
+          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
+          echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> .env
+          echo "VITE_API_URL=${{ secrets.API_URL }}" >> .env
+          echo "VITE_DECRYPTION_KEY=${{ secrets.VITE_DECRYPTION_KEY }}" >> .env
+          echo "VITE_FRONT_URL=${{ secrets.VITE_FRONT_URL }}" >> .env
 
       - name: Install Dependencies
         working-directory: Web Ui
@@ -249,14 +250,18 @@ jobs:
       - name: Set Environment Variables
         working-directory: Web Ui
         run: |
-          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > ./.env
-          echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> ./.env
-          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./.env
-          echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> ./.env
-          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> ./.env
-          echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> ./.env
-          echo "VITE_API_URL=${{ secrets.API_URL }}" >> ./.env
-          echo "VITE_DECRYPTION_KEY=${{ secrets.VITE_DECRYPTION_KEY }}" >> ./.env
+          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > .env
+          echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> .env
+          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> .env
+          echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> .env
+          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
+          echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> .env
+          echo "VITE_API_URL=${{ secrets.API_URL }}" >> .env
+          echo "VITE_DECRYPTION_KEY=${{ secrets.VITE_DECRYPTION_KEY }}" >> .env
+          npm ci
+          npm run build
+          npm install -g firebase-tools
+          firebase deploy --project ${{ secrets.FIREBASE_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
 
       - name: Install Dependencies
         working-directory: Web Ui
@@ -304,14 +309,17 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo "PGHOST=${{ secrets.PGHOST }}" >> ./server/.env
-          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
-          echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
-          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
-          echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
-          echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
-          echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> ./server/.env
-          echo "TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }}" >> ./server/.env
+          echo "PGHOST=${{ secrets.PGHOST }}" > .env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> .env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> .env
+          echo "VITE_FRONT_URL=${{ secrets.VITE_FRONT_URL }}" >> .env
+          echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> .env
+          echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> .env
+          echo "TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }}" >> .env
       - name: Install Vercel CLI
         run: npm install -g vercel
 
@@ -351,14 +359,18 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo "PGHOST=${{ secrets.PGHOST }}" >> ./server/.env
-          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> ./server/.env
-          echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
-          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
-          echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
-          echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
-          echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> ./server/.env
-          echo "TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }}" >> ./server/.env
+          echo "PGHOST=${{ secrets.PGHOST }}" > .env
+          echo "PGDATABASE=${{ secrets.PGDATABASE }}" >> .env
+          echo "PGUSER=${{ secrets.PGUSER }}" >> .env
+          echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> .env
+          echo "PGPORT=${{ secrets.PGPORT }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> .env
+          echo "VITE_FRONT_URL=${{ secrets.VITE_FRONT_URL }}" >> .env
+          echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> .env
+          echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> .env
+          echo "TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }}" >> .env
+          
       - name: Install Vercel CLI
         run: npm install -g vercel
 
