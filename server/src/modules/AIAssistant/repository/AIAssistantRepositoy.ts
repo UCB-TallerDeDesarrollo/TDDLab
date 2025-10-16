@@ -1,12 +1,34 @@
 import dotenv from 'dotenv';
 import { AIAssistantAnswerObject } from '../domain/AIAssistant';
+import { IAIProvider } from '../domain/IAIProvider';
+import { AIProviderFactory, AIProviderType } from './providers/AIProviderFactory';
+import * as fs from 'fs';
+import * as path from 'path';
 
 dotenv.config();
-const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
 
 export class AIAssistantRepository {
-    private readonly apiKey = process.env.TOGETHER_API_KEY;
-    private readonly apiUrl = process.env.LLM_API_URL || '';
+    private readonly provider: IAIProvider;
+    private readonly systemPrompt: string;
+
+    constructor(providerType?: AIProviderType) {
+        const type = providerType || (process.env.AI_PROVIDER as AIProviderType) || 'gemini';
+        const apiKey = process.env.MODEL_API_KEY || '';
+        const apiUrl = process.env.LLM_API_URL;
+
+        this.provider = AIProviderFactory.createProvider(type, apiKey, apiUrl);
+        this.systemPrompt = this.loadSystemPrompt();
+    }
+
+    private loadSystemPrompt(): string {
+        try {
+            const promptPath = path.join(__dirname, '../config/prompts.txt');
+            return fs.readFileSync(promptPath, 'utf-8').trim();
+        } catch (error) {
+            console.warn('Sistema de prompts no disponible');
+            return '';
+        }
+    }
 
     private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
         if (!data) {
@@ -31,42 +53,9 @@ export class AIAssistantRepository {
     public async sendRequestToAIAssistant(code: string, instruction: string): Promise<string> {
         try {
             const userContent = `${instruction}\n\n${code}`;
-
-            if (!this.apiUrl) {
-                throw new Error('LLM_API_URL no está definido');
-            }
-
-            const response = await fetch(this.apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.apiKey}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: MODEL,
-                    messages: [
-                        { role: 'system', content: 'Eres un experto en desarrollo de software, responde todo en español latino.' },
-                        { role: 'user', content: userContent }
-                    ],
-                    temperature: 0.2,
-                    max_tokens: 1024
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
-
-            if (!data?.choices?.[0]?.message?.content) {
-                throw new Error('No se recibió una respuesta válida del modelo.');
-            }
-
-            return data.choices[0].message.content;
-
+            return await this.provider.sendRequest(this.systemPrompt, userContent);
         } catch (error) {
-            console.error('[LLM ERROR]', error);
+            console.error('[AI Service Error]', error instanceof Error ? error.message : 'Unknown error');
             return 'Error al comunicarse con el modelo.';
         }
     }
