@@ -10,7 +10,8 @@ describe("TDDCharts", () => {
 
   it("renders with default props (null data)", () => {
     render(<TDDCharts 
-      commits={null} 
+      commits={null}
+      tddLogs={null}
       metric={""} 
       setMetric={() => {}}
       port={new CommitHistoryAdapter()}

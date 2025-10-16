@@ -8,15 +8,19 @@ import { VITE_API } from "../../../../config";
 import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
 import { useSearchParams } from "react-router-dom";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
+import { TDDLogEntry, TestExecutionLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import TDDCycleChart from "./TDDCycleChart";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
+  tddLogs: TDDLogEntry[];
   port: CommitHistoryRepository;
   role: string;
 }
 
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
+  tddLogs,
   role,
   port,
 }) => {
@@ -41,6 +45,39 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     { length: numberOfLabels },
     (_, i) => maxTestCount - i * step
   );
+
+const getTestsForCommit = (commitSha: string): TestExecutionLog[] => {
+    const testExecutions: TestExecutionLog[] = [];
+    
+    // Encontrar el índice del commit actual en tddLogs
+    const commitIndex = tddLogs.findIndex(
+      (entry) => 'commitId' in entry && entry.commitId === commitSha
+    );
+    
+    if (commitIndex === -1) return [];
+    
+    // Encontrar el commit anterior (si existe)
+    let previousCommitIndex = -1;
+    for (let i = commitIndex - 1; i >= 0; i--) {
+      if ('commitId' in tddLogs[i]) {
+        previousCommitIndex = i;
+        break;
+      }
+    }
+    
+    // Extraer todas las ejecuciones de pruebas entre el commit anterior y el actual
+    const startIndex = previousCommitIndex + 1;
+    const endIndex = commitIndex;
+    
+    for (let i = startIndex; i < endIndex; i++) {
+      const entry = tddLogs[i];
+      if ('numPassedTests' in entry) {
+        testExecutions.push(entry as TestExecutionLog);
+      }
+    }
+    
+    return testExecutions;
+  };
 
   const handleOpenFileDialog = () => {
     setIsFileDialogOpen(true);
@@ -206,8 +243,15 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             );
   
             if (response.ok) {
-              const data = await response.json();
-              setCommitTimelineData(data); 
+              await response.json();
+              // Filtrar los tests del commit específico usando el tdd_log.json local
+              const testsForCommit = getTestsForCommit(sha);
+
+
+              setCommitTimelineData(testsForCommit); 
+
+              
+
               setSelectedCommit(commit); 
               setOpenModal(true); 
             } else {
@@ -216,7 +260,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
           } catch (error) {
             console.error("Error al llamar a la API:", error);
           }
-        }
+          }
       }
     }
   };
@@ -479,6 +523,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             port={port}
             role={role}
             filteredCommitsObject={commits}
+            tddLogs={tddLogs}
             optionSelected={graph}
             complexity={null}
             commitsCycles= {null}
@@ -486,7 +531,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
         </>
 
       )}
-    </>
+      <TDDCycleChart data={tddLogs} />
+    </>    
   );
 };
 
