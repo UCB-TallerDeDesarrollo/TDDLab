@@ -23,8 +23,9 @@ import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import axios from "axios";
-import TDDBar from "./Graficas-Adicionales/TDDBarCycle";
+import TDDCycleChart from "./TDDCycleChart";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
+import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
   CategoryScale,
@@ -41,6 +42,7 @@ ChartJS.register(
 
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
+  tddLogs: TDDLogEntry [] | null;
   optionSelected: string;
   port: CommitHistoryRepository;
   role: string;
@@ -50,11 +52,12 @@ interface LineChartProps {
 
 function TDDLineCharts({
   filteredCommitsObject,
+  tddLogs,
   optionSelected,
   port,
   role,
   complexity,
-  commitsCycles
+  commitsCycles: _
 }: LineChartProps) {
   
   let dataChart: any = {};
@@ -365,7 +368,7 @@ function TDDLineCharts({
       case "Lista":
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} port={port} role={role}/>;
+          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
       case "Complejidad":
             if (complexity != null) {
                 dataChart = getDataChart(
@@ -377,8 +380,35 @@ function TDDLineCharts({
             }
             break;
           
-      case "TddCiclos":
-        return <TDDBar CommitsCycles={commitsCycles || []}></TDDBar>
+      case "Ciclo de ejecución de pruebas": {
+        console.log(tddLogs)
+        // Convert TDDLogEntry[] to TestLog[] format and handle null case
+        const testLogs = tddLogs?.map(log => {
+          // TDDLogEntry is a union type, so we need to handle both TestExecutionLog and CommitLog
+          if ('numPassedTests' in log) {
+            // This is a TestExecutionLog
+            return {
+              numPassedTests: log.numPassedTests,
+              failedTests: log.failedTests,
+              numTotalTests: log.numTotalTests,
+              timestamp: log.timestamp,
+              success: log.success,
+              testId: log.testId
+            };
+          } else {
+            // This is a CommitLog
+            return {
+              commitId: log.commitId,
+              commitName: log.commitName,
+              commitTimestamp: log.commitTimestamp,
+              testId: log.testId
+            };
+          }
+        }) || [];
+        return <TDDCycleChart data={testLogs} />;
+      }
+
+
       case "Pie":
         return <TDDPie commits={filteredCommitsObject || []} />;     
     }

@@ -12,6 +12,7 @@ import { CommentDataObject, CommentsCreationObject } from "../../modules/teacher
 import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
+import { TDDLogEntry } from "../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 interface CycleReportViewProps {
   port: CommitHistoryRepository;
@@ -60,6 +61,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
 
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
+  const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
@@ -74,6 +76,9 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const fetchData = async () => {
     setLoading(true);
     try {
+      const tddlogs = await getTDDCycles.obtainTDDLogs(repoOwner, repoName);
+      setTDDLogsInfo(tddlogs);
+
       const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
       setCommitsInfo(commits);
 
@@ -252,6 +257,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
             <TDDCharts
               data-testId="cycle-chart"
               commits={commitsInfo}
+              tddLogs = {tddLogsInfo}
               complexity={complexity}
               commitsTddCycles={commitsTddCycles}
               port={port}

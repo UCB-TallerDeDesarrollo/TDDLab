@@ -2,6 +2,7 @@ import { ComplexityObject } from "../../../../src/modules/TDDCycles-Visualizatio
 import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
+import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";
 
 // Función para convertir CommitData al formato CommitDataObject para mantener compatibilidad
@@ -45,6 +46,11 @@ export class MockGithubAPI implements CommitHistoryRepository {
     let commitCycles: CommitCycle[] = [];
     return commitCycles;
   }
+
+  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+    let tddLogs: TDDLogEntry[] = [];
+    return tddLogs;
+  }
 }
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
@@ -66,6 +72,11 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     let commitCycles: CommitCycle[] = [];
     return commitCycles;
   }
+
+  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+    let tddLogs: TDDLogEntry[] = [];
+    return tddLogs;
+  }
 }
 
 export class MockGithubAPIError implements CommitHistoryRepository {
@@ -83,5 +94,9 @@ export class MockGithubAPIError implements CommitHistoryRepository {
 
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
     throw new Error("no commit cycles");
+  }
+
+  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+    throw new Error("no TDD logs");
   }
 }
