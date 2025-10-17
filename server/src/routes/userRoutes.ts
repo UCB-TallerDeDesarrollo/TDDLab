@@ -20,8 +20,6 @@ router.post("/github", (req, res) =>
 );
 router.post(
   "/verifyPassword",
-  authenticateJWT,
-  authorizeRoles("admin", "teacher"),
   (req, res) => userController.verifyPassword(req, res)
 );
 router.get(
