@@ -186,19 +186,22 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   };
 
   useEffect(() => {
-    setSave(false);
-    setAssignmentData({
-      id: 0,
-      title: "",
-      description: "",
-      start_date: new Date(),
-      end_date: new Date(),
-      state: "pending",
-      link: "",
-      comment: "",
-      groupid: groupid,
-    });
-  }, [open, groupid]);
+  const effectiveGroupId =
+    groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
+
+  setSave(false);
+  setAssignmentData({
+    id: 0,
+    title: "",
+    description: "",
+    start_date: new Date(),
+    end_date: new Date(),
+    state: "pending",
+    link: "",
+    comment: "",
+    groupid: effectiveGroupId, // ⬅️ usa el id efectivo
+  });
+}, [open, groupid]);
 
   const groupRepository = new GroupsRepository();
   const [groups, setGroups] = useState<GroupDataObject[]>([]);

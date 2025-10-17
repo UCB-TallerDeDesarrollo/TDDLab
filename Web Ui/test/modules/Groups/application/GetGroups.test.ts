@@ -37,4 +37,26 @@ describe('GetGroups', () => {
   
       await expect(getGroupsInstance.getGroups()).rejects.toThrowError(mockError);
     });
+
+    it("should return default group object when repository returns null in getGroupById", async () => {
+      groupsRepositoryMock.getGroupById = jest.fn().mockResolvedValueOnce(null);
+
+      const result = await getGroupsInstance.getGroupById(123);
+
+      expect(result).toEqual({
+        id: 0,
+        groupName: "",
+        groupDetail: "",
+        creationDate: expect.any(Date),
+    });
+  });
+
+      it("should return [-1] when repository returns null in getGroupsByUserId", async () => {
+      groupsRepositoryMock.getGroupsByUserId = jest.fn().mockResolvedValueOnce(null);
+
+      const result = await getGroupsInstance.getGroupsByUserId(123);
+
+      expect(result).toEqual([-1]);
+    });
+        
   });

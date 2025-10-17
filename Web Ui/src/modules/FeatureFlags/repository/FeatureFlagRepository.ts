@@ -10,18 +10,18 @@ const API_URL = `${VITE_API}/featureflags`;
 
 class FeatureFlagRepository implements FeatureFlagRepositoryInterface {
   async getFlags(): Promise<FeatureFlag[]> {
-    const response = await axios.get(API_URL);
+    const response = await axios.get(API_URL,{withCredentials: true});
     return response.data;
   }
 
   async updateFlag(id: number, request: FeatureFlagUpdateRequest): Promise<FeatureFlag> {
-    const response = await axios.put(`${API_URL}/${id}`, request);
+    const response = await axios.put(`${API_URL}/${id}`, request,{withCredentials: true});
     return response.data;
   }
 
   async getFlagByName(name: string): Promise<FeatureFlag | null> {
     try {
-      const response = await axios.get(`${API_URL}/name/${name}`);
+      const response = await axios.get(`${API_URL}/name/${name}`,{withCredentials: true});
       return response.data;
     } catch (error) {
       console.error(`Error al obtener el flag "${name}":`, error);

@@ -7,7 +7,7 @@ const API_URL = VITE_API + "/practices";
 class PracticesRepository implements PracticeRepositoryInterface {
   async getPractices(): Promise<PracticeDataObject[]> {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {
@@ -23,7 +23,7 @@ class PracticesRepository implements PracticeRepositoryInterface {
     practiceId: number
   ): Promise<PracticeDataObject | null> {
     try {
-      const response = await axios.get(`${API_URL}/${practiceId}`);
+      const response = await axios.get(`${API_URL}/${practiceId}`,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {
@@ -39,7 +39,7 @@ class PracticesRepository implements PracticeRepositoryInterface {
     userid: number | undefined
   ): Promise<PracticeDataObject[]> {
     try {
-      const response = await axios.get(`${API_URL}/user/${userid}`);
+      const response = await axios.get(`${API_URL}/user/${userid}`,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {
@@ -52,19 +52,19 @@ class PracticesRepository implements PracticeRepositoryInterface {
   }
 
   async createPractice(practiceData: PracticeDataObject): Promise<void> {
-    await axios.post(API_URL, practiceData);
+    await axios.post(API_URL, practiceData,{withCredentials: true});
   }
 
   async updatePractice(
     practiceId: number,
     practiceData: PracticeDataObject
   ): Promise<void> {
-    await axios.put(`${API_URL}/${practiceId}`, practiceData);
+    await axios.put(`${API_URL}/${practiceId}`, practiceData,{withCredentials: true});
   }
 
   async deletePractice(practiceId: number): Promise<void> {
     try {
-      const response = await axios.delete(`${API_URL}/${practiceId}`);
+      const response = await axios.delete(`${API_URL}/${practiceId}`,{withCredentials: true});
 
       if (response.status === 200) {
         return response.data;

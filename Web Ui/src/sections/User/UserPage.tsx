@@ -113,7 +113,17 @@ function UserPage() {
     : users.filter((user) => user.groupid === selectedGroup);
 
   if (loading) {
-    return <CircularProgress />;
+    return (<div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <CircularProgress />
+    </div>)
   }
 
   if (error) {

@@ -1,12 +1,19 @@
-import Cookies from "js-cookie";
+import axios from "axios";
+import { VITE_API } from "../../../../config.ts";
+
+const API_URL = VITE_API;
 
 export const getSessionCookie = () => {
-  try {
-    const cookie = Cookies.get("userSession");
-    const parsedCookie = cookie ? JSON.parse(cookie) : null;
-    return parsedCookie;
-  } catch (error) {
-    console.error("Error retrieving session cookie:", error);
-    return null;
-  }
+  return axios
+    .get(API_URL + "/user/me", {
+      withCredentials: true,
+    })
+    .then((res) => {
+      const userData = res.data;
+      return userData;
+    })
+    .catch((error) => {
+      console.error("Error retrieving session cookie:", error);
+      return null;
+    });
 };

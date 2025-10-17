@@ -10,16 +10,19 @@ import { removeSessionCookie } from "../../../modules/User-Authentication/applic
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+import { useNavigate } from "react-router-dom";
 
 
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
+      const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAccount(userData.email);
+      const userAccount = await loginPort.userHasAnAccountWithToken(idToken);
       setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };
@@ -32,8 +35,9 @@ export default function LoginComponent() {
       usergroupid: -1,
       userRole: "",
     });
-    removeSessionCookie();
+    await removeSessionCookie();
     localStorage.clear();
+    navigate("/login");
   };
 
   return (

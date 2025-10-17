@@ -103,12 +103,12 @@ describe("Create assignment", () => {
 describe("Delete assignment", () => {
   it("should delete an assignment", async () => {
     clientQueryMock.mockResolvedValue({ rowCount: 1 });
-    const deletedAssignment = await repository.deleteAssignment("1");
+    const deletedAssignment = await repository.deleteAssignment(1);
     expect(deletedAssignment).toBeUndefined();
   });
   it("should handle errors when deleting an assignment", async () => {
     poolConnectMock.mockRejectedValue(new Error());
-    await expect(repository.deleteAssignment("1")).rejects.toThrow();
+    await expect(repository.deleteAssignment(1)).rejects.toThrow();
   });
 });
 

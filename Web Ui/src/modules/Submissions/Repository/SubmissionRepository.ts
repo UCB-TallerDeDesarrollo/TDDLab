@@ -8,11 +8,11 @@ const API_URL = VITE_API + "/submissions";
 class SubmissionRepository implements SubmissionRepositoryInterface {
 
     async createSubmission(submissionData: SubmissionCreationObject): Promise<void> {
-        await axios.post(API_URL, submissionData);
+        await axios.post(API_URL, submissionData,{withCredentials: true});
     }
     async checkSubmissionExists(assignmentid: number, userid: number): Promise<{ hasStarted: boolean }> {
         try {
-            const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`);
+            const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`,{withCredentials: true});
             if (response.status === 200) {
                 return response.data;
             } else {
@@ -29,7 +29,7 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
 
     async getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObject[]> {
         try {
-            const response = await axios.get(`${API_URL}/${assignmentid}`);
+            const response = await axios.get(`${API_URL}/${assignmentid}`,{withCredentials: true});
             if (response.status === 200) {
                 return response.data;
             } else {
@@ -55,7 +55,7 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
 
     async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject> {
         try {
-            const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`);
+            const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`,{withCredentials: true});
             if (response.status === 200) {
                 return response.data;
             } else {

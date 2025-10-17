@@ -19,6 +19,7 @@ describe("removeUser", () => {
 
     // Verificando llamada correcta al repo
     expect(userRepositoryMock.removeUserFromGroup).toHaveBeenCalledWith(userId);
+    expect(userRepositoryMock.removeUserFromGroup).toHaveBeenCalledWith(1);
   });
 
   it("should throw an error if removeUserFromGroup fails", async () => {
@@ -29,4 +30,12 @@ describe("removeUser", () => {
     // Verificar que el error esta siendo lanzado correctamente
     await expect(removeUser(userId, userRepositoryMock)).rejects.toThrow("Database error");
   });
+
+  it("should throw if repository returns a string error", async () => {
+    const userId = 2;
+    userRepositoryMock.removeUserFromGroup.mockRejectedValue("Usuario o grupo no encontrado");
+
+    await expect(removeUser(userId, userRepositoryMock)).rejects.toBe("Usuario o grupo no encontrado");
+  });
+
 });

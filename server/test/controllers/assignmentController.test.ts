@@ -11,16 +11,16 @@ let controller: AssignmentController;
 const assignmentRepositoryMock = getAssignmentRepositoryMock();
 
 beforeEach(() => {
-  controller = new AssignmentController(
-    assignmentRepositoryMock,
-  );
+  controller = new AssignmentController(assignmentRepositoryMock);
 });
 
 describe("Get assignments by group ID", () => {
   it("should respond with status 200 and list of assignments for a valid group ID", async () => {
     const req = createRequest("1");
     const res = createResponse();
-    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockResolvedValue(getAssignmentListMock());
+    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockResolvedValue(
+      getAssignmentListMock()
+    );
 
     await controller.getAssignmentsByGroupId(req, res);
 
@@ -31,7 +31,9 @@ describe("Get assignments by group ID", () => {
     const req = createRequest("1");
     const res = createResponse();
     const error = new Error("Failed to obtain assignments");
-    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockRejectedValue(error);
+    assignmentRepositoryMock.obtainAssignmentsByGroupId.mockRejectedValue(
+      error
+    );
 
     await controller.getAssignmentsByGroupId(req, res);
 
@@ -99,9 +101,7 @@ describe("Create Assignment", () => {
     assignmentRepositoryMock.createAssignment.mockResolvedValue(
       assignmentPendingDataMock
     );
-    assignmentRepositoryMock.groupidExistsForAssigment.mockResolvedValue(
-      true
-    );
+    assignmentRepositoryMock.groupidExistsForAssigment.mockResolvedValue(true);
     await controller.createAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(assignmentPendingDataMock);
@@ -117,29 +117,58 @@ describe("Create Assignment", () => {
 });
 
 describe("Delete Assignment", () => {
-  it("should respond with a status 204 when assignment deletion is successful", async () => {
-    const req = createRequest("existing_id");
+  it("should respond with 200 when assignment is deleted successfully", async () => {
+    const req = createRequest("1");
     const res = createResponse();
-    assignmentRepositoryMock.deleteAssignment.mockResolvedValue(undefined);
+    (controller as any).getAssignmentByIdUseCase.execute = jest
+      .fn()
+      .mockResolvedValue({ id: 1 });
+    (controller as any).deleteAssignmentUseCase.execute = jest
+      .fn()
+      .mockResolvedValue(true);
     await controller.deleteAssignment(req, res);
-    expect(res.status).toHaveBeenCalledWith(204);
-    expect(res.send).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      message: "Tarea eliminada correctamente",
+    });
   });
-  it("should respond with a status 500 and error message when assignment deletion fails", async () => {
-    const req = createRequest("non_existing_id");
+  it("should respond with 400 when ID is invalid", async () => {
+    const req = createRequest("");
     const res = createResponse();
-    assignmentRepositoryMock.deleteAssignment.mockRejectedValue(new Error());
+
     await controller.deleteAssignment(req, res);
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      error: "ID de tarea es requerido",
+    });
+  });
+
+  it("should respond with 404 when assignment is not found", async () => {
+    const req = createRequest("99");
+    const res = createResponse();
+    (controller as any).getAssignmentByIdUseCase.execute = jest
+      .fn()
+      .mockResolvedValue(null);
+    (controller as any).deleteAssignmentUseCase.execute = jest
+      .fn()
+      .mockResolvedValue(false);
+
+    await controller.deleteAssignment(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      error: "Tarea no encontrada",
+    });
   });
 });
 
 describe("Deliver Assignment", () => {
   const assignmentRepositoryMock = getAssignmentRepositoryMock();
-  const controller = new AssignmentController(
-    assignmentRepositoryMock,
-  );
+  const controller = new AssignmentController(assignmentRepositoryMock);
   it("should respond with a status 200 and delivered assignment when delivery is successful", async () => {
     const req = createRequest(
       "id_assignment_pending",

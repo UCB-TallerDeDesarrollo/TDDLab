@@ -10,7 +10,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   async getAssignments(): Promise<AssignmentDataObject[]> {
     try {
       // Send a GET request to fetch assignments from the backend
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL,{withCredentials: true});
 
       // Check if the response status is successful (e.g., 200 OK)
       if (response.status === 200) {
@@ -28,7 +28,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   }
   async getAssignmentsByGroupid(groupid: number): Promise<AssignmentDataObject[]> {
     try {
-      const response = await axios.get(`${API_URL}/groupid/${groupid}`);
+      const response = await axios.get(`${API_URL}/groupid/${groupid}`,{withCredentials: true});
       if (response.status === 200) {
         return response.data;
       } else {
@@ -39,6 +39,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
       throw error;
     }
   }
+  
 
   // Define a function to fetch an assignment by its ID
   async getAssignmentById(
@@ -46,7 +47,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   ): Promise<AssignmentDataObject | null> {
     try {
       // Send a GET request to fetch a specific assignment by ID
-      const response = await axios.get(`${API_URL}/${assignmentId}`);
+      const response = await axios.get(`${API_URL}/${assignmentId}`,{withCredentials: true});
       // Check if the response status is successful (e.g., 200 OK)
       if (response.status === 200) {
         // Return the assignment data from the response
@@ -67,7 +68,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
 
   async createAssignment(assignmentData: AssignmentDataObject): Promise<void> {
     try {
-      await axios.post(API_URL, assignmentData);
+      await axios.post(API_URL, assignmentData,{withCredentials: true});
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         throw new Error(error.response.data.message ?? "Error al crear la tarea");
@@ -81,26 +82,47 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    await axios.put(`${API_URL}/${assignmentId}`, assignmentData);
+    await axios.put(`${API_URL}/${assignmentId}`, assignmentData,{withCredentials: true});
   }
 
   async deleteAssignment(assignmentId: number): Promise<void> {
     try {
-      // Send a GET request to fetch a specific assignment by ID
-      const response = await axios.delete(`${API_URL}/${assignmentId}`);
+      console.log('Enviando DELETE a:', `${API_URL}/${assignmentId}`);
 
-      // Check if the response status is successful (e.g., 200 OK)
+      const response = await axios.delete(`${API_URL}/${assignmentId}`, {
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      });
+
+      console.log('Delete response status:', response.status);
+      console.log('Delete response data:', response.data);
+
       if (response.status === 200) {
-        // Return the assignment data from the response
         return response.data;
       } else {
-        // Handle other response status codes or errors here if needed
-        throw new Error("Failed to delete assignment by ID");
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
-      // Handle any network errors or exceptions that may occur
-      console.error("Error deleting assignment by ID:", error);
-      throw error;
+
+    } catch (error: any) {  
+      console.error('Error en deleteAssignment (frontend):', error);
+
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const serverError = error.response.data;
+          console.error('Error del servidor:', serverError);
+
+          const errorMessage = serverError?.error || serverError?.message || `Error ${error.response.status}: ${error.response.statusText}`;
+
+          throw new Error(errorMessage);
+        } else if (error.request) {
+          throw new Error('Error de conexion: No se pudo conactar al servidor');
+        }
+      }
+
+      throw new Error(error.message || 'Error desconocido al eliminar la tarea');    
     }
   }
 
@@ -110,7 +132,7 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   ): Promise<void> {
 
 
-    await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData);
+    await axios.put(`${API_URL}/${assignmentId}/deliver`, assignmentData,{withCredentials: true});
   }
 }
 
