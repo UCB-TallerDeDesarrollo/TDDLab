@@ -48,6 +48,7 @@ class TDDCyclesController {
     this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
   }
+  //NO SE USA
   async getTDDCycles(req: Request, res: Response) {
     try {
       const { owner, repoName } = req.query;
@@ -65,6 +66,7 @@ class TDDCyclesController {
       return res.status(500).json({ error: "Server error" });
     }
   }
+  //NO SE USA
   async getTestResults(req: Request, res: Response) {
     try {
       const { owner, repoName } = req.query;
@@ -83,6 +85,7 @@ class TDDCyclesController {
     }
   }
 
+  //SÍ SE USA
   // New: proxy and map commit-history.json from GitHub (frontend logic moved server-side)
   async getCommitHistory(req: Request, res: Response) {
     try {
@@ -99,6 +102,7 @@ class TDDCyclesController {
     }
   }
 
+  // SÍ SE USA
   // New: commit cycles endpoint using the same raw file
   async getCommitCycles(req: Request, res: Response) {
     try {
@@ -115,6 +119,7 @@ class TDDCyclesController {
     }
   }
 
+  // NO SE USA
   async getCommitTimeLine(req: Request, res: Response) {
     try {
       const { sha, owner, repoName } = req.query;
@@ -140,6 +145,7 @@ class TDDCyclesController {
     }
   }
 
+  //NO SE USA
   private async insertJobForCommit(
     actualCommitSha: string,
     repoOwner: string,
@@ -168,6 +174,7 @@ class TDDCyclesController {
     }
   }
   
+  //NO SE USA
   private async handleJobConclusionUpdate(
     actualCommitSha: string,
     repoOwner: string,
@@ -219,6 +226,7 @@ class TDDCyclesController {
     }
   }
 
+  //NO SE USA
   private async updateTestCountIfNeeded(
     repoOwner: string,
     repoName: string,
@@ -256,7 +264,7 @@ class TDDCyclesController {
   }
   
   
-
+  //NO SE USA
   async uploadTDDLog(req: Request, res: Response) {
     
     try {
@@ -357,6 +365,7 @@ class TDDCyclesController {
     }
   }
   
+  // NO SE USA
   async getCommits(req: Request, res: Response) {
     try {
       const { owner, repoName } = req.query;
@@ -377,4 +386,5 @@ class TDDCyclesController {
     }
   }
 }
+
 export default TDDCyclesController;
