@@ -133,43 +133,49 @@ function Assignments({
   }
 
   const fetchData = async () => {
+  try {
+    const allGroups = await getUserGroups();
+    setGroupList(allGroups);
+
+    const groupIdFromURL = new URLSearchParams(window.location.search).get("groupId");
+    const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
+
+    const savedSelectedGroup = localStorage.getItem("selectedGroup");
+    const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
+    const groupIdAuth = authData?.usergroupid ?? null;
+
+    let firstUserGroup: number | null = null;
     try {
-      const allGroups = await getUserGroups();
-      setGroupList(allGroups);
-
-      // Recuperar el groupId de la URL
-      const groupIdFromURL = new URLSearchParams(window.location.search).get('groupId');
-      // Recuperar el groupId de authData
-      const authGroupId = authData?.usergroupid;
-      // Recuperar el groupId de localStorage
-      const savedSelectedGroup = localStorage.getItem("selectedGroup");
-
-      let groupIdToUse: number | null = null;
-      if (groupIdFromURL) {
-        groupIdToUse = parseInt(groupIdFromURL, 10);
-      } else if (savedSelectedGroup) {
-        groupIdToUse = parseInt(savedSelectedGroup, 10);
-      } else if (authGroupId) {
-        groupIdToUse = authGroupId;
-}
-
-      if (groupIdToUse !== undefined && groupIdToUse !== null) {
-        const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
-        if (selectedGroup?.id) {
-          setSelectedGroup(selectedGroup.id);
-          const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup.id);
-          setAssignments(data);
-          orderAssignments([...data], selectedSorting);
-        }
+      const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
+      if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
+        firstUserGroup = storedUserGroups[0];
       }
-    } catch (error) {
-      console.error("Error fetching assignments:", error);
-    }
-  };
+    } catch {}
 
-  useEffect(() => {
-    fetchData();
-  }, [location, authData]);
+    const finalGroupId =
+      groupIdUrl ||
+      groupIdLocal ||
+      groupIdAuth ||
+      firstUserGroup ||
+      allGroups?.[0]?.id ||
+      null;
+
+    if (finalGroupId) {
+      await loadAssignmentsByGroupId(finalGroupId);
+    } else {
+      setSelectedGroup(0);
+      setAssignments([]);
+    }
+  } catch (error) {
+    console.error("Error en fetchData:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+useEffect(() => {
+  fetchData();
+}, [location]);
 
   // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {
