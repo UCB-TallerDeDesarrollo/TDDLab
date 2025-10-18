@@ -16,12 +16,6 @@ export function setCookieAndGlobalStateForValidUser(
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,
     });
-    setSessionCookie({
-      userData,
-      id: usergroupid.id,
-      role: usergroupid.role,
-      groupid: usergroupid.groupid,
-    });
     positiveCallback();
   } else {
     console.log("Invalid User");
