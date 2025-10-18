@@ -110,13 +110,12 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Map server shape to current UI Contract (note: UI uses property tddCylce)
+      // Map server shape to current UI Contract (note: UI uses property tddCycle)
       const commits: CommitCycle[] = (response.data || []).map((item: any) => ({
         url: item.url,
         sha: item.sha,
-        // Maintain existing UI prop name typo for compatibility
-        // @ts-ignore
-        tddCylce: item.tddCycle ?? "null",
+        tddCycle: item.tddCycle ?? "null",
+        coverage: item.coverage,
       }));
       return commits;
     } catch (error) {
