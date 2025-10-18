@@ -1,6 +1,5 @@
 import { User } from "firebase/auth";
 import { setGlobalState } from "../domain/authStates";
-import { setSessionCookie } from "./setSessionCookie";
 import { UserOnDb } from "../domain/userOnDb.interface";
 
 export function setCookieAndGlobalStateForValidUser(
