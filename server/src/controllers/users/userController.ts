@@ -87,7 +87,11 @@ class UserController {
 
 
 async  logoutController (res: Response): Promise<void> {
-  res.clearCookie("userSession", { path: "/" });
+  res.clearCookie("userSession", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
   res.status(200).json({ message: "Sesión cerrada correctamente" });
 };
 
