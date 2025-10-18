@@ -1,6 +1,5 @@
 import { User } from "firebase/auth";
 import { setGlobalState } from "../domain/authStates";
-import { setSessionCookie } from "./setSessionCookie";
 import { UserOnDb } from "../domain/userOnDb.interface";
 
 export function setCookieAndGlobalStateForValidUser(
@@ -15,12 +14,6 @@ export function setCookieAndGlobalStateForValidUser(
       userEmail: userData.email,
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,
-    });
-    setSessionCookie({
-      userData,
-      id: usergroupid.id,
-      role: usergroupid.role,
-      groupid: usergroupid.groupid,
     });
     positiveCallback();
   } else {

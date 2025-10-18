@@ -37,7 +37,7 @@ featureFlagsRouter.get(
 featureFlagsRouter.get(
   "/name/:name",
     authenticateJWT,
-    authorizeRoles("admin", "teacher"),
+    authorizeRoles("admin", "teacher","student"),
   async (req, res) => await featureFlagsController.getFeatureFlagByName(req, res)
 );
 

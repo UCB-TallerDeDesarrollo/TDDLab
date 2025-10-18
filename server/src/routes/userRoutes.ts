@@ -49,7 +49,7 @@ router.get(
 router.get(
   "/users/:id",
   authenticateJWT,
-  authorizeRoles("admin", "teacher"),
+  authorizeRoles("admin", "teacher","student"),
   (req, res) => userController.getUserbyid(req, res)
 );
 router.put(

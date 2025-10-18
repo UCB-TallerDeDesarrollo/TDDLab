@@ -50,7 +50,7 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
         console.log(submissionData);
         console.log(submissionid);
         console.log(`${API_URL}/${submissionid}`);
-        await axios.put(`${API_URL}/${submissionid}`, submissionData);
+        await axios.put(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
     }
 
     async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject> {
