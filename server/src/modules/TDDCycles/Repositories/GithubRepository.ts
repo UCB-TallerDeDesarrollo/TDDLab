@@ -341,7 +341,7 @@ export class GithubRepository implements IGithubRepository {
       test_count: commitData.test_count,
       conclusion: commitData.conclusion,
     }));
-    commits.sort((a, b) => new Date(b.commit.date).getTime() - new Date(a.commit.date).getTime());
+    commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
     return commits;
   }
 
