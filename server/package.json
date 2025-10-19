@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "axios": "^1.9.0",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
     "dotenv": "^16.5.0",
     "espressts": "file:",
     "express": "^4.21.2",
