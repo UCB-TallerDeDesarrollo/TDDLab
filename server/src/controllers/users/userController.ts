@@ -85,6 +85,24 @@ class UserController {
     }
   }
 
+  async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
+    const { idToken } = req.body;
+    try {
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      const email = decoded.email;
+      if (!email) {
+        res.status(400).json({ error: "No se pudo obtener email de Firebase" });
+        return;
+      }
+      let user = (await getUserByemail(email || "")) as User;
+      const token = await getUserToken(user);
+      await saveUserCookie(token, res);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(401).json({ error: "Token inválido o expirado" });
+    }
+  }
+
 
 async  logoutController (res: Response): Promise<void> {
   res.clearCookie("userSession", { path: "/" });

@@ -173,13 +173,109 @@ describe("UserController", () => {
       error: "Token inválido o expirado",
     });
   });
+});
+
+  describe("getUserControllerGoogle", () => {
+    let mockReq: any;
+    let controller: UserController;
+    let userRepositoryMock: UserRepository;
+    let mockRes: any;
+
+    beforeEach(() => {
+      mockReq = { body: { idToken: "validGoogleToken" } };
+      mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+      jest.clearAllMocks();
+      userRepositoryMock = new UserRepository() as jest.Mocked<UserRepository>;
+      controller = new UserController(userRepositoryMock);
+    });
+
+    it("Verificar el token con firebase para Google", async () => {
+      const fakeDecoded = { email: "test@google.com" };
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      await controller.getUserControllerGoogle(mockReq, mockRes);
+      expect(verifyIdTokenMock).toHaveBeenCalledWith("validGoogleToken");
+    });
+
+    it("Verificar que devuelve el usuario cuando el token de Google es valido", async () => {
+      const fakeDecoded = { email: "test@google.com" };
+      const fakeUser = { id: 1, role: "admin", groupid: 10 };
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
+      await controller.getUserControllerGoogle(mockReq, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(fakeUser);
+    });
+
+    it("Verificar que devuelve error si no se obtiene email del token de Google", async () => {
+      const fakeDecoded = {};
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      await controller.getUserControllerGoogle(mockReq, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "No se pudo obtener email de Firebase",
+      });
+    });
+
+    it("Verificar que se obtiene el token generado del usuario con Google", async () => {
+      const fakeDecoded = { email: "test@google.com" };
+      const fakeUser = { id: 1, role: "admin", groupid: 10 };
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
+      (getUserToken as jest.Mock).mockResolvedValue("fake.jwt.token");
+      await controller.getUserControllerGoogle(mockReq, mockRes);
+      expect(getUserToken).toHaveBeenCalledWith(fakeUser);
+    });
+
+    it("Verificar que se guarda la cookie correctamente con Google", async () => {
+      const fakeDecoded = { email: "test@google.com" };
+      const fakeUser = { id: 1, role: "admin", groupid: 10 };
+      const fakeToken = "fake.jwt.token";
+      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
+      (getUserToken as jest.Mock).mockResolvedValue(fakeToken);
+      await controller.getUserControllerGoogle(mockReq, mockRes);
+      expect(saveUserCookie).toHaveBeenCalledWith(fakeToken, mockRes);
+    });
+
+    it("Verificar que devuelve 401 en caso de error con Google", async () => {
+      const verifyIdTokenMock = jest.fn().mockRejectedValue(new Error("invalid"));
+      (admin.auth as jest.Mock).mockReturnValue({
+        verifyIdToken: verifyIdTokenMock,
+      });
+      await controller.getUserControllerGoogle(mockReq, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Token inválido o expirado",
+      });
+    });
   });
+});
 
   describe("getMeController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let statusMock: jest.Mock;
   let jsonMock: jest.Mock;
+  let controller: UserController;
+  let userRepositoryMock: UserRepository;
 
   beforeEach(() => {
     statusMock = jest.fn().mockReturnThis();
@@ -189,6 +285,8 @@ describe("UserController", () => {
       json: jsonMock,
       cookies: {},
     } as any;
+    userRepositoryMock = new UserRepository() as jest.Mocked<UserRepository>;
+    controller = new UserController(userRepositoryMock);
   });
 
 
@@ -229,5 +327,4 @@ describe("UserController", () => {
     expect(statusMock).toHaveBeenCalledWith(401);
     expect(jsonMock).toHaveBeenCalledWith({ error: "Token inválido o expirado" });
   });
-});
 });
