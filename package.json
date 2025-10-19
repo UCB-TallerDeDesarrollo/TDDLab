@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "check-node-version": "^4.2.1",
+    "crypto-js": "^4.2.0",
+    "jszip": "^3.10.1",
+    "langchain": "^0.3.27"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "js-cookie": "^3.0.5",
+    "vite": "^6.2.2"
+  }
+}

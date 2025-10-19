@@ -1,0 +1,48 @@
+/* Estilos para el contenedor principal */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Estilos para el encabezado */
+.app-header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+  top: 0;
+  position: absolute;
+}
+
+/* Estilos para el contenido de inicio de sesión */
+.login-content {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Estilos para el botón de GitHub */
+.github-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #18fca4;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+.login-Title {
+  font-size: 25px;
+  font-weight: 600;
+  color: black;
+}
+.github-button:hover {
+  background-color: #555;
+  color: white;
+}

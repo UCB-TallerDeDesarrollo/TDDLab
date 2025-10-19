@@ -1,0 +1,145 @@
+.cycleCardContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 16px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+  width: 65vw; 
+  height: 26.2vh;
+}
+
+.cycleCardContainer span {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 50px;
+}
+
+.commit-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 10%;
+  padding: 12px;
+}
+.commit-date-item{
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+.conclusionBox {
+  width: calc(5vw + 100px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #28a745;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 12px; 
+}
+
+.noActionsBox {
+  width: calc(7vw + 100px);
+  background-color: #000000;
+}
+
+.commit-link {
+  display: inline-block;
+  padding: 16px 28px; 
+  background-color: #0366d6;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  width: calc(4vw + 15px);
+}
+
+.commit-link:hover {
+  background-color: #0056b3;
+  color: rgb(40, 239, 76);
+}
+
+
+.commit-link:visited {
+  background-color: grey;
+}
+
+.commit-link:visited:hover {
+  color: rgb(233, 239, 40);
+  background-color: rgb(102, 102, 102);
+}
+
+.commit-stat-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.commit-stat-item span {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.commit-stat-item .circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.circle.total {
+  background-color: #28a3bc; 
+}
+
+.circle.additions {
+  background-color: #28a745; 
+}
+
+.circle.deletions {
+  background-color: #d73a49; 
+}
+
+.circle.coverage {
+  background-color: #0366d6;
+}
+
+.cycleCardContainer span.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 30px;
+  width: calc(24vw + 10px);
+}
+
+.cycleCardWrapper {
+  display: flex; 
+  align-items: stretch; 
+  gap: 16px; 
+  
+}
+
+.cycleCardWrapper > .MuiCard-root {
+  flex: 1;
+  min-width: 80px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: self-start;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px; 
+}
+
+
+.dateCard {
+  flex: 0 0 auto; 
+  min-height: 150px; 
+  height: 26.2vh; 
+  display: flex; 
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}

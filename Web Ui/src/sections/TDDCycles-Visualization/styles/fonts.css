@@ -1,0 +1,22 @@
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+  }
+
+/* Cambiar el tamaño y el peso de fuente para los encabezados según tus preferencias */
+h1, h2, h3, h4, h5, h6 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  /* Colores de enlaces y enlaces visitados similares a GitHub */
+  a {
+    color: #0366d6; /* Enlace normal */
+    text-decoration: none; /* Quitar subrayado de enlace */
+  }
+  
+  a:hover {
+    color: #63a0e5; /* Color al pasar el mouse */
+  }
+  

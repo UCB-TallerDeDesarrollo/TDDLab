@@ -1,0 +1,123 @@
+.lineChartContainer {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  height: 100%;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.nav-button {
+  padding: 8px 12px;
+  font-size: 16px;
+  background-color: #052845;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.nav-button:disabled {
+  background-color: #B0B0B0;
+  cursor: not-allowed;
+}
+
+.nav-button:hover:not(:disabled) {
+  background-color: #083860;
+}
+
+.comments-section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.comments-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.comment-card {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+.comment-header {
+  display: flex;
+  justify-content: space-between; 
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+.comment-author {
+  font-weight: bold;
+  color: #333;
+}
+.comment-date {
+  font-size: 0.9rem;
+  color: #666;
+}
+.comment-body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.feedback-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.feedback-container label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+.feedback-container textarea {
+  width: 100%;
+  height: 120px;
+  padding: 12px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.feedback-container textarea:focus {
+  box-shadow: 0 0 8px rgba(54, 215, 183, 0.6);
+  border-color: #36d7b7;
+}
+.feedback-container button {
+  margin-top: 15px;
+  padding: 12px 25px;
+  background-color: #052845;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  
+}
+.feedback-container button:hover {
+  background-color: #000000;
+}
