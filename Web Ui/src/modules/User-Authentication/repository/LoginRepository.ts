@@ -40,13 +40,27 @@ class AuthRepository implements AuthDBRepositoryInterface {
   }
 
   async registerAccount(user: UserOnDb): Promise<void> {
-    try {
-      return await axios.post(API_URL + "/user/register", user);
-    } catch (error) {
-      console.error("Error saving user", error);
-      throw error;
+  try {
+    const response = await axios.post(API_URL + "/user/register", user);
+
+    return response.data;
+  } catch (error: unknown) {
+    console.error("Error saving user", error);
+
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 403) {
+        throw new Error("No tiene permisos para registrar administradores");
+      }
+
+      throw new Error(
+        error.response.data?.error || "Error al registrar usuario"
+      );
     }
+
+    throw new Error("Error desconocido en el registro de usuario");
   }
+}
+
 
   async verifyPassword(password: string): Promise<boolean> {
     try {
