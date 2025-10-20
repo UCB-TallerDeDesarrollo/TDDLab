@@ -21,6 +21,7 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
@@ -86,6 +87,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
+  const [auth] = useGlobalState("authData");
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
     title: "",
@@ -199,7 +201,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     state: "pending",
     link: "",
     comment: "",
-    groupid: effectiveGroupId, // ⬅️ usa el id efectivo
+    groupid: effectiveGroupId,
   });
 }, [open, groupid]);
 
@@ -209,14 +211,50 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
-      const allGroups = await getGroups.getGroups();
-      setGroups(allGroups);
+      let list: GroupDataObject[] = [];
+
+      if (auth?.userRole === "teacher") {
+        const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
+        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
+      } else if (auth?.userRole === "admin") {
+        list = await getGroups.getGroups();
+      } else if (auth?.userRole === "student") {
+        let ids: number[] = [];
+        try {
+          const fromLS = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
+          if (Array.isArray(fromLS) && fromLS.length) ids = fromLS;
+        } catch {}
+        if (!ids.length) {
+          ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
+        }
+        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
+      } else {
+        list = [];
+      }
+
+      setGroups(list);
+
+      setAssignmentData(prev => {
+        const keepCurrent = list.some(g => g.id === prev.groupid);
+        const fallbackId = list[0]?.id ?? 0;
+        return { ...prev, groupid: keepCurrent ? prev.groupid : fallbackId };
+      });
     };
 
-    if (open) {
-      fetchGroups();
-    }
-  }, [open]);
+    if (open) fetchGroups();
+  }, [open, auth?.userRole, auth?.userid]);
+
+  // useEffect(() => {
+  //   const fetchGroups = async () => {
+  //     const getGroups = new GetGroups(groupRepository);
+  //     const allGroups = await getGroups.getGroups();
+  //     setGroups(allGroups);
+  //   };
+
+  //   if (open) {
+  //     fetchGroups();
+  //   }
+  // }, [open]);
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
