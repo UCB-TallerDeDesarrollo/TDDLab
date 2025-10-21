@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "tddlab-hosting-firebase"
-  }
+    "default": "tddlab-preview-firebase",
+    "y": "tddlab-preview-firebase",
+    "preview": "tddlab-preview-firebase"
+  },
+  "targets": {},
+  "etags": {}
 }
