@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { GetCommitsOfRepo } from "../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
 import { GetCommitTddCycle } from "../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
-import { GetComplexityOfRepo } from "../../modules/TDDCycles-Visualization/application/GetComplexityOfRepo";
+
 import { GetTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../modules/TDDCycles-Visualization/application/GetUserName";
 import TDDCharts from "./components/TDDChart";
@@ -69,13 +69,12 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
-  const [complexity, setComplexity] = useState<ComplexityObject[] | null>(null);
+
   const [emails, setEmails] = useState<{ [key: number]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
-  const getComplexityOfRepoUseCase = new GetComplexityOfRepo(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
   const getUserNameUseCase = new GetUserName(port);
 
@@ -91,8 +90,6 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const tddCycles = await getCommitTddCycleUseCase.execute(repoOwner, repoName);
       setCommitsTddCycles(tddCycles);
 
-  const complexityList = await getComplexityOfRepoUseCase.execute(repoOwner, repoName);
-      setComplexity(complexityList);
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -264,7 +261,6 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
               data-testId="cycle-chart"
               commits={commitsInfo}
               tddLogs = {tddLogsInfo}
-              complexity={complexity}
               commitsTddCycles={commitsTddCycles}
               port={port}
               role={role}

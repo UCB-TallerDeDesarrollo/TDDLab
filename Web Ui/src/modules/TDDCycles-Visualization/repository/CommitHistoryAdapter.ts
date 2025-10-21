@@ -67,37 +67,6 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     }
   }
 
-  async obtainComplexityOfRepo(owner: string, repoName: string) {
-    try {
-      const repoUrl = `https://github.com/${owner}/${repoName}`;
-
-      // const response = await axios.post("https://api-ccn.vercel.app/analyzeAvgCcn", {
-      //   repoUrl,
-      // }, {
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // });
-
-      // if (response.status !== 200) {
-      //   throw new Error(`HTTP error! Status: ${response.status}`);
-      // }
-
-      // const responseData = response.data.results;
-      // return responseData.map((complexity: any) => ({
-      //   ciclomaticComplexity: Math.round(complexity.average_cyclomatic_complexity),
-      //   commit: complexity.commit,
-      // }));
-      return [];
-    } catch (error) {
-      console.error("Error obtaining complexity data:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        console.error("Server responded with status:", error.response.status);
-        console.error("Server response data:", error.response.data);
-      }
-      throw error;
-    }
-  }
 
   async obtainCommitTddCycle(
     owner: string,
