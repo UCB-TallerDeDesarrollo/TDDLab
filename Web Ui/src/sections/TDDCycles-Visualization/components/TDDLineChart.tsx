@@ -21,8 +21,6 @@ import TDDList from "./TDDList";
 import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
-import axios from "axios";
 import TDDCycleChart from "./TDDCycleChart";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
@@ -46,7 +44,6 @@ interface LineChartProps {
   optionSelected: string;
   port: CommitHistoryRepository;
   role: string;
-  complexity: ComplexityObject[] | null;
   commitsCycles: CommitCycle[] | null;
 }
 
@@ -56,48 +53,13 @@ function TDDLineCharts({
   optionSelected,
   port,
   role,
-  complexity,
   commitsCycles: _
 }: LineChartProps) {
   
   let dataChart: any = {};
   const chartRef = useRef<any>();
 
-  const [analyzeData, setAnalyzeData] = useState<string[]>([]); 
   
-  useEffect(() => {
-    if (optionSelected === "Complejidad" && complexity && filteredCommitsObject) {
-      const analyzeCommits = async () => {
-        const reversedCommits = filteredCommitsObject.slice().reverse();
-        const responses: string[] = [];
-
-        for (const commit of reversedCommits) {
-          const requestBody = { repoUrl: commit.html_url };
-
-          try {
-            const response = await axios.post(
-              "https://api-ccn.vercel.app/analyze",
-              requestBody,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-
-            responses.push(JSON.stringify(response.data));
-            
-          } catch (error) {
-            console.error("Error al procesar el commit:", error);
-          }
-        }
-
-        setAnalyzeData(responses);
-      };
-
-      analyzeCommits();
-    }
-  }, [optionSelected, filteredCommitsObject, complexity]);
 
   function getDataLabels() {
     if (filteredCommitsObject != null) {
@@ -312,11 +274,6 @@ function TDDLineCharts({
                 `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
               );
 
-              const complexityResponse = analyzeData[context[0].dataIndex];
-              //console.log("EX1M"+complexityResponse)
-              if (complexityResponse) {
-                afterBodyContent.push(`Complejidad Ciclomática: ${complexityResponse}`);
-              }
               return afterBodyContent;
             },
           },
@@ -369,17 +326,7 @@ function TDDLineCharts({
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
-      case "Complejidad":
-            if (complexity != null) {
-                dataChart = getDataChart(
-                complexity?.map((data) => data.ciclomaticComplexity),
-                "Complejidad Ciclomática"
-              );
-              optionsChart = getOptionsChart("Complejidad Ciclomática");
-              dataTestid = "graph-complexity";
-            }
-            break;
-          
+
       case "Ciclo de ejecución de pruebas": {
         console.log(tddLogs)
         // Convert TDDLogEntry[] to TestLog[] format and handle null case
