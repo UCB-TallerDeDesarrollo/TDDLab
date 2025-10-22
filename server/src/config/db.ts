@@ -9,9 +9,9 @@ const config = {
   database: PGDATABASE,
   user: PGUSER,
   password: PGPASSWORD,
-  port: Number(PGPORT), // Convert port to a number
+  port: Number(PGPORT), 
   ssl: {
-    rejectUnauthorized: false, // Set this to false if needed for self-signed certificates
+    rejectUnauthorized: false, 
   },
 };
 
