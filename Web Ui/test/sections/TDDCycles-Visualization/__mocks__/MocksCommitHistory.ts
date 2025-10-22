@@ -26,7 +26,10 @@ export function convertToCommitDataObject(commitData: CommitData): CommitDataObj
   };
 }
 
-export class MockGithubAPI implements CommitHistoryRepository {
+  async obtainUserName(_owner: string): Promise<string> {
+    return "mockUser";
+  }
+
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     // Convertimos nuestros datos al formato esperado por la interfaz
     return mockCommitDataArray.map(convertToCommitDataObject);
