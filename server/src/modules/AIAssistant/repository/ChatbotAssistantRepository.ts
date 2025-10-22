@@ -3,23 +3,14 @@ import { AIAssistantRepository } from "./AIAssistantRepositoy";
 import { AIAssistantAnswerObject, AIAssistantInstructionObject } from "../domain/AIAssistant";
 import { CommitDataObject } from "../domain/commitHistory";
 import { AIAssistantDataBaseRepository } from "./AiAssistantDataBaseRepository";
+import { mapToAIAssistantAnswer } from "../utils/mapToAIAssistantAnswer"; // ✅ Import nuevo
 
 export class ChatbotAssistantRepository {
     private readonly bufferMemory = new BufferMemory({ returnMessages: true });
     private readonly aiAssistantRepository = new AIAssistantRepository;
     private readonly aiAssistantDB = new AIAssistantDataBaseRepository;
 
-    private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
-        if (!data) {
-            return { result: 'No se recibio ninguna respuesta del modelo.' };
-        }
-
-        if (data.error) {
-            return { result: `Error del modelo: ${data.error}` };
-        }
-
-        return { result: data };
-    }
+    // 🧩 Eliminada la función duplicada mapToAIAssistantAnswer
 
     private async buildConversationContext(userInput: string): Promise<{ prompt: string }> {
         const memoryVars = await this.bufferMemory.loadMemoryVariables({});
@@ -151,7 +142,6 @@ export class ChatbotAssistantRepository {
         }
     }
 
-
     public async sendPrompt(instruction: AIAssistantInstructionObject): Promise<AIAssistantAnswerObject> {
         try {
             const newInstruction = await this.buildPromt(instruction.value);
@@ -174,7 +164,7 @@ export class ChatbotAssistantRepository {
                 { output: raw }
             );
 
-            return this.mapToAIAssistantAnswer(raw);
+            return mapToAIAssistantAnswer(raw); // ✅ Uso de la utilidad compartida
         } catch (error) {
             console.error('[sendPrompt ERROR]', error);
             return { result: 'Error al comunicarse con el modelo.' };
