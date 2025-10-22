@@ -110,16 +110,6 @@ function Groups() {
       fetchGroups();
   }, [authData?.userRole, authData?.userid]);
 
-  // useEffect(() => {
-  //   const fetchGroups = async () => {
-  //     const getGroupsApp = new GetGroups(groupRepository);
-  //     const allGroups = await getGroupsApp.getGroups();
-  //     setGroups(allGroups);
-  //   };
-  //   fetchGroups();
-  // }, []);
-
-  // Auto-seleccion inicial
   useEffect(() => {
     if (!groups.length || currentSelectedGroupId) return;
 

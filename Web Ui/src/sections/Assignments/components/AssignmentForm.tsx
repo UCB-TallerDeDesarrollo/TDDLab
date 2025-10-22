@@ -244,18 +244,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     if (open) fetchGroups();
   }, [open, auth?.userRole, auth?.userid]);
 
-  // useEffect(() => {
-  //   const fetchGroups = async () => {
-  //     const getGroups = new GetGroups(groupRepository);
-  //     const allGroups = await getGroups.getGroups();
-  //     setGroups(allGroups);
-  //   };
-
-  //   if (open) {
-  //     fetchGroups();
-  //   }
-  // }, [open]);
-
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
