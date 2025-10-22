@@ -525,7 +525,7 @@ const getTestsForCommit = (commitSha: string): TestExecutionLog[] => {
             filteredCommitsObject={commits}
             tddLogs={tddLogs}
             optionSelected={graph}
-            complexity={null}
+
             commitsCycles= {null}
           />
         </>

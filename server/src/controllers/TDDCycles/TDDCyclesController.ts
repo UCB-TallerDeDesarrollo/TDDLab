@@ -8,6 +8,9 @@ import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLo
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
 import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
+import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
+import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
+
 
 
 
@@ -18,6 +21,9 @@ class TDDCyclesController {
   dbCommitsRepository: IDBCommitsRepository;
   dbJobsRepository: IDBJobsRepository;
   getCommitExecutions: GetCommitTimeLineUseCase;
+  getCommitHistoryUseCase: GetCommitHistoryUseCase;
+  getCommitCyclesUseCase: GetCommitCyclesUseCase;
+
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
@@ -37,9 +43,12 @@ class TDDCyclesController {
     this.getCommitExecutions = new GetCommitTimeLineUseCase(
       dbJobsRepository,
     );
-    this.dbCommitsRepository=new DBCommitsRepository();
+    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository);
+    this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
+    this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
   }
+  //NO SE USA
   async getTDDCycles(req: Request, res: Response) {
     try {
       const { owner, repoName } = req.query;
@@ -57,6 +66,7 @@ class TDDCyclesController {
       return res.status(500).json({ error: "Server error" });
     }
   }
+  //NO SE USA
   async getTestResults(req: Request, res: Response) {
     try {
       const { owner, repoName } = req.query;
@@ -75,6 +85,41 @@ class TDDCyclesController {
     }
   }
 
+  //SÍ SE USA
+  // New: proxy and map commit-history.json from GitHub (frontend logic moved server-side)
+  async getCommitHistory(req: Request, res: Response) {
+    try {
+      const { owner, repoName } = req.query;
+      if (!owner || !repoName) {
+        return res.status(400).json({ error: "Bad request, missing owner or repoName" });
+      }
+
+      const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName));
+      return res.status(200).json(commits);
+    } catch (error) {
+      console.error("Error fetching commit history:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  // SÍ SE USA
+  // New: commit cycles endpoint using the same raw file
+  async getCommitCycles(req: Request, res: Response) {
+    try {
+      const { owner, repoName } = req.query;
+      if (!owner || !repoName) {
+        return res.status(400).json({ error: "Bad request, missing owner or repoName" });
+      }
+
+      const commits = await this.getCommitCyclesUseCase.execute(String(owner), String(repoName));
+      return res.status(200).json(commits);
+    } catch (error) {
+      console.error("Error fetching commit cycles:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  // NO SE USA
   async getCommitTimeLine(req: Request, res: Response) {
     try {
       const { sha, owner, repoName } = req.query;
@@ -100,6 +145,7 @@ class TDDCyclesController {
     }
   }
 
+  //NO SE USA
   private async insertJobForCommit(
     actualCommitSha: string,
     repoOwner: string,
@@ -128,6 +174,7 @@ class TDDCyclesController {
     }
   }
   
+  //NO SE USA
   private async handleJobConclusionUpdate(
     actualCommitSha: string,
     repoOwner: string,
@@ -179,6 +226,7 @@ class TDDCyclesController {
     }
   }
 
+  //NO SE USA
   private async updateTestCountIfNeeded(
     repoOwner: string,
     repoName: string,
@@ -216,7 +264,7 @@ class TDDCyclesController {
   }
   
   
-
+  //NO SE USA
   async uploadTDDLog(req: Request, res: Response) {
     
     try {
@@ -317,6 +365,7 @@ class TDDCyclesController {
     }
   }
   
+  // NO SE USA
   async getCommits(req: Request, res: Response) {
     try {
       const { owner, repoName } = req.query;
@@ -337,4 +386,5 @@ class TDDCyclesController {
     }
   }
 }
+
 export default TDDCyclesController;

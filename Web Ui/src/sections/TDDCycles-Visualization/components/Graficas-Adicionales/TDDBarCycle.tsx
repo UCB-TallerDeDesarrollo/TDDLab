@@ -27,7 +27,7 @@ const TDDBar: React.FC<TDDBarProps> = ({ CommitsCycles }) => {
     let noDateExtension = 0;
   
     CommitsCycles.forEach((commitcycle) => {
-        switch(commitcycle.tddCylce){
+        switch(commitcycle.tddCycle){
           case "RojoVerde":
             redGreen ++;
             break;
