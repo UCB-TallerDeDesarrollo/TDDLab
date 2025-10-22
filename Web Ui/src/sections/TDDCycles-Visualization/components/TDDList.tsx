@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { PortGetTDDCycles } from "../../../modules/TDDCycles-Visualization/application/GetTDDCycles";
+import { GetCommitsOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
 import TDDCycleList from "./TDDCycleList";
 
 interface CycleReportViewProps {
@@ -17,12 +17,12 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const getTDDCycles = new PortGetTDDCycles(port);
+  const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
 
   const fetchData = async () => {
     try {
       console.log("Fetching commit information...");
-      const commits: CommitDataObject[] = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+      const commits: CommitDataObject[] = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
       setCommitsInfo(commits);
       console.log("Página TDDList: ", commits);
     } catch (error) {
