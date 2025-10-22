@@ -57,7 +57,8 @@ class AuthRepository implements AuthDBRepositoryInterface {
       );
     }
 
-    throw new Error("Error desconocido en el registro de usuario");
+    throw new Error("Error saving user");
+
   }
 }
 
