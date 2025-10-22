@@ -26,17 +26,14 @@ export function convertToCommitDataObject(commitData: CommitData): CommitDataObj
   };
 }
 
+export class MockGithubAPI implements CommitHistoryRepository {
   async obtainUserName(_owner: string): Promise<string> {
     return "mockUser";
   }
 
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
-    // Convertimos nuestros datos al formato esperado por la interfaz
     return mockCommitDataArray.map(convertToCommitDataObject);
   }
-
-
-
 
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
     let commitCycles: CommitCycle[] = [];
@@ -59,7 +56,6 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     return "";
   }
 
-
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
     let commitCycles: CommitCycle[] = [];
     return commitCycles;
@@ -80,7 +76,6 @@ export class MockGithubAPIError implements CommitHistoryRepository {
     throw new Error("no username");
   }
 
-
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
     throw new Error("no commit cycles");
   }
@@ -89,3 +84,5 @@ export class MockGithubAPIError implements CommitHistoryRepository {
     throw new Error("no TDD logs");
   }
 }
+
+export const mockGithubAPI = new MockGithubAPI();
