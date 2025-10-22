@@ -12,7 +12,7 @@ import { PropagateLoader } from "react-spinners";
 import { CommitHistoryRepository } from "../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 import { CommentDataObject, CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
-import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
+
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
