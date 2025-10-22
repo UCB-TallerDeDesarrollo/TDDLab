@@ -58,7 +58,7 @@ export class TogetherAIProvider implements IAIProvider {
             return data.choices[0].message.content;
         } catch (error) {
             console.error('[AI Provider Error]', error instanceof Error ? error.message : 'Unknown error');
-            throw new Error('Error al comunicarse con el servicio de IA');
+            throw new Error('Error al comunicarse con el servicio de IA TogetherAI');
         }
     }
 }

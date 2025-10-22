@@ -12,7 +12,7 @@ export class AIAssistantRepository {
     private readonly systemPrompt: string;
 
     constructor(providerType?: AIProviderType) {
-        const type = providerType || (process.env.AI_PROVIDER as AIProviderType) || 'gemini';
+        const type = providerType || (process.env.AI_PROVIDER as AIProviderType);
         const apiKey = process.env.MODEL_API_KEY || '';
         const apiUrl = process.env.LLM_API_URL;
 
