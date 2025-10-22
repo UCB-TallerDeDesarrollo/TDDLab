@@ -11,11 +11,17 @@ export class RegisterUserOnDb {
   async register(user: UserOnDb) {
     try {
       await this.adapter.registerAccount(user);
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error fetching user course:", error);
+
+      const message = error?.message || "";
+
+      if (message.includes("403") || message.includes("No tiene permisos")) {
+        throw new Error("No tiene permisos para registrar administradores");
+      }
+
       throw error;
     }
-
   }
 
   async verifyPass(pass: string): Promise<boolean> {
