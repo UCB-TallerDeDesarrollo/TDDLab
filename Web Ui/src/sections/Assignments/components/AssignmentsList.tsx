@@ -120,9 +120,15 @@ function Assignments({
         const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') ?? '[]');
         allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
       }
-    } else if(userRole === "teacher" || userRole === "admin") {
+    } else if (userRole === "teacher") {
+      const teacherGroupIds = await getGroups.getGroupsByUserId(authData.userid ?? -1);
+      allGroups = await Promise.all(teacherGroupIds.map((id) => getGroups.getGroupById(id)));
+    } else if (userRole === "admin") {
       allGroups = await getGroups.getGroups();
     }
+    // } else if(userRole === "teacher" || userRole === "admin") {
+    //   allGroups = await getGroups.getGroups();
+    // }
 
     if(selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
       await loadAssignmentsByGroupId(allGroups[0].id);

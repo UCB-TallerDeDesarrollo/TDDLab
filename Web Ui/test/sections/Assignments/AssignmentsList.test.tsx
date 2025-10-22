@@ -5,7 +5,6 @@ import AssignmentsList from "../../../src/sections/Assignments/components/Assign
 import { AssignmentDataObject } from "../../../src/modules/Assignments/domain/assignmentInterfaces";
 import { GroupDataObject } from "../../../src/modules/Groups/domain/GroupInterface";
 
-// Mock de las dependencias
 const mockAssignmentsRepo = {
   getAssignmentsByGroupid: jest.fn(),
   getAssignments: jest.fn(),
@@ -54,13 +53,13 @@ jest.mock("../../../src/modules/User-Authentication/domain/authStates", () => ({
   useGlobalState: jest.fn(() => [
     {
       userid: 123,
+      userrole: "teacher", 
       usergroupid: 1,
     },
     jest.fn(),
   ]),
 }));
 
-// Mock de localStorage
 const localStorageMock = {
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -71,7 +70,6 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-// Mock de window.location
 Object.defineProperty(window, 'location', {
   value: {
     search: '',
@@ -79,7 +77,6 @@ Object.defineProperty(window, 'location', {
   writable: true,
 });
 
-// Mock de window.addEventListener y removeEventListener
 Object.defineProperty(window, 'addEventListener', {
   value: jest.fn(),
 });
@@ -136,7 +133,6 @@ describe("AssignmentsList Component", () => {
     localStorageMock.getItem.mockReturnValue(null);
     window.location.search = '';
     
-    // Configurar mocks por defecto
     mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
     mockGetGroups.getGroups.mockResolvedValue(mockGroups);
     mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
@@ -173,16 +169,6 @@ describe("AssignmentsList Component", () => {
   });
 
   it("debería mostrar el botón 'Crear' para roles de teacher y admin", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList({ userRole: "teacher" });
 
     await waitFor(() => {
@@ -191,16 +177,6 @@ describe("AssignmentsList Component", () => {
   });
 
   it("NO debería mostrar el botón 'Crear' para estudiantes", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList({ userRole: "student" });
 
     await waitFor(() => {
@@ -209,16 +185,6 @@ describe("AssignmentsList Component", () => {
   });
 
   it("debería llamar a ShowForm cuando se hace clic en el botón 'Crear'", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList({ userRole: "teacher" });
 
     await waitFor(() => {
@@ -232,16 +198,6 @@ describe("AssignmentsList Component", () => {
   });
 
   it("debería mostrar las tareas filtradas por grupo", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList();
 
     await waitFor(() => {
@@ -251,38 +207,24 @@ describe("AssignmentsList Component", () => {
   });
 
   it("debería mostrar el filtro de grupos", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList();
 
     await waitFor(() => {
-      expect(screen.getByText("Grupo 1")).toBeInTheDocument();
+      const comboboxes = screen.getAllByRole("combobox");
+      const groupFilterComboboxDiv = comboboxes[0]; 
+
+      expect(groupFilterComboboxDiv).toBeInTheDocument();
+
+      const groupFilterInput = groupFilterComboboxDiv.nextElementSibling as HTMLInputElement;
+      expect(groupFilterInput).toBeInTheDocument();
+      expect(groupFilterInput).toHaveValue("1"); 
     });
   });
 
   it("debería mostrar el componente de ordenamiento", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList();
 
     await waitFor(() => {
-      // El componente SortingComponent debería estar presente (usar aria-label para ser específico)
       expect(screen.getByRole("combobox", { name: "Ordenar" })).toBeInTheDocument();
     });
   });
@@ -291,50 +233,33 @@ describe("AssignmentsList Component", () => {
     renderAssignmentsList();
 
     await waitFor(() => {
-      expect(screen.getByText("Grupo 1")).toBeInTheDocument();
+      const comboboxes = screen.getAllByRole("combobox");
+      const groupFilterComboboxDiv = comboboxes[0]; 
+
+      const groupFilterInput = groupFilterComboboxDiv.nextElementSibling as HTMLInputElement;
+      expect(groupFilterInput).toHaveValue("1"); 
     });
-
-    // Simular cambio de grupo usando click en lugar de change
-    const groupSelects = screen.getAllByRole("combobox");
-    const groupSelect = groupSelects[0];
-    fireEvent.click(groupSelect);
-
-    // Verificar que el componente se renderizó correctamente
-    expect(screen.getByText("Grupo 1")).toBeInTheDocument();
+    
+    const comboboxes = screen.getAllByRole("combobox");
+    const groupFilterComboboxDiv = comboboxes[0];
+    const groupFilterInput = groupFilterComboboxDiv.nextElementSibling as HTMLInputElement;
+    expect(groupFilterInput).toHaveValue("1");
   });
 
   it("debería mostrar mensaje cuando no hay tareas", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
+    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValueOnce([]);
     
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue([]);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList();
 
     await waitFor(() => {
       expect(screen.getByText("Tareas")).toBeInTheDocument();
-      // La tabla debería estar vacía pero presente
-      expect(screen.queryByText("Tarea 1")).not.toBeInTheDocument();
+      expect(screen.queryByText("Tarea 1")).not.toBeInTheDocument(); // La tabla debería estar vacía pero presente
     });
   });
 
   it("debería manejar errores en la carga de datos", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
+    mockAssignmentsRepo.getAssignmentsByGroupid.mockRejectedValueOnce(new Error("Error de red"));
     
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockRejectedValue(new Error("Error de red"));
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
-    // Mock console.error para evitar logs en los tests
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     renderAssignmentsList();
@@ -347,20 +272,11 @@ describe("AssignmentsList Component", () => {
   });
 
   it("debería usar datos de localStorage para grupos de estudiantes", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
     localStorageMock.getItem.mockImplementation((key) => {
       if (key === 'userGroups') return '[1, 2]';
       return null;
     });
     
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList({ userRole: "student", userGroupid: [1, 2] });
 
     await waitFor(() => {
@@ -370,24 +286,13 @@ describe("AssignmentsList Component", () => {
   });
 
   it("debería manejar el evento de actualización de tareas", async () => {
-    const AssignmentsRepository = require("../../../src/modules/Assignments/repository/AssignmentsRepository").default;
-    const GetGroups = require("../../../src/modules/Groups/application/GetGroups").default;
-    
-    const mockAssignmentsRepo = new AssignmentsRepository();
-    const mockGetGroups = new GetGroups();
-    
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
-    mockGetGroups.getGroups.mockResolvedValue(mockGroups);
-    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
-
     renderAssignmentsList();
 
-    // Simular el evento de actualización
     const assignmentUpdatedEvent = new CustomEvent('assignment-updated');
     window.dispatchEvent(assignmentUpdatedEvent);
 
     await waitFor(() => {
-      expect(mockAssignmentsRepo.getAssignmentsByGroupid).toHaveBeenCalled();
+      expect(mockAssignmentsRepo.getAssignmentsByGroupid).toHaveBeenCalledTimes(2);
     });
   });
 });
