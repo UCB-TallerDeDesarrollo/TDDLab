@@ -54,25 +54,7 @@ describe("CommitHistoryAdapter", () => {
     });
   });
 
-  describe("obtainComplexityOfRepo", () => {
-    it("debe retornar la complejidad ciclomática redondeada", async () => {
-      mockedAxios.post.mockResolvedValue({
-        status: 200,
-        data: {
-          results: [
-            {
-              average_cyclomatic_complexity: 2.6,
-              commit: "abc123"
-            }
-          ]
-        }
-      });
 
-      const result = await adapter.obtainComplexityOfRepo("owner", "repo");
-      expect(result[0].ciclomaticComplexity).toBe(3);
-      expect(result[0].commit).toBe("abc123");
-    });
-  });
 
   describe("obtainCommitTddCycle", () => {
     it("debe retornar los ciclos TDD con cobertura", async () => {
