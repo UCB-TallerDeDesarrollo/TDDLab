@@ -5,8 +5,6 @@ import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualizatio
 import TDDLineCharts from "./TDDLineChart";
 
 import { VITE_API } from "../../../../config";
-import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
-import { useSearchParams } from "react-router-dom";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
@@ -24,10 +22,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   role,
   port,
 }) => {
-  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
-  const [searchParams] = useSearchParams();
-  const repoOwner = searchParams.get("repoOwner");
-  const repoName = searchParams.get("repoName");
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
@@ -77,26 +71,6 @@ const getTestsForCommit = (commitSha: string): TestExecutionLog[] => {
     }
     
     return testExecutions;
-  };
-
-  const handleOpenFileDialog = () => {
-    setIsFileDialogOpen(true);
-  };
-  
-  const handleCloseFileDialog = () => {
-    setIsFileDialogOpen(false);
-  };
-
-  const handleFileUpload = async (file: File) => {
-    if (repoOwner && repoName) {
-      try {
-        await UploadTDDLogFile(file, undefined, repoOwner, repoName);
-      } catch (error) {
-        console.error("Error al subir el archivo:", error);
-      }
-    } else {
-      console.error("No se encontraron repoOwner y repoName en el enlace.");
-    }
   };
   
   function containsRefactor(commitMessage: string): boolean {
@@ -429,10 +403,6 @@ const getTestsForCommit = (commitSha: string): TestExecutionLog[] => {
             <CommitTimelineDialog
               open={openModal}
               handleCloseModal={handleCloseModal}
-              handleOpenFileDialog={handleOpenFileDialog}
-              handleCloseFileDialog={handleCloseFileDialog}
-              handleFileUpload={handleFileUpload}
-              isFileDialogOpen={isFileDialogOpen}
               selectedCommit={selectedCommit}
               commitTimelineData={commitTimelineData}
               commits={commits}
