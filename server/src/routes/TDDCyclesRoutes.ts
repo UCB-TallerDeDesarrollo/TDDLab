@@ -47,4 +47,15 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getCommits(req, res)
 );
 
+// New endpoints moved from frontend logic
+TDDCyclesRouter.get(
+  "/commits-history",
+  async (req, res) => await tddCyclesController.getCommitHistory(req, res)
+);
+
+TDDCyclesRouter.get(
+  "/commit-cycles",
+  async (req, res) => await tddCyclesController.getCommitCycles(req, res)
+);
+
 export default TDDCyclesRouter;
