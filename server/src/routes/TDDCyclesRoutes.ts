@@ -25,6 +25,12 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getTDDCycles(req, res)
 );
 
+// Agregar esta nueva ruta al archivo existente
+TDDCyclesRouter.get(
+  "/tdd-logs",
+  async (req, res) => await tddCyclesController.getTDDLogs(req, res)
+);
+
 // Get all test results from a repository in Github
 TDDCyclesRouter.get(
   "/jobs",
