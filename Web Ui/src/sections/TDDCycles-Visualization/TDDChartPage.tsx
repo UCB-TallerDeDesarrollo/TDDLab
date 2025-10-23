@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { PortGetTDDCycles } from "../../modules/TDDCycles-Visualization/application/GetTDDCycles";
+import { GetCommitsOfRepo } from "../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
+import { GetCommitTddCycle } from "../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
+import { GetComplexityOfRepo } from "../../modules/TDDCycles-Visualization/application/GetComplexityOfRepo";
+import { GetTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogs";
+import { GetUserName } from "../../modules/TDDCycles-Visualization/application/GetUserName";
 import TDDCharts from "./components/TDDChart";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { CommitHistoryRepository } from "../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { CommitHistoryAdapter } from "../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TeacherCommentsRepository from "../../modules/teacherCommentsOnSubmissions/repository/CommentsRepository";
 import { CommentDataObject, CommentsCreationObject } from "../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import { ComplexityObject } from "../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { GetProcessedTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogsProcessed";
+import { ProcessedTDDLogs } from "../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces";
 
 interface CycleReportViewProps {
   port: CommitHistoryRepository;
@@ -62,6 +67,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
+  const [processedTddLogs, setProcessedTddLogs] = useState<ProcessedTDDLogs | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
@@ -70,22 +76,31 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [emails, setEmails] = useState<{ [key: number]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const getTDDCycles = new PortGetTDDCycles(port);
-  const commitHistoryAdapter = new CommitHistoryAdapter();
+  const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
+  const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
+  const getComplexityOfRepoUseCase = new GetComplexityOfRepo(port);
+  const getTDDLogsUseCase = new GetTDDLogs(port);
+  const getProcessedTDDLogsUseCase = new GetProcessedTDDLogs(port);
+  const getUserNameUseCase = new GetUserName(port);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const tddlogs = await getTDDCycles.obtainTDDLogs(repoOwner, repoName);
+      //ANTIGUO
+  const tddlogs = await getTDDLogsUseCase.execute(repoOwner, repoName);
       setTDDLogsInfo(tddlogs);
+//NUEVO, CONSULTA DESDE BACKEND
+      const processedLogs = await getProcessedTDDLogsUseCase.execute(repoOwner, repoName);
+      setProcessedTddLogs(processedLogs);
+      
 
-      const commits = await getTDDCycles.obtainCommitsOfRepo(repoOwner, repoName);
+  const commits = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
       setCommitsInfo(commits);
 
-      const tddCycles = await getTDDCycles.obtainCommitTddCycle(repoOwner, repoName);
+  const tddCycles = await getCommitTddCycleUseCase.execute(repoOwner, repoName);
       setCommitsTddCycles(tddCycles);
 
-      const complexityList = await getTDDCycles.obtainComplexityData(repoOwner, repoName);
+  const complexityList = await getComplexityOfRepoUseCase.execute(repoOwner, repoName);
       setComplexity(complexityList);
     } catch (error) {
       console.error("Error obtaining data:", error);
@@ -150,7 +165,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   useEffect(() => {
     const fetchOwnerName = async () => {
       try {
-        const name = await commitHistoryAdapter.obtainUserName(repoOwner);
+        const name = await getUserNameUseCase.execute(repoOwner);
         setOwnerName(name);
       } catch (error) {
         console.error("Error obtaining owner name:", error);
@@ -258,6 +273,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
               data-testId="cycle-chart"
               commits={commitsInfo}
               tddLogs = {tddLogsInfo}
+              processedTddLogs = {processedTddLogs}
               complexity={complexity}
               commitsTddCycles={commitsTddCycles}
               port={port}

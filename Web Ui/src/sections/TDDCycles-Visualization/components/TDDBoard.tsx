@@ -10,10 +10,12 @@ import { useSearchParams } from "react-router-dom";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
+import { ProcessedTDDLogs } from '../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces';
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
   tddLogs: TDDLogEntry[];
+  processedTddLogs: ProcessedTDDLogs | null;
   port: CommitHistoryRepository;
   role: string;
 }
@@ -21,6 +23,7 @@ interface CycleReportViewProps {
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
   tddLogs,
+  processedTddLogs,
   role,
   port,
 }) => {
@@ -526,12 +529,13 @@ const getTestsForCommit = (commitSha: string): TestExecutionLog[] => {
             tddLogs={tddLogs}
             optionSelected={graph}
             complexity={null}
-            commitsCycles= {null}
-          />
+            commitsCycles={null} 
+            processedTddLogs={processedTddLogs}
+            />
         </>
 
       )}
-      <TDDCycleChart data={tddLogs} />
+      <TDDCycleChart data={processedTddLogs} />
     </>    
   );
 };

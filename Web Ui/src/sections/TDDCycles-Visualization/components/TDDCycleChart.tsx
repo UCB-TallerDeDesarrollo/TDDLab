@@ -1,56 +1,46 @@
 import React, { useMemo } from 'react';
-
-interface TestLog {
-  numPassedTests?: number;
-  failedTests?: number;
-  numTotalTests?: number;
-  timestamp?: number;
-  success?: boolean;
-  testId: number;
-  commitId?: string;
-  commitName?: string;
-  commitTimestamp?: number;
-}
+import { ProcessedTDDLogs } from '../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces';
 
 interface TDDCycleChartProps {
-  data: TestLog[];
+  data: ProcessedTDDLogs | null;
 }
 
-interface CommitData {
-  commitNumber: number;
-  tests: Array<{ passed: boolean; size: number }>;
-}
-
-const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
+const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
+  console.log(data);
   const processedData = useMemo(() => {
-    if (!data || data.length === 0) {
-      return [];
-    }
-    
-    const commitMap = new Map<number, CommitData>();
-    let currentCommit = 1;
-    
-    data.forEach((log) => {
-      if (log.commitId) {
-        currentCommit++;
-      }
-      
-      if (log.numPassedTests !== undefined) {
-        if (!commitMap.has(currentCommit)) {
-          commitMap.set(currentCommit, {
-            commitNumber: currentCommit,
-            tests: []
-          });
-        }
-        
-        const commit = commitMap.get(currentCommit)!;
-        const passed = (log.failedTests === 0) && (log.success === true);
-        commit.tests.push({ passed, size: 1 });
-      }
-    });
-    
-    return Array.from(commitMap.values());
+
+    return data?.commits || [];
   }, [data]);
+  
+  const summary = useMemo(() => {
+    return data?.summary || { totalCommits: 0, totalExecutions: 0 };
+  }, [data]);
+
+  if (!data) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        </div>
+        <div style={{...styles.summary, justifyContent: 'center'}}>
+          <span style={styles.legendText}>Cargando datos...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (processedData.length === 0) {
+     return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        </div>
+        <div style={{...styles.summary, justifyContent: 'center'}}>
+          <span style={styles.legendText}>No hay datos de ejecución de pruebas para mostrar.</span>
+        </div>
+      </div>
+    );
+  }
 
   const chartHeight = 400;
   const chartWidth = 1200;
@@ -194,13 +184,14 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         </div>
       </div>
 
-      {/* Summary */}
+      {/* 6. ACTUALIZAR EL RESUMEN PARA USAR LOS DATOS DEL BACKEND */}
       <div style={styles.summary}>
         <div style={styles.summaryItem}>
-          <strong>Total de commits:</strong> {processedData.length}
+          <strong>Total de commits:</strong> {summary.totalCommits}
         </div>
         <div style={styles.summaryItem}>
-          <strong>Total de ejecuciones:</strong> {data.filter(d => d.numPassedTests !== undefined).length}
+          {/* El cálculo 'data.filter(...)' se reemplaza por el valor del backend */}
+          <strong>Total de ejecuciones:</strong> {summary.totalExecutions}
         </div>
       </div>
     </div>

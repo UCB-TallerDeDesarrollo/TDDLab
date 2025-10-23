@@ -25,6 +25,12 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getTDDCycles(req, res)
 );
 
+// Agregar esta nueva ruta al archivo existente
+TDDCyclesRouter.get(
+  "/tdd-logs",
+  async (req, res) => await tddCyclesController.getTDDLogs(req, res)
+);
+
 // Get all test results from a repository in Github
 TDDCyclesRouter.get(
   "/jobs",
@@ -45,6 +51,17 @@ TDDCyclesRouter.get( //en teoria aqui deberia recibir el sha del commit
 TDDCyclesRouter.get(
   "/get-commits",
   async (req, res) => await tddCyclesController.getCommits(req, res)
+);
+
+// New endpoints moved from frontend logic
+TDDCyclesRouter.get(
+  "/commits-history",
+  async (req, res) => await tddCyclesController.getCommitHistory(req, res)
+);
+
+TDDCyclesRouter.get(
+  "/commit-cycles",
+  async (req, res) => await tddCyclesController.getCommitCycles(req, res)
 );
 
 export default TDDCyclesRouter;

@@ -11,10 +11,12 @@ import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualizatio
 import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { ProcessedTDDLogs } from "../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
   tddLogs: TDDLogEntry[] | null;
+  processedTddLogs: ProcessedTDDLogs | null;
   metric: string | null;
   setMetric: (metric: string) => void;
   port: CommitHistoryRepository;
@@ -24,7 +26,7 @@ interface CycleReportViewProps {
   typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, complexity, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, processedTddLogs, setMetric, port, role, complexity, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
@@ -117,6 +119,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, complexity, commit
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
         tddLogs = {tddLogs}
+        processedTddLogs = {processedTddLogs}
         optionSelected={metricSelected}
         complexity={complexity}
         port={port}
