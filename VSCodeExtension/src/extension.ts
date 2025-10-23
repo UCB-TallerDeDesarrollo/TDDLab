@@ -1,178 +1,261 @@
 import * as vscode from 'vscode';
-import { TimelineView } from './sections/Timeline/TimelineView';
-import * as path from 'path';
-import * as fs from 'fs';
-import { ExecuteTestCommand } from './modules/Button/application/runTest/ExecuteTestCommand';
-import { VSCodeTerminalRepository } from './modules/Button/infraestructure/VSCodeTerminalRepository';
-import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
-import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
-import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
-import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
-import { TerminalViewProvider } from './sections/TDDLabTerminal/TerminalViewProvider';
-import { FeatureConfigLoader } from './FeatureConfigLoader';
+import { ExecuteTestCommand } from './application/runTest/ExecuteTestCommand';
+import { NpmRunTests } from './infrastructure/test/NpmRunTests';
+import { TerminalViewProvider } from './presentation/terminal/TerminalViewProvider';
+import { TimelineView } from './presentation/timeline/TimelineView';
+import { TestMenuProvider } from './presentation/menu/TestMenuProvider';
+import { VSCodeTerminalRepository } from './infrastructure/terminal/VSCodeTerminalRepository';
+import { ExecuteCloneCommand } from './application/clone/ExecuteCloneCommand';
 
-/**
- * @param {vscode.ExtensionContext} context
- */
+let terminalProvider: TerminalViewProvider | null = null;
+let timelineView: TimelineView | null = null;
+let testMenuProvider: TestMenuProvider | null = null;
 
 export async function activate(context: vscode.ExtensionContext) {
-    const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
-    let isInitialRun = true;
-    let features: { [key: string]: boolean } = FeatureConfigLoader.load(context);
+  console.log('TDDLab extension is activating...');
+//trrtrtrt
+  try {
+    timelineView = new TimelineView(context);
+    const terminalPort = new VSCodeTerminalRepository();
+    terminalProvider = new TerminalViewProvider(context, timelineView, terminalPort);
+    testMenuProvider = new TestMenuProvider();
 
-    const terminalRepository = new VSCodeTerminalRepository();
-    const executeTestCommand = new ExecuteTestCommand(terminalRepository);
-    const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
-    const executeExportCommand = new ExecuteExportCommand();
-    const executeAIAssistant = new ExecuteAIAssistant();
+    const runTests = new NpmRunTests(terminalProvider);
+    const executeTestCommand = new ExecuteTestCommand(runTests);
+    const executeCloneCommand = new ExecuteCloneCommand();
 
-    if (features.tddTerminalView) {
-        context.subscriptions.push(
-            vscode.window.registerWebviewViewProvider(
-                TerminalViewProvider.viewType,
-                new TerminalViewProvider(context)
-            )
-        );
-    }
-    
+    // Registrar comandos
+    const cmds = [
+      vscode.commands.registerCommand('TDD.runTest', async () => {
+        if (!terminalProvider) {
+          vscode.window.showErrorMessage('Terminal no disponible');
+          return;
+        }
+        await vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider.executeCommand('npm test');
+      }),
 
-    const timelineView = new TimelineView(context);
+      vscode.commands.registerCommand('TDD.clearTerminal', () => terminalProvider?.clearTerminal()),
+
+      vscode.commands.registerCommand('TDD.cloneCommand', async () => {
+        try { await executeCloneCommand.execute(); }
+        catch (e: any) { vscode.window.showErrorMessage(`Error al crear proyecto: ${e.message}`); }
+      }),
+
+      vscode.commands.registerCommand('extension.showTimeline', () => vscode.commands.executeCommand('tddTerminalView.focus')),
+
+      vscode.commands.registerCommand('TDD.runCypress', () => {
+        vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider?.executeCommand('npx cypress run');
+      }),
+
+      vscode.commands.registerCommand('TDD.gitStatus', () => {
+        vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider?.executeCommand('git status');
+      }),
+
+      vscode.commands.registerCommand('TDD.npmInstall', () => {
+        vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider?.executeCommand('npm install');
+      }),
+
+      // 💬 Chat IA - VERSIÓN MEJORADA
+      vscode.commands.registerCommand('TDD.openChat', () => {
+        try {
+          const panel = vscode.window.createWebviewPanel(
+            'tddChat',
+            '🧠 TDD Assistant Chat', // Mejor título
+            vscode.ViewColumn.Two,
+            { 
+              enableScripts: true,
+              retainContextWhenHidden: true, // ✅ Mantiene el estado
+              localResourceRoots: [] // ✅ Seguridad
+            }
+          );
+          
+          panel.webview.html = getChatHtml();
+          
+          // ✅ Manejar cuando se cierra el panel
+          panel.onDidDispose(() => {
+            console.log('TDD Chat panel closed');
+          }, null, context.subscriptions);
+          
+        } catch (error) {
+          vscode.window.showErrorMessage(`❌ Error abriendo TDD Assistant: ${error}`);
+        }
+      })
+    ];
+
+    context.subscriptions.push(...cmds);
+
+    // Registrar menú lateral
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider('timelineView', timelineView)
+      vscode.window.registerTreeDataProvider('tddTestExecution', testMenuProvider)
     );
 
-    vscode.commands.registerCommand('extension.showTimeline', () => {
-        vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-        if (timelineView.currentWebview) {
-            timelineView.showTimeline(timelineView.currentWebview);
-        }
-    });
-
-    const jsonFilePath = path.join(
-        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
-        'script',
-        'tdd_log.json'
+    // Registrar vista de terminal
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider(TerminalViewProvider.viewType, terminalProvider)
     );
 
-    const updateTimeLine = () => {
-        if (timelineView.currentWebview) {
-            timelineView.showTimeline(timelineView.currentWebview);
-        }
-    };
+    console.log('TDDLab extension activated ✅');
+  } catch (error) {
+    console.error('Error activating TDDLab extension:', error);
+    vscode.window.showErrorMessage(`Error activating TDDLab: ${error}`);
+  }
+}
 
-    const watchFile = () => {
-        fs.watch(jsonFilePath, (eventType, filename) => {
-            if (eventType === 'change') {
-                updateTimeLine();
-            }
-        });
-        if (isInitialRun) {
-            updateTimeLine();
-            isInitialRun = false;
-        }
-    };
-
-    if (fs.existsSync(jsonFilePath)) {
-        watchFile();
-    } else {
-        const interval = setInterval(() => {
-            if (fs.existsSync(jsonFilePath)) {
-                clearInterval(interval);
-                watchFile();
-            }
-        }, 1000);
-    }
-
-
-    const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage(
-                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado para ejecutar la extensión.'
-            );
-            return;
-        }
-
-        const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
-
-        try {
-            if (!fs.existsSync(projectJsonPath)) {
-                throw new Error(
-                    'Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
-                );
-            }
-
-            const stats = fs.statSync(projectJsonPath);
-            if (!stats.isFile()) {
-                throw new Error('El archivo "tdd_log.json" no es un archivo válido.');
-            }
-
-            await executeTestCommand.execute();
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Se produjo un error desconocido.';
-            vscode.window.showErrorMessage(`TDD Lab: Error al ejecutar la extensión. ${message}`);
-        }
-    });
-
-    const runTestActivityCommand = vscode.commands.registerCommand('TDD.runTestActivity', async () => {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage(
-                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado y compatible para ejecutar la extensión.'
-            );
-            return;
-        }
-
-        try {
-            const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
-            if (!fs.existsSync(projectJsonPath)) {
-                vscode.window.showErrorMessage(
-                    'TDD Lab: Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
-                );
-                return;
-            }
-            await executeTestCommand.execute();
-        } catch (error) {
-            vscode.window.showErrorMessage('Ocurrió un error al intentar ejecutar la prueba.');
-        }
-    });
-
-    const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
-        try {
-            await executeCloneCommand.execute(tddBasePath);
-        } catch (error) {
-            vscode.window.showErrorMessage('Error al clonar el proyecto. Por favor, verifica la configuración.');
-        }
-    });
-
-    const runExportCommand = vscode.commands.registerCommand('TDD.exportCommand', async () => {
-        try {
-            await executeExportCommand.execute();
-        } catch (error) {
-            vscode.window.showErrorMessage('Error al exportar los datos. Por favor, intenta nuevamente.');
-        }
-    });
-
-    const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
-        try {
-            await executeAIAssistant.execute(context);
-        } catch (error: any) {
-            vscode.window.showErrorMessage(`Error: ${error?.message}`);
-        }
-    });
-
-    context.subscriptions.push(runTestCommand);
-    context.subscriptions.push(runTestActivityCommand);
-    context.subscriptions.push(runCloneCommand);
-    context.subscriptions.push(runExportCommand);
-    context.subscriptions.push(runAsistenteCommand);
-
-    const testExecutionTreeView = new ExecutionTreeView(context, features);
-    testExecutionTreeView.initialize();
-
-
-
+function getChatHtml(): string {
+  const webhookUrl = 'https://marlon8n.app.n8n.cloud/webhook/9dbbe983-f9a8-400b-8df8-ab429611850e/chat';
   
+    return `<!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Asistente IA TDD</title>
+        <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+        <style>
+            body {
+                padding: 0;
+                margin: 0;
+                background: transparent;
+                height: 100vh;
+                overflow: hidden;
+            }
+            #chat-container {
+                height: 100vh;
+                width: 100%;
+                border-radius: 8px;
+            }
+            .loading {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                color: var(--vscode-foreground);
+                font-family: var(--vscode-font-family);
+            }
+            .welcome-message {
+                padding: 20px;
+                text-align: center;
+                color: var(--vscode-descriptionForeground);
+                font-family: var(--vscode-font-family);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="chat-container">
+            <div class="loading" id="loading">
+                <div>
+                    <div class="welcome-message">
+                        <h3>🤖 Asistente IA TDD</h3>
+                        <p>Inicializando chat...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script type="module">
+            import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+            let chatInstance = null;
+            const chatContainer = document.getElementById('chat-container');
+            const loadingElement = document.getElementById('loading');
+
+            // Configuración del chat
+            const chatConfig = {
+                webhookUrl: '${webhookUrl}',
+                target: '#chat-container',
+                mode: 'bubble',
+                welcomeMessage: '¡Hola! Soy tu asistente especializado en TDD. ¿En qué puedo ayudarte con tus tests?',
+
+                theme: {
+                    light: {
+                        primary: '#007ACC',
+                        secondary: '#FFFFFF',
+                        text: '#333333',
+                    },
+                    dark: {
+                        primary: '#007ACC',
+                        secondary: '#1E1E1E',
+                        text: '#CCCCCC',
+                    }
+                },
+                chatInput: {
+                    placeholder: 'Pregunta sobre TDD, tests, o tu código...',
+                    enabled: true
+                },
+                initialMessages: [
+                    'Puedo ayudarte a:',
+                    '• Escribir tests unitarios',
+                    '• Explicar conceptos de TDD', 
+                    '• Revisar tu código de test',
+                    '• Sugerir mejoras en tus tests',
+                    '• Resolver problemas con frameworks de testing'
+                ]
+            };
+
+            // Inicializar el chat
+            function initializeChat() {
+                try {
+                    chatInstance = createChat(chatConfig);
+                    
+                    // Ocultar loading cuando el chat esté listo
+                    setTimeout(() => {
+                        if (loadingElement) {
+                            loadingElement.style.display = 'none';
+                        }
+                    }, 1000);
+
+                    console.log('Chat TDD inicializado correctamente');
+                } catch (error) {
+                    console.error('Error al inicializar el chat:', error);
+                    if (loadingElement) {
+                        loadingElement.innerHTML = '<div class="welcome-message"><h3>❌ Error</h3><p>No se pudo cargar el chat. Verifica la conexión.</p></div>';
+                    }
+                }
+            }
+
+            // Escuchar mensajes de VSCode
+            window.addEventListener('message', event => {
+                const message = event.data;
+                switch (message.type) {
+                    case 'focusChat':
+                        // Enfocar el input del chat cuando se solicite
+                        setTimeout(() => {
+                            const chatInput = document.querySelector('[data-test-id="chat-input"]') || 
+                                            document.querySelector('input[placeholder*="Pregunta"]');
+                            if (chatInput) {
+                                chatInput.focus();
+                            }
+                        }, 300);
+                        break;
+                }
+            });
+
+            // Inicializar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeChat);
+            } else {
+                initializeChat();
+            }
+
+            // Notificar a VSCode que el chat está listo
+            setTimeout(() => {
+                const vscode = acquireVsCodeApi();
+                vscode.postMessage({
+                    type: 'chatReady',
+                    ready: true
+                });
+            }, 2000);
+        </script>
+    </body>
+    </html>`;
+  }
+
+export function deactivate() {
+  terminalProvider = null;
+  timelineView = null;
+  testMenuProvider = null;
 }
