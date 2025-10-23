@@ -8,10 +8,12 @@ import { VITE_API } from "../../../../config";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
+import { ProcessedTDDLogs } from '../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces';
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
   tddLogs: TDDLogEntry[];
+  processedTddLogs: ProcessedTDDLogs | null;
   port: CommitHistoryRepository;
   role: string;
 }
@@ -69,6 +71,7 @@ const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
   tddLogs,
+  processedTddLogs,
   role,
   port,
 }) => {
@@ -521,13 +524,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             filteredCommitsObject={commits}
             tddLogs={tddLogs}
             optionSelected={graph}
-
-            commitsCycles= {null}
-          />
+            complexity={null}
+            commitsCycles={null} 
+            processedTddLogs={processedTddLogs}
+            />
         </>
 
       )}
-      <TDDCycleChart data={tddLogs} />
+      <TDDCycleChart data={processedTddLogs} />
     </>    
   );
 };

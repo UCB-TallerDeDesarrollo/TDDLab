@@ -3,6 +3,7 @@ import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/Tdd
 import { getElementAtEvent, Line } from "react-chartjs-2";
 import { useRef } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
+import { ProcessedTDDLogs } from "../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces";
 
 import {
   Chart as ChartJS,
@@ -41,6 +42,7 @@ ChartJS.register(
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
   tddLogs: TDDLogEntry [] | null;
+  processedTddLogs: ProcessedTDDLogs | null;
   optionSelected: string;
   port: CommitHistoryRepository;
   role: string;
@@ -50,6 +52,7 @@ interface LineChartProps {
 function TDDLineCharts({
   filteredCommitsObject,
   tddLogs,
+  processedTddLogs, 
   optionSelected,
   port,
   role,
@@ -325,34 +328,26 @@ function TDDLineCharts({
       case "Lista":
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
-
+          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} processedTddLogs={processedTddLogs} port={port} role={role}/>;
+      case "Complejidad":
+            if (complexity != null) {
+                dataChart = getDataChart(
+                complexity?.map((data) => data.ciclomaticComplexity),
+                "Complejidad Ciclomática"
+              );
+              optionsChart = getOptionsChart("Complejidad Ciclomática");
+              dataTestid = "graph-complexity";
+            }
+            break;
+          
       case "Ciclo de ejecución de pruebas": {
-        console.log(tddLogs)
-        // Convert TDDLogEntry[] to TestLog[] format and handle null case
-        const testLogs = tddLogs?.map(log => {
-          // TDDLogEntry is a union type, so we need to handle both TestExecutionLog and CommitLog
-          if ('numPassedTests' in log) {
-            // This is a TestExecutionLog
-            return {
-              numPassedTests: log.numPassedTests,
-              failedTests: log.failedTests,
-              numTotalTests: log.numTotalTests,
-              timestamp: log.timestamp,
-              success: log.success,
-              testId: log.testId
-            };
-          } else {
-            // This is a CommitLog
-            return {
-              commitId: log.commitId,
-              commitName: log.commitName,
-              commitTimestamp: log.commitTimestamp,
-              testId: log.testId
-            };
-          }
-        }) || [];
-        return <TDDCycleChart data={testLogs} />;
+        console.log("Datos procesados del backend para 'Ciclo de ejecución de pruebas':", processedTddLogs);
+
+        // Validamos que los nuevos datos hayan llegado
+        if (!processedTddLogs) {
+          return <div>Cargando datos del ciclo de pruebas...</div>;
+        }
+        return <TDDCycleChart data={processedTddLogs} />;
       }
 
 

@@ -6,6 +6,7 @@ import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
+import { ProcessedTDDLogs } from "../domain/ProcessedTDDLogInterfaces";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
   octokit: Octokit;
@@ -110,6 +111,26 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
 
     } catch (error) {
       console.error("Error obtaining TDD logs:", error);
+      throw error;
+    }
+  }
+
+  async obtainProcessedTDDLogs(
+    owner: string,
+    repoName: string,
+  ): Promise<ProcessedTDDLogs> {
+    try {
+      const apiUrl = `http://localhost:3000/api/TDDCycles/tdd-logs?owner=${owner}&repoName=${repoName}`;
+      
+      const response = await axios.get<ProcessedTDDLogs>(apiUrl);
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error("Error obtaining processed TDD logs:", error);
       throw error;
     }
   }
