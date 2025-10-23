@@ -5,6 +5,8 @@ import { IGithubRepository } from "../../modules/TDDCycles/Domain/IGithubReposit
 import { GetTDDCyclesUseCase } from "../../modules/TDDCycles/Application/getTDDCyclesUseCase";
 import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLogUseCase";
+import { ProcessedTDDResponse } from "../../modules/TDDCycles/Domain/IProcessedTDDData";
+import { GetTDDLogsUseCase } from "../../modules/TDDCycles/Application/getTDDLogsUseCase";
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
 import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
@@ -23,6 +25,7 @@ class TDDCyclesController {
   getCommitExecutions: GetCommitTimeLineUseCase;
   getCommitHistoryUseCase: GetCommitHistoryUseCase;
   getCommitCyclesUseCase: GetCommitCyclesUseCase;
+  getTDDLogsUseCase: GetTDDLogsUseCase; 
 
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
@@ -45,8 +48,35 @@ class TDDCyclesController {
     );
     this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository);
     this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
+    this.getTDDLogsUseCase = new GetTDDLogsUseCase(githubRepository);
     this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
+  }
+  // SÍ SE USA
+  // Endpoint para obtener los TDD logs procesados desde GitHub
+  async getTDDLogs(req: Request, res: Response) {
+    try {
+      const { owner, repoName } = req.query;
+      
+      if (!owner || !repoName) {
+        return res.status(400).json({ 
+          error: "Bad request, missing owner or repoName" 
+        });
+      }
+
+      // Ahora retorna los datos ya procesados
+      const processedData: ProcessedTDDResponse = await this.getTDDLogsUseCase.execute(
+        String(owner),
+        String(repoName)
+      );
+
+      return res.status(200).json(processedData);
+    } catch (error) {
+      console.error("Error fetching and processing TDD logs:", error);
+      return res.status(500).json({ 
+        error: "Server error fetching TDD logs" 
+      });
+    }
   }
   //NO SE USA
   async getTDDCycles(req: Request, res: Response) {
