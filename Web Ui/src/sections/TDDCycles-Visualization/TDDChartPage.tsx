@@ -219,6 +219,12 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
         </div>
       )}
 
+      {!loading && commitsInfo?.length !== 0 && (!tddLogsInfo || tddLogsInfo.length === 0) && (
+        <div className="error-message" data-testid="errorMessage">
+          Hubo un problema al cargar los TDD logs, por lo que los graficos que usan estos datos no podran ser mostrados.
+        </div>
+      )}
+
       {!loading && commitsInfo?.length !== 0 && (
         <React.Fragment>
           {!isStudent(role) && (
