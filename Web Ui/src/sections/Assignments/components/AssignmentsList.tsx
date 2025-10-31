@@ -126,9 +126,6 @@ function Assignments({
     } else if (userRole === "admin") {
       allGroups = await getGroups.getGroups();
     }
-    // } else if(userRole === "teacher" || userRole === "admin") {
-    //   allGroups = await getGroups.getGroups();
-    // }
 
     if(selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
       await loadAssignmentsByGroupId(allGroups[0].id);
