@@ -108,7 +108,11 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
 
       return response.data;
 
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        console.warn("TDD log file not found. Proceeding without TDD log data.");
+        return [];
+      }
       console.error("Error obtaining TDD logs:", error);
       throw error;
     }
