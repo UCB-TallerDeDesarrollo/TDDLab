@@ -1,4 +1,3 @@
-import { ComplexityObject } from "../domain/ComplexityInterface";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { CommitCycle } from "../domain/TddCycleInterface";
@@ -24,12 +23,7 @@ export class PortGetTDDCycles {
     return await this.adapter.obtainCommitsOfRepo(owner, repoName);
   }
 
-  async obtainComplexityData(
-    owner: string,
-    repoName: string,
-  ): Promise<ComplexityObject[]> {
-    return await this.adapter.obtainComplexityOfRepo(owner, repoName);
-  }
+
 
   async obtainCommitTddCycle(
     owner: string,

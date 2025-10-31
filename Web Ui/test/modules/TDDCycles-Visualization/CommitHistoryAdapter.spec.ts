@@ -13,25 +13,12 @@ describe("CommitHistoryAdapter", () => {
     adapter = new CommitHistoryAdapter();
   });
 
-
+  //el frontend ya no se encarga de ordenarlos de forma descendente por la fecha, ya lo recibe de esa manera desde el backend
   describe("obtainCommitsOfRepo", () => {
     it("debe retornar commits ordenados por fecha descendente", async () => {
       mockedAxios.get.mockResolvedValue({
         status: 200,
         data: [
-          {
-            sha: "123",
-            stats: { total: 10, additions: 5, deletions: 5, date: "2024-01-01" },
-            commit: {
-              date: "2024-01-01",
-              message: "Init",
-              url: "url1",
-              comment_count: 0,
-            },
-            coverage: 80,
-            test_count: 2,
-            conclusion: "success"
-          },
           {
             sha: "456",
             stats: { total: 15, additions: 10, deletions: 5, date: "2024-01-02" },
@@ -44,6 +31,19 @@ describe("CommitHistoryAdapter", () => {
             coverage: 90,
             test_count: 3,
             conclusion: "success"
+          },
+          {
+            sha: "123",
+            stats: { total: 10, additions: 5, deletions: 5, date: "2024-01-01" },
+            commit: {
+              date: "2024-01-01",
+              message: "Init",
+              url: "url1",
+              comment_count: 0,
+            },
+            coverage: 80,
+            test_count: 2,
+            conclusion: "success"
           }
         ]
       });
@@ -54,25 +54,7 @@ describe("CommitHistoryAdapter", () => {
     });
   });
 
-  describe("obtainComplexityOfRepo", () => {
-    it("debe retornar la complejidad ciclomática redondeada", async () => {
-      mockedAxios.post.mockResolvedValue({
-        status: 200,
-        data: {
-          results: [
-            {
-              average_cyclomatic_complexity: 2.6,
-              commit: "abc123"
-            }
-          ]
-        }
-      });
 
-      const result = await adapter.obtainComplexityOfRepo("owner", "repo");
-      expect(result[0].ciclomaticComplexity).toBe(3);
-      expect(result[0].commit).toBe("abc123");
-    });
-  });
 
   describe("obtainCommitTddCycle", () => {
     it("debe retornar los ciclos TDD con cobertura", async () => {
@@ -81,8 +63,8 @@ describe("CommitHistoryAdapter", () => {
         data: [
           {
             sha: "789",
-            commit: { url: "url3" },
-            tdd_cycle: "Red-Green-Refactor",
+            url: "url3",
+            tddCycle: "Red-Green-Refactor",
             coverage: 75
           }
         ]

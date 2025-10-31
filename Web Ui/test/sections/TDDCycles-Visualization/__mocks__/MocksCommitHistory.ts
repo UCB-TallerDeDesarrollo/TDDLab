@@ -1,4 +1,3 @@
-import { ComplexityObject } from "../../../../src/modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
@@ -28,18 +27,12 @@ export function convertToCommitDataObject(commitData: CommitData): CommitDataObj
 }
 
 export class MockGithubAPI implements CommitHistoryRepository {
-  async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
-    // Convertimos nuestros datos al formato esperado por la interfaz
-    return mockCommitDataArray.map(convertToCommitDataObject);
-  }
-
   async obtainUserName(_owner: string): Promise<string> {
-    return "MockUsername";
+    return "mockUser";
   }
 
-  async obtainComplexityOfRepo(_owner: string, _repoName: string): Promise<ComplexityObject[]> {
-    let complexity: ComplexityObject[] = [];
-    return complexity;
+  async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
+    return mockCommitDataArray.map(convertToCommitDataObject);
   }
 
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
@@ -63,11 +56,6 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     return "";
   }
 
-  async obtainComplexityOfRepo(_owner: string, _repoName: string): Promise<ComplexityObject[]> {
-    let complexity: ComplexityObject[] = [];
-    return complexity;
-  }
-
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
     let commitCycles: CommitCycle[] = [];
     return commitCycles;
@@ -88,10 +76,6 @@ export class MockGithubAPIError implements CommitHistoryRepository {
     throw new Error("no username");
   }
 
-  async obtainComplexityOfRepo(_owner: string, _repoName: string): Promise<ComplexityObject[]> {
-    throw new Error("no complexity");
-  }
-
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
     throw new Error("no commit cycles");
   }
@@ -100,3 +84,5 @@ export class MockGithubAPIError implements CommitHistoryRepository {
     throw new Error("no TDD logs");
   }
 }
+
+export const mockGithubAPI = new MockGithubAPI();

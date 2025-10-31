@@ -7,6 +7,9 @@ import {
 import dotenv from "dotenv";
 import { JobDataObject } from "../Domain/JobDataObject";
 import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
+import axios from "axios";
+import { CommitCycleData } from "../Domain/ICommitCycleData";
+import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
@@ -299,5 +302,56 @@ export class GithubRepository implements IGithubRepository {
       })
     );
     return jobs;
+  }
+
+  async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
+    try {
+      const url = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
+      const response = await axios.get(url);
+      
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return response.data as any[];
+    } catch (error) {
+      console.error("Error fetching commit-history.json from GitHub:", error);
+      throw error;
+    }
+  }
+
+  async getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]> {
+    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    const commits: CommitHistoryData[] = commitHistory.map((commitData: any) => ({
+      html_url: commitData.commit.url,
+      sha: commitData.sha,
+      stats: {
+        total: commitData.stats.total,
+        additions: commitData.stats.additions,
+        deletions: commitData.stats.deletions,
+        date: commitData.stats.date,
+      },
+      commit: {
+        date: new Date(commitData.commit.date),
+        message: commitData.commit.message,
+        url: commitData.commit.url,
+        comment_count: commitData.commit.comment_count,
+      },
+      coverage: commitData.coverage,
+      test_count: commitData.test_count,
+      conclusion: commitData.conclusion,
+    }));
+    commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
+    return commits;
+  }
+
+  async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {
+    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    return commitHistory.map((commitData: any) => ({
+      url: commitData.commit.url,
+      sha: commitData.sha,
+      tddCycle: commitData.tdd_cycle ?? "null",
+      coverage: commitData.coverage,
+    }));
   }
 }

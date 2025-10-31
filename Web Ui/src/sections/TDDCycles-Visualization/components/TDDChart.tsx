@@ -8,7 +8,6 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
@@ -19,12 +18,11 @@ interface CycleReportViewProps {
   setMetric: (metric: string) => void;
   port: CommitHistoryRepository;
   role: string;
-  complexity: ComplexityObject[] | null;
   commitsTddCycles: CommitCycle[] | null;
   typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, complexity, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
@@ -118,7 +116,6 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, complexity, commit
         filteredCommitsObject={filteredCommitsObject}
         tddLogs = {tddLogs}
         optionSelected={metricSelected}
-        complexity={complexity}
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}
