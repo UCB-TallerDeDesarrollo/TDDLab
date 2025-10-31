@@ -90,17 +90,26 @@ function Groups() {
     }
   };
 
-  // Cargar grupos
+  // Cargar 
   useEffect(() => {
-    const fetchGroups = async () => {
-      const getGroupsApp = new GetGroups(groupRepository);
+  const fetchGroups = async () => {
+    const getGroupsApp = new GetGroups(groupRepository);
+    const role = authData?.userRole ?? "";
+    const uid  = authData?.userid ?? -1;
+
+    if (role === "teacher") {
+      const ids = await getGroupsApp.getGroupsByUserId(uid);
+      const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
+        .filter(Boolean) as GroupDataObject[];
+        setGroups(allGroups);
+    } else {
       const allGroups = await getGroupsApp.getGroups();
       setGroups(allGroups);
+    }
     };
-    fetchGroups();
-  }, []);
+      fetchGroups();
+  }, [authData?.userRole, authData?.userid]);
 
-  // Auto-seleccion inicial
   useEffect(() => {
     if (!groups.length || currentSelectedGroupId) return;
 
