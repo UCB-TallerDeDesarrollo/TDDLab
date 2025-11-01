@@ -25,17 +25,17 @@ class UserController {
     this.userRepository = userRepository;
   }
   async registerUserController(req: Request, res: Response): Promise<void> {
-    const { email, groupid, role } = req.body;
+    const { email, groupid, role, firstName, lastName } = req.body;
 
-    if (!email || !groupid || !role) {
+    if (!email || !groupid || !role || !firstName || !lastName) {
       res.status(400).json({
-        error: "Debes proporcionar un email, grupo y rol validos",
+        error: "Debes proporcionar un email, grupo, rol, nombre y apellido validos",
       });
       return;
     }
 
     try {
-      await registerUser({ email, groupid, role });
+      await registerUser({ email, groupid, role, firstName, lastName });
       res.status(201).json({ message: "Usuario registrado con éxito." });
     } catch (error: any) {
       if (error.message === "UserAlreadyExistsInThatGroup") {
