@@ -11,6 +11,9 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
+
 
 interface CreateGroupPopupProps {
   open: boolean;
@@ -28,6 +31,9 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const groupRepository = new GroupsRepository();
+
+  const [auth] = useGlobalState("authData");
+  const dbAuthPort = new RegisterUserOnDb();
 
   const handleCancel = () => {
     handleClose();
@@ -52,6 +58,26 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     try {
       const newGroup = await createGroup.createGroup(payload);
       // avisa al padre
+      if (auth?.userEmail) {
+        await dbAuthPort.register({
+          email: auth.userEmail,
+          groupid: newGroup.id,
+          role: "teacher",
+        });
+      }
+
+      try {
+        const raw = localStorage.getItem("userGroups");
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr) && !arr.includes(newGroup.id)) {
+            localStorage.setItem("userGroups", JSON.stringify([newGroup.id, ...arr]));
+          }
+        }
+      } catch {
+        // ignore
+      }
+
       onCreated?.(newGroup);
       setValidationDialogOpen(true);
     } catch (error) {

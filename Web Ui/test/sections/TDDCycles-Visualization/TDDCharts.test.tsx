@@ -15,7 +15,7 @@ describe("TDDCharts", () => {
       metric={""} 
       setMetric={() => {}}
       port={new CommitHistoryAdapter()}
-      complexity={null}
+
       role={"student"}
       commitsTddCycles={null}
       typegraphs="graph"
