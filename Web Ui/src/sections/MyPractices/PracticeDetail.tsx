@@ -42,7 +42,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   const [practiceSubmissions, setPracticeSubmissions] = useState<
     PracticeSubmissionDataObject[]
   >([]);
-  const [practiceSubmission] = useState<PracticeSubmissionDataObject>();
   const [_submissionsError, setSubmissionsError] = useState<string | null>(
     null
   );
