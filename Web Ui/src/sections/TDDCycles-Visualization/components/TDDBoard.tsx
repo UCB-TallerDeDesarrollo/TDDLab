@@ -32,7 +32,7 @@ const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
   let currentTests: TestExecutionLog[] = [];
   let currentCommitData: CommitLog | null = null;
   
-  tddLogs.forEach((log) => {
+  for (const log of tddLogs) {
     // Si es un commit, guardamos los tests del commit anterior (si existen)
     if ('commitId' in log) {
       if (currentCommitIndex >= 0 && currentTests.length > 0) {
@@ -45,14 +45,14 @@ const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
       
       // Iniciamos un nuevo commit
       currentCommitIndex++;
-      currentCommitData = log as CommitLog;
+      currentCommitData = log;
       currentTests = [];
     }
     // Si es una ejecución de tests, la agregamos al commit actual
     else if ('numPassedTests' in log) {
-      currentTests.push(log as TestExecutionLog);
+      currentTests.push(log);
     }
-  });
+  };
   
   // No olvidar agregar el último commit si tiene tests
   if (currentCommitIndex >= 0 && currentTests.length > 0) {
