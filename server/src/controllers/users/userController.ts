@@ -103,6 +103,40 @@ class UserController {
     }
   }
 
+  async registerUserWithGoogleController(req: Request, res: Response): Promise<void> {
+    const { idToken, groupid, role } = req.body;
+    
+    if (!idToken || !groupid || !role) {
+      res.status(400).json({
+        error: "Debes proporcionar un token, grupo y rol válidos",
+      });
+      return;
+    }
+
+    try {
+      // Verificar token de Google con Firebase
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      const email = decoded.email;
+      
+      if (!email) {
+        res.status(400).json({ error: "No se pudo obtener email de Firebase" });
+        return;
+      }
+
+      // Registrar usuario con el email obtenido del token
+      await registerUser({ email, groupid, role });
+      res.status(201).json({ message: "Usuario registrado con éxito usando Google." });
+    } catch (error: any) {
+      if (error.message === "UserAlreadyExistsInThatGroup") {
+        res
+          .status(409)
+          .json({ error: "The user is already registered in that group." });
+      } else {
+        res.status(500).json({ error: "Server error while registering user" });
+      }
+    }
+  }
+
 
 async  logoutController (res: Response): Promise<void> {
   res.clearCookie("userSession", { path: "/" });
