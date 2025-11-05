@@ -18,6 +18,15 @@ export class RegisterUserOnDb {
 
   }
 
+  async registerWithGoogle(idToken: string, groupid: number, role: string) {
+    try {
+      await this.adapter.registerAccountWithGoogle(idToken, groupid, role);
+    } catch (error) {
+      console.log("Error registering user with Google:", error);
+      throw error;
+    }
+  }
+
   async verifyPass(pass: string): Promise<boolean> {
     return await this.adapter.verifyPassword(pass);
   }

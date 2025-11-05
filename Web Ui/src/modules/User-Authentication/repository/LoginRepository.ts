@@ -64,6 +64,19 @@ class AuthRepository implements AuthDBRepositoryInterface {
     }
   }
 
+  async registerAccountWithGoogle(idToken: string, groupid: number, role: string): Promise<void> {
+    try {
+      return await axios.post(API_URL + "/user/register/google", {
+        idToken,
+        groupid,
+        role
+      });
+    } catch (error) {
+      console.error("Error saving user with Google", error);
+      throw error;
+    }
+  }
+
   async verifyPassword(password: string): Promise<boolean> {
     try {
 
