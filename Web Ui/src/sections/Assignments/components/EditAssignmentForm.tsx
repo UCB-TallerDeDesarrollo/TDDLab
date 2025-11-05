@@ -84,8 +84,9 @@ function EditAssignmentDialog({
         const updateAssignment = new UpdateAssignment(assignmentsRepository);
         await updateAssignment.updateAssignment(assignmentId, updatedAssignmentData);
   
-        onClose(); // Cerrar el diálogo después de guardar los cambios
-        window.location.reload(); // Recargar la página
+        onClose();
+        // Notificar a la lista para refrescar sin recargar la página
+        window.dispatchEvent(new CustomEvent('assignment-updated'));
       } else {
         // Manejar el caso en el que la tarea actual no existe
         console.error("La tarea actual no se encontró.");

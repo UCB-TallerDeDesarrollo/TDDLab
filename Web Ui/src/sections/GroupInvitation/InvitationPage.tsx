@@ -16,6 +16,7 @@ import { RegisterUserOnDb } from "../../modules/User-Authentication/application/
 import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
+import AdminAlertModal from "./components/AdminAlertModal";
 
 function InvitationPage() {
   const location = useLocation();
@@ -25,19 +26,19 @@ function InvitationPage() {
     if (param === "groupid") {
       return value ? parseInt(value, 10) : undefined;
     }
-    return value ?? undefined; };
+    return value ?? undefined;
+  };
 
   const groupid = getQueryParam("groupid");
   const userType = getQueryParam("type");
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
-  const [openPopup, setOpenPopup] = useState(false); 
-  const [_popupMessage, setPopupMessage] = useState(""); 
+  const [openPopup, setOpenPopup] = useState(false);
+  const [_popupMessage, setPopupMessage] = useState("");
   const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [isLoading, setIsLoading] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
-  
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -84,22 +85,22 @@ function InvitationPage() {
   const LoadingOverlay = () => (
     <div
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         zIndex: 99999,
-        backdropFilter: 'blur(5px)', //blur
+        backdropFilter: "blur(5px)", //blur
       }}
     >
       <CircularProgress size={60} />
     </div>
-  );  
+  );
 
   const handleAcceptInvitation = async (type: string) => {
     setIsLoading(true);
@@ -107,10 +108,10 @@ function InvitationPage() {
       if (user?.email) {
         const userObj: UserOnDb = {
           email: user.email,
-          groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
+          groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
           role: type,
         };
-        try{
+        try {
           await dbAuthPort.register(userObj);
         } catch (error) {
           setPopupMessage("El usuario ya tiene un grupo asignado.");
@@ -120,29 +121,37 @@ function InvitationPage() {
 
         setShowPopUp(true);
       }
-    } finally{
+    } finally {
       setIsLoading(false);
     }
   };
+
+  const [showAdminModal, setShowAdminModal] = useState(false);
+
+  useEffect(() => {
+    if (userType === "admin") {
+      setShowAdminModal(true);
+    }
+  }, [userType]);
+
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = event;
     const { left, top, width, height } = currentTarget.getBoundingClientRect();
-  
+
     const x = clientX - (left + width / 2);
     const y = clientY - (top + height / 2);
-    const rotateY = (x / width) * 30; 
-    const rotateX = -(y / height) * 30; 
-  
+    const rotateY = (x / width) * 30;
+    const rotateX = -(y / height) * 30;
+
     setRotation({ rotateX, rotateY });
-  
   };
-  
+
   const handleMouseLeave = () => {
-    setRotation({ rotateX: 0, rotateY: 0 }); 
+    setRotation({ rotateX: 0, rotateY: 0 });
   };
   return (
     <div style={{ position: "relative" }}>
-    {isLoading && <LoadingOverlay />}
+      {isLoading && <LoadingOverlay />}
 
       {user ? (
         <div>
@@ -154,11 +163,13 @@ function InvitationPage() {
             style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
             direction="column" // Alinea los elementos en una sola columna
           >
-            <Grid item
+            <Grid
+              item
               style={{
                 width: user.displayName ? "400px" : "600px",
                 transition: "width 0.3s ease",
-              }}>
+              }}
+            >
               <Card
                 sx={{
                   "&:hover": {
@@ -224,21 +235,26 @@ function InvitationPage() {
               </Card>
             </Grid>
             <Grid item>
-              <Card sx={{ width: user.displayName ? "400px" : "500px",
-              transition: "width 0.5s ease" }} variant="outlined">
+              <Card
+                sx={{
+                  width: user.displayName ? "400px" : "500px",
+                  transition: "width 0.5s ease",
+                }}
+                variant="outlined"
+              >
                 <CardMedia
                   component="img"
                   alt="Imagen de portada"
                   height="50%" // La mitad superior del card
                   image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
                   sx={{
-                    transition: "transform 0.1s ease-out", 
+                    transition: "transform 0.1s ease-out",
                     transformStyle: "preserve-3d",
                     transform: `rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
                     boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.5)",
                   }}
                   onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave} 
+                  onMouseLeave={handleMouseLeave}
                 />
                 <CardContent>
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
@@ -307,6 +323,9 @@ function InvitationPage() {
           </Grid>
         </Grid>
       )}
+      <AdminAlertModal
+        open={showAdminModal}
+      />
     </div>
   );
 }

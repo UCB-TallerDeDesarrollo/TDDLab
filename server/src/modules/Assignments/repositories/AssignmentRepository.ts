@@ -23,6 +23,24 @@ class AssignmentRepository {
     }
   }
 
+  public async executeTransaction(queries: { query: string; values?: any[] }[]): Promise<void> {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      for (const { query, values } of queries) {
+        await client.query(query, values);
+      }
+      
+      await client.query('COMMIT');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   public mapRowToAssignment(row: any): AssignmentDataObject {
     return {
       id: row.id,
@@ -67,6 +85,13 @@ class AssignmentRepository {
     return null;
   }
 
+  async obtainAssignmentsByPracticeId(practiceId: string): Promise<AssignmentDataObject[]> {
+    const query = "SELECT * FROM assignments WHERE practice_id = $1";
+    const values = [practiceId];
+    const rows = await this.executeQuery(query, values);
+    return rows.map((row) => this.mapRowToAssignment(row));
+  }
+
   async createAssignment(
     assignment: AssignmentCreationObject
   ): Promise<AssignmentCreationObject> {
@@ -79,10 +104,53 @@ class AssignmentRepository {
     return this.mapRowToAssignment(rows[0]);
   }
 
-  async deleteAssignment(id: string): Promise<void> {
-    const query = "DELETE FROM assignments WHERE id = $1";
-    const values = [id];
-    await this.executeQuery(query, values);
+  async deleteAssignment(assignmentId: number): Promise<void> {
+    const client = await pool.connect();
+    console.log("Eliminando assignment de BD, ID:", assignmentId);
+
+    try {
+      // 1. Intentar eliminar entregas relacionadas (si existen)
+      try {
+        await client.query('DELETE FROM submissions WHERE assignmentid = $1', [assignmentId]);
+      } catch (error: any) {
+        console.warn("Tabla submissions no existe, continuando...");
+      }
+
+      // 2. Intentar eliminar deliveries si existen
+      try {
+        await client.query('DELETE FROM deliveries WHERE assignmentid = $1', [assignmentId]);
+      } catch (error: any) {
+        console.warn("Tabla deliveries no existe, continuando...");
+      }
+
+      // 3. Finalmente eliminar el assignment
+      await client.query('DELETE FROM assignments WHERE id = $1', [assignmentId]);
+
+    } catch (error: any) {
+      console.error("Error en deleteAssignment repository:", error);
+      throw new Error(`Error en la base de datos: ${error.message}`);
+    } finally {
+      client.release();
+    }
+  }
+
+  async deleteAssignmentsByPracticeId(practiceId: string): Promise<void> {
+    const client = await pool.connect();
+    try {
+      console.log('Eliminando assignments por practice_id:', practiceId);
+
+      const query = "DELETE FROM assignments WHERE practice_id = $1";
+      const values = [practiceId];
+
+      const result = await client.query(query, values);
+
+      console.log('Delete by practice_id result rowCount:', result.rowCount);
+    } catch (error: any) {
+      console.error('Error en deleteAssignmentsByPracticeId:', error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async updateAssignment(

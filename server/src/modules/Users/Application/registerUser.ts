@@ -6,6 +6,10 @@ export const registerUser = async (
     Adapter: UserRepository = new UserRepository()
 ) => {
   try {
+    if (user.role === "admin") {
+      throw new Error("No tiene permisos para registrar administradores");
+    }
+    
     const existingUser = await Adapter.obtainUserByemail(user.email);
     if (existingUser?.groupid?.includes(user.groupid)) {
       throw new Error("UserAlreadyExistsInThatGroup");

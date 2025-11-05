@@ -1,4 +1,7 @@
-import { AssignmentInProgresDataMock, assignmentPendingDataMock } from "./dataTypeMocks/assignmentData";
+import {
+  AssignmentInProgresDataMock,
+  assignmentPendingDataMock,
+} from "./dataTypeMocks/assignmentData";
 
 export function getAssignmentRepositoryMock() {
   return {
@@ -23,6 +26,11 @@ export function getAssignmentRepositoryMock() {
     updateAssignment: jest.fn(),
     deliverAssignment: jest.fn(),
     groupidExistsForAssigment: jest.fn(),
-    checkDuplicateTitle: jest.fn().mockReturnValue(false)
+    checkDuplicateTitle: jest.fn().mockReturnValue(false),
+    executeTransaction: jest.fn(),
+    obtainAssignmentsByPracticeId: jest.fn(),
+    deleteAssignmentsByPracticeId: jest.fn(),
+    getAssignmentByIdUseCase:jest.fn(),
+    deleteAssignmentUseCase:jest.fn(),
   };
 }

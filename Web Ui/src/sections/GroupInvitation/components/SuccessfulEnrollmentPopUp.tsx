@@ -19,8 +19,9 @@ function SuccessfulEnrollmentPopUp() {
     setOpen(false);
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
+      const idToken = await userData.getIdToken();
        const loginPort = new CheckIfUserHasAccount();
-       const userCourse = await loginPort.userHasAnAccount(userData.email);
+       const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
       setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
@@ -30,6 +31,9 @@ function SuccessfulEnrollmentPopUp() {
       localStorage.clear();
       localStorage.setItem("userGroups", "[0]")
       console.log(open);
+      if (userData.photoURL) {
+      localStorage.setItem("userProfilePic", userData.photoURL);
+    }
     } else {
       alert("Disculpa, tu usuario no esta registrado");
     }

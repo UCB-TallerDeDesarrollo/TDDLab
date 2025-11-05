@@ -22,14 +22,46 @@ class AuthRepository implements AuthDBRepositoryInterface {
       throw error;
     }
   }
-  async registerAccount(user: UserOnDb): Promise<void> {
+
+  async getAccountInfoWithToken(idToken: string): Promise<UserOnDb> {
     try {
-      return await axios.post(API_URL + "/user/register", user);
+      const response = await axios.post(API_URL + "/user/github",
+      { idToken },
+      { withCredentials: true } );
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error("Failed to get user Course");
+      }
     } catch (error) {
-      console.error("Error saving user", error);
+      console.error("Error fetching user course:", error);
       throw error;
     }
   }
+
+  async registerAccount(user: UserOnDb): Promise<void> {
+  try {
+    const response = await axios.post(API_URL + "/user/register", user);
+
+    return response.data;
+  } catch (error: unknown) {
+    console.error("Error saving user", error);
+
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 403) {
+        throw new Error("No tiene permisos para registrar administradores");
+      }
+
+      throw new Error(
+        error.response.data?.error || "Error al registrar usuario"
+      );
+    }
+
+    throw new Error("Error saving user");
+
+  }
+}
+
 
   async verifyPassword(password: string): Promise<boolean> {
     try {

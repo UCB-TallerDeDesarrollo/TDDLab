@@ -15,7 +15,7 @@ class AIAssistantRepository implements AIAssistantInterface {
         }
       };
 
-      const response = await axios.post(API_URL, backendRequest);
+      const response = await axios.post(API_URL, backendRequest,{withCredentials: true});
 
       if (response.status === 200) {
         return response.data;
@@ -30,7 +30,7 @@ class AIAssistantRepository implements AIAssistantInterface {
 
   async getPrompts(): Promise<AIPromptResponse> {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL,{withCredentials: true});
 
       if (response.status === 200) {
         return {
@@ -49,7 +49,7 @@ class AIAssistantRepository implements AIAssistantInterface {
 
   async updatePrompts(request: UpdatePromptsRequest): Promise<AIPromptResponse> {
     try {
-      const response = await axios.put(API_URL, request);
+      const response = await axios.put(API_URL, request,{withCredentials: true});
 
       if (response.status === 200) {
         return {

@@ -8,21 +8,21 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
+import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
+  tddLogs: TDDLogEntry[] | null;
   metric: string | null;
   setMetric: (metric: string) => void;
   port: CommitHistoryRepository;
   role: string;
-  complexity: ComplexityObject[] | null;
   commitsTddCycles: CommitCycle[] | null;
   typegraphs: string;
 }
 
-function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
@@ -76,13 +76,13 @@ function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycle
 
   const options = [
     { value: 'Complejidad', label: 'Lista de Complejidad' },
-    { value: 'TddCiclos', label: 'Análisis de distribución de pruebas por commit' },
     { value: 'Pie', label: 'Distribución de Commits' },
     { value: 'Dashboard', label: 'Dashboard' },
     { value: 'Total Número de Tests', label: 'Total Número de Tests' },
     { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
     { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
     { value: 'Lista', label: 'Lista de Commits' },
+    { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
   ];
 
   return (
@@ -100,9 +100,9 @@ function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycle
           >
             {options.filter(option => {
               if (typegraphs === 'aditionalgraph') {
-                return ['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+                return ['Complejidad', 'Pie'].includes(option.value);
               } else {
-                return !['Complejidad', 'TddCiclos', 'Pie'].includes(option.value);
+                return !['Complejidad', 'Pie'].includes(option.value);
               }
             }).map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -114,8 +114,8 @@ function TDDCharts({ commits, setMetric, port, role, complexity, commitsTddCycle
       </Box>
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
+        tddLogs = {tddLogs}
         optionSelected={metricSelected}
-        complexity={complexity}
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}

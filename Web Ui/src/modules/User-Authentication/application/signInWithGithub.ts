@@ -5,7 +5,6 @@ export async function handleSignInWithGitHub() {
   try {
     const auth = getAuth(firebase);
     const result = await signInWithPopup(auth, provider);
-
     return result.user;
   } catch (error) {
     console.error("Error de autenticación con GitHub", error);

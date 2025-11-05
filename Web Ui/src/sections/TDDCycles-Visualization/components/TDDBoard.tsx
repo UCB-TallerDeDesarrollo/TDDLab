@@ -1,29 +1,80 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo  } from "react";
 import { Bubble, getElementAtEvent, Line } from "react-chartjs-2";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
 
 import { VITE_API } from "../../../../config";
-import { UploadTDDLogFile } from "../../../modules/Assignments/application/UploadTDDLogFile";
-import { useSearchParams } from "react-router-dom";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
+import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import TDDCycleChart from "./TDDCycleChart";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
+  tddLogs: TDDLogEntry[];
   port: CommitHistoryRepository;
   role: string;
 }
 
+interface CommitTestsMapping {
+  commitIndex: number;
+  commitData: CommitLog | null;
+  tests: TestExecutionLog[];
+}
+
+const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
+  if (!tddLogs || tddLogs.length === 0) {
+    return [];
+  }
+  
+  const commitMappings: CommitTestsMapping[] = [];
+  let currentCommitIndex = -1;
+  let currentTests: TestExecutionLog[] = [];
+  let currentCommitData: CommitLog | null = null;
+  
+  for (const log of tddLogs) {
+    // Si es un commit, guardamos los tests del commit anterior (si existen)
+    if ('commitId' in log) {
+      if (currentCommitIndex >= 0 && currentTests.length > 0) {
+        commitMappings.push({
+          commitIndex: currentCommitIndex,
+          commitData: currentCommitData,
+          tests: [...currentTests]
+        });
+      }
+      
+      // Iniciamos un nuevo commit
+      currentCommitIndex++;
+      currentCommitData = log;
+      currentTests = [];
+    }
+    // Si es una ejecución de tests, la agregamos al commit actual
+    else if ('numPassedTests' in log) {
+      currentTests.push(log);
+    }
+  };
+  
+  // No olvidar agregar el último commit si tiene tests
+  if (currentCommitIndex >= 0 && currentTests.length > 0) {
+    commitMappings.push({
+      commitIndex: currentCommitIndex,
+      commitData: currentCommitData,
+      tests: [...currentTests]
+    });
+  }
+  
+  return commitMappings;
+};
+
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
+  tddLogs,
   role,
   port,
 }) => {
-  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
-  const [searchParams] = useSearchParams();
-  const repoOwner = searchParams.get("repoOwner");
-  const repoName = searchParams.get("repoName");
+  const processedTDDLogs = useMemo(() => {
+    return preprocessTDDLogs(tddLogs);
+  }, [tddLogs]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
@@ -42,24 +93,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
-  const handleOpenFileDialog = () => {
-    setIsFileDialogOpen(true);
-  };
-  
-  const handleCloseFileDialog = () => {
-    setIsFileDialogOpen(false);
-  };
-
-  const handleFileUpload = async (file: File) => {
-    if (repoOwner && repoName) {
-      try {
-        await UploadTDDLogFile(file, undefined, repoOwner, repoName);
-      } catch (error) {
-        console.error("Error al subir el archivo:", error);
-      }
-    } else {
-      console.error("No se encontraron repoOwner y repoName en el enlace.");
-    }
+  const getTestsForCommit = (commitIndex: number): TestExecutionLog[] => {
+    // Buscar el commit en los logs preprocesados por índice
+    const commitMapping = processedTDDLogs.find(
+      mapping => mapping.commitIndex === commitIndex
+    );
+    
+    return commitMapping ? commitMapping.tests : [];
   };
   
   function containsRefactor(commitMessage: string): boolean {
@@ -206,8 +246,12 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             );
   
             if (response.ok) {
-              const data = await response.json();
-              setCommitTimelineData(data); 
+              await response.json();
+              // Filtrar los tests del commit específico usando el tdd_log.json local
+              const commitIndexInOriginal = dataSetIndexNum - 1;
+              const testsForCommit = getTestsForCommit(commitIndexInOriginal);
+
+              setCommitTimelineData(testsForCommit); 
               setSelectedCommit(commit); 
               setOpenModal(true); 
             } else {
@@ -216,7 +260,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
           } catch (error) {
             console.error("Error al llamar a la API:", error);
           }
-        }
+          }
       }
     }
   };
@@ -385,10 +429,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             <CommitTimelineDialog
               open={openModal}
               handleCloseModal={handleCloseModal}
-              handleOpenFileDialog={handleOpenFileDialog}
-              handleCloseFileDialog={handleCloseFileDialog}
-              handleFileUpload={handleFileUpload}
-              isFileDialogOpen={isFileDialogOpen}
               selectedCommit={selectedCommit}
               commitTimelineData={commitTimelineData}
               commits={commits}
@@ -479,14 +519,16 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             port={port}
             role={role}
             filteredCommitsObject={commits}
+            tddLogs={tddLogs}
             optionSelected={graph}
-            complexity={null}
+
             commitsCycles= {null}
           />
         </>
 
       )}
-    </>
+      <TDDCycleChart data={tddLogs} />
+    </>    
   );
 };
 

@@ -64,6 +64,7 @@ function Assignments({
       number | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,7 +72,7 @@ function Assignments({
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const assignmentsRepository = new AssignmentsRepository();
 
-  const deleteAssignment = new DeleteAssignment(assignmentsRepository);
+  const deleteAssignmentUseCase = new DeleteAssignment(assignmentsRepository);
 
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const groupRepository = new GroupsRepository();
@@ -119,7 +120,10 @@ function Assignments({
         const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') ?? '[]');
         allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
       }
-    } else if(userRole === "teacher" || userRole === "admin") {
+    } else if (userRole === "teacher") {
+      const teacherGroupIds = await getGroups.getGroupsByUserId(authData.userid ?? -1);
+      allGroups = await Promise.all(teacherGroupIds.map((id) => getGroups.getGroupById(id)));
+    } else if (userRole === "admin") {
       allGroups = await getGroups.getGroups();
     }
 
@@ -132,70 +136,86 @@ function Assignments({
   }
 
   const fetchData = async () => {
+  try {
+    const allGroups = await getUserGroups();
+    setGroupList(allGroups);
+
+    const groupIdFromURL = new URLSearchParams(window.location.search).get("groupId");
+    const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
+
+    const savedSelectedGroup = localStorage.getItem("selectedGroup");
+    const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
+    const groupIdAuth = authData?.usergroupid ?? null;
+
+    let firstUserGroup: number | null = null;
     try {
-      const allGroups = await getUserGroups();
-      setGroupList(allGroups);
-
-      // Recuperar el groupId de la URL
-      const groupIdFromURL = new URLSearchParams(window.location.search).get('groupId');
-      // Recuperar el groupId de authData
-      const authGroupId = authData?.usergroupid;
-      // Recuperar el groupId de localStorage
-      const savedSelectedGroup = localStorage.getItem("selectedGroup");
-
-      let groupIdToUse: number | null = null;
-      if (groupIdFromURL) {
-        groupIdToUse = parseInt(groupIdFromURL, 10);
-      } else if (authGroupId) {
-        groupIdToUse = authGroupId;
-      } else if (savedSelectedGroup) {
-        groupIdToUse = parseInt(savedSelectedGroup, 10);
+      const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
+      if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
+        firstUserGroup = storedUserGroups[0];
       }
+    } catch {}
 
-      if (groupIdToUse !== undefined && groupIdToUse !== null) {
-        const selectedGroup = allGroups.find((group) => group.id === groupIdToUse);
-        if (selectedGroup?.id) {
-          setSelectedGroup(selectedGroup.id);
-          const data = await assignmentsRepository.getAssignmentsByGroupid(selectedGroup.id);
-          setAssignments(data);
-          orderAssignments([...data], selectedSorting);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching assignments:", error);
+    const finalGroupId =
+      groupIdUrl ||
+      groupIdLocal ||
+      groupIdAuth ||
+      firstUserGroup ||
+      allGroups?.[0]?.id ||
+      null;
+
+    if (finalGroupId) {
+      await loadAssignmentsByGroupId(finalGroupId);
+    } else {
+      setSelectedGroup(0);
+      setAssignments([]);
     }
-  };
+  } catch (error) {
+    console.error("Error en fetchData:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
+useEffect(() => {
+  fetchData();
+}, [location]);
+
+  // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {
-    fetchData();
-  }, [location, authData]);
+    const handler = () => {
+      const savedSelectedGroup = localStorage.getItem("selectedGroup");
+      const groupId = savedSelectedGroup ? parseInt(savedSelectedGroup, 10) : selectedGroup;
+      if (groupId) {
+        loadAssignmentsByGroupId(groupId);
+      }
+    };
+    window.addEventListener('assignment-updated', handler as EventListener);
+    return () => window.removeEventListener('assignment-updated', handler as EventListener);
+  }, [selectedGroup]);
 
   useEffect(() => {
     const fetchAssignmentsByGroup = async () => {
       try {
-        if (!authData || authData.usergroupid === undefined) {
-          console.warn("authData aún no está disponible. Esperando a que se cargue...");
+        // Preferir grupo seleccionado guardado
+        const savedSelectedGroup = localStorage.getItem("selectedGroup");
+        const preferredGroupId = savedSelectedGroup
+          ? parseInt(savedSelectedGroup, 10)
+          : authData?.usergroupid;
+
+        if (preferredGroupId === undefined || preferredGroupId === null) {
           return;
         }
 
-        const authGroupId = authData.usergroupid;
-
-        if (authGroupId !== undefined && authGroupId !== null) {
-          const data = await assignmentsRepository.getAssignmentsByGroupid(authGroupId);
-          setAssignments(data);
-          orderAssignments([...data], selectedSorting);
-
-        } else {
-          console.warn("No se encontró un groupId válido para utilizar.");
-        }
+        const data = await assignmentsRepository.getAssignmentsByGroupid(preferredGroupId);
+        setSelectedGroup(preferredGroupId);
+        setAssignments(data);
+        orderAssignments([...data], selectedSorting);
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
 
-    if (authData && authData.usergroupid !== undefined) {
-      fetchAssignmentsByGroup();
-    }
+    fetchAssignmentsByGroup();
   }, [authData, selectedSorting]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
@@ -249,26 +269,31 @@ function Assignments({
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      if (
-          selectedAssignmentIndex !== null &&
-          assignments[selectedAssignmentIndex]
-      ) {
-        
-        await deleteAssignment.deleteAssignment(
-            assignments[selectedAssignmentIndex].id,
-        );
-        const updatedAssignments = [...assignments];
-        updatedAssignments.splice(selectedAssignmentIndex, 1);
-        setAssignments(updatedAssignments);
-      }
+    if (selectedAssignmentIndex === null || !assignments[selectedAssignmentIndex]) {
       setConfirmationOpen(false);
-    } catch (error) {
-      console.error(error);
+      return;
     }
-    setValidationDialogOpen(true);
-    setConfirmationOpen(false);
+
+    setDeleteLoading(true);
+
+    try {
+      const assignmentToDelete = assignments[selectedAssignmentIndex];
+      console.log('Eliminando assignment:', assignmentToDelete);
+
+      const resutlt = await deleteAssignmentUseCase.deleteAssignment(assignmentToDelete.id);
+      console.log('Resultado obtenido al intentar eliminar eliminar:', resutlt);
+
+      setValidationDialogOpen(true);
+
+    } catch (error: any) {
+      console.error('Error eliminando assignment:', error);
+    } finally {
+      setConfirmationOpen(false);
+      setDeleteLoading(false);
+      setSelectedAssignmentIndex(null);
+    }
   };
+
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
@@ -277,7 +302,17 @@ function Assignments({
   <Container>
     {isLoading ? (
       <LoadingContainer>
-        <CircularProgress />
+         <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <CircularProgress />
+    </div>
       </LoadingContainer>
     ) : (
       <section className="Tareas">
@@ -384,7 +419,15 @@ function Assignments({
             open={validationDialogOpen}
             title="Tarea eliminada exitosamente"
             closeText="Cerrar"
-            onClose={() => window.location.reload()}
+            onClose={() => {
+              setValidationDialogOpen(false);
+              // Refrescar datos del grupo actual sin recargar página
+              if (selectedGroup) {
+                loadAssignmentsByGroupId(selectedGroup);
+              } else if (authData?.usergroupid) {
+                loadAssignmentsByGroupId(authData.usergroupid);
+              }
+            }}
           />
         )}
       </section>

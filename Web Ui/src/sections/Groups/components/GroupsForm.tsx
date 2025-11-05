@@ -11,56 +11,89 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
+
 
 interface CreateGroupPopupProps {
   open: boolean;
   handleClose: () => void;
+  onCreated?: (group: GroupDataObject) => void;
 }
 
 const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   open,
   handleClose,
+  onCreated,
 }) => {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [groupId] = useState(Number);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const groupRepository = new GroupsRepository();
 
+  const [auth] = useGlobalState("authData");
+  const dbAuthPort = new RegisterUserOnDb();
+
   const handleCancel = () => {
     handleClose();
+    setGroupName("");
+    setGroupDescription("");
   };
+
+  const formInvalid = () => groupName.trim() === "";
 
   const handleCreate = async () => {
     setSave(true);
-    if (formInvalid()) {
-      return;
-    }
+    if (formInvalid()) return;
 
     const createGroup = new CreateGroup(groupRepository);
     const payload: GroupDataObject = {
-      id: groupId,
-      groupName: groupName,
+      id: 0 as unknown as number,
+      groupName,
       groupDetail: groupDescription,
       creationDate: new Date(),
     };
+
     try {
-      await createGroup.createGroup(payload);
+      const newGroup = await createGroup.createGroup(payload);
+      // avisa al padre
+      if (auth?.userEmail) {
+        await dbAuthPort.register({
+          email: auth.userEmail,
+          groupid: newGroup.id,
+          role: "teacher",
+        });
+      }
+
+      try {
+        const raw = localStorage.getItem("userGroups");
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr) && !arr.includes(newGroup.id)) {
+            localStorage.setItem("userGroups", JSON.stringify([newGroup.id, ...arr]));
+          }
+        }
+      } catch {
+        // ignore
+      }
+
+      onCreated?.(newGroup);
+      setValidationDialogOpen(true);
     } catch (error) {
       console.error("Error al crear el grupo:", error);
     } finally {
       setSave(false);
     }
-    setValidationDialogOpen(true);
-  };
-
-  const formInvalid = () => {
-    return groupName === "";
   };
 
   useEffect(() => {
-    setSave(false);
+    if (!open) {
+      setSave(false);
+      setValidationDialogOpen(false);
+      setGroupName("");
+      setGroupDescription("");
+    }
   }, [open]);
 
   return (
@@ -81,6 +114,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
               multiline
@@ -97,28 +131,25 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button
-              onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
-            >
+            <Button onClick={handleCancel} style={{ color: "#555", textTransform: "none" }}>
               Cancelar
             </Button>
-            <Button
-              onClick={handleCreate}
-              color="primary"
-              style={{ textTransform: "none" }}
-            >
+            <Button onClick={handleCreate} color="primary" style={{ textTransform: "none" }}>
               Crear
             </Button>
           </DialogActions>
         </>
       )}
-      {!!validationDialogOpen && (
+
+      {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
           title="Grupo creado exitosamente"
           closeText="Cerrar"
-          onClose={() => window.location.reload()}
+          onClose={() => {
+            setValidationDialogOpen(false);
+            handleClose(); // cierra el popup después de mostrar el mensaje
+          }}
         />
       )}
     </Dialog>

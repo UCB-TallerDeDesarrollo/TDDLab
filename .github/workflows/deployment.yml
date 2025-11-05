@@ -117,7 +117,7 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -341,6 +341,9 @@ jobs:
           echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
           echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
           echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./server/.env
+          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./server/.env
+          echo "VITE_FRONT_URL=${{ secrets.VITE_FRONT_URL }}" >> ./server/.env
           echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> ./server/.env
           echo "TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }}" >> ./server/.env
       - name: Install Vercel CLI
@@ -365,7 +368,7 @@ jobs:
     #   env:
     #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
     #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-    #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
+    #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}    
 
     steps:
       - name: "Echo values"
@@ -387,6 +390,9 @@ jobs:
           echo "PGUSER=${{ secrets.PGUSER }}" >> ./server/.env
           echo "PGPASSWORD=${{ secrets.PGPASSWORD }}" >> ./server/.env
           echo "PGPORT=${{ secrets.PGPORT }}" >> ./server/.env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./server/.env
+          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> ./server/.env
+          echo "VITE_FRONT_URL=${{ secrets.VITE_FRONT_URL }}" >> ./server/.env
           echo "REACT_APP_AUTH_TOKEN=${{ secrets.REACT_APP_AUTH_TOKEN }}" >> ./server/.env
           echo "LLM_API_URL=${{ secrets.LLM_API_URL }}" >> ./server/.env
           echo "TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }}" >> ./server/.env
@@ -402,3 +408,4 @@ jobs:
         run: |
           cd ./server
           vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+

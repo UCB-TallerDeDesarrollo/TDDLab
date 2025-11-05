@@ -1,7 +1,7 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
 
 import {
@@ -21,10 +21,9 @@ import TDDList from "./TDDList";
 import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { ComplexityObject } from "../../../modules/TDDCycles-Visualization/domain/ComplexityInterface";
-import axios from "axios";
-import TDDBar from "./Graficas-Adicionales/TDDBarCycle";
+import TDDCycleChart from "./TDDCycleChart";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
+import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
   CategoryScale,
@@ -41,60 +40,26 @@ ChartJS.register(
 
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
+  tddLogs: TDDLogEntry [] | null;
   optionSelected: string;
   port: CommitHistoryRepository;
   role: string;
-  complexity: ComplexityObject[] | null;
   commitsCycles: CommitCycle[] | null;
 }
 
 function TDDLineCharts({
   filteredCommitsObject,
+  tddLogs,
   optionSelected,
   port,
   role,
-  complexity,
-  commitsCycles
+  commitsCycles: _
 }: LineChartProps) {
   
   let dataChart: any = {};
   const chartRef = useRef<any>();
 
-  const [analyzeData, setAnalyzeData] = useState<string[]>([]); 
   
-  useEffect(() => {
-    if (optionSelected === "Complejidad" && complexity && filteredCommitsObject) {
-      const analyzeCommits = async () => {
-        const reversedCommits = filteredCommitsObject.slice().reverse();
-        const responses: string[] = [];
-
-        for (const commit of reversedCommits) {
-          const requestBody = { repoUrl: commit.html_url };
-
-          try {
-            const response = await axios.post(
-              "https://api-ccn.vercel.app/analyze",
-              requestBody,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-
-            responses.push(JSON.stringify(response.data));
-            
-          } catch (error) {
-            console.error("Error al procesar el commit:", error);
-          }
-        }
-
-        setAnalyzeData(responses);
-      };
-
-      analyzeCommits();
-    }
-  }, [optionSelected, filteredCommitsObject, complexity]);
 
   function getDataLabels() {
     if (filteredCommitsObject != null) {
@@ -309,11 +274,6 @@ function TDDLineCharts({
                 `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
               );
 
-              const complexityResponse = analyzeData[context[0].dataIndex];
-              //console.log("EX1M"+complexityResponse)
-              if (complexityResponse) {
-                afterBodyContent.push(`Complejidad Ciclomática: ${complexityResponse}`);
-              }
               return afterBodyContent;
             },
           },
@@ -365,20 +325,37 @@ function TDDLineCharts({
       case "Lista":
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} port={port} role={role}/>;
-      case "Complejidad":
-            if (complexity != null) {
-                dataChart = getDataChart(
-                complexity?.map((data) => data.ciclomaticComplexity),
-                "Complejidad Ciclomática"
-              );
-              optionsChart = getOptionsChart("Complejidad Ciclomática");
-              dataTestid = "graph-complexity";
-            }
-            break;
-          
-      case "TddCiclos":
-        return <TDDBar CommitsCycles={commitsCycles || []}></TDDBar>
+          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
+
+      case "Ciclo de ejecución de pruebas": {
+        console.log(tddLogs)
+        // Convert TDDLogEntry[] to TestLog[] format and handle null case
+        const testLogs = tddLogs?.map(log => {
+          // TDDLogEntry is a union type, so we need to handle both TestExecutionLog and CommitLog
+          if ('numPassedTests' in log) {
+            // This is a TestExecutionLog
+            return {
+              numPassedTests: log.numPassedTests,
+              failedTests: log.failedTests,
+              numTotalTests: log.numTotalTests,
+              timestamp: log.timestamp,
+              success: log.success,
+              testId: log.testId
+            };
+          } else {
+            // This is a CommitLog
+            return {
+              commitId: log.commitId,
+              commitName: log.commitName,
+              commitTimestamp: log.commitTimestamp,
+              testId: log.testId
+            };
+          }
+        }) || [];
+        return <TDDCycleChart data={testLogs} />;
+      }
+
+
       case "Pie":
         return <TDDPie commits={filteredCommitsObject || []} />;     
     }
