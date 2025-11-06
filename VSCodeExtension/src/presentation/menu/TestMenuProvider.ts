@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 
-// Alias para el tipo unión
 type TreeItemChange = TestMenuItem | undefined | null | void;
 
 export class TestMenuItem extends vscode.TreeItem {
@@ -15,9 +14,10 @@ export class TestMenuItem extends vscode.TreeItem {
 }
 
 export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
-  // Usar alias en lugar del tipo unión repetido
+
   private _onDidChangeTreeData: vscode.EventEmitter<TreeItemChange> = new vscode.EventEmitter<TreeItemChange>();
   readonly onDidChangeTreeData: vscode.Event<TreeItemChange> = this._onDidChangeTreeData.event;
+
 
   refresh(): void {
     this._onDidChangeTreeData.fire(undefined);
