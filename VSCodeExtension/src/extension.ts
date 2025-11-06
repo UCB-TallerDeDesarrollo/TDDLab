@@ -1,178 +1,208 @@
 import * as vscode from 'vscode';
-import { TimelineView } from './sections/Timeline/TimelineView';
 import * as path from 'path';
-import * as fs from 'fs';
-import { ExecuteTestCommand } from './modules/Button/application/runTest/ExecuteTestCommand';
-import { VSCodeTerminalRepository } from './modules/Button/infraestructure/VSCodeTerminalRepository';
-import { ExecutionTreeView } from './sections/ExecutionTree/ExecutionTreeView';
-import { ExecuteCloneCommand } from './modules/Button/application/clone/ExecuteCloneCommand';
-import { ExecuteExportCommand } from './modules/Button/application/export/ExecuteExportCommand';
-import { ExecuteAIAssistant } from './sections/AIAssistant/ExecuteAIAssistant';
-import { TerminalViewProvider } from './sections/TDDLabTerminal/TerminalViewProvider';
-import { FeatureConfigLoader } from './FeatureConfigLoader';
+import { ExecuteTestCommand } from './application/runTest/ExecuteTestCommand';
+import { NpmRunTests } from './infrastructure/test/NpmRunTests';
+import { TerminalViewProvider } from './presentation/terminal/TerminalViewProvider';
+import { TimelineView } from './presentation/timeline/TimelineView';
+import { TestMenuProvider } from './presentation/menu/TestMenuProvider';
+import { VSCodeTerminalRepository } from './infrastructure/terminal/VSCodeTerminalRepository';
+import { ExecuteCloneCommand } from './application/clone/ExecuteCloneCommand';
 
-/**
- * @param {vscode.ExtensionContext} context
- */
+let terminalProvider: TerminalViewProvider | null = null;
+let timelineView: TimelineView | null = null;
+let testMenuProvider: TestMenuProvider | null = null;
 
 export async function activate(context: vscode.ExtensionContext) {
-    const tddBasePath = path.join(context.extensionPath, 'resources', 'TDDLabBaseProject');
-    let isInitialRun = true;
-    let features: { [key: string]: boolean } = FeatureConfigLoader.load(context);
+  console.log('TDDLab extension is activating...');
 
-    const terminalRepository = new VSCodeTerminalRepository();
-    const executeTestCommand = new ExecuteTestCommand(terminalRepository);
-    const executeCloneCommand = new ExecuteCloneCommand(terminalRepository);
-    const executeExportCommand = new ExecuteExportCommand();
-    const executeAIAssistant = new ExecuteAIAssistant();
-
-    if (features.tddTerminalView) {
-        context.subscriptions.push(
-            vscode.window.registerWebviewViewProvider(
-                TerminalViewProvider.viewType,
-                new TerminalViewProvider(context)
-            )
-        );
-    }
+  try {
+    // Crear TimelineView primero
+    timelineView = new TimelineView(context);
     
+    // Crear VSCodeTerminalRepository
+    const terminalPort = new VSCodeTerminalRepository();
+    
+    // Crear TerminalViewProvider con TimelineView
+    terminalProvider = new TerminalViewProvider(context, timelineView, terminalPort);
+    
+    // Crear el menú de opciones TDD
+    testMenuProvider = new TestMenuProvider();
+    
+    // Crear instancias para ejecutar tests y clonar proyecto
+    const runTests = new NpmRunTests(terminalProvider);
+    const executeTestCommand = new ExecuteTestCommand(runTests);
+    const executeCloneCommand = new ExecuteCloneCommand();
 
-    const timelineView = new TimelineView(context);
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider('timelineView', timelineView)
-    );
+    // Verificar si hay una instalación pendiente
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (workspaceFolder) {
+      const markerFile = path.join(workspaceFolder, '.tddlab-setup-pending');
+      try {
+        const fs = await import('fs/promises');
+        const markerExists = await fs.access(markerFile).then(() => true).catch(() => false);
+        
+        if (markerExists) {
+          // Esperar un poco para que la ventana se cargue completamente
+          setTimeout(async () => {
+            await vscode.window.withProgress({
+              location: vscode.ProgressLocation.Notification,
+              title: "Configurando proyecto TDDLab...",
+              cancellable: false
+            }, async (progress) => {
+              try {
+                // Abrir la terminal TDD
+                await vscode.commands.executeCommand('tddTerminalView.focus');
 
-    vscode.commands.registerCommand('extension.showTimeline', () => {
-        vscode.commands.executeCommand('workbench.view.extension.timelineContainer');
-        if (timelineView.currentWebview) {
-            timelineView.showTimeline(timelineView.currentWebview);
+                // Ejecutar npm install
+                progress.report({ increment: 0, message: "Instalando dependencias..." });
+                if (terminalProvider) {
+                  terminalProvider.sendToTerminal('\r\n🔧 Configuración automática iniciada...\r\n');
+                  terminalProvider.sendToTerminal('$ npm install\r\n');
+                  await terminalPort.createAndExecuteCommand('TDDLab Setup', 'npm install');
+                }
+
+                // Ejecutar git init
+                progress.report({ increment: 50, message: "Inicializando Git..." });
+                if (terminalProvider) {
+                  terminalProvider.sendToTerminal('\r\n$ git init\r\n');
+                  await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git init');
+                  
+                  terminalProvider.sendToTerminal('\r\n$ git add .\r\n');
+                  await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git add .');
+                  
+                  terminalProvider.sendToTerminal('\r\n$ git commit -m "Initial commit"\r\n');
+                  await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git commit -m "Initial commit"');
+                }
+
+                // Eliminar el archivo marcador
+                await fs.unlink(markerFile);
+
+                progress.report({ increment: 100, message: "¡Completado!" });
+
+                if (terminalProvider) {
+                  terminalProvider.sendToTerminal('\r\n✅ Proyecto configurado correctamente\r\n');
+                  terminalProvider.sendToTerminal('Puedes ejecutar: npm test\r\n$ ');
+                }
+
+                vscode.window.showInformationMessage('✅ Proyecto TDDLab configurado correctamente');
+              } catch (error: any) {
+                console.error('Error en setup automático:', error);
+                vscode.window.showErrorMessage(`Error en configuración automática: ${error.message}`);
+                if (terminalProvider) {
+                  terminalProvider.sendToTerminal(`\r\n❌ Error: ${error.message}\r\n$ `);
+                }
+              }
+            });
+          }, 2000); // Esperar 2 segundos
         }
-    });
-
-    const jsonFilePath = path.join(
-        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
-        'script',
-        'tdd_log.json'
-    );
-
-    const updateTimeLine = () => {
-        if (timelineView.currentWebview) {
-            timelineView.showTimeline(timelineView.currentWebview);
-        }
-    };
-
-    const watchFile = () => {
-        fs.watch(jsonFilePath, (eventType, filename) => {
-            if (eventType === 'change') {
-                updateTimeLine();
-            }
-        });
-        if (isInitialRun) {
-            updateTimeLine();
-            isInitialRun = false;
-        }
-    };
-
-    if (fs.existsSync(jsonFilePath)) {
-        watchFile();
-    } else {
-        const interval = setInterval(() => {
-            if (fs.existsSync(jsonFilePath)) {
-                clearInterval(interval);
-                watchFile();
-            }
-        }, 1000);
+      } catch (error) {
+        // Archivo marcador no existe, continuar normalmente
+      }
     }
 
-
-    const runTestCommand = vscode.commands.registerCommand('TDD.runTest', async () => {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage(
-                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado para ejecutar la extensión.'
-            );
-            return;
+    // Comando Run Test
+    const runTestCmd = vscode.commands.registerCommand('TDD.runTest', async () => {
+      try {
+        if (!terminalProvider) {
+          vscode.window.showErrorMessage('Terminal no disponible');
+          return;
         }
 
-        const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
-
-        try {
-            if (!fs.existsSync(projectJsonPath)) {
-                throw new Error(
-                    'Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
-                );
-            }
-
-            const stats = fs.statSync(projectJsonPath);
-            if (!stats.isFile()) {
-                throw new Error('El archivo "tdd_log.json" no es un archivo válido.');
-            }
-
-            await executeTestCommand.execute();
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Se produjo un error desconocido.';
-            vscode.window.showErrorMessage(`TDD Lab: Error al ejecutar la extensión. ${message}`);
-        }
+        await vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider.executeCommand('npm test');
+        
+      } catch (error: any) {
+        const msg = `❌ Error ejecutando tests: ${error.message}`;
+        vscode.window.showErrorMessage(msg);
+      }
     });
 
-    const runTestActivityCommand = vscode.commands.registerCommand('TDD.runTestActivity', async () => {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage(
-                'TDD Lab: No hay un espacio de trabajo abierto. Por favor, abre un proyecto adecuado y compatible para ejecutar la extensión.'
-            );
-            return;
-        }
-
-        try {
-            const projectJsonPath = path.join(workspaceFolder, 'script', 'tddScript.js');
-            if (!fs.existsSync(projectJsonPath)) {
-                vscode.window.showErrorMessage(
-                    'TDD Lab: Este no es un proyecto compatible con la extension, asegurate de abrir un proyecto adecuado.'
-                );
-                return;
-            }
-            await executeTestCommand.execute();
-        } catch (error) {
-            vscode.window.showErrorMessage('Ocurrió un error al intentar ejecutar la prueba.');
-        }
+    // Comando Clear Terminal
+    const clearTerminalCmd = vscode.commands.registerCommand('TDD.clearTerminal', () => {
+      if (terminalProvider) {
+        terminalProvider.clearTerminal();
+      }
     });
 
-    const runCloneCommand = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
-        try {
-            await executeCloneCommand.execute(tddBasePath);
-        } catch (error) {
-            vscode.window.showErrorMessage('Error al clonar el proyecto. Por favor, verifica la configuración.');
-        }
+    // Comando Crear Proyecto
+    const cloneProjectCmd = vscode.commands.registerCommand('TDD.cloneCommand', async () => {
+      try {
+        await executeCloneCommand.execute();
+      } catch (error: any) {
+        vscode.window.showErrorMessage(`Error al crear el proyecto: ${error.message}`);
+      }
     });
 
-    const runExportCommand = vscode.commands.registerCommand('TDD.exportCommand', async () => {
-        try {
-            await executeExportCommand.execute();
-        } catch (error) {
-            vscode.window.showErrorMessage('Error al exportar los datos. Por favor, intenta nuevamente.');
-        }
+    // Comando Show Timeline (abre la Terminal TDD que contiene el timeline)
+    const showTimelineCmd = vscode.commands.registerCommand('extension.showTimeline', async () => {
+      try {
+        await vscode.commands.executeCommand('tddTerminalView.focus');
+      } catch (error: any) {
+        vscode.window.showErrorMessage(`Error al mostrar timeline: ${error.message}`);
+      }
     });
 
-    const runAsistenteCommand = vscode.commands.registerCommand('TDD.AsistenteCommand', async () => {
-        try {
-            await executeAIAssistant.execute(context);
-        } catch (error: any) {
-            vscode.window.showErrorMessage(`Error: ${error?.message}`);
-        }
+    // Comando Run Cypress
+    const runCypressCmd = vscode.commands.registerCommand('TDD.runCypress', () => {
+      if (terminalProvider) {
+        vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider.executeCommand('npx cypress run');
+      }
     });
 
-    context.subscriptions.push(runTestCommand);
-    context.subscriptions.push(runTestActivityCommand);
-    context.subscriptions.push(runCloneCommand);
-    context.subscriptions.push(runExportCommand);
-    context.subscriptions.push(runAsistenteCommand);
+    // Comando Git Status
+    const gitStatusCmd = vscode.commands.registerCommand('TDD.gitStatus', () => {
+      if (terminalProvider) {
+        vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider.executeCommand('git status');
+      }
+    });
 
-    const testExecutionTreeView = new ExecutionTreeView(context, features);
-    testExecutionTreeView.initialize();
+    // Comando NPM Install
+    const npmInstallCmd = vscode.commands.registerCommand('TDD.npmInstall', () => {
+      if (terminalProvider) {
+        vscode.commands.executeCommand('tddTerminalView.focus');
+        terminalProvider.executeCommand('npm install');
+      }
+    });
 
+    // Registrar todos los comandos
+    context.subscriptions.push(
+      runTestCmd, 
+      clearTerminalCmd,
+      cloneProjectCmd,
+      showTimelineCmd,
+      runCypressCmd, 
+      gitStatusCmd, 
+      npmInstallCmd
+    );
 
+    // Registrar el menú de opciones TDD
+    context.subscriptions.push(
+      vscode.window.registerTreeDataProvider(
+        'tddTestExecution',
+        testMenuProvider
+      )
+    );
 
-  
+    // Registrar Terminal TDDLab (incluye el Timeline integrado)
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider(
+        TerminalViewProvider.viewType,
+        terminalProvider
+      )
+    );
+
+    console.log('TDDLab extension activated ✅');
+
+  } catch (error) {
+    console.error('Error activating TDDLab extension:', error);
+    vscode.window.showErrorMessage(`Error activating TDDLab: ${error}`);
+  }
+}
+
+export function deactivate() {
+  terminalProvider = null;
+  timelineView = null;
+  testMenuProvider = null;
 }
