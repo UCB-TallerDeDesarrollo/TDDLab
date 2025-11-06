@@ -16,6 +16,15 @@ import { RegisterUserOnDb } from "../../modules/User-Authentication/application/
 import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
+import UpdateUserNamePopUp from "./components/UpdateUserNamePopUp";
+
+interface ExtendedUser extends User {
+  backendId?: string;
+  name?: string;
+}
+interface RegisterResponse {
+  id: string;
+}
 
 function InvitationPage() {
   const location = useLocation();
@@ -29,8 +38,9 @@ function InvitationPage() {
 
   const groupid = getQueryParam("groupid");
   const userType = getQueryParam("type");
+  const [showNamePopup, setShowNamePopup] = useState(false);
 
-  const [user, setUser] = useState<User | null>(null);
+   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false); 
   const [_popupMessage, setPopupMessage] = useState(""); 
@@ -101,25 +111,39 @@ function InvitationPage() {
   );  
 
   const handleAcceptInvitation = async (type: string) => {
-    setIsLoading(true);
-    try {
-      
-      if (user?.email) {
-        const userObj: UserOnDb = {
-          email: user.email,
-          groupid: typeof groupid === 'number' ? groupid : Number(groupid) || 1,
-          role: type,
-        };
-        try{
-          await dbAuthPort.register(userObj);
-        } catch (error) {
+  setIsLoading(true);
+  try {
+    if (user?.email) {
+      const userObj: UserOnDb = {
+        email: user.email,
+        groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
+        role: type,
+        first_name: user?.displayName || " ",
+        last_name: user?.displayLastName || " "
+      };
+
+      try {
+        const result = await dbAuthPort.register(userObj);
+        const backendId = (result as any)?.id || (result as any)?.user?.id;
+
+        if (backendId && user) {
+          // Guardamos el backendId en el usuario local
+          setUser({ ...user, backendId });
+          // Mostramos directamente el formulario de nombre para nuevos usuarios
+          setShowNamePopup(true);
+          return; // 👈 importante: no mostrar el popup de éxito todavía
+        }
+      } catch (error: any) {
+        // Si el error 409 indica que ya estaba registrado
+        if (error?.response?.status === 409) {
           setPopupMessage("El usuario ya tiene un grupo asignado.");
           setOpenPopup(true);
-          return;
+        } else{
+          console.error("Error al registrar:", error);
         }
-
-        setShowPopUp(true);
+        return;
       }
+    }
     } finally{
       setIsLoading(false);
     }
@@ -281,6 +305,23 @@ function InvitationPage() {
           )}
           {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
+          {showNamePopup && (user as any)?.backendId && (
+            <UpdateUserNamePopUp
+              open={showNamePopup}
+              onClose={() => {
+              setShowNamePopup(false);
+              setShowPopUp(true);
+             }}
+            userId={(user as any).backendId}
+            currentName={user?.displayName ?? undefined}
+            currentlastName={(user as any)?.lastname ?? undefined}
+            setUser={setUser}
+            />
+
+        )}
+
+{showPopUp && <SuccessfulEnrollmentPopUp />}
+{openPopup && <CheckRegisterGroupPopUp />}
         </div>
       ) : (
         <Grid
