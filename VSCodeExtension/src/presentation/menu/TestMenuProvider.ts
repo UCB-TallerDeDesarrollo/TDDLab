@@ -15,7 +15,7 @@ export class TestMenuItem extends vscode.TreeItem {
 
 export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
 
-  private _onDidChangeTreeData: vscode.EventEmitter<TreeItemChange> = new vscode.EventEmitter<TreeItemChange>();
+  readonly _onDidChangeTreeData: vscode.EventEmitter<TreeItemChange> = new vscode.EventEmitter<TreeItemChange>();
   readonly onDidChangeTreeData: vscode.Event<TreeItemChange> = this._onDidChangeTreeData.event;
 
 

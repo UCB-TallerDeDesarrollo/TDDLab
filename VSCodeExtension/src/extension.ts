@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { NpmRunTests } from './infrastructure/test/NpmRunTests';
 import { TerminalViewProvider } from './presentation/terminal/TerminalViewProvider';
 import { TimelineView } from './presentation/timeline/TimelineView';
 import { TestMenuProvider } from './presentation/menu/TestMenuProvider';
@@ -28,7 +27,6 @@ export async function activate(context: vscode.ExtensionContext) {
     testMenuProvider = new TestMenuProvider();
     
     // Crear instancias para ejecutar tests y clonar proyecto
-    const runTests = new NpmRunTests(terminalProvider);
     const executeCloneCommand = new ExecuteCloneCommand();
 
     // Verificar si hay una instalación pendiente
