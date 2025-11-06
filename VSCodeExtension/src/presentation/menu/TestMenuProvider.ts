@@ -47,13 +47,7 @@ export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
           title: 'Crear Proyecto TDDLab'
         }
       ),
-      new TestMenuItem(
-        '🧹 Clear Terminal',
-        {
-          command: 'TDD.clearTerminal',
-          title: 'Clear Terminal'
-        }
-      ),
+     
       new TestMenuItem(
         '📊 Show Timeline',
         {

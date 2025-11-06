@@ -50,6 +50,8 @@ export class TimelineView implements vscode.WebviewViewProvider {
   public async getTimelineHtml(webview: vscode.Webview): Promise<string> {
     try {
       const timeline = await this.getTimeline.execute();
+      console.log('[TimelineView] Timeline items count:', timeline.length);
+      console.log('[TimelineView] Timeline data:', JSON.stringify(timeline));
       return this.generateHtmlFragment(timeline, webview);
     } catch (err) {
       console.debug('[TimelineView] Timeline no disponible');

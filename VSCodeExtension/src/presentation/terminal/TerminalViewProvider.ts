@@ -156,6 +156,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     if (this.webviewView) {
       try {
         const newTimelineHtml = await this.timelineView.getTimelineHtml(this.webviewView.webview);
+        // Actualizar SOLO el Timeline, sin tocar el buffer de la terminal
         this.webviewView.webview.postMessage({
           command: 'updateTimeline',
           html: newTimelineHtml
@@ -167,6 +168,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   public sendToTerminal(message: string, isRestoring: boolean = false) {
+    // NO guardar en buffer si es para restaurar
     if (!isRestoring) {
       this.terminalBuffer += message;
       this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
@@ -186,13 +188,18 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   public clearTerminal() {
-    this.terminalBuffer = '$ ';
-    this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
+    // Limpiar completamente el buffer
+    this.terminalBuffer = '';
+    this.context.globalState.update(this.BUFFER_STORAGE_KEY, '');
     
     if (this.webviewView) {
       this.webviewView.webview.postMessage({
         command: 'clearTerminal'
       });
+      // Después de limpiar, enviar el prompt inicial
+      setTimeout(() => {
+        this.sendToTerminal('$ ');
+      }, 100);
     }
   }
 
