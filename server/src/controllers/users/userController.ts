@@ -24,29 +24,28 @@ class UserController {
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
-  async registerUserController(req: Request, res: Response): Promise<void> {
-    const { email, groupid, role, firstName, lastName } = req.body;
+ async registerUserController(req: Request, res: Response): Promise<void> {
+  const { email, groupid, role, firstName, lastName } = req.body;
 
-    if (!email || !groupid || !role || !firstName || !lastName) {
-      res.status(400).json({
-        error: "Debes proporcionar un email, grupo, rol, nombre y apellido validos",
-      });
-      return;
-    }
+  if (!email || !groupid || !role || !firstName || !lastName) {
+    res.status(400).json({
+      error: "Debes proporcionar un email, grupo, rol, nombre y apellido válidos",
+    });
+    return;
+  }
 
-    try {
-      await registerUser({ email, groupid, role, firstName, lastName });
-      res.status(201).json({ message: "Usuario registrado con éxito." });
-    } catch (error: any) {
-      if (error.message === "UserAlreadyExistsInThatGroup") {
-        res
-          .status(409)
-          .json({ error: "The user is already registered in that group." });
-      } else {
-        res.status(500).json({ error: "Server error while registering user" });
-      }
+  try {
+    await registerUser({ email, groupid, role, firstName, lastName });
+    res.status(201).json({ message: "Usuario registrado con éxito." });
+  } catch (error: any) {
+    if (error.message === "UserAlreadyExistsInThatGroup") {
+      res.status(409).json({ error: "El usuario ya está registrado en ese grupo." });
+    } else {
+      res.status(500).json({ error: "Error del servidor al registrar el usuario" });
     }
   }
+}
+
   async getUserController(req: Request, res: Response): Promise<void> {
     const { email } = req.body;
 
@@ -223,38 +222,33 @@ async  logoutController (res: Response): Promise<void> {
     }
   }
 
-  async updateUserById(req: Request, res: Response) {
-    const id = parseInt(req.params.id);
-    const { name } = req.body;
-    const {lastName} = req.body;
-    if (!id) {
-      res.status(400).json({ error: "id de usuario invalid." });
-      return;
-    }
-
-    if (!name || name.trim() === "") {
-      res.status(400).json({ error: "El nombre no puede estar vacio." });
-      return;
-    }
-     if (!lastName || lastName.trim() === "") {
-      res.status(400).json({ error: "El Apellido no puede estar vacio." });
-      return;
-    }
+  async updateUserById(req: Request, res: Response): Promise<Response> {
     try {
-      const updateUser = await updateUserById(id, name);
-      if (!updateUser) {
-        res.status(404).json({ error: "Usuario no encontrado."});
-        return;
+      const userId = Number(req.params.id);
+      const userFromToken = (req as any).user; // Usuario autenticado
+      
+      console.log("📝 Actualizando nombre - Usuario autenticado:", userFromToken);
+      console.log("📝 ID objetivo:", userId);
+      
+      // Verificar que estudiantes solo puedan actualizar su propio perfil
+      if (userFromToken.role === 'student' && userFromToken.id !== userId) {
+        console.log("❌ Student intentando actualizar otro usuario");
+        return res.status(403).json({ 
+          message: "Los estudiantes solo pueden actualizar su propio perfil" 
+        });
       }
 
-      res.status(200).json({ message: "Usuario actualizado correctamente.", user: updateUser });
-    } catch (error: any) {
-      if (error.message === "UserNotFound") {
-        res.status(404).json({ error: "Usuario no encontrado."});
-      } else {
-        console.error(error);
-        res.status(500).json({ error: "Error interno del servidor." });
-      }
+      const { firstName, lastName } = req.body;
+      console.log("📝 Nuevo nombre:", firstName,lastName);
+      
+      const updatedUser = await this.userRepository.updateUserById(userId,  firstName, lastName );
+
+      console.log("✅ Nombre actualizado exitosamente");
+      
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error("❌ Error en updateUserById:", error);
+      return res.status(500).json({ message: "Error interno del servidor" });
     }
   }
 

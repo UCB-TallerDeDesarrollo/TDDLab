@@ -1,23 +1,19 @@
-import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import UsersRepository from "../../../modules/Users/repository/UsersRepository";
 
 interface UpdateUserNamePopUpProps {
   open: boolean;
   onClose: () => void;
-  userId: string | number;
+  userId: number;
   currentName?: string;
-  currentlastName?: string;
-  setUser: (user: any) => void;
+  currentLastName?: string;
+  setUser: (updateFn: (prev: any) => any) => void;
 }
 
 const UpdateUserNamePopUp: React.FC<UpdateUserNamePopUpProps> = ({
@@ -25,103 +21,83 @@ const UpdateUserNamePopUp: React.FC<UpdateUserNamePopUpProps> = ({
   onClose,
   userId,
   currentName,
-  currentlastName,
+  currentLastName,
   setUser,
 }) => {
   const [name, setName] = useState(currentName || "");
-  const [lastName, setLastName] = useState(currentlastName || "");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const [lastName, setLastName] = useState(currentLastName || "");
+  const [isLoading, setIsLoading] = useState(false);
+  const usersRepo = new UsersRepository();
 
-  const handleSubmit = async () => {
-    if (!name.trim() || !lastName.trim()) {
-      setError("Nombre y apellido son obligatorios");
-      return;
-    }
+  useEffect(() => {
+    setName(currentName || "");
+    setLastName(currentLastName || "");
+  }, [currentName, currentLastName]);
 
-    setLoading(true);
-    setError("");
-
+  const handleSave = async () => {
+    if (!name.trim() || !lastName.trim()) return;
+    setIsLoading(true);
     try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/user/${userId}`,
-        { name, lastname: lastName },
-        { withCredentials: true }
-      );
-
-      // Actualizamos el estado local/global del usuario
-      if (response.data) {
-        setUser((prev: any) => ({
-          ...prev,
-          name: response.data.name || name,
-          lastname: response.data.lastname || lastName,
-        }));
+      // CORREGIDO: Usar firstName y lastName en lugar de first_name y last_name
+      await usersRepo.updateUserById(userId, { 
+        firstName: name.trim(), 
+        lastName: lastName.trim() 
+      });
+      setUser((prev) => prev ? { ...prev, displayName: `${name} ${lastName}` } : prev);
+      onClose();
+    } catch (error: any) {
+      console.error("Error updating user:", error);
+      if (error.response?.status === 403) {
+        alert("Todavía hay problemas de permisos. Contacta al administrador.");
+      } else if (error.response?.status === 404) {
+        alert("Endpoint no encontrado. Verifica la URL del servicio.");
+      } else {
+        alert("Error al actualizar los datos");
       }
-
-      setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-        onClose();
-      }, 1500);
-    } catch (err: any) {
-      console.error("Error al actualizar los datos:", err);
-      setError("No se pudo actualizar. Intenta nuevamente.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Actualiza tu información</DialogTitle>
+    <Dialog open={open} onClose={onClose} disableEscapeKeyDown>
+      <DialogTitle>Completa tu registro</DialogTitle>
       <DialogContent>
-        {success ? (
-          <Typography color="success.main">
-            Datos actualizados correctamente 🎉
-          </Typography>
-        ) : (
-          <>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Nombre"
-              type="text"
-              fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <TextField
-              margin="dense"
-              label="Apellido"
-              type="text"
-              fullWidth
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-            {error && (
-              <Typography color="error" variant="body2">
-                {error}
-              </Typography>
-            )}
-          </>
-        )}
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Nombre"
+          fullWidth
+          variant="outlined"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          disabled={isLoading}
+          error={!name.trim()}
+          helperText={!name.trim() ? "El nombre es requerido" : ""}
+        />
+        <TextField
+          margin="dense"
+          label="Apellido"
+          fullWidth
+          variant="outlined"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          disabled={isLoading}
+          error={!lastName.trim()}
+          helperText={!lastName.trim() ? "El apellido es requerido" : ""}
+        />
       </DialogContent>
-      {!success && (
-        <DialogActions>
-          <Button onClick={onClose} disabled={loading}>
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            color="primary"
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={24} /> : "Guardar"}
-          </Button>
-        </DialogActions>
-      )}
+      <DialogActions>
+        <Button onClick={onClose} disabled={isLoading}>Cancelar</Button>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          color="primary"
+          disabled={isLoading || !name.trim() || !lastName.trim()}
+        >
+          {isLoading ? "Guardando..." : "Guardar"}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

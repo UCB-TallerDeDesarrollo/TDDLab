@@ -30,5 +30,14 @@ export class RegisterUserOnDb {
       return null;  // Si el usuario no existe, devuelve null
     }
   }
+  async authenticateWithFirebase(idToken: string): Promise<UserOnDb> {
+    try {
+      const user = await this.adapter.getAccountInfoWithToken(idToken);
+      return user;
+    } catch (error) {
+      console.error("Error authenticating with Firebase:", error);
+      throw error;
+    }
+  }
 }
 

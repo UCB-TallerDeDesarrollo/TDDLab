@@ -107,15 +107,15 @@ export class UserRepository {
   }
   async updateUserById(
   id: number,
-  name: string,
+  firstName: string,
   lastName: string
 ): Promise<User | null> {
   const query = `UPDATE userstable 
-    SET name = $2, lastName = $3 
+    SET first_name = $2, last_name = $3 
     WHERE id = $1 
     RETURNING *`;
 
-  const values = [id, name, lastName];
+  const values = [id, firstName, lastName];
   const rows = await this.executeQuery(query, values);
 
   if (rows.length === 1) {

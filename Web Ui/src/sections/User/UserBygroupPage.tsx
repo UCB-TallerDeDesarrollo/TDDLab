@@ -67,8 +67,8 @@ function UsersByGroupPage() {
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id}>
-                <TableCell>{user.first_name}</TableCell>
-                <TableCell>{user.last_name}</TableCell>
+                <TableCell>{user.firstName}</TableCell>
+                <TableCell>{user.lastName}</TableCell>
                 <TableCell>{user.email}</TableCell>
               </TableRow>
             ))}

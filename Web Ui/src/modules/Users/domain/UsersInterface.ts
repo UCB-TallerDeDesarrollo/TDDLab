@@ -3,6 +3,6 @@ export interface UserDataObject {
     email: string;
     groupid: number;
     role: string;
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
   }

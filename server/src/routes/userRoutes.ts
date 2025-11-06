@@ -61,7 +61,7 @@ router.put(
   (req, res) => userController.updateUser(req, res)
 );
 router.put(
-  "/user/:id",
+  "/users/changeNames/:id",
   authenticateJWT,
   authorizeRoles("admin", "teacher", "student"),
   (req, res) => userController.updateUserById(req, res)

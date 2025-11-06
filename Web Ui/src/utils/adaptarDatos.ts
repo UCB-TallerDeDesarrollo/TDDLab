@@ -14,8 +14,8 @@ export function adaptarDatos(authData: {
         email: authData.userEmail ?? " ",
         groupid: authData.usergroupid,
         role: authData.userRole ?? " ",
-        first_name: authData.userName ??" ",
-        last_name: authData.userLastName?? ""
+        firstName: authData.userName ??" ",
+        lastName: authData.userLastName?? ""
         // Ajusta según tu necesidad, no hay una correspondencia directa en AuthData
       };
   }

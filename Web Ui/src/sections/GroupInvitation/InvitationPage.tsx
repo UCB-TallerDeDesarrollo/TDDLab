@@ -17,13 +17,12 @@ import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 import UpdateUserNamePopUp from "./components/UpdateUserNamePopUp";
+import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 
 interface ExtendedUser extends User {
   backendId?: string;
   name?: string;
-}
-interface RegisterResponse {
-  id: string;
+  idToken?: string;
 }
 
 function InvitationPage() {
@@ -39,11 +38,11 @@ function InvitationPage() {
   const groupid = getQueryParam("groupid");
   const userType = getQueryParam("type");
   const [showNamePopup, setShowNamePopup] = useState(false);
-
-   const [user, setUser] = useState<ExtendedUser | null>(null);
+  const [isSubmitting] = useState(false);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
-  const [openPopup, setOpenPopup] = useState(false); 
-  const [_popupMessage, setPopupMessage] = useState(""); 
+  const [openPopup] = useState(false); 
+  const [_popupMessage] = useState(""); 
   const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [isLoading, setIsLoading] = useState(false);
   const dbAuthPort = new RegisterUserOnDb();
@@ -111,43 +110,70 @@ function InvitationPage() {
   );  
 
   const handleAcceptInvitation = async (type: string) => {
-  setIsLoading(true);
-  try {
-    if (user?.email) {
+    if (!user?.email) return;
+    setIsLoading(true);
+
+    try {
+      const [firstName, lastName] = (user.displayName?.split(" ") ?? [" ", " "]);
+
       const userObj: UserOnDb = {
-        email: user.email,
-        groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
-        role: type,
-        first_name: user?.displayName || " ",
-        last_name: user?.displayLastName || " "
+      email: user.email,
+      groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
+      role: type,
+      firstName: firstName || " ",
+      lastName: lastName || " ",
       };
 
-      try {
-        const result = await dbAuthPort.register(userObj);
-        const backendId = (result as any)?.id || (result as any)?.user?.id;
 
-        if (backendId && user) {
-          // Guardamos el backendId en el usuario local
-          setUser({ ...user, backendId });
-          // Mostramos directamente el formulario de nombre para nuevos usuarios
-          setShowNamePopup(true);
-          return; // 👈 importante: no mostrar el popup de éxito todavía
-        }
+      // 1. Registrar usuario
+      try {
+        await dbAuthPort.register(userObj);
       } catch (error: any) {
-        // Si el error 409 indica que ya estaba registrado
         if (error?.response?.status === 409) {
-          setPopupMessage("El usuario ya tiene un grupo asignado.");
-          setOpenPopup(true);
-        } else{
-          console.error("Error al registrar:", error);
+        } else {
+          return;
         }
+      }
+
+      const idToken = await user.getIdToken();
+      console.log("Firebase ID Token obtenido:", idToken);
+
+      let registeredUser;
+      try {
+        registeredUser = await dbAuthPort.authenticateWithFirebase(idToken);
+      } catch (authError) {
+        registeredUser = await dbAuthPort.getAccountInfo(user.email);
+      }
+
+      if (!registeredUser?.id) {
+        console.error("No se pudo obtener el usuario registrado del backend");
         return;
       }
-    }
-    } finally{
+
+      try {
+        setCookieAndGlobalStateForValidUser(user, registeredUser, () => {
+        });
+      } catch (globalStateError) {
+        console.warn("Error estableciendo estado global:", globalStateError);
+      }
+
+      // 5. Actualizar estado local del componente
+      setUser({
+        ...user,
+        backendId: registeredUser.id.toString(),
+        displayName: registeredUser.firstName || user.displayName,
+      });
+
+      // 6. Mostrar modal para completar nombre
+      setShowNamePopup(true);
+
+    } catch (error) {
+      console.error("Error en handleAcceptInvitation:", error);
+    } finally {
       setIsLoading(false);
     }
   };
+
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = event;
     const { left, top, width, height } = currentTarget.getBoundingClientRect();
@@ -275,9 +301,9 @@ function InvitationPage() {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
-                      disabled={isLoading}
+                      disabled={isLoading || isSubmitting}
                     >
-                      Aceptar invitación al curso
+                      {isSubmitting ? "Procesando..." : "Aceptar invitación al curso" }
                     </Button>
                   )}
                   {userType === "teacher" && (
@@ -287,7 +313,7 @@ function InvitationPage() {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
-                      disabled={isLoading}
+                      disabled={isLoading || isSubmitting}
                     >
                       Aceptar invitación al curso como Docente
                     </Button>
@@ -303,25 +329,20 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
-          {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
-          {showNamePopup && (user as any)?.backendId && (
+          {showNamePopup && user?.backendId && (
             <UpdateUserNamePopUp
               open={showNamePopup}
               onClose={() => {
-              setShowNamePopup(false);
-              setShowPopUp(true);
-             }}
-            userId={(user as any).backendId}
-            currentName={user?.displayName ?? undefined}
-            currentlastName={(user as any)?.lastname ?? undefined}
-            setUser={setUser}
+                setShowNamePopup(false);
+                setShowPopUp(true);
+              }}
+              userId={parseInt(user.backendId)}
+              currentName={user.displayName ?? undefined}
+              setUser={setUser}
             />
-
-        )}
-
-{showPopUp && <SuccessfulEnrollmentPopUp />}
-{openPopup && <CheckRegisterGroupPopUp />}
+          )}
+          {showPopUp && <SuccessfulEnrollmentPopUp />}
+          {openPopup && <CheckRegisterGroupPopUp />}
         </div>
       ) : (
         <Grid
