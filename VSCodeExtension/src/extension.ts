@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { ExecuteTestCommand } from './application/runTest/ExecuteTestCommand';
 import { NpmRunTests } from './infrastructure/test/NpmRunTests';
 import { TerminalViewProvider } from './presentation/terminal/TerminalViewProvider';
 import { TimelineView } from './presentation/timeline/TimelineView';
@@ -30,7 +29,6 @@ export async function activate(context: vscode.ExtensionContext) {
     
     // Crear instancias para ejecutar tests y clonar proyecto
     const runTests = new NpmRunTests(terminalProvider);
-    const executeTestCommand = new ExecuteTestCommand(runTests);
     const executeCloneCommand = new ExecuteCloneCommand();
 
     // Verificar si hay una instalación pendiente
@@ -38,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
     if (workspaceFolder) {
       const markerFile = path.join(workspaceFolder, '.tddlab-setup-pending');
       try {
-        const fs = await import('fs/promises');
+        const fs = await import('node:fs/promises');
         const markerExists = await fs.access(markerFile).then(() => true).catch(() => false);
         
         if (markerExists) {
@@ -168,22 +166,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Registrar todos los comandos
     context.subscriptions.push(
-      runTestCmd, 
-      clearTerminalCmd,
-      cloneProjectCmd,
-      showTimelineCmd,
-      runCypressCmd, 
-      gitStatusCmd, 
-      npmInstallCmd
-    );
-
-    // Registrar el menú de opciones TDD
-    context.subscriptions.push(
-      vscode.window.registerTreeDataProvider(
-        'tddTestExecution',
-        testMenuProvider
-      )
-    );
+  runTestCmd,
+  clearTerminalCmd,
+  cloneProjectCmd,
+  showTimelineCmd,
+  runCypressCmd,
+  gitStatusCmd,
+  npmInstallCmd,
+  vscode.window.registerTreeDataProvider('tddTestExecution', testMenuProvider),
+  vscode.window.registerWebviewViewProvider(TerminalViewProvider.viewType, terminalProvider)
+);
 
     // Registrar Terminal TDDLab (incluye el Timeline integrado)
     context.subscriptions.push(

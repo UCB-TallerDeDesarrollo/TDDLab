@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { TerminalPort } from '../../domain/model/TerminalPort';
-import { spawn } from 'child_process';
+import { spawn } from 'node:child_process';
 
 export class VSCodeTerminalRepository implements TerminalPort {
-  private outputChannel: vscode.OutputChannel;
+  readonly outputChannel: vscode.OutputChannel;
   private currentProcess: any = null;
   private onOutputCallback: ((output: string) => void) | null = null;
   private isExecuting: boolean = false;

@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs/promises';
-import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 
 const execAsync = promisify(exec);
 
@@ -16,10 +16,11 @@ export class ExecuteCloneCommand {
       try {
         await execAsync('git --version');
       } catch (error) {
-        vscode.window.showErrorMessage(
-          '❌ Git no está instalado. Por favor, instala Git primero: https://git-scm.com/'
-        );
-        return;
+        console.error('Error al verificar Git:', error);
+         vscode.window.showErrorMessage(
+    ' Git no está instalado. Por favor, instala Git primero: https://git-scm.com/'
+  );
+  return;
       }
 
       // Abrir diálogo para seleccionar carpeta donde crear el proyecto
