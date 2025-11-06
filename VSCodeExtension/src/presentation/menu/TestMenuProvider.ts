@@ -14,10 +14,12 @@ export class TestMenuItem extends vscode.TreeItem {
 }
 
 export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
+  // Marcado como private readonly para cumplir con Sonar
+  private readonly _onDidChangeTreeData: vscode.EventEmitter<TreeItemChange> =
+    new vscode.EventEmitter<TreeItemChange>();
 
-  readonly _onDidChangeTreeData: vscode.EventEmitter<TreeItemChange> = new vscode.EventEmitter<TreeItemChange>();
-  readonly onDidChangeTreeData: vscode.Event<TreeItemChange> = this._onDidChangeTreeData.event;
-
+  readonly onDidChangeTreeData: vscode.Event<TreeItemChange> =
+    this._onDidChangeTreeData.event;
 
   refresh(): void {
     this._onDidChangeTreeData.fire(undefined);
@@ -37,27 +39,18 @@ export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
 
   private getMenuItems(): TestMenuItem[] {
     return [
-      new TestMenuItem(
-        '▶️ Run Tests',
-        {
-          command: 'TDD.runTest',
-          title: 'Run Tests'
-        }
-      ),
-      new TestMenuItem(
-        '📁 Crear Proyecto',
-        {
-          command: 'TDD.cloneCommand',
-          title: 'Crear Proyecto TDDLab'
-        }
-      ),
-      new TestMenuItem(
-        '📊 Show Timeline',
-        {
-          command: 'extension.showTimeline',
-          title: 'Show Timeline'
-        }
-      )
+      new TestMenuItem('▶️ Run Tests', {
+        command: 'TDD.runTest',
+        title: 'Run Tests'
+      }),
+      new TestMenuItem('📁 Crear Proyecto', {
+        command: 'TDD.cloneCommand',
+        title: 'Crear Proyecto TDDLab'
+      }),
+      new TestMenuItem('📊 Show Timeline', {
+        command: 'extension.showTimeline',
+        title: 'Show Timeline'
+      })
     ];
   }
 }
