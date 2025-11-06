@@ -771,6 +771,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell>Nombre</TableCell>
+                    <TableCell>Apellido</TableCell>
                     <TableCell>Email</TableCell>
                     <TableCell>Estado</TableCell>
                     <TableCell>Enlace</TableCell>
