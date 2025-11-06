@@ -164,6 +164,28 @@ function UserPage() {
                     lineHeight: "2",
                   }}
                 >
+                  Nombre
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Apellido
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
                   Correo electrónico
                 </TableCell>
                 <TableCell
@@ -204,6 +226,8 @@ function UserPage() {
             <TableBody>
               {filteredUsers.map((user) => (
                 <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.first_name}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.last_name}</TableCell>
                   <TableCell sx={{ lineHeight: "3" }}>{user.email}</TableCell>
                   <TableCell sx={{ lineHeight: "3" }}>
                     {groupMap[user.groupid] || "Unknown Group"}
