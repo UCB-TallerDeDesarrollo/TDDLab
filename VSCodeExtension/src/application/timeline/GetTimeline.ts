@@ -1,4 +1,3 @@
-import * as vscode from 'vscode';
 import { Timeline } from '../../domain/timeline/Timeline';
 import { CommitPoint } from '../../domain/timeline/CommitPoint';
 import { TimelineRepository } from '../../application/timeline/repository/TimelineRepository';

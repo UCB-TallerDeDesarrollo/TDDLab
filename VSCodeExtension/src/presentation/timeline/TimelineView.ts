@@ -39,11 +39,12 @@ export class TimelineView implements vscode.WebviewViewProvider {
       const timeline = await this.getTimeline.execute();
       webview.html = this.generateHtml(timeline, webview);
       this.updateTimelineCache(timeline);
-    } catch (err) {
+    } catch (err: any) {
+      // Manejo explícito del error para cumplir Sonar
+      console.error('[TimelineView] Error al mostrar timeline:', err);
       webview.html = `<h2>TDDLab Timeline</h2>
                       <p style="color:gray;">⚠️ Timeline no disponible</p>
                       <p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline</p>`;
-      console.debug('[TimelineView] Timeline no disponible (esperado en proyectos sin tests)');
     }
   }
 
@@ -53,8 +54,9 @@ export class TimelineView implements vscode.WebviewViewProvider {
       console.log('[TimelineView] Timeline items count:', timeline.length);
       console.log('[TimelineView] Timeline data:', JSON.stringify(timeline));
       return this.generateHtmlFragment(timeline, webview);
-    } catch (err) {
-      console.debug('[TimelineView] Timeline no disponible');
+    } catch (err: any) {
+      // Manejo explícito del error
+      console.error('[TimelineView] Error al generar HTML del timeline:', err);
       return `<p style="color:#666;font-size:12px;">Sin timeline disponible</p>`;
     }
   }
@@ -66,10 +68,10 @@ export class TimelineView implements vscode.WebviewViewProvider {
     setInterval(async () => {
       try {
         const currentTimeline = await this.getTimeline.execute();
-        
-       
+
+        // Reiniciar contador de errores
         consecutiveErrors = 0;
-        
+
         if (this.hasTimelineChanged(currentTimeline)) {
           this.updateTimelineCache(currentTimeline);
 
@@ -80,14 +82,14 @@ export class TimelineView implements vscode.WebviewViewProvider {
             });
           }
         }
-      } catch (err) {
+      } catch (err: any) {
         consecutiveErrors++;
-        
-       
+        // Registrar el error explícitamente
+        console.error('[TimelineView] Error en polling del timeline:', err);
+
         if (consecutiveErrors === maxConsecutiveErrors) {
-          console.debug('[TimelineView] Timeline no disponible en este proyecto');
+          console.warn('[TimelineView] Timeline no disponible en este proyecto tras múltiples intentos.');
         }
-       
       }
     }, 4000);
   }
@@ -113,12 +115,12 @@ export class TimelineView implements vscode.WebviewViewProvider {
     return timeline
       .slice()
       .reverse()
-      .map((point, index) => {
+      .map((point) => {
         if (point instanceof Timeline) {
           const color = point.getColor();
           const passed = point.numPassedTests;
           const total = point.numTotalTests;
-          const failed = total - passed; // Calcular tests fallidos
+          const failed = total - passed;
           const timestamp = new Date(point.timestamp).toLocaleString('es-ES', {
             day: '2-digit',
             month: '2-digit',
@@ -128,7 +130,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
             second: '2-digit'
           });
           const status = point.success ? '✅ Exitoso' : '❌ Fallido';
-          
           const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
           
           return `<div class="timeline-dot" title="${tooltip}" style="margin:3px;background:${color};width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;

@@ -16,10 +16,11 @@ export class ExecuteCloneCommand {
       try {
         await execAsync('git --version');
       } catch (error) {
-        vscode.window.showErrorMessage(
-          '❌ Git no está instalado. Por favor, instala Git primero: https://git-scm.com/'
-        );
-        return;
+        console.error('Error al verificar Git:', error);
+         vscode.window.showErrorMessage(
+    ' Git no está instalado. Por favor, instala Git primero: https://git-scm.com/'
+  );
+  return;
       }
 
       // Abrir diálogo para seleccionar carpeta donde crear el proyecto

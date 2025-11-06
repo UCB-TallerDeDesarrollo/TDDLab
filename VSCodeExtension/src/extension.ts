@@ -168,22 +168,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Registrar todos los comandos
     context.subscriptions.push(
-      runTestCmd, 
-      clearTerminalCmd,
-      cloneProjectCmd,
-      showTimelineCmd,
-      runCypressCmd, 
-      gitStatusCmd, 
-      npmInstallCmd
-    );
-
-    // Registrar el menú de opciones TDD
-    context.subscriptions.push(
-      vscode.window.registerTreeDataProvider(
-        'tddTestExecution',
-        testMenuProvider
-      )
-    );
+  runTestCmd,
+  clearTerminalCmd,
+  cloneProjectCmd,
+  showTimelineCmd,
+  runCypressCmd,
+  gitStatusCmd,
+  npmInstallCmd,
+  vscode.window.registerTreeDataProvider('tddTestExecution', testMenuProvider),
+  vscode.window.registerWebviewViewProvider(TerminalViewProvider.viewType, terminalProvider)
+);
 
     // Registrar Terminal TDDLab (incluye el Timeline integrado)
     context.subscriptions.push(

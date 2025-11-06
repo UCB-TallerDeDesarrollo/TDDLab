@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
 
+// Alias para el tipo unión
+type TreeItemChange = TestMenuItem | undefined | null | void;
+
 export class TestMenuItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
@@ -12,8 +15,9 @@ export class TestMenuItem extends vscode.TreeItem {
 }
 
 export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
-  private _onDidChangeTreeData: vscode.EventEmitter<TestMenuItem | undefined | null | void> = new vscode.EventEmitter<TestMenuItem | undefined | null | void>();
-  readonly onDidChangeTreeData: vscode.Event<TestMenuItem | undefined | null | void> = this._onDidChangeTreeData.event;
+  // Usar alias en lugar del tipo unión repetido
+  private _onDidChangeTreeData: vscode.EventEmitter<TreeItemChange> = new vscode.EventEmitter<TreeItemChange>();
+  readonly onDidChangeTreeData: vscode.Event<TreeItemChange> = this._onDidChangeTreeData.event;
 
   refresh(): void {
     this._onDidChangeTreeData.fire(undefined);
@@ -47,7 +51,6 @@ export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
           title: 'Crear Proyecto TDDLab'
         }
       ),
-     
       new TestMenuItem(
         '📊 Show Timeline',
         {
