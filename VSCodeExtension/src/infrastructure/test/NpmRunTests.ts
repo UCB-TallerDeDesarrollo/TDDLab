@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { TerminalViewProvider } from '../../presentation/terminal/TerminalViewProvider';
 import { TestRunnerPort } from '../../domain/model/TestRunnerPort';
 
 const execPromise = promisify(exec);
 
 export class NpmRunTests implements TestRunnerPort {
-  private terminalProvider: TerminalViewProvider;
+  readonly terminalProvider: TerminalViewProvider;
 
   constructor(terminalProvider: TerminalViewProvider) {
     this.terminalProvider = terminalProvider;

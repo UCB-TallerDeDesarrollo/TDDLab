@@ -12,7 +12,7 @@ export class TestMenuItem extends vscode.TreeItem {
 }
 
 export class TestMenuProvider implements vscode.TreeDataProvider<TestMenuItem> {
-  private _onDidChangeTreeData: vscode.EventEmitter<TestMenuItem | undefined | null | void> = new vscode.EventEmitter<TestMenuItem | undefined | null | void>();
+  readonly _onDidChangeTreeData: vscode.EventEmitter<TestMenuItem | undefined | null | void> = new vscode.EventEmitter<TestMenuItem | undefined | null | void>();
   readonly onDidChangeTreeData: vscode.Event<TestMenuItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
   refresh(): void {

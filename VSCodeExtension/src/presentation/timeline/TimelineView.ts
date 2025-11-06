@@ -10,7 +10,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
   private readonly getTimeline: GetTimeline;
   private readonly getLastPoint: GetLastPoint;
 
-  private static _onTimelineUpdated: vscode.EventEmitter<
+  static readonly _onTimelineUpdated: vscode.EventEmitter<
     Array<Timeline | CommitPoint>
   > = new vscode.EventEmitter<Array<Timeline | CommitPoint>>();
   public static readonly onTimelineUpdated: vscode.Event<
