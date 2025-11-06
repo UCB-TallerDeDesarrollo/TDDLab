@@ -223,6 +223,41 @@ async  logoutController (res: Response): Promise<void> {
     }
   }
 
+  async updateUserById(req: Request, res: Response) {
+    const id = parseInt(req.params.id);
+    const { name } = req.body;
+    const {lastName} = req.body;
+    if (!id) {
+      res.status(400).json({ error: "id de usuario invalid." });
+      return;
+    }
+
+    if (!name || name.trim() === "") {
+      res.status(400).json({ error: "El nombre no puede estar vacio." });
+      return;
+    }
+     if (!lastName || lastName.trim() === "") {
+      res.status(400).json({ error: "El Apellido no puede estar vacio." });
+      return;
+    }
+    try {
+      const updateUser = await updateUserById(id, name);
+      if (!updateUser) {
+        res.status(404).json({ error: "Usuario no encontrado."});
+        return;
+      }
+
+      res.status(200).json({ message: "Usuario actualizado correctamente.", user: updateUser });
+    } catch (error: any) {
+      if (error.message === "UserNotFound") {
+        res.status(404).json({ error: "Usuario no encontrado."});
+      } else {
+        console.error(error);
+        res.status(500).json({ error: "Error interno del servidor." });
+      }
+    }
+  }
+
   async removeUserFromGroup(req: Request, res: Response): Promise<void> {
     const userId = parseInt(req.params.userId);
 
