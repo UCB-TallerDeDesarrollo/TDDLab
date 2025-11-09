@@ -89,7 +89,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       }));
       return commits;
     } catch (error) {
-      console.error("Error obtaining commit TDD cycles:", error);
+      console.error("Error al obtener los ciclos TDD:", error);
       throw error;
     }
   }
@@ -110,10 +110,10 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
 
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
-        console.warn("TDD log file not found. Proceeding without TDD log data.");
+        console.warn("Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.");
         return [];
       }
-      console.error("Error obtaining TDD logs:", error);
+      console.error("Error al obtener tdd_log.json:", error);
       throw error;
     }
   }
