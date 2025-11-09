@@ -183,23 +183,22 @@ describe('obtainUsers', () => {
         email: 'user1@example.com', 
         groupid: 70, 
         role: 'admin',
-        first_name: 'John',  // Changed from firstName to first_name
-        last_name: 'Doe'     // Changed from lastName to last_name
+        first_name: 'John', 
+        last_name: 'Doe'    
       },
       { 
         id: 2,
         email: 'user2@example.com', 
         groupid: 70, 
         role: 'user',
-        first_name: 'Jane',  // Changed from firstName to first_name
-        last_name: 'Smith'   // Changed from lastName to last_name
+        first_name: 'Jane', 
+        last_name: 'Smith' 
       },
     ];
     clientQueryMock.mockResolvedValue({ rows: expectedUsers });
 
     const users = await repository.obtainUsers();
 
-    // The repository should return mapped users with firstName/lastName
     const expectedMappedUsers = expectedUsers.map(user => repository.mapRowToUser(user));
     expect(users).toEqual(expectedMappedUsers);
     expect(clientQueryMock).toHaveBeenCalledWith(
@@ -229,8 +228,8 @@ describe("obtainUserById", () => {
       email: "user1@example.com", 
       groupid: 70, 
       role: "admin",
-      first_name: "John",  // Changed from firstName to first_name
-      last_name: "Doe"     // Changed from lastName to last_name
+      first_name: "John", 
+      last_name: "Doe"   
     };
     clientQueryMock.mockResolvedValue({ rows: [expectedUser] });
 
@@ -386,8 +385,8 @@ describe("updateUserGroup", () => {
       email: "user1@example.com", 
       groupid: newGroupId, 
       role: "admin",
-      first_name: "John",  // Changed from firstName to first_name
-      last_name: "Doe"     // Changed from lastName to last_name
+      first_name: "John",
+      last_name: "Doe" 
     };
     clientQueryMock.mockResolvedValue({ rows: [updatedUser] });
 

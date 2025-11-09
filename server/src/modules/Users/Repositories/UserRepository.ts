@@ -1,4 +1,4 @@
-import { Pool } from "pg"; // Import the Pool from 'pg'
+import { Pool } from "pg";
 import config from "../../../config/db";
 import { User, UserCreationObect } from "../Domain/User";
 
@@ -46,7 +46,7 @@ export class UserRepository {
     const values = [email];
     const rows = await this.executeQuery(query, values);
     if (rows.length >= 1) {
-      return { // Solo devuelve el primer usuario encontrado, considerar cambiarlo cuando se rediseñe la base de datos
+      return { 
         id: rows[0].id,
         email: rows[0].email,
         groupid: rows.map((row) => row.groupid),
@@ -88,14 +88,14 @@ export class UserRepository {
       console.log(`Usuario con ID ${userId} ha sido eliminado`);
     } catch (error) {
       console.error("Error al eliminar usuario", error);
-      throw error; // Relanzar error para manejarlo en capas superiores
+      throw error;
     }
   }
   
   async updateUser(id: number, groupid: number,): Promise<User | null> {
     const query =
-      "UPDATE userstable SET groupid = $2 WHERE id = $1 RETURNING *"; // Actualizado para modificar solo el ID del grupo
-    const values = [id,groupid]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
+      "UPDATE userstable SET groupid = $2 WHERE id = $1 RETURNING *"; 
+    const values = [id,groupid]; 
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
       return this.mapRowToUser(rows[0]);
