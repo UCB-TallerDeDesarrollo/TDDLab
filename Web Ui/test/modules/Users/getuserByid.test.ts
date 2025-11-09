@@ -19,12 +19,16 @@ describe('GetUserById', () => {
     email: 'john@example.com',
     role: 'admin',
     groupid: 70,
+    firstName: "John",
+    lastName: "Doe"
   };
   const notFoundUser: UserDataObject = {
     id: -1,
     email: '',
     role: '',
     groupid: -1,
+    firstName: '',
+    lastName: ''
   };
 
   beforeEach(() => {
