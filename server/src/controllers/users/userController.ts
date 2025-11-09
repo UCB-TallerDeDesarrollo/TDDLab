@@ -25,33 +25,34 @@ class UserController {
     this.userRepository = userRepository;
   }
   async registerUserController(req: Request, res: Response): Promise<void> {
-    const { email, groupid, role } = req.body;
+    const { email, groupid, role, firstName, lastName } = req.body;
 
-    if (!email || !groupid || !role) {
+    if (!email || !groupid || !role || !firstName || !lastName) {
       res.status(400).json({
-        error: "Debes proporcionar un email, grupo y rol validos",
+        error: "Debes proporcionar un email, grupo, rol, nombre y apellido válidos",
       });
       return;
     }
 
     try {
-      await registerUser({ email, groupid, role });
-      res.status(201).json({ message: "Usuario registrado con éxito." });
-    } catch (error: any) {
-    if (error.message === "UserAlreadyExistsInThatGroup") {
-      res
-        .status(409)
-        .json({ error: "The user is already registered in that group." });
-    } else if (error.message === "No tiene permisos para registrar administradores") {
-      res
-        .status(403)
-        .json({ error: "No tiene permisos para registrar administradores" });
-    } else {
-      res.status(500).json({ error: "Server error while registering user" });
+        await registerUser({ email, groupid, role, firstName, lastName });
+        res.status(201).json({ message: "Usuario registrado con éxito." });
+      } catch (error: any) {
+      if (error.message === "UserAlreadyExistsInThatGroup") {
+        res
+          .status(409)
+          .json({ error: "The user is already registered in that group." });
+      } else if (error.message === "No tiene permisos para registrar administradores") {
+        res
+          .status(403)
+          .json({ error: "No tiene permisos para registrar administradores" });
+      } else {
+        res.status(500).json({ error: "Server error while registering user" });
+      }
     }
-}
-
   }
+
+
   async getUserController(req: Request, res: Response): Promise<void> {
     const { email } = req.body;
 
@@ -229,6 +230,36 @@ async  logoutController (res: Response): Promise<void> {
       else res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async updateUserById(req: Request, res: Response): Promise<Response> {
+    try {
+      const userId = Number(req.params.id);
+      const userFromToken = (req as any).user; // Usuario autenticado
+      
+      console.log("📝 Actualizando nombre - Usuario autenticado:", userFromToken);
+      console.log("📝 ID objetivo:", userId);
+      
+      // Verificar que estudiantes solo puedan actualizar su propio perfil
+      if (userFromToken.role === 'student' && userFromToken.id !== userId) {
+        console.log("❌ Student intentando actualizar otro usuario");
+        return res.status(403).json({ 
+          message: "Los estudiantes solo pueden actualizar su propio perfil" 
+        });
+      }
+
+      const { firstName, lastName } = req.body;
+      console.log("📝 Nuevo nombre:", firstName,lastName);
+      
+      const updatedUser = await this.userRepository.updateUserById(userId,  firstName, lastName );
+
+      console.log("✅ Nombre actualizado exitosamente");
+      
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error("❌ Error en updateUserById:", error);
+      return res.status(500).json({ message: "Error interno del servidor" });
     }
   }
 

@@ -13,8 +13,8 @@ const mockRepository: UsersRepositoryInterface = {
 describe('GetUsers', () => {
     let getUsers: GetUsers;
     const mockUsers: UserDataObject[] = [
-      { id: 1, email: 'john@example.com', role: 'admin', groupid: 70 },
-      { id: 2, email: 'jane@example.com', role: 'user', groupid: 70 },
+      { id: 1, email: 'john@example.com', role: 'admin', groupid: 70, firstName: 'John', lastName: 'Doe' },
+      { id: 2, email: 'jane@example.com', role: 'user', groupid: 70, firstName: 'Jane', lastName: 'Smith' },
     ];
   
     beforeEach(() => {
