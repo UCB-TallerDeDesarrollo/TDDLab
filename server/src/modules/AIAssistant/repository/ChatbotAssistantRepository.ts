@@ -57,6 +57,21 @@ export class ChatbotAssistantRepository {
         }
     }
 
+    private async getTddLogUrl(URL: string): Promise<string> {
+        try {
+            const match = URL.match(/github\.com\/([^/]+)\/([^/]+)/);
+            if (!match || match.length < 3) {
+                throw new Error('URL del repositorio inválida');
+            }
+            const owner = match[1];
+            const repoName = match[2];
+            return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+        } catch (error) {
+            console.error('Error construyendo la URL de tdd_log.json:', error);
+            throw error;
+        }
+    }
+
     private serializeCommits(commits: CommitDataObject[]): any[] {
         return commits.map(commit => ({
             ...commit,
