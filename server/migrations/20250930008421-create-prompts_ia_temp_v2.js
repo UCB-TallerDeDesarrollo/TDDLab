@@ -1,15 +1,15 @@
 'use strict';
 
 exports.up = function (db, callback) {
-  db.createTable('feature_flags', {
+  db.createTable('prompts_ia_temp_v2', {
     id: { type: 'int', primaryKey: true, autoIncrement: true },
-    feature_name: { type: 'string', notNull: true },
-    is_enabled: { type: 'boolean', notNull: true, defaultValue: false }
+    name: { type: 'text', notNull: true },
+    prompt: { type: 'text', notNull: true }
   }, { ifNotExists: true }, callback);
 };
 
 exports.down = function (db, callback) {
-  db.dropTable('feature_flags', callback);
+  db.dropTable('prompts_ia_temp_v2', callback);
 };
 
 exports._meta = { version: 1 };

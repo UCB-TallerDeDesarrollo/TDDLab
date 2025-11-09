@@ -1,19 +1,16 @@
 'use strict';
 
-
-exports.up = function (db) {
-  return db.createTable('groups', {
+exports.up = function (db, callback) {
+  db.createTable('groups', {
     id: { type: 'int', primaryKey: true, autoIncrement: true },
     groupname: { type: 'string', notNull: true },
     groupdetail: { type: 'text' },
-    creationdate: { type: 'date' }
-  });
+    creationdate: { type: 'timestamp', defaultValue: String('CURRENT_TIMESTAMP') }
+  }, { ifNotExists: true }, callback);
 };
 
-exports.down = function (db) {
-  return db.dropTable('groups');
+exports.down = function (db, callback) {
+  db.dropTable('groups', callback);
 };
 
-exports._meta = {
-  "version": 1
-};
+exports._meta = { version: 1 };
