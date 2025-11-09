@@ -29,7 +29,7 @@ export class UserRepository {
   async registerUser(user: UserCreationObect) {
     const client = await this.pool.connect();
     try {
-      const query = "INSERT INTO usersTable (email,groupid,role,first_name, last_name) VALUES ($1, $2, $3, $4, $5)";
+      const query = "INSERT INTO usersTable (email,groupid,role,first_name,last_name) VALUES ($1, $2, $3, $4, $5)";
       const values = [user.email, user.groupid, user.role, user.firstName, user.lastName];
 
       await client.query(query, values);
@@ -62,14 +62,14 @@ export class UserRepository {
     const values = [id];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
-      return rows[0];
+      return this.mapRowToUser(rows[0]);
     }
     return null;
   }
   async obtainUsers(): Promise<User[] | null> {
     const query = "SELECT id, email, groupid, role, first_name, last_name FROM usersTable";
     const rows = await this.executeQuery(query);
-    return rows.length > 0 ? rows : null;
+    return rows.length > 0 ? rows.map(row => this.mapRowToUser(row)) : null;
   }
 
   async getUsersByGroupid(groupid: number): Promise<User[]> {
@@ -92,37 +92,27 @@ export class UserRepository {
     }
   }
   
-  async updateUser(
-    id: number,
-    groupid: number,
-  ): Promise<Promise<User | null>> {
+  async updateUser(id: number, groupid: number,): Promise<User | null> {
     const query =
       "UPDATE userstable SET groupid = $2 WHERE id = $1 RETURNING *"; // Actualizado para modificar solo el ID del grupo
     const values = [id,groupid]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
-      return rows[0];
+      return this.mapRowToUser(rows[0]);
     }
     return null;
   }
-  async updateUserById(
-  id: number,
-  firstName: string,
-  lastName: string
-): Promise<User | null> {
-  const query = `UPDATE userstable 
-    SET first_name = $2, last_name = $3 
-    WHERE id = $1 
-    RETURNING *`;
 
-  const values = [id, firstName, lastName];
-  const rows = await this.executeQuery(query, values);
+  async updateUserById(id: number, firstName: string, lastName: string): Promise<User | null> {
+    const query = `UPDATE userstable SET first_name = $2, last_name = $3 WHERE id = $1 RETURNING *`;
+    const values = [id, firstName, lastName];
+    const rows = await this.executeQuery(query, values);
 
-  if (rows.length === 1) {
-    return this.mapRowToUser(rows[0]);
+    if (rows.length === 1) {
+      return this.mapRowToUser(rows[0]);
+    }
+
+    return null;
   }
-
-  return null;
-}
 
 }
