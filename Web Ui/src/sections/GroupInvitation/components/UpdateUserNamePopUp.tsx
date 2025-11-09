@@ -11,7 +11,7 @@ interface UpdateUserNamePopUpProps {
   open: boolean;
   onClose: () => void;
   userId: number;
-  currentName?: string;
+  currentFirstName?: string;
   currentLastName?: string;
   setUser: (updateFn: (prev: any) => any) => void;
 }
@@ -20,30 +20,26 @@ const UpdateUserNamePopUp: React.FC<UpdateUserNamePopUpProps> = ({
   open,
   onClose,
   userId,
-  currentName,
+  currentFirstName,
   currentLastName,
   setUser,
 }) => {
-  const [name, setName] = useState(currentName || "");
+  const [firstName, setFirstName] = useState(currentFirstName || "");
   const [lastName, setLastName] = useState(currentLastName || "");
   const [isLoading, setIsLoading] = useState(false);
   const usersRepo = new UsersRepository();
 
   useEffect(() => {
-    setName(currentName || "");
+    setFirstName(currentFirstName || "");
     setLastName(currentLastName || "");
-  }, [currentName, currentLastName]);
+  }, [currentFirstName, currentLastName]);
 
   const handleSave = async () => {
-    if (!name.trim() || !lastName.trim()) return;
+    if (!firstName.trim() || !lastName.trim()) return;
     setIsLoading(true);
     try {
-      // CORREGIDO: Usar firstName y lastName en lugar de first_name y last_name
-      await usersRepo.updateUserById(userId, { 
-        firstName: name.trim(), 
-        lastName: lastName.trim() 
-      });
-      setUser((prev) => prev ? { ...prev, displayName: `${name} ${lastName}` } : prev);
+      await usersRepo.updateUserById(userId, { firstName, lastName });
+      setUser((prev) => prev ? { ...prev, displayName: `${firstName} ${lastName}` } : prev);
       onClose();
     } catch (error: any) {
       console.error("Error updating user:", error);
@@ -60,7 +56,16 @@ const UpdateUserNamePopUp: React.FC<UpdateUserNamePopUpProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} disableEscapeKeyDown>
+    <Dialog 
+      open={open} 
+      onClose={(reason) => {
+        if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+          return;
+        }
+        onClose();
+      }} 
+      disableEscapeKeyDown={true}
+      >
       <DialogTitle>Completa tu registro</DialogTitle>
       <DialogContent>
         <TextField
@@ -69,11 +74,11 @@ const UpdateUserNamePopUp: React.FC<UpdateUserNamePopUpProps> = ({
           label="Nombre"
           fullWidth
           variant="outlined"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
           disabled={isLoading}
-          error={!name.trim()}
-          helperText={!name.trim() ? "El nombre es requerido" : ""}
+          error={!firstName.trim()}
+          helperText={!firstName.trim() ? "El nombre es requerido" : ""}
         />
         <TextField
           margin="dense"
@@ -93,7 +98,7 @@ const UpdateUserNamePopUp: React.FC<UpdateUserNamePopUpProps> = ({
           onClick={handleSave}
           variant="contained"
           color="primary"
-          disabled={isLoading || !name.trim() || !lastName.trim()}
+          disabled={isLoading || !firstName.trim() || !lastName.trim()}
         >
           {isLoading ? "Guardando..." : "Guardar"}
         </Button>

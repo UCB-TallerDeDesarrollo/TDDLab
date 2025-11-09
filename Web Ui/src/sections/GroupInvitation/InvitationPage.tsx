@@ -117,11 +117,11 @@ function InvitationPage() {
       const [firstName, lastName] = (user.displayName?.split(" ") ?? [" ", " "]);
 
       const userObj: UserOnDb = {
-      email: user.email,
-      groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
-      role: type,
-      firstName: firstName || " ",
-      lastName: lastName || " ",
+        email: user.email,
+        groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
+        role: type,
+        firstName: firstName || " ",
+        lastName: lastName || " ",
       };
 
 
@@ -337,7 +337,7 @@ function InvitationPage() {
                 setShowPopUp(true);
               }}
               userId={parseInt(user.backendId)}
-              currentName={user.displayName ?? undefined}
+              currentFirstName={user.displayName ?? undefined}
               setUser={setUser}
             />
           )}
