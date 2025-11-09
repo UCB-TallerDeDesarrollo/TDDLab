@@ -7,13 +7,7 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-import FileUploadDialog from "./components/FileUploadDialog";
-
-import { UploadTDDLogFile } from "../../modules/Assignments/application/UploadTDDLogFile.ts";
 import { GetFeatureFlagByName } from "../../modules/FeatureFlags/application/GetFeatureFlagByName";
-
-
-
 
 import {
   Button,
@@ -299,8 +293,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     }
   };
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
-
 
   const [_comment, setComment] = useState("");
 
@@ -311,19 +303,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const handleCloseCommentDialog = () => {
     setIsCommentDialogOpen(false);
   };
-
-  const handleOpenFileDialog = () => {
-    setIsFileDialogOpen(true);
-  };
-
-  const handleCloseFileDialog = () => {
-    setIsFileDialogOpen(false);
-  };
-
-  const handleFileUpload = async (file: File) => {
-    await UploadTDDLogFile(file, studentSubmission?.repository_link);
-  };
-
 
   const handleSendComment = async (comment: string) => {
     if (submission) {
@@ -695,16 +674,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 Finalizar tarea
               </Button>
             )}
-            {isStudent(role) && (
-              <Button
-                variant="contained"
-                disabled={isTaskInProgress}
-                onClick={handleOpenFileDialog} // Abrir el nuevo diálogo
-                style={{ textTransform: "none", fontSize: "15px", marginRight: "8px" }}
-              >
-                Subir sesión TDD extension
-              </Button>
-            )}
             {isStudent(role) && showIAButton && (
               <Button
                 variant="contained"
@@ -790,11 +759,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           </CardContent>
         </Card>
       )}
-      <FileUploadDialog
-        open={isFileDialogOpen}
-        onClose={handleCloseFileDialog}
-        onUpload={handleFileUpload}
-      />
     </div>
   );
 };
