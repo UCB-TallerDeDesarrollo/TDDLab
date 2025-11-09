@@ -122,6 +122,28 @@ export class ChatbotAssistantRepository {
         }
     }
 
+    private async getTddLog(URL: string): Promise<any[] | null> {
+        try {
+            const fullUrl = await this.getTddLogUrl(URL);
+            const response = await fetch(fullUrl);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.log(`tdd_log.json no encontrado en ${fullUrl}. Continuando sin él.`);
+                    return null;
+                }
+                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+            }
+
+            const tddLog = await response.json();
+            return tddLog;
+
+        } catch (error) {
+            console.warn("Error obteniendo tdd_log.json:", error);
+            return null; 
+        }
+    }
+
     private async getContextFromCommitHistory(URL: string): Promise<string> {
         try {
             const commits = await this.getCommitHistory(URL);
