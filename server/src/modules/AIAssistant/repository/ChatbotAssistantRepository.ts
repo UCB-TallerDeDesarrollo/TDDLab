@@ -144,7 +144,8 @@ export class ChatbotAssistantRepository {
         }
     }
 
-    private async getContextFromCommitHistory(URL: string): Promise<string> {
+    //Antes llamado: getContextFromCommitHistory
+    private async buildAnalysisContext(URL: string): Promise<string> {
         try {
             const commits = await this.getCommitHistory(URL);
 
@@ -154,11 +155,17 @@ export class ChatbotAssistantRepository {
             }
 
             const serializableCommits = this.serializeCommits(commits);
-            return JSON.stringify(serializableCommits, null, 2);
+            const tddLog = await this.getTddLog(URL);
+            const combinedContext = {
+                commitHistory: serializableCommits,
+                tddLog: tddLog 
+            };
+
+            return JSON.stringify(combinedContext, null, 2);
 
         } catch (error) {
-            console.warn("Error al obtener commits. Usando la URL como contexto:", error);
-            return URL;
+            console.warn("Error al construir el contexto de análisis. Usando la URL como contexto:", error);
+            return URL; 
         }
     }
 
@@ -196,7 +203,7 @@ export class ChatbotAssistantRepository {
             let context: string;
 
             if (instructionValue === "analiza" || instructionValue === "califica") {
-                context = await this.getContextFromCommitHistory(instruction.URL);
+                context = await this.buildAnalysisContext(instruction.URL);
             } else {
                 context = instruction.URL;
             }
