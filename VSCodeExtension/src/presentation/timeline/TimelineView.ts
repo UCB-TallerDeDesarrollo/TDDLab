@@ -35,18 +35,14 @@ export class TimelineView implements vscode.WebviewViewProvider {
   }
 
   async showTimeline(webview: vscode.Webview): Promise<void> {
-    try {
-      const timeline = await this.getTimeline.execute();
-      webview.html = this.generateHtml(timeline, webview);
-      this.updateTimelineCache(timeline);
-    } catch (err: any) {
-      // Manejo explícito del error para cumplir Sonar
-      console.error('[TimelineView] Error al mostrar timeline:', err);
-      webview.html = `<h2>TDDLab Timeline</h2>
-                      <p style="color:gray;">⚠️ Timeline no disponible</p>
-                      <p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline</p>`;
-    }
+  try {
+    const timeline = await this.getTimeline.execute();
+    webview.html = this.generateHtml(timeline, webview);
+    this.updateTimelineCache(timeline);
+  } catch (err: unknown) {
+    this.handleTimelineError(webview, err);
   }
+}
 
   public async getTimelineHtml(webview: vscode.Webview): Promise<string> {
     try {
@@ -242,4 +238,28 @@ export class TimelineView implements vscode.WebviewViewProvider {
       </html>
     `;
   }
+  private handleTimelineError(webview: vscode.Webview, error: unknown): void {
+  console.error('[TimelineView] Error al mostrar timeline:', error);
+  webview.html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { 
+          background: #1e1e1e; 
+          color: #eee; 
+          font-family: monospace;
+          padding: 10px;
+        }
+      </style>
+    </head>
+    <body>
+      <h2>TDDLab Timeline</h2>
+      <p style="color: gray;">⚠️ Timeline no disponible</p>
+      <p style="color: #666; font-size: 12px;">Ejecuta tests para ver el timeline</p>
+    </body>
+    </html>
+  `;
+}
 }
