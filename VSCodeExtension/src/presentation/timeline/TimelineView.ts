@@ -180,13 +180,49 @@ export class TimelineView implements vscode.WebviewViewProvider {
       <head>
         <meta charset="UTF-8">
         <style>
-          body { background:#1e1e1e; color:#eee; font-family:monospace; }
-          .timeline-dot { display:inline-block; }
+          body { 
+            background:#1e1e1e; 
+            color:#eee; 
+            font-family:monospace; 
+            margin: 0;
+            padding: 10px;
+          }
+          .timeline-dot { 
+            display:inline-block; 
+          }
+          .timeline-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+          }
+          .timeline-item:hover {
+            transform: scale(1.2);
+          }
+          .test-passed {
+            color: #00ff00;
+          }
+          .test-failed {
+            color: #ff0000;
+          }
           #timeline-content { 
             display:flex;
             flex-direction:row;
             flex-wrap:wrap;
             align-items:center;
+            gap: 2px;
+          }
+          h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #cccccc;
           }
         </style>
       </head>
