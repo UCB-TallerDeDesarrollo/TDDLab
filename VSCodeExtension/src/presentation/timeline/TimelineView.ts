@@ -127,7 +127,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
   }
 
   private generateTimelinePointHtml(point: Timeline): string {
-    const color = point.getColor();
     const passed = point.numPassedTests;
     const total = point.numTotalTests;
     const failed = total - passed;
@@ -141,8 +140,14 @@ export class TimelineView implements vscode.WebviewViewProvider {
     });
     const status = point.success ? '✅ Exitoso' : '❌ Fallido';
     const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
-    
-    return `<div class="timeline-dot" title="${tooltip}" style="margin:3px;background:${color};width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;
+
+    if (point.success) {
+      // Test pasa - mostrar check verde
+      return `<div class="timeline-item test-passed" title="${tooltip}">✓</div>`;
+    } else {
+      // Test falla - mostrar X roja
+      return `<div class="timeline-item test-failed" title="${tooltip}">✗</div>`;
+    }
   }
 
   private generateCommitPointHtml(
