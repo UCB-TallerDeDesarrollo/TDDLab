@@ -117,39 +117,51 @@ export class TimelineView implements vscode.WebviewViewProvider {
       .reverse()
       .map((point) => {
         if (point instanceof Timeline) {
-          const color = point.getColor();
-          const passed = point.numPassedTests;
-          const total = point.numTotalTests;
-          const failed = total - passed;
-          const timestamp = new Date(point.timestamp).toLocaleString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          });
-          const status = point.success ? '✅ Exitoso' : '❌ Fallido';
-          const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
-          
-          return `<div class="timeline-dot" title="${tooltip}" style="margin:3px;background:${color};width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;
+          return this.generateTimelinePointHtml(point);
         } else if (point instanceof CommitPoint) {
-          const commitName = point.commitName || 'Commit sin mensaje';
-          const tooltip = `Commit: ${commitName}`;
-          
-          let htmlPoint = `
-            <div class="timeline-dot" title="${tooltip}">
-              <img src="${gitLogoUri}" style="margin:3px;width:20px;height:20px;border-radius:50%;cursor:pointer;">
-            </div>
-          `;
-          if (point.commitName && regex.test(point.commitName)) {
-            htmlPoint += `<div class="timeline-dot" title="Refactor detectado" style="margin:3px;background:skyblue;width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;
-          }
-          return htmlPoint;
+          return this.generateCommitPointHtml(point, gitLogoUri, regex);
         }
         return '';
       })
       .join('');
+  }
+
+  private generateTimelinePointHtml(point: Timeline): string {
+    const color = point.getColor();
+    const passed = point.numPassedTests;
+    const total = point.numTotalTests;
+    const failed = total - passed;
+    const timestamp = new Date(point.timestamp).toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    const status = point.success ? '✅ Exitoso' : '❌ Fallido';
+    const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
+    
+    return `<div class="timeline-dot" title="${tooltip}" style="margin:3px;background:${color};width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;
+  }
+
+  private generateCommitPointHtml(
+    point: CommitPoint, 
+    gitLogoUri: vscode.Uri, 
+    regex: RegExp
+  ): string {
+    const commitName = point.commitName || 'Commit sin mensaje';
+    const tooltip = `Commit: ${commitName}`;
+    
+    let htmlPoint = `
+      <div class="timeline-dot" title="${tooltip}">
+        <img src="${gitLogoUri}" style="margin:3px;width:20px;height:20px;border-radius:50%;cursor:pointer;">
+      </div>
+    `;
+    if (point.commitName && regex.test(point.commitName)) {
+      htmlPoint += `<div class="timeline-dot" title="Refactor detectado" style="margin:3px;background:skyblue;width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;
+    }
+    return htmlPoint;
   }
 
   private generateHtml(
