@@ -98,6 +98,16 @@ export class UsersRepository implements UsersRepositoryInterface {
       throw error;
     }
   }
+  async getCurrentUser(): Promise<UserDataObject> {
+     const response = await fetch(`${VITE_API}/user/me`,{
+      method: "GET",
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Error fetching current user: ${response.status}");
+    }
+    return await response.json();
+  }
 }
 
 export default UsersRepository;
