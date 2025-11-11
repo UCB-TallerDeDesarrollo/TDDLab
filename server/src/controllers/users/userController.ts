@@ -236,29 +236,22 @@ async  logoutController (res: Response): Promise<void> {
   async updateUserById(req: Request, res: Response): Promise<Response> {
     try {
       const userId = Number(req.params.id);
-      const userFromToken = (req as any).user; // Usuario autenticado
+      const userFromToken = (req as any).user; 
       
-      console.log("📝 Actualizando nombre - Usuario autenticado:", userFromToken);
-      console.log("📝 ID objetivo:", userId);
-      
-      // Verificar que estudiantes solo puedan actualizar su propio perfil
+     
       if (userFromToken.role === 'student' && userFromToken.id !== userId) {
-        console.log("❌ Student intentando actualizar otro usuario");
         return res.status(403).json({ 
           message: "Los estudiantes solo pueden actualizar su propio perfil" 
         });
       }
 
       const { firstName, lastName } = req.body;
-      console.log("📝 Nuevo nombre:", firstName,lastName);
       
       const updatedUser = await this.userRepository.updateUserById(userId,  firstName, lastName );
 
-      console.log("✅ Nombre actualizado exitosamente");
       
       return res.status(200).json(updatedUser);
     } catch (error) {
-      console.error("❌ Error en updateUserById:", error);
       return res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -267,47 +260,37 @@ async  logoutController (res: Response): Promise<void> {
     try {
       const userId = Number(req.params.id);
       const { role } = req.body;
-      const userFromToken = (req as any).user; // usuario autenticado
+      const userFromToken = (req as any).user; 
 
-      console.log("🧩 Intentando cambiar rol del usuario:", userId, "a", role);
-      console.log("🧩 Usuario autenticado:", userFromToken);
-
-      // Validaciones básicas
       if (!userId || !role) {
         return res.status(400).json({ error: "Debes proporcionar un id y un rol válidos" });
       }
 
-      // No permitir que cambie su propio rol (opcional)
       if (userFromToken.id === userId) {
         return res.status(403).json({ error: "No puedes cambiar tu propio rol" });
       }
 
-      // Solo admin o teacher pueden cambiar roles (ya está controlado por middleware, pero agregamos refuerzo)
       if (!["admin", "teacher"].includes(userFromToken.role)) {
         return res.status(403).json({ error: "No tienes permisos para cambiar roles" });
       }
 
-      // Validar que el rol nuevo sea válido
       const validRoles = ["admin", "teacher", "student"];
       if (!validRoles.includes(role)) {
         return res.status(400).json({ error: "Rol no válido" });
       }
 
-      // Actualizar en base de datos
       const updatedUser = await this.userRepository.updateUserRole(userId, role);
 
       if (!updatedUser) {
         return res.status(404).json({ error: "Usuario no encontrado" });
       }
 
-      console.log("✅ Rol actualizado correctamente:", updatedUser);
       return res.status(200).json({
         message: `Rol del usuario con ID ${userId} actualizado a '${role}' exitosamente`,
         user: updatedUser,
       });
 
     } catch (error) {
-      console.error("❌ Error en updateUserRoleById:", error);
       return res.status(500).json({ error: "Error interno del servidor" });
     }
   }
