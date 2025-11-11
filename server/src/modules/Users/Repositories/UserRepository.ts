@@ -115,4 +115,16 @@ export class UserRepository {
     return null;
   }
 
+async updateUserRole(id: number, role: string): Promise<User | null> {
+  const query = `UPDATE userstable SET role = $2 WHERE id = $1 RETURNING *`;
+  const values = [id, role];
+  const rows = await this.executeQuery(query, values);
+
+  if (rows.length === 1) {
+    return this.mapRowToUser(rows[0]);
+  }
+
+  return null;
+}
+
 }

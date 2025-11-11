@@ -4,7 +4,7 @@ export class UpdateUserRole {
     constructor(private userRepository: UsersRepository) {}
 
     async updateUserRole(userId: number, newRole: string): Promise<void> {
-        const validRoles = ["studen", "teacher", "admin"];
+        const validRoles = ["student", "teacher", "admin"];
         if (!validRoles.includes(newRole)) {
             throw new Error("Rol invalido");
         }
@@ -14,7 +14,7 @@ export class UpdateUserRole {
         }
 
         try {
-            await this.userRepository.updateUserById(userId, { role: newRole });
+            await this.userRepository.updateUserRoleById(userId, { role: newRole });
             console.log(`Rol del usuario ${userId} actualizado a ${newRole}`);
         } catch (error) {
             console.error("Error al actualizar el rol del usuario:", error);
