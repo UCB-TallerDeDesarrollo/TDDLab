@@ -299,7 +299,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       </head>
       <body>
         <div id="timeline">
-          <h2>TDDLab Timeline</h2>
+          <h2>TDDLab Timeline 2</h2>
           <div id="timeline-content">${timelineContent}</div>
         </div>
 

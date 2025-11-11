@@ -1,0 +1,18 @@
+body {
+  background: #1e1e1e;
+  color: #eee;
+  font-family: monospace;
+  margin: 0;
+  padding: 10px;
+}
+
+.timeline-dot {
+  display: inline-block;
+}
+
+#timeline-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
