@@ -10,7 +10,7 @@ import { handleSignInWithGoogle } from "../../../modules/User-Authentication/app
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { useNavigate } from "react-router-dom";
-import { getAuth } from "firebase/auth";
+import { getAuth, type User } from "firebase/auth";
 import firebase from "../../../firebaseConfig";
 
 interface SuccessfulEnrollmentPopUpProps {
@@ -18,6 +18,15 @@ interface SuccessfulEnrollmentPopUpProps {
 }
 
 function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollmentPopUpProps) {
+  const isFirebaseUser = (data: unknown): data is User => {
+    return (
+      !!data &&
+      typeof data === "object" &&
+      "email" in (data as Record<string, unknown>) &&
+      "getIdToken" in (data as Record<string, unknown>)
+    );
+  };
+
   const [open, setOpen] = React.useState(true);
   const [groupName, setGroupName] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -65,11 +74,23 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
       let userData;
       if (authProvider === "google") {
         userData = await handleSignInWithGoogle();
+        if (
+          userData &&
+          (userData as { needsReauth?: string }).needsReauth === "github"
+        ) {
+          return;
+        }
       } else {
         userData = await handleSignInWithGitHub();
+        if (
+          userData &&
+          (userData as { needsReauth?: string }).needsReauth === "google"
+        ) {
+          return;
+        }
       }
       
-      if (userData?.email) {
+      if (isFirebaseUser(userData)) {
         const idToken = await userData.getIdToken();
         const loginPort = new CheckIfUserHasAccount();
         
@@ -91,10 +112,14 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
           }
           window.location.href = "/";
         } else {
-          alert("Disculpa, tu usuario no esta registrado");
+          alert(
+            "Tu cuenta de GitHub/Google todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
+          );
         }
       } else {
-        alert("No se pudo autenticar. Por favor intenta nuevamente.");
+        alert(
+          "No se pudo autenticar. Por favor intenta nuevamente."
+        );
       }
     }
   };
@@ -116,7 +141,7 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
   }, []);
 
 
-  const dialogContent: any = (
+  const dialogContent: React.ReactNode = (
     <DialogContentText>
       Ahora eres parte del grupo {groupName}.
       Ya puedes aprender y mejorar tus skills de programación con las tareas del curso.

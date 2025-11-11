@@ -5,15 +5,31 @@ import { useNavigate } from "react-router-dom";
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+import type { User } from "firebase/auth";
 
 function CheckRegisterGroupPopUp() {
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
 
+  const isFirebaseUser = (data: unknown): data is User => {
+    return (
+      !!data &&
+      typeof data === "object" &&
+      "email" in (data as Record<string, unknown>) &&
+      "getIdToken" in (data as Record<string, unknown>)
+    );
+  };
+
   const handleClose = async () => {
     setOpen(false);
     const userData = await handleSignInWithGitHub();
-    if (userData?.email) {
+    if (
+      userData &&
+      (userData as { needsReauth?: string }).needsReauth === "google"
+    ) {
+      return;
+    }
+    if (isFirebaseUser(userData)) {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
       const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
@@ -23,11 +39,13 @@ function CheckRegisterGroupPopUp() {
         }),
       );
     } else {
-      alert("Disculpa, tu usuario no esta registrado");
+        alert(
+          "Tu cuenta de GitHub/Google todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
+        );
     }
   };
 
-  const dialogContent: any = (
+  const dialogContent: React.ReactNode = (
     <DialogContentText>
         Ya estas registrado en este grupo.
     </DialogContentText>

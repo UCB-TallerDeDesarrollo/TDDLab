@@ -20,6 +20,10 @@ const Login = () => {
   }, [authData]);
   const handleGitHubLogin = async () => {
     const userData = await handleSignInWithGitHub();
+    if (userData && (userData as { needsReauth?: string }).needsReauth) {
+      // Se pidió iniciar sesión con Google para completar la vinculación.
+      return;
+    }
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       console.log("ID Token:", idToken);
@@ -32,12 +36,18 @@ const Login = () => {
       );
       localStorage.setItem("userProfilePic", userData.photoURL||"");
     } else {
-      alert("Disculpa, tu usuario no esta registrado");
+      alert(
+        "Tu cuenta de GitHub/Google todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
+      );
     }
   };
 
   const handleGoogleLogin = async () => {
     const userData = await handleSignInWithGoogle();
+    if (userData && (userData as { needsReauth?: string }).needsReauth) {
+      // Se pidió iniciar sesión con GitHub para completar la vinculación.
+      return;
+    }
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       console.log("Google ID Token:", idToken);
@@ -50,7 +60,9 @@ const Login = () => {
       );
       localStorage.setItem("userProfilePic", userData.photoURL||"");
     } else {
-      alert("Disculpa, tu usuario no esta registrado");
+      alert(
+        "Tu cuenta de GitHub/Google todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
+      );
     }
   };
 
