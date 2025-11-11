@@ -24,6 +24,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+import UpdateUserRole from "../../modules/Users/application/updateUserRole.ts";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -105,6 +106,23 @@ function UserPage() {
         console.error(error);
         alert("Hubo un error al eliminar al estudiante del grupo.");
       }
+    }
+  };
+
+  const handleRoleChange = async (userId: number, newRole: string) => {
+    try {
+      const userRepository = new UsersRepository();
+      const updateRoleInstance = new UpdateUserRole(userRepository);
+      await updateRoleInstance.updateUserRole(userId, newRole);
+
+      setUsers(users.map(user =>
+        user.id === userId ? {...user, role: newRole } : user
+      ));
+
+      alert("Rol actualizado con exito");
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al actulizar el rol");
     }
   };
 
@@ -232,7 +250,26 @@ function UserPage() {
                   <TableCell sx={{ lineHeight: "3" }}>
                     {groupMap[user.groupid] || "Unknown Group"}
                   </TableCell>
-                  <TableCell sx={{ lineHeight: "3" }}>{user.role}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>
+                    <Select
+                      value={user.role}
+                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                      size="small"
+                      sx={{
+                        minWidth: 120,
+                        "& . MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#E7E7E7",
+                        },
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#333",
+                        },
+                      }}
+                    >
+                      <MenuItem value="student">Student</MenuItem>
+                      <MenuItem value="teacher">Teacher</MenuItem>
+                      <MenuItem value="admin">Admin</MenuItem>
+                    </Select>
+                  </TableCell>
                   <TableCell
                     sx={{
                       lineHeight: "3",
