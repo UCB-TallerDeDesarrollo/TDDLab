@@ -44,6 +44,18 @@ function InvitationPage() {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
+      // Detectar el proveedor del usuario autenticado
+      if (authUser) {
+        const providerData = authUser.providerData;
+        if (providerData && providerData.length > 0) {
+          const providerId = providerData[0].providerId;
+          if (providerId === "google.com") {
+            setAuthProvider("google");
+          } else if (providerId === "github.com") {
+            setAuthProvider("github");
+          }
+        }
+      }
     });
     return () => {
       unsubscribe();
@@ -305,7 +317,7 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
+          {showPopUp && <SuccessfulEnrollmentPopUp authProvider={authProvider}></SuccessfulEnrollmentPopUp>}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
         </div>
       ) : (
@@ -318,24 +330,30 @@ function InvitationPage() {
           style={{ minHeight: "100vh" }}
         >
           <Grid item>
-            <div style={{ display: "flex", gap: "10px" }}>
-              <Button color="primary" onClick={handleSignUp} disabled={isLoading}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <GitHubIcon style={{ marginRight: "8px" }} />
-                  Registrarse con GitHub
-                </div>
-              </Button>
+            <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
               <Button 
-                color="primary" 
-                onClick={handleSignUpWithGoogle} 
+                onClick={handleSignUp} 
                 disabled={isLoading}
-                sx={{ backgroundColor: "#4285f4", "&:hover": { backgroundColor: "#3367d6" } }}
+                variant="outlined"
+                sx={{ 
+                  backgroundColor: "white",
+                  borderColor: "#1976d2",
+                  color: "#1976d2",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  padding: "10px 20px",
+                  textTransform: "uppercase",
+                  fontWeight: 500,
+                  "&:hover": { 
+                    backgroundColor: "#f5f5f5",
+                    borderColor: "#1565c0"
+                  },
+                  "&:disabled": {
+                    backgroundColor: "white",
+                    borderColor: "#ccc",
+                    color: "#ccc"
+                  }
+                }}
               >
                 <div
                   style={{
@@ -344,7 +362,36 @@ function InvitationPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <GoogleIcon style={{ marginRight: "8px" }} />
+                  <GitHubIcon style={{ marginRight: "8px", fontSize: "20px" }} />
+                  Registrarse con GitHub
+                </div>
+              </Button>
+              <Button 
+                onClick={handleSignUpWithGoogle} 
+                disabled={isLoading}
+                variant="contained"
+                sx={{ 
+                  backgroundColor: "#4285f4",
+                  color: "white",
+                  padding: "10px 20px",
+                  textTransform: "uppercase",
+                  fontWeight: 500,
+                  "&:hover": { 
+                    backgroundColor: "#3367d6"
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#ccc"
+                  }
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <GoogleIcon style={{ marginRight: "8px", fontSize: "20px" }} />
                   Registrarse con Google
                 </div>
               </Button>
