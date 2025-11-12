@@ -115,7 +115,17 @@ function UserPage() {
     }
   };
 
-  const handleRoleChange = async (userId: number, newRole: string) => {
+  const handleRoleChange = async (userId: number, newRole: string, oldRole: string, userName: string) => {
+    if (newRole === oldRole) {
+      return;
+    }
+
+    const confirmMessage = `¿Estás seguro que deseas cambiar el rol de ${userName} de ${oldRole} a ${newRole}?`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return; 
+    }
+
     try {
       const userRepository = new UsersRepository();
       const updateRoleInstance = new UpdateUserRole(userRepository);
@@ -125,10 +135,14 @@ function UserPage() {
         user.id === userId ? { ...user, role: newRole } : user
       ));
 
-      alert("Rol actualizado con exito");
+      alert("Rol actualizado con éxito");
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al actulizar el rol");
+      alert("Hubo un error al actualizar el rol");
+      
+      setUsers(users.map(user =>
+        user.id === userId ? { ...user, role: oldRole } : user
+      ));
     }
   };
 
@@ -284,8 +298,13 @@ function UserPage() {
                   </TableCell>
                   <TableCell sx={{ lineHeight: "3" }}>
                     <Select
-                      value={user.role || ""} 
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                      value={user.role || ""}
+                      onChange={(e) => handleRoleChange(
+                        user.id, 
+                        e.target.value, 
+                        user.role, 
+                        `${user.firstName} ${user.lastName}`
+                      )}
                       size="small"
                       sx={{
                         minWidth: 120,
