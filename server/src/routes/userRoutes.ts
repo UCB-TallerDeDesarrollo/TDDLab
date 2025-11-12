@@ -58,6 +58,12 @@ router.put(
   authorizeRoles("admin", "teacher"),
   (req, res) => userController.updateUser(req, res)
 );
+router.put(
+  "/users/changeNames/:id",
+  authenticateJWT,
+  authorizeRoles("admin", "teacher", "student"),
+  (req, res) => userController.updateUserById(req, res)
+)
 router.delete(
   "/users/delete/:userId",
   authenticateJWT,

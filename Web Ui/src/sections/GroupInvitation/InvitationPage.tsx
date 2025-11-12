@@ -17,6 +17,14 @@ import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 import AdminAlertModal from "./components/AdminAlertModal";
+import UpdateUserNamePopUp from "./components/UpdateUserNamePopUp";
+import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+
+interface ExtendedUser extends User {
+  backendId?: string;
+  name?: string;
+  idToken?: string;
+}
 
 function InvitationPage() {
   const location = useLocation();
@@ -31,8 +39,9 @@ function InvitationPage() {
 
   const groupid = getQueryParam("groupid");
   const userType = getQueryParam("type");
-
-  const [user, setUser] = useState<User | null>(null);
+  const [showNamePopup, setShowNamePopup] = useState(false);
+  const [isSubmitting] = useState(false);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [_popupMessage, setPopupMessage] = useState("");
@@ -103,13 +112,18 @@ function InvitationPage() {
   );
 
   const handleAcceptInvitation = async (type: string) => {
+    if (!user?.email) return;
     setIsLoading(true);
+
     try {
       if (user?.email) {
+        const [firstName, lastName] = (user.displayName?.split(" ") ?? [" ", " "]);
         const userObj: UserOnDb = {
           email: user.email,
           groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
           role: type,
+          firstName: firstName || '',
+          lastName: lastName || ''
         };
         try {
           await dbAuthPort.register(userObj);
@@ -118,9 +132,42 @@ function InvitationPage() {
           setOpenPopup(true);
           return;
         }
-
-        setShowPopUp(true);
       }
+
+      const idToken = await user.getIdToken();
+      console.log("Firebase ID Token obtenido:", idToken);
+
+      let registeredUser;
+      try {
+        registeredUser = await dbAuthPort.authenticateWithFirebase(idToken);
+      } catch (authError) {
+        registeredUser = await dbAuthPort.getAccountInfo(user.email);
+      }
+
+      if (!registeredUser?.id) {
+        console.error("No se pudo obtener el usuario registrado del backend");
+        return;
+      }
+
+      try {
+        setCookieAndGlobalStateForValidUser(user, registeredUser, () => {
+        });
+      } catch (globalStateError) {
+        console.warn("Error estableciendo estado global:", globalStateError);
+      }
+
+      // 5. Actualizar estado local del componente
+      setUser({
+        ...user,
+        backendId: registeredUser.id.toString(),
+        displayName: registeredUser.firstName || user.displayName,
+      });
+
+      // 6. Mostrar modal para completar nombre
+      setShowNamePopup(true);
+
+    } catch (error) {
+      console.error("Error en handleAcceptInvitation:", error);
     } finally {
       setIsLoading(false);
     }
@@ -267,9 +314,9 @@ function InvitationPage() {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
-                      disabled={isLoading}
+                      disabled={isLoading || isSubmitting}
                     >
-                      Aceptar invitación al curso
+                      {isSubmitting ? "Procesando..." : "Aceptar invitación al curso" }
                     </Button>
                   )}
                   {userType === "teacher" && (
@@ -279,7 +326,7 @@ function InvitationPage() {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
-                      disabled={isLoading}
+                      disabled={isLoading || isSubmitting}
                     >
                       Aceptar invitación al curso como Docente
                     </Button>
@@ -295,8 +342,20 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
-          {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
+          {showNamePopup && user?.backendId && (
+            <UpdateUserNamePopUp
+              open={showNamePopup}
+              onClose={() => {
+                setShowNamePopup(false);
+                setShowPopUp(true);
+              }}
+              userId={parseInt(user.backendId)}
+              currentFirstName={user.displayName ?? undefined}
+              setUser={setUser}
+            />
+          )}
+          {showPopUp && <SuccessfulEnrollmentPopUp />}
+          {openPopup && <CheckRegisterGroupPopUp />}
         </div>
       ) : (
         <Grid
