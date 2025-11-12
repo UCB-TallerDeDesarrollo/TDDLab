@@ -115,7 +115,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     this.sendToTerminal(`\r\n$ ${trimmedCommand}\r\n`);
 
     try {
-      await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
+      await this.terminalPort.createAndExecuteCommand('TDDLab Terminal 22', trimmedCommand);
     } catch (error: any) {
       this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n$ `);
     }
@@ -299,7 +299,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       </head>
       <body>
         <div id="timeline">
-          <h2>TDDLab Timeline 2</h2>
+          <h2>TDDLab Timeline</h2>
           <div id="timeline-content">${timelineContent}</div>
         </div>
 

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { GetTimeline } from '../../application/timeline/GetTimeline';
 import { GetLastPoint } from '../../application/timeline/GetLastPoint';
 import { Timeline } from '../../domain/timeline/Timeline';
@@ -57,7 +57,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
     } catch (err: any) {
       console.error('[TimelineView] Error al mostrar timeline:', err);
       webview.html = `
-        <h2>TDDLab Timeline</h2>
+        <h2>TDDLab Timeline 2</h2>
         <p style="color:gray;">⚠️ Timeline no disponible</p>
         <p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline</p>
       `;
@@ -185,7 +185,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
     let htmlTemplate = fs.readFileSync(htmlPath, 'utf8');
     const timelineHtml = this.generateHtmlFragment(timeline, webview);
 
-    // Reemplaza el marcador del CSS y del contenido del timeline
     htmlTemplate = htmlTemplate
       .replace('{{CSS_PATH}}', cssUri.toString())
       .replace('{{TIMELINE_CONTENT}}', timelineHtml);
