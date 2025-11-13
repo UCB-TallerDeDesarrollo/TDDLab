@@ -17,6 +17,14 @@ import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 import AdminAlertModal from "./components/AdminAlertModal";
+import UpdateUserNamePopUp from "./components/UpdateUserNamePopUp";
+import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+
+interface ExtendedUser extends User {
+  backendId?: string;
+  name?: string;
+  idToken?: string;
+}
 
 function InvitationPage() {
   const location = useLocation();
@@ -31,8 +39,9 @@ function InvitationPage() {
 
   const groupid = getQueryParam("groupid");
   const userType = getQueryParam("type");
-
-  const [user, setUser] = useState<User | null>(null);
+  const [showNamePopup, setShowNamePopup] = useState(false);
+  const [isSubmitting] = useState(false);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [_popupMessage, setPopupMessage] = useState("");
@@ -95,7 +104,7 @@ function InvitationPage() {
         justifyContent: "center",
         alignItems: "center",
         zIndex: 99999,
-        backdropFilter: "blur(5px)", //blur
+        backdropFilter: "blur(5px)",
       }}
     >
       <CircularProgress size={60} />
@@ -103,13 +112,18 @@ function InvitationPage() {
   );
 
   const handleAcceptInvitation = async (type: string) => {
+    if (!user?.email) return;
     setIsLoading(true);
+
     try {
       if (user?.email) {
+        const [firstName, lastName] = (user.displayName?.split(" ") ?? [" ", " "]);
         const userObj: UserOnDb = {
           email: user.email,
           groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
           role: type,
+          firstName: firstName || '',
+          lastName: lastName || ''
         };
         try {
           await dbAuthPort.register(userObj);
@@ -118,9 +132,40 @@ function InvitationPage() {
           setOpenPopup(true);
           return;
         }
-
-        setShowPopUp(true);
       }
+
+      const idToken = await user.getIdToken();
+      console.log("Firebase ID Token obtenido:", idToken);
+
+      let registeredUser;
+      try {
+        registeredUser = await dbAuthPort.authenticateWithFirebase(idToken);
+      } catch (authError) {
+        registeredUser = await dbAuthPort.getAccountInfo(user.email);
+      }
+
+      if (!registeredUser?.id) {
+        console.error("No se pudo obtener el usuario registrado del backend");
+        return;
+      }
+
+      try {
+        setCookieAndGlobalStateForValidUser(user, registeredUser, () => {
+        });
+      } catch (globalStateError) {
+        console.warn("Error estableciendo estado global:", globalStateError);
+      }
+
+      setUser({
+        ...user,
+        backendId: registeredUser.id.toString(),
+        displayName: registeredUser.firstName || user.displayName,
+      });
+
+      setShowNamePopup(true);
+
+    } catch (error) {
+      console.error("Error en handleAcceptInvitation:", error);
     } finally {
       setIsLoading(false);
     }
@@ -157,11 +202,11 @@ function InvitationPage() {
         <div>
           <Grid
             container
-            spacing={2} // Agrega la separación deseada entre los Card
-            justifyContent="center" // Centra los elementos horizontalmente
-            alignItems="center" // Centra los elementos verticalmente
-            style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
-            direction="column" // Alinea los elementos en una sola columna
+            spacing={2} 
+            justifyContent="center" 
+            alignItems="center"
+            style={{ minHeight: "100vh" }}
+            direction="column" 
           >
             <Grid
               item
@@ -202,7 +247,7 @@ function InvitationPage() {
                             alt="Imagen"
                             height="100%"
                             width="100%"
-                            image={user.photoURL ?? "URL_POR_DEFECTO"} // Reemplaza con la ruta de tu imagen.
+                            image={user.photoURL ?? "URL_POR_DEFECTO"}
                           />
                         </div>
                       </div>
@@ -245,7 +290,7 @@ function InvitationPage() {
                 <CardMedia
                   component="img"
                   alt="Imagen de portada"
-                  height="50%" // La mitad superior del card
+                  height="50%" 
                   image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
                   sx={{
                     transition: "transform 0.1s ease-out",
@@ -267,9 +312,9 @@ function InvitationPage() {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
-                      disabled={isLoading}
+                      disabled={isLoading || isSubmitting}
                     >
-                      Aceptar invitación al curso
+                      {isSubmitting ? "Procesando..." : "Aceptar invitación al curso" }
                     </Button>
                   )}
                   {userType === "teacher" && (
@@ -279,7 +324,7 @@ function InvitationPage() {
                       color="primary"
                       sx={{ marginTop: 2 }}
                       fullWidth
-                      disabled={isLoading}
+                      disabled={isLoading || isSubmitting}
                     >
                       Aceptar invitación al curso como Docente
                     </Button>
@@ -295,8 +340,20 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
-          {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
+          {showNamePopup && user?.backendId && (
+            <UpdateUserNamePopUp
+              open={showNamePopup}
+              onClose={() => {
+                setShowNamePopup(false);
+                setShowPopUp(true);
+              }}
+              userId={parseInt(user.backendId)}
+              currentFirstName={user.displayName ?? undefined}
+              setUser={setUser}
+            />
+          )}
+          {showPopUp && <SuccessfulEnrollmentPopUp />}
+          {openPopup && <CheckRegisterGroupPopUp />}
         </div>
       ) : (
         <Grid

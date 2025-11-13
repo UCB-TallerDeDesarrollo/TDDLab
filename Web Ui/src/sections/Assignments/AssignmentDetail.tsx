@@ -46,6 +46,7 @@ import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Ap
 import {
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
+import { UserDataObject } from "../../modules/Users/domain/UsersInterface.ts";
 
 
 interface AssignmentDetailProps {
@@ -348,20 +349,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     }
   };
 
-  const getStudentEmailById = async (studentId: number): Promise<string> => {
-    try {
+  const getStudentById = async (studentId: number): Promise<UserDataObject> => {
       const student = await usersRepository.getUserById(studentId);
-      return student.email;
-    } catch (error) {
-      console.error("Error fetching student email:", error);
-      return "";
-    }
+      console.log(student);
+      return student;
   };
+
   const renderStudentRows = async () => {
 
     const rows = await Promise.all(
       submissions.map(async (submission) => {
-        const studentEmail = await getStudentEmailById(submission.userid);
+        const student = await getStudentById(submission.userid);
         const formattedStartDate = formatDate(submission.start_date.toString());
         const formattedEndDate = submission.end_date
           ? formatDate(submission.end_date.toString())
@@ -369,7 +367,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
         return (
           <TableRow key={generateUniqueId()}>
-            <TableCell>{studentEmail}</TableCell>
+            <TableCell>{student.firstName}</TableCell>
+            <TableCell>{student.lastName}</TableCell>
+            <TableCell>{student.email}</TableCell>
             <TableCell>{getDisplayStatus(submission.status)}</TableCell>
             <TableCell>
               <a
@@ -740,6 +740,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell>Nombre</TableCell>
+                    <TableCell>Apellido</TableCell>
                     <TableCell>Email</TableCell>
                     <TableCell>Estado</TableCell>
                     <TableCell>Enlace</TableCell>

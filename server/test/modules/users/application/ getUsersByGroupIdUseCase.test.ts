@@ -43,7 +43,9 @@ describe("UserController - getUserController", () => {
     id: 1, 
     email: "si@existe.com", 
     groupid: [1], 
-    role: "admin" 
+    role: "admin",
+    firstName: "Test",
+    lastName: "User"
   };
 
   jest.spyOn(getUserByEmailModule, "getUserByemail").mockResolvedValue(fakeUser);

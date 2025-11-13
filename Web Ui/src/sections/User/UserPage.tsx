@@ -24,6 +24,8 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+import UpdateUserRole from "../../modules/Users/application/updateUserRole.ts";
+import GetCurrentUserRole from "../../modules/Users/application/getCurrentUserRole";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -52,16 +54,20 @@ function UserPage() {
   const [selectedGroup, setSelectedGroup] = useState<number | "all">("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string>("");
 
+  const userRepository = useMemo(() => new UsersRepository(), []);
   const getUsers = useMemo(() => new GetUsers(new UsersRepository()), []);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
+  const getCurrentUserRole = useMemo(() => new GetCurrentUserRole(userRepository), [userRepository]);
 
   useEffect(() => {
     const fetchUsersAndGroups = async () => {
       try {
-        const [userData, groupData] = await Promise.all([
+        const [userData, groupData, role] = await Promise.all([
           getUsers.getUsers(),
           getGroups.getGroups(),
+          getCurrentUserRole.execute(),
         ]);
 
         if (!Array.isArray(userData)) {
@@ -70,6 +76,7 @@ function UserPage() {
 
         setUsers(userData);
         setGroups(groupData);
+        setCurrentUserRole(role);
       } catch (error) {
         console.error("Error fetching users or groups:", error);
         setError(error);
@@ -79,7 +86,7 @@ function UserPage() {
     };
 
     fetchUsersAndGroups();
-  }, [getUsers, getGroups]);
+  }, [getUsers, getGroups, getCurrentUserRole]);
 
   type GroupMap = { [key: number]: string };
 
@@ -108,22 +115,79 @@ function UserPage() {
     }
   };
 
+  const handleRoleChange = async (userId: number, newRole: string, oldRole: string, userName: string) => {
+    if (newRole === oldRole) {
+      return;
+    }
+
+    const confirmMessage = `¿Estás seguro que deseas cambiar el rol de ${userName} de ${oldRole} a ${newRole}?`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return; 
+    }
+
+    try {
+      const userRepository = new UsersRepository();
+      const updateRoleInstance = new UpdateUserRole(userRepository);
+      await updateRoleInstance.updateUserRole(userId, newRole);
+
+      setUsers(users.map(user =>
+        user.id === userId ? { ...user, role: newRole } : user
+      ));
+
+      alert("Rol actualizado con éxito");
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al actualizar el rol");
+      
+      setUsers(users.map(user =>
+        user.id === userId ? { ...user, role: oldRole } : user
+      ));
+    }
+  };
+
+  const getRoleOptions = (userRole: string) => {
+    if (currentUserRole === "admin") {
+      return [
+        <MenuItem key="student" value="student">Student</MenuItem>,
+        <MenuItem key="teacher" value="teacher">Teacher</MenuItem>,
+        <MenuItem key="admin" value="admin">Admin</MenuItem>
+      ];
+    }
+
+    if (currentUserRole === "teacher") {
+      const options = [];
+      if (userRole === "admin") {
+        options.push(<MenuItem key="admin" value="admin">Admin</MenuItem>);
+      }
+      options.push(
+        <MenuItem key="student" value="student">Student</MenuItem>,
+        <MenuItem key="teacher" value="teacher">Teacher</MenuItem>
+      );
+      return options;
+    }
+
+    return [<MenuItem key={userRole} value={userRole}>{userRole}</MenuItem>];
+  };
+
   const filteredUsers = selectedGroup === "all"
     ? users
     : users.filter((user) => user.groupid === selectedGroup);
 
   if (loading) {
-    return (<div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <CircularProgress />
-    </div>)
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
   }
 
   if (error) {
@@ -155,6 +219,28 @@ function UserPage() {
           <StyledTable>
             <TableHead>
               <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Nombre
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Apellido
+                </TableCell>
                 <TableCell
                   sx={{
                     fontWeight: 560,
@@ -204,11 +290,36 @@ function UserPage() {
             <TableBody>
               {filteredUsers.map((user) => (
                 <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.firstName}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>{user.lastName}</TableCell>
                   <TableCell sx={{ lineHeight: "3" }}>{user.email}</TableCell>
                   <TableCell sx={{ lineHeight: "3" }}>
                     {groupMap[user.groupid] || "Unknown Group"}
                   </TableCell>
-                  <TableCell sx={{ lineHeight: "3" }}>{user.role}</TableCell>
+                  <TableCell sx={{ lineHeight: "3" }}>
+                    <Select
+                      value={user.role || ""}
+                      onChange={(e) => handleRoleChange(
+                        user.id, 
+                        e.target.value, 
+                        user.role, 
+                        `${user.firstName} ${user.lastName}`
+                      )}
+                      size="small"
+                      sx={{
+                        minWidth: 120,
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#E7E7E7",
+                        },
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#333",
+                        },
+                      }}
+                      disabled={currentUserRole === "student"}
+                    >
+                      {getRoleOptions(user.role)}
+                    </Select>
+                  </TableCell>
                   <TableCell
                     sx={{
                       lineHeight: "3",
@@ -227,11 +338,10 @@ function UserPage() {
                           transition: "color 0.3s ease",
                           "&:hover": {
                             color: "#a10e0e",
+                            cursor: "pointer"
                           },
                         }}
-                      >
-                        <LogoutIcon />
-                      </RemoveCircleIcon>
+                      />
                     </Tooltip>
                   </TableCell>
                 </TableRow>
