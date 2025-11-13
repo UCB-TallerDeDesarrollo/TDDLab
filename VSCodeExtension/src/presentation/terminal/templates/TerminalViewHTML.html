@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Terminal TDD</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
+  <link rel="stylesheet" type="text/css" href="{{cssUri}}">
+  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+</head>
+<body>
+  <div id="timeline">
+    <h2>TDDLab Timeline</h2>
+    <div id="timeline-content">{{timelineContent}}</div>
+  </div>
+
+  <div class="terminal-wrapper">
+    <div id="terminal"></div>
+  </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+    
+    const term = new Terminal({ 
+      cursorBlink: true,
+      cols: 80,
+      rows: 30,
+      theme: {
+        background: '#1e1e1e',
+        foreground: '#ffffff'
+      },
+      allowTransparency: false,
+      convertEol: true
+    });
+    
+    const terminalElement = document.getElementById('terminal');
+    term.open(terminalElement);
+    
+    setTimeout(() => {
+      const xtermRows = terminalElement.querySelector('.xterm-rows');
+      if (xtermRows) {
+        xtermRows.style.textAlign = 'left';
+        xtermRows.style.paddingLeft = '0';
+        xtermRows.style.marginLeft = '0';
+        xtermRows.style.width = '100%';
+      }
+      
+      const xtermScreen = terminalElement.querySelector('.xterm-screen');
+      if (xtermScreen) {
+        xtermScreen.style.textAlign = 'left';
+        xtermScreen.style.paddingLeft = '0';
+        xtermScreen.style.marginLeft = '0';
+      }
+    }, 100);
+    
+    const fitAddon = () => {
+      const container = document.querySelector('.terminal-wrapper');
+      if (container) {
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+        const cols = Math.floor((width - 20) / 9); // Ajuste para el padding
+        const rows = Math.floor(height / 17); // Ajuste para la altura de la fila
+        term.resize(cols, rows);
+      }
+    };
+    
+    window.addEventListener('resize', fitAddon);
+    setTimeout(fitAddon, 200);
+    
+    term.focus();
+    
+    let command = '';
+    let isExecuting = false;
+
+    term.onData(data => {
+      const code = data.charCodeAt(0);
+      if (code === 13) {
+        if (command.trim() && !isExecuting) {
+          isExecuting = true;
+          vscode.postMessage({
+            command: 'executeCommand',
+            text: command
+          });
+          command = '';
+        } else if (!isExecuting) {
+          term.write('\r\n$ ');
+        }
+      } else if (code === 127) {
+        if (command.length > 0 && !isExecuting) {
+          command = command.slice(0, -1);
+          term.write('\b \b');
+        }
+      } else if (code === 3) {
+        // Ctrl+C - siempre funciona
+        term.write('^C');
+        vscode.postMessage({
+          command: 'killCommand'
+        });
+        isExecuting = false;
+        term.write('\r\n$ ');
+      } else if (code >= 32 && code <= 126 && !isExecuting) {
+        command += data;
+        term.write(data);
+      }
+    });
+    
+    window.addEventListener('message', event => {
+      const message = event.data;
+      if (message.command === 'updateTimeline') {
+        document.getElementById('timeline-content').innerHTML = message.html;
+      }
+      if (message.command === 'writeToTerminal') {
+        const text = message.text || '';
+        term.write(text);
+        if (message.text === '$ ' || message.text.endsWith('\r\n$ ')) {
+          isExecuting = false;
+        }
+      }
+      if (message.command === 'executeCommand') {
+        term.write('\r\n$ ' + message.text + '\r\n');
+        isExecuting = true;
+      }
+      if (message.command === 'clearTerminal') {
+        term.clear();
+        term.write('$ ');
+        isExecuting = false;
+        command = '';
+      }
+    });
+  </script>
+</body>
+</html>
