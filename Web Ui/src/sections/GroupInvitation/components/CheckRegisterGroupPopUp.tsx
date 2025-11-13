@@ -23,13 +23,10 @@ function CheckRegisterGroupPopUp() {
   const handleClose = async () => {
     setOpen(false);
     const userData = await handleSignInWithGitHub();
-    if (
-      userData &&
-      (userData as { needsReauth?: string }).needsReauth === "google"
-    ) {
+    if (!userData || !isFirebaseUser(userData)) {
       return;
     }
-    if (isFirebaseUser(userData)) {
+    try {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
       const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
@@ -38,10 +35,10 @@ function CheckRegisterGroupPopUp() {
           pathname: "/",
         }),
       );
-    } else {
-        alert(
-          "Tu cuenta de GitHub/Google todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
-        );
+    } catch (error) {
+      alert(
+        "Tu cuenta de GitHub todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
+      );
     }
   };
 

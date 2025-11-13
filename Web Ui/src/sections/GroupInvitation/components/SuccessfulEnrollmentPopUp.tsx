@@ -74,52 +74,45 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
       let userData;
       if (authProvider === "google") {
         userData = await handleSignInWithGoogle();
-        if (
-          userData &&
-          (userData as { needsReauth?: string }).needsReauth === "github"
-        ) {
-          return;
-        }
       } else {
         userData = await handleSignInWithGitHub();
-        if (
-          userData &&
-          (userData as { needsReauth?: string }).needsReauth === "google"
-        ) {
-          return;
-        }
       }
       
       if (isFirebaseUser(userData)) {
-        const idToken = await userData.getIdToken();
-        const loginPort = new CheckIfUserHasAccount();
-        
-        let userCourse;
-        if (authProvider === "google") {
-          userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
-        } else {
-          userCourse = await loginPort.userHasAnAccountWithToken(idToken);
-        }
-        
-        if (userCourse) {
-          setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
-            navigate({
-              pathname: "/",
-            }),
-          );
-          if (userData.photoURL) {
-            localStorage.setItem("userProfilePic", userData.photoURL);
+        try {
+          const idToken = await userData.getIdToken();
+          const loginPort = new CheckIfUserHasAccount();
+          
+          let userCourse;
+          if (authProvider === "google") {
+            userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
+          } else {
+            userCourse = await loginPort.userHasAnAccountWithToken(idToken);
           }
-          window.location.href = "/";
-        } else {
+          
+          if (userCourse) {
+            setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
+              navigate({
+                pathname: "/",
+              }),
+            );
+            if (userData.photoURL) {
+              localStorage.setItem("userProfilePic", userData.photoURL);
+            }
+            window.location.href = "/";
+          } else {
+            alert(
+              "Tu cuenta todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
+            );
+          }
+        } catch (error) {
           alert(
-            "Tu cuenta de GitHub/Google todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
+            "Tu cuenta todavía no está registrada en TDDLab. Completa tu invitación o solicita acceso a un administrador."
           );
         }
       } else {
-        alert(
-          "No se pudo autenticar. Por favor intenta nuevamente."
-        );
+        // userData es null, el usuario canceló o hubo un error
+        // Los mensajes ya se mostraron en las funciones de signIn
       }
     }
   };
