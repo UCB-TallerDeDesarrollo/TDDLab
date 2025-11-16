@@ -114,7 +114,7 @@ function UserPage() {
     }
   };
 
-  // ✅ Nuevo filtrado con búsqueda por email
+  
   const filteredUsers = users
     .filter((user) =>
       selectedGroup === "all" ? true : user.groupid === selectedGroup
@@ -147,7 +147,7 @@ function UserPage() {
     <div>
       <CenteredContainer>
         <FilterContainer>
-          {/* 🔍 Campo de búsqueda */}
+          {/* Campo de búsqueda */}
           <TextField
             label="Buscar por email"
             variant="outlined"
