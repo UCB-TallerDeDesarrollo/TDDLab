@@ -91,10 +91,18 @@ function EditAssignmentDialog({
         // Manejar el caso en el que la tarea actual no existe
         console.error("La tarea actual no se encontró.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al guardar los cambios:", error);
+      
+      if (error.message.includes("Ya existe una tarea con el mismo nombre")) {
+        setErrorMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
+      } else if (error.message.includes("Limite de caracteres excedido") || error.message.includes("Límite de caracteres excedido")) {
+        setErrorMessage("Error: Límite de caracteres excedido. El título no puede tener más de 50 caracteres.");
+      } else {
+        setErrorMessage("Error al actualizar la tarea: " + error.message);
+      }
+      
       setErrorOpen(true);
-      setErrorMessage("Por favor verifica la logitud del titulo");
     }
   };
   // Esta función se encarga de obtener los detalles de la tarea actual

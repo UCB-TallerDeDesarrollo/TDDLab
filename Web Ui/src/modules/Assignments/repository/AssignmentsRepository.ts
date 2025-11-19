@@ -82,7 +82,18 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
     assignmentId: number,
     assignmentData: AssignmentDataObject
   ): Promise<void> {
-    await axios.put(`${API_URL}/${assignmentId}`, assignmentData,{withCredentials: true});
+    try{
+    const response=await axios.put(`${API_URL}/${assignmentId}`, assignmentData,{withCredentials: true});
+  return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Capturar el mensaje específico del backend
+      const errorMessage = error.response.data?.error || error.response.data?.message;
+      throw new Error(errorMessage);
+    } else {
+      throw new Error("Error de red o desconocido al actualizar la tarea");
+    }
+  }
   }
 
   async deleteAssignment(assignmentId: number): Promise<void> {
