@@ -179,67 +179,7 @@ jobs:
             echo "No changes to commit in TypeScript files."
             exit 0
           fi
-  # MIGRACIONES #
-  run-db-migrations-staging:
-    runs-on: ubuntu-latest
-    environment:
-      name: 'staging'
-    needs: prettier  # Se ejecuta después de que pasen los tests y el formateo
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        working-directory: server
-        run: npm ci
-
-      - name: Run DB Migrations
-        working-directory: server
-        env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
-          PGPORT: ${{ secrets.PGPORT }}
-        run: |
-          echo "Corriendo migraciones de db-migrate en STAGING..."
-          npx db-migrate up
-
-  run-db-migrations-production:
-    runs-on: ubuntu-latest
-    environment:
-      name: 'production'
-    needs: run-db-migrations-staging  # Se ejecuta después de realizar las migraciones en staging
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        working-directory: server
-        run: npm ci
-
-      - name: Run DB Migrations
-        working-directory: server
-        env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
-          PGPORT: ${{ secrets.PGPORT }}
-        run: |
-          echo "Corriendo migraciones de db-migrate en PRODUCCION..."
-          npx db-migrate up
-  # FIN MIGRACIONES #
+  
   deploy_firebase_staging:
     runs-on: ubuntu-latest
     environment:
