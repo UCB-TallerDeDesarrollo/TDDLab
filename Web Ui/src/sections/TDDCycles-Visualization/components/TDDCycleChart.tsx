@@ -8,7 +8,6 @@ interface TDDCycleChartProps {
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
   console.log(data);
   const processedData = useMemo(() => {
-
     return data?.commits || [];
   }, [data]);
   

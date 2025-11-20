@@ -228,6 +228,12 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
         </div>
       )}
 
+      {!loading && commitsInfo?.length !== 0 && (!tddLogsInfo || tddLogsInfo.length === 0) && (
+        <div className="error-message" data-testid="errorMessage">
+          Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
+        </div>
+      )}
+
       {!loading && commitsInfo?.length !== 0 && (
         <React.Fragment>
           {!isStudent(role) && (

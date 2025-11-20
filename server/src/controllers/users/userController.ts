@@ -38,14 +38,19 @@ class UserController {
       await registerUser({ email, groupid, role });
       res.status(201).json({ message: "Usuario registrado con éxito." });
     } catch (error: any) {
-      if (error.message === "UserAlreadyExistsInThatGroup") {
-        res
-          .status(409)
-          .json({ error: "The user is already registered in that group." });
-      } else {
-        res.status(500).json({ error: "Server error while registering user" });
-      }
+    if (error.message === "UserAlreadyExistsInThatGroup") {
+      res
+        .status(409)
+        .json({ error: "The user is already registered in that group." });
+    } else if (error.message === "No tiene permisos para registrar administradores") {
+      res
+        .status(403)
+        .json({ error: "No tiene permisos para registrar administradores" });
+    } else {
+      res.status(500).json({ error: "Server error while registering user" });
     }
+}
+
   }
   async getUserController(req: Request, res: Response): Promise<void> {
     const { email } = req.body;

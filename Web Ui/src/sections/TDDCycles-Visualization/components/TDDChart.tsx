@@ -101,6 +101,11 @@ function TDDCharts({ commits, tddLogs, processedTddLogs, setMetric, port, role, 
             label="Métricas"
           >
             {options.filter(option => {
+              if (!tddLogs || tddLogs.length === 0) {
+                if (option.value === 'Dashboard' || option.value === 'Ciclo de ejecución de pruebas') {
+                  return false;
+                }
+              }
               if (typegraphs === 'aditionalgraph') {
                 return ['Complejidad', 'Pie'].includes(option.value);
               } else {
