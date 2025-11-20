@@ -133,7 +133,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
           const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
           
           // Determinar el símbolo basado en si el test pasó o falló
-          const symbol = point.success ? '✓' : '✗';
+          const symbol = '✓';
           const symbolColor = '#ffffff';
           
           return `
