@@ -1,11 +1,14 @@
+import { VITE_API } from "../../../../config";
 import { UserOnDb } from "../../User-Authentication/domain/userOnDb.interface";
+
+const API_URL = VITE_API + "/user/users";
 
 export async function updateUserById(
   userId: number,
   userData: Partial<UserOnDb>,
 ): Promise<UserOnDb> {
   try {
-    const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+    const response = await fetch(`${API_URL}/${userId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

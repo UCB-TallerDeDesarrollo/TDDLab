@@ -238,7 +238,6 @@ async  logoutController (res: Response): Promise<void> {
       const userId = Number(req.params.id);
       const userFromToken = (req as any).user; 
       
-     
       if (userFromToken.role === 'student' && userFromToken.id !== userId) {
         return res.status(403).json({ 
           message: "Los estudiantes solo pueden actualizar su propio perfil" 
@@ -248,7 +247,6 @@ async  logoutController (res: Response): Promise<void> {
       const { firstName, lastName } = req.body;
       
       const updatedUser = await this.userRepository.updateUserById(userId,  firstName, lastName );
-
       
       return res.status(200).json(updatedUser);
     } catch (error) {

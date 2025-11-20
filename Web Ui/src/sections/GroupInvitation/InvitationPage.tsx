@@ -135,7 +135,6 @@ function InvitationPage() {
       }
 
       const idToken = await user.getIdToken();
-      console.log("Firebase ID Token obtenido:", idToken);
 
       let registeredUser;
       try {
@@ -161,7 +160,10 @@ function InvitationPage() {
         backendId: registeredUser.id.toString(),
         displayName: registeredUser.firstName || user.displayName,
       });
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/Us17-Complete-Register
       setShowNamePopup(true);
 
     } catch (error) {
@@ -204,8 +206,13 @@ function InvitationPage() {
             container
             spacing={2} 
             justifyContent="center" 
+<<<<<<< HEAD
             alignItems="center"
             style={{ minHeight: "100vh" }}
+=======
+            alignItems="center" 
+            style={{ minHeight: "100vh" }} 
+>>>>>>> feature/Us17-Complete-Register
             direction="column" 
           >
             <Grid
@@ -247,7 +254,11 @@ function InvitationPage() {
                             alt="Imagen"
                             height="100%"
                             width="100%"
+<<<<<<< HEAD
                             image={user.photoURL ?? "URL_POR_DEFECTO"}
+=======
+                            image={user.photoURL ?? "URL_POR_DEFECTO"} 
+>>>>>>> feature/Us17-Complete-Register
                           />
                         </div>
                       </div>
