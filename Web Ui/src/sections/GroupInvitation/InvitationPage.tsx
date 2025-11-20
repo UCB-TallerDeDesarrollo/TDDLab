@@ -135,7 +135,6 @@ function InvitationPage() {
       }
 
       const idToken = await user.getIdToken();
-      console.log("Firebase ID Token obtenido:", idToken);
 
       let registeredUser;
       try {
@@ -156,14 +155,11 @@ function InvitationPage() {
         console.warn("Error estableciendo estado global:", globalStateError);
       }
 
-      // 5. Actualizar estado local del componente
       setUser({
         ...user,
         backendId: registeredUser.id.toString(),
         displayName: registeredUser.firstName || user.displayName,
       });
-
-      // 6. Mostrar modal para completar nombre
       setShowNamePopup(true);
 
     } catch (error) {
@@ -204,11 +200,11 @@ function InvitationPage() {
         <div>
           <Grid
             container
-            spacing={2} // Agrega la separación deseada entre los Card
-            justifyContent="center" // Centra los elementos horizontalmente
-            alignItems="center" // Centra los elementos verticalmente
-            style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
-            direction="column" // Alinea los elementos en una sola columna
+            spacing={2} 
+            justifyContent="center" 
+            alignItems="center" 
+            style={{ minHeight: "100vh" }} 
+            direction="column" 
           >
             <Grid
               item
@@ -249,7 +245,7 @@ function InvitationPage() {
                             alt="Imagen"
                             height="100%"
                             width="100%"
-                            image={user.photoURL ?? "URL_POR_DEFECTO"} // Reemplaza con la ruta de tu imagen.
+                            image={user.photoURL ?? "URL_POR_DEFECTO"} 
                           />
                         </div>
                       </div>
@@ -292,7 +288,7 @@ function InvitationPage() {
                 <CardMedia
                   component="img"
                   alt="Imagen de portada"
-                  height="50%" // La mitad superior del card
+                  height="50%" 
                   image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
                   sx={{
                     transition: "transform 0.1s ease-out",

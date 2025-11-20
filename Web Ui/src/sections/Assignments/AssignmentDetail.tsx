@@ -96,7 +96,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           setDisableAdditionalGraphs(!(flag?.is_enabled));
         } catch (error) {
           console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-          setDisableAdditionalGraphs(true); // por precaución
+          setDisableAdditionalGraphs(true); 
         }
       }
     };
@@ -134,7 +134,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
 
           if (assignmentid < 0 || userid < 0) {
-            return; // Validación silenciosa
+            return; 
           }
 
           const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
@@ -235,7 +235,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentid) { //means if the assignment id is in memory or somthn
+    if (assignmentid) { 
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
@@ -283,7 +283,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             repoOwner: user,
             repoName: repo,
             fetchedSubmissions: JSON.stringify(fetchedSubmissions),
-            submissionId: submissionId.toString(),  // Convertimos submissionId a cadena para pasarlo como parámetro
+            submissionId: submissionId.toString(),  
           }).toString(),
         });
       } else {
@@ -409,7 +409,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   navigate("/asistente-ia", {
-                    state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
+                    state: { repositoryLink: submission.repository_link }, 
                   });
                 }}
                 color="primary"

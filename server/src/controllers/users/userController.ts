@@ -236,26 +236,17 @@ async  logoutController (res: Response): Promise<void> {
   async updateUserById(req: Request, res: Response): Promise<Response> {
     try {
       const userId = Number(req.params.id);
-      const userFromToken = (req as any).user; // Usuario autenticado
+      const userFromToken = (req as any).user; 
       
-      console.log("📝 Actualizando nombre - Usuario autenticado:", userFromToken);
-      console.log("📝 ID objetivo:", userId);
-      
-      // Verificar que estudiantes solo puedan actualizar su propio perfil
       if (userFromToken.role === 'student' && userFromToken.id !== userId) {
-        console.log("❌ Student intentando actualizar otro usuario");
         return res.status(403).json({ 
           message: "Los estudiantes solo pueden actualizar su propio perfil" 
         });
       }
 
       const { firstName, lastName } = req.body;
-      console.log("📝 Nuevo nombre:", firstName,lastName);
-      
       const updatedUser = await this.userRepository.updateUserById(userId,  firstName, lastName );
 
-      console.log("✅ Nombre actualizado exitosamente");
-      
       return res.status(200).json(updatedUser);
     } catch (error) {
       console.error("❌ Error en updateUserById:", error);

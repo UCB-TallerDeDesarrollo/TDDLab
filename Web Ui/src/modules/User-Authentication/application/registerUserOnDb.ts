@@ -30,12 +30,13 @@ export class RegisterUserOnDb {
   async getAccountInfo(email: string): Promise<UserOnDb | null> {
     try {
       const user = await this.adapter.getAccountInfo(email);
-      return user;  // Retorna el usuario si existe
+      return user;  
     } catch (error) {
       console.error("Error checking user:", error);
-      return null;  // Si el usuario no existe, devuelve null
+      return null;
     }
   }
+  
   async authenticateWithFirebase(idToken: string): Promise<UserOnDb> {
     try {
       const user = await this.adapter.getAccountInfoWithToken(idToken);
