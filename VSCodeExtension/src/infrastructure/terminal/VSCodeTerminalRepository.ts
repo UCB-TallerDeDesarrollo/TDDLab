@@ -17,8 +17,11 @@ export class VSCodeTerminalRepository implements TerminalPort {
   }
 
   async createAndExecuteCommand(terminalName: string, command: string): Promise<void> {
-    // Si ya está ejecutando, no hacer nada
+    // If already executing, don't do anything
     if (this.isExecuting) {
+      if (this.onOutputCallback) {
+        this.onOutputCallback('\r\n⚠️  Ya hay un comando en ejecución\r\n$ ');
+      }
       return;
     }
 
@@ -26,17 +29,29 @@ export class VSCodeTerminalRepository implements TerminalPort {
 
     return new Promise((resolve) => {
       try {
+        // 🔒 SECURITY: Basic command validation
+        if (!this.isCommandBasicSafe(command)) {
+          this.outputChannel.appendLine(`[SECURITY BLOCKED] ${command}`);
+          this.isExecuting = false;
+          if (this.onOutputCallback) {
+            this.onOutputCallback('\r\n❌ Comando rechazado por seguridad\r\n$ ');
+          }
+          resolve();
+          return;
+        }
+
         this.outputChannel.appendLine(`[${new Date().toISOString()}] Executing: ${command}`);
         
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         const cwd = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
 
-        const [cmd, ...args] = this.parseCommand(command);
-        
-        this.currentProcess = spawn(cmd, args, {
+        // Use shell: true to access all system commands and PATH
+        this.currentProcess = spawn(command, {
           cwd: cwd,
-          shell: true,
-          stdio: ['pipe', 'pipe', 'pipe']
+          shell: true, // Allows access to all system commands and PATH
+          stdio: ['pipe', 'pipe', 'pipe'],
+          timeout: 60000, // 60 second timeout for longer processes
+          windowsHide: true
         });
 
         this.currentProcess.stdout?.on('data', (data: Buffer) => {
@@ -58,7 +73,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
         this.currentProcess.on('close', (code: number) => {
           this.outputChannel.appendLine(`\nCommand exited with code: ${code}`);
           
-          // IMPORTANTE: Resetear estado ANTES de enviar callbacks
+          // IMPORTANT: Reset state BEFORE sending callbacks
           this.currentProcess = null;
           this.isExecuting = false;
           
@@ -68,7 +83,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
             } else {
               this.onOutputCallback(`\r\n❌ Comando falló con código: ${code}\r\n`);
             }
-            // Enviar prompt DESPUÉS de resetear estado
+            // Send prompt AFTER resetting state
             this.onOutputCallback('$ ');
           }
           
@@ -78,7 +93,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
         this.currentProcess.on('error', (error: Error) => {
           this.outputChannel.appendLine(`Process error: ${error.message}`);
           
-          // IMPORTANTE: Resetear estado ANTES de enviar callbacks
+          // IMPORTANT: Reset state BEFORE sending callbacks
           this.currentProcess = null;
           this.isExecuting = false;
           
@@ -89,10 +104,21 @@ export class VSCodeTerminalRepository implements TerminalPort {
           resolve();
         });
 
+        // Handle process timeout
+        setTimeout(() => {
+          if (this.currentProcess && this.isExecuting) {
+            this.outputChannel.appendLine('Command timed out');
+            this.killCurrentProcess();
+            if (this.onOutputCallback) {
+              this.onOutputCallback('\r\n⏰ Comando excedió el tiempo límite\r\n$ ');
+            }
+          }
+        }, 60000);
+
       } catch (error: any) {
         this.outputChannel.appendLine(`  ERROR: ${error.message}`);
         
-        // IMPORTANTE: Resetear estado en caso de excepción
+        // IMPORTANT: Reset state in case of exception
         this.currentProcess = null;
         this.isExecuting = false;
         
@@ -105,21 +131,49 @@ export class VSCodeTerminalRepository implements TerminalPort {
     });
   }
 
-  private parseCommand(command: string): string[] {
-    const regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
-    const matches = [];
-    let match;
-    
-    while ((match = regex.exec(command)) !== null) {
-      matches.push(match[1] || match[2] || match[0]);
+  // 🔒 SECURITY: Basic safety checks without restricting commands
+  private isCommandBasicSafe(command: string): boolean {
+    if (!command || command.trim().length === 0) {
+      return false;
     }
-    
-    return matches.length > 0 ? matches : [command];
+
+    // Block only extremely dangerous patterns
+    const dangerousPatterns = [
+      />\s*\/dev\/|\|\s*\/dev\//, // Redirection to device files
+    ];
+
+    // Warning for potentially dangerous commands (but allow them)
+    const warningPatterns = [
+      /\b(rm\s+-?rf?|del\s+\/s|format|chmod\s+[0-7]{3,4}\s+)\b/i,
+    ];
+
+    if (dangerousPatterns.some(pattern => pattern.test(command))) {
+      return false;
+    }
+
+    // Log warnings but allow the command
+    if (warningPatterns.some(pattern => pattern.test(command))) {
+      this.outputChannel.appendLine(`[SECURITY WARNING] Potentially dangerous command: ${command}`);
+      // You could also show a warning to the user if desired
+      if (this.onOutputCallback) {
+        this.onOutputCallback('\r\n⚠️  Advertencia: Comando potencialmente peligroso\r\n');
+      }
+    }
+
+    return true;
   }
 
   public killCurrentProcess(): void {
     if (this.currentProcess) {
+      // Try SIGTERM first, then SIGKILL if needed
       this.currentProcess.kill('SIGTERM');
+      
+      setTimeout(() => {
+        if (this.currentProcess) {
+          this.currentProcess.kill('SIGKILL');
+        }
+      }, 5000);
+      
       this.currentProcess = null;
       this.isExecuting = false;
       this.outputChannel.appendLine('Process killed by user');
@@ -127,7 +181,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
         this.onOutputCallback('\r\n🛑 Proceso cancelado por el usuario\r\n$ ');
       }
     } else {
-      // Si no hay proceso pero isExecuting está true, resetearlo
+      // If no process but isExecuting is true, reset it
       this.isExecuting = false;
       if (this.onOutputCallback) {
         this.onOutputCallback('\r\n🛑 No hay proceso en ejecución\r\n$ ');
@@ -142,5 +196,29 @@ export class VSCodeTerminalRepository implements TerminalPort {
   public dispose(): void {
     this.killCurrentProcess();
     this.outputChannel.dispose();
+  }
+
+  // Helper method to get system information - FIXED VARIABLE NAME
+  public async getSystemInfo(): Promise<string> {
+    return new Promise((resolve) => {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      const cwd = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
+      
+      // FIX: Changed variable name from 'process' to 'shellProcess' to avoid conflict
+      const shellProcess = spawn('echo', ['$SHELL'], {
+        cwd: cwd,
+        shell: true,
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
+
+      let output = '';
+      shellProcess.stdout?.on('data', (data: Buffer) => {
+        output += data.toString();
+      });
+
+      shellProcess.on('close', () => {
+        resolve(output.trim() || 'Unknown shell');
+      });
+    });
   }
 }
