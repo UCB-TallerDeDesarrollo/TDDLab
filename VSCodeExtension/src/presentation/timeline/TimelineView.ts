@@ -140,16 +140,26 @@ export class TimelineView implements vscode.WebviewViewProvider {
           });
           const status = point.success ? '✅ Exitoso' : '❌ Fallido';
           const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
-          return `<div class="timeline-dot" title="${tooltip}" style="margin:3px;background:${color};width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;
+          
+          // Determinar el símbolo basado en si el test pasó o falló
+          const symbol = '✓';
+          const symbolColor = '#ffffff';
+          
+          return `
+            <div class="timeline-dot" title="${tooltip}" 
+                style="margin:3px;background:${color};width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold;color:${symbolColor};font-size:14px;">
+              ${symbol}
+            </div>`;
         } else if (point instanceof CommitPoint) {
           const commitName = point.commitName || 'Commit sin mensaje';
           const tooltip = `Commit: ${commitName}`;
           let htmlPoint = `
             <div class="timeline-dot" title="${tooltip}">
-              <img src="${gitLogoUri}" style="margin:3px;width:20px;height:20px;border-radius:50%;cursor:pointer;">
-            </div>`;
+              <img src="${gitLogoUri}" style="margin:3px;width:24px;height:24px;border-radius:50%;cursor:pointer;">
+            </div>
+          `;
           if (point.commitName && regex.test(point.commitName)) {
-            htmlPoint += `<div class="timeline-dot" title="Refactor detectado" style="margin:3px;background:skyblue;width:20px;height:20px;border-radius:50%;cursor:pointer;"></div>`;
+            htmlPoint += `<div class="timeline-dot" title="Refactor detectado" style="margin:3px;background:skyblue;width:24px;height:24px;border-radius:50%;cursor:pointer;"></div>`;
           }
           return htmlPoint;
         }
@@ -184,11 +194,53 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
     let htmlTemplate = fs.readFileSync(htmlPath, 'utf8');
     const timelineHtml = this.generateHtmlFragment(timeline, webview);
-
-    htmlTemplate = htmlTemplate
-      .replace('{{CSS_PATH}}', cssUri.toString())
-      .replace('{{TIMELINE_CONTENT}}', timelineHtml);
-
-    return htmlTemplate;
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { 
+            background:#1e1e1e; 
+            color:#eee; 
+            font-family:monospace; 
+            margin: 0;
+            padding: 10px;
+          }
+          .timeline-dot { 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+          }
+          #timeline-content { 
+            display:flex;
+            flex-direction:row;
+            flex-wrap:wrap;
+            align-items:center;
+            gap: 2px;
+          }
+          h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #cccccc;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>TDDLab Timeline</h2>
+        <div id="timeline-content">
+          ${timelineHtml}
+        </div>
+        <script>
+          window.addEventListener('message', event => {
+            if (event.data.command === 'updateTimeline') {
+              document.getElementById('timeline-content').innerHTML = event.data.html;
+            }
+          });
+        </script>
+      </body>
+      </html>
+    `;
   }
 }
