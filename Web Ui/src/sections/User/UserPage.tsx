@@ -58,7 +58,6 @@ function UserPage() {
   const getUsers = useMemo(() => new GetUsers(new UsersRepository()), []);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
 
-  //  👇 Caso de uso de búsqueda
   const searchUsersByEmail = useMemo(() => new SearchUsersByEmail(), []);
 
 
@@ -114,7 +113,7 @@ function UserPage() {
     }
   };
 
-  // 🔥 AQUI USAMOS HEXAGONAL
+  
   const filteredUsers = searchUsersByEmail.execute(users, {
     query: searchQuery,
     groupId: selectedGroup,
