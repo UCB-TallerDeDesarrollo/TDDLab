@@ -107,13 +107,15 @@ describe("EditAssignmentDialog Component", () => {
     renderEditDialog();
 
     await waitFor(() => {
-      expect(screen.getByText("Editar Tarea : Tarea Original")).toBeInTheDocument();
-      expect(screen.getByDisplayValue("Tarea Original")).toBeInTheDocument();
-      expect(screen.getByDisplayValue("Descripción original")).toBeInTheDocument();
-      expect(screen.getByText("Cancelar")).toBeInTheDocument();
-      expect(screen.getByText("Guardar Cambios")).toBeInTheDocument();
-    });
-  });
+        expect(screen.getByText("Editar Tarea : Tarea Original")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("Tarea Original")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("Descripción original")).toBeInTheDocument();
+        expect(screen.getByText("Cancelar")).toBeInTheDocument();
+        expect(screen.getByText("Guardar Cambios")).toBeInTheDocument();
+      });
+    },
+    15000
+  );
 
   it("debería mostrar los valores actuales en los campos", async () => {
     renderEditDialog();

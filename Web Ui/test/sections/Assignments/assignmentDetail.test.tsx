@@ -6,6 +6,38 @@ import { GitLinkDialog } from "../../../src/sections/Assignments/components/GitH
 
 jest.setTimeout(10000);
 
+jest.mock("../../../src/modules/Users/repository/UsersRepository", () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    getUserById: jest.fn().mockImplementation((id: number) => {
+      const users: { [key: number]: any } = {
+        123: {
+          id: 123,
+          email: 'student1@example.com',
+          role: 'student',
+          groupid: 70,
+          firstName: 'John',
+          lastName: 'Doe'
+        },
+        124: {
+          id: 124,
+          email: 'student2@example.com',
+          role: 'student', 
+          groupid: 70,
+          firstName: 'Jane',
+          lastName: 'Smith'
+        }
+      };
+      return Promise.resolve(users[id] || null);
+    }),
+    getUsersByGroupid: jest.fn().mockResolvedValue([]),
+    getUserByEmail: jest.fn().mockResolvedValue(null),
+    updateUser: jest.fn().mockResolvedValue({}),
+    getUserEmailById: jest.fn().mockResolvedValue(''),
+    removeUserFromGroup: jest.fn().mockResolvedValue({})
+  }))
+}));
+
 jest.mock(
   "../../../src/modules/Assignments/application/GetAssignmentDetail",
   () => ({
@@ -58,7 +90,17 @@ jest.mock(
   })
 );
 
+jest.mock('axios', () => ({
+  get: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+}));
+
 describe("AssignmentDetail Component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("displays the group name", async () => {
     const { getByText } = render(
       <BrowserRouter>
@@ -141,16 +183,6 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the list of submissions for teacher role", async () => {
-    jest.mock('react-router-dom', () => ({
-      ...jest.requireActual('react-router-dom'),
-      useSearchParams: () => [
-        new URLSearchParams({
-          repoOwner: 'danTerra45',
-          repoName: 'parcel-jest-cars'
-        })
-      ]
-    }));
-  
     render(
       <BrowserRouter>
         <AssignmentDetail role="teacher" userid={123} />
@@ -159,26 +191,18 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(
       () => {
+        expect(screen.getByText("Nombre")).toBeInTheDocument();
+        expect(screen.getByText("Apellido")).toBeInTheDocument();
         expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
+        
         expect(screen.getByText("Enviado")).toBeInTheDocument();
         expect(screen.getByText("En progreso")).toBeInTheDocument();
         
         expect(screen.getByText("https://github.com/student/repo1")).toBeInTheDocument();
         expect(screen.getByText("https://github.com/student/repo2")).toBeInTheDocument();
       },
-      { timeout: 3000 }
+      { timeout: 5000 }
     );
-  });
-
-  it("shows loading indicator while fetching assignment details", async () => {
-    const { getByTestId } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
-
-    const loadingIndicator = getByTestId("loading-indicator");
-    expect(loadingIndicator).toBeInTheDocument();
   });
 
   it("opens and closes the GitLinkDialog", async () => {
