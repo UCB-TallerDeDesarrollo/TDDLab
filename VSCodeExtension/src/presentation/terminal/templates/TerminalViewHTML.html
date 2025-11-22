@@ -43,7 +43,6 @@
         xtermRows.style.marginLeft = '0';
         xtermRows.style.width = '100%';
       }
-      
       const xtermScreen = terminalElement.querySelector('.xterm-screen');
       if (xtermScreen) {
         xtermScreen.style.textAlign = 'left';
@@ -57,14 +56,14 @@
       if (container) {
         const width = container.offsetWidth;
         const height = container.offsetHeight;
-        const cols = Math.floor((width - 20) / 9); // Ajuste para el padding
-        const rows = Math.floor(height / 17); // Ajuste para la altura de la fila
+        const cols = Math.floor((width - 20) / 9); 
+        const rows = Math.floor(height / 17); 
         term.resize(cols, rows);
       }
     };
     
     window.addEventListener('resize', fitAddon);
-    setTimeout(fitAddon, 200);
+    setTimeout(fitAddon, 200); 
     
     term.focus();
     
@@ -72,29 +71,23 @@
     let isExecuting = false;
 
     term.onData(data => {
-      const code = data.charCodeAt(0);
-      if (code === 13) {
+      const code = data.codePointAt(0);
+      if (code === 13) { 
         if (command.trim() && !isExecuting) {
           isExecuting = true;
-          vscode.postMessage({
-            command: 'executeCommand',
-            text: command
-          });
+          vscode.postMessage({ command: 'executeCommand', text: command });
           command = '';
         } else if (!isExecuting) {
           term.write('\r\n$ ');
         }
-      } else if (code === 127) {
+      } else if (code === 127) { 
         if (command.length > 0 && !isExecuting) {
           command = command.slice(0, -1);
           term.write('\b \b');
         }
-      } else if (code === 3) {
-        // Ctrl+C - siempre funciona
+      } else if (code === 3) { 
         term.write('^C');
-        vscode.postMessage({
-          command: 'killCommand'
-        });
+        vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
         term.write('\r\n$ ');
       } else if (code >= 32 && code <= 126 && !isExecuting) {
@@ -105,25 +98,23 @@
     
     window.addEventListener('message', event => {
       const message = event.data;
-      if (message.command === 'updateTimeline') {
-        document.getElementById('timeline-content').innerHTML = message.html;
-      }
-      if (message.command === 'writeToTerminal') {
-        const text = message.text || '';
-        term.write(text);
-        if (message.text === '$ ' || message.text.endsWith('\r\n$ ')) {
+      switch (message.command) {
+        case 'updateTimeline':
+          document.getElementById('timeline-content').innerHTML = message.html;
+          break;
+        case 'writeToTerminal':
+          { const text = message.text || '';
+          term.write(text);
+          if (text.endsWith('\r\n$ ')) {
+            isExecuting = false;
+          }
+          break; }
+        case 'clearTerminal':
+          term.clear();
+          term.write('$ ');
           isExecuting = false;
-        }
-      }
-      if (message.command === 'executeCommand') {
-        term.write('\r\n$ ' + message.text + '\r\n');
-        isExecuting = true;
-      }
-      if (message.command === 'clearTerminal') {
-        term.clear();
-        term.write('$ ');
-        isExecuting = false;
-        command = '';
+          command = '';
+          break;
       }
     });
   </script>

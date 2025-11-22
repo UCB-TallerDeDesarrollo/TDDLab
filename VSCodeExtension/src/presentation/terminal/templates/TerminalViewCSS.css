@@ -44,32 +44,13 @@ html, body {
   padding: 10px !important;
   box-sizing: border-box !important;
 }
-.xterm-viewport {
-  width: 100% !important;
-  text-align: left !important;
-}
-.xterm-screen {
-  width: 100% !important;
-  text-align: left !important;
-}
-.xterm-rows {
-  text-align: left !important;
-  width: 100% !important;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
-}
-.xterm-row {
-  text-align: left !important;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
-}
-.xterm-char {
-  text-align: left !important;
-}
+.xterm-viewport,
+.xterm-screen,
+.xterm-rows,
+.xterm-row,
+.xterm-char,
 #terminal > div {
   text-align: left !important;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
 }
 .terminal-wrapper {
   width: 100%;
