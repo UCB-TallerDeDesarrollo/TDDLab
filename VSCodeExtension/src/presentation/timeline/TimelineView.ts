@@ -57,7 +57,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
     } catch (err: any) {
       console.error('[TimelineView] Error al mostrar timeline:', err);
       webview.html = `
-        <h2>TDDLab Timeline 2</h2>
+        <h2>TDDLab Timeline</h2>
         <p style="color:gray;">⚠️ Timeline no disponible</p>
         <p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline</p>
       `;
@@ -131,25 +131,20 @@ export class TimelineView implements vscode.WebviewViewProvider {
           const total = point.numTotalTests;
           const failed = total - passed;
           const timestamp = new Date(point.timestamp).toLocaleString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
           });
           const status = point.success ? '✅ Exitoso' : '❌ Fallido';
           const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
           
-          // Determinar el símbolo basado en si el test pasó o falló
           const symbol = '✓';
           const symbolColor = '#ffffff';
-          
+
           return `
             <div class="timeline-dot" title="${tooltip}" 
-                style="margin:3px;background:${color};width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold;color:${symbolColor};font-size:14px;">
-              ${symbol}
+                style="margin:3px;background:${color};width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold;color:${symbolColor};font-size:14px;">${symbol}
             </div>`;
+
         } else if (point instanceof CommitPoint) {
           const commitName = point.commitName || 'Commit sin mensaje';
           const tooltip = `Commit: ${commitName}`;
@@ -172,75 +167,21 @@ export class TimelineView implements vscode.WebviewViewProvider {
     timeline: Array<Timeline | CommitPoint>,
     webview: vscode.Webview
   ): string {
-    const htmlPath = path.join(
-      this.context.extensionUri.fsPath,
-      'src',
-      'presentation',
-      'timeline',
-      'templates',
-      'TimelineViewHTML.html'
+    const templatePath = path.join(
+      this.context.extensionUri.fsPath, 'src', 'presentation', 'timeline', 'templates'
     );
+    const htmlPath = path.join(templatePath, 'TimelineViewHTML.html');
+    const cssPath = path.join(templatePath, 'TimelineViewCSS.css');
 
-    const cssUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this.context.extensionUri,
-        'src',
-        'presentation',
-        'timeline',
-        'templates',
-        'TimelineViewCSS.css'
-      )
-    );
+    const cssUri = webview.asWebviewUri(vscode.Uri.file(cssPath));
 
     let htmlTemplate = fs.readFileSync(htmlPath, 'utf8');
     const timelineHtml = this.generateHtmlFragment(timeline, webview);
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <style>
-          body { 
-            background:#1e1e1e; 
-            color:#eee; 
-            font-family:monospace; 
-            margin: 0;
-            padding: 10px;
-          }
-          .timeline-dot { 
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-          }
-          #timeline-content { 
-            display:flex;
-            flex-direction:row;
-            flex-wrap:wrap;
-            align-items:center;
-            gap: 2px;
-          }
-          h2 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #cccccc;
-          }
-        </style>
-      </head>
-      <body>
-        <h2>TDDLab Timeline</h2>
-        <div id="timeline-content">
-          ${timelineHtml}
-        </div>
-        <script>
-          window.addEventListener('message', event => {
-            if (event.data.command === 'updateTimeline') {
-              document.getElementById('timeline-content').innerHTML = event.data.html;
-            }
-          });
-        </script>
-      </body>
-      </html>
-    `;
+
+    htmlTemplate = htmlTemplate
+      .replace('{{CSS_PATH}}', cssUri.toString())
+      .replace('{{TIMELINE_CONTENT}}', timelineHtml);
+
+    return htmlTemplate;
   }
 }

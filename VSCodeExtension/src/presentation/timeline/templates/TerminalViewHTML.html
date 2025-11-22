@@ -12,9 +12,11 @@
   </div>
 
   <script>
+    const vscode = acquireVsCodeApi();
     window.addEventListener('message', event => {
-      if (event.data.command === 'updateTimeline') {
-        document.getElementById('timeline-content').innerHTML = event.data.html;
+      const message = event.data;
+      if (message.command === 'updateTimeline') {
+        document.getElementById('timeline-content').innerHTML = message.html;
       }
     });
   </script>
