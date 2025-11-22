@@ -21,6 +21,9 @@ router.post("/login", (req, res) => userController.getUserController(req, res));
 router.post("/github", (req, res) =>
   userController.getUserControllerGithub(req, res)
 );
+router.post("/google", (req, res) =>
+  userController.getUserControllerGoogle(req, res)
+);
 router.post(
   "/verifyPassword",
   (req, res) => userController.verifyPassword(req, res)

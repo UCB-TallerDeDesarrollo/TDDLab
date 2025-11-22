@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { registerUser } from "../../modules/Users/Application/registerUser";
 import { registerUserWithGoogle } from "../../modules/Users/Application/registerUserWithGoogle";
+import { loginUserWithGoogle } from "../../modules/Users/Application/loginUserWithGoogle";
 import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
@@ -118,6 +119,32 @@ class UserController {
       res.status(200).json(user);
     } catch (error) {
       res.status(401).json({ error: "Token inválido o expirado" });
+    }
+  }
+
+  async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
+    const { idToken } = req.body;
+    if (!idToken) {
+      res.status(400).json({ error: "Debes proporcionar un token válido" });
+      return;
+    }
+
+    try {
+      const { user, jwtToken } = await loginUserWithGoogle(idToken);
+      await saveUserCookie(jwtToken, res);
+      res.status(200).json(user);
+    } catch (error: any) {
+      if (error.message === "Usuario no encontrado") {
+        res.status(404).json({ error: error.message });
+      } else if (error.message === "Token inválido o expirado" ||
+                 error.message === "Token expirado" ||
+                 error.message === "Token inválido") {
+        res.status(401).json({ error: error.message });
+      } else if (error.message === "No se pudo obtener email de Firebase") {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Error en el servidor" });
+      }
     }
   }
 
