@@ -62,6 +62,30 @@ class AuthRepository implements AuthDBRepositoryInterface {
   }
 }
 
+  async registerAccountWithGoogle(idToken: string, groupid: number, role: string): Promise<void> {
+    try {
+      const response = await axios.post(API_URL + "/user/register/google", {
+        idToken,
+        groupid,
+        role,
+      });
+
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error("No tiene permisos para registrar administradores");
+        }
+
+        throw new Error(
+          error.response.data?.error || "Error al registrar usuario con Google"
+        );
+      }
+
+      throw new Error("Error saving user with Google");
+    }
+  }
+
 
   async verifyPassword(password: string): Promise<boolean> {
     try {
