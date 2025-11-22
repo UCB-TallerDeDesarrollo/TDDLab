@@ -11,12 +11,12 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
     throw new Error("Method not implemented.");
   }
   async createGroup(groupData: GroupDataObject): Promise<GroupDataObject> {
-  const newGroup: GroupDataObject = {
-    ...groupData,
-    id: groupData.id ?? Math.floor(Math.random() * 1000) + 1,
-  };
-  return newGroup;
-}
+    const newGroup: GroupDataObject = {
+      ...groupData,
+      id: groupData.id ?? Math.floor(Math.random() * 1000) + 1,
+    };
+    return newGroup;  
+  }
 
   async deleteGroup(id: number): Promise<void> {
     try {
@@ -27,6 +27,18 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
   }
   getGroupsByUserId(_id: number): Promise<number[]>{
     throw new Error("Method not implemented.");
+  }
+
+  async updateGroup(groupId: number, updatedGroupData: GroupDataObject): Promise<void> {
+    const updateGroup: GroupDataObject ={
+      ...updatedGroupData,
+      id: groupId
+    };
+    try {
+      await this.groupsRepository.updateGroup(groupId, updateGroup);
+    } catch (error) {
+      console.error("Ocurrio un error al actualizar el grupo:", error);
+    }
   }
 }
 
