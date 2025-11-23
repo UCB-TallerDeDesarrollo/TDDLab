@@ -60,7 +60,7 @@ describe("InvitationPage component", () => {
         <InvitationPage />
       </MemoryRouter>
     );
-    const signUpButton = getByText("Registrarse");
+    const signUpButton = getByText("Registrarse con GitHub");
 
     fireEvent.click(signUpButton);
     expect(RegisterUserOnDb).toHaveBeenCalledTimes(3);
