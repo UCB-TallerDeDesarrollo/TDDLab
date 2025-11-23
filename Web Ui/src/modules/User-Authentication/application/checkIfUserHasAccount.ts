@@ -42,4 +42,18 @@ export class CheckIfUserHasAccount {
       throw error; // Ensure the error is propagated
     }
   }
+
+  async userHasAnAccountWithGoogleToken(idToken: string) {
+    try {
+      const answerData: UserOnDb = await this.adapter.getAccountInfoWithGoogleToken(idToken);
+      
+      if (answerData.groupid) {
+        return answerData;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }
