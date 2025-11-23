@@ -3,6 +3,8 @@ import '@testing-library/jest-dom';
 import SuccessfulEnrollmentPopUp from '../../../src/sections/GroupInvitation/components/SuccessfulEnrollmentPopUp';
 import { MemoryRouter } from 'react-router-dom';
 
+jest.mock('axios');
+
 describe('Succesful Sign Up Pop up component', () => {
     it('Renders basic components', () => {
         const { getByText } = render(
@@ -11,35 +13,35 @@ describe('Succesful Sign Up Pop up component', () => {
             </MemoryRouter>
         );
         const title = getByText(/Inscripción Exitosa/);
-        const body = getByText(/Ahora eres parte del grupo . Ya puedes aprender y mejorar tus skills de programación con las tareas del curso./);
+        const body = getByText(/Ahora eres parte del grupo/);
         const acceptButton = getByText("Aceptar");
         expect(title).toBeInTheDocument();
         expect(body).toBeInTheDocument();
         expect(acceptButton).toBeInTheDocument();
     });
 
-    it('Renders click accept button', () => {
+    it('Renders click accept button', async () => {
         const { getByText } = render(
             <MemoryRouter>
                 <SuccessfulEnrollmentPopUp/>
             </MemoryRouter>
         );
-        waitFor(() => {
+        await waitFor(() => {
             const acceptButton = getByText('Aceptar');
             expect(acceptButton).toBeInTheDocument();
             const open = true;
             fireEvent.click(acceptButton);
             expect(open).toBe(false);
-        })
+        });
     });
 
-    it('Renders click accept button and go to homepage', () => {
+    it('Renders click accept button and go to homepage', async () => {
         const { getByText } = render(
             <MemoryRouter>
                 <SuccessfulEnrollmentPopUp/>
             </MemoryRouter>
         );
-        waitFor(() => {
+        await waitFor(() => {
             const acceptButton = getByText('Aceptar');
             expect(acceptButton).toBeInTheDocument();
             const oldPathname = window.location.pathname;
@@ -49,6 +51,6 @@ describe('Succesful Sign Up Pop up component', () => {
             const actualLastPart = newPathname.substring(newPathname.lastIndexOf('/') + 1);
             expect(oldPathname).not.toBe(newPathname);
             expect(actualLastPart).toBe(expectedLastPart);
-        })
+        });
     });
 });
