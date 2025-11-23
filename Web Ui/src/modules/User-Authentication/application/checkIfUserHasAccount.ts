@@ -37,9 +37,13 @@ export class CheckIfUserHasAccount {
         console.log('User does not have a group ID.');
         return null;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking user account:', error);
-      throw error; // Ensure the error is propagated
+      // Propagar el error con el mensaje original del servidor
+      if (error.message) {
+        throw new Error(error.message);
+      }
+      throw error;
     }
   }
 
@@ -52,7 +56,11 @@ export class CheckIfUserHasAccount {
       } else {
         return null;
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Propagar el error con el mensaje original del servidor
+      if (error.message) {
+        throw new Error(error.message);
+      }
       throw error;
     }
   }

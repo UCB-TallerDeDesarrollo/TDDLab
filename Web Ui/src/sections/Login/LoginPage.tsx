@@ -19,36 +19,66 @@ const Login = () => {
     }
   }, [authData]);
   const handleGitHubLogin = async () => {
-    const userData = await handleSignInWithGitHub();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
-        navigate({
-          pathname: "/",
-        }),
-      );
-      localStorage.setItem("userProfilePic", userData.photoURL||"");
-    } else {
-      alert("Disculpa, tu usuario no esta registrado");
+    try {
+      const userData = await handleSignInWithGitHub();
+      if (userData?.email) {
+        const idToken = await userData.getIdToken();
+        const loginPort = new CheckIfUserHasAccount();
+        const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
+        if (userCourse) {
+          setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
+            navigate({
+              pathname: "/",
+            }),
+          );
+          localStorage.setItem("userProfilePic", userData.photoURL||"");
+        } else {
+          alert("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
+        }
+      } else {
+        alert("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
+      }
+    } catch (error: any) {
+      const errorMessage = error?.message || "Error al iniciar sesión";
+      if (errorMessage.includes("Google")) {
+        alert("Este usuario está registrado con Google. Por favor, inicia sesión con Google.");
+      } else if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
+        alert("Usuario no encontrado. Por favor, regístrate primero.");
+      } else {
+        alert(errorMessage);
+      }
     }
   };
 
   const handleGoogleLogin = async () => {
-    const userData = await handleSignInWithGoogle();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
-        navigate({
-          pathname: "/",
-        }),
-      );
-      localStorage.setItem("userProfilePic", userData.photoURL||"");
-    } else {
-      alert("Disculpa, tu usuario no esta registrado");
+    try {
+      const userData = await handleSignInWithGoogle();
+      if (userData?.email) {
+        const idToken = await userData.getIdToken();
+        const loginPort = new CheckIfUserHasAccount();
+        const userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
+        if (userCourse) {
+          setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
+            navigate({
+              pathname: "/",
+            }),
+          );
+          localStorage.setItem("userProfilePic", userData.photoURL||"");
+        } else {
+          alert("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
+        }
+      } else {
+        alert("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
+      }
+    } catch (error: any) {
+      const errorMessage = error?.message || "Error al iniciar sesión";
+      if (errorMessage.includes("GitHub")) {
+        alert("Este usuario está registrado con GitHub. Por favor, inicia sesión con GitHub.");
+      } else if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
+        alert("Usuario no encontrado. Por favor, regístrate primero.");
+      } else {
+        alert(errorMessage);
+      }
     }
   };
 
