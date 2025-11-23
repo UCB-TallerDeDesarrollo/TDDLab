@@ -21,7 +21,7 @@ class UpdateAssignment {
       const currentAssignment = await this.repository.obtainAssignmentById(assignmentId);
       
       if (!currentAssignment) {
-        throw new Error("Tarea no encontrada");
+        throw new Error("Assignment not found");
       }
       if (currentAssignment.title !== updatedAssignment.title) {
         const isDuplicate = await this.repository.checkDuplicateTitle(

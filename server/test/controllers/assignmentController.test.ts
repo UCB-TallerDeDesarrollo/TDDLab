@@ -208,6 +208,8 @@ describe("Deliver Assignment", () => {
       "https://example.com/assignment"
     );
     const res = createResponse();
+    (controller as any).deliverAssignmentUseCase.execute = jest.fn()
+      .mockRejectedValue(new Error());
     await controller.deliverAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
@@ -218,6 +220,8 @@ describe("Update Assignment", () => {
   it("should respond with a status 200 and updated assignment when update is successful", async () => {
     const req = createRequest("existing_id", assignmentPendingDataMock);
     const res = createResponse();
+     (controller as any).updateAssignmentUseCase.execute = jest.fn()
+      .mockResolvedValue(assignmentPendingDataMock);
     assignmentRepositoryMock.updateAssignment.mockResolvedValue(
       assignmentPendingDataMock
     );
@@ -228,7 +232,8 @@ describe("Update Assignment", () => {
   it("should respond with a 404 status and error message when assignment is not found", async () => {
     const req = createRequest("non_existing_id", assignmentPendingDataMock);
     const res = createResponse();
-    assignmentRepositoryMock.updateAssignment.mockResolvedValue(null);
+     (controller as any).updateAssignmentUseCase.execute = jest.fn()
+      .mockResolvedValue(null);
     await controller.updateAssignment(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: "Assignment not found" });

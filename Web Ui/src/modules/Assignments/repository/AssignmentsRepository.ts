@@ -87,7 +87,6 @@ class AssignmentsRepository implements AssignmentsRepositoryInterface {
   return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
-      // Capturar el mensaje específico del backend
       const errorMessage = error.response.data?.error || error.response.data?.message;
       throw new Error(errorMessage);
     } else {

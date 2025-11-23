@@ -267,7 +267,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
             error: error.message,
             message: `El titulo no puede tener mas de 50 caracteres.`,
           });
-        } else if (error.message === "Tarea no encontrada") {
+        } else if (error.message === "Assignment not found") {
         res.status(404).json({ error: error.message });
         }else {
           console.error("Unexpected error: ", error);
