@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect, useMemo } from "react";
 
 import GetUsers from "../../modules/Users/application/getUsers";
@@ -22,7 +20,7 @@ import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 
-import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail.ts";
+import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail";
 
 
 const CenteredContainer = styled(Container)({
@@ -113,11 +111,13 @@ function UserPage() {
     }
   };
 
-  
-  const filteredUsers = searchUsersByEmail.execute(users, {
-    query: searchQuery,
-    groupId: selectedGroup,
-  });
+  //const searchUsersByEmail = useMemo(() => new SearchUsersByEmail(), []);
+
+const filteredUsers = searchUsersByEmail.execute(users, {
+  query: searchQuery,
+  groupId: selectedGroup,
+});
+
 
 
   if (loading) {
@@ -198,7 +198,7 @@ function UserPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredUsers.map((user) => (
+                filteredUsers.map((user: UserDataObject) => (
                   <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{groupMap[user.groupid] || "Unknown Group"}</TableCell>

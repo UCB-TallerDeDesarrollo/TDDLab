@@ -1,18 +1,23 @@
 
 import { UserDataObject } from "../UsersInterface";
 
-export type SearchParams = {
+export interface SearchParams {
   query: string;
   groupId: number | "all";
-};
+}
 
 export function filterUsersByEmail(
   users: UserDataObject[],
-  { query, groupId }: SearchParams
+  params: SearchParams
 ): UserDataObject[] {
-  const q = (query ?? "").trim().toLowerCase();
+
+  const { query, groupId } = params;
 
   return users
-    .filter(u => (groupId === "all" ? true : u.groupid === groupId))
-    .filter(u => u.email.toLowerCase().includes(q));
+    .filter(user =>
+      groupId === "all" ? true : user.groupid === groupId
+    )
+    .filter(user =>
+      user.email.toLowerCase().includes(query.toLowerCase())
+    );
 }
