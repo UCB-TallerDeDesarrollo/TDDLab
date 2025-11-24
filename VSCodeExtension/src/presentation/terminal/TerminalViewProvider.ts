@@ -213,7 +213,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <title>Terminal TDD</title>
+        <title>TDD Terminal</title>
         <link rel="stylesheet" href="${xtermCssUri}">
         <script src="${xtermJsUri}"></script>
         <style>
@@ -297,7 +297,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
           }
         </style>
       </head>
-      <body>
+      <body> 
         <div id="timeline">
           <h2>TDDLab Timeline</h2>
           <div id="timeline-content">${timelineContent}</div>
