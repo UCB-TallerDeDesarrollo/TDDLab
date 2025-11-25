@@ -66,21 +66,21 @@ const localStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn(),
 };
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(globalThis, 'localStorage', {
   value: localStorageMock,
 });
 
-Object.defineProperty(window, 'location', {
+Object.defineProperty(globalThis, 'location', {
   value: {
     search: '',
   },
   writable: true,
 });
 
-Object.defineProperty(window, 'addEventListener', {
+Object.defineProperty(globalThis, 'addEventListener', {
   value: jest.fn(),
 });
-Object.defineProperty(window, 'removeEventListener', {
+Object.defineProperty(globalThis, 'removeEventListener', {
   value: jest.fn(),
 });
 
@@ -131,7 +131,7 @@ describe("AssignmentsList Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
-    window.location.search = '';
+    globalThis.location.search = '';
     
     mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
     mockGetGroups.getGroups.mockResolvedValue(mockGroups);
@@ -289,7 +289,7 @@ describe("AssignmentsList Component", () => {
     renderAssignmentsList();
 
     const assignmentUpdatedEvent = new CustomEvent('assignment-updated');
-    window.dispatchEvent(assignmentUpdatedEvent);
+    globalThis.dispatchEvent(assignmentUpdatedEvent);
 
     await waitFor(() => {
       expect(mockAssignmentsRepo.getAssignmentsByGroupid).toHaveBeenCalledTimes(2);
