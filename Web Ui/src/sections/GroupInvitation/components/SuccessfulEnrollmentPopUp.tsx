@@ -5,36 +5,59 @@ import {VITE_API} from "../../../../config.ts";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub.ts";
+import { getAuth } from "firebase/auth";
+import firebase from "../../../firebaseConfig";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount.ts";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser.ts";
 import { useNavigate } from "react-router-dom";
 
-function SuccessfulEnrollmentPopUp() {
+interface SuccessfulEnrollmentPopUpProps {
+  authProvider?: "github" | "google" | null;
+}
+
+function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollmentPopUpProps) {
   const [open, setOpen] = React.useState(true);
   const [groupName, setGroupName] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleClose = async () => {
     setOpen(false);
-    const userData = await handleSignInWithGitHub();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-       const loginPort = new CheckIfUserHasAccount();
-       const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
-        navigate({
-          pathname: "/",
-        }),
-      );
-      window.location.href = "/";
-      localStorage.clear();
-      localStorage.setItem("userGroups", "[0]")
-      console.log(open);
-      if (userData.photoURL) {
-      localStorage.setItem("userProfilePic", userData.photoURL);
+    
+    const auth = getAuth(firebase);
+    const currentUser = auth.currentUser;
+    
+    if (!currentUser) {
+      alert("Disculpa, tu usuario no esta registrado");
+      return;
     }
-    } else {
+
+    try {
+      const idToken = await currentUser.getIdToken();
+      const loginPort = new CheckIfUserHasAccount();
+      
+      let userCourse;
+      if (authProvider === "google") {
+        userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
+      } else {
+        userCourse = await loginPort.userHasAnAccountWithToken(idToken);
+      }
+      
+      if (userCourse) {
+        setCookieAndGlobalStateForValidUser(currentUser, userCourse, () =>
+          navigate({
+            pathname: "/",
+          }),
+        );
+        
+        if (currentUser.photoURL) {
+          localStorage.setItem("userProfilePic", currentUser.photoURL);
+        }
+        
+        window.location.href = "/";
+      } else {
+        alert("Disculpa, tu usuario no esta registrado");
+      }
+    } catch (error) {
       alert("Disculpa, tu usuario no esta registrado");
     }
   };

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { registerUser } from "../../modules/Users/Application/registerUser";
+import { registerUserWithGoogle } from "../../modules/Users/Application/registerUserWithGoogle";
 import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
@@ -51,6 +52,36 @@ class UserController {
     }
 }
 
+  }
+
+  async registerUserWithGoogleController(req: Request, res: Response): Promise<void> {
+    const { idToken, groupid, role } = req.body;
+
+    if (!idToken || !groupid || !role) {
+      res.status(400).json({
+        error: "Debes proporcionar un token, grupo y rol válidos",
+      });
+      return;
+    }
+
+    try {
+      await registerUserWithGoogle(idToken, groupid, role);
+      res.status(201).json({ message: "Usuario registrado con éxito usando Google." });
+    } catch (error: any) {
+      if (error.message === "UserAlreadyExistsInThatGroup") {
+        res.status(409).json({ error: "The user is already registered in that group." });
+      } else if (error.message === "No tiene permisos para registrar administradores") {
+        res.status(403).json({ error: "No tiene permisos para registrar administradores" });
+      } else if (error.message === "Token inválido o expirado" || 
+                 error.message === "Token expirado" || 
+                 error.message === "Token inválido") {
+        res.status(401).json({ error: error.message });
+      } else if (error.message === "No se pudo obtener email de Firebase") {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Server error while registering user" });
+      }
+    }
   }
   async getUserController(req: Request, res: Response): Promise<void> {
     const { email } = req.body;
