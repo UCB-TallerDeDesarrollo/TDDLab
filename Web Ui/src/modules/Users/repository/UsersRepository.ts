@@ -2,6 +2,7 @@ import axios from "axios";
 import { UserDataObject } from "../domain/UsersInterface";
 import UsersRepositoryInterface from "../domain/UsersRepositoryInterface";
 import {VITE_API} from "../../../../config.ts";
+import { SearchParams } from "../domain/SearchParamsInterface.ts";
 
 const API_URL = VITE_API + "/user/users";
 
@@ -76,6 +77,19 @@ export class UsersRepository implements UsersRepositoryInterface {
       throw error;
     }
   }
+
+  filterUsersByEmail(users: UserDataObject[], params: SearchParams): UserDataObject[] {
+  const { query, groupId } = params;
+
+  return users
+    .filter(user =>
+      groupId === "all" ? true : user.groupid === groupId
+    )
+    .filter(user =>
+      user.email.toLowerCase().includes(query.toLowerCase())
+    );
+}
+
 }
 
 export default UsersRepository;

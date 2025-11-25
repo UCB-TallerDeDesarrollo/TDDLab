@@ -56,7 +56,11 @@ function UserPage() {
   const getUsers = useMemo(() => new GetUsers(new UsersRepository()), []);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
 
-  const searchUsersByEmail = useMemo(() => new SearchUsersByEmail(), []);
+  const searchUsersByEmail = useMemo(
+  () => new SearchUsersByEmail(new UsersRepository()),
+  []
+);
+
 
 
   useEffect(() => {
@@ -113,10 +117,19 @@ function UserPage() {
 
   //const searchUsersByEmail = useMemo(() => new SearchUsersByEmail(), []);
 
-const filteredUsers = searchUsersByEmail.execute(users, {
-  query: searchQuery,
-  groupId: selectedGroup,
-});
+const [filteredUsers, setFilteredUsers] = useState<UserDataObject[]>([]);
+
+useEffect(() => {
+  const runSearch = async () => {
+    const results = await searchUsersByEmail.execute({
+      query: searchQuery,
+      groupId: selectedGroup
+    });
+    setFilteredUsers(results);
+  };
+
+  runSearch();
+}, [searchQuery, selectedGroup, searchUsersByEmail]);
 
 
 
