@@ -8,11 +8,8 @@ interface UsersRepositoryInterface {
   getUserByEmail(email: string): Promise<UserDataObject | null>;
   updateUser(id: number, groupid: number): Promise<void>;
   removeUserFromGroup(userId: number): Promise<void>;
+  getFilteredUsersByEmail(params: SearchParams): Promise<UserDataObject[]>;
 
-  filterUsersByEmail(
-    users: UserDataObject[],
-    params: SearchParams
-  ): UserDataObject[];
 }
 
 export default UsersRepositoryInterface;

@@ -78,16 +78,17 @@ export class UsersRepository implements UsersRepositoryInterface {
     }
   }
 
-  filterUsersByEmail(users: UserDataObject[], params: SearchParams): UserDataObject[] {
+  async getFilteredUsersByEmail(params: SearchParams): Promise<UserDataObject[]> {
   const { query, groupId } = params;
+  const users = await this.getUsers();
 
-  return users
-    .filter(user =>
-      groupId === "all" ? true : user.groupid === groupId
-    )
-    .filter(user =>
-      user.email.toLowerCase().includes(query.toLowerCase())
-    );
+  const filteredByGroup = groupId === "all"
+    ? users
+    : users.filter((user) => user.groupid === groupId);
+
+  return filteredByGroup.filter((user) =>
+    user.email.toLowerCase().includes(query.toLowerCase())
+  );
 }
 
 }
