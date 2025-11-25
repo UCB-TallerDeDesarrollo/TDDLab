@@ -184,7 +184,7 @@ useEffect(() => {
   useEffect(() => {
     const handler = () => {
       const savedSelectedGroup = localStorage.getItem("selectedGroup");
-      const groupId = savedSelectedGroup ? parseInt(savedSelectedGroup, 10) : selectedGroup;
+      const groupId = savedSelectedGroup ? Number(savedSelectedGroup) : selectedGroup;
       if (groupId) {
         loadAssignmentsByGroupId(groupId);
       }
