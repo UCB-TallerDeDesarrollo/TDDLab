@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="{{CSS_PATH}}" />
+  <title>TDDLab Timeline Extension</title>
+</head>
+<body>
+  <h2>TDDLab Timeline</h2>
+  <div id="timeline-content">
+    {{TIMELINE_CONTENT}}
+  </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+    window.addEventListener('message', event => {
+      const message = event.data;
+      if (message.command === 'updateTimeline') {
+        document.getElementById('timeline-content').innerHTML = message.html;
+      }
+    });
+  </script>
+</body>
+</html>
