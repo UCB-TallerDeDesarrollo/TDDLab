@@ -76,6 +76,16 @@ export class UsersRepository implements UsersRepositoryInterface {
       throw error;
     }
   }
+   async updateUserById(id: number, updatedData: Partial<UserDataObject>): Promise<void> {
+    try {
+      await axios.put(`${API_URL}/changeNames/${id}`, updatedData, {  
+        withCredentials: true 
+      });
+    } catch (error) {
+      console.error("Error updating user by ID:", error);
+      throw error;
+    }
+  }
 }
 
 export default UsersRepository;
