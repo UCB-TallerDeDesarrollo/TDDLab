@@ -63,8 +63,11 @@
     };
     
     window.addEventListener('resize', fitAddon);
-    setTimeout(fitAddon, 200); 
+    setTimeout(fitAddon, 200);
     
+        // MOSTRAR PROMPT INICIAL INMEDIATAMENTE
+    term.write('$ ');
+    term.scrollToBottom();
     term.focus();
     
     let command = '';
@@ -103,15 +106,22 @@
           document.getElementById('timeline-content').innerHTML = message.html;
           break;
         case 'writeToTerminal':
-          { const text = message.text || '';
+          { 
+          const text = message.text || '';
           term.write(text);
-          if (text.endsWith('\r\n$ ')) {
+          term.scrollToBottom();
+          term.focus();
+          if (/\r?\n?\$ $/.test(text) || text.trim().endsWith('$')) {    
+//           term.write('\r\n');
             isExecuting = false;
           }
-          break; }
+          break;
+        }
         case 'clearTerminal':
           term.clear();
           term.write('$ ');
+          term.scrollToBottom();
+          term.focus();
           isExecuting = false;
           command = '';
           break;
