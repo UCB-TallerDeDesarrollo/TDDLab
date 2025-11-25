@@ -17,7 +17,8 @@
     "onView:tddTestExecution",
     "onCommand:TDD.runTest",
     "onCommand:TDD.openTerminal",
-    "onView:tddTerminalView"
+    "onView:tddTerminalView",
+    "onView:timelineView"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -68,12 +69,12 @@
       "panel": [
         {
           "id": "timelineContainer",
-          "title": "TDDLAB",
+          "title": "TDDLab TIMELINE",
           "icon": ""
         },
         {
           "id": "tddTerminalPanel",
-          "title": "TDD Terminal",
+          "title": "TDDLab Terminal",
           "icon": "resources/TddLab_v2.png"
         }
       ]
