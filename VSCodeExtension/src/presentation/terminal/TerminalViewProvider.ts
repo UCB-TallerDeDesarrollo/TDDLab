@@ -127,13 +127,15 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     if (!this.helpTextCache) {
       try {
         const helpPath = path.join(this.TEMPLATE_DIR, 'TerminalHelp.txt');
-        this.helpTextCache = await fs.readFile(helpPath, 'utf-8');
+        const helpContent = await fs.readFile(helpPath, 'utf-8');
+
+        this.helpTextCache = helpContent + '\r\n$ ';  
       } catch (error) {
         console.error('Error cargando TerminalHelp.txt:', error);
         this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n$ ';
       }
     }
-    this.sendToTerminal(this.helpTextCache);
+    this.sendToTerminal(this.helpTextCache, false, true);
   }
 
   private async updateTimelineInWebview() {
