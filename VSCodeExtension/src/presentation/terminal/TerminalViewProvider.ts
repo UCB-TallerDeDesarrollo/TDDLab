@@ -127,6 +127,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       await this.showHelp();
       return;
     }
+    
+    this.sendToTerminal('\r\n');
     // SOLO ejecuta el comando... NO imprimas el comando aquí
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
@@ -198,9 +200,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       this.webviewView.webview.postMessage({
         command: 'clearTerminal'
       });
-      setTimeout(() => {
-        this.sendPrompt();
-      }, 100);
     }
   }
 
