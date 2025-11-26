@@ -151,14 +151,14 @@ function Groups() {
       Time_Up: () =>
         [...groups].sort(
           (a, b) =>
-            new Date(a.creationDate).getTime() -
-            new Date(b.creationDate).getTime()
+            new Date(b.creationDate).getTime() -
+            new Date(a.creationDate).getTime()
         ),
       Time_Down: () =>
         [...groups].sort(
           (a, b) =>
-            new Date(b.creationDate).getTime() -
-            new Date(a.creationDate).getTime()
+            new Date(a.creationDate).getTime() -
+            new Date(b.creationDate).getTime()
         ),
     } as const;
 
