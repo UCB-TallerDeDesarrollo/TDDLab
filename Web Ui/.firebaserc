@@ -7,11 +7,18 @@
   "targets": {
     "tddlab-hosting-firebase": {
       "hosting": {
-        "production": ["tddlab-hosting-firebase"]
+        "production": [
+          "tddlab-hosting-firebase"
+        ]
       }
     },
     "tddlab-staging-firebase": {
-      "hosting": { "staging": ["tddlab-staging-firebase"] }
+      "hosting": {
+        "staging": [
+          "tddlab-staging-firebase"
+        ]
+      }
     }
-  }
+  },
+  "etags": {}
 }
