@@ -12,6 +12,7 @@ describe("RemoveUserFromGroup", () => {
       getUsers: jest.fn(),
       getUsersByGroupid: jest.fn(),
       getUserByEmail: jest.fn(),
+      getFilteredUsersByEmail: jest.fn(),
       updateUser: jest.fn(),
       removeUserFromGroup: jest.fn(),
     };

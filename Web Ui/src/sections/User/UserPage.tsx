@@ -47,7 +47,7 @@ const FilterContainer = styled("div")({
 // -------------------------------------------------
 
 function UserPage() {
-  const [users, setUsers] = useState<UserDataObject[]>([]);
+  const [, setUsers] = useState<UserDataObject[]>([]);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,7 +60,6 @@ function UserPage() {
   const getUsers = useMemo(() => new GetUsers(userRepository), [userRepository]);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
 
-  // Caso de uso Hexagonal
   const searchUsersByEmail = useMemo(
     () => new SearchUsersByEmail(userRepository),
     [userRepository]
