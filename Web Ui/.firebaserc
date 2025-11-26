@@ -9,6 +9,9 @@
       "hosting": {
         "production": [
           "tddlab-hosting-firebase"
+        ],
+        "staging": [
+          "tddlab-staging-firebase"
         ]
       }
     },
