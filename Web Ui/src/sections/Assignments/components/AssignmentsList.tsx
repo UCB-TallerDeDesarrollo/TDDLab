@@ -140,7 +140,7 @@ function Assignments({
     const allGroups = await getUserGroups();
     setGroupList(allGroups);
 
-    const groupIdFromURL = new URLSearchParams(window.location.search).get("groupId");
+    const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
     const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
 
     const savedSelectedGroup = localStorage.getItem("selectedGroup");
@@ -184,13 +184,13 @@ useEffect(() => {
   useEffect(() => {
     const handler = () => {
       const savedSelectedGroup = localStorage.getItem("selectedGroup");
-      const groupId = savedSelectedGroup ? parseInt(savedSelectedGroup, 10) : selectedGroup;
+      const groupId = savedSelectedGroup ? Number(savedSelectedGroup) : selectedGroup;
       if (groupId) {
         loadAssignmentsByGroupId(groupId);
       }
     };
-    window.addEventListener('assignment-updated', handler as EventListener);
-    return () => window.removeEventListener('assignment-updated', handler as EventListener);
+    globalThis.addEventListener('assignment-updated', handler as EventListener);
+    return () => globalThis.removeEventListener('assignment-updated', handler as EventListener);
   }, [selectedGroup]);
 
   useEffect(() => {

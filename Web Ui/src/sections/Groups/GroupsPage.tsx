@@ -328,7 +328,7 @@ function Groups() {
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Estudiantes" arrow>
+                      <Tooltip title="Participantes" arrow>
                         <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
                           <GroupsIcon />
                         </IconButton>
