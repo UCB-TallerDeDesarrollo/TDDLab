@@ -33,7 +33,11 @@ class AuthRepository implements AuthDBRepositoryInterface {
       } else {
         throw new Error("Failed to get user Course");
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.error || "Error al obtener información del usuario";
+        throw new Error(errorMessage);
+      }
       console.error("Error fetching user course:", error);
       throw error;
     }
@@ -49,7 +53,11 @@ class AuthRepository implements AuthDBRepositoryInterface {
       } else {
         throw new Error("Failed to get user Course");
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.error || "Error al obtener información del usuario";
+        throw new Error(errorMessage);
+      }
       console.error("Error fetching user course:", error);
       throw error;
     }

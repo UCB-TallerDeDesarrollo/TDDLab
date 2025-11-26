@@ -37,27 +37,31 @@ export class CheckIfUserHasAccount {
         console.log('User does not have a group ID.');
         return null;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking user account:', error);
-      throw error; // Ensure the error is propagated
+      // Propagar el error con el mensaje original del servidor
+      if (error.message) {
+        throw new Error(error.message);
+      }
+      throw error;
     }
   }
 
   async userHasAnAccountWithGoogleToken(idToken: string) {
     try {
       const answerData: UserOnDb = await this.adapter.getAccountInfoWithGoogleToken(idToken);
-      console.log('User data retrieved:', answerData);
       
       if (answerData.groupid) {
-        console.log('User has a group ID:', answerData.groupid);
         return answerData;
       } else {
-        console.log('User does not have a group ID.');
         return null;
       }
-    } catch (error) {
-      console.error('Error checking user account:', error);
-      throw error; // Ensure the error is propagated
+    } catch (error: any) {
+      // Propagar el error con el mensaje original del servidor
+      if (error.message) {
+        throw new Error(error.message);
+      }
+      throw error;
     }
   }
 }
