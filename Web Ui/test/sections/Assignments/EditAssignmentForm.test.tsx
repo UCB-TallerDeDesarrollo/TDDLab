@@ -46,8 +46,8 @@ jest.mock("../../../src/modules/Assignments/application/UpdateAssignment", () =>
   };
 });
 
-// Mock de window.dispatchEvent
-Object.defineProperty(window, 'dispatchEvent', {
+// Mock de globalThis.dispatchEvent
+Object.defineProperty(globalThis, 'dispatchEvent', {
   value: jest.fn(),
 });
 

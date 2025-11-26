@@ -1,0 +1,21 @@
+
+┌───[TDDLab - Comandos]─────────────────────────────┐
+│                                                   │
+│  Comandos locales:                                │
+│    clear     - Limpiar terminal                   │
+│    help, ?   - Mostrar esta ayuda                 │
+│                                                   │
+│  Comandos del sistema:                            │
+│    Cualquier comando se ejecuta en tiempo real    │
+│    y muestra la salida directamente aquí          │
+│                                                   │
+│  Control:                                         │
+│    Ctrl+C    - Cancelar comando en ejecución      │
+│                                                   │
+│  Ejemplos:                                        │
+│    npm test  - Ejecutar tests                     │
+│    git status - Estado de Git                     │
+│    ls -la    - Listar archivos                    │
+│    pwd       - Directorio actual                  │
+│                                                   │
+└───────────────────────────────────────────────────┘

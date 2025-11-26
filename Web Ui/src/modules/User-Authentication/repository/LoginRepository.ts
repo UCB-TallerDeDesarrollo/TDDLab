@@ -33,7 +33,31 @@ class AuthRepository implements AuthDBRepositoryInterface {
       } else {
         throw new Error("Failed to get user Course");
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.error || "Error al obtener información del usuario";
+        throw new Error(errorMessage);
+      }
+      console.error("Error fetching user course:", error);
+      throw error;
+    }
+  }
+
+  async getAccountInfoWithGoogleToken(idToken: string): Promise<UserOnDb> {
+    try {
+      const response = await axios.post(API_URL + "/user/google",
+      { idToken },
+      { withCredentials: true } );
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error("Failed to get user Course");
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.error || "Error al obtener información del usuario";
+        throw new Error(errorMessage);
+      }
       console.error("Error fetching user course:", error);
       throw error;
     }
@@ -59,6 +83,30 @@ class AuthRepository implements AuthDBRepositoryInterface {
 
     throw new Error("Error saving user");
 
+  }
+}
+
+  async registerAccountWithGoogle(idToken: string, groupid: number, role: string): Promise<void> {
+    try {
+      const response = await axios.post(API_URL + "/user/register/google", {
+        idToken,
+        groupid,
+        role,
+      });
+
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error("No tiene permisos para registrar administradores");
+        }
+
+        throw new Error(
+          error.response.data?.error || "Error al registrar usuario con Google"
+        );
+      }
+
+      throw new Error("Error saving user with Google");
   }
 }
 
