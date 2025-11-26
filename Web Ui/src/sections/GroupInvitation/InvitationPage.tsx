@@ -4,6 +4,7 @@ import firebase from "../../firebaseConfig";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import GoogleIcon from "@mui/icons-material/Google";
 import { UserOnDb } from "../../modules/User-Authentication/domain/userOnDb.interface";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -11,6 +12,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CircularProgress, Grid } from "@mui/material";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
+import { handleSignInWithGoogle } from "../../modules/User-Authentication/application/signInWithGoogle";
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
@@ -38,11 +40,23 @@ function InvitationPage() {
   const [_popupMessage, setPopupMessage] = useState("");
   const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [isLoading, setIsLoading] = useState(false);
+  const [authProvider, setAuthProvider] = useState<"github" | "google" | null>(null);
   const dbAuthPort = new RegisterUserOnDb();
   useEffect(() => {
     const auth = getAuth(firebase);
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
+      if (authUser) {
+        const providerData = authUser.providerData;
+        if (providerData && providerData.length > 0) {
+          const providerId = providerData[0].providerId;
+          if (providerId === "google.com") {
+            setAuthProvider("google");
+          } else if (providerId === "github.com") {
+            setAuthProvider("github");
+          }
+        }
+      }
     });
     return () => {
       unsubscribe();
@@ -57,6 +71,20 @@ function InvitationPage() {
       const userData = await handleSignInWithGitHub();
       if (userData) {
         setUser(userData);
+        setAuthProvider("github");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignUpWithGoogle = async () => {
+    setIsLoading(true);
+    try {
+      const userData = await handleSignInWithGoogle();
+      if (userData) {
+        setUser(userData);
+        setAuthProvider("google");
       }
     } finally {
       setIsLoading(false);
@@ -106,13 +134,20 @@ function InvitationPage() {
     setIsLoading(true);
     try {
       if (user?.email) {
-        const userObj: UserOnDb = {
-          email: user.email,
-          groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
-          role: type,
-        };
+        const userGroupid = typeof groupid === "number" ? groupid : Number(groupid) || 1;
+        
         try {
-          await dbAuthPort.register(userObj);
+          if (authProvider === "google") {
+            const idToken = await user.getIdToken();
+            await dbAuthPort.registerWithGoogle(idToken, userGroupid, type);
+          } else {
+            const userObj: UserOnDb = {
+              email: user.email,
+              groupid: userGroupid,
+              role: type,
+            };
+            await dbAuthPort.register(userObj);
+          }
         } catch (error) {
           setPopupMessage("El usuario ya tiene un grupo asignado.");
           setOpenPopup(true);
@@ -295,7 +330,7 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
+          {showPopUp && <SuccessfulEnrollmentPopUp authProvider={authProvider}></SuccessfulEnrollmentPopUp>}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
         </div>
       ) : (
@@ -308,18 +343,66 @@ function InvitationPage() {
           style={{ minHeight: "100vh" }}
         >
           <Grid item>
-            <Button color="primary" onClick={handleSignUp} disabled={isLoading}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+            <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
+              <Button 
+                onClick={handleSignUp} 
+                disabled={isLoading}
+                variant="contained"
+                sx={{ 
+                  backgroundColor: "#24292e",
+                  color: "white",
+                  padding: "10px 20px",
+                  textTransform: "uppercase",
+                  fontWeight: 500,
+                  "&:hover": { 
+                    backgroundColor: "#1a1e22"
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#ccc"
+                  }
                 }}
               >
-                <GitHubIcon style={{ marginRight: "8px" }} />
-                Registrarse
-              </div>
-            </Button>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <GitHubIcon style={{ marginRight: "8px" }} />
+                  Registrarse con GitHub
+                </div>
+              </Button>
+              <Button 
+                onClick={handleSignUpWithGoogle} 
+                disabled={isLoading}
+                variant="contained"
+                sx={{ 
+                  backgroundColor: "#4285f4",
+                  color: "white",
+                  padding: "10px 20px",
+                  textTransform: "uppercase",
+                  fontWeight: 500,
+                  "&:hover": { 
+                    backgroundColor: "#3367d6"
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#ccc"
+                  }
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <GoogleIcon style={{ marginRight: "8px" }} />
+                  Registrarse con Google
+                </div>
+              </Button>
+            </div>
           </Grid>
         </Grid>
       )}
