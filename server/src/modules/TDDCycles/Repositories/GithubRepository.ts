@@ -10,6 +10,7 @@ import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 import axios from "axios";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
+import { TDDLogEntry } from "../Domain/ITDDLogEntry";
 
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
@@ -125,6 +126,22 @@ export class GithubRepository implements IGithubRepository {
       throw error;
     }
   }
+
+  async obtainTDDLogs(owner: string, repoName: string): Promise<TDDLogEntry[]> {
+  try {
+    const tddLogUrl = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+    const response = await axios.get<TDDLogEntry[]>(tddLogUrl);
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error obtaining TDD logs from GitHub:", error);
+    throw error;
+  }
+}
 
   async getCommitInfoForTDDCycle(
     owner: string,
