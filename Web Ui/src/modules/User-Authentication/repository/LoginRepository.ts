@@ -107,8 +107,8 @@ class AuthRepository implements AuthDBRepositoryInterface {
       }
 
       throw new Error("Error saving user with Google");
-    }
   }
+}
 
 
   async verifyPassword(password: string): Promise<boolean> {
