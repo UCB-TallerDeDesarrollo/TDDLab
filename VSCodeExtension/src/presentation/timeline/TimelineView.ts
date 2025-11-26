@@ -20,12 +20,20 @@ export class TimelineView implements vscode.WebviewViewProvider {
   > = TimelineView._onTimelineUpdated.event;
 
   private lastTimelineData: Array<Timeline | CommitPoint> = [];
+  private readonly TIMELINE_STORAGE_KEY = 'tddTimelineData';
+  private forceUpdateRequested: boolean = false;
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
     this.getTimeline = new GetTimeline(rootPath);
     this.getLastPoint = new GetLastPoint(context);
+
+    // Cargar timeline guardado inmediatamente
+    const savedTimeline = context.globalState.get(this.TIMELINE_STORAGE_KEY, []);
+    if (savedTimeline && savedTimeline.length > 0) {
+      this.lastTimelineData = savedTimeline;
+    }
 
     this.startTimelinePolling();
   }
@@ -51,27 +59,56 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
   async showTimeline(webview: vscode.Webview): Promise<void> {
     try {
+      // Forzar actualización inmediata al mostrar el timeline
       const timeline = await this.getTimeline.execute();
       webview.html = this.generateHtml(timeline, webview);
       this.updateTimelineCache(timeline);
     } catch (err: any) {
       console.error('[TimelineView] Error al mostrar timeline:', err);
-      webview.html = `
-        <h2>TDDLab Timeline</h2>
-        <p style="color:gray;">⚠️ Timeline no disponible</p>
-        <p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline</p>
-      `;
+      // Mostrar datos guardados en caso de error
+      webview.html = this.generateHtml(this.lastTimelineData, webview);
     }
   }
 
   public async getTimelineHtml(webview: vscode.Webview): Promise<string> {
     try {
+      // Siempre obtener datos frescos para el HTML
       const timeline = await this.getTimeline.execute();
       console.log('[TimelineView] Timeline items count:', timeline.length);
+      
+      // Actualizar cache con los datos frescos
+      this.updateTimelineCache(timeline);
+      
       return this.generateHtmlFragment(timeline, webview);
     } catch (err: any) {
       console.error('[TimelineView] Error al generar HTML del timeline:', err);
-      return `<p style="color:#666;font-size:12px;">Sin timeline disponible</p>`;
+      // Usar datos guardados en caso de error
+      return this.generateHtmlFragment(this.lastTimelineData, webview);
+    }
+  }
+
+  // Nuevo método: forzar actualización inmediata
+  public async forceTimelineUpdate(): Promise<void> {
+    try {
+      console.log('[TimelineView] Forzando actualización inmediata del timeline');
+      const currentTimeline = await this.getTimeline.execute();
+      
+      if (this.hasTimelineChanged(currentTimeline)) {
+        this.updateTimelineCache(currentTimeline);
+        
+        // Notificar a todas las vistas webview
+        if (this.currentWebview) {
+          this.currentWebview.postMessage({
+            command: 'updateTimeline',
+            html: this.generateHtmlFragment(currentTimeline, this.currentWebview),
+          });
+        }
+        
+        // También notificar a través del event emitter
+        TimelineView._onTimelineUpdated.fire(currentTimeline);
+      }
+    } catch (error) {
+      console.error('[TimelineView] Error en actualización forzada:', error);
     }
   }
 
@@ -84,7 +121,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
         const currentTimeline = await this.getTimeline.execute();
         consecutiveErrors = 0;
 
-        if (this.hasTimelineChanged(currentTimeline)) {
+        if (this.hasTimelineChanged(currentTimeline) || this.forceUpdateRequested) {
           this.updateTimelineCache(currentTimeline);
           if (this.currentWebview) {
             this.currentWebview.postMessage({
@@ -92,6 +129,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
               html: this.generateHtmlFragment(currentTimeline, this.currentWebview),
             });
           }
+          this.forceUpdateRequested = false;
         }
       } catch (err: any) {
         consecutiveErrors++;
@@ -100,7 +138,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
           console.warn('[TimelineView] Timeline no disponible tras múltiples intentos.');
         }
       }
-    }, 4000);
+    }, 2000); // Reducido a 2 segundos para mayor responsividad
   }
 
   private hasTimelineChanged(newTimeline: Array<Timeline | CommitPoint>): boolean {
@@ -109,19 +147,27 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
   private updateTimelineCache(timeline: Array<Timeline | CommitPoint>): void {
     this.lastTimelineData = [...timeline];
+    // Guardar inmediatamente en el estado global
+    this.context.globalState.update(this.TIMELINE_STORAGE_KEY, timeline);
     TimelineView._onTimelineUpdated.fire(timeline);
+    
+    console.log(`[TimelineView] Timeline guardado con ${timeline.length} elementos`);
   }
 
   private generateHtmlFragment(
     timeline: Array<Timeline | CommitPoint>,
     webview: vscode.Webview
   ): string {
+    if (!timeline || timeline.length === 0) {
+      return '<p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline de TDD</p>';
+    }
+
     const gitLogoUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.context.extensionUri, 'images', 'git.png')
     );
     const regex = /refactor/i;
 
-    return timeline
+    const htmlContent = timeline
       .slice()
       .reverse()
       .map((point) => {
@@ -161,6 +207,8 @@ export class TimelineView implements vscode.WebviewViewProvider {
         return '';
       })
       .join('');
+
+    return htmlContent || '<p style="color:#666;font-size:12px;">Sin datos de timeline</p>';
   }
 
   private generateHtml(

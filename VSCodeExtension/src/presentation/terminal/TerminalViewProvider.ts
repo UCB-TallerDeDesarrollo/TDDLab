@@ -32,9 +32,13 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     
     this.terminalPort.setOnOutputCallback((output: string) => {
       this.sendToTerminal(output);
+      // Detectar cuando se completan tests y forzar actualización del timeline
+      if (this.isTestOutput(output)) {
+        this.forceTimelineUpdate();
+      }
     });
 
-    // Suscribirse a actualizaciones del timeline si está disponible
+    // Suscribirse a actualizaciones del timeline
     if (typeof (TimelineView as any).onTimelineUpdated === 'function') {
       (TimelineView as any).onTimelineUpdated(async () => {
         await this.updateTimelineInWebview();
@@ -118,17 +122,19 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     // Procesar mensajes pendientes
     this.processPendingMessages();
 
-    // Actualizar timeline
+    // Actualizar timeline inmediatamente
     setTimeout(async () => {
       await this.updateTimelineInWebview();
+      // Forzar una actualización del timeline al cargar
+      this.forceTimelineUpdate();
     }, 100);
   }
 
   private processPendingMessages(): void {
     if (this.isWebviewReady && this.pendingMessages.length > 0) {
-      for (const message of this.pendingMessages) {
+      this.pendingMessages.forEach(message => {
         this.sendToWebview(message);
-      }
+      });
       this.pendingMessages = [];
     }
   }
@@ -163,8 +169,38 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
+      
+      // Forzar actualización del timeline después de comandos que puedan afectar tests
+      if (this.isTestRelatedCommand(trimmedCommand)) {
+        setTimeout(() => {
+          this.forceTimelineUpdate();
+        }, 1000);
+      }
     } catch (error: any) {
       this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n$ `);
+    }
+  }
+
+  private isTestRelatedCommand(command: string): boolean {
+    const testCommands = ['npm test', 'jest', 'mocha', 'test', 'npm run test'];
+    return testCommands.some(testCmd => command.includes(testCmd));
+  }
+
+  private isTestOutput(output: string): boolean {
+    const testIndicators = [
+      'Tests:', 'passed', 'failed', '✓', '×', 'PASS', 'FAIL',
+      'Test Suites:', 'test.js', 'spec.js'
+    ];
+    return testIndicators.some(indicator => output.includes(indicator));
+  }
+
+  private async forceTimelineUpdate(): Promise<void> {
+    try {
+      if (this.timelineView && typeof (this.timelineView as any).forceTimelineUpdate === 'function') {
+        await (this.timelineView as any).forceTimelineUpdate();
+      }
+    } catch (error) {
+      console.error('[TerminalViewProvider] Error forzando actualización del timeline:', error);
     }
   }
 
@@ -212,6 +248,13 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
   public async executeCommand(command: string) {
     await this.executeRealCommand(command);
+    
+    // Forzar actualización del timeline para comandos de test
+    if (this.isTestRelatedCommand(command)) {
+      setTimeout(() => {
+        this.forceTimelineUpdate();
+      }, 1500);
+    }
   }
 
   public clearTerminal() {
