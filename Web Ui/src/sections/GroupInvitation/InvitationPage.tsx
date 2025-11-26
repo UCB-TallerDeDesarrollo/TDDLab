@@ -330,7 +330,7 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp></SuccessfulEnrollmentPopUp>}
+          {showPopUp && <SuccessfulEnrollmentPopUp authProvider={authProvider}></SuccessfulEnrollmentPopUp>}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
         </div>
       ) : (
@@ -344,7 +344,24 @@ function InvitationPage() {
         >
           <Grid item>
             <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
-              <Button color="primary" onClick={handleSignUp} disabled={isLoading}>
+              <Button 
+                onClick={handleSignUp} 
+                disabled={isLoading}
+                variant="contained"
+                sx={{ 
+                  backgroundColor: "#24292e",
+                  color: "white",
+                  padding: "10px 20px",
+                  textTransform: "uppercase",
+                  fontWeight: 500,
+                  "&:hover": { 
+                    backgroundColor: "#1a1e22"
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#ccc"
+                  }
+                }}
+              >
                 <div
                   style={{
                     display: "flex",
@@ -356,7 +373,24 @@ function InvitationPage() {
                   Registrarse con GitHub
                 </div>
               </Button>
-              <Button color="primary" onClick={handleSignUpWithGoogle} disabled={isLoading}>
+              <Button 
+                onClick={handleSignUpWithGoogle} 
+                disabled={isLoading}
+                variant="contained"
+                sx={{ 
+                  backgroundColor: "#4285f4",
+                  color: "white",
+                  padding: "10px 20px",
+                  textTransform: "uppercase",
+                  fontWeight: 500,
+                  "&:hover": { 
+                    backgroundColor: "#3367d6"
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#ccc"
+                  }
+                }}
+              >
                 <div
                   style={{
                     display: "flex",
