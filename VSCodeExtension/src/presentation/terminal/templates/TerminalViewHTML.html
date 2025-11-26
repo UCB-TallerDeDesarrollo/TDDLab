@@ -20,6 +20,10 @@
   <script>
     const vscode = acquireVsCodeApi();
     
+        // función para pedir el prompt real al backend
+    function requestPrompt() {
+      vscode.postMessage({ command: 'requestPrompt' });
+    }
     const term = new Terminal({ 
       cursorBlink: true,
       cols: 80,
@@ -65,10 +69,12 @@
     window.addEventListener('resize', fitAddon);
     setTimeout(fitAddon, 200);
     
-        // MOSTRAR PROMPT INICIAL INMEDIATAMENTE
-    term.write('$ ');
-    term.scrollToBottom();
-    term.focus();
+    // PIDE EL PROMPT AL BACKEND
+    requestPrompt();
+    setTimeout(() => {
+      term.scrollToBottom();
+      term.focus();
+    }, 0);
     
     let command = '';
     let isExecuting = false;
@@ -81,8 +87,11 @@
           vscode.postMessage({ command: 'executeCommand', text: command });
           command = '';
         } else if (!isExecuting) {
-          term.write('\r\n$ ');
-        }
+          requestPrompt();
+          setTimeout(() => {
+            term.scrollToBottom();
+            term.focus();
+          }, 0);  }
       } else if (code === 127) { 
         if (command.length > 0 && !isExecuting) {
           command = command.slice(0, -1);
@@ -92,7 +101,6 @@
         term.write('^C');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
-        term.write('\r\n$ ');
       } else if (code >= 32 && code <= 126 && !isExecuting) {
         command += data;
         term.write(data);
@@ -109,19 +117,26 @@
           { 
           const text = message.text || '';
           term.write(text);
-          term.scrollToBottom();
-          term.focus();
-          if (/\r?\n?\$ $/.test(text) || text.trim().endsWith('$')) {    
-//           term.write('\r\n');
+          setTimeout(() => {
+            term.scrollToBottom();
+            term.focus();
+          }, 0);
+          if (/\r?\n?.+> $/.test(text)) {
             isExecuting = false;
           }
+          setTimeout(() => {
+            term.scrollToBottom();
+            term.focus();
+          }, 0);
           break;
         }
         case 'clearTerminal':
           term.clear();
-          term.write('$ ');
-          term.scrollToBottom();
-          term.focus();
+          requestPrompt();
+          setTimeout(() => {
+            term.scrollToBottom();
+            term.focus();
+          }, 0);
           isExecuting = false;
           command = '';
           break;

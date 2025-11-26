@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'node:path';
-import * as fs from 'node:fs/promises'; 
+import * as fs from 'node:fs/promises';
 import { TimelineView } from '../timeline/TimelineView';
 import { TerminalPort } from '../../domain/model/TerminalPort';
 
@@ -36,6 +36,12 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  // NUEVO: Método para obtener el cwd real del workspace (NO process.cwd())
+  private getWorkingDirectory(): string {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    return workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
+  }
+
   async resolveWebviewView(
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext,
@@ -52,18 +58,19 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
 
     webviewView.webview.html = await this.getHtml(webviewView.webview, timelineHtml);
-    
+
     webviewView.webview.onDidReceiveMessage(async (message) => {
       await this.handleWebviewMessage(message);
     });
 
-    if (this.terminalBuffer && this.terminalBuffer.trim() !== '' && this.terminalBuffer !== '$ ') {
+    // Restaurar buffer solo si existe, si no pedir prompt inicial real
+    if (this.terminalBuffer && this.terminalBuffer.trim() !== '') {
       this.webviewView?.webview.postMessage({
         command: 'writeToTerminal',
         text: this.terminalBuffer
       });
     } else {
-      this.sendToTerminal('\r\nBienvenido a la Terminal TDD\r\n$ ');
+      this.sendPrompt();
     }
 
     setTimeout(async () => {
@@ -73,20 +80,31 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     console.log('[TerminalViewProvider] Webview inicializada ✅');
   }
 
+  // Cambia el prompt para que use el cwd del workspace
+  private sendPrompt(): void {
+    const cwd = this.getWorkingDirectory();
+    const promptString = `\r\n${cwd} > `;
+    this.sendToTerminal(promptString);
+  }
+
   private async handleWebviewMessage(message: any): Promise<void> {
     switch (message.command) {
       case 'executeCommand':
         await this.executeRealCommand(message.text);
         break;
-      
+
       case 'requestTimelineUpdate':
         await this.updateTimelineInWebview();
         break;
-      
+
       case 'killCommand':
         this.killCurrentCommand();
         break;
-      
+
+      case 'requestPrompt':
+        this.sendPrompt();
+        break;
+
       default:
         console.warn(`Comando no reconocido: ${message.command}`);
     }
@@ -94,28 +112,27 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
   private async executeRealCommand(command: string): Promise<void> {
     if (!command.trim()) {
-      this.sendToTerminal('$ ');
+      this.sendPrompt();
       return;
     }
 
     const trimmedCommand = command.trim();
-    
+
     if (trimmedCommand === 'clear') {
       this.clearTerminal();
       return;
     }
-    
+
     if (trimmedCommand === 'help' || trimmedCommand === '?') {
       await this.showHelp();
       return;
     }
-
-    this.sendToTerminal(`\r\n$ ${trimmedCommand}\r\n`);
-
+    // SOLO ejecuta el comando... NO imprimas el comando aquí
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
     } catch (error: any) {
-      this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n$ `);
+      this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n`);
+      this.sendPrompt();
     }
   }
 
@@ -130,10 +147,11 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         this.helpTextCache = await fs.readFile(helpPath, 'utf-8');
       } catch (error) {
         console.error('Error cargando TerminalHelp.txt:', error);
-        this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n$ ';
+        this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n';
       }
     }
     this.sendToTerminal(this.helpTextCache);
+    this.sendPrompt();
   }
 
   private async updateTimelineInWebview() {
@@ -150,12 +168,16 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  // Guarda en buffer solo la salida real, NO el prompt
   public sendToTerminal(message: string, isRestoring: boolean = false) {
-    if (!isRestoring) {
+    if (
+      !isRestoring &&
+      !/\r?\n?.+> $/.test(message)
+    ) {
       this.terminalBuffer += message;
       this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
     }
-    
+
     if (this.webviewView) {
       this.webviewView.webview.postMessage({
         command: 'writeToTerminal',
@@ -171,13 +193,13 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   public clearTerminal() {
     this.terminalBuffer = '';
     this.context.globalState.update(this.BUFFER_STORAGE_KEY, '');
-    
+
     if (this.webviewView) {
       this.webviewView.webview.postMessage({
         command: 'clearTerminal'
       });
       setTimeout(() => {
-        this.sendToTerminal('$ ');
+        this.sendPrompt();
       }, 100);
     }
   }
@@ -194,5 +216,4 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     return htmlContent;
   }
-  
 }
