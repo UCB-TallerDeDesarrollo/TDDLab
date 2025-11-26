@@ -20,6 +20,11 @@
   <script>
     const vscode = acquireVsCodeApi();
     
+    // Estado del terminal
+    let terminalContent = '';
+    let currentCommand = '';
+    let isExecuting = false;
+
     const term = new Terminal({ 
       cursorBlink: true,
       cols: 80,
@@ -35,63 +40,60 @@
     const terminalElement = document.getElementById('terminal');
     term.open(terminalElement);
     
+    // Ajustar tamaño después de inicializar
     setTimeout(() => {
-      const xtermRows = terminalElement.querySelector('.xterm-rows');
-      if (xtermRows) {
-        xtermRows.style.textAlign = 'left';
-        xtermRows.style.paddingLeft = '0';
-        xtermRows.style.marginLeft = '0';
-        xtermRows.style.width = '100%';
-      }
-      const xtermScreen = terminalElement.querySelector('.xterm-screen');
-      if (xtermScreen) {
-        xtermScreen.style.textAlign = 'left';
-        xtermScreen.style.paddingLeft = '0';
-        xtermScreen.style.marginLeft = '0';
-      }
-    }, 100);
-    
-    const fitAddon = () => {
       const container = document.querySelector('.terminal-wrapper');
       if (container) {
         const width = container.offsetWidth;
         const height = container.offsetHeight;
-        const cols = Math.floor((width - 20) / 9); 
-        const rows = Math.floor(height / 17); 
+        const cols = Math.floor((width - 20) / 9);
+        const rows = Math.floor(height / 17);
         term.resize(cols, rows);
       }
-    };
+    }, 100);
     
-    window.addEventListener('resize', fitAddon);
-    setTimeout(fitAddon, 200); 
+    window.addEventListener('resize', () => {
+      const container = document.querySelector('.terminal-wrapper');
+      if (container) {
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+        const cols = Math.floor((width - 20) / 9);
+        const rows = Math.floor(height / 17);
+        term.resize(cols, rows);
+      }
+    });
     
+    // Notificar que el webview está listo
+    vscode.postMessage({ command: 'webviewReady' });
+
     term.focus();
     
-    let command = '';
-    let isExecuting = false;
-
     term.onData(data => {
       const code = data.codePointAt(0);
-      if (code === 13) { 
-        if (command.trim() && !isExecuting) {
+      if (code === 13) { // Enter
+        if (currentCommand.trim() && !isExecuting) {
           isExecuting = true;
-          vscode.postMessage({ command: 'executeCommand', text: command });
-          command = '';
+          vscode.postMessage({ command: 'executeCommand', text: currentCommand });
+          currentCommand = '';
         } else if (!isExecuting) {
           term.write('\r\n$ ');
+          terminalContent += '\r\n$ ';
+          vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
         }
-      } else if (code === 127) { 
-        if (command.length > 0 && !isExecuting) {
-          command = command.slice(0, -1);
+      } else if (code === 127) { // Backspace
+        if (currentCommand.length > 0 && !isExecuting) {
+          currentCommand = currentCommand.slice(0, -1);
           term.write('\b \b');
         }
-      } else if (code === 3) { 
+      } else if (code === 3) { // Ctrl+C
         term.write('^C');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
         term.write('\r\n$ ');
+        terminalContent += '\r\n$ ';
+        vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
       } else if (code >= 32 && code <= 126 && !isExecuting) {
-        command += data;
+        currentCommand += data;
         term.write(data);
       }
     });
@@ -102,19 +104,38 @@
         case 'updateTimeline':
           document.getElementById('timeline-content').innerHTML = message.html;
           break;
-        case 'writeToTerminal':
-          { const text = message.text || '';
+          
+        case 'writeToTerminal': {
+          const text = message.text || '';
           term.write(text);
-          if (text.endsWith('\r\n$ ')) {
+          terminalContent += text;
+          vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
+          
+          if (text.endsWith('\r\n$ ') || text.endsWith('$ ')) {
             isExecuting = false;
           }
-          break; }
-        case 'clearTerminal':
+          break;
+        }
+          
+        case 'clearTerminal': {
           term.clear();
           term.write('$ ');
+          currentCommand = '';
           isExecuting = false;
-          command = '';
+          terminalContent = '$ ';
+          vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
           break;
+        }
+          
+        case 'restoreContent': {
+          term.clear();
+          const content = message.content || '$ ';
+          term.write(content);
+          terminalContent = content;
+          currentCommand = '';
+          isExecuting = false;
+          break;
+        }
       }
     });
   </script>

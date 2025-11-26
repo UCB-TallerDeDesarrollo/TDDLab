@@ -10,9 +10,13 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private webviewView?: vscode.WebviewView;
   private readonly timelineView: TimelineView;
   private readonly terminalPort: TerminalPort;
-  private terminalBuffer: string = '';
+  
+  // Estado persistente mejorado
+  private terminalContent: string = '';
+  private isWebviewReady: boolean = false;
+  private pendingMessages: Array<{command: string, text?: string}> = [];
 
-  private readonly BUFFER_STORAGE_KEY = 'tddTerminalBuffer';
+  private readonly CONTENT_STORAGE_KEY = 'tddTerminalContent';
   private readonly TEMPLATE_DIR: string;
   private helpTextCache: string | undefined;
 
@@ -23,12 +27,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     this.TEMPLATE_DIR = path.join(this.context.extensionPath, 'src', 'presentation', 'terminal', 'templates');
 
-    this.terminalBuffer = context.globalState.get(this.BUFFER_STORAGE_KEY, '');
-
+    // Cargar contenido persistente al inicializar
+    this.terminalContent = context.globalState.get(this.CONTENT_STORAGE_KEY, '');
+    
     this.terminalPort.setOnOutputCallback((output: string) => {
       this.sendToTerminal(output);
     });
 
+    // Suscribirse a actualizaciones del timeline si está disponible
     if (typeof (TimelineView as any).onTimelineUpdated === 'function') {
       (TimelineView as any).onTimelineUpdated(async () => {
         await this.updateTimelineInWebview();
@@ -42,7 +48,12 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     _token: vscode.CancellationToken
   ) {
     this.webviewView = webviewView;
-    webviewView.webview.options = { enableScripts: true };
+    webviewView.webview.options = { 
+      enableScripts: true,
+      localResourceRoots: [
+        vscode.Uri.joinPath(this.context.extensionUri, 'src', 'presentation', 'terminal', 'templates')
+      ]
+    };
 
     let timelineHtml = '<p style="color: gray;">Timeline no disponible 🚨</p>';
     try {
@@ -57,19 +68,9 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       await this.handleWebviewMessage(message);
     });
 
-    if (this.terminalBuffer && this.terminalBuffer.trim() !== '' && this.terminalBuffer !== '$ ') {
-      this.webviewView?.webview.postMessage({
-        command: 'writeToTerminal',
-        text: this.terminalBuffer
-      });
-    } else {
-      this.sendToTerminal('\r\nBienvenido a la Terminal TDD\r\n$ ');
-    }
-
-    setTimeout(async () => {
-      await this.updateTimelineInWebview();
-    }, 500);
-
+    // Inicializar estado
+    this.isWebviewReady = false;
+    
     console.log('[TerminalViewProvider] Webview inicializada ✅');
   }
 
@@ -87,8 +88,56 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         this.killCurrentCommand();
         break;
       
+      case 'webviewReady':
+        this.handleWebviewReady();
+        break;
+      
+      case 'contentUpdate':
+        this.terminalContent = message.content;
+        this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
+        break;
+      
       default:
         console.warn(`Comando no reconocido: ${message.command}`);
+    }
+  }
+
+  private handleWebviewReady(): void {
+    this.isWebviewReady = true;
+    
+    // Restaurar contenido persistente
+    if (this.terminalContent && this.terminalContent.trim() !== '') {
+      this.sendToWebview({
+        command: 'restoreContent',
+        content: this.terminalContent
+      });
+    } else {
+      this.sendToTerminal('\r\nBienvenido a la Terminal TDD\r\n$ ');
+    }
+
+    // Procesar mensajes pendientes
+    this.processPendingMessages();
+
+    // Actualizar timeline
+    setTimeout(async () => {
+      await this.updateTimelineInWebview();
+    }, 100);
+  }
+
+  private processPendingMessages(): void {
+    if (this.isWebviewReady && this.pendingMessages.length > 0) {
+      for (const message of this.pendingMessages) {
+        this.sendToWebview(message);
+      }
+      this.pendingMessages = [];
+    }
+  }
+
+  private sendToWebview(message: any): void {
+    if (this.webviewView && this.isWebviewReady) {
+      this.webviewView.webview.postMessage(message);
+    } else {
+      this.pendingMessages.push(message);
     }
   }
 
@@ -140,7 +189,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     if (this.webviewView) {
       try {
         const newTimelineHtml = await this.timelineView.getTimelineHtml(this.webviewView.webview);
-        this.webviewView.webview.postMessage({
+        this.sendToWebview({
           command: 'updateTimeline',
           html: newTimelineHtml
         });
@@ -150,18 +199,15 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  public sendToTerminal(message: string, isRestoring: boolean = false) {
-    if (!isRestoring) {
-      this.terminalBuffer += message;
-      this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
-    }
+  public sendToTerminal(message: string) {
+    // Actualizar contenido persistente
+    this.terminalContent += message;
+    this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
     
-    if (this.webviewView) {
-      this.webviewView.webview.postMessage({
-        command: 'writeToTerminal',
-        text: message
-      });
-    }
+    this.sendToWebview({
+      command: 'writeToTerminal',
+      text: message
+    });
   }
 
   public async executeCommand(command: string) {
@@ -169,17 +215,12 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   public clearTerminal() {
-    this.terminalBuffer = '';
-    this.context.globalState.update(this.BUFFER_STORAGE_KEY, '');
+    this.terminalContent = '$ ';
+    this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
     
-    if (this.webviewView) {
-      this.webviewView.webview.postMessage({
-        command: 'clearTerminal'
-      });
-      setTimeout(() => {
-        this.sendToTerminal('$ ');
-      }, 100);
-    }
+    this.sendToWebview({
+      command: 'clearTerminal'
+    });
   }
 
   private async getHtml(webview: vscode.Webview, timelineContent: string): Promise<string> {
@@ -194,5 +235,4 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     return htmlContent;
   }
-  
 }
