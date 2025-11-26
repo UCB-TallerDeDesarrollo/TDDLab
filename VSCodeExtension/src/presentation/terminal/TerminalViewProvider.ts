@@ -11,14 +11,15 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private readonly timelineView: TimelineView;
   private readonly terminalPort: TerminalPort;
   
-  // Estado persistente mejorado
+  // Estado persistente por proyecto
   private terminalContent: string = '';
   private isWebviewReady: boolean = false;
   private pendingMessages: Array<{command: string, text?: string}> = [];
 
-  private readonly CONTENT_STORAGE_KEY = 'tddTerminalContent';
+  private CONTENT_STORAGE_KEY: string = 'tddTerminalContent-global';
   private readonly TEMPLATE_DIR: string;
   private helpTextCache: string | undefined;
+  private currentProjectId: string = 'global';
 
   constructor(context: vscode.ExtensionContext, timelineView: TimelineView, terminalPort: TerminalPort) {
     this.context = context;
@@ -27,8 +28,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     this.TEMPLATE_DIR = path.join(this.context.extensionPath, 'src', 'presentation', 'terminal', 'templates');
 
-    // Cargar contenido persistente al inicializar
-    this.terminalContent = context.globalState.get(this.CONTENT_STORAGE_KEY, '');
+    // Inicializar con el proyecto actual
+    this.updateProjectContext();
     
     this.terminalPort.setOnOutputCallback((output: string) => {
       this.sendToTerminal(output);
@@ -38,12 +39,101 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       }
     });
 
+    // Suscribirse a cambios de workspace
+    this.setupWorkspaceListeners();
+
     // Suscribirse a actualizaciones del timeline
     if (typeof (TimelineView as any).onTimelineUpdated === 'function') {
       (TimelineView as any).onTimelineUpdated(async () => {
         await this.updateTimelineInWebview();
       });
     }
+  }
+
+  private updateProjectContext(): void {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders && workspaceFolders.length > 0) {
+      // Usar la ruta del workspace como identificador único del proyecto
+      const workspacePath = workspaceFolders[0].uri.fsPath;
+      this.currentProjectId = this.generateProjectId(workspacePath);
+      this.CONTENT_STORAGE_KEY = `tddTerminalContent-${this.currentProjectId}`;
+      
+      // Cargar contenido persistente para este proyecto
+      this.terminalContent = this.context.globalState.get(this.CONTENT_STORAGE_KEY, '');
+      
+      console.log(`[TerminalViewProvider] Contexto actualizado para proyecto: ${this.currentProjectId}`);
+    } else {
+      // Sin workspace abierto - usar sesión global
+      this.currentProjectId = 'global';
+      this.CONTENT_STORAGE_KEY = 'tddTerminalContent-global';
+      this.terminalContent = this.context.globalState.get(this.CONTENT_STORAGE_KEY, '');
+      
+      console.log('[TerminalViewProvider] Usando sesión global (sin workspace)');
+    }
+  }
+
+  private generateProjectId(workspacePath: string): string {
+    // Generar un ID único basado en la ruta del workspace
+    return Buffer.from(workspacePath).toString('base64').replaceAll(/[^a-zA-Z0-9]/g, '').substring(0, 16);
+  }
+
+  private setupWorkspaceListeners(): void {
+    // Escuchar cambios en el workspace
+    vscode.workspace.onDidChangeWorkspaceFolders(async (event) => {
+      console.log('[TerminalViewProvider] Workspace cambiado, actualizando contexto...');
+      await this.handleWorkspaceChange();
+    });
+
+    // Escuchar cuando se abre un nuevo workspace
+    vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+      if (editor) {
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+        if (workspaceFolder) {
+          const newProjectId = this.generateProjectId(workspaceFolder.uri.fsPath);
+          if (newProjectId !== this.currentProjectId) {
+            console.log('[TerminalViewProvider] Proyecto activo cambiado, actualizando contexto...');
+            await this.handleWorkspaceChange();
+          }
+        }
+      }
+    });
+  }
+
+  private async handleWorkspaceChange(): Promise<void> {
+    // Guardar el estado actual antes de cambiar
+    this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
+
+    // Actualizar al nuevo proyecto
+    this.updateProjectContext();
+
+    // Limpiar el terminal visualmente
+    if (this.webviewView) {
+      this.sendToWebview({
+        command: 'clearTerminal'
+      });
+    }
+
+    // Restaurar el contenido del nuevo proyecto
+    if (this.terminalContent && this.terminalContent.trim() !== '') {
+      this.sendToWebview({
+        command: 'restoreContent',
+        content: this.terminalContent
+      });
+    } else {
+      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n$ `);
+    }
+
+    // Forzar actualización del timeline para el nuevo proyecto
+    await this.forceTimelineUpdate();
+    await this.updateTimelineInWebview();
+  }
+
+  private getProjectName(): string {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders && workspaceFolders.length > 0) {
+      return workspaceFolders[0].name;
+    }
+    return 'Global';
   }
 
   async resolveWebviewView(
@@ -75,7 +165,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     // Inicializar estado
     this.isWebviewReady = false;
     
-    console.log('[TerminalViewProvider] Webview inicializada ✅');
+    console.log(`[TerminalViewProvider] Webview inicializada para proyecto: ${this.currentProjectId}`);
   }
 
   private async handleWebviewMessage(message: any): Promise<void> {
@@ -100,6 +190,15 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         this.terminalContent = message.content;
         this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
         break;
+
+      case 'getProjectContext':
+        // El webview solicita información del proyecto actual
+        this.sendToWebview({
+          command: 'projectContext',
+          projectName: this.getProjectName(),
+          projectId: this.currentProjectId
+        });
+        break;
       
       default:
         console.warn(`Comando no reconocido: ${message.command}`);
@@ -109,6 +208,13 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private handleWebviewReady(): void {
     this.isWebviewReady = true;
     
+    // Enviar contexto del proyecto primero
+    this.sendToWebview({
+      command: 'projectContext',
+      projectName: this.getProjectName(),
+      projectId: this.currentProjectId
+    });
+
     // Restaurar contenido persistente
     if (this.terminalContent && this.terminalContent.trim() !== '') {
       this.sendToWebview({
@@ -116,7 +222,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         content: this.terminalContent
       });
     } else {
-      this.sendToTerminal('\r\nBienvenido a la Terminal TDD\r\n$ ');
+      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n$ `);
     }
 
     // Procesar mensajes pendientes
@@ -125,16 +231,15 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     // Actualizar timeline inmediatamente
     setTimeout(async () => {
       await this.updateTimelineInWebview();
-      // Forzar una actualización del timeline al cargar
-      this.forceTimelineUpdate();
+      await this.forceTimelineUpdate();
     }, 100);
   }
 
   private processPendingMessages(): void {
     if (this.isWebviewReady && this.pendingMessages.length > 0) {
-      this.pendingMessages.forEach(message => {
+      for (const message of this.pendingMessages) {
         this.sendToWebview(message);
-      });
+      }
       this.pendingMessages = [];
     }
   }
@@ -162,6 +267,11 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     
     if (trimmedCommand === 'help' || trimmedCommand === '?') {
       await this.showHelp();
+      return;
+    }
+
+    if (trimmedCommand === 'project') {
+      this.sendToTerminal(`\r\nProyecto actual: ${this.getProjectName()} (ID: ${this.currentProjectId})\r\n$ `);
       return;
     }
 

@@ -20,8 +20,9 @@ export class TimelineView implements vscode.WebviewViewProvider {
   > = TimelineView._onTimelineUpdated.event;
 
   private lastTimelineData: Array<Timeline | CommitPoint> = [];
-  private readonly TIMELINE_STORAGE_KEY = 'tddTimelineData';
+  private TIMELINE_STORAGE_KEY: string = 'tddTimelineData-global';
   private forceUpdateRequested: boolean = false;
+  private currentProjectId: string = 'global';
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
@@ -29,13 +30,34 @@ export class TimelineView implements vscode.WebviewViewProvider {
     this.getTimeline = new GetTimeline(rootPath);
     this.getLastPoint = new GetLastPoint(context);
 
-    // Cargar timeline guardado inmediatamente
-    const savedTimeline = context.globalState.get(this.TIMELINE_STORAGE_KEY, []);
-    if (savedTimeline && savedTimeline.length > 0) {
-      this.lastTimelineData = savedTimeline;
-    }
+    // Inicializar con el proyecto actual
+    this.updateProjectContext(rootPath);
 
     this.startTimelinePolling();
+  }
+
+  private updateProjectContext(rootPath: string): void {
+    if (rootPath) {
+      this.currentProjectId = this.generateProjectId(rootPath);
+      this.TIMELINE_STORAGE_KEY = `tddTimelineData-${this.currentProjectId}`;
+    } else {
+      this.currentProjectId = 'global';
+      this.TIMELINE_STORAGE_KEY = 'tddTimelineData-global';
+    }
+
+    // Cargar timeline guardado para este proyecto
+    const savedTimeline = this.context.globalState.get(this.TIMELINE_STORAGE_KEY, []);
+    if (savedTimeline && savedTimeline.length > 0) {
+      this.lastTimelineData = savedTimeline;
+      console.log(`[TimelineView] Timeline cargado para proyecto ${this.currentProjectId}: ${savedTimeline.length} elementos`);
+    } else {
+      console.log(`[TimelineView] No hay timeline guardado para proyecto ${this.currentProjectId}`);
+    }
+  }
+
+  private generateProjectId(workspacePath: string): string {
+    // Usar replaceAll en lugar de replace con regex
+    return Buffer.from(workspacePath).toString('base64').replaceAll(/[^a-zA-Z0-9]/g, '').substring(0, 16);
   }
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
@@ -74,7 +96,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
     try {
       // Siempre obtener datos frescos para el HTML
       const timeline = await this.getTimeline.execute();
-      console.log('[TimelineView] Timeline items count:', timeline.length);
+      console.log(`[TimelineView] Timeline items count para ${this.currentProjectId}:`, timeline.length);
       
       // Actualizar cache con los datos frescos
       this.updateTimelineCache(timeline);
@@ -90,7 +112,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
   // Nuevo método: forzar actualización inmediata
   public async forceTimelineUpdate(): Promise<void> {
     try {
-      console.log('[TimelineView] Forzando actualización inmediata del timeline');
+      console.log(`[TimelineView] Forzando actualización inmediata del timeline para proyecto ${this.currentProjectId}`);
       const currentTimeline = await this.getTimeline.execute();
       
       if (this.hasTimelineChanged(currentTimeline)) {
@@ -151,7 +173,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
     this.context.globalState.update(this.TIMELINE_STORAGE_KEY, timeline);
     TimelineView._onTimelineUpdated.fire(timeline);
     
-    console.log(`[TimelineView] Timeline guardado con ${timeline.length} elementos`);
+    console.log(`[TimelineView] Timeline guardado para proyecto ${this.currentProjectId} con ${timeline.length} elementos`);
   }
 
   private generateHtmlFragment(
