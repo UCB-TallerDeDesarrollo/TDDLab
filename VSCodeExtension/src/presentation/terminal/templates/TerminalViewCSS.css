@@ -43,6 +43,8 @@ html, body {
   overflow: hidden;
   padding: 0;
   margin: 0;
+  padding-bottom: 32px !important;  /* Ajusta aquí si quieres más/menos espacio bajo el prompt */
+
 }
 .xterm {
   width: 100% !important;

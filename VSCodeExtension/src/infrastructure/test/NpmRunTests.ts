@@ -87,3 +87,5 @@ export class NpmRunTests implements TestRunnerPort {
     return results.length > 0 ? results : ['Tests ejecutados'];
   }
 }
+
+// jkjkjdkfjd

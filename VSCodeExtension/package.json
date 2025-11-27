@@ -70,7 +70,7 @@
         {
           "id": "timelineContainer",
           "title": "TDDLab TIMELINE",
-          "icon": ""
+          "icon": "resources/TddLab_v2.png"
         },
         {
           "id": "tddTerminalPanel",
@@ -92,7 +92,7 @@
       ],
       "timelineContainer": [
         {
-          "id": "timelineView",
+          "id": "tddtimelineView",
           "name": "Timeline",
           "type": "webview"
         }

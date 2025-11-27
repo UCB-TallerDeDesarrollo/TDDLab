@@ -20,6 +20,11 @@
   <script>
     const vscode = acquireVsCodeApi();
     
+    // función para pedir el prompt real al backend
+    function requestPrompt() {
+      vscode.postMessage({ command: 'requestPrompt' });
+    }
+
     const term = new Terminal({ 
       cursorBlink: true,
       cols: 80,
@@ -63,57 +68,152 @@
     };
     
     window.addEventListener('resize', fitAddon);
-    setTimeout(fitAddon, 200); 
+    setTimeout(fitAddon, 200);
     
-    term.focus();
+    // PIDE EL PROMPT AL BACKEND
+    requestPrompt();
+    setTimeout(() => {
+      term.scrollToBottom();
+      term.focus();
+    }, 0);
     
+    // Estado del cliente (webview)
     let command = '';
     let isExecuting = false;
+    let history = [];
+    let historyIndex = 0; // history.length significa "línea vacía"
+    let prompt = ''; // último prompt recibido desde backend (ej: "d:\\... > ")
 
-    term.onData(data => {
-      const code = data.codePointAt(0);
-      if (code === 13) { 
-        if (command.trim() && !isExecuting) {
-          isExecuting = true;
-          vscode.postMessage({ command: 'executeCommand', text: command });
-          command = '';
-        } else if (!isExecuting) {
-          term.write('\r\n$ ');
+    // Redibuja la línea actual: borra la línea y escribe prompt + comando
+    function redrawInput() {
+      term.write('\x1b[2K\r' + prompt + command);
+    }
+
+    // Manejo de teclas usando onKey (más fiable para flechas y modificadores)
+    term.onKey(e => {
+      const ev = e.domEvent;
+      const key = ev.key; // 'Enter', 'Backspace', 'ArrowUp', etc.
+      // Enter
+      if (key === 'Enter') {
+        if (!isExecuting) {
+          if (command.trim()) {
+            isExecuting = true;
+            history.push(command);
+            historyIndex = history.length;
+            vscode.postMessage({ command: 'executeCommand', text: command });
+            command = '';
+          } else {
+            // pedir prompt de nuevo si la línea está vacía
+            requestPrompt();
+          }
         }
-      } else if (code === 127) { 
+        ev.preventDefault();
+        return;
+      }
+
+      // ArrowUp
+      if (key === 'ArrowUp') {
+        if (history.length === 0) { ev.preventDefault(); return; }
+        historyIndex = Math.max(0, historyIndex - 1);
+        if (historyIndex === history.length) {
+          command = '';
+        } else {
+          command = history[historyIndex];
+        }
+        redrawInput();
+        ev.preventDefault();
+        return;
+      }
+
+      // ArrowDown
+      if (key === 'ArrowDown') {
+        if (history.length === 0) { ev.preventDefault(); return; }
+        historyIndex = Math.min(history.length, historyIndex + 1);
+        if (historyIndex === history.length) {
+          command = '';
+        } else {
+          command = history[historyIndex];
+        }
+        redrawInput();
+        ev.preventDefault();
+        return;
+      }
+
+      // Backspace
+      if (key === 'Backspace') {
         if (command.length > 0 && !isExecuting) {
           command = command.slice(0, -1);
-          term.write('\b \b');
+          redrawInput();
         }
-      } else if (code === 3) { 
-        term.write('^C');
+        ev.preventDefault();
+        return;
+      }
+
+      // Ctrl+L (limpiar)
+      if ((ev.ctrlKey || ev.metaKey) && (key === 'l' || key === 'L')) {
+        vscode.postMessage({ command: 'clearTerminal' });
+        ev.preventDefault();
+        return;
+      }
+
+      // Ctrl+C
+      if ((ev.ctrlKey || ev.metaKey) && key === 'c') {
+        term.write('^C\r\n');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
-        term.write('\r\n$ ');
-      } else if (code >= 32 && code <= 126 && !isExecuting) {
-        command += data;
-        term.write(data);
+        ev.preventDefault();
+        return;
+      }
+
+      // Carácter imprimible (ev.key suele contener el carácter si no es especial)
+      // Filtramos teclas con modificadores (alt/ctrl/meta) y teclas no imprimibles
+      if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && key.length === 1 && !isExecuting) {
+        command += key;
+        term.write(key);
+        ev.preventDefault();
       }
     });
-    
+
+    // Recibe mensajes desde extension host
     window.addEventListener('message', event => {
       const message = event.data;
       switch (message.command) {
         case 'updateTimeline':
           document.getElementById('timeline-content').innerHTML = message.html;
           break;
+
         case 'writeToTerminal':
-          { const text = message.text || '';
-          term.write(text);
-          if (text.endsWith('\r\n$ ')) {
-            isExecuting = false;
+          { 
+            const text = message.text || '';
+            term.write(text);
+
+            // Mejor detección del prompt: buscamos un '> ' al final de la salida
+            // y guardamos el texto de prompt (la última línea que termina con '> ')
+            // Ej: "\r\nC:\path > "
+            const promptMatch = /(?:\r?\n)([^\r\n]*> )$/.exec(text) || /([^\r\n]*> )$/.exec(text);
+            if (promptMatch) {
+              prompt = promptMatch[1];
+              isExecuting = false;
+              historyIndex = history.length;
+            }
+
+            setTimeout(() => {
+              term.scrollToBottom();
+              term.focus();
+            }, 0);
+            break;
           }
-          break; }
+
         case 'clearTerminal':
           term.clear();
-          term.write('$ ');
-          isExecuting = false;
           command = '';
+          isExecuting = false;
+          // después de limpiar pedimos prompt real al backend
+          requestPrompt();
+          setTimeout(() => {
+            term.scrollToBottom();
+            term.focus();
+          }, 0);
           break;
       }
     });

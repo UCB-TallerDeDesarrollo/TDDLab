@@ -1,6 +1,7 @@
+// src/presentation/terminal/TerminalViewProvider.ts
 import * as vscode from 'vscode';
 import * as path from 'node:path';
-import * as fs from 'node:fs/promises'; 
+import * as fs from 'node:fs/promises';
 import { TimelineView } from '../timeline/TimelineView';
 import { TerminalPort } from '../../domain/model/TerminalPort';
 
@@ -52,18 +53,18 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
 
     webviewView.webview.html = await this.getHtml(webviewView.webview, timelineHtml);
-    
+
     webviewView.webview.onDidReceiveMessage(async (message) => {
       await this.handleWebviewMessage(message);
     });
 
-    if (this.terminalBuffer && this.terminalBuffer.trim() !== '' && this.terminalBuffer !== '$ ') {
+    if (this.terminalBuffer && this.terminalBuffer.trim() !== '') {
       this.webviewView?.webview.postMessage({
         command: 'writeToTerminal',
         text: this.terminalBuffer
       });
     } else {
-      this.sendToTerminal('\r\nBienvenido a la Terminal TDD\r\n$ ');
+      this.sendPrompt();
     }
 
     setTimeout(async () => {
@@ -73,50 +74,58 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     console.log('[TerminalViewProvider] Webview inicializada ✅');
   }
 
+  private sendPrompt(): void {
+    // delegar el prompt al TerminalRepository (comando vacío)
+    this.terminalPort.createAndExecuteCommand('TDDLab Terminal', '');
+  }
+
   private async handleWebviewMessage(message: any): Promise<void> {
     switch (message.command) {
       case 'executeCommand':
         await this.executeRealCommand(message.text);
         break;
-      
+
       case 'requestTimelineUpdate':
         await this.updateTimelineInWebview();
         break;
-      
+
       case 'killCommand':
         this.killCurrentCommand();
         break;
-      
+
+      case 'requestPrompt':
+        this.sendPrompt();
+        break;
+
       default:
         console.warn(`Comando no reconocido: ${message.command}`);
     }
   }
 
   private async executeRealCommand(command: string): Promise<void> {
-   if (!command.trim()) {
-  const currentDir = process.cwd();
-this.sendToTerminal(`${currentDir}> ${command}\n`);
-  return;
-}
+    if (!command.trim()) {
+      this.sendPrompt();
+      return;
+    }
 
     const trimmedCommand = command.trim();
-    
+
     if (trimmedCommand === 'clear') {
       this.clearTerminal();
       return;
     }
-    
+
     if (trimmedCommand === 'help' || trimmedCommand === '?') {
       await this.showHelp();
       return;
     }
 
-    this.sendToTerminal(`\r\n$ ${trimmedCommand}\r\n`);
-
+    this.sendToTerminal('\r\n');
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
     } catch (error: any) {
-      this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n$ `);
+      this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n`);
+      this.sendPrompt();
     }
   }
 
@@ -130,13 +139,15 @@ this.sendToTerminal(`${currentDir}> ${command}\n`);
         const helpPath = path.join(this.TEMPLATE_DIR, 'TerminalHelp.txt');
         const helpContent = await fs.readFile(helpPath, 'utf-8');
 
-        this.helpTextCache = helpContent + '\r\n$ ';  
+        this.helpTextCache = helpContent + '\r\n';
       } catch (error) {
         console.error('Error cargando TerminalHelp.txt:', error);
-        this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n$ ';
+        this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n';
       }
     }
-    this.sendToTerminal(this.helpTextCache, false, true);
+
+    this.sendToTerminal(this.helpTextCache);
+    this.sendPrompt();
   }
 
   private async updateTimelineInWebview() {
@@ -154,13 +165,12 @@ this.sendToTerminal(`${currentDir}> ${command}\n`);
   }
 
   public sendToTerminal(message: string, isRestoring: boolean = false, skipColorize: boolean = false) {
-    // Colorizar automáticamente según palabras clave
     let coloredMessage = skipColorize ? message : this.colorizeTestOutput(message);
     if (!isRestoring) {
       this.terminalBuffer += coloredMessage;
       this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
     }
-    
+
     if (this.webviewView) {
       this.webviewView.webview.postMessage({
         command: 'writeToTerminal',
@@ -170,60 +180,44 @@ this.sendToTerminal(`${currentDir}> ${command}\n`);
   }
 
   private colorizeTestOutput(text: string): string {
-  // Códigos ANSI para colores
-  const RED = '\x1b[31m';
-  const GREEN = '\x1b[32m';
-  const YELLOW = '\x1b[33m';
-  const BRIGHT_RED = '\x1b[91m';
-  const BRIGHT_GREEN = '\x1b[92m';
-  const RESET = '\x1b[0m';
-  
-  let result = text;
-  
-  //  Colorear "Test Suites: X failed, Y total"
-  result = result.replace(/(Test Suites:)\s+(\d+)\s+(failed)/gi, 
-    `$1 ${BRIGHT_RED}$2 $3${RESET}`);
-  
-  //  Colorear "Tests: X failed, Y passed, Z total"
-  result = result.replace(/(Tests:)\s+(\d+)\s+(failed),\s+(\d+)\s+(passed)/gi, 
-    `$1 ${BRIGHT_RED}$2 $3${RESET}, ${BRIGHT_GREEN}$4 $5${RESET}`);
-  
-  // Colorear solo "X passed" (cuando no hay failed)
-  result = result.replace(/(Tests:)\s+(\d+)\s+(passed)/gi, 
-    `$1 ${BRIGHT_GREEN}$2 $3${RESET}`);
-  
-  //  Colorear solo "X failed" (cuando no hay passed)
-  result = result.replace(/(Tests:)\s+(\d+)\s+(failed)/gi, 
-    `$1 ${BRIGHT_RED}$2 $3${RESET}`);
-  
-  //  Colorear líneas completas "PASS"
-  result = result.replace(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
-  
-  // Colorear líneas completas "FAIL"
-  result = result.replace(/(FAIL\s+[^\n]+)/g, `${RED}$1${RESET}`);
-  
-  //  Detectar símbolos de éxito
-  result = result.replace(/(✓|✔)/g, `${GREEN}$1${RESET}`);
-  
-  //  Detectar símbolos de error
-  result = result.replace(/(✗|✘)/g, `${RED}$1${RESET}`);
-  
-  // Colorear "Expected" y "Received"
-  result = result.replace(/(Expected|Received):/gi, `${RED}$1:${RESET}`);
-  
-  //  Colorear errores
-  result = result.replace(/(Error:|Error at)/gi, `${RED}$1${RESET}`);
-  
-  //  Colorear "Snapshots: X total"
-  result = result.replace(/(Snapshots:)\s+(\d+)\s+(total)/gi, 
-    `$1 ${YELLOW}$2 $3${RESET}`);
-  
-  //  Colorear tiempo de ejecución
-  result = result.replace(/(Time:)\s+([0-9.]+\s*s)/gi, 
-    `$1 ${YELLOW}$2${RESET}`);
-  
-  return result;
-}
+    const RED = '\x1b[31m';
+    const GREEN = '\x1b[32m';
+    const YELLOW = '\x1b[33m';
+    const BRIGHT_RED = '\x1b[91m';
+    const BRIGHT_GREEN = '\x1b[92m';
+    const RESET = '\x1b[0m';
+
+    let result = text;
+
+    result = result.replace(/(Test Suites:)\s+(\d+)\s+(failed)/gi,
+      `$1 ${BRIGHT_RED}$2 $3${RESET}`);
+
+    result = result.replace(/(Tests:)\s+(\d+)\s+(failed),\s+(\d+)\s+(passed)/gi,
+      `$1 ${BRIGHT_RED}$2 $3${RESET}, ${BRIGHT_GREEN}$4 $5${RESET}`);
+
+    result = result.replace(/(Tests:)\s+(\d+)\s+(passed)/gi,
+      `$1 ${BRIGHT_GREEN}$2 $3${RESET}`);
+
+    result = result.replace(/(Tests:)\s+(\d+)\s+(failed)/gi,
+      `$1 ${BRIGHT_RED}$2 $3${RESET}`);
+
+    result = result.replace(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
+    result = result.replace(/(FAIL\s+[^\n]+)/g, `${RED}$1${RESET}`);
+
+    result = result.replace(/(✓|✔)/g, `${GREEN}$1${RESET}`);
+    result = result.replace(/(✗|✘)/g, `${RED}$1${RESET}`);
+
+    result = result.replace(/(Expected|Received):/gi, `${RED}$1:${RESET}`);
+    result = result.replace(/(Error:|Error at)/gi, `${RED}$1${RESET}`);
+
+    result = result.replace(/(Snapshots:)\s+(\d+)\s+(total)/gi,
+      `$1 ${YELLOW}$2 $3${RESET}`);
+
+    result = result.replace(/(Time:)\s+([0-9.]+\s*s)/gi,
+      `$1 ${YELLOW}$2${RESET}`);
+
+    return result;
+  }
 
   public async executeCommand(command: string) {
     await this.executeRealCommand(command);
@@ -232,14 +226,13 @@ this.sendToTerminal(`${currentDir}> ${command}\n`);
   public clearTerminal() {
     this.terminalBuffer = '';
     this.context.globalState.update(this.BUFFER_STORAGE_KEY, '');
-    
+
     if (this.webviewView) {
       this.webviewView.webview.postMessage({
         command: 'clearTerminal'
       });
       setTimeout(() => {
-        const currentDir = process.cwd();   
-    this.sendToTerminal(`${currentDir}> `);
+        this.sendPrompt();
       }, 100);
     }
   }
@@ -256,5 +249,4 @@ this.sendToTerminal(`${currentDir}> ${command}\n`);
 
     return htmlContent;
   }
-  
 }
