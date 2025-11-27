@@ -9,7 +9,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
   readonly outputChannel: vscode.OutputChannel;
   private currentProcess: any = null;
   private onOutputCallback: ((output: string) => void) = () => {};
-  private isExecuting: boolean = false;
+  private isExecuting = false;
   private currentDirectory: string;
 
   constructor() {
@@ -22,7 +22,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
     this.onOutputCallback = callback;
   }
 
-  private printPrompt() {
+  private printPrompt(): void {
     this.onOutputCallback(`\r\n${this.currentDirectory} > `);
   }
 
@@ -46,14 +46,14 @@ export class VSCodeTerminalRepository implements TerminalPort {
       return;
     }
 
-    const cdMatch = /^cd\s+(.+)$/.exec(trimmed);
+    const cdMatch = /^cd\s+(.+)$/i.exec(trimmed);
     if (cdMatch) {
       let dir = cdMatch[1].trim();
 
       if (dir === '..') {
         this.currentDirectory = path.dirname(this.currentDirectory);
       } else {
-        dir = dir.replaceAll(/^["']|["']$/g, '');
+        dir = dir.replace(/(^["'])|(["']$)/g, '');
         const possiblePath = path.isAbsolute(dir)
           ? dir
           : path.resolve(this.currentDirectory, dir);
@@ -65,7 +65,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
           } else {
             this.onOutputCallback(`\r\n❌ ${possiblePath} no es un directorio válido.\r\n`);
           }
-        } catch (err) {
+        } catch {
           this.onOutputCallback(`\r\n❌ No existe el directorio: ${possiblePath}\r\n`);
         }
       }
@@ -135,13 +135,14 @@ export class VSCodeTerminalRepository implements TerminalPort {
           resolve();
         });
 
-      } catch (error: any) {
-        this.outputChannel.appendLine(`  ERROR: ${error.message}`);
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        this.outputChannel.appendLine(`  ERROR: ${msg}`);
 
         this.currentProcess = null;
         this.isExecuting = false;
 
-        this.onOutputCallback(`\r\n❌ Error: ${error.message}\r\n`);
+        this.onOutputCallback(`\r\n❌ Error: ${msg}\r\n`);
         this.printPrompt();
         resolve();
       }
@@ -151,7 +152,8 @@ export class VSCodeTerminalRepository implements TerminalPort {
   private parseCommand(command: string): string[] {
     const regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
     const matches: string[] = [];
-    let match;
+    let match: RegExpExecArray | null;
+    // eslint-disable-next-line no-cond-assign
     while ((match = regex.exec(command)) !== null) {
       matches.push(match[1] || match[2] || match[0]);
     }
