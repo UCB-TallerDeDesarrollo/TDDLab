@@ -1,7 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  height: 100vh;
   display: flex;
   overflow: hidden;
   flex-direction: column;
@@ -9,6 +9,7 @@ html, body {
   background: #1e1e1e;
   color: #eee;
 }
+
 #timeline {
   position: sticky;
   top: 0;
@@ -20,8 +21,16 @@ html, body {
   text-align: left;
   padding: 10px;
   border-bottom: 1px solid #444;
-  
+  max-height: 120px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
+#timeline h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
 #timeline-content {
   display: flex;
   text-align: left;
@@ -29,12 +38,25 @@ html, body {
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: flex-start;
-  width: 80%;
-
+  gap: 4px;
+  width: 100%;
 }
+
 .timeline-dot {
   display: inline-block;
+  flex-shrink: 0;
 }
+
+.terminal-wrapper {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 #terminal {
   flex: 1 1 auto;
   text-align: left;
@@ -43,9 +65,8 @@ html, body {
   overflow: hidden;
   padding: 0;
   margin: 0;
-  padding-bottom: 32px !important;  /* Ajusta aquí si quieres más/menos espacio bajo el prompt */
-
 }
+
 .xterm {
   width: 100% !important;
   height: 100% !important;
@@ -53,6 +74,7 @@ html, body {
   padding: 10px !important;
   box-sizing: border-box !important;
 }
+
 .xterm-viewport,
 .xterm-screen,
 .xterm-rows,
@@ -61,8 +83,21 @@ html, body {
 #terminal > div {
   text-align: left !important;
 }
-.terminal-wrapper {
-  width: 100%;
-  height: 100%;
-  text-align: left;
+
+/* Estilos para scrollbar del timeline */
+#timeline::-webkit-scrollbar {
+  width: 6px;
+}
+
+#timeline::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+#timeline::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+#timeline::-webkit-scrollbar-thumb:hover {
+  background: #777;
 }

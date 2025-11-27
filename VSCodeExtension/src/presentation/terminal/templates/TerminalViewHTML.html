@@ -20,7 +20,6 @@
   <script>
     const vscode = acquireVsCodeApi();
     
-    // Estado del terminal
     let terminalContent = '';
     let currentCommand = '';
     let isExecuting = false;
@@ -40,7 +39,16 @@
     const terminalElement = document.getElementById('terminal');
     term.open(terminalElement);
     
-    // Ajustar tamaño después de inicializar
+    function scrollToBottom() {
+      setTimeout(() => {
+        term.scrollToBottom();
+        const viewport = terminalElement.querySelector('.xterm-viewport');
+        if (viewport) {
+          viewport.scrollTop = viewport.scrollHeight;
+        }
+      }, 50);
+    }
+    
     setTimeout(() => {
       const container = document.querySelector('.terminal-wrapper');
       if (container) {
@@ -63,14 +71,13 @@
       }
     });
     
-    // Notificar que el webview está listo
     vscode.postMessage({ command: 'webviewReady' });
 
     term.focus();
     
     term.onData(data => {
       const code = data.codePointAt(0);
-      if (code === 13) { // Enter
+      if (code === 13) {
         if (currentCommand.trim() && !isExecuting) {
           isExecuting = true;
           vscode.postMessage({ command: 'executeCommand', text: currentCommand });
@@ -79,32 +86,52 @@
           term.write('\r\n$ ');
           terminalContent += '\r\n$ ';
           vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
+          scrollToBottom();
         }
-      } else if (code === 127) { // Backspace
+      } else if (code === 127) {
         if (currentCommand.length > 0 && !isExecuting) {
           currentCommand = currentCommand.slice(0, -1);
           term.write('\b \b');
         }
-      } else if (code === 3) { // Ctrl+C
+      } else if (code === 3) {
         term.write('^C');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
         term.write('\r\n$ ');
         terminalContent += '\r\n$ ';
         vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
+        scrollToBottom();
       } else if (code >= 32 && code <= 126 && !isExecuting) {
         currentCommand += data;
         term.write(data);
       }
     });
 
-    // Recibe mensajes desde extension host
     window.addEventListener('message', event => {
       const message = event.data;
       switch (message.command) {
-        case 'updateTimeline':
-          document.getElementById('timeline-content').innerHTML = message.html;
+        case 'updateTimeline': {
+          const timelineContent = document.getElementById('timeline-content');
+          if (timelineContent) {
+            // Guardar scroll position del timeline
+            const timelineContainer = document.getElementById('timeline');
+            const scrollTop = timelineContainer ? timelineContainer.scrollTop : 0;
+            
+            // Actualizar contenido sin perder el foco del terminal
+            timelineContent.innerHTML = message.html;
+            
+            // Restaurar scroll position del timeline
+            if (timelineContainer) {
+              timelineContainer.scrollTop = scrollTop;
+            }
+            
+            // Mantener foco en terminal
+            setTimeout(() => {
+              term.focus();
+            }, 10);
+          }
           break;
+        }
           
         case 'writeToTerminal': {
           const text = message.text || '';
@@ -115,6 +142,8 @@
           if (text.endsWith('\r\n$ ') || text.endsWith('$ ')) {
             isExecuting = false;
           }
+          
+          scrollToBottom();
           break;
         }
           
@@ -125,6 +154,7 @@
           isExecuting = false;
           terminalContent = '$ ';
           vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
+          scrollToBottom();
           break;
         }
           
@@ -135,6 +165,12 @@
           terminalContent = content;
           currentCommand = '';
           isExecuting = false;
+          scrollToBottom();
+          break;
+        }
+          
+        case 'scrollToBottom': {
+          scrollToBottom();
           break;
         }
       }

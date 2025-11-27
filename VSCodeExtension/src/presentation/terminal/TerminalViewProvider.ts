@@ -12,7 +12,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private readonly timelineView: TimelineView;
   private readonly terminalPort: TerminalPort;
   
-  // Estado persistente por proyecto
   private terminalContent: string = '';
   private isWebviewReady: boolean = false;
   private pendingMessages: Array<{command: string, text?: string}> = [];
@@ -21,6 +20,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private readonly TEMPLATE_DIR: string;
   private helpTextCache: string | undefined;
   private currentProjectId: string = 'global';
+  private scrollTimeout: NodeJS.Timeout | null = null;
+  private isUpdatingTimeline: boolean = false;
 
   constructor(context: vscode.ExtensionContext, timelineView: TimelineView, terminalPort: TerminalPort) {
     this.context = context;
@@ -29,21 +30,17 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     this.TEMPLATE_DIR = path.join(this.context.extensionPath, 'src', 'presentation', 'terminal', 'templates');
 
-    // Inicializar con el proyecto actual
     this.updateProjectContext();
     
     this.terminalPort.setOnOutputCallback((output: string) => {
       this.sendToTerminal(output);
-      // Detectar cuando se completan tests y forzar actualización del timeline
       if (this.isTestOutput(output)) {
         this.forceTimelineUpdate();
       }
     });
 
-    // Suscribirse a cambios de workspace
     this.setupWorkspaceListeners();
 
-    // Suscribirse a actualizaciones del timeline
     if (typeof (TimelineView as any).onTimelineUpdated === 'function') {
       (TimelineView as any).onTimelineUpdated(async () => {
         await this.updateTimelineInWebview();
@@ -54,17 +51,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private updateProjectContext(): void {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders && workspaceFolders.length > 0) {
-      // Usar la ruta del workspace como identificador único del proyecto
       const workspacePath = workspaceFolders[0].uri.fsPath;
       this.currentProjectId = this.generateProjectId(workspacePath);
       this.CONTENT_STORAGE_KEY = `tddTerminalContent-${this.currentProjectId}`;
       
-      // Cargar contenido persistente para este proyecto
       this.terminalContent = this.context.globalState.get(this.CONTENT_STORAGE_KEY, '');
       
       console.log(`[TerminalViewProvider] Contexto actualizado para proyecto: ${this.currentProjectId}`);
     } else {
-      // Sin workspace abierto - usar sesión global
       this.currentProjectId = 'global';
       this.CONTENT_STORAGE_KEY = 'tddTerminalContent-global';
       this.terminalContent = this.context.globalState.get(this.CONTENT_STORAGE_KEY, '');
@@ -74,18 +68,15 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   private generateProjectId(workspacePath: string): string {
-    // Generar un ID único basado en la ruta del workspace
     return Buffer.from(workspacePath).toString('base64').replaceAll(/[^a-zA-Z0-9]/g, '').substring(0, 16);
   }
 
   private setupWorkspaceListeners(): void {
-    // Escuchar cambios en el workspace
     vscode.workspace.onDidChangeWorkspaceFolders(async (event) => {
       console.log('[TerminalViewProvider] Workspace cambiado, actualizando contexto...');
       await this.handleWorkspaceChange();
     });
 
-    // Escuchar cuando se abre un nuevo workspace
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
       if (editor) {
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
@@ -101,20 +92,16 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   private async handleWorkspaceChange(): Promise<void> {
-    // Guardar el estado actual antes de cambiar
     this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
 
-    // Actualizar al nuevo proyecto
     this.updateProjectContext();
 
-    // Limpiar el terminal visualmente
     if (this.webviewView) {
       this.sendToWebview({
         command: 'clearTerminal'
       });
     }
 
-    // Restaurar el contenido del nuevo proyecto
     if (this.terminalContent && this.terminalContent.trim() !== '') {
       this.sendToWebview({
         command: 'restoreContent',
@@ -125,7 +112,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n${currentDir}> `);
     }
 
-    // Forzar actualización del timeline para el nuevo proyecto
     await this.forceTimelineUpdate();
     await this.updateTimelineInWebview();
   }
@@ -164,14 +150,12 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       await this.handleWebviewMessage(message);
     });
 
-    // Inicializar estado
     this.isWebviewReady = false;
     
     console.log(`[TerminalViewProvider] Webview inicializada para proyecto: ${this.currentProjectId}`);
   }
 
   private sendPrompt(): void {
-    // delegar el prompt al TerminalRepository (comando vacío)
     this.terminalPort.createAndExecuteCommand('TDDLab Terminal', '');
   }
 
@@ -199,7 +183,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         break;
 
       case 'getProjectContext':
-        // El webview solicita información del proyecto actual
         this.sendToWebview({
           command: 'projectContext',
           projectName: this.getProjectName(),
@@ -215,14 +198,12 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private handleWebviewReady(): void {
     this.isWebviewReady = true;
     
-    // Enviar contexto del proyecto primero
     this.sendToWebview({
       command: 'projectContext',
       projectName: this.getProjectName(),
       projectId: this.currentProjectId
     });
 
-    // Restaurar contenido persistente
     if (this.terminalContent && this.terminalContent.trim() !== '') {
       this.sendToWebview({
         command: 'restoreContent',
@@ -233,10 +214,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n${currentDir}> `);
     }
 
-    // Procesar mensajes pendientes
     this.processPendingMessages();
 
-    // Actualizar timeline inmediatamente
     setTimeout(async () => {
       await this.updateTimelineInWebview();
       await this.forceTimelineUpdate();
@@ -258,6 +237,23 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     } else {
       this.pendingMessages.push(message);
     }
+  }
+
+  private scrollToBottom(): void {
+    if (this.isUpdatingTimeline) {
+      return;
+    }
+    
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
+    
+    this.scrollTimeout = setTimeout(() => {
+      this.sendToWebview({
+        command: 'scrollToBottom'
+      });
+      this.scrollTimeout = null;
+    }, 300);
   }
 
   private async executeRealCommand(command: string): Promise<void> {
@@ -291,7 +287,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
       
-      // Forzar actualización del timeline después de comandos que puedan afectar tests
       if (this.isTestRelatedCommand(trimmedCommand)) {
         setTimeout(() => {
           this.forceTimelineUpdate();
@@ -349,13 +344,20 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private async updateTimelineInWebview() {
     if (this.webviewView) {
       try {
+        this.isUpdatingTimeline = true;
+        
         const newTimelineHtml = await this.timelineView.getTimelineHtml(this.webviewView.webview);
         this.sendToWebview({
           command: 'updateTimeline',
           html: newTimelineHtml
         });
+        
+        setTimeout(() => {
+          this.isUpdatingTimeline = false;
+        }, 500);
       } catch (error) {
         console.error('[TerminalViewProvider] Error actualizando timeline:', error);
+        this.isUpdatingTimeline = false;
       }
     }
   }
@@ -363,7 +365,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   public sendToTerminal(message: string, isRestoring: boolean = false, skipColorize: boolean = false) {
     let coloredMessage = skipColorize ? message : this.colorizeTestOutput(message);
     
-    // Actualizar contenido persistente
     if (!isRestoring) {
       this.terminalContent += coloredMessage;
       this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
@@ -373,10 +374,13 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       command: 'writeToTerminal',
       text: coloredMessage
     });
+    
+    if (!this.isUpdatingTimeline) {
+      this.scrollToBottom();
+    }
   }
 
   private colorizeTestOutput(text: string): string {
-    // Códigos ANSI para colores
     const RED = '\x1b[31m';
     const GREEN = '\x1b[32m';
     const YELLOW = '\x1b[33m';
@@ -386,46 +390,34 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     
     let result = text;
     
-    // Colorear "Test Suites: X failed, Y total"
-    result = result.replace(/(Test Suites:)\s+(\d+)\s+(failed)/gi, 
+    result = result.replaceAll(/(Test Suites:)\s+(\d+)\s+(failed)/gi, 
       `$1 ${BRIGHT_RED}$2 $3${RESET}`);
     
-    // Colorear "Tests: X failed, Y passed, Z total"
-    result = result.replace(/(Tests:)\s+(\d+)\s+(failed),\s+(\d+)\s+(passed)/gi, 
+    result = result.replaceAll(/(Tests:)\s+(\d+)\s+(failed),\s+(\d+)\s+(passed)/gi, 
       `$1 ${BRIGHT_RED}$2 $3${RESET}, ${BRIGHT_GREEN}$4 $5${RESET}`);
     
-    // Colorear solo "X passed" (cuando no hay failed)
-    result = result.replace(/(Tests:)\s+(\d+)\s+(passed)/gi, 
+    result = result.replaceAll(/(Tests:)\s+(\d+)\s+(passed)/gi, 
       `$1 ${BRIGHT_GREEN}$2 $3${RESET}`);
     
-    // Colorear solo "X failed" (cuando no hay passed)
-    result = result.replace(/(Tests:)\s+(\d+)\s+(failed)/gi, 
+    result = result.replaceAll(/(Tests:)\s+(\d+)\s+(failed)/gi, 
       `$1 ${BRIGHT_RED}$2 $3${RESET}`);
     
-    // Colorear líneas completas "PASS"
-    result = result.replace(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
+    result = result.replaceAll(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
     
-    // Colorear líneas completas "FAIL"
-    result = result.replace(/(FAIL\s+[^\n]+)/g, `${RED}$1${RESET}`);
+    result = result.replaceAll(/(FAIL\s+[^\n]+)/g, `${RED}$1${RESET}`);
     
-    // Detectar símbolos de éxito
-    result = result.replace(/(✓|✔)/g, `${GREEN}$1${RESET}`);
+    result = result.replaceAll(/(✓|✔)/g, `${GREEN}$1${RESET}`);
     
-    // Detectar símbolos de error
-    result = result.replace(/(✗|✘)/g, `${RED}$1${RESET}`);
+    result = result.replaceAll(/(✗|✘)/g, `${RED}$1${RESET}`);
     
-    // Colorear "Expected" y "Received"
-    result = result.replace(/(Expected|Received):/gi, `${RED}$1:${RESET}`);
+    result = result.replaceAll(/(Expected|Received):/gi, `${RED}$1:${RESET}`);
     
-    // Colorear errores
-    result = result.replace(/(Error:|Error at)/gi, `${RED}$1${RESET}`);
+    result = result.replaceAll(/(Error:|Error at)/gi, `${RED}$1${RESET}`);
     
-    // Colorear "Snapshots: X total"
-    result = result.replace(/(Snapshots:)\s+(\d+)\s+(total)/gi, 
+    result = result.replaceAll(/(Snapshots:)\s+(\d+)\s+(total)/gi, 
       `$1 ${YELLOW}$2 $3${RESET}`);
     
-    // Colorear tiempo de ejecución
-    result = result.replace(/(Time:)\s+([0-9.]+\s*s)/gi, 
+    result = result.replaceAll(/(Time:)\s+([0-9.]+\s*s)/gi, 
       `$1 ${YELLOW}$2${RESET}`);
     
     return result;
@@ -434,7 +426,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   public async executeCommand(command: string) {
     await this.executeRealCommand(command);
     
-    // Forzar actualización del timeline para comandos de test
     if (this.isTestRelatedCommand(command)) {
       setTimeout(() => {
         this.forceTimelineUpdate();

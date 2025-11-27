@@ -53,7 +53,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
       if (dir === '..') {
         this.currentDirectory = path.dirname(this.currentDirectory);
       } else {
-        dir = dir.replace(/^["']|["']$/g, '');
+        dir = dir.replaceAll(/^["']|["']$/g, '');
         const possiblePath = path.isAbsolute(dir)
           ? dir
           : path.resolve(this.currentDirectory, dir);
