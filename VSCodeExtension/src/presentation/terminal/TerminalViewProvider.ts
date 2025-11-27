@@ -93,10 +93,11 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   private async executeRealCommand(command: string): Promise<void> {
-    if (!command.trim()) {
-      this.sendToTerminal('$ ');
-      return;
-    }
+   if (!command.trim()) {
+  const currentDir = process.cwd();
+this.sendToTerminal(`${currentDir}> ${command}\n`);
+  return;
+}
 
     const trimmedCommand = command.trim();
     
@@ -153,7 +154,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   public sendToTerminal(message: string, isRestoring: boolean = false, skipColorize: boolean = false) {
-    // ✅ Colorizar automáticamente según palabras clave
+    // Colorizar automáticamente según palabras clave
     let coloredMessage = skipColorize ? message : this.colorizeTestOutput(message);
     if (!isRestoring) {
       this.terminalBuffer += coloredMessage;
@@ -179,45 +180,45 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   
   let result = text;
   
-  // ✅ Colorear "Test Suites: X failed, Y total"
+  //  Colorear "Test Suites: X failed, Y total"
   result = result.replace(/(Test Suites:)\s+(\d+)\s+(failed)/gi, 
     `$1 ${BRIGHT_RED}$2 $3${RESET}`);
   
-  // ✅ Colorear "Tests: X failed, Y passed, Z total"
+  //  Colorear "Tests: X failed, Y passed, Z total"
   result = result.replace(/(Tests:)\s+(\d+)\s+(failed),\s+(\d+)\s+(passed)/gi, 
     `$1 ${BRIGHT_RED}$2 $3${RESET}, ${BRIGHT_GREEN}$4 $5${RESET}`);
   
-  // ✅ Colorear solo "X passed" (cuando no hay failed)
+  // Colorear solo "X passed" (cuando no hay failed)
   result = result.replace(/(Tests:)\s+(\d+)\s+(passed)/gi, 
     `$1 ${BRIGHT_GREEN}$2 $3${RESET}`);
   
-  // ✅ Colorear solo "X failed" (cuando no hay passed)
+  //  Colorear solo "X failed" (cuando no hay passed)
   result = result.replace(/(Tests:)\s+(\d+)\s+(failed)/gi, 
     `$1 ${BRIGHT_RED}$2 $3${RESET}`);
   
-  // ✅ Colorear líneas completas "PASS"
+  //  Colorear líneas completas "PASS"
   result = result.replace(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
   
-  // ✅ Colorear líneas completas "FAIL"
+  // Colorear líneas completas "FAIL"
   result = result.replace(/(FAIL\s+[^\n]+)/g, `${RED}$1${RESET}`);
   
-  // ✅ Detectar símbolos de éxito
+  //  Detectar símbolos de éxito
   result = result.replace(/(✓|✔)/g, `${GREEN}$1${RESET}`);
   
-  // ✅ Detectar símbolos de error
+  //  Detectar símbolos de error
   result = result.replace(/(✗|✘)/g, `${RED}$1${RESET}`);
   
-  // ✅ Colorear "Expected" y "Received"
+  // Colorear "Expected" y "Received"
   result = result.replace(/(Expected|Received):/gi, `${RED}$1:${RESET}`);
   
-  // ✅ Colorear errores
+  //  Colorear errores
   result = result.replace(/(Error:|Error at)/gi, `${RED}$1${RESET}`);
   
-  // ✅ Colorear "Snapshots: X total"
+  //  Colorear "Snapshots: X total"
   result = result.replace(/(Snapshots:)\s+(\d+)\s+(total)/gi, 
     `$1 ${YELLOW}$2 $3${RESET}`);
   
-  // ✅ Colorear tiempo de ejecución
+  //  Colorear tiempo de ejecución
   result = result.replace(/(Time:)\s+([0-9.]+\s*s)/gi, 
     `$1 ${YELLOW}$2${RESET}`);
   
@@ -237,7 +238,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         command: 'clearTerminal'
       });
       setTimeout(() => {
-        this.sendToTerminal('$ ');
+        const currentDir = process.cwd();   
+    this.sendToTerminal(`${currentDir}> `);
       }, 100);
     }
   }
