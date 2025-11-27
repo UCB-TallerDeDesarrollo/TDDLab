@@ -32,23 +32,20 @@ export class VSCodeTerminalRepository implements TerminalPort {
 
     const trimmed = command.trim();
 
-    // Ignorar líneas vacías o solo prompt
     if (!trimmed || trimmed.endsWith('>')) {
       this.isExecuting = false;
       this.printPrompt();
       return;
     }
 
-    // ----------- Manejo de "clear" -----------
     if (trimmed === 'clear') {
       this.outputChannel.clear();
-      this.onOutputCallback('\x1Bc'); // limpiar webview
+      this.onOutputCallback('\x1Bc');
       this.isExecuting = false;
       this.printPrompt();
       return;
     }
 
-    // ----------- Manejo de "cd" -----------
     const cdMatch = /^cd\s+(.+)$/.exec(trimmed);
     if (cdMatch) {
       let dir = cdMatch[1].trim();
@@ -78,7 +75,6 @@ export class VSCodeTerminalRepository implements TerminalPort {
       return;
     }
 
-    // ----------- Comando normal -----------
     const cwd = this.currentDirectory;
     const parsed = this.parseCommand(trimmed);
 
@@ -90,17 +86,14 @@ export class VSCodeTerminalRepository implements TerminalPort {
 
     const [cmd, ...args] = parsed;
 
-    // Solución definitiva para Windows (.cmd)
-    const safeCmd = process.platform === 'win32' ? `${cmd}.cmd` : cmd;
-
     return new Promise((resolve) => {
       try {
         this.outputChannel.appendLine(`[${new Date().toISOString()}] Executing: ${trimmed} (cwd: ${cwd})`);
 
-        this.currentProcess = spawn(safeCmd, args, {
+        this.currentProcess = spawn(cmd, args, {
           cwd,
           stdio: ['pipe', 'pipe', 'pipe'],
-          shell: false
+          shell: true
         });
 
         this.currentProcess.stdout?.on('data', (data: Buffer) => {
