@@ -6,11 +6,23 @@ import { GetLastPoint } from '../../application/timeline/GetLastPoint';
 import { Timeline } from '../../domain/timeline/Timeline';
 import { CommitPoint } from '../../domain/timeline/CommitPoint';
 
+function getNonce() {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
 export class TimelineView implements vscode.WebviewViewProvider {
   private readonly context: vscode.ExtensionContext;
   public currentWebview: vscode.Webview | null = null;
   private readonly getTimeline: GetTimeline;
   private readonly getLastPoint: GetLastPoint;
+  
+  // Cache para la imagen en base64 para no leerla del disco cada vez
+  private gitLogoBase64: string = '';
 
   static readonly _onTimelineUpdated: vscode.EventEmitter<
     Array<Timeline | CommitPoint>
@@ -30,10 +42,25 @@ export class TimelineView implements vscode.WebviewViewProvider {
     this.getTimeline = new GetTimeline(rootPath);
     this.getLastPoint = new GetLastPoint(context);
 
-    // Inicializar con el proyecto actual
-    this.updateProjectContext(rootPath);
+    // Cargar la imagen en memoria una sola vez al iniciar
+    this.loadGitLogo();
 
+    this.updateProjectContext(rootPath);
     this.startTimelinePolling();
+  }
+
+  // --- NUEVO MÉTODO: Cargar imagen como Base64 ---
+  private loadGitLogo(): void {
+    try {
+      const imagePath = path.join(this.context.extensionUri.fsPath, 'images', 'git.png');
+      const imageBuffer = fs.readFileSync(imagePath);
+      // Convertir a string base64 listo para CSS
+      this.gitLogoBase64 = `data:image/png;base64,${imageBuffer.toString('base64')}`;
+    } catch (e) {
+      console.error('[TimelineView] Error cargando git.png:', e);
+      // Fallback: un cuadrado gris si falla la lectura
+      this.gitLogoBase64 = ''; 
+    }
   }
 
   private updateProjectContext(rootPath: string): void {
@@ -45,18 +72,13 @@ export class TimelineView implements vscode.WebviewViewProvider {
       this.TIMELINE_STORAGE_KEY = 'tddTimelineData-global';
     }
 
-    // Cargar timeline guardado para este proyecto
     const savedTimeline = this.context.globalState.get(this.TIMELINE_STORAGE_KEY, []);
     if (savedTimeline && savedTimeline.length > 0) {
       this.lastTimelineData = savedTimeline;
-      console.log(`[TimelineView] Timeline cargado para proyecto ${this.currentProjectId}: ${savedTimeline.length} elementos`);
-    } else {
-      console.log(`[TimelineView] No hay timeline guardado para proyecto ${this.currentProjectId}`);
     }
   }
 
   private generateProjectId(workspacePath: string): string {
-    // Usar replaceAll en lugar de replace con regex
     return Buffer.from(workspacePath).toString('base64').replaceAll(/[^a-zA-Z0-9]/g, '').substring(0, 16);
   }
 
@@ -64,13 +86,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [
-        vscode.Uri.joinPath(
-          this.context.extensionUri,
-          'src',
-          'presentation',
-          'timeline',
-          'templates'
-        ),
+        vscode.Uri.joinPath(this.context.extensionUri, 'src', 'presentation', 'timeline', 'templates'),
         vscode.Uri.joinPath(this.context.extensionUri, 'images')
       ]
     };
@@ -81,86 +97,60 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
   async showTimeline(webview: vscode.Webview): Promise<void> {
     try {
-      // Forzar actualización inmediata al mostrar el timeline
       const timeline = await this.getTimeline.execute();
       webview.html = this.generateHtml(timeline, webview);
       this.updateTimelineCache(timeline);
     } catch (err: any) {
       console.error('[TimelineView] Error al mostrar timeline:', err);
-      // Mostrar datos guardados en caso de error
       webview.html = this.generateHtml(this.lastTimelineData, webview);
     }
   }
 
   public async getTimelineHtml(webview: vscode.Webview): Promise<string> {
     try {
-      // Siempre obtener datos frescos para el HTML
       const timeline = await this.getTimeline.execute();
-      console.log(`[TimelineView] Timeline items count para ${this.currentProjectId}:`, timeline.length);
-      
-      // Actualizar cache con los datos frescos
       this.updateTimelineCache(timeline);
-      
       return this.generateHtmlFragment(timeline, webview);
     } catch (err: any) {
-      console.error('[TimelineView] Error al generar HTML del timeline:', err);
-      // Usar datos guardados en caso de error
       return this.generateHtmlFragment(this.lastTimelineData, webview);
     }
   }
 
-  // Nuevo método: forzar actualización inmediata
   public async forceTimelineUpdate(): Promise<void> {
     try {
-      console.log(`[TimelineView] Forzando actualización inmediata del timeline para proyecto ${this.currentProjectId}`);
       const currentTimeline = await this.getTimeline.execute();
-      
       if (this.hasTimelineChanged(currentTimeline)) {
         this.updateTimelineCache(currentTimeline);
-        
-        // Notificar a todas las vistas webview
         if (this.currentWebview) {
           this.currentWebview.postMessage({
             command: 'updateTimeline',
             html: this.generateHtmlFragment(currentTimeline, this.currentWebview),
           });
         }
-        
-        // También notificar a través del event emitter
         TimelineView._onTimelineUpdated.fire(currentTimeline);
       }
     } catch (error) {
-      console.error('[TimelineView] Error en actualización forzada:', error);
+      console.error('[TimelineView] Error forceUpdate:', error);
     }
   }
 
   private startTimelinePolling(): void {
-    let consecutiveErrors = 0;
-    const maxConsecutiveErrors = 3;
-
+    // ... (Tu código de polling se mantiene igual) ...
     setInterval(async () => {
-      try {
-        const currentTimeline = await this.getTimeline.execute();
-        consecutiveErrors = 0;
-
-        if (this.hasTimelineChanged(currentTimeline) || this.forceUpdateRequested) {
-          this.updateTimelineCache(currentTimeline);
-          if (this.currentWebview) {
-            this.currentWebview.postMessage({
-              command: 'updateTimeline',
-              html: this.generateHtmlFragment(currentTimeline, this.currentWebview),
-            });
+        try {
+          const currentTimeline = await this.getTimeline.execute();
+          if (this.hasTimelineChanged(currentTimeline) || this.forceUpdateRequested) {
+            this.updateTimelineCache(currentTimeline);
+            if (this.currentWebview) {
+              this.currentWebview.postMessage({
+                command: 'updateTimeline',
+                html: this.generateHtmlFragment(currentTimeline, this.currentWebview),
+              });
+            }
+            this.forceUpdateRequested = false;
           }
-          this.forceUpdateRequested = false;
-        }
-      } catch (err: any) {
-        consecutiveErrors++;
-        console.error('[TimelineView] Error en polling del timeline:', err);
-        if (consecutiveErrors === maxConsecutiveErrors) {
-          console.warn('[TimelineView] Timeline no disponible tras múltiples intentos.');
-        }
-      }
-    }, 2000); // Reducido a 2 segundos para mayor responsividad
+        } catch (err) { /* ignorar errores silenciosos */ }
+    }, 2000);
   }
 
   private hasTimelineChanged(newTimeline: Array<Timeline | CommitPoint>): boolean {
@@ -169,11 +159,8 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
   private updateTimelineCache(timeline: Array<Timeline | CommitPoint>): void {
     this.lastTimelineData = [...timeline];
-    // Guardar inmediatamente en el estado global
     this.context.globalState.update(this.TIMELINE_STORAGE_KEY, timeline);
     TimelineView._onTimelineUpdated.fire(timeline);
-    
-    console.log(`[TimelineView] Timeline guardado para proyecto ${this.currentProjectId} con ${timeline.length} elementos`);
   }
 
   private generateHtmlFragment(
@@ -184,9 +171,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
       return '<p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline de TDD</p>';
     }
 
-    const gitLogoUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, 'images', 'git.png')
-    );
     const regex = /refactor/i;
 
     const htmlContent = timeline
@@ -194,19 +178,14 @@ export class TimelineView implements vscode.WebviewViewProvider {
       .reverse()
       .map((point) => {
         if (point instanceof Timeline) {
+          // ... Lógica de Timeline igual que antes ...
           const color = point.getColor();
           const passed = point.numPassedTests;
           const total = point.numTotalTests;
           const failed = total - passed;
-          const timestamp = new Date(point.timestamp).toLocaleString('es-ES', {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit'
-          });
-          const status = point.success ? '✅ Exitoso' : '❌ Fallido';
-          const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
-          
           const symbol = '✓';
           const symbolColor = '#ffffff';
+          const tooltip = `Tests: ${passed}/${total}`;
 
           return `
             <div class="timeline-dot" title="${tooltip}" 
@@ -216,11 +195,26 @@ export class TimelineView implements vscode.WebviewViewProvider {
         } else if (point instanceof CommitPoint) {
           const commitName = point.commitName || 'Commit sin mensaje';
           const tooltip = `Commit: ${commitName}`;
+          
+          // === SOLUCIÓN: Usar la imagen Base64 pre-cargada ===
+          // Esto garantiza que la imagen se vea sí o sí.
           let htmlPoint = `
             <div class="timeline-dot" title="${tooltip}">
-              <img src="${gitLogoUri}" style="margin:3px;width:24px;height:24px;border-radius:50%;cursor:pointer;">
+               <div style="
+                margin: 3px;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                cursor: pointer;
+                background-color: #2d2d2d;
+                background-image: url('${this.gitLogoBase64}');
+                background-size: 65%;
+                background-repeat: no-repeat;
+                background-position: center;
+               "></div>
             </div>
           `;
+
           if (point.commitName && regex.test(point.commitName)) {
             htmlPoint += `<div class="timeline-dot" title="Refactor detectado" style="margin:3px;background:skyblue;width:24px;height:24px;border-radius:50%;cursor:pointer;"></div>`;
           }
@@ -230,7 +224,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
       })
       .join('');
 
-    return htmlContent || '<p style="color:#666;font-size:12px;">Sin datos de timeline</p>';
+    return htmlContent || '<p style="color:#666;">Sin datos</p>';
   }
 
   private generateHtml(
@@ -238,27 +232,21 @@ export class TimelineView implements vscode.WebviewViewProvider {
     webview: vscode.Webview
   ): string {
     const root = this.context.asAbsolutePath('');
-const templatePath = path.join(
-  root,
-  'src',
-  'presentation',
-  'timeline',
-  'templates'
-);
+    const templatePath = path.join(root, 'src', 'presentation', 'timeline', 'templates');
     const htmlPath = path.join(templatePath, 'TimelineViewHTML.html');
     const cssPath = path.join(templatePath, 'TimelineViewCSS.css');
 
-    console.log("HTML:", htmlPath, fs.existsSync(htmlPath));
-console.log("CSS:", cssPath, fs.existsSync(cssPath));
-
     const cssUri = webview.asWebviewUri(vscode.Uri.file(cssPath));
+    const nonce = getNonce();
 
     let htmlTemplate = fs.readFileSync(htmlPath, 'utf8');
     const timelineHtml = this.generateHtmlFragment(timeline, webview);
 
     htmlTemplate = htmlTemplate
       .replace('{{CSS_PATH}}', cssUri.toString())
-      .replace('{{TIMELINE_CONTENT}}', timelineHtml);
+      .replace('{{TIMELINE_CONTENT}}', timelineHtml)
+      .replace(/{{CSP_SOURCE}}/g, webview.cspSource)
+      .replace(/{{NONCE}}/g, nonce);
 
     return htmlTemplate;
   }

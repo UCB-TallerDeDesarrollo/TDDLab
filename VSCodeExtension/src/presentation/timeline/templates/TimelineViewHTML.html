@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src {{CSP_SOURCE}} data:; style-src {{CSP_SOURCE}} 'unsafe-inline'; script-src 'nonce-{{NONCE}}';">
+  
   <link rel="stylesheet" href="{{CSS_PATH}}" />
   <title>TDDLab Timeline</title>
 </head>
@@ -11,7 +13,7 @@
     {{TIMELINE_CONTENT}}
   </div>
 
-  <script>
+  <script nonce="{{NONCE}}">
     const vscode = acquireVsCodeApi();
     window.addEventListener('message', event => {
       const message = event.data;
