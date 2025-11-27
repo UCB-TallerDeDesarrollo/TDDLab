@@ -1,4 +1,3 @@
-// src/infrastructure/terminal/VSCodeTerminalRepository.ts
 import * as vscode from 'vscode';
 import { TerminalPort } from '../../domain/model/TerminalPort';
 import { spawn } from 'node:child_process';
@@ -22,7 +21,8 @@ export class VSCodeTerminalRepository implements TerminalPort {
     this.onOutputCallback = callback;
   }
 
-  private printPrompt(): void {
+  // CAMBIO: Eliminar printPrompt y usar directamente el formato correcto
+  private showPrompt(): void {
     this.onOutputCallback(`\r\n${this.currentDirectory} > `);
   }
 
@@ -34,7 +34,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
 
     if (!trimmed || trimmed.endsWith('>')) {
       this.isExecuting = false;
-      this.printPrompt();
+      this.showPrompt(); // Cambio aquí
       return;
     }
 
@@ -42,7 +42,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
       this.outputChannel.clear();
       this.onOutputCallback('\x1Bc');
       this.isExecuting = false;
-      this.printPrompt();
+      this.showPrompt(); // Cambio aquí
       return;
     }
 
@@ -71,26 +71,19 @@ export class VSCodeTerminalRepository implements TerminalPort {
       }
 
       this.isExecuting = false;
-      this.printPrompt();
+      this.showPrompt(); // Cambio aquí
       return;
     }
 
     const cwd = this.currentDirectory;
-    const parsed = this.parseCommand(trimmed);
 
-    if (parsed.length === 0 || !parsed[0]) {
-      this.isExecuting = false;
-      this.printPrompt();
-      return;
-    }
-
-    const [cmd, ...args] = parsed;
-
+    // SOLUCIÓN SIMPLIFICADA PARA EL ERROR SPAWN
     return new Promise((resolve) => {
       try {
         this.outputChannel.appendLine(`[${new Date().toISOString()}] Executing: ${trimmed} (cwd: ${cwd})`);
 
-        this.currentProcess = spawn(cmd, args, {
+        // Enfoque simplificado que funciona en Windows
+        this.currentProcess = spawn(trimmed, [], {
           cwd,
           stdio: ['pipe', 'pipe', 'pipe'],
           shell: true
@@ -120,7 +113,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
             this.onOutputCallback(`\r\n❌ Comando falló con código: ${code}\r\n`);
           }
 
-          this.printPrompt();
+          this.showPrompt(); // Cambio aquí
           resolve();
         });
 
@@ -131,7 +124,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
           this.isExecuting = false;
 
           this.onOutputCallback(`\r\n❌ Error ejecutando comando: ${error.message}\r\n`);
-          this.printPrompt();
+          this.showPrompt(); // Cambio aquí
           resolve();
         });
 
@@ -143,22 +136,13 @@ export class VSCodeTerminalRepository implements TerminalPort {
         this.isExecuting = false;
 
         this.onOutputCallback(`\r\n❌ Error: ${msg}\r\n`);
-        this.printPrompt();
+        this.showPrompt(); // Cambio aquí
         resolve();
       }
     });
   }
 
-  private parseCommand(command: string): string[] {
-    const regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
-    const matches: string[] = [];
-    let match: RegExpExecArray | null;
-    // eslint-disable-next-line no-cond-assign
-    while ((match = regex.exec(command)) !== null) {
-      matches.push(match[1] || match[2] || match[0]);
-    }
-    return matches;
-  }
+  // Eliminamos parseCommand ya que no es necesario con el enfoque simplificado
 
   public killCurrentProcess(): void {
     if (this.currentProcess) {
@@ -168,11 +152,11 @@ export class VSCodeTerminalRepository implements TerminalPort {
       this.outputChannel.appendLine('Process killed by user');
 
       this.onOutputCallback('\r\n🛑 Proceso cancelado por el usuario\r\n');
-      this.printPrompt();
+      this.showPrompt(); // Cambio aquí
     } else {
       this.isExecuting = false;
       this.onOutputCallback('\r\n🛑 No hay proceso en ejecución\r\n');
-      this.printPrompt();
+      this.showPrompt(); // Cambio aquí
     }
   }
 

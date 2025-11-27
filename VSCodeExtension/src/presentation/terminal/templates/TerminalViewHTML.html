@@ -83,10 +83,8 @@
           vscode.postMessage({ command: 'executeCommand', text: currentCommand });
           currentCommand = '';
         } else if (!isExecuting) {
-          term.write('\r\n$ ');
-          terminalContent += '\r\n$ ';
-          vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
-          scrollToBottom();
+          // CAMBIO: Enviar comando vacío en lugar de escribir $ manualmente
+          vscode.postMessage({ command: 'executeCommand', text: '' });
         }
       } else if (code === 127) {
         if (currentCommand.length > 0 && !isExecuting) {
@@ -97,10 +95,7 @@
         term.write('^C');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
-        term.write('\r\n$ ');
-        terminalContent += '\r\n$ ';
-        vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
-        scrollToBottom();
+        // CAMBIO: No escribir $ manualmente, el backend se encargará del prompt
       } else if (code >= 32 && code <= 126 && !isExecuting) {
         currentCommand += data;
         term.write(data);
@@ -139,7 +134,8 @@
           terminalContent += text;
           vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
           
-          if (text.endsWith('\r\n$ ') || text.endsWith('$ ')) {
+          // CAMBIO: Detectar cuando se muestra el prompt basado en el formato de directorio
+          if (text.includes('> ') && (text.endsWith('> ') || text.endsWith('\r\n'))) {
             isExecuting = false;
           }
           
@@ -149,10 +145,9 @@
           
         case 'clearTerminal': {
           term.clear();
-          term.write('$ ');
           currentCommand = '';
           isExecuting = false;
-          terminalContent = '$ ';
+          terminalContent = '';
           vscode.postMessage({ command: 'contentUpdate', content: terminalContent });
           scrollToBottom();
           break;
@@ -160,7 +155,7 @@
           
         case 'restoreContent': {
           term.clear();
-          const content = message.content || '$ ';
+          const content = message.content || '';
           term.write(content);
           terminalContent = content;
           currentCommand = '';
