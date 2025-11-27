@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo  } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Bubble, getElementAtEvent, Line } from "react-chartjs-2";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
@@ -17,8 +17,8 @@ interface CycleReportViewProps {
 }
 
 interface CommitTestsMapping {
-  commitIndex: number;
-  commitData: ProcessedCommit; 
+  commitNumber: number;
+  commitData: ProcessedCommit;
   tests: ProcessedTest[];
 }
 
@@ -27,9 +27,9 @@ const preprocessProcessedLogs = (processedLogs: ProcessedTDDLogs | null): Commit
     return [];
   }
   
-  return processedLogs.commits.map((commit, index) => {
+  return processedLogs.commits.map((commit) => {
     return {
-      commitIndex: index,
+      commitNumber: commit.commitNumber,
       commitData: commit,
       tests: commit.tests
     };
@@ -42,17 +42,30 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   role,
   port,
 }) => {
+  // 1. CREAMOS UNA VERSIÓN ORDENADA (Oldest -> Newest)
+  // Esto invierte el array original para que la posición 0 sea el "Initial Commit".
+  const sortedCommits = useMemo(() => {
+    return [...commits].reverse();
+  }, [commits]);
+
   const processedTDDLogs = useMemo(() => {
     return preprocessProcessedLogs(processedTddLogs);
   }, [processedTddLogs]);
+
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
+  
+  // Referencias a las gráficas
   const chartRefCoverage = useRef<any>();
   const chartRefModifiedLines = useRef<any>();
   const chartRefTestCount = useRef<any>();
+  const chartRef = useRef<any>(); 
+
   const [graph, setGraph] = useState<string>("");
-  const testCounts = commits.map((commit) => commit.test_count);
+  
+  // Usamos sortedCommits para los cálculos de máximos
+  const testCounts = sortedCommits.map((commit) => commit.test_count);
   const minTestCount = 0;
   const maxTestCount = 100;
   const maxTest = Math.max(...testCounts);
@@ -63,9 +76,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
-  const getTestsForCommit = (commitIndex: number): ProcessedTest[] => {
-    // Buscar el commit en los logs preprocesados por índice
-    const mapping = processedTDDLogs.find(m => m.commitIndex === commitIndex);
+  const getTestsForCommit = (commitNumber: number): ProcessedTest[] => {
+    const mapping = processedTDDLogs.find(m => m.commitNumber === commitNumber);
     return mapping ? mapping.tests : [];
   };
   
@@ -74,33 +86,21 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     return regex.test(commitMessage);
   }
 
-  // Nueva función para obtener el color basado directamente en el commit
   const getCommitColor = (commit: CommitDataObject): string => {
-    if (
-    !commit || typeof commit !== "object" ||
-    !commit.commit || typeof commit.commit.message !== "string"
-    ) {
-    return "red";
+    if (!commit || typeof commit !== "object" || !commit.commit || typeof commit.commit.message !== "string") {
+      return "red";
     }
     
     const { coverage, test_count, conclusion, commit: { message } } = commit;
     
-    // Si no hay información de cobertura o tests, asumimos que el commit no pasó
-     if (
-    coverage === undefined || coverage === null
-    ) {
+    if (coverage === undefined || coverage === null) {
       return "black";
     }
 
-     // Casos de error: sin cobertura, sin tests o tests fallidosAdd commentMore actions
-    if (
-    test_count === undefined || test_count === 0 ||
-    conclusion === "failure"
-    ) {
+    if (test_count === undefined || test_count === 0 || conclusion === "failure") {
       return "red";
     }
     const isRefactor = containsRefactor(message);
-    // Si tiene tests y no hay errores (asumimos que en commit-history.json solo se guardan commits válidos)
     return getColorByCoverage(coverage, isRefactor);
   };
   
@@ -109,22 +109,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     let opacity: number;
     const baseColor = isRefactor ? 'blue' : 'green';
   
-    if (coverage >= 90) {
-      colorValue = 110;
-      opacity = 1;
-    } else if (coverage >= 80) {
-      colorValue = 110;
-      opacity = 0.8;
-    } else if (coverage >= 70) {
-      colorValue = 110;
-      opacity = 0.6;
-    } else if (coverage >= 60) {
-      colorValue = 110;
-      opacity = 0.4;
-    } else {
-      colorValue = 110;
-      opacity = 0.2;
-    }
+    if (coverage >= 90) { colorValue = 110; opacity = 1; } 
+    else if (coverage >= 80) { colorValue = 110; opacity = 0.8; } 
+    else if (coverage >= 70) { colorValue = 110; opacity = 0.6; } 
+    else if (coverage >= 60) { colorValue = 110; opacity = 0.4; } 
+    else { colorValue = 110; opacity = 0.2; }
   
     return baseColor === 'green'
       ? `rgba(0, ${colorValue}, 0, ${opacity})`
@@ -147,57 +136,49 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
           title: {
             display: true,
             text: "Commits Realizados",
-            font: {
-              size: 13,
-              lineHeight: 1.2,
-            },
+            font: { size: 13, lineHeight: 1.2 },
           },
         },
         y: {
           title: {
             display: true,
             text: yAxisText,
-            font: {
-              size: 10,
-              lineHeight: 1.2,
-              padding: { top: 20 },
-            },
+            font: { size: 10, lineHeight: 1.2, padding: { top: 20 } },
           },
         },
       },
       plugins: {
-        legend: {
-          display: true,
-        },
+        legend: { display: true },
       },
     };
   };
 
+  // 2. CORREGIDO: getLineChartData ahora asume que recibe los datos ya ordenados (sortedCommits)
+  // Eliminamos los .reverse() internos que causaban confusión
   const getLineChartData = (label: string, data: number[]) => {
     return {
-      labels: commits.map((_, index) => `Commit ${index + 1}`),
+      labels: sortedCommits.map((_, index) => `Commit ${index + 1}`),
       datasets: [
         {
           label,
-          data: [...data].reverse(),
-          backgroundColor: commits
-            .map((commit) => {
-              return getCommitColor(commit);
-            })
-            .reverse(),
+          data: data, // Ya vienen ordenados
+          backgroundColor: sortedCommits.map((commit) => getCommitColor(commit)),
           borderColor: "rgba(0, 0, 0, 0.2)",
-          links: commits.map((commit) => commit.html_url).reverse(),
+          links: sortedCommits.map((commit) => commit.html_url),
         },
       ],
     };
   };
-  const chartRef = useRef<any>();  
 
   const onClick = async (event: any) => {
     const elements = getElementAtEvent(chartRef.current, event);
     if (elements.length > 0) {
       const dataSetIndexNum = elements[0].datasetIndex;
-      const commit = commits.slice().reverse()[dataSetIndexNum];
+      
+      // 3. CORREGIDO: Usamos sortedCommits directamente.
+      // El índice en el gráfico ahora coincide con el índice en sortedCommits
+      const commit = sortedCommits[dataSetIndexNum];
+      
       if (commit?.html_url) {
         const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
         const match = commit.html_url.match(regex);
@@ -214,9 +195,16 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   
             if (response.ok) {
               await response.json();
-              // Filtrar los tests del commit específico usando el tdd_log.json local
-              const commitIndexInOriginal = dataSetIndexNum - 1;
-              const testsForCommit = getTestsForCommit(commitIndexInOriginal);
+              
+              // 4. CORREGIDO: Cálculo del número de commit.
+              // Como sortedCommits va de Antiguo (0) a Nuevo (N), 
+              // el Commit #1 es el índice 0 + 1.
+              const commitNumberForLogs = dataSetIndexNum + 1;
+              const testsForCommit = getTestsForCommit(commitNumberForLogs);
+
+              console.log(`Commit seleccionado UI Index: ${dataSetIndexNum}`);
+              console.log(`Commit Number calculado: ${commitNumberForLogs}`);
+              console.log(`Tests encontrados:`, testsForCommit);
 
               setCommitTimelineData(testsForCommit); 
               setSelectedCommit(commit); 
@@ -238,7 +226,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   };
   
   useEffect(() => {
-  
   }, [graph]);
 
   const [barraHeight, setBarraHeight] = useState(window.innerWidth / 3);
@@ -247,14 +234,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     const actualizarAltura = () => {
       setBarraHeight(window.innerWidth / 3);
     };
-
-    // Agregamos el listener de redimensionamiento
     window.addEventListener('resize', actualizarAltura);
-
-    // Llamamos una primera vez para configurar la altura inicial
     actualizarAltura();
-
-    // Limpiamos el listener cuando el componente se desmonte
     return () => window.removeEventListener('resize', actualizarAltura);
   }, []);
   
@@ -270,18 +251,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             justifyContent: "center",
           }}
         >
-          <div>
-            <h3>Logs procesados:</h3>
-            <ul>
-              {processedTddLogs?.commits?.map((log, i) => (
-                <li key={i}>{JSON.stringify(log)}</li>
-              ))}
-            </ul>
-          </div>
-
           
           <div style={{ width: "85%", marginBottom: "20px",marginRight:"20px", position: 'relative' }}>
             <h2>Métricas de Commits con Cobertura de Código</h2>
+            {/* ... (código de la barra lateral sin cambios, omitido por brevedad) ... */}
               <div
                 style={{
                   position: "absolute",
@@ -293,7 +266,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{
                   width: "20px",
-                  height: `${barraHeight}px`, // Altura dinámica ajustada
+                  height: `${barraHeight}px`,
                   transform:  'translateX(-655%) translateY(6%)',
                   background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
                   textAlign: "center",
@@ -304,7 +277,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 style={{
                   transform: 'translateX(-33%) translateY(-18%)',
                   color: "#000",
-
                   fontWeight: "bold",
                 }}
               >
@@ -339,17 +311,15 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               ref={chartRef}
               onClick={onClick}
               data={{
-                datasets: commits
-                  .slice()
-                  .reverse()
+                // 6. CORREGIDO: Usamos sortedCommits directamente
+                datasets: sortedCommits
                   .map((commit, index) => {
                     const backgroundColor = getCommitColor(commit);
-
                     return {
                       label: `Commit ${index + 1}`,
                       data: [
                         {
-                          x: index + 1,
+                          x: index + 1, // Commit 1 es X=1
                           y: commit.test_count,
                           r: Math.max(10, commit.stats.total / 1.5),
                         },
@@ -365,7 +335,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                     title: { display: true, text: "Commits" },
                     ticks: {
                       callback: (_: any, index: number) => {
-                        const dataLength = commits.length;
+                        const dataLength = sortedCommits.length;
                         if (dataLength === 1) {
                           return `Commit ${index}`;
                         }
@@ -386,9 +356,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   tooltip: {
                     callbacks: {
                       label: (tooltipItem: any) => {
-                        const reversedCommits = commits.slice().reverse();
+                        // 7. CORREGIDO: Tooltip usa sortedCommits
                         const index = tooltipItem.raw.x - 1;
-                        const commit = reversedCommits[index];
+                        const commit = sortedCommits[index];
                         const commitNumber = index + 1;
                         return [
                           `Commit ${commitNumber}: ${commit.commit.message}`,
@@ -402,13 +372,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   },
                 },
               }}
-            />;
+            />
             <CommitTimelineDialog
               open={openModal}
               handleCloseModal={handleCloseModal}
               selectedCommit={selectedCommit}
               commitTimelineData={commitTimelineData}
-              commits={commits}
+              commits={sortedCommits} 
             />
             <div
               style={{
@@ -419,22 +389,18 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 marginBottom: "30px",
               }}
             >
+              {/* 8. CORREGIDO: Pasamos datos basados en sortedCommits a las gráficas lineales */}
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Total Número de Tests")}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    changeGraph("Líneas de Código Modificadas");
-                  }
-                }}
                 role="button"
+                tabIndex={0}
               >
                 <h3>Total Número de Tests</h3>
                 <Line
                   data={getLineChartData(
                     "Total Número de Tests",
-                    commits.map((commit) => commit.test_count)
+                    sortedCommits.map((commit) => commit.test_count)
                   )}
                   options={getChartOptions("Número de Tests")}
                   ref={chartRefTestCount}
@@ -443,21 +409,15 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Cobertura de Código")}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    changeGraph("Líneas de Código Modificadas");
-                  }
-                }}
                 role="button"
+                tabIndex={0}
               >
                 <h3>Cobertura de Código</h3>
                 <Line
                   data={getLineChartData(
                     "Porcentaje de Cobertura de Código",
-                    commits.map((commit) => commit.coverage ?? 0)
+                    sortedCommits.map((commit) => commit.coverage ?? 0)
                   )}
-                        
                   options={getChartOptions("Cobertura de Código")}
                   ref={chartRefCoverage}
                 />
@@ -465,19 +425,14 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{ width: "30%" }}
                 onClick={() => changeGraph("Líneas de Código Modificadas")}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    changeGraph("Líneas de Código Modificadas");
-                  }
-                }}
                 role="button"
+                tabIndex={0}
               >
                 <h3>Líneas de Código Modificadas</h3>
                 <Line
                   data={getLineChartData(
                     "Total de Líneas de Código Modificadas",
-                    commits.map((commit) => commit.stats.total)
+                    sortedCommits.map((commit) => commit.stats.total)
                   )}
                   options={getChartOptions("Líneas de Código Modificadas")}
                   ref={chartRefModifiedLines}
@@ -495,7 +450,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
           <TDDLineCharts
             port={port}
             role={role}
-            filteredCommitsObject={commits}
+            filteredCommitsObject={sortedCommits} // Usar el array ordenado también aquí
             optionSelected={graph}
             commitsCycles={null} 
             processedTddLogs={processedTddLogs}

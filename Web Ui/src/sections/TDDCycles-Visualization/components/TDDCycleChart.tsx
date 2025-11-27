@@ -16,6 +16,14 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
     return data?.summary || { totalCommits: 0, totalExecutions: 0 };
   }, [data]);
 
+  // --- NUEVO: Calcular el máximo número de tests para ajustar la altura ---
+  const maxTests = useMemo(() => {
+    if (processedData.length === 0) return 7;
+    const maxInCommits = Math.max(...processedData.map(c => c.tests.length));
+    return Math.max(maxInCommits, 7); // Mínimo 7 para mantener la estética base
+  }, [processedData]);
+  // ----------------------------------------------------------------------
+
   if (!data) {
     return (
       <div style={styles.container}>
@@ -42,18 +50,28 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
     );
   }
 
-  const chartHeight = 400;
-  const chartWidth = 1200;
+  const iconSize = 36; 
+  const circleSpacing = 8;
+  const rowHeight = iconSize + circleSpacing; // Altura de cada fila de tests
+
   const leftPadding = 60;
   const rightPadding = 60;
   const topPadding = 40;
   const bottomPadding = 80;
+
+  // --- MODIFICADO: Altura dinámica basada en maxTests ---
+  // El área de dibujo (plotHeight) ahora depende de cuántas filas necesitamos
+  const plotHeight = maxTests * rowHeight; 
+  const chartHeight = plotHeight + topPadding + bottomPadding;
+  // -----------------------------------------------------
+  
+  const chartWidth = 1200;
   const plotWidth = chartWidth - leftPadding - rightPadding;
-  const plotHeight = chartHeight - topPadding - bottomPadding;
   
   const commitSpacing = plotWidth / (processedData.length + 1);
-  const iconSize = 36; // Tamaño del icono (aumentado de 30 a 36)
-  const circleSpacing = 8;
+
+  // Generar array para el eje Y dinámico [0, 1, 2, ..., maxTests]
+  const yTicks = Array.from({ length: maxTests + 1 }, (_, i) => i);
 
   return (
     <div style={styles.container}>
@@ -62,14 +80,14 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
       </div>
       
       <svg width={chartWidth} height={chartHeight} style={styles.svg}>
-        {/* Grid lines */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+        {/* Grid lines - MODIFICADO para usar yTicks dinámicos */}
+        {yTicks.map(i => (
           <line
             key={`grid-${i}`}
             x1={leftPadding}
-            y1={topPadding + (plotHeight / 7) * i}
+            y1={topPadding + plotHeight - (i * rowHeight)} // Calculado desde abajo
             x2={leftPadding + plotWidth}
-            y2={topPadding + (plotHeight / 7) * i}
+            y2={topPadding + plotHeight - (i * rowHeight)}
             stroke="#e0e0e0"
             strokeWidth="1"
           />
@@ -107,12 +125,12 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
           Pruebas ejecutadas
         </text>
 
-        {/* Y-axis ticks */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+        {/* Y-axis ticks - MODIFICADO para usar yTicks dinámicos */}
+        {yTicks.map(i => (
           <text
             key={`y-tick-${i}`}
             x={leftPadding - 10}
-            y={topPadding + plotHeight - (plotHeight / 7) * i + 5}
+            y={topPadding + plotHeight - (i * rowHeight) + 5} // Alineado con la grid line
             fill="#666"
             fontSize="12"
             textAnchor="end"
@@ -121,14 +139,15 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
           </text>
         ))}
 
-        {/* Data points - CHECKS Y X en lugar de círculos */}
+        {/* Data points - CHECKS Y X */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
           
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
-                const y = topPadding + plotHeight - (testIndex * (iconSize + circleSpacing)) - iconSize/2;
+                // Cálculo de Y ajustado a la nueva altura dinámica
+                const y = topPadding + plotHeight - (testIndex * rowHeight) - iconSize/2;
                 
                 return (
                   <text
