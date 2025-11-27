@@ -16,9 +16,13 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private pendingMessages: Array<{command: string, text?: string}> = [];
 
   private CONTENT_STORAGE_KEY: string = 'tddTerminalContent-global';
+  private HISTORY_STORAGE_KEY: string = 'tddTerminalHistory-global';
   private readonly TEMPLATE_DIR: string;
   private helpTextCache: string | undefined;
   private currentProjectId: string = 'global';
+
+  // Mantener un historial en el lado del host para restaurarlo al webview
+  private commandHistory: string[] = [];
 
   constructor(context: vscode.ExtensionContext, timelineView: TimelineView, terminalPort: TerminalPort) {
     this.context = context;
@@ -48,11 +52,15 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       const workspacePath = workspaceFolders[0].uri.fsPath;
       this.currentProjectId = this.generateProjectId(workspacePath);
       this.CONTENT_STORAGE_KEY = `tddTerminalContent-${this.currentProjectId}`;
+      this.HISTORY_STORAGE_KEY = `tddTerminalHistory-${this.currentProjectId}`;
       this.terminalContent = this.context.globalState.get(this.CONTENT_STORAGE_KEY, '');
+      this.commandHistory = this.context.globalState.get(this.HISTORY_STORAGE_KEY, []) as string[] || [];
     } else {
       this.currentProjectId = 'global';
       this.CONTENT_STORAGE_KEY = 'tddTerminalContent-global';
+      this.HISTORY_STORAGE_KEY = 'tddTerminalHistory-global';
       this.terminalContent = this.context.globalState.get(this.CONTENT_STORAGE_KEY, '');
+      this.commandHistory = this.context.globalState.get(this.HISTORY_STORAGE_KEY, []) as string[] || [];
     }
   }
 
@@ -68,6 +76,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
   private async handleWorkspaceChange(): Promise<void> {
     this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
+    this.context.globalState.update(this.HISTORY_STORAGE_KEY, this.commandHistory);
+
     this.updateProjectContext();
 
     if (this.webviewView) {
@@ -85,6 +95,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       // CAMBIO: Sin símbolo de dólar
       this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n`);
       this.sendPrompt();
+    }
+
+    // Enviar historial restaurado al webview (si aplica)
+    if (this.commandHistory && this.commandHistory.length > 0) {
+      this.sendToWebview({
+        command: 'restoreHistory',
+        history: this.commandHistory
+      });
     }
 
     await this.updateTimelineInWebview();
@@ -154,6 +172,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
         break;
 
+      case 'historyUpdate':
+        // Actualizar historial desde webview y persistirlo
+        if (Array.isArray(message.history)) {
+          this.commandHistory = message.history;
+          this.context.globalState.update(this.HISTORY_STORAGE_KEY, this.commandHistory);
+        }
+        break;
+
       default:
         console.warn(`Comando no reconocido: ${message.command}`);
     }
@@ -171,6 +197,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       // CAMBIO: Sin símbolo de dólar
       this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n`);
       this.sendPrompt();
+    }
+
+    // Enviar historial persistido al webview para que el usuario pueda navegarlo
+    if (this.commandHistory && this.commandHistory.length > 0) {
+      this.sendToWebview({
+        command: 'restoreHistory',
+        history: this.commandHistory
+      });
     }
 
     this.processPendingMessages();
@@ -214,9 +248,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       await this.showHelp();
       return;
     }
-
-    // CAMBIO: Eliminar línea que muestra el comando con $
-    // this.sendToTerminal(`\r\n$ ${trimmedCommand}\r\n`);
 
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);

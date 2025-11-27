@@ -67,11 +67,12 @@ html, body {
   margin: 0;
 }
 
+/* IMPORTANTE: padding-bottom para que el prompt no quede pegado al borde */
 .xterm {
   width: 100% !important;
   height: 100% !important;
   text-align: left !important;
-  padding: 10px !important;
+  padding: 10px 10px 20px 10px !important; /* padding-bottom aumentado */
   box-sizing: border-box !important;
 }
 
