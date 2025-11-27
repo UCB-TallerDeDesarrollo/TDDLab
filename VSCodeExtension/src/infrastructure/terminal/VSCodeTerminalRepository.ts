@@ -17,7 +17,6 @@ export class VSCodeTerminalRepository implements TerminalPort {
   }
 
   async createAndExecuteCommand(terminalName: string, command: string): Promise<void> {
-    // Si ya está ejecutando, no hacer nada
     if (this.isExecuting) {
       return;
     }
@@ -58,7 +57,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
         this.currentProcess.on('close', (code: number) => {
           this.outputChannel.appendLine(`\nCommand exited with code: ${code}`);
           
-          // IMPORTANTE: Resetear estado ANTES de enviar callbacks
+          // Reset estado
           this.currentProcess = null;
           this.isExecuting = false;
           
@@ -68,8 +67,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
             } else {
               this.onOutputCallback(`\r\n❌ Comando falló con código: ${code}\r\n`);
             }
-            // Enviar prompt DESPUÉS de resetear estado
-            this.onOutputCallback('$ ');
+            // ❗ NO ENVIAR PROMPT AQUÍ
           }
           
           resolve();
@@ -78,12 +76,12 @@ export class VSCodeTerminalRepository implements TerminalPort {
         this.currentProcess.on('error', (error: Error) => {
           this.outputChannel.appendLine(`Process error: ${error.message}`);
           
-          // IMPORTANTE: Resetear estado ANTES de enviar callbacks
           this.currentProcess = null;
           this.isExecuting = false;
           
           if (this.onOutputCallback) {
-            this.onOutputCallback(`\r\n❌ Error ejecutando comando: ${error.message}\r\n$ `);
+            this.onOutputCallback(`\r\n❌ Error ejecutando comando: ${error.message}\r\n`);
+            // ❗ NO ENVIAR PROMPT AQUÍ
           }
           
           resolve();
@@ -92,12 +90,12 @@ export class VSCodeTerminalRepository implements TerminalPort {
       } catch (error: any) {
         this.outputChannel.appendLine(`  ERROR: ${error.message}`);
         
-        // IMPORTANTE: Resetear estado en caso de excepción
         this.currentProcess = null;
         this.isExecuting = false;
         
         if (this.onOutputCallback) {
-          this.onOutputCallback(`\r\n❌ Error: ${error.message}\r\n$ `);
+          this.onOutputCallback(`\r\n❌ Error: ${error.message}\r\n`);
+          // ❗ NO ENVIAR PROMPT AQUÍ
         }
         
         resolve();
@@ -122,15 +120,17 @@ export class VSCodeTerminalRepository implements TerminalPort {
       this.currentProcess.kill('SIGTERM');
       this.currentProcess = null;
       this.isExecuting = false;
+
       this.outputChannel.appendLine('Process killed by user');
+
       if (this.onOutputCallback) {
-        this.onOutputCallback('\r\n🛑 Proceso cancelado por el usuario\r\n$ ');
+        this.onOutputCallback('\r\n🛑 Proceso cancelado por el usuario\r\n');
       }
     } else {
-      // Si no hay proceso pero isExecuting está true, resetearlo
+      // No hay proceso — pero no mandar prompt aquí
       this.isExecuting = false;
       if (this.onOutputCallback) {
-        this.onOutputCallback('\r\n🛑 No hay proceso en ejecución\r\n$ ');
+        this.onOutputCallback('\r\n🛑 No hay proceso en ejecución\r\n');
       }
     }
   }
