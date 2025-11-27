@@ -7,12 +7,13 @@ import {
   Button,
 } from "@mui/material";
 import { Bubble } from "react-chartjs-2";
+import { ProcessedTest } from '../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces';
 
 interface CommitTimelineDialogProps {
   open: boolean;
   handleCloseModal: () => void;
   selectedCommit: any;
-  commitTimelineData: any[];
+  commitTimelineData: ProcessedTest[]; // Usamos estrictamente la nueva interfaz
   commits: any[];
 }
 
@@ -32,12 +33,14 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
       x: index + 1,
       y: 1,
       r: 15,
-      // Si el dato viene del tdd_log.json:
-      isPassed: item.success ?? (item.color === "green"),
-      numTests: item.numTotalTests ?? item.number_of_tests,
-      passedTests: item.numPassedTests ?? item.passed_tests,
+      // Mapeo directo usando solo las propiedades de ProcessedTest
+      // Ya no necesitamos '?? item.color' porque item siempre es ProcessedTest
+      isPassed: item.success, 
+      numTests: item.numTotalTests,
+      passedTests: item.numPassedTests,
       failedTests: item.failedTests,
-      date: item.timestamp ? new Date(item.timestamp) : item.execution_timestamp,
+      // Asumimos que timestamp viene en ms, si viene en segundos multiplicarlo por 1000
+      date: new Date(item.timestamp), 
     }));
   };
 

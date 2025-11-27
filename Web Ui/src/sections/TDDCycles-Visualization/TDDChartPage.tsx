@@ -16,6 +16,8 @@ import { CommentDataObject, CommentsCreationObject } from "../../modules/teacher
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { GetProcessedTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogsProcessed";
+import { ProcessedTDDLogs } from "../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces";
 
 interface CycleReportViewProps {
   port: CommitHistoryRepository;
@@ -65,6 +67,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
+  const [processedTddLogs, setProcessedTddLogs] = useState<ProcessedTDDLogs | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
@@ -76,6 +79,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
+  const getProcessedTDDLogsUseCase = new GetProcessedTDDLogs(port);
   const getUserNameUseCase = new GetUserName(port);
 
   const fetchData = async () => {
@@ -83,6 +87,10 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
     try {
   const tddlogs = await getTDDLogsUseCase.execute(repoOwner, repoName);
       setTDDLogsInfo(tddlogs);
+
+  //obtiene los logs desde el backend
+  const processedLogs = await getProcessedTDDLogsUseCase.execute(repoOwner, repoName);
+      setProcessedTddLogs(processedLogs);
 
   const commits = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
       setCommitsInfo(commits);
@@ -267,6 +275,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
               data-testId="cycle-chart"
               commits={commitsInfo}
               tddLogs = {tddLogsInfo}
+              processedTddLogs = {processedTddLogs}
               commitsTddCycles={commitsTddCycles}
               port={port}
               role={role}

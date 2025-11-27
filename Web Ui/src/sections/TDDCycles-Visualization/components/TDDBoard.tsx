@@ -8,21 +8,23 @@ import { VITE_API } from "../../../../config";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
+import { ProcessedTDDLogs, ProcessedCommit, ProcessedTest } from '../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces';
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
   tddLogs: TDDLogEntry[];
+  processedTddLogs: ProcessedTDDLogs | null;
   port: CommitHistoryRepository;
   role: string;
 }
 
 interface CommitTestsMapping {
   commitIndex: number;
-  commitData: CommitLog | null;
-  tests: TestExecutionLog[];
+  commitData: ProcessedCommit; 
+  tests: ProcessedTest[];
 }
 
-const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
+/*const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
   if (!tddLogs || tddLogs.length === 0) {
     return [];
   }
@@ -64,17 +66,65 @@ const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
   }
   
   return commitMappings;
+};*/
+
+/*const mapProcessedLogsToTimeline = (processedLogs: ProcessedTDDLogs | null): CommitTestsMapping[] => {
+  if (!processedLogs || !processedLogs.commits || processedLogs.commits.length === 0) {
+    return [];
+  }
+
+  return processedLogs.commits.map((processedCommit, index) => {
+    const adaptedTests: TestExecutionLog[] = processedCommit.tests.map((test: ProcessedTest) => ({
+      numPassedTests: test.numPassedTests,
+      failedTests: test.failedTests,
+      numTotalTests: test.numTotalTests,
+      timestamp: test.timestamp,
+      success: test.success,
+      testId: test.testId
+    }));
+
+    // Creamos un adaptador para la info del commit (CommitLog)
+    // Nota: ProcessedCommit no tiene timestamp del commit, ponemos 0 o el del último test por defecto
+    const commitLogData: CommitLog = {
+      commitId: processedCommit.commitId,
+      commitName: processedCommit.commitName,
+      testId: processedCommit.testId,
+      commitTimestamp: adaptedTests.length > 0 ? adaptedTests[adaptedTests.length - 1].timestamp : 0
+    };
+
+    // 3. Devolvemos la estructura exacta que tu componente espera
+    return {
+      commitIndex: index,       // El índice secuencial
+      commitData: commitLogData,// Los metadatos del commit
+      tests: adaptedTests       // El array de tests para el Timeline
+    };
+  });
+};*/
+
+const preprocessProcessedLogs = (processedLogs: ProcessedTDDLogs | null): CommitTestsMapping[] => {
+  if (!processedLogs || !processedLogs.commits || processedLogs.commits.length === 0) {
+    return [];
+  }
+  
+  return processedLogs.commits.map((commit, index) => {
+    return {
+      commitIndex: index,
+      commitData: commit,
+      tests: commit.tests
+    };
+  });
 };
 
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
   tddLogs,
+  processedTddLogs,
   role,
   port,
 }) => {
   const processedTDDLogs = useMemo(() => {
-    return preprocessTDDLogs(tddLogs);
-  }, [tddLogs]);
+    return preprocessProcessedLogs(processedTddLogs);
+  }, [processedTddLogs]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
@@ -93,13 +143,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
-  const getTestsForCommit = (commitIndex: number): TestExecutionLog[] => {
+  const getTestsForCommit = (commitIndex: number): ProcessedTest[] => {
     // Buscar el commit en los logs preprocesados por índice
-    const commitMapping = processedTDDLogs.find(
-      mapping => mapping.commitIndex === commitIndex
-    );
-    
-    return commitMapping ? commitMapping.tests : [];
+    const mapping = processedTDDLogs.find(m => m.commitIndex === commitIndex);
+    return mapping ? mapping.tests : [];
   };
   
   function containsRefactor(commitMessage: string): boolean {
@@ -303,6 +350,26 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             justifyContent: "center",
           }}
         >
+          <div>
+            <h3>Logs simples:</h3>
+            <ul>
+              {tddLogs.map((log, i) => (
+                <li key={i}>{JSON.stringify(log)}</li>
+              ))}
+            </ul>
+          </div>
+
+
+          <div>
+            <h3>Logs procesados:</h3>
+            <ul>
+              {processedTddLogs?.commits?.map((log, i) => (
+                <li key={i}>{JSON.stringify(log)}</li>
+              ))}
+            </ul>
+          </div>
+
+          
           <div style={{ width: "85%", marginBottom: "20px",marginRight:"20px", position: 'relative' }}>
             <h2>Métricas de Commits con Cobertura de Código</h2>
               <div
@@ -521,13 +588,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             filteredCommitsObject={commits}
             tddLogs={tddLogs}
             optionSelected={graph}
-
-            commitsCycles= {null}
-          />
+            commitsCycles={null} 
+            processedTddLogs={processedTddLogs}
+            />
         </>
 
       )}
-      <TDDCycleChart data={tddLogs} />
+      <TDDCycleChart data={processedTddLogs} />
     </>    
   );
 };
