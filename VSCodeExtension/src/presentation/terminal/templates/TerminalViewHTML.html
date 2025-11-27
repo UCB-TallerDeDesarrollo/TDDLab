@@ -72,25 +72,32 @@
 
     term.onData(data => {
       const code = data.codePointAt(0);
+
       if (code === 13) { 
         if (command.trim() && !isExecuting) {
           isExecuting = true;
           vscode.postMessage({ command: 'executeCommand', text: command });
           command = '';
         } else if (!isExecuting) {
-          term.write('\r\n$ ');
+          // Ya NO escribimos ningún prompt aquí
+          term.write('\r\n');
+          vscode.postMessage({ command: 'executeCommand', text: '' });
         }
-      } else if (code === 127) { 
+      } 
+      else if (code === 127) { 
         if (command.length > 0 && !isExecuting) {
           command = command.slice(0, -1);
           term.write('\b \b');
         }
-      } else if (code === 3) { 
+      } 
+      else if (code === 3) { 
         term.write('^C');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
-        term.write('\r\n$ ');
-      } else if (code >= 32 && code <= 126 && !isExecuting) {
+        // SIN prompt
+        term.write('\r\n');
+      } 
+      else if (code >= 32 && code <= 126 && !isExecuting) {
         command += data;
         term.write(data);
       }
@@ -98,22 +105,24 @@
     
     window.addEventListener('message', event => {
       const message = event.data;
+
       switch (message.command) {
+
         case 'updateTimeline':
           document.getElementById('timeline-content').innerHTML = message.html;
           break;
+
         case 'writeToTerminal':
-          { const text = message.text || '';
-          term.write(text);
-          if (text.endsWith('\r\n$ ')) {
-            isExecuting = false;
-          }
-          break; }
+          term.write(message.text || '');
+          // Nunca detectamos $ aquí
+          isExecuting = false;
+          break;
+
         case 'clearTerminal':
           term.clear();
-          term.write('$ ');
           isExecuting = false;
           command = '';
+          // Backend enviará prompt correcto
           break;
       }
     });

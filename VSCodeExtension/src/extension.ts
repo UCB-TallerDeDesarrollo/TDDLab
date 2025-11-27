@@ -52,22 +52,26 @@ export async function activate(context: vscode.ExtensionContext) {
                 // Ejecutar npm install
                 progress.report({ increment: 0, message: 'Instalando dependencias...' });
                 if (terminalProvider) {
-                  terminalProvider.sendToTerminal('\r\n🔧 Configuración automática iniciada...\r\n');
-                  terminalProvider.sendToTerminal('$ npm install\r\n');
+                  terminalProvider.sendToTerminal('\r\n🔧 Configuración automática iniciada...\r\n', false);
+                  terminalProvider.sendToTerminal(`${terminalProvider.getPrompt()}npm install\r\n`, false);
                   await terminalPort.createAndExecuteCommand('TDDLab Setup', 'npm install');
+                  terminalProvider.sendToTerminal('', true);
                 }
 
                 // Ejecutar git init
                 progress.report({ increment: 50, message: 'Inicializando Git...' });
                 if (terminalProvider) {
-                  terminalProvider.sendToTerminal('\r\n$ git init\r\n');
+                  terminalProvider.sendToTerminal(`${terminalProvider.getPrompt()}git init\r\n`, false);
                   await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git init');
+                  terminalProvider.sendToTerminal('', true);
 
-                  terminalProvider.sendToTerminal('\r\n$ git add .\r\n');
+                  terminalProvider.sendToTerminal(`${terminalProvider.getPrompt()}git add .\r\n`, false);
                   await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git add .');
+                  terminalProvider.sendToTerminal('', true);
 
-                  terminalProvider.sendToTerminal('\r\n$ git commit -m "Initial commit"\r\n');
+                  terminalProvider.sendToTerminal(`${terminalProvider.getPrompt()}git commit -m "Initial commit"\r\n`, false);
                   await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git commit -m "Initial commit"');
+                  terminalProvider.sendToTerminal('', true);
                 }
 
                 // Eliminar el archivo marcador
@@ -76,8 +80,8 @@ export async function activate(context: vscode.ExtensionContext) {
                 progress.report({ increment: 100, message: '¡Completado!' });
 
                 if (terminalProvider) {
-                  terminalProvider.sendToTerminal('\r\n✅ Proyecto configurado correctamente\r\n');
-                  terminalProvider.sendToTerminal('Puedes ejecutar: npm test\r\n$ ');
+                  terminalProvider.sendToTerminal('\r\n✅ Proyecto configurado correctamente\r\n', false);
+                  terminalProvider.sendToTerminal('Puedes ejecutar: npm test\r\n', true);
                 }
 
                 vscode.window.showInformationMessage('✅ Proyecto TDDLab configurado correctamente');
@@ -85,7 +89,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 console.error('Error en setup automático:', error);
                 vscode.window.showErrorMessage(`Error en configuración automática: ${error.message}`);
                 if (terminalProvider) {
-                  terminalProvider.sendToTerminal(`\r\n❌ Error: ${error.message}\r\n$ `);
+                  terminalProvider.sendToTerminal(`\r\n❌ Error: ${error.message}\r\n`, true);
                 }
               }
             });
