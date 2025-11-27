@@ -120,7 +120,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         content: this.terminalContent
       });
     } else {
-      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n$ `);
+      const currentDir = process.cwd();
+      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n${currentDir}> `);
     }
 
     // Forzar actualización del timeline para el nuevo proyecto
@@ -222,7 +223,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         content: this.terminalContent
       });
     } else {
-      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n$ `);
+      const currentDir = process.cwd();
+      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD - Proyecto: ${this.getProjectName()}\r\n${currentDir}> `);
     }
 
     // Procesar mensajes pendientes
@@ -254,7 +256,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
   private async executeRealCommand(command: string): Promise<void> {
     if (!command.trim()) {
-      this.sendToTerminal('$ ');
+      const currentDir = process.cwd();
+      this.sendToTerminal(`${currentDir}> ${command}\n`);
       return;
     }
 
@@ -271,7 +274,9 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
 
     if (trimmedCommand === 'project') {
-      this.sendToTerminal(`\r\nProyecto actual: ${this.getProjectName()} (ID: ${this.currentProjectId})\r\n$ `);
+      this.sendToTerminal(`\r\nProyecto actual: ${this.getProjectName()} (ID: ${this.currentProjectId})\r\n`);
+      const currentDir = process.cwd();
+      this.sendToTerminal(`${currentDir}> `);
       return;
     }
 
@@ -322,13 +327,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     if (!this.helpTextCache) {
       try {
         const helpPath = path.join(this.TEMPLATE_DIR, 'TerminalHelp.txt');
-        this.helpTextCache = await fs.readFile(helpPath, 'utf-8');
+        const helpContent = await fs.readFile(helpPath, 'utf-8');
+        this.helpTextCache = helpContent + '\r\n$ ';
       } catch (error) {
         console.error('Error cargando TerminalHelp.txt:', error);
         this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n$ ';
       }
     }
-    this.sendToTerminal(this.helpTextCache);
+    this.sendToTerminal(this.helpTextCache, false, true);
   }
 
   private async updateTimelineInWebview() {
@@ -345,15 +351,76 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  public sendToTerminal(message: string) {
+  public sendToTerminal(message: string, isRestoring: boolean = false, skipColorize: boolean = false) {
+    // Colorizar automáticamente según palabras clave
+    let coloredMessage = skipColorize ? message : this.colorizeTestOutput(message);
+    
     // Actualizar contenido persistente
-    this.terminalContent += message;
-    this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
+    if (!isRestoring) {
+      this.terminalContent += coloredMessage;
+      this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
+    }
     
     this.sendToWebview({
       command: 'writeToTerminal',
-      text: message
+      text: coloredMessage
     });
+  }
+
+  private colorizeTestOutput(text: string): string {
+    // Códigos ANSI para colores
+    const RED = '\x1b[31m';
+    const GREEN = '\x1b[32m';
+    const YELLOW = '\x1b[33m';
+    const BRIGHT_RED = '\x1b[91m';
+    const BRIGHT_GREEN = '\x1b[92m';
+    const RESET = '\x1b[0m';
+    
+    let result = text;
+    
+    // Colorear "Test Suites: X failed, Y total"
+    result = result.replace(/(Test Suites:)\s+(\d+)\s+(failed)/gi, 
+      `$1 ${BRIGHT_RED}$2 $3${RESET}`);
+    
+    // Colorear "Tests: X failed, Y passed, Z total"
+    result = result.replace(/(Tests:)\s+(\d+)\s+(failed),\s+(\d+)\s+(passed)/gi, 
+      `$1 ${BRIGHT_RED}$2 $3${RESET}, ${BRIGHT_GREEN}$4 $5${RESET}`);
+    
+    // Colorear solo "X passed" (cuando no hay failed)
+    result = result.replace(/(Tests:)\s+(\d+)\s+(passed)/gi, 
+      `$1 ${BRIGHT_GREEN}$2 $3${RESET}`);
+    
+    // Colorear solo "X failed" (cuando no hay passed)
+    result = result.replace(/(Tests:)\s+(\d+)\s+(failed)/gi, 
+      `$1 ${BRIGHT_RED}$2 $3${RESET}`);
+    
+    // Colorear líneas completas "PASS"
+    result = result.replace(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
+    
+    // Colorear líneas completas "FAIL"
+    result = result.replace(/(FAIL\s+[^\n]+)/g, `${RED}$1${RESET}`);
+    
+    // Detectar símbolos de éxito
+    result = result.replace(/(✓|✔)/g, `${GREEN}$1${RESET}`);
+    
+    // Detectar símbolos de error
+    result = result.replace(/(✗|✘)/g, `${RED}$1${RESET}`);
+    
+    // Colorear "Expected" y "Received"
+    result = result.replace(/(Expected|Received):/gi, `${RED}$1:${RESET}`);
+    
+    // Colorear errores
+    result = result.replace(/(Error:|Error at)/gi, `${RED}$1${RESET}`);
+    
+    // Colorear "Snapshots: X total"
+    result = result.replace(/(Snapshots:)\s+(\d+)\s+(total)/gi, 
+      `$1 ${YELLOW}$2 $3${RESET}`);
+    
+    // Colorear tiempo de ejecución
+    result = result.replace(/(Time:)\s+([0-9.]+\s*s)/gi, 
+      `$1 ${YELLOW}$2${RESET}`);
+    
+    return result;
   }
 
   public async executeCommand(command: string) {
@@ -368,12 +435,18 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   }
 
   public clearTerminal() {
-    this.terminalContent = '$ ';
+    this.terminalContent = '';
     this.context.globalState.update(this.CONTENT_STORAGE_KEY, this.terminalContent);
     
-    this.sendToWebview({
-      command: 'clearTerminal'
-    });
+    if (this.webviewView) {
+      this.sendToWebview({
+        command: 'clearTerminal'
+      });
+      setTimeout(() => {
+        const currentDir = process.cwd();   
+        this.sendToTerminal(`${currentDir}> `);
+      }, 100);
+    }
   }
 
   private async getHtml(webview: vscode.Webview, timelineContent: string): Promise<string> {

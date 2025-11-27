@@ -3,18 +3,24 @@ html, body {
   padding: 0;
   height: 100%;
   display: flex;
+  overflow: hidden;
   flex-direction: column;
   font-family: monospace;
   background: #1e1e1e;
   color: #eee;
 }
 #timeline {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   flex: 0 0 auto;
+  flex-shrink: 0;
   background-color: #222;
   color: #eee;
   text-align: left;
   padding: 10px;
   border-bottom: 1px solid #444;
+  
 }
 #timeline-content {
   display: flex;
@@ -23,7 +29,8 @@ html, body {
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: flex-start;
-  width: 100%;
+  width: 80%;
+
 }
 .timeline-dot {
   display: inline-block;

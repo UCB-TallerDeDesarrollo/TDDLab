@@ -237,11 +237,19 @@ export class TimelineView implements vscode.WebviewViewProvider {
     timeline: Array<Timeline | CommitPoint>,
     webview: vscode.Webview
   ): string {
-    const templatePath = path.join(
-      this.context.extensionUri.fsPath, 'src', 'presentation', 'timeline', 'templates'
-    );
+    const root = this.context.asAbsolutePath('');
+const templatePath = path.join(
+  root,
+  'src',
+  'presentation',
+  'timeline',
+  'templates'
+);
     const htmlPath = path.join(templatePath, 'TimelineViewHTML.html');
     const cssPath = path.join(templatePath, 'TimelineViewCSS.css');
+
+    console.log("HTML:", htmlPath, fs.existsSync(htmlPath));
+console.log("CSS:", cssPath, fs.existsSync(cssPath));
 
     const cssUri = webview.asWebviewUri(vscode.Uri.file(cssPath));
 
