@@ -120,6 +120,7 @@
 
         case 'clearTerminal':
           term.clear();
+          term.write('\r\n');
           isExecuting = false;
           command = '';
           // Backend enviará prompt correcto
