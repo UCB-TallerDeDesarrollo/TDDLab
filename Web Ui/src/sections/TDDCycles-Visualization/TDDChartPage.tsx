@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { GetCommitsOfRepo } from "../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
 import { GetCommitTddCycle } from "../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
 
-import { GetTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../modules/TDDCycles-Visualization/application/GetUserName";
 import TDDCharts from "./components/TDDChart";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
@@ -15,7 +14,6 @@ import { CommentDataObject, CommentsCreationObject } from "../../modules/teacher
 
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { GetProcessedTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogsProcessed";
 import { ProcessedTDDLogs } from "../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces";
 
@@ -66,7 +64,6 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
 
   const [ownerName, setOwnerName] = useState<string>("");
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
-  const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [processedTddLogs, setProcessedTddLogs] = useState<ProcessedTDDLogs | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,25 +75,21 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
 
   const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
-  const getTDDLogsUseCase = new GetTDDLogs(port);
   const getProcessedTDDLogsUseCase = new GetProcessedTDDLogs(port);
   const getUserNameUseCase = new GetUserName(port);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-  const tddlogs = await getTDDLogsUseCase.execute(repoOwner, repoName);
-      setTDDLogsInfo(tddlogs);
+      //obtiene los logs desde el backend
+      const processedLogs = await getProcessedTDDLogsUseCase.execute(repoOwner, repoName);
+          setProcessedTddLogs(processedLogs);
 
-  //obtiene los logs desde el backend
-  const processedLogs = await getProcessedTDDLogsUseCase.execute(repoOwner, repoName);
-      setProcessedTddLogs(processedLogs);
+      const commits = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
+          setCommitsInfo(commits);
 
-  const commits = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
-      setCommitsInfo(commits);
-
-  const tddCycles = await getCommitTddCycleUseCase.execute(repoOwner, repoName);
-      setCommitsTddCycles(tddCycles);
+      const tddCycles = await getCommitTddCycleUseCase.execute(repoOwner, repoName);
+          setCommitsTddCycles(tddCycles);
 
     } catch (error) {
       console.error("Error obtaining data:", error);
@@ -227,7 +220,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
         </div>
       )}
 
-      {!loading && commitsInfo?.length !== 0 && (!tddLogsInfo || tddLogsInfo.length === 0) && (
+      {!loading && commitsInfo?.length !== 0 && (!processedTddLogs || processedTddLogs.commits.length === 0) && (
         <div className="error-message" data-testid="errorMessage">
           Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
         </div>
@@ -274,7 +267,6 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
             <TDDCharts
               data-testId="cycle-chart"
               commits={commitsInfo}
-              tddLogs = {tddLogsInfo}
               processedTddLogs = {processedTddLogs}
               commitsTddCycles={commitsTddCycles}
               port={port}

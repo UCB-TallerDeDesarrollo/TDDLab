@@ -52,7 +52,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
   const plotHeight = chartHeight - topPadding - bottomPadding;
   
   const commitSpacing = plotWidth / (processedData.length + 1);
-  const circleRadius = 15;
+  const iconSize = 36; // Tamaño del icono (aumentado de 30 a 36)
   const circleSpacing = 8;
 
   return (
@@ -121,24 +121,29 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
           </text>
         ))}
 
-        {/* Data points - circles stacked vertically */}
+        {/* Data points - CHECKS Y X en lugar de círculos */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
           
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
-                const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
+                const y = topPadding + plotHeight - (testIndex * (iconSize + circleSpacing)) - iconSize/2;
                 
                 return (
-                  <circle
+                  <text
                     key={`test-${commitIndex}-${testIndex}`}
-                    cx={x}
-                    cy={y}
-                    r={circleRadius}
-                    fill={test.passed ? '#2d8a2d' : '#c72828'}
-                    opacity="0.9"
-                  />
+                    x={x}
+                    y={y}
+                    fill={test.passed ? '#28A745' : '#D73A49'}
+                    fontSize={iconSize}
+                    fontWeight="bold"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    style={{ fontFamily: 'Arial' }}
+                  >
+                    {test.passed ? '✔' : '✖'}
+                  </text>
                 );
               })}
             </g>
@@ -175,22 +180,20 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
       {/* Legend */}
       <div style={styles.legend}>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#2d8a2d'}}></div>
+          <span style={{...styles.legendIcon, color: '#28A745'}}>✔</span>
           <span style={styles.legendText}>Pruebas exitosas</span>
         </div>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#c72828'}}></div>
+          <span style={{...styles.legendIcon, color: '#D73A49'}}>✖</span>
           <span style={styles.legendText}>Pruebas fallidas</span>
         </div>
       </div>
 
-      {/* 6. ACTUALIZAR EL RESUMEN PARA USAR LOS DATOS DEL BACKEND */}
       <div style={styles.summary}>
         <div style={styles.summaryItem}>
           <strong>Total de commits:</strong> {summary.totalCommits}
         </div>
         <div style={styles.summaryItem}>
-          {/* El cálculo 'data.filter(...)' se reemplaza por el valor del backend */}
           <strong>Total de ejecuciones:</strong> {summary.totalExecutions}
         </div>
       </div>
@@ -233,10 +236,10 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '8px',
   },
-  legendCircle: {
-    width: '20px',
-    height: '20px',
-    borderRadius: '50%',
+  legendIcon: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    fontFamily: 'Arial',
   },
   legendText: {
     fontSize: '14px',

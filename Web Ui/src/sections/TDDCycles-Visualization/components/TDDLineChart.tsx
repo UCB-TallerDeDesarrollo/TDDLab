@@ -24,7 +24,6 @@ import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
   CategoryScale,
@@ -41,7 +40,6 @@ ChartJS.register(
 
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
-  tddLogs: TDDLogEntry [] | null;
   processedTddLogs: ProcessedTDDLogs | null;
   optionSelected: string;
   port: CommitHistoryRepository;
@@ -51,7 +49,6 @@ interface LineChartProps {
 
 function TDDLineCharts({
   filteredCommitsObject,
-  tddLogs,
   processedTddLogs, 
   optionSelected,
   port,
@@ -328,7 +325,7 @@ function TDDLineCharts({
       case "Lista":
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} processedTddLogs={processedTddLogs} port={port} role={role}/>;
+        return <TDDBoard commits={filteredCommitsObject || []} processedTddLogs={processedTddLogs} port={port} role={role}/>;
 
       /*case "Complejidad":
             if (complexity != null) {
