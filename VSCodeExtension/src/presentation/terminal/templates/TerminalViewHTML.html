@@ -111,10 +111,12 @@
           break; }
         case 'clearTerminal':
           term.clear();
+          term.reset(); // Resetea el estado interno
           term.write('$ ');
           isExecuting = false;
-          command = '';
           break;
+
+      
       }
     });
   </script>
