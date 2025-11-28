@@ -69,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
                   await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git add .');
                   terminalProvider.sendToTerminal('', true);
 
-                  terminalProvider.sendToTerminal(`${terminalProvider.getPrompt()}git commit -m "Initial commit"\r\n`, false);
+                  terminalProvider.sendToTerminal(`${terminalProvider.getPrompt()}git commit -m "Initial commit"\r\n\n`, false);
                   await terminalPort.createAndExecuteCommand('TDDLab Setup', 'git commit -m "Initial commit"');
                   terminalProvider.sendToTerminal('', true);
                 }

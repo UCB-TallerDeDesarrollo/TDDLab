@@ -54,7 +54,6 @@ export class VSCodeTerminalRepository implements TerminalPort {
           if (this.onOutputCallback) {
             const text = data.toString();
             this.onOutputCallback('\r\n' + text);
-            //this.onOutputCallback(output);
           }
         });
 
@@ -62,7 +61,8 @@ export class VSCodeTerminalRepository implements TerminalPort {
           const error = data.toString();
           this.outputChannel.append(error);
           if (this.onOutputCallback) {
-            this.onOutputCallback(error);
+            const text = data.toString();
+            this.onOutputCallback('\r\n' + error + '\r\n' + text);
           }
         });
 
