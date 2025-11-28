@@ -110,8 +110,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       return;
     }
 
-    this.sendToTerminal(`\r\n$ ${trimmedCommand}\r\n`);
-
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
     } catch (error: any) {
@@ -196,7 +194,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     `$1 ${BRIGHT_RED}$2 $3${RESET}`);
   
   // ✅ Colorear líneas completas "PASS"
-  result = result.replaceAll(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
+result = result.replaceAll(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
   
   // ✅ Colorear líneas completas "FAIL"
   result = result.replaceAll(/(FAIL\s+[^\n]+)/g, `${RED}$1${RESET}`);

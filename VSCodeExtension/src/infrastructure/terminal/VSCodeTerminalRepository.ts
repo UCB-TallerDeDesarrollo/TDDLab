@@ -63,12 +63,6 @@ export class VSCodeTerminalRepository implements TerminalPort {
           this.isExecuting = false;
           
           if (this.onOutputCallback) {
-            if (code === 0) {
-              this.onOutputCallback(`\r\n✅ Comando ejecutado correctamente\r\n`);
-            } else {
-              this.onOutputCallback(`\r\n❌ Comando falló con código: ${code}\r\n`);
-            }
-            // Enviar prompt DESPUÉS de resetear estado
             this.onOutputCallback('$ ');
           }
           

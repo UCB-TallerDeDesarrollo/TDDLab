@@ -102,18 +102,24 @@
         case 'updateTimeline':
           document.getElementById('timeline-content').innerHTML = message.html;
           break;
+
         case 'writeToTerminal':
           { const text = message.text || '';
           term.write(text);
-          if (text.endsWith('\r\n$ ')) {
-            isExecuting = false;
+          
+
+         if (text.includes('$ ') && 
+          (text.endsWith('$ ') || text.match(/\$\s*$/))) {
+           isExecuting = false;
           }
           break; }
+
         case 'clearTerminal':
           term.clear();
           term.reset(); // Resetea el estado interno
           term.write('$ ');
           isExecuting = false;
+          command = '';
           break;
 
       
