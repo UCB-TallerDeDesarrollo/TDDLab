@@ -73,7 +73,7 @@
         },
         {
           "id": "tddTerminalPanel",
-          "title": "Terminal TDD",
+          "title": "TDD Terminal ",
           "icon": "resources/TddLab_v2.png"
         }
       ]
