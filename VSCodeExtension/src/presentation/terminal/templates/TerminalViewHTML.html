@@ -60,7 +60,7 @@
 
       switch (code) {
         case 13: // Enter
-          //term.write('\r\n');
+          term.write('\r\n');
           if (command.trim()) {
             isExecuting = true;
             vscode.postMessage({ command: 'executeCommand', text: command });

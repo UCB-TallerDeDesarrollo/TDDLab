@@ -150,7 +150,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     // El prompt ya se muestra a través del callback onCommandComplete
     try {
-      await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
+      this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
     } catch (error: any) {
       this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}`);
       this.sendToTerminal(this.getPrompt());

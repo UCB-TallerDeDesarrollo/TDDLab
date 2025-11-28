@@ -61,8 +61,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
           const error = data.toString();
           this.outputChannel.append(error);
           if (this.onOutputCallback) {
-            const text = data.toString();
-            this.onOutputCallback('\r\n' + error + '\r\n' + text);
+            this.onOutputCallback('\r\n' + error);
           }
         });
 
