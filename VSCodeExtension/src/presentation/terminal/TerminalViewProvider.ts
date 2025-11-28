@@ -111,6 +111,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       await this.showHelp();
       return;
     }
+      this.sendToTerminal('\r\n');
+
 
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
