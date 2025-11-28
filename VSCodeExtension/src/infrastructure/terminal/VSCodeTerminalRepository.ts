@@ -7,9 +7,16 @@ export class VSCodeTerminalRepository implements TerminalPort {
   private currentProcess: any = null;
   private onOutputCallback: ((output: string) => void) | null = null;
   private isExecuting: boolean = false;
+  private currentWorkingDirectory: string; // ✅ NUEVA PROPIEDAD
 
   constructor() {
     this.outputChannel = vscode.window.createOutputChannel('TDDLab Commands');
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    this.currentWorkingDirectory = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
+  }
+   // ✅ NUEVO MÉTODO para obtener el directorio actual
+  getCurrentDirectory(): string {
+    return this.currentWorkingDirectory;
   }
 
   setOnOutputCallback(callback: (output: string) => void): void {
@@ -30,6 +37,18 @@ export class VSCodeTerminalRepository implements TerminalPort {
         
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         const cwd = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
+
+          // ✅ Actualizar el directorio actual
+        this.currentWorkingDirectory = cwd;
+
+        // ✅ Detectar comandos que cambian de directorio
+        const trimmedCommand = command.trim().toLowerCase();
+        if (trimmedCommand.startsWith('cd ')) {
+          // Manejar el comando cd especialmente
+          const targetDir = command.trim().substring(3).trim();
+          this.handleCdCommand(targetDir, cwd, resolve);
+          return;
+        }
 
         const [cmd, ...args] = this.parseCommand(command);
         
@@ -63,7 +82,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
           this.isExecuting = false;
           
           if (this.onOutputCallback) {
-            this.onOutputCallback('$ ');
+            this.onOutputCallback(`\r\n${this.currentWorkingDirectory}$ `);
           }
           
           resolve();
@@ -97,6 +116,51 @@ export class VSCodeTerminalRepository implements TerminalPort {
         resolve();
       }
     });
+  }
+   // ✅ NUEVO MÉTODO para manejar el comando cd
+  private handleCdCommand(targetDir: string, currentCwd: string, resolve: () => void): void {
+    const path = require('node:path');
+    
+    try {
+      // Resolver la ruta target
+      let newDir: string;
+      
+      if (targetDir === '~') {
+        // Directorio home
+        newDir = require('node:os').homedir();
+      } else if (targetDir === '..') {
+        // Directorio padre
+        newDir = path.dirname(this.currentWorkingDirectory);
+      } else if (path.isAbsolute(targetDir)) {
+        // Ruta absoluta
+        newDir = targetDir;
+      } else {
+        // Ruta relativa
+        newDir = path.resolve(this.currentWorkingDirectory, targetDir);
+      }
+
+      // Verificar si el directorio existe
+      const fs = require('node:fs');
+      if (fs.existsSync(newDir) && fs.statSync(newDir).isDirectory()) {
+        this.currentWorkingDirectory = newDir;
+        this.outputChannel.appendLine(`Changed directory to: ${newDir}`);
+        
+        if (this.onOutputCallback) {
+          this.onOutputCallback(`\r\n${this.currentWorkingDirectory}$ `);
+        }
+      } else {
+        if (this.onOutputCallback) {
+          this.onOutputCallback(`\r\n❌ El directorio no existe: ${targetDir}\r\n${this.currentWorkingDirectory}$ `);
+        }
+      }
+    } catch (error: any) {
+      if (this.onOutputCallback) {
+        this.onOutputCallback(`\r\n❌ Error cambiando directorio: ${error.message}\r\n${this.currentWorkingDirectory}$ `);
+      }
+    }
+    
+    this.isExecuting = false;
+    resolve();
   }
 
   private parseCommand(command: string): string[] {

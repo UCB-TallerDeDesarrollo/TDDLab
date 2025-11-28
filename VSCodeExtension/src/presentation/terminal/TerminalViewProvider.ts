@@ -63,7 +63,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         text: this.terminalBuffer
       });
     } else {
-      this.sendToTerminal('\r\nBienvenido a la Terminal TDD\r\n$ ');
+      const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
+      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD\r\n${cwd}$ `);
     }
 
     setTimeout(async () => {
@@ -94,7 +95,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
   private async executeRealCommand(command: string): Promise<void> {
     if (!command.trim()) {
-      this.sendToTerminal('$ ');
+      const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
+      this.sendToTerminal(`${cwd}$ `);
       return;
     }
 
@@ -227,12 +229,17 @@ result = result.replaceAll(/(PASS\s+[^\n]+)/g, `${GREEN}$1${RESET}`);
   }
 
   public clearTerminal() {
-    this.terminalBuffer = '$ ';
+    const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
+    const promptWithPath = `${cwd}$ `;
+
+    this.terminalBuffer = promptWithPath;
     this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
     
     if (this.webviewView) {
       this.webviewView.webview.postMessage({
-        command: 'clearTerminal'
+        command: 'clearTerminal',
+        prompt: promptWithPath  // ✅ NUEVO: envía el prompt
+
       });
     }
   }

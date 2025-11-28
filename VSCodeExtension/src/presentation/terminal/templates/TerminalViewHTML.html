@@ -108,18 +108,19 @@
           term.write(text);
           
 
-         if (text.includes('$ ') && 
-          (text.endsWith('$ ') || text.match(/\$\s*$/))) {
-           isExecuting = false;
+          if (text.endsWith('$ ')) {
+          isExecuting = false;
           }
           break; }
 
         case 'clearTerminal':
           term.clear();
           term.reset(); // Resetea el estado interno
-          term.write('$ ');
           isExecuting = false;
           command = '';
+           if (message.prompt) {
+          term.write(message.prompt);
+          } 
           break;
 
       
