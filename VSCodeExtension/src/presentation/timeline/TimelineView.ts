@@ -209,7 +209,7 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
         if (isTimeline) {
           // Lógica original, recuperando color si existe el método o calculándolo
-          let color = '#555';
+          let color;
           if (point.getColor) color = point.getColor();
           else color = point.success ? '#4caf50' : '#f44336'; // Fallback simple
 
