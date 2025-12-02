@@ -86,7 +86,8 @@ export async function activate(context: vscode.ExtensionContext) {
       gitStatusCmd,
       npmInstallCmd,
       vscode.window.registerTreeDataProvider('tddTestExecution', testMenuProvider),
-      vscode.window.registerWebviewViewProvider(TerminalViewProvider.viewType, terminalProvider)
+      vscode.window.registerWebviewViewProvider(TerminalViewProvider.viewType, terminalProvider),
+       vscode.window.registerWebviewViewProvider(TimelineView.viewType, timelineView)
     );
 
     console.log('TDDLab extension activated ✅');

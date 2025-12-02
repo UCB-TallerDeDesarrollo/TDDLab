@@ -68,7 +68,7 @@
       "panel": [
         {
           "id": "timelineContainer",
-          "title": "TDDLAB",
+          "title": "TDD TIMELINE",
           "icon": ""
         },
         {
@@ -91,9 +91,10 @@
       ],
       "timelineContainer": [
         {
-          "id": "timelineView",
+          "id": "tddTimelineView",
           "name": "Timeline",
-          "type": "webview"
+          "type": "webview",
+          "retainContextWhenHidden": true
         }
       ],
       "tddTerminalPanel": [

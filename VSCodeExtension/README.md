@@ -28,4 +28,4 @@ TDD Lab incluye los siguientes botones:
 5. Una vez instalada, accede a la extensión desde la barra lateral o ejecuta el comando:
 
 ## Créditos
-**Grupo Stack Overflores :)**
+**Grupo PIGGY SOFT**
