@@ -7,6 +7,7 @@ import { Timeline } from '../../domain/timeline/Timeline';
 import { CommitPoint } from '../../domain/timeline/CommitPoint';
 
 export class TimelineView implements vscode.WebviewViewProvider {
+  public static readonly viewType = 'tddTimelineView';
   private readonly context: vscode.ExtensionContext;
   public currentWebview: vscode.Webview | null = null;
   private readonly getTimeline: GetTimeline;
@@ -26,7 +27,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
     const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
     this.getTimeline = new GetTimeline(rootPath);
     this.getLastPoint = new GetLastPoint(context);
-
     this.startTimelinePolling();
   }
 
@@ -46,31 +46,120 @@ export class TimelineView implements vscode.WebviewViewProvider {
     };
 
     this.currentWebview = webviewView.webview;
-    this.showTimeline(this.currentWebview);
+
+    TimelineView.onTimelineUpdated(async (timeline) => {
+      const webview = webviewView.webview;
+      webview.postMessage({
+        command: 'updateTimeline',
+        html: this.generateHtmlFragment(timeline, webview)
+      });
+    });
+
+    webviewView.onDidChangeVisibility(() => {
+      if (webviewView.visible) {
+        this.showTimeline(webviewView.webview);
+      }
+    });
+
+    this.showTimeline(webviewView.webview);
   }
 
-  async showTimeline(webview: vscode.Webview): Promise<void> {
-    try {
-      const timeline = await this.getTimeline.execute();
-      webview.html = this.generateHtml(timeline, webview);
-      this.updateTimelineCache(timeline);
-    } catch (err: any) {
-      console.error('[TimelineView] Error al mostrar timeline:', err);
-      webview.html = `
-        <h2>TDDLab Timeline</h2>
-        <p style="color:gray;">⚠️ Timeline no disponible</p>
-        <p style="color:#666;font-size:12px;">Ejecuta tests para ver el timeline</p>
-      `;
-    }
+ async showTimeline(webview: vscode.Webview): Promise<void> {
+  try {
+    const timelineHtml = await this.getTimelineHtml(webview);
+
+    webview.html = `
+      <h2 style="margin:0 0 10px 0;color:#ccc;font-size:14px;">TDDLab Timeline</h2>
+
+      <style>
+        body {
+          background: #1e1e1e;
+          color: #eee;
+          font-family: monospace;
+          margin: 0;
+          padding: 10px;
+        }
+
+        /* -------- TIMELINE HORIZONTAL REAL -------- */
+        #timeline-content {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          overflow-x: auto !important;
+          overflow-y: hidden !important;
+          gap: 6px !important;
+          align-items: center !important;
+          width: 100%;
+          padding-bottom: 10px;
+        }
+
+        .timeline-dot {
+          width: 26px;
+          height: 26px;
+          min-width: 26px;
+          min-height: 26px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: bold;
+          color: #fff;
+          cursor: pointer;
+          flex-shrink: 0;
+          background: #555;
+        }
+      </style>
+
+      <div id="timeline-content">${timelineHtml}</div>
+
+      <script>
+        const vscode = acquireVsCodeApi();
+        window.addEventListener('message', event => {
+          if (event.data.command === 'updateTimeline') {
+            document.getElementById('timeline-content').innerHTML = event.data.html;
+          }
+        });
+      </script>
+    `;
+  } catch {
+    webview.html = `
+      <h2 style="margin:0 0 10px 0;color:#ccc;font-size:14px;">TDDLab Timeline</h2>
+
+      <style>
+        body {
+          background: #1e1e1e;
+          color: #eee;
+          font-family: monospace;
+          margin: 0;
+          padding: 10px;
+        }
+
+        #timeline-content {
+          display:flex;
+          color:gray;
+        }
+      </style>
+
+      <div id="timeline-content">(Esperando resultados...)</div>
+
+      <script>
+        const vscode = acquireVsCodeApi();
+        window.addEventListener('message', event => {
+          if (event.data.command === 'updateTimeline') {
+            document.getElementById('timeline-content').innerHTML = event.data.html;
+          }
+        });
+      </script>
+    `;
   }
+}
+
 
   public async getTimelineHtml(webview: vscode.Webview): Promise<string> {
     try {
       const timeline = await this.getTimeline.execute();
-      console.log('[TimelineView] Timeline items count:', timeline.length);
       return this.generateHtmlFragment(timeline, webview);
-    } catch (err: any) {
-      console.error('[TimelineView] Error al generar HTML del timeline:', err);
+    } catch {
       return `<p style="color:#666;font-size:12px;">Sin timeline disponible</p>`;
     }
   }
@@ -93,12 +182,8 @@ export class TimelineView implements vscode.WebviewViewProvider {
             });
           }
         }
-      } catch (err: any) {
+      } catch {
         consecutiveErrors++;
-        console.error('[TimelineView] Error en polling del timeline:', err);
-        if (consecutiveErrors === maxConsecutiveErrors) {
-          console.warn('[TimelineView] Timeline no disponible tras múltiples intentos.');
-        }
       }
     }, 4000);
   }
@@ -134,17 +219,12 @@ export class TimelineView implements vscode.WebviewViewProvider {
             day: '2-digit', month: '2-digit', year: 'numeric',
             hour: '2-digit', minute: '2-digit', second: '2-digit'
           });
-          const status = point.success ? '✅ Exitoso' : '❌ Fallido';
-          const tooltip = `Tests: ${passed}/${total} pasados | ${failed} fallidos&#10;Estado: ${status}&#10;Fecha: ${timestamp}`;
-          
-          const symbol = '✓';
-          const symbolColor = '#ffffff';
+          const status = point.success ? 'Exitoso' : 'Fallido';
+          const tooltip = `Tests: ${passed}/${total} | ${failed} fallidos | ${status} | ${timestamp}`;
 
           return `
             <div class="timeline-dot" title="${tooltip}" 
-                style="margin:3px;background:${color};width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold;color:${symbolColor};font-size:14px;">${symbol}
-            </div>`;
-
+                style="margin:3px;background:${color};width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:14px;">✓</div>`;
         } else if (point instanceof CommitPoint) {
           const commitName = point.commitName || 'Commit sin mensaje';
           const tooltip = `Commit: ${commitName}`;
@@ -153,8 +233,8 @@ export class TimelineView implements vscode.WebviewViewProvider {
               <img src="${gitLogoUri}" style="margin:3px;width:24px;height:24px;border-radius:50%;cursor:pointer;">
             </div>
           `;
-          if (point.commitName && regex.test(point.commitName)) {
-            htmlPoint += `<div class="timeline-dot" title="Refactor detectado" style="margin:3px;background:skyblue;width:24px;height:24px;border-radius:50%;cursor:pointer;"></div>`;
+          if (regex.test(commitName)) {
+            htmlPoint += `<div class="timeline-dot" style="margin:3px;background:skyblue;width:24px;height:24px;border-radius:50%;cursor:pointer;"></div>`;
           }
           return htmlPoint;
         }
