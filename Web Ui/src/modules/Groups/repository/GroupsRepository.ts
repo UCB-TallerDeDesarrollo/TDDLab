@@ -49,6 +49,10 @@ class GroupsRepository implements GroupsRepositoryInterface {
       throw error;
     }
   }
+
+  async updateGroup(groupId: number, updatedGroupData: GroupDataObject): Promise<void> {
+    await axios.put(`${API_URL}/${groupId}`, updatedGroupData,{withCredentials: true});
+  }
 }
 
 export default GroupsRepository;
