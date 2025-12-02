@@ -28,8 +28,6 @@ export async function activate(context: vscode.ExtensionContext) {
     // Instancia para clonar proyectos
     const executeCloneCommand = new ExecuteCloneCommand();
 
-  
-
     const runTestCmd = vscode.commands.registerCommand('TDD.runTest', async () => {
       try {
         if (!terminalProvider) {
@@ -86,8 +84,19 @@ export async function activate(context: vscode.ExtensionContext) {
       gitStatusCmd,
       npmInstallCmd,
       vscode.window.registerTreeDataProvider('tddTestExecution', testMenuProvider),
-      vscode.window.registerWebviewViewProvider(TerminalViewProvider.viewType, terminalProvider),
-       vscode.window.registerWebviewViewProvider(TimelineView.viewType, timelineView)
+      
+      // CAMBIO IMPORTANTE: Registramos las vistas con la opción de retener contexto
+      // Esto soluciona el problema de que se borre al cambiar de pestaña
+      vscode.window.registerWebviewViewProvider(
+          TerminalViewProvider.viewType, 
+          terminalProvider,
+          { webviewOptions: { retainContextWhenHidden: true } }
+      ),
+      vscode.window.registerWebviewViewProvider(
+          TimelineView.viewType, 
+          timelineView,
+          { webviewOptions: { retainContextWhenHidden: true } }
+      )
     );
 
     console.log('TDDLab extension activated ✅');

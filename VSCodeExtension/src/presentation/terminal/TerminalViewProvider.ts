@@ -23,7 +23,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     this.TEMPLATE_DIR = path.join(this.context.extensionPath, 'src', 'presentation', 'terminal', 'templates');
 
-    this.terminalBuffer = context.globalState.get(this.BUFFER_STORAGE_KEY, '');
+    // CAMBIO 1: Usar workspaceState para que cada proyecto tenga su propia terminal
+    this.terminalBuffer = context.workspaceState.get(this.BUFFER_STORAGE_KEY, '');
 
     this.terminalPort.setOnOutputCallback((output: string) => {
       this.sendToTerminal(output);
@@ -42,6 +43,12 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     this.webviewView = webviewView;
 
     webviewView.webview.options = { enableScripts: true };
+
+    // CAMBIO 2: Esto evita que se borre al cambiar de pestaña
+    (webviewView as any).webview.options = {
+        ...webviewView.webview.options,
+        retainContextWhenHidden: true
+    };
 
     let timelineHtml = '<p style="color: gray;">Timeline no disponible</p>';
     try {
@@ -150,7 +157,8 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     if (!isRestoring) {
       this.terminalBuffer += coloredMessage;
-      this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
+      // CAMBIO 3: Guardar en workspaceState
+      this.context.workspaceState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
     }
 
     if (this.webviewView) {
@@ -211,7 +219,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     const promptWithPath = `${cwd}$ `;
 
     this.terminalBuffer = promptWithPath;
-    this.context.globalState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
+    this.context.workspaceState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
 
     if (this.webviewView) {
       this.webviewView.webview.postMessage({

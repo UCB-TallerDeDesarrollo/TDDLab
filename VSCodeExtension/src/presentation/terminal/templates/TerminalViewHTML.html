@@ -118,14 +118,17 @@
           term.reset(); // Resetea el estado interno
           isExecuting = false;
           command = '';
-           if (message.prompt) {
+          if (message.prompt) {
           term.write(message.prompt);
           } 
           break;
-
+          
       
       }
     });
+    setTimeout(() => {
+        vscode.postMessage({ command: 'webviewReady' });
+    }, 100);
   </script>
 </body>
 </html>
