@@ -7,14 +7,14 @@ export class VSCodeTerminalRepository implements TerminalPort {
   private currentProcess: any = null;
   private onOutputCallback: ((output: string) => void) | null = null;
   private isExecuting: boolean = false;
-  private currentWorkingDirectory: string; // ✅ NUEVA PROPIEDAD
+  private currentWorkingDirectory: string; //  NUEVA PROPIEDAD
 
   constructor() {
     this.outputChannel = vscode.window.createOutputChannel('TDDLab Commands');
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     this.currentWorkingDirectory = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
   }
-   // ✅ NUEVO MÉTODO para obtener el directorio actual
+   //  NUEVO MÉTODO para obtener el directorio actual
   getCurrentDirectory(): string {
     return this.currentWorkingDirectory;
   }
@@ -38,10 +38,10 @@ export class VSCodeTerminalRepository implements TerminalPort {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         const cwd = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
 
-          // ✅ Actualizar el directorio actual
+          //  Actualizar el directorio actual
         this.currentWorkingDirectory = cwd;
 
-        // ✅ Detectar comandos que cambian de directorio
+        //  Detectar comandos que cambian de directorio
         const trimmedCommand = command.trim().toLowerCase();
         if (trimmedCommand.startsWith('cd ')) {
           // Manejar el comando cd especialmente
@@ -117,7 +117,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
       }
     });
   }
-   // ✅ NUEVO MÉTODO para manejar el comando cd
+   //  NUEVO MÉTODO para manejar el comando cd
   private handleCdCommand(targetDir: string, currentCwd: string, resolve: () => void): void {
     const path = require('node:path');
     
