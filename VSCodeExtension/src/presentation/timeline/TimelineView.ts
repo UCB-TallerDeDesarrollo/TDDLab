@@ -21,16 +21,13 @@ export class TimelineView implements vscode.WebviewViewProvider {
   > = TimelineView._onTimelineUpdated.event;
 
   private lastTimelineData: Array<Timeline | CommitPoint> = [];
-  // CAMBIO 1: Key para guardar datos
   private readonly STORAGE_KEY = 'tddTimelineData';
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
     this.getTimeline = new GetTimeline(rootPath);
-    this.getLastPoint = new GetLastPoint(context);
-    
-    // CAMBIO 2: Recuperar historial al iniciar
+    this.getLastPoint = new GetLastPoint(context);    
     const savedData = this.context.workspaceState.get(this.STORAGE_KEY, []);
     this.lastTimelineData = savedData as any[];
 
@@ -51,8 +48,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
         vscode.Uri.joinPath(this.context.extensionUri, 'images')
       ]
     };
-
-    // CAMBIO 3: Evitar reseteo de pestaña al cambiar focus
     (webviewView as any).webview.options = {
         ...webviewView.webview.options,
         retainContextWhenHidden: true
@@ -77,16 +72,14 @@ export class TimelineView implements vscode.WebviewViewProvider {
     this.showTimeline(webviewView.webview);
   }
 
- async showTimeline(webview: vscode.Webview): Promise<void> {
+async showTimeline(webview: vscode.Webview): Promise<void> {
   try {
-    // Intentamos cargar lo que ya tenemos en memoria primero (rapidez)
-    let timelineHtml = this.generateHtmlFragment(this.lastTimelineData, webview);
-    
-    // Si podemos obtener fresco, mejor
+    let timelineHtml = '';
     try {
-        const freshHtml = await this.getTimelineHtml(webview);
-        timelineHtml = freshHtml;
-    } catch {}
+        timelineHtml = await this.getTimelineHtml(webview);
+    } catch {
+        timelineHtml = this.generateHtmlFragment(this.lastTimelineData, webview);
+    }
 
     webview.html = `
       <h2 style="margin:0 0 10px 0;color:#ccc;font-size:14px;">TDDLab Timeline</h2>
@@ -142,28 +135,55 @@ export class TimelineView implements vscode.WebviewViewProvider {
       </script>
     `;
   } catch {
-    // Fallback html
-    webview.html = `... (tu html de error original) ...`;
+    webview.html = `
+      <h2 style="margin:0 0 10px 0;color:#ccc;font-size:14px;">TDDLab Timeline</h2>
+      <style>
+        body { background: #1e1e1e; color: #eee; font-family: monospace; margin: 0; padding: 10px; }
+        #timeline-content { display:flex; color:gray; }
+      </style>
+      <div id="timeline-content">(Esperando resultados...)</div>
+      <script>
+        const vscode = acquireVsCodeApi();
+        window.addEventListener('message', event => {
+          if (event.data.command === 'updateTimeline') {
+            document.getElementById('timeline-content').innerHTML = event.data.html;
+          }
+        });
+      </script>
+    `;
   }
 }
-
+  public async forceTimelineUpdate(): Promise<void> {
+      try {
+        const currentTimeline = await this.getTimeline.execute();
+        this.updateTimelineCache(currentTimeline);
+        if (this.currentWebview) {
+            this.currentWebview.postMessage({
+                command: 'updateTimeline',
+                html: this.generateHtmlFragment(currentTimeline, this.currentWebview)
+            });
+        }
+        TimelineView._onTimelineUpdated.fire(currentTimeline);
+      } catch {}
+  }
 
   public async getTimelineHtml(webview: vscode.Webview): Promise<string> {
     try {
       const timeline = await this.getTimeline.execute();
-      this.updateTimelineCache(timeline); // Guardamos cuando obtenemos éxito
+      this.updateTimelineCache(timeline); 
       return this.generateHtmlFragment(timeline, webview);
     } catch {
-      // Si falla, devolvemos lo que tenemos guardado
       return this.generateHtmlFragment(this.lastTimelineData, webview);
     }
   }
 
   private startTimelinePolling(): void {
+    let consecutiveErrors = 0; 
     setInterval(async () => {
       try {
         const currentTimeline = await this.getTimeline.execute();
-        
+        consecutiveErrors = 0;
+
         if (this.hasTimelineChanged(currentTimeline)) {
           this.updateTimelineCache(currentTimeline);
           if (this.currentWebview) {
@@ -173,7 +193,9 @@ export class TimelineView implements vscode.WebviewViewProvider {
             });
           }
         }
-      } catch {}
+      } catch {
+          consecutiveErrors++;
+      }
     }, 4000);
   }
 
@@ -183,7 +205,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
 
   private updateTimelineCache(timeline: Array<Timeline | CommitPoint>): void {
     this.lastTimelineData = [...timeline];
-    // CAMBIO 4: Persistir en disco
     this.context.workspaceState.update(this.STORAGE_KEY, timeline);
     TimelineView._onTimelineUpdated.fire(timeline);
   }
@@ -196,29 +217,28 @@ export class TimelineView implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this.context.extensionUri, 'images', 'git.png')
     );
     const regex = /refactor/i;
-
-    if (!timeline || timeline.length === 0) return '';
+    if (!timeline) return '';
 
     return timeline
       .slice()
       .reverse()
-      .map((point: any) => { // Cast a any para tolerar datos recuperados del storage
-        // Chequeo más flexible para soportar objetos recuperados del JSON
-        const isTimeline = point.numTotalTests !== undefined; 
-        const isCommit = point.commitName !== undefined;
+      .map((point: any) => { 
+        const isTimeline = (point instanceof Timeline) || (point.numTotalTests !== undefined);
+        const isCommit = (point instanceof CommitPoint) || (point.commitName !== undefined);
 
         if (isTimeline) {
-          // Lógica original, recuperando color si existe el método o calculándolo
           let color;
-          if (point.getColor) color = point.getColor();
-          else color = point.success ? '#4caf50' : '#f44336'; // Fallback simple
+          if (typeof point.getColor === 'function') color = point.getColor();
+          else color = point.success ? '#4caf50' : '#f44336'; // Fallback
 
           const passed = point.numPassedTests;
           const total = point.numTotalTests;
           const failed = total - passed;
+          const timeStr = point.timestamp ? new Date(point.timestamp).toLocaleString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+          }) : '';
           const status = point.success ? 'Exitoso' : 'Fallido';
-          // timestamp puede venir como string del JSON storage
-          const timeStr = point.timestamp ? new Date(point.timestamp).toLocaleTimeString() : ''; 
           const tooltip = `Tests: ${passed}/${total} | ${failed} fallidos | ${status} | ${timeStr}`;
 
           return `
@@ -241,7 +261,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
       })
       .join('');
   }
-
   private generateHtml(
     timeline: Array<Timeline | CommitPoint>,
     webview: vscode.Webview

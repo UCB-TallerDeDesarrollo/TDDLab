@@ -6,7 +6,7 @@
   "description": "Plugin de VSCode para la aplicación TDDLab",
   "publisher": "TDDEXTENSIONTEST",
   "_publisherParaPruebas": "TDDLab-Testing, TDDLab-TallerDesarrollo",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "engines": {
     "vscode": "^1.94.0"
   },

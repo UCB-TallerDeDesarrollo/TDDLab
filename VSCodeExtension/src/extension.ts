@@ -13,19 +13,10 @@ export async function activate(context: vscode.ExtensionContext) {
   console.log('TDDLab extension is activating...');
 
   try {
-    // Crear TimelineView
     timelineView = new TimelineView(context);
-
-    // Crear puerto terminal
     const terminalPort = new VSCodeTerminalRepository();
-
-    // Crear TerminalViewProvider
     terminalProvider = new TerminalViewProvider(context, timelineView, terminalPort);
-
-    // Crear menú TDD
     testMenuProvider = new TestMenuProvider();
-
-    // Instancia para clonar proyectos
     const executeCloneCommand = new ExecuteCloneCommand();
 
     const runTestCmd = vscode.commands.registerCommand('TDD.runTest', async () => {
@@ -54,6 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const showTimelineCmd = vscode.commands.registerCommand('extension.showTimeline', async () => {
       try {
+        await timelineView?.forceTimelineUpdate();
         await vscode.commands.executeCommand('tddTerminalView.focus');
       } catch (error: any) {
         vscode.window.showErrorMessage(`Error al mostrar timeline: ${error.message}`);
@@ -83,19 +75,16 @@ export async function activate(context: vscode.ExtensionContext) {
       runCypressCmd,
       gitStatusCmd,
       npmInstallCmd,
-      vscode.window.registerTreeDataProvider('tddTestExecution', testMenuProvider),
-      
-      // CAMBIO IMPORTANTE: Registramos las vistas con la opción de retener contexto
-      // Esto soluciona el problema de que se borre al cambiar de pestaña
+      vscode.window.registerTreeDataProvider('tddTestExecution', testMenuProvider),      
       vscode.window.registerWebviewViewProvider(
-          TerminalViewProvider.viewType, 
-          terminalProvider,
-          { webviewOptions: { retainContextWhenHidden: true } }
+        TerminalViewProvider.viewType, 
+        terminalProvider,
+        { webviewOptions: { retainContextWhenHidden: true } }
       ),
       vscode.window.registerWebviewViewProvider(
-          TimelineView.viewType, 
-          timelineView,
-          { webviewOptions: { retainContextWhenHidden: true } }
+        TimelineView.viewType, 
+        timelineView,
+        { webviewOptions: { retainContextWhenHidden: true } }
       )
     );
 

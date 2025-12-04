@@ -23,16 +23,23 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     this.TEMPLATE_DIR = path.join(this.context.extensionPath, 'src', 'presentation', 'terminal', 'templates');
 
-    // CAMBIO 1: Usar workspaceState para que cada proyecto tenga su propia terminal
+    // CAMBIO 1: Persistencia aislada por workspace
     this.terminalBuffer = context.workspaceState.get(this.BUFFER_STORAGE_KEY, '');
 
     this.terminalPort.setOnOutputCallback((output: string) => {
-      this.sendToTerminal(output);
+      this.sendToTerminal(output);      
+      if (this.isTestOutput(output)) {
+          (this.timelineView as any).forceTimelineUpdate();
+      }
     });
 
     TimelineView.onTimelineUpdated(async () => {
       await this.updateTimelineInWebview();
     });
+  }
+
+  private isTestOutput(output: string): boolean {
+      return /(PASS|FAIL|Tests:|Test Suites:|✓|✕)/i.test(output);
   }
 
   async resolveWebviewView(
@@ -43,8 +50,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     this.webviewView = webviewView;
 
     webviewView.webview.options = { enableScripts: true };
-
-    // CAMBIO 2: Esto evita que se borre al cambiar de pestaña
     (webviewView as any).webview.options = {
         ...webviewView.webview.options,
         retainContextWhenHidden: true
@@ -120,6 +125,10 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  public async executeCommand(command: string) {
+      await this.executeRealCommand(command);
+  }
+
   private killCurrentCommand(): void {
     this.terminalPort.killCurrentProcess();
   }
@@ -157,7 +166,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     if (!isRestoring) {
       this.terminalBuffer += coloredMessage;
-      // CAMBIO 3: Guardar en workspaceState
       this.context.workspaceState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);
     }
 
@@ -208,10 +216,6 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       `$1 ${YELLOW}$2${RESET}`);
 
     return result;
-  }
-
-  public async executeCommand(command: string) {
-    await this.executeRealCommand(command);
   }
 
   public clearTerminal() {
