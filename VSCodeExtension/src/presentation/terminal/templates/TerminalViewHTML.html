@@ -48,6 +48,7 @@
         xtermScreen.style.textAlign = 'left';
         xtermScreen.style.paddingLeft = '0';
         xtermScreen.style.marginLeft = '0';
+        
       }
     }, 100);
     
@@ -78,7 +79,9 @@
           vscode.postMessage({ command: 'executeCommand', text: command });
           command = '';
         } else if (!isExecuting) {
-          term.write('\r\n$ ');
+          term.write('\r\n');
+          vscode.postMessage({ command: 'requestPrompt' });
+
         }
       } else if (code === 127) { 
         if (command.length > 0 && !isExecuting) {
@@ -89,7 +92,7 @@
         term.write('^C');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
-        term.write('\r\n$ ');
+        term.write('\r\n> ');
       } else if (code >= 32 && code <= 126 && !isExecuting) {
         command += data;
         term.write(data);
@@ -102,21 +105,33 @@
         case 'updateTimeline':
           document.getElementById('timeline-content').innerHTML = message.html;
           break;
+
         case 'writeToTerminal':
           { const text = message.text || '';
           term.write(text);
-          if (text.endsWith('\r\n$ ')) {
-            isExecuting = false;
+          
+
+          if (text.endsWith('> ')) {
+          isExecuting = false;
           }
           break; }
+
         case 'clearTerminal':
           term.clear();
-          term.write('$ ');
+          term.reset(); // Resetea el estado interno
           isExecuting = false;
           command = '';
+          if (message.prompt) {
+          term.write(message.prompt);
+          } 
           break;
+          
+      
       }
     });
+    setTimeout(() => {
+        vscode.postMessage({ command: 'webviewReady' });
+    }, 100);
   </script>
 </body>
 </html>

@@ -19,4 +19,13 @@ TDD Lab incluye los siguientes botones:
 
 - **Ctrl+T**: Ejecuta todas las pruebas, igual que los botones "Run Test".
 
-## Grupo Stack Overflores :)
+## Instalación
+
+1. Abre **Visual Studio Code**.  
+2. Dirígete al panel de **Extensiones (Ctrl + Shift + X)**.  
+3. Busca **TDD Lab** en el Marketplace.  
+4. Haz clic en **Instalar**.  
+5. Una vez instalada, accede a la extensión desde la barra lateral o ejecuta el comando:
+
+## Créditos
+**Grupo PIGGY SOFT**

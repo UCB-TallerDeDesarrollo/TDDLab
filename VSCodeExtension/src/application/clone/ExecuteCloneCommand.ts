@@ -59,7 +59,7 @@ export class ExecuteCloneCommand {
         title: "Creando proyecto TDDLab...",
         cancellable: false
       }, async (progress) => {
-        progress.report({ increment: 0, message: "Clonando repositorio..." });
+        progress.report({ increment: 0, message: "Creando repositorio..." });
 
         try {
           // Crear carpeta temporal para el clone

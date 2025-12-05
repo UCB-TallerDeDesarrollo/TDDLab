@@ -6,3 +6,6 @@
 *.ttf
 *.svg
 *.json
+*.vsix
+*.log
+node_modules/
