@@ -94,7 +94,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       case 'killCommand':
         this.killCurrentCommand();
         break;
+
+      case 'requestPrompt':
+        const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
+        this.sendToTerminal(`${cwd}$ `);
+        break;
+        
     }
+    
   }
 
   private async executeRealCommand(command: string): Promise<void> {

@@ -79,7 +79,9 @@
           vscode.postMessage({ command: 'executeCommand', text: command });
           command = '';
         } else if (!isExecuting) {
-          term.write('\r\n$ ');
+          term.write('\r\n');
+          vscode.postMessage({ command: 'requestPrompt' });
+
         }
       } else if (code === 127) { 
         if (command.length > 0 && !isExecuting) {
