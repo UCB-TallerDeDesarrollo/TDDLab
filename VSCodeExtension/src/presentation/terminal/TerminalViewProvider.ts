@@ -23,10 +23,10 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
     this.TEMPLATE_DIR = path.join(this.context.extensionPath, 'src', 'presentation', 'terminal', 'templates');
 
-    // CAMBIO 1: Persistencia aislada por workspace
     this.terminalBuffer = context.workspaceState.get(this.BUFFER_STORAGE_KEY, '');
 
     this.terminalPort.setOnOutputCallback((output: string) => {
+      
       this.sendToTerminal(output);      
       if (this.isTestOutput(output)) {
           (this.timelineView as any).forceTimelineUpdate();
@@ -66,14 +66,14 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
       await this.handleWebviewMessage(message);
     });
 
-    if (this.terminalBuffer && this.terminalBuffer.trim() !== '' && this.terminalBuffer !== '$ ') {
+    if (this.terminalBuffer && this.terminalBuffer.trim() !== '' && this.terminalBuffer !== '> ') {
       this.webviewView?.webview.postMessage({
         command: 'writeToTerminal',
         text: this.terminalBuffer
       });
     } else {
       const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
-      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD\r\n${cwd}$ `);
+      this.sendToTerminal(`\r\nBienvenido a la Terminal TDD\r\n${cwd}> `);
     }
 
     setTimeout(async () => {
@@ -97,7 +97,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
       case 'requestPrompt':
         const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
-        this.sendToTerminal(`${cwd}$ `);
+        this.sendToTerminal(`${cwd}> `);
         break;
         
     }
@@ -107,7 +107,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
   private async executeRealCommand(command: string): Promise<void> {
     if (!command.trim()) {
       const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
-      this.sendToTerminal(`${cwd}$ `);
+      this.sendToTerminal(`${cwd}> `);
       return;
     }
 
@@ -128,7 +128,9 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
     try {
       await this.terminalPort.createAndExecuteCommand('TDDLab Terminal', trimmedCommand);
     } catch (error: any) {
-      this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n$ `);
+       this.sendToTerminal(`❌ Error ejecutando comando: ${error.message}\r\n`);
+    const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
+    this.sendToTerminal(`${cwd}> `);
     }
   }
 
@@ -149,11 +151,11 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         const helpContent = await fs.readFile(helpPath, 'utf-8');
         this.helpTextCache = helpContent;
       } catch {
-        this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n$ ';
+        this.helpTextCache = '\r\n❌ Error al cargar la ayuda.\r\n> ';
       }
     }
 
-    this.sendToTerminal(this.helpTextCache + `\r\n${cwd}$ `, false, true);
+    this.sendToTerminal(this.helpTextCache + `\r\n${cwd}> `, false, true);
   }
 
   private async updateTimelineInWebview() {
@@ -227,7 +229,7 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
 
   public clearTerminal() {
     const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
-    const promptWithPath = `${cwd}$ `;
+    const promptWithPath = `${cwd}> `;
 
     this.terminalBuffer = promptWithPath;
     this.context.workspaceState.update(this.BUFFER_STORAGE_KEY, this.terminalBuffer);

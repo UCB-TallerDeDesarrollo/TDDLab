@@ -82,7 +82,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
           this.isExecuting = false;
           
           if (this.onOutputCallback) {
-            this.onOutputCallback(`\r\n${this.currentWorkingDirectory}$ `);
+            this.onOutputCallback(`\r\n${this.currentWorkingDirectory}> `);
           }
           
           resolve();
@@ -96,7 +96,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
           this.isExecuting = false;
           
           if (this.onOutputCallback) {
-            this.onOutputCallback(`\r\n❌ Error ejecutando comando: ${error.message}\r\n$ `);
+            this.onOutputCallback(`\r\n❌ Error ejecutando comando: ${error.message}\r\n> `);
           }
           
           resolve();
@@ -110,7 +110,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
         this.isExecuting = false;
         
         if (this.onOutputCallback) {
-          this.onOutputCallback(`\r\n❌ Error: ${error.message}\r\n$ `);
+          this.onOutputCallback(`\r\n❌ Error: ${error.message}\r\n> `);
         }
         
         resolve();
@@ -150,12 +150,12 @@ export class VSCodeTerminalRepository implements TerminalPort {
         }
       } else {
         if (this.onOutputCallback) {
-          this.onOutputCallback(`\r\n❌ El directorio no existe: ${targetDir}\r\n${this.currentWorkingDirectory}$ `);
+          this.onOutputCallback(`\r\n❌ El directorio no existe: ${targetDir}\r\n${this.currentWorkingDirectory}> `);
         }
       }
     } catch (error: any) {
       if (this.onOutputCallback) {
-        this.onOutputCallback(`\r\n❌ Error cambiando directorio: ${error.message}\r\n${this.currentWorkingDirectory}$ `);
+        this.onOutputCallback(`\r\n❌ Error cambiando directorio: ${error.message}\r\n${this.currentWorkingDirectory}> `);
       }
     }
     
@@ -182,13 +182,13 @@ export class VSCodeTerminalRepository implements TerminalPort {
       this.isExecuting = false;
       this.outputChannel.appendLine('Process killed by user');
       if (this.onOutputCallback) {
-        this.onOutputCallback('\r\n🛑 Proceso cancelado por el usuario\r\n$ ');
+        this.onOutputCallback('\r\n🛑 Proceso cancelado por el usuario\r\n> ');
       }
     } else {
       // Si no hay proceso pero isExecuting está true, resetearlo
       this.isExecuting = false;
       if (this.onOutputCallback) {
-        this.onOutputCallback('\r\n🛑 No hay proceso en ejecución\r\n$ ');
+        this.onOutputCallback('\r\n🛑 No hay proceso en ejecución\r\n> ');
       }
     }
   }

@@ -92,7 +92,7 @@
         term.write('^C');
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
-        term.write('\r\n$ ');
+        term.write('\r\n> ');
       } else if (code >= 32 && code <= 126 && !isExecuting) {
         command += data;
         term.write(data);
@@ -111,7 +111,7 @@
           term.write(text);
           
 
-          if (text.endsWith('$ ')) {
+          if (text.endsWith('> ')) {
           isExecuting = false;
           }
           break; }
