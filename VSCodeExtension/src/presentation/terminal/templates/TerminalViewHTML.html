@@ -72,19 +72,64 @@
     let isExecuting = false;
 
     term.onData(data => {
+      // Verificar que data no esté vacío
+      if (!data || data.length === 0) {
+        return;
+      }
+      
       const code = data.codePointAt(0);
+      const char = data.charAt(0);
+      
+      // Verificar que code no sea undefined
+      if (code === undefined) {
+        return;
+      }
+      
+      // Si hay un proceso ejecutándose
+      if (isExecuting) {
+        // Enviar todas las teclas al proceso
+        vscode.postMessage({ 
+          command: 'terminalInput', 
+          data: data 
+        });
+        
+        // Mostrar en terminal VISUALMENTE
+        switch (code) {
+          case 13: // Enter - MOSTRAR salto de línea
+            term.write('\r\n');
+            break;
+          case 127: // Backspace - MOSTRAR retroceso
+            term.write('\b \b');
+            break;
+          case 3: // Ctrl+C
+            term.write('^C');
+            break;
+          case 9: // Tab
+            term.write('\t');
+            break;
+          default:
+            // Solo mostrar caracteres imprimibles normales
+            if (char && char.length === 1 && code >= 32 && code <= 126) {
+              term.write(data);
+            }
+            // NOTA: No mostrar secuencias de escape (como flechas)
+            break;
+        }
+        return;
+      }
+      
+      // Código para cuando NO hay proceso ejecutándose
       if (code === 13) { 
-        if (command.trim() && !isExecuting) {
+        if (command.trim()) {
           isExecuting = true;
           vscode.postMessage({ command: 'executeCommand', text: command });
           command = '';
-        } else if (!isExecuting) {
+        } else {
           term.write('\r\n');
           vscode.postMessage({ command: 'requestPrompt' });
-
         }
       } else if (code === 127) { 
-        if (command.length > 0 && !isExecuting) {
+        if (command.length > 0) {
           command = command.slice(0, -1);
           term.write('\b \b');
         }
@@ -93,7 +138,7 @@
         vscode.postMessage({ command: 'killCommand' });
         isExecuting = false;
         term.write('\r\n> ');
-      } else if (code >= 32 && code <= 126 && !isExecuting) {
+      } else if (code >= 32 && code <= 126) {
         command += data;
         term.write(data);
       }
@@ -107,30 +152,30 @@
           break;
 
         case 'writeToTerminal':
-          { const text = message.text || '';
+          const text = message.text || '';
           term.write(text);
           
-
-          if (text.endsWith('> ')) {
-          isExecuting = false;
+          // Detectar si el texto termina con prompt para resetear estado
+          if (text.endsWith('> ') || text.endsWith('$ ') || text.endsWith('# ')) {
+            isExecuting = false;
+            command = '';
           }
-          break; }
+          break;
 
         case 'clearTerminal':
           term.clear();
-          term.reset(); // Resetea el estado interno
+          term.reset();
           isExecuting = false;
           command = '';
           if (message.prompt) {
-          term.write(message.prompt);
+            term.write(message.prompt);
           } 
           break;
-          
-      
       }
     });
+    
     setTimeout(() => {
-        vscode.postMessage({ command: 'webviewReady' });
+      vscode.postMessage({ command: 'webviewReady' });
     }, 100);
   </script>
 </body>

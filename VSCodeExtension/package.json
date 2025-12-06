@@ -1,12 +1,12 @@
 {
-  "name": "tddlab-testing",
+  "name": "tdd-extension-taller",
   "_nameParaPruebas": "tddlab-testing, tdd-extension-taller",
-  "displayName": "TDD Lab Testing",
+  "displayName": "TDD Lab",
   "_displayNameParaPruebas": "TDD Lab Testing,TDD Lab",
   "description": "Plugin de VSCode para la aplicación TDDLab",
-  "publisher": "TDDEXTENSIONTEST",
+  "publisher": "TDDLab-TallerDesarrollo",
   "_publisherParaPruebas": "TDDLab-Testing, TDDLab-TallerDesarrollo",
-  "version": "1.5.8",
+  "version": "1.5.3",
   "engines": {
     "vscode": "^1.94.0"
   },
