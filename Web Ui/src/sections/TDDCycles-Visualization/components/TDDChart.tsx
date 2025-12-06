@@ -9,11 +9,11 @@ import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { ProcessedTDDLogs } from "../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
-  tddLogs: TDDLogEntry[] | null;
+  processedTddLogs: ProcessedTDDLogs | null;
   metric: string | null;
   setMetric: (metric: string) => void;
   port: CommitHistoryRepository;
@@ -22,7 +22,7 @@ interface CycleReportViewProps {
   typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, processedTddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
@@ -99,7 +99,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
             label="Métricas"
           >
             {options.filter(option => {
-              if (!tddLogs || tddLogs.length === 0) {
+              if (!processedTddLogs || processedTddLogs.commits.length === 0) {
                 if (option.value === 'Dashboard' || option.value === 'Ciclo de ejecución de pruebas') {
                   return false;
                 }
@@ -119,7 +119,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
       </Box>
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
-        tddLogs = {tddLogs}
+        processedTddLogs = {processedTddLogs}
         optionSelected={metricSelected}
         port={port}
         role={role}

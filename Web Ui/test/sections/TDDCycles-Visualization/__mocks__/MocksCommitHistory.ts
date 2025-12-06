@@ -1,8 +1,9 @@
 import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+// ELIMINAR: import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";
+import { ProcessedTDDLogs } from "../../../../src/modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces";
 
 // Función para convertir CommitData al formato CommitDataObject para mantener compatibilidad
 export function convertToCommitDataObject(commitData: CommitData): CommitDataObject {
@@ -40,9 +41,22 @@ export class MockGithubAPI implements CommitHistoryRepository {
     return commitCycles;
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
-    let tddLogs: TDDLogEntry[] = [];
-    return tddLogs;
+  // ELIMINAR este método - ya no existe en la interfaz
+  // async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+  //   let tddLogs: TDDLogEntry[] = [];
+  //   return tddLogs;
+  // }
+
+  async obtainProcessedTDDLogs(_owner: string, _repoName: string): Promise<ProcessedTDDLogs> {
+    // Mock de datos procesados vacío
+    const processedTddLogs: ProcessedTDDLogs = {
+      commits: [],
+      summary: {
+        totalCommits: 0,
+        totalExecutions: 0
+      }
+    };
+    return processedTddLogs;
   }
 }
 
@@ -61,9 +75,21 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     return commitCycles;
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
-    let tddLogs: TDDLogEntry[] = [];
-    return tddLogs;
+  // ELIMINAR este método
+  // async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+  //   let tddLogs: TDDLogEntry[] = [];
+  //   return tddLogs;
+  // }
+
+  async obtainProcessedTDDLogs(_owner: string, _repoName: string): Promise<ProcessedTDDLogs> {
+    const processedTddLogs: ProcessedTDDLogs = {
+      commits: [],
+      summary: {
+        totalCommits: 0,
+        totalExecutions: 0
+      }
+    };
+    return processedTddLogs;
   }
 }
 
@@ -80,8 +106,13 @@ export class MockGithubAPIError implements CommitHistoryRepository {
     throw new Error("no commit cycles");
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
-    throw new Error("no TDD logs");
+  // ELIMINAR este método
+  // async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+  //   throw new Error("no TDD logs");
+  // }
+
+  async obtainProcessedTDDLogs(_owner: string, _repoName: string): Promise<ProcessedTDDLogs> {
+    throw new Error("no processed TDD logs");
   }
 }
 

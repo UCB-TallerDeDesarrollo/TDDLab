@@ -5,14 +5,28 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  Typography,
+  Box,
+  Divider,
+  Chip
 } from "@mui/material";
 import { Bubble } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  Tooltip,
+  Legend,
+  LinearScale,
+  PointElement,
+} from "chart.js";
+import { ProcessedTest } from '../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces';
+
+ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
 interface CommitTimelineDialogProps {
   open: boolean;
   handleCloseModal: () => void;
   selectedCommit: any;
-  commitTimelineData: any[];
+  commitTimelineData: ProcessedTest[];
   commits: any[];
 }
 
@@ -24,24 +38,58 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
   commits,
 }) => {
 
-  // Preparar los datos para la visualización
   const prepareTimelineData = () => {
     if (!commitTimelineData || commitTimelineData.length === 0) return [];
-    
+
     return commitTimelineData.map((item, index) => ({
       x: index + 1,
-      y: 1,
-      r: 15,
-      // Si el dato viene del tdd_log.json:
-      isPassed: item.success ?? (item.color === "green"),
-      numTests: item.numTotalTests ?? item.number_of_tests,
-      passedTests: item.numPassedTests ?? item.passed_tests,
+      y: 1, 
+      r: 0, 
+      isPassed: item.success,
+      numTests: item.numTotalTests,
+      passedTests: item.numPassedTests,
       failedTests: item.failedTests,
-      date: item.timestamp ? new Date(item.timestamp) : item.execution_timestamp,
+      date: new Date(item.timestamp),
     }));
   };
 
   const timelineData = prepareTimelineData();
+
+  // Plugin personalizado
+  const customIconPlugin = {
+    id: 'customIcons',
+    afterDatasetsDraw(chart: any) {
+      const { ctx } = chart;
+      
+      chart.data.datasets.forEach((dataset: any, i: number) => {
+        const meta = chart.getDatasetMeta(i);
+        
+        meta.data.forEach((element: any, index: number) => {
+          const dataItem = dataset.data[index];
+          const { x, y } = element.tooltipPosition();
+
+          ctx.save();
+          
+          // CAMBIO 1: Aumentamos el tamaño de 24px a 36px
+          ctx.font = 'bold 36px Arial'; 
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          if (dataItem.isPassed) {
+            ctx.fillStyle = '#28A745'; 
+            ctx.fillText('✔', x, y);
+          } else {
+            ctx.fillStyle = '#D73A49'; 
+            ctx.fillText('✖', x, y);
+          }
+          
+          ctx.restore();
+        });
+      });
+    }
+  };
+
+  const commitIndex = commits.length - commits.findIndex((commit) => commit.sha === selectedCommit?.sha);
 
   return (
     <Dialog
@@ -49,133 +97,124 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
       onClose={handleCloseModal}
       aria-labelledby="commit-details-dialog"
       fullWidth
-      maxWidth="sm"
+      maxWidth="md"
       sx={{
         "& .MuiDialog-paper": {
-          padding: "25px",
-          borderRadius: "10px",
+          padding: "10px",
+          borderRadius: "16px",
         },
       }}
     >
-      <DialogTitle
-        id="commit-details-dialog"
-        style={{ textAlign: "center", fontSize: "2em", fontWeight: "bold" }}
-      >
-        {`Timeline del commit ${
-          commits.length - commits.findIndex((commit) => commit.sha === selectedCommit?.sha)
-        } `}
+      <DialogTitle id="commit-details-dialog">
+        <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
+          <Typography variant="h5" component="span" fontWeight="bold" color="primary">
+            Timeline de Ejecución
+          </Typography>
+          <Chip 
+            label={`Commit #${commitIndex}`} 
+            color="primary" 
+            variant="outlined" 
+            size="small" 
+          />
+        </Box>
       </DialogTitle>
+
+      <Divider variant="middle" />
+
       <DialogContent>
-        {selectedCommit?.sha && (
-          <div style={{ textAlign: "center", marginBottom: "10px" }}>
-            <div
-              style={{
-                fontFamily: "monospace",
-                fontSize: "1.25em",
-                marginBottom: "10px",
-              }}
-            >
-              ({selectedCommit.sha})
-            </div>
-          </div>
-        )}
-        {timelineData.length > 0 ? (
-          <div>
-            <div style={{ width: "100%", height: "300px" }}>
-              <Bubble
-                data={{
-                  datasets: [
-                    {
-                      label: "Ejecuciones de Tests",
-                      data: timelineData,
-                      backgroundColor: timelineData.map((item) =>
-                        item.isPassed ? "#28A745" : "#D73A49"
-                      ),
-                      borderColor: timelineData.map((item) =>
-                        item.isPassed ? "#28A745" : "#D73A49"
-                      ),
-                      borderWidth: 2,
-                    },
-                  ],
-                }}
-                options={{
-                  scales: {
-                    x: {
-                      title: {
-                        display: true,
-                        text: "Ejecuciones de pruebas en este commit",
-                      },
-                      ticks: {
-                        stepSize: 1,
-                      },
-                    },
-                    y: {
-                      title: {
-                        display: false,
-                      },
-                      ticks: {
-                        display: false,
-                      },
-                      min: 0.5,
-                      max: 1.5,
-                    },
-                  },
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                      enabled: true,
-                      callbacks: {
-                        label: function (context: any) {
-                          const dataPoint = context.raw;
-                          const formatDate = (date: Date): string => {
-                            const day = String(date.getDate()).padStart(2, "0");
-                            const month = String(date.getMonth() + 1).padStart(2, "0");
-                            const year = date.getFullYear();
-                            return `${day}/${month}/${year}`;
-                          };
-
-                          const formatTime = (date: Date): string => {
-                            const hours = String(date.getHours()).padStart(2, "0");
-                            const minutes = String(date.getMinutes()).padStart(2, "0");
-                            const seconds = String(date.getSeconds()).padStart(2, "0");
-                            return `${hours}:${minutes}:${seconds}`;
-                          };
-
-                          return [
-                            `Ejecución ${context.dataIndex + 1}`,
-                            `Total Tests: ${dataPoint.numTests}`,
-                            `Tests Pasados: ${dataPoint.passedTests}`,
-                            `Tests Fallidos: ${dataPoint.failedTests || 0}`,
-                            `Estado: ${dataPoint.isPassed ? "✓ Exitoso" : "✗ Fallido"}`,
-                            `Fecha: ${formatDate(dataPoint.date)}`,
-                            `Hora: ${formatTime(dataPoint.date)}`,
-                          ];
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-        ) : (
-          <div>
-            <p style={{ textAlign: "center", margin: "2em 0px 2em 0px" }}>
-              No hay registros de ejecución para este commit.
-            </p>
-          </div>
-        )}
         {selectedCommit?.commit?.message && (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <strong>Mensaje del commit:</strong>
-            <p style={{ fontStyle: "italic", marginTop: "5px" }}>
-              {selectedCommit.commit.message}
-            </p>
-          </div>
+          <Box mb={4} textAlign="center">
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Mensaje del commit:
+            </Typography>
+            <Typography variant="h6" component="p" fontStyle="italic">
+              "{selectedCommit.commit.message}"
+            </Typography>
+          </Box>
+        )}
+
+        {timelineData.length > 0 ? (
+          <Box height={300} width="100%" display="flex" alignItems="center" justifyContent="center">
+            <Bubble
+              data={{
+                datasets: [
+                  {
+                    label: "Ejecuciones",
+                    data: timelineData,
+                    // Aumentamos el radio de interacción porque el icono es más grande
+                    hitRadius: 40, 
+                    hoverRadius: 40, 
+                    backgroundColor: "transparent", 
+                    borderColor: "transparent",
+                  },
+                ],
+              }}
+              plugins={[customIconPlugin]}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: "Secuencia de ejecuciones",
+                      font: { size: 14, weight: 'bold' }
+                    },
+                    ticks: { stepSize: 1 },
+                    grid: { display: false },
+                    // CAMBIO 2: Lógica de espaciado
+                    // min: 0 asegura margen izquierdo.
+                    // max: fuerza al eje a tener AL MENOS espacio para 6 items.
+                    // Si tienes 2 items, ocuparán las posiciones 1 y 2 de 6 (juntos a la izquierda).
+                    // Si tienes 10 items, el eje crecerá a 11 (se ajusta normalmente).
+                    min: 0,
+                    max: Math.max(timelineData.length + 1, 6),
+                  },
+                  y: {
+                    display: false,
+                    min: 0.5,
+                    max: 1.5,
+                  },
+                },
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                      label: function (context: any) {
+                        const dataPoint = context.raw;
+                        const dateObj = dataPoint.date;
+                        
+                        return [
+                          `Ejecución #${context.dataIndex + 1}`,
+                          `--------------------------`,
+                          `Estado: ${dataPoint.isPassed ? "✓ PASÓ" : "✗ FALLÓ"}`,
+                          `Total Tests: ${dataPoint.numTests}`,
+                          `Pasados: ${dataPoint.passedTests}`,
+                          `Fallidos: ${dataPoint.failedTests}`,
+                          `Hora: ${dateObj.toLocaleTimeString()}`,
+                        ];
+                      },
+                    },
+                  },
+                },
+              }}
+            />
+          </Box>
+        ) : (
+          <Box py={5} display="flex" justifyContent="center">
+            <Typography color="text.secondary">
+              No hay registros de ejecución de pruebas para este commit.
+            </Typography>
+          </Box>
         )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseModal} color="primary">
+
+      <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+        <Button onClick={handleCloseModal} color="inherit">
           Cerrar
         </Button>
         <Button
@@ -184,10 +223,11 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
               window.open(selectedCommit.html_url, "_blank");
             }
           }}
-          color="primary"
           variant="contained"
+          color="primary"
+          sx={{ borderRadius: "20px", textTransform: "none", px: 3 }}
         >
-          Ir al Commit en GitHub
+          Ver en GitHub
         </Button>
       </DialogActions>
     </Dialog>
