@@ -99,7 +99,9 @@ export class TerminalViewProvider implements vscode.WebviewViewProvider {
         const cwd = (this.terminalPort as any).getCurrentDirectory?.() || process.cwd();
         this.sendToTerminal(`${cwd}> `);
         break;
-        
+      case 'terminalInput':
+        this.terminalPort.writeToTerminal?.(message.data);
+        break;
     }
     
   }
