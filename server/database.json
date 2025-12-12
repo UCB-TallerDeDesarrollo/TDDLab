@@ -1,0 +1,16 @@
+{
+  "defaultEnv": "dev",
+  "dev": {
+    "driver": "pg",
+    "host": "${PGHOST}",
+    "port": "${PGPORT}",
+    "database": "neondb",
+    "user": "${PGUSER}",
+    "password": "${PGPASSWORD}",
+    "ssl": true
+  },
+  "prod": {
+    "driver": "pg",
+    "url": "postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}?ssl=true"
+  }
+}
