@@ -73,18 +73,22 @@ export class FirebaseDBBranchesCommitsRepository implements IFirebaseDBBranchesC
 
           if (commits.length > 0) {
             const testRunsRef = db.collection("test-runs");
-            const testRunsSnapshot = await testRunsRef
-                .where("repo_name", "==", repoName)
-                .where("user_id", "==", owner)
-                .where("branch", "==", branchName)
-                .get();
-            
             const testRunsMap = new Map<string, ITestRun>();
-            testRunsSnapshot.forEach(doc => {
-                const data = doc.data();
-                testRunsMap.set(data.commit_sha, data as ITestRun);
-            });
-
+            const commitShas = commits.map(c => c.sha);
+            
+            const chunkSize = 10;
+            for (let i = 0; i < commitShas.length; i += chunkSize) {
+                const chunk = commitShas.slice(i, i + chunkSize);
+                let testRunsSnapshot = await testRunsRef
+                        .where("commit_sha", "in", chunk)
+                        .get();
+                
+                testRunsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const sha = data.commit_sha || data.id || doc.id;
+                    testRunsMap.set(sha, data as ITestRun);
+                });
+            }
             commits = commits.map(commit => {
                 return {
                     ...commit,
