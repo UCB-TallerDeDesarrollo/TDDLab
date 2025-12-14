@@ -1,3 +1,5 @@
+import { ITestRun } from "./ITestRun";
+
 export interface IDBCommit {
     sha: string; // sha
     branch: string;
@@ -19,6 +21,7 @@ export interface IDBCommit {
     test_count: number;
     failed_tests: number;
     conclusion: string;
+    test_run?: ITestRun;
 }
 
 export interface IDBBranchWithCommits {

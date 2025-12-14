@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { GetCommitsOfRepo } from "../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
-import { GetCommitTddCycle } from "../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
-
-import { GetTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../modules/TDDCycles-Visualization/application/GetUserName";
 import { GetDBBranchesWithCommits } from "../../modules/TDDCycles-Visualization/application/GetDBBranchesWithCommits";
 import TDDCharts from "./components/TDDChart";
@@ -77,9 +73,6 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [emails, setEmails] = useState<{ [key: number]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
-  const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
-  const getTDDLogsUseCase = new GetTDDLogs(port);
   const getUserNameUseCase = new GetUserName(port);
   const getDBBranchesWithCommitsUseCase = new GetDBBranchesWithCommits(port);
 
@@ -105,7 +98,40 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
     console.log("Mapped Commits:", mappedCommits);
     setCommitsInfo(mappedCommits);
     setCommitsTddCycles([]); 
-    setTDDLogsInfo([]);
+
+    const tddLogs: TDDLogEntry[] = [];
+    branch.commits.forEach(commit => {
+      // Add Commit Log
+      tddLogs.push({
+        commitId: commit.sha,
+        commitName: commit.commit.message,
+        commitTimestamp: new Date(commit.commit.date).getTime(),
+        testId: 0 // Default or derived?
+      } as any); // Cast to any if types are strict and I'm missing something, but let's try to match interface
+
+      // Add Test Execution Logs
+      if (commit.test_run && commit.test_run.runs) {
+        commit.test_run.runs.forEach(run => {
+          tddLogs.push({
+            numPassedTests: run.summary.passed,
+            failedTests: run.summary.failed,
+            numTotalTests: run.summary.total,
+            timestamp: run.execution_timestamp,
+            success: run.success,
+            testId: run.test_id
+          });
+        });
+      }
+    });
+
+    // Sort logs by timestamp
+    tddLogs.sort((a, b) => {
+      const timeA = 'commitTimestamp' in a ? a.commitTimestamp : a.timestamp;
+      const timeB = 'commitTimestamp' in b ? b.commitTimestamp : b.timestamp;
+      return timeA - timeB;
+    });
+
+    setTDDLogsInfo(tddLogs);
   };
 
   const handleBranchChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
