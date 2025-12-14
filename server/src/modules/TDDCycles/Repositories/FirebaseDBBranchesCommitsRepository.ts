@@ -2,6 +2,7 @@ import { db } from "../../../config/firebase";
 import { IDBCommit } from "../Domain/IDBCommit";
 import { IDBBranchWithCommits } from "../Domain/IDBBranchWithCommits";
 import { IFirebaseDBBranchesCommitsRepository } from "../Domain/IFirebaseDBBranchesCommitsRepository";
+import { ITestRun } from "../Domain/ITestRun";
 
 export class FirebaseDBBranchesCommitsRepository implements IFirebaseDBBranchesCommitsRepository {
   async getBranchesWithCommits(owner: string, repoName: string): Promise<IDBBranchWithCommits[]> {
@@ -10,16 +11,8 @@ export class FirebaseDBBranchesCommitsRepository implements IFirebaseDBBranchesC
       
       let snapshot = await branchesRef
         .where("user_id", "==", owner)
-        .where("repo_name", "==", repoName)
+        .where(" repo_name", "==", repoName)
         .get();
-
-      if (snapshot.empty) {
-        console.log("No branches found with 'repo_name', trying ' repo_name'");
-        snapshot = await branchesRef
-            .where("user_id", "==", owner)
-            .where(" repo_name", "==", repoName)
-            .get();
-      }
 
       if (snapshot.empty) {
         return [];
@@ -76,6 +69,28 @@ export class FirebaseDBBranchesCommitsRepository implements IFirebaseDBBranchesC
                     } as IDBCommit;
                 });
             }
+          }
+
+          if (commits.length > 0) {
+            const testRunsRef = db.collection("test-runs");
+            const testRunsSnapshot = await testRunsRef
+                .where("repo_name", "==", repoName)
+                .where("user_id", "==", owner)
+                .where("branch", "==", branchName)
+                .get();
+            
+            const testRunsMap = new Map<string, ITestRun>();
+            testRunsSnapshot.forEach(doc => {
+                const data = doc.data();
+                testRunsMap.set(data.commit_sha, data as ITestRun);
+            });
+
+            commits = commits.map(commit => {
+                return {
+                    ...commit,
+                    test_run: testRunsMap.get(commit.sha)
+                };
+            });
           }
           
           let updatedAt = branchData.updated_at || branchData[" updated_at"];
