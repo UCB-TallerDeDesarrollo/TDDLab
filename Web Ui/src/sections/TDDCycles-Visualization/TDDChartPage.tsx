@@ -4,8 +4,10 @@ import { GetCommitTddCycle } from "../../modules/TDDCycles-Visualization/applica
 
 import { GetTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../modules/TDDCycles-Visualization/application/GetUserName";
+import { GetDBBranchesWithCommits } from "../../modules/TDDCycles-Visualization/application/GetDBBranchesWithCommits";
 import TDDCharts from "./components/TDDChart";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { IDBBranchWithCommits } from "../../modules/TDDCycles-Visualization/domain/IDBBranchWithCommits";
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
@@ -69,6 +71,8 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
+  const [branches, setBranches] = useState<IDBBranchWithCommits[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<string>("");
 
   const [emails, setEmails] = useState<{ [key: number]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,19 +81,53 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
   const getUserNameUseCase = new GetUserName(port);
+  const getDBBranchesWithCommitsUseCase = new GetDBBranchesWithCommits(port);
+
+  const updateChartData = (branch: IDBBranchWithCommits) => {
+    const mappedCommits: CommitDataObject[] = branch.commits.map(c => ({
+      html_url: c.commit.url,
+      stats: {
+        total: c.stats.total,
+        additions: c.stats.additions,
+        deletions: c.stats.deletions
+      },
+      commit: {
+        date: new Date(c.commit.date),
+        message: c.commit.message,
+        url: c.commit.url,
+        comment_count: 0
+      },
+      sha: c._id,
+      coverage: c.coverage,
+      test_count: c.test_count,
+      conclusion: c.conclusion
+    }));
+    setCommitsInfo(mappedCommits);
+    setCommitsTddCycles([]); 
+    setTDDLogsInfo([]);
+  };
+
+  const handleBranchChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const branchName = event.target.value;
+    setSelectedBranch(branchName);
+    const branch = branches.find(b => b.branch_name === branchName);
+    if (branch) {
+      updateChartData(branch);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
     try {
-  const tddlogs = await getTDDLogsUseCase.execute(repoOwner, repoName);
-      setTDDLogsInfo(tddlogs);
-
-  const commits = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
-      setCommitsInfo(commits);
-
-  const tddCycles = await getCommitTddCycleUseCase.execute(repoOwner, repoName);
-      setCommitsTddCycles(tddCycles);
-
+      const branchesData = await getDBBranchesWithCommitsUseCase.execute(repoOwner, repoName);
+      setBranches(branchesData);
+      console.log("Branches Data:", branchesData);
+      
+      if (branchesData.length > 0) {
+        const initialBranch = branchesData[0];
+        setSelectedBranch(initialBranch.branch_name);
+        updateChartData(initialBranch);
+      }
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -206,6 +244,17 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
       {!isStudent(role) && (
         <h1 data-testid="repoOwnerTitle">Autor: {ownerName}</h1>
       )}
+
+      <div className="branch-selector" style={{ margin: '10px 0' }}>
+        <label htmlFor="branch-select" style={{ marginRight: '10px' }}>Rama: </label>
+        <select id="branch-select" value={selectedBranch} onChange={handleBranchChange} style={{ padding: '5px' }}>
+          {branches.map((branch) => (
+            <option key={branch._id} value={branch.branch_name}>
+              {branch.branch_name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {loading && (
         <div className="mainInfoContainer">
