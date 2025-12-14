@@ -102,6 +102,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
       test_count: c.test_count,
       conclusion: c.conclusion
     }));
+    console.log("Mapped Commits:", mappedCommits);
     setCommitsInfo(mappedCommits);
     setCommitsTddCycles([]); 
     setTDDLogsInfo([]);
@@ -121,7 +122,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
     try {
       const branchesData = await getDBBranchesWithCommitsUseCase.execute(repoOwner, repoName);
       setBranches(branchesData);
-      console.log("Branches Data:", branchesData);
+      console.log("Branches Data:",repoOwner, repoName,  branchesData);
       
       if (branchesData.length > 0) {
         const initialBranch = branchesData[0];
@@ -248,8 +249,8 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
       <div className="branch-selector" style={{ margin: '10px 0' }}>
         <label htmlFor="branch-select" style={{ marginRight: '10px' }}>Rama: </label>
         <select id="branch-select" value={selectedBranch} onChange={handleBranchChange} style={{ padding: '5px' }}>
-          {branches.map((branch) => (
-            <option key={branch._id} value={branch.branch_name}>
+          {branches.map((branch, index) => (
+            <option key={branch._id || index} value={branch.branch_name}>
               {branch.branch_name}
             </option>
           ))}

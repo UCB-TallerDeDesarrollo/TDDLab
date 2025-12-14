@@ -10,7 +10,7 @@ export class FirebaseDBBranchesCommitsRepository implements IFirebaseDBBranchesC
       const branchesRef = db.collection("branches");
       const snapshot = await branchesRef
         .where("user_id", "==", owner)
-        .where("repo_name", "==", repoName)
+        .where(" repo_name", "==", repoName)
         .get();
 
       if (snapshot.empty) {
@@ -19,26 +19,36 @@ export class FirebaseDBBranchesCommitsRepository implements IFirebaseDBBranchesC
 
       const branchesWithCommits = await Promise.all(
         snapshot.docs.map(async (doc) => {
-          const branchData = doc.data() as IDBBranch;
-          const commitShas = branchData.commits || [];
+          const branchData = doc.data();
+          console.log("Branch Data from DB:", branchData);
+          
+          // Handle potential leading spaces in keys or missing keys
+          const commitsData = branchData.commits || branchData[" commits"] || [];
+          const commitShas = Array.isArray(commitsData) ? commitsData : [];
+          
+          console.log("Commit SHAs:", commitShas);
 
           let commits: IDBCommit[] = [];
           if (commitShas.length > 0) {
             const commitsRef = db.collection("commits");
-            const commitRefs = commitShas.map((sha) => commitsRef.doc(sha));
+            const commitRefs = commitShas.map((sha: string) => commitsRef.doc(sha));
             
             if (commitRefs.length > 0) {
                 const commitSnapshots = await db.getAll(...commitRefs);
                 commits = commitSnapshots
                 .filter((snap) => snap.exists)
-                .map((snap) => snap.data() as IDBCommit);
+                .map((snap) => {
+                    const data = snap.data();
+                    return { ...data, _id: snap.id } as IDBCommit;
+                });
             }
           }
 
           return {
             ...branchData,
+            _id: branchData._id || doc.id, // Ensure _id is present
             commits: commits, 
-          };
+          } as IDBBranchWithCommits;
         })
       );
 
