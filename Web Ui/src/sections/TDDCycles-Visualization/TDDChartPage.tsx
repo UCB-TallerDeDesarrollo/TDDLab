@@ -97,7 +97,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
         url: c.commit.url,
         comment_count: 0
       },
-      sha: c._id,
+      sha: c.sha,
       coverage: c.coverage,
       test_count: c.test_count,
       conclusion: c.conclusion

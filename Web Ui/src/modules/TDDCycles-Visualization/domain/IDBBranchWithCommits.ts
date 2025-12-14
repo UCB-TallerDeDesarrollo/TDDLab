@@ -1,5 +1,5 @@
 export interface IDBCommit {
-    _id: string; // sha
+    sha: string; // sha
     branch: string;
     repo_name: string;
     user_id: string;
