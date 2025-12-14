@@ -231,36 +231,22 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     if (elements.length > 0) {
       const dataSetIndexNum = elements[0].datasetIndex;
       const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit?.html_url) {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
-        const match = commit.html_url.match(regex);
-  
-        if (match) {
-          const repoOwner = match[1];
-          const repoName = match[2];
-          const sha = match[3];
-  
-          try {
-            const response = await fetch(
-              `${VITE_API}/TDDCycles/commit-timeline?sha=${sha}&repoName=${repoName}&owner=${repoOwner}`
-            );
-  
-            if (response.ok) {
-              await response.json();
-              // Filtrar los tests del commit específico usando el tdd_log.json local
-              const commitIndexInOriginal = dataSetIndexNum - 1;
-              const testsForCommit = getTestsForCommit(commitIndexInOriginal);
-
-              setCommitTimelineData(testsForCommit); 
-              setSelectedCommit(commit); 
-              setOpenModal(true); 
-            } else {
-              console.error("Error al obtener los datos:", response.statusText);
-            }
-          } catch (error) {
-            console.error("Error al llamar a la API:", error);
+      
+      if (commit) {
+          if (commit.test_run && commit.test_run.runs) {
+             setCommitTimelineData(commit.test_run.runs);
+          } else {
+             // Fallback to existing logic if no test_run data (e.g. for backward compatibility or if data missing)
+             const commitIndexInOriginal = dataSetIndexNum - 1; // This logic seems fragile if commits are reversed
+             // Better to rely on commit.test_run if possible. 
+             // If we must fallback, we can try to find it in tddLogs but the user wants to move away from that.
+             // Let's just set empty if not found for now, or keep the old logic as fallback?
+             // The user said "haciendo la consulta al endpoint /api/TDDCycles/branches... y no de los archivos json"
+             // So we should prioritize commit.test_run.
+             setCommitTimelineData([]);
           }
-          }
+          setSelectedCommit(commit);
+          setOpenModal(true);
       }
     }
   };

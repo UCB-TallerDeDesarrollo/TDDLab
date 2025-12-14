@@ -93,7 +93,8 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
       sha: c.sha,
       coverage: c.coverage,
       test_count: c.test_count,
-      conclusion: c.conclusion
+      conclusion: c.conclusion,
+      test_run: c.test_run
     }));
     console.log("Mapped Commits:", mappedCommits);
     setCommitsInfo(mappedCommits);
