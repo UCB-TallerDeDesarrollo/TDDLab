@@ -2,6 +2,7 @@ import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visua
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { IDBBranchWithCommits } from "../../../../src/modules/TDDCycles-Visualization/domain/IDBBranchWithCommits";
 import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";
 
 // Función para convertir CommitData al formato CommitDataObject para mantener compatibilidad
@@ -44,6 +45,29 @@ export class MockGithubAPI implements CommitHistoryRepository {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
+
+  async obtainBranchesWithCommits(_owner: string, _repoName: string): Promise<IDBBranchWithCommits[]> {
+    return [
+      {
+        _id: "mockBranchId1",
+        user_id: "mockOwner",
+        repo_name: "mockRepo",
+        branch_name: "main",
+        commits: mockCommitDataArray.map(convertToCommitDataObject),
+        last_commit: "mockSha1",
+        updated_at: new Date()
+      },
+      {
+        _id: "mockBranchId2",
+        user_id: "mockOwner",
+        repo_name: "mockRepo",
+        branch_name: "feature/test",
+        commits: [],
+        last_commit: "mockSha2",
+        updated_at: new Date()
+      }
+    ];
+  }
 }
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
@@ -65,6 +89,10 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
+
+  async obtainBranchesWithCommits(_owner: string, _repoName: string): Promise<IDBBranchWithCommits[]> {
+    return [];
+  }
 }
 
 export class MockGithubAPIError implements CommitHistoryRepository {
@@ -82,6 +110,10 @@ export class MockGithubAPIError implements CommitHistoryRepository {
 
   async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
     throw new Error("no TDD logs");
+  }
+
+  async obtainBranchesWithCommits(_owner: string, _repoName: string): Promise<IDBBranchWithCommits[]> {
+    throw new Error("Error obtaining branches with commits");
   }
 }
 

@@ -4,7 +4,6 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
 
-import { VITE_API } from "../../../../config";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
@@ -93,15 +92,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     (_, i) => maxTestCount - i * step
   );
 
-  const getTestsForCommit = (commitIndex: number): TestExecutionLog[] => {
-    // Buscar el commit en los logs preprocesados por índice
-    const commitMapping = processedTDDLogs.find(
-      mapping => mapping.commitIndex === commitIndex
-    );
-    
-    return commitMapping ? commitMapping.tests : [];
-  };
-  
   function containsRefactor(commitMessage: string): boolean {
     const regex = /\brefactor(\w*)\b/i;
     return regex.test(commitMessage);
@@ -237,7 +227,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
              setCommitTimelineData(commit.test_run.runs);
           } else {
              // Fallback to existing logic if no test_run data (e.g. for backward compatibility or if data missing)
-             const commitIndexInOriginal = dataSetIndexNum - 1; // This logic seems fragile if commits are reversed
              // Better to rely on commit.test_run if possible. 
              // If we must fallback, we can try to find it in tddLogs but the user wants to move away from that.
              // Let's just set empty if not found for now, or keep the old logic as fallback?
