@@ -1,3 +1,7 @@
+import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
+import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { IDBBranchWithCommits } from "../../../../src/modules/TDDCycles-Visualization/domain/IDBBranchWithCommits";
 import { IDBCommit } from "../../../../src/modules/TDDCycles-Visualization/domain/IDBCommit";
 import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";

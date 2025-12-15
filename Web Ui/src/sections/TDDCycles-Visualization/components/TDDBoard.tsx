@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo  } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Bubble, getElementAtEvent, Line } from "react-chartjs-2";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
@@ -20,50 +20,6 @@ interface CommitTestsMapping {
   commitData: CommitLog | null;
   tests: TestExecutionLog[];
 }
-
-const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
-  if (!tddLogs || tddLogs.length === 0) {
-    return [];
-  }
-  
-  const commitMappings: CommitTestsMapping[] = [];
-  let currentCommitIndex = -1;
-  let currentTests: TestExecutionLog[] = [];
-  let currentCommitData: CommitLog | null = null;
-  
-  for (const log of tddLogs) {
-    // Si es un commit, guardamos los tests del commit anterior (si existen)
-    if ('commitId' in log) {
-      if (currentCommitIndex >= 0 && currentTests.length > 0) {
-        commitMappings.push({
-          commitIndex: currentCommitIndex,
-          commitData: currentCommitData,
-          tests: [...currentTests]
-        });
-      }
-      
-      // Iniciamos un nuevo commit
-      currentCommitIndex++;
-      currentCommitData = log;
-      currentTests = [];
-    }
-    // Si es una ejecución de tests, la agregamos al commit actual
-    else if ('numPassedTests' in log) {
-      currentTests.push(log);
-    }
-  };
-  
-  // No olvidar agregar el último commit si tiene tests
-  if (currentCommitIndex >= 0 && currentTests.length > 0) {
-    commitMappings.push({
-      commitIndex: currentCommitIndex,
-      commitData: currentCommitData,
-      tests: [...currentTests]
-    });
-  }
-  
-  return commitMappings;
-};
 
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
