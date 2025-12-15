@@ -1,8 +1,5 @@
-import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { IDBBranchWithCommits } from "../../../../src/modules/TDDCycles-Visualization/domain/IDBBranchWithCommits";
+import { IDBCommit } from "../../../../src/modules/TDDCycles-Visualization/domain/IDBCommit";
 import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";
 
 // Función para convertir CommitData al formato CommitDataObject para mantener compatibilidad
@@ -53,7 +50,7 @@ export class MockGithubAPI implements CommitHistoryRepository {
         user_id: "mockOwner",
         repo_name: "mockRepo",
         branch_name: "main",
-        commits: mockCommitDataArray.map(convertToCommitDataObject),
+        commits: mockCommitDataArray as IDBCommit[], // Use the raw mock data
         last_commit: "mockSha1",
         updated_at: new Date()
       },

@@ -1,4 +1,5 @@
-import { IFirebaseDBBranchesCommitsRepository, TestRunsData } from "../Domain/IFirebaseDBBranchesCommitsRepository";
+import { IFirebaseDBBranchesCommitsRepository } from "../Domain/IFirebaseDBBranchesCommitsRepository";
+import { TestRunsData } from "../Domain/TestRunsData";
 
 export class SaveTestRunsUseCase {
   private repository: IFirebaseDBBranchesCommitsRepository;

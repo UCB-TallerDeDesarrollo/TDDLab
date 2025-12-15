@@ -71,9 +71,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   role,
   port,
 }) => {
-  const processedTDDLogs = useMemo(() => {
-    return preprocessTDDLogs(tddLogs);
-  }, [tddLogs]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
