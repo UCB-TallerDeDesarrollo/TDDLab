@@ -24,6 +24,20 @@ export class RegisterUserOnDb {
     }
   }
 
+  async registerWithGoogle(idToken: string, groupid: number, role: string) {
+    try {
+      await this.adapter.registerAccountWithGoogle(idToken, groupid, role);
+    } catch (error: any) {
+      const message = error?.message || "";
+
+      if (message.includes("403") || message.includes("No tiene permisos")) {
+        throw new Error("No tiene permisos para registrar administradores");
+      }
+
+      throw error;
+    }
+  }
+
   async verifyPass(pass: string): Promise<boolean> {
     return await this.adapter.verifyPassword(pass);
   }

@@ -14,9 +14,15 @@ const router = express.Router();
 router.post("/register", (req, res) =>
   userController.registerUserController(req, res)
 );
+router.post("/register/google", (req, res) =>
+  userController.registerUserWithGoogleController(req, res)
+);
 router.post("/login", (req, res) => userController.getUserController(req, res));
 router.post("/github", (req, res) =>
   userController.getUserControllerGithub(req, res)
+);
+router.post("/google", (req, res) =>
+  userController.getUserControllerGoogle(req, res)
 );
 router.post(
   "/verifyPassword",

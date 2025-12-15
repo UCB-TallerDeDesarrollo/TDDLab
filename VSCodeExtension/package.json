@@ -1,9 +1,12 @@
 {
   "name": "tdd-extension-taller",
+  "_nameParaPruebas": "tddlab-testing, tdd-extension-taller",
   "displayName": "TDD Lab",
+  "_displayNameParaPruebas": "TDD Lab Testing,TDD Lab",
   "description": "Plugin de VSCode para la aplicación TDDLab",
   "publisher": "TDDLab-TallerDesarrollo",
-  "version": "1.5.2",
+  "_publisherParaPruebas": "TDDLab-Testing, TDDLab-TallerDesarrollo",
+  "version": "1.5.3",
   "engines": {
     "vscode": "^1.94.0"
   },
@@ -65,12 +68,12 @@
       "panel": [
         {
           "id": "timelineContainer",
-          "title": "TDDLAB",
+          "title": "TDD TIMELINE",
           "icon": ""
         },
         {
           "id": "tddTerminalPanel",
-          "title": "Terminal TDD",
+          "title": "TDD Terminal",
           "icon": "resources/TddLab_v2.png"
         }
       ]
@@ -88,9 +91,10 @@
       ],
       "timelineContainer": [
         {
-          "id": "timelineView",
+          "id": "tddTimelineView",
           "name": "Timeline",
-          "type": "webview"
+          "type": "webview",
+          "retainContextWhenHidden": true
         }
       ],
       "tddTerminalPanel": [

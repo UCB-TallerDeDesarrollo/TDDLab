@@ -6,6 +6,7 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
+import EditIcon from "@mui/icons-material/Edit";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
@@ -32,6 +33,7 @@ import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
+import EditGroupPopup from "./components/EditGroupForm";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -66,6 +68,8 @@ function Groups() {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
+  const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
+  const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
   // data
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
@@ -141,6 +145,15 @@ function Groups() {
     setCreateGroupPopupOpen(true);
   };
 
+  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    event.stopPropagation();
+    const group = groups[index];
+    if (group) {
+      setGroupToEdit(group);
+      setEditGroupPopupOpen(true);
+    }
+  };
+
   const handleGroupsOrder = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value);
     const sortings = {
@@ -151,14 +164,14 @@ function Groups() {
       Time_Up: () =>
         [...groups].sort(
           (a, b) =>
-            new Date(a.creationDate).getTime() -
-            new Date(b.creationDate).getTime()
+            new Date(b.creationDate).getTime() -
+            new Date(a.creationDate).getTime()
         ),
       Time_Down: () =>
         [...groups].sort(
           (a, b) =>
-            new Date(b.creationDate).getTime() -
-            new Date(a.creationDate).getTime()
+            new Date(a.creationDate).getTime() -
+            new Date(b.creationDate).getTime()
         ),
     } as const;
 
@@ -275,6 +288,12 @@ function Groups() {
     selectAndSync(newGroup.id);
   };
 
+  const handleGroupUpdated = (updatedGroup: GroupDataObject) => {
+    setGroups((prevGroups) =>
+      prevGroups.map((g) => (g.id === updatedGroup.id ? updatedGroup : g))
+    );
+  };
+
   return (
     <CenteredContainer>
       <section className="Grupos">
@@ -322,13 +341,19 @@ function Groups() {
                   <TableCell>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
+                      <Tooltip title="Editar grupo" arrow>
+                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+
                       <Tooltip title="Tareas" arrow>
                         <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
                           <AutoAwesomeMotionIcon />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Estudiantes" arrow>
+                      <Tooltip title="Participantes" arrow>
                         <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
                           <GroupsIcon />
                         </IconButton>
@@ -401,6 +426,13 @@ function Groups() {
         open={createGroupPopupOpen}
         handleClose={() => setCreateGroupPopupOpen(false)}
         onCreated={handleGroupCreated}
+      />
+
+      <EditGroupPopup
+        open={editGroupPopupOpen}
+        handleClose={() => setEditGroupPopupOpen(false)}
+        groupToEdit={groupToEdit}
+        onUpdated={handleGroupUpdated}
       />
     </CenteredContainer>
   );

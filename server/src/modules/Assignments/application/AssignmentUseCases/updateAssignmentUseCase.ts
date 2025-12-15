@@ -18,6 +18,21 @@ class UpdateAssignment {
       );
     }
     try {
+      const currentAssignment = await this.repository.obtainAssignmentById(assignmentId);
+      
+      if (!currentAssignment) {
+        throw new Error("Assignment not found");
+      }
+      if (currentAssignment.title !== updatedAssignment.title) {
+        const isDuplicate = await this.repository.checkDuplicateTitle(
+          updatedAssignment.title, 
+          updatedAssignment.groupid
+        );
+        
+        if (isDuplicate) {
+          throw new Error("Ya existe una tarea con el mismo nombre en este grupo");
+        }
+      }
       const updatedAssignmentResult = await this.repository.updateAssignment(
         assignmentId,
         updatedAssignment

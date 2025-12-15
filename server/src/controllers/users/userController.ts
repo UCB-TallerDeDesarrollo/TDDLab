@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { registerUser } from "../../modules/Users/Application/registerUser";
+import { registerUserWithGoogle } from "../../modules/Users/Application/registerUserWithGoogle";
+import { loginUserWithGoogle } from "../../modules/Users/Application/loginUserWithGoogle";
 import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
@@ -52,7 +54,35 @@ class UserController {
     }
   }
 
+  async registerUserWithGoogleController(req: Request, res: Response): Promise<void> {
+    const { idToken, groupid, role } = req.body;
 
+    if (!idToken || !groupid || !role) {
+      res.status(400).json({
+        error: "Debes proporcionar un token, grupo y rol válidos",
+      });
+      return;
+    }
+
+    try {
+      await registerUserWithGoogle(idToken, groupid, role);
+      res.status(201).json({ message: "Usuario registrado con éxito usando Google." });
+    } catch (error: any) {
+      if (error.message === "UserAlreadyExistsInThatGroup") {
+        res.status(409).json({ error: "The user is already registered in that group." });
+      } else if (error.message === "No tiene permisos para registrar administradores") {
+        res.status(403).json({ error: "No tiene permisos para registrar administradores" });
+      } else if (error.message === "Token inválido o expirado" || 
+                 error.message === "Token expirado" || 
+                 error.message === "Token inválido") {
+        res.status(401).json({ error: error.message });
+      } else if (error.message === "No se pudo obtener email de Firebase") {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Server error while registering user" });
+      }
+    }
+  }
   async getUserController(req: Request, res: Response): Promise<void> {
     const { email } = req.body;
 
@@ -78,16 +108,72 @@ class UserController {
     try {
       const decoded = await admin.auth().verifyIdToken(idToken);
       const email = decoded.email;
+      const firebaseData = decoded.firebase as any;
+      const providerId = firebaseData?.sign_in_provider;
+      
       if (!email) {
         res.status(400).json({ error: "No se pudo obtener email de Firebase" });
         return;
       }
+
+      // Si el token no es de GitHub, verificar si el usuario existe
+      // Si existe, significa que está usando el proveedor equivocado
+      if (providerId && providerId !== "github.com") {
+        const userResult = await getUserByemail(email);
+        if (userResult && !("error" in userResult) && userResult !== null) {
+          res.status(400).json({ 
+            error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
+          });
+          return;
+        }
+        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
+        return;
+      }
+
       let user = (await getUserByemail(email || "")) as User;
+      if (!user || "error" in user || user === null) {
+        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
+        return;
+      }
       const token = await getUserToken(user);
       await saveUserCookie(token, res);
       res.status(200).json(user);
-    } catch (error) {
-      res.status(401).json({ error: "Token inválido o expirado" });
+    } catch (error: any) {
+      if (error.message && error.message.includes("Usuario no encontrado")) {
+        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
+      } else {
+        res.status(401).json({ error: "Token inválido o expirado" });
+      }
+    }
+  }
+
+  async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
+    const { idToken } = req.body;
+    if (!idToken) {
+      res.status(400).json({ error: "Debes proporcionar un token válido" });
+      return;
+    }
+
+    try {
+      const { user, jwtToken } = await loginUserWithGoogle(idToken);
+      await saveUserCookie(jwtToken, res);
+      res.status(200).json(user);
+    } catch (error: any) {
+      if (error.message === "DEBE_USAR_GOOGLE") {
+        res.status(400).json({ 
+          error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
+        });
+      } else if (error.message === "Usuario no encontrado") {
+        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
+      } else if (error.message === "Token inválido o expirado" ||
+                 error.message === "Token expirado" ||
+                 error.message === "Token inválido") {
+        res.status(401).json({ error: error.message });
+      } else if (error.message === "No se pudo obtener email de Firebase") {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Error en el servidor" });
+      }
     }
   }
 

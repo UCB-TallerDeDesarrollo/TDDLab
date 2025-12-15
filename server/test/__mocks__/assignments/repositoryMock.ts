@@ -18,7 +18,7 @@ export function getAssignmentRepositoryMock() {
         case "non_existing_id":
           return null;
         default:
-          throw new Error("Assignment not found");
+          return null;
       }
     }),
     obtainAssignmentsByGroupId: jest.fn(),

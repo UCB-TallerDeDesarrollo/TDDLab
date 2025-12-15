@@ -25,6 +25,14 @@
   text-align: center;
 }
 
+/* Estilos para el contenedor de botones */
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
 /* Estilos para el botón de GitHub */
 .github-button {
   padding: 10px 20px;
@@ -45,4 +53,20 @@
 .github-button:hover {
   background-color: #555;
   color: white;
+}
+
+/* Estilos para el botón de Google */
+.google-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.google-button:hover {
+  background-color: #3367d6;
 }
