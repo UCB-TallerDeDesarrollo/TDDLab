@@ -17,7 +17,7 @@ export interface CommitData {
   coverage: number;
   test_count: number;
   conclusion: "success" | "failure";
-  html_url?: string;
+  html_url: string;
 }
 
 // Mock de un solo dato

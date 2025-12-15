@@ -13,7 +13,7 @@ const mockIDBCommitArray = [
     user_id: "FranAliss",
     author: "FranAliss",
     commit: {
-      date: new Date("2023-10-07T09:45:00.000Z"),
+      date: "2023-10-07T09:45:00.000Z",
       message: "Todos los tests del mundo",
       url: "https://api.github.com/repos/FranAliss/parcel_jest_base_TDD/git/commits/dd4ca82ccf990f55ecc1ea94c75d114ea05a39ff",
     },
@@ -36,7 +36,7 @@ const mockIDBCommitArray = [
     user_id: "FranAliss",
     author: "FranAliss",
     commit: {
-      date: new Date("2023-10-07T09:45:00.000Z"),
+      date: "2023-10-07T09:45:00.000Z",
       message: "This commit failed",
       url: "https://api.github.com/repos/FranAliss/parcel_jest_base_TDD/git/commits/bad4bac7433175ff06c083930599e96f46eafcde",
     },
@@ -66,7 +66,7 @@ export class MockGithubAPI implements CommitHistoryRepository {
         sha: commit.sha,
         stats: commit.stats,
         commit: {
-            date: commit.commit.date,
+            date: new Date(commit.commit.date), // Convert string to Date for CommitDataObject
             message: commit.commit.message,
             url: commit.commit.url,
             comment_count: 0 // Assuming default
