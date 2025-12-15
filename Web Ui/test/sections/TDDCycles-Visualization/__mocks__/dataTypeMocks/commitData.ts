@@ -6,7 +6,7 @@ export interface CommitData {
     date: Date;
     message: string;
     url: string;
-    comment_count?: number;
+    comment_count: number;
   };
   stats: {
     total: number;
