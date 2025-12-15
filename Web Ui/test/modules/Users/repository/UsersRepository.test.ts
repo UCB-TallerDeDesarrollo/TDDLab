@@ -17,7 +17,14 @@ describe('UsersRepository', () => {
 
   describe('getUserById', () => {
     it('should fetch user by ID successfully', async () => {
-      const mockUser: UserDataObject = { id: 1, email: 'john@example.com', role: 'admin', groupid: 70 };
+      const mockUser: UserDataObject = { 
+        id: 1, 
+        email: 'john@example.com', 
+        role: 'admin', 
+        groupid: 70,
+        firstName: 'John',
+        lastName: 'Doe'
+      };
       axiosGetSpy.mockResolvedValue({ status: 200, data: mockUser });
 
       const result = await repository.getUserById(1);
@@ -30,11 +37,26 @@ describe('UsersRepository', () => {
       await expect(repository.getUserById(1)).rejects.toThrowError('Network Error');
     });
   });
+
   describe('getUsers', () => {
     it('should fetch all users successfully', async () => {
       const mockUsers: UserDataObject[] = [
-        { id: 1, email: 'john@example.com', role: 'admin', groupid: 70 },
-        { id: 2, email: 'jane@example.com', role: 'user', groupid: 70 },
+        { 
+          id: 1, 
+          email: 'john@example.com', 
+          role: 'admin', 
+          groupid: 70,
+          firstName: 'John',
+          lastName: 'Doe'
+        },
+        { 
+          id: 2, 
+          email: 'jane@example.com', 
+          role: 'user', 
+          groupid: 70,
+          firstName: 'Jane',
+          lastName: 'Smith'
+        },
       ];
       axiosGetSpy.mockResolvedValue({ status: 200, data: mockUsers });
 
@@ -42,18 +64,32 @@ describe('UsersRepository', () => {
       expect(result).toEqual(mockUsers);
       expect(axiosGetSpy).toHaveBeenCalledWith(API_URL,{"withCredentials": true});
     });
-    
   
     it('should handle fetch error', async () => {
       axiosGetSpy.mockRejectedValue(new Error('Network Error'));
       await expect(repository.getUsers()).rejects.toThrowError('Network Error');
     });
   });
+
   describe('getUsersByGroupid', () => {
     it('should fetch users by group ID successfully', async () => {
       const mockUsers: UserDataObject[] = [
-        { id: 1, email: 'john@example.com', role: 'admin', groupid: 70 },
-        { id: 2, email: 'jane@example.com', role: 'user', groupid: 70 },
+        { 
+          id: 1, 
+          email: 'john@example.com', 
+          role: 'admin', 
+          groupid: 70,
+          firstName: 'John',
+          lastName: 'Doe'
+        },
+        { 
+          id: 2, 
+          email: 'jane@example.com', 
+          role: 'user', 
+          groupid: 70,
+          firstName: 'Jane',
+          lastName: 'Smith'
+        },
       ];
       axiosGetSpy.mockResolvedValue({ status: 200, data: mockUsers });
 
@@ -61,25 +97,36 @@ describe('UsersRepository', () => {
       expect(result).toEqual(mockUsers);
       expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/groupid/70`,{withCredentials: true});
     });
+
     it('should handle fetch error', async () => {
-        axiosGetSpy.mockRejectedValue(new Error('Network Error'));
-        await expect(repository.getUsersByGroupid(70)).rejects.toThrowError('Network Error');
-      });
+      axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+      await expect(repository.getUsersByGroupid(70)).rejects.toThrowError('Network Error');
+    });
   });
+
   describe('getUserByEmail', () => {
     it('should fetch user by email successfully', async () => {
-      const mockUser: UserDataObject = { id: 1, email: 'john@example.com', role: 'admin', groupid: 70 };
+      const mockUser: UserDataObject = { 
+        id: 1, 
+        email: 'john@example.com', 
+        role: 'admin', 
+        groupid: 70,
+        firstName: 'John',
+        lastName: 'Doe'
+      };
       axiosGetSpy.mockResolvedValue({ status: 200, data: mockUser });
 
       const result = await repository.getUserByEmail('john@example.com');
       expect(result).toEqual(mockUser);
       expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/john@example.com`,{withCredentials: true});
     });
+
     it('should handle fetch error', async () => {
-        axiosGetSpy.mockRejectedValue(new Error('Network Error'));
-        await expect(repository.getUserByEmail('john@example.com')).rejects.toThrowError('Network Error');
-      });
+      axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+      await expect(repository.getUserByEmail('john@example.com')).rejects.toThrowError('Network Error');
+    });
   });
+
   describe('updateUser', () => {
     it('should update user group ID successfully', async () => {
       axiosPutSpy.mockResolvedValue({ status: 200 });
@@ -89,24 +136,32 @@ describe('UsersRepository', () => {
     });
   
     it('should handle update error', async () => {
-        axiosPutSpy.mockRejectedValue(new Error('Network Error'));
-        await expect(repository.updateUser(1, 70)).rejects.toThrowError('Network Error');
+      axiosPutSpy.mockRejectedValue(new Error('Network Error'));
+      await expect(repository.updateUser(1, 70)).rejects.toThrowError('Network Error');
     });
   });
+
   describe('getUserEmailById', () => {
     it('should fetch user email by ID successfully', async () => {
-      const mockUser = { id: 1, email: 'john@example.com' };
+      const mockUser = { 
+        id: 1, 
+        email: 'john@example.com',
+        firstName: 'John',
+        lastName: 'Doe'
+      };
       axiosGetSpy.mockResolvedValue({ status: 200, data: mockUser });
 
       const result = await repository.getUserEmailById(1);
       expect(result).toEqual('john@example.com');
       expect(axiosGetSpy).toHaveBeenCalledWith(`${API_URL}/1`,{withCredentials: true});
     });
+
     it('should handle fetch error', async () => {
-        axiosGetSpy.mockRejectedValue(new Error('Network Error'));
-        await expect(repository.getUserEmailById(1)).rejects.toThrowError('Network Error');
-      });
+      axiosGetSpy.mockRejectedValue(new Error('Network Error'));
+      await expect(repository.getUserEmailById(1)).rejects.toThrowError('Network Error');
+    });
   });
+
   describe('removeUserFromGroup', () => {
     it('should remove user from group successfully', async () => {
       axios.delete = jest.fn().mockResolvedValue({ status: 200 });
@@ -122,5 +177,4 @@ describe('UsersRepository', () => {
       await expect(repository.removeUserFromGroup(1)).rejects.toThrowError('Network Error');
     });
   });
-  
 });

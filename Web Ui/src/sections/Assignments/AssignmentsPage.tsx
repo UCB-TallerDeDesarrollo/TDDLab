@@ -21,7 +21,7 @@ interface AssignmentManagerProps {
 }
 function AssignmentManager({
   userRole,
-  userGroupid, // Recibir userGroupid como prop
+  userGroupid, 
 }: Readonly<AssignmentManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
@@ -47,7 +47,6 @@ function AssignmentManager({
           data-testid="form-container"
           open={createAssignmentPopupOpen}
           handleClose={() => setCreateAssignmentPopupOpen(false)}
-          // ⬇⬇⬇  usa localStorage como respaldo antes de userGroupid
           groupid={
             selectedGroupId ??
             (Number(localStorage.getItem("selectedGroup") ?? NaN) || userGroupid)
