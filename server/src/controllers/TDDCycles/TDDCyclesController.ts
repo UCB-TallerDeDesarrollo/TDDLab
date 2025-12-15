@@ -10,9 +10,11 @@ import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBComm
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
-
-
-
+import { SaveCommitUseCase } from "../../modules/TDDCycles/Application/saveCommitUseCase";
+import { SaveTestRunsUseCase } from "../../modules/TDDCycles/Application/saveTestRunsUseCase";
+import { IFirebaseDBBranchesCommitsRepository } from "../../modules/TDDCycles/Domain/IFirebaseDBBranchesCommitsRepository";
+import { CommitData } from "../../modules/TDDCycles/Domain/CommitData";
+import { TestRunsData } from "../../modules/TDDCycles/Domain/TestRunsData";
 
 class TDDCyclesController {
   tddCyclesUseCase: GetTDDCyclesUseCase;
@@ -23,11 +25,14 @@ class TDDCyclesController {
   getCommitExecutions: GetCommitTimeLineUseCase;
   getCommitHistoryUseCase: GetCommitHistoryUseCase;
   getCommitCyclesUseCase: GetCommitCyclesUseCase;
+  saveCommitUseCase: SaveCommitUseCase;
+  saveTestRunsUseCase: SaveTestRunsUseCase;
 
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
-    githubRepository: IGithubRepository
+    githubRepository: IGithubRepository,
+    firebaseRepository: IFirebaseDBBranchesCommitsRepository
   ) {
     this.tddCyclesUseCase = new GetTDDCyclesUseCase(
       dbCommitsRepository,
@@ -47,7 +52,39 @@ class TDDCyclesController {
     this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
     this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
+
+    this.saveCommitUseCase = new SaveCommitUseCase(firebaseRepository);
+    this.saveTestRunsUseCase = new SaveTestRunsUseCase(firebaseRepository);
   }
+
+  async saveCommit(req: Request, res: Response) {
+    try {
+      const commitData: CommitData = req.body;
+      if (!commitData._id || !commitData.user_id || !commitData.repo_name || !commitData.branch) {
+        return res.status(400).json({ error: "Bad request, missing required fields in commit data." });
+      }
+      await this.saveCommitUseCase.execute(commitData);
+      return res.status(201).json({ message: "Commit data saved successfully." });
+    } catch (error) {
+      console.error("Error saving commit:", error);
+      return res.status(500).json({ error: "Server error while saving commit." });
+    }
+  }
+
+  async saveTestRuns(req: Request, res: Response) {
+    try {
+      const testRunsData: TestRunsData = req.body;
+      if (!testRunsData.commit_sha || !testRunsData.user_id || !testRunsData.repo_name || !testRunsData.branch) {
+        return res.status(400).json({ error: "Bad request, missing required fields in test runs data." });
+      }
+      await this.saveTestRunsUseCase.execute(testRunsData);
+      return res.status(201).json({ message: "Test runs data saved successfully." });
+    } catch (error) {
+      console.error("Error saving test runs:", error);
+      return res.status(500).json({ error: "Server error while saving test runs." });
+    }
+  }
+
   //NO SE USA
   async getTDDCycles(req: Request, res: Response) {
     try {

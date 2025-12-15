@@ -1,17 +1,76 @@
 import { db } from "../../../config/firebase";
+import { FieldValue } from "firebase-admin/firestore";
 import { IDBCommit } from "../Domain/IDBCommit";
 import { IDBBranchWithCommits } from "../Domain/IDBBranchWithCommits";
 import { IFirebaseDBBranchesCommitsRepository } from "../Domain/IFirebaseDBBranchesCommitsRepository";
+import { CommitData } from '../Domain/CommitData';
+import { TestRunsData } from '../Domain/TestRunsData';
 import { ITestRun } from "../Domain/ITestRun";
 
 export class FirebaseDBBranchesCommitsRepository implements IFirebaseDBBranchesCommitsRepository {
+  async saveCommit(commitData: CommitData): Promise<void> {
+    try {
+      const commitRef = db.collection("commits").doc(commitData._id);
+      await commitRef.set(commitData);
+      
+      console.log(`Commit ${commitData._id} saved successfully.`);
+
+      const branchesRef = db.collection("branches");
+      const branchQuery = await branchesRef
+        .where("user_id", "==", commitData.user_id)
+        .where("repo_name", "==", commitData.repo_name)
+        .where("branch_name", "==", commitData.branch)
+        .limit(1)
+        .get();
+
+      if (branchQuery.empty) {
+        // If branch doesn't exist, create it
+        const newBranchRef = branchesRef.doc();
+        await newBranchRef.set({
+          _id: newBranchRef.id,
+          user_id: commitData.user_id,
+          repo_name: commitData.repo_name,
+          branch_name: commitData.branch,
+          commits: [commitData._id],
+          last_commit: commitData._id,
+          updated_at: FieldValue.serverTimestamp(),
+        });
+        console.log(`New branch '${commitData.branch}' created and commit added.`);
+      } else {
+        // If branch exists, update it
+        const branchDoc = branchQuery.docs[0];
+        await branchDoc.ref.update({
+          commits: FieldValue.arrayUnion(commitData._id),
+          last_commit: commitData._id,
+          updated_at: FieldValue.serverTimestamp(),
+        });
+        console.log(`Existing branch '${commitData.branch}' updated with commit.`);
+      }
+
+    } catch (error) {
+      console.error("Error saving commit:", error);
+      throw error;
+    }
+  }
+
+  async saveTestRuns(testRunsData: TestRunsData): Promise<void> {
+    try {
+      const testRunsRef = db.collection("test-runs").doc(testRunsData.commit_sha);
+      await testRunsRef.set(testRunsData);
+      console.log(`Test runs for commit ${testRunsData.commit_sha} saved successfully.`);
+    } catch (error) {
+      console.error("Error saving test runs:", error);
+      throw error;
+    }
+  }
+
   async getBranchesWithCommits(owner: string, repoName: string): Promise<IDBBranchWithCommits[]> {
     try {
       const branchesRef = db.collection("branches");
       
       let snapshot = await branchesRef
         .where("user_id", "==", owner)
-        .where(" repo_name", "==", repoName)
+        .where("repo_name", "==", repoName)
         .get();
 
       if (snapshot.empty) {

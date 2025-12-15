@@ -12,17 +12,31 @@ const dbJobsRepository = new DBJobsRepository();
 const githubRepository = new GithubRepository();
 const firebaseDBBranchesCommitsRepository = new FirebaseDBBranchesCommitsRepository();
 
-// Create an instance of your controller
+// Create an instance of your controller, now passing the firebase repository
 const tddCyclesController = new TDDCyclesController(
   dbCommitsRepository,
   dbJobsRepository,
-  githubRepository
+  githubRepository,
+  firebaseDBBranchesCommitsRepository
 );
 
 const dbBranchesController = new DBBranchesController(firebaseDBBranchesCommitsRepository);
 
 // Create a new router to handle the TDDCycles routes
 const TDDCyclesRouter = express.Router();
+
+// --- NEW ENDPOINTS ---
+TDDCyclesRouter.post(
+  "/commits",
+  async (req, res) => await tddCyclesController.saveCommit(req, res)
+);
+
+TDDCyclesRouter.post(
+  "/test-runs",
+  async (req, res) => await tddCyclesController.saveTestRuns(req, res)
+);
+// ---------------------
+
 
 // Get all commits from a repository in Github (TDD Cycles)
 TDDCyclesRouter.get(
