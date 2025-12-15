@@ -7,6 +7,8 @@ const { setGlobalState, useGlobalState } = createGlobalState<{
     userEmail: string | undefined;
     usergroupid: number | undefined;
     userRole: string | undefined;
+    userFisrtName: string | undefined,
+    userLastName: string | undefined,
   };
 }>({
   authData: {
@@ -15,6 +17,8 @@ const { setGlobalState, useGlobalState } = createGlobalState<{
     userEmail: undefined,
     usergroupid: undefined,
     userRole: undefined,
+    userFisrtName: undefined,
+    userLastName: undefined
   },
 });
 

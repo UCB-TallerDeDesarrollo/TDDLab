@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Terminal TDD</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
+  <link rel="stylesheet" type="text/css" href="{{cssUri}}">
+  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+</head>
+<body>
+  <div id="timeline">
+    <h2>TDDLab Timeline</h2>
+    <div id="timeline-content">{{timelineContent}}</div>
+  </div>
+
+  <div class="terminal-wrapper">
+    <div id="terminal"></div>
+  </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+    
+    const term = new Terminal({ 
+      cursorBlink: true,
+      cols: 80,
+      rows: 30,
+      theme: {
+        background: '#1e1e1e',
+        foreground: '#ffffff'
+      },
+      allowTransparency: false,
+      convertEol: true
+    });
+    
+    const terminalElement = document.getElementById('terminal');
+    term.open(terminalElement);
+    
+    setTimeout(() => {
+      const xtermRows = terminalElement.querySelector('.xterm-rows');
+      if (xtermRows) {
+        xtermRows.style.textAlign = 'left';
+        xtermRows.style.paddingLeft = '0';
+        xtermRows.style.marginLeft = '0';
+        xtermRows.style.width = '100%';
+      }
+      const xtermScreen = terminalElement.querySelector('.xterm-screen');
+      if (xtermScreen) {
+        xtermScreen.style.textAlign = 'left';
+        xtermScreen.style.paddingLeft = '0';
+        xtermScreen.style.marginLeft = '0';
+        
+      }
+    }, 100);
+    
+    const fitAddon = () => {
+      const container = document.querySelector('.terminal-wrapper');
+      if (container) {
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+        const cols = Math.floor((width - 20) / 9); 
+        const rows = Math.floor(height / 17); 
+        term.resize(cols, rows);
+      }
+    };
+    
+    window.addEventListener('resize', fitAddon);
+    setTimeout(fitAddon, 200); 
+    
+    term.focus();
+    
+    let command = '';
+    let isExecuting = false;
+
+    term.onData(data => {
+      // Verificar que data no esté vacío
+      if (!data || data.length === 0) {
+        return;
+      }
+      
+      const code = data.codePointAt(0);
+      const char = data.charAt(0);
+      
+      // Verificar que code no sea undefined
+      if (code === undefined) {
+        return;
+      }
+      
+      // Si hay un proceso ejecutándose
+      if (isExecuting) {
+        // Enviar todas las teclas al proceso
+        vscode.postMessage({ 
+          command: 'terminalInput', 
+          data: data 
+        });
+        
+        // Mostrar en terminal VISUALMENTE
+        switch (code) {
+          case 13: // Enter - MOSTRAR salto de línea
+            term.write('\r\n');
+            break;
+          case 127: // Backspace - MOSTRAR retroceso
+            term.write('\b \b');
+            break;
+          case 3: // Ctrl+C
+            term.write('^C');
+            break;
+          case 9: // Tab
+            term.write('\t');
+            break;
+          default:
+            // Solo mostrar caracteres imprimibles normales
+            if (char && char.length === 1 && code >= 32 && code <= 126) {
+              term.write(data);
+            }
+            // NOTA: No mostrar secuencias de escape (como flechas)
+            break;
+        }
+        return;
+      }
+      
+      // Código para cuando NO hay proceso ejecutándose
+      if (code === 13) { 
+        if (command.trim()) {
+          isExecuting = true;
+          vscode.postMessage({ command: 'executeCommand', text: command });
+          command = '';
+        } else {
+          term.write('\r\n');
+          vscode.postMessage({ command: 'requestPrompt' });
+        }
+      } else if (code === 127) { 
+        if (command.length > 0) {
+          command = command.slice(0, -1);
+          term.write('\b \b');
+        }
+      } else if (code === 3) { 
+        term.write('^C');
+        vscode.postMessage({ command: 'killCommand' });
+        isExecuting = false;
+        term.write('\r\n> ');
+      } else if (code >= 32 && code <= 126) {
+        command += data;
+        term.write(data);
+      }
+    });
+    
+    window.addEventListener('message', event => {
+      const message = event.data;
+      switch (message.command) {
+        case 'updateTimeline':
+          document.getElementById('timeline-content').innerHTML = message.html;
+          break;
+
+        case 'writeToTerminal':
+          const text = message.text || '';
+          term.write(text);
+          
+          // Detectar si el texto termina con prompt para resetear estado
+          if (text.endsWith('> ') || text.endsWith('$ ') || text.endsWith('# ')) {
+            isExecuting = false;
+            command = '';
+          }
+          break;
+
+        case 'clearTerminal':
+          term.clear();
+          term.reset();
+          isExecuting = false;
+          command = '';
+          if (message.prompt) {
+            term.write(message.prompt);
+          } 
+          break;
+      }
+    });
+    
+    setTimeout(() => {
+      vscode.postMessage({ command: 'webviewReady' });
+    }, 100);
+  </script>
+</body>
+</html>

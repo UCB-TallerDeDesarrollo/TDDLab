@@ -188,7 +188,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}
-            title="Tarea eliminada exitosamente"
+            title="Practica eliminada exitosamente"
             closeText="Cerrar"
             onClose={() => window.location.reload()}
           />

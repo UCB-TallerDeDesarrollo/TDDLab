@@ -350,9 +350,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   };
 
   const getStudentById = async (studentId: number): Promise<UserDataObject> => {
-      const student = await usersRepository.getUserById(studentId);
-      console.log(student);
-      return student;
+
+    const student = await usersRepository.getUserById(studentId);
+    if (!student) {
+      console.error('Error fetching student');
+    }
+    return student;
   };
 
   const renderStudentRows = async () => {

@@ -39,6 +39,14 @@ class MockGroupsRepository implements GroupsRepositoryInterface {
       .filter(g => g.id === userId)
       .map(g => g.id);
   }
+
+  async updateGroup(groupId: number, updatedGroupData: GroupDataObject): Promise<void> {
+    const updateGroup: GroupDataObject = {
+      ...updatedGroupData,
+      id: groupId
+    };
+    this.groups.push(updateGroup);
+  }
 }
 
 export default MockGroupsRepository;

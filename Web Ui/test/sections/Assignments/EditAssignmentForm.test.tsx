@@ -271,8 +271,9 @@ describe("EditAssignmentDialog Component", () => {
   });
 
   it("debería mostrar diálogo de error cuando hay un error", async () => {
-    mockUpdateAssignment.updateAssignment.mockRejectedValue(new Error("Error de validación"));
-
+    (mockUpdateAssignment.updateAssignment as jest.Mock).mockRejectedValue(
+    new Error("Limite de caracteres excedido. El titulo no puede tener mas de 50 caracteres.")
+  );
     renderEditDialog();
 
     await waitFor(() => {
@@ -282,8 +283,9 @@ describe("EditAssignmentDialog Component", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Error")).toBeInTheDocument();
-      expect(screen.getByText("Por favor verifica la logitud del titulo")).toBeInTheDocument();
     });
+    const errorMessage = screen.getByText(/Límite de caracteres|Limite de caracteres/i);
+  expect(errorMessage).toBeInTheDocument();
   });
 
   it("debería cerrar el diálogo de error", async () => {

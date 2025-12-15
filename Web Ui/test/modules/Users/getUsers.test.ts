@@ -9,6 +9,7 @@ const mockRepository: UsersRepositoryInterface = {
   getUserByEmail: jest.fn(),
   updateUser: jest.fn(),
   removeUserFromGroup: jest.fn(),
+  getFilteredUsersByEmail: jest.fn(),
 };
 describe('GetUsers', () => {
     let getUsers: GetUsers;
