@@ -5,7 +5,7 @@ import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualizatio
 import TDDLineCharts from "./TDDLineChart";
 
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
-import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
 
 interface CycleReportViewProps {
