@@ -55,7 +55,7 @@ class UserController {
   }
 
   async registerUserWithGoogleController(req: Request, res: Response): Promise<void> {
-    const { idToken, groupid, role } = req.body;
+    const { idToken, groupid, role,firstName,lastName } = req.body;
 
     if (!idToken || !groupid || !role) {
       res.status(400).json({
@@ -65,7 +65,7 @@ class UserController {
     }
 
     try {
-      await registerUserWithGoogle(idToken, groupid, role);
+      await registerUserWithGoogle(idToken, groupid, role,firstName,lastName);
       res.status(201).json({ message: "Usuario registrado con éxito usando Google." });
     } catch (error: any) {
       if (error.message === "UserAlreadyExistsInThatGroup") {

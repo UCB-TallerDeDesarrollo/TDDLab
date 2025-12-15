@@ -145,7 +145,6 @@ function InvitationPage() {
 
     try {
       if (user?.email) {
-<<<<<<< HEAD
         const [firstName, lastName] = (user.displayName?.split(" ") ?? [" ", " "]);
         const userObj: UserOnDb = {
           email: user.email,
@@ -154,10 +153,8 @@ function InvitationPage() {
           firstName: firstName || '',
           lastName: lastName || ''
         };
-=======
         const userGroupid = typeof groupid === "number" ? groupid : Number(groupid) || 1;
         
->>>>>>> refactorRegister
         try {
           if (authProvider === "google") {
             const idToken = await user.getIdToken();
@@ -167,6 +164,8 @@ function InvitationPage() {
               email: user.email,
               groupid: userGroupid,
               role: type,
+              firstName: firstName || '',
+              lastName: lastName || ''
             };
             await dbAuthPort.register(userObj);
           }
@@ -381,7 +380,6 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-<<<<<<< HEAD
           {showNamePopup && user?.backendId && (
             <UpdateUserNamePopUp
               open={showNamePopup}
@@ -394,12 +392,8 @@ function InvitationPage() {
               setUser={setUser}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp />}
-          {openPopup && <CheckRegisterGroupPopUp />}
-=======
           {showPopUp && <SuccessfulEnrollmentPopUp authProvider={authProvider}></SuccessfulEnrollmentPopUp>}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
->>>>>>> refactorRegister
         </div>
       ) : (
         <Grid
