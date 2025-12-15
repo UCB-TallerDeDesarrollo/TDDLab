@@ -351,7 +351,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const getStudentById = async (studentId: number): Promise<UserDataObject> => {
       const student = await usersRepository.getUserById(studentId);
-      console.log(student);
       return student;
   };
 

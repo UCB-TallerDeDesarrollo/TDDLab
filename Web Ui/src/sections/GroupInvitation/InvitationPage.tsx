@@ -146,13 +146,6 @@ function InvitationPage() {
     try {
       if (user?.email) {
         const [firstName, lastName] = (user.displayName?.split(" ") ?? [" ", " "]);
-        const userObj: UserOnDb = {
-          email: user.email,
-          groupid: typeof groupid === "number" ? groupid : Number(groupid) || 1,
-          role: type,
-          firstName: firstName || '',
-          lastName: lastName || ''
-        };
         const userGroupid = typeof groupid === "number" ? groupid : Number(groupid) || 1;
         
         try {

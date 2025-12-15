@@ -335,7 +335,6 @@ async  logoutController (res: Response): Promise<void> {
 
       return res.status(200).json(updatedUser);
     } catch (error) {
-      console.error("❌ Error en updateUserById:", error);
       return res.status(500).json({ message: "Error interno del servidor" });
     }
   }
