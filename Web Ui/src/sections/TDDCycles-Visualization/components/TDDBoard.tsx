@@ -15,12 +15,6 @@ interface CycleReportViewProps {
   role: string;
 }
 
-interface CommitTestsMapping {
-  commitIndex: number;
-  commitData: CommitLog | null;
-  tests: TestExecutionLog[];
-}
-
 const TDDBoard: React.FC<CycleReportViewProps> = ({
   commits,
   tddLogs,
