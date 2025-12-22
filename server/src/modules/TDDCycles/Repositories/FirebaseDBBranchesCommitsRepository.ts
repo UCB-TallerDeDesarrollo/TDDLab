@@ -1,4 +1,4 @@
-import { db } from "../../../config/firebase";
+import { db } from "../../../config/TDDLogs-Firebase";
 import { FieldValue } from "firebase-admin/firestore";
 import { IDBCommit } from "../Domain/IDBCommit";
 import { IDBBranchWithCommits } from "../Domain/IDBBranchWithCommits";
