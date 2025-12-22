@@ -110,7 +110,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       return response.data;
 
     } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+      if (error.response?.status === 404) {
         console.warn("Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.");
         return [];
       }

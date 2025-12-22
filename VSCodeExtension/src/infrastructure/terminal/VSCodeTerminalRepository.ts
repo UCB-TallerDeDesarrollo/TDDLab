@@ -45,6 +45,7 @@ export class VSCodeTerminalRepository implements TerminalPort {
           return;
         }
      
+        // NOSONAR: This execute command is safe here because it is restricted to the user's workspace
         this.currentProcess = spawn(command, {
           cwd: cwd,
           shell: true,

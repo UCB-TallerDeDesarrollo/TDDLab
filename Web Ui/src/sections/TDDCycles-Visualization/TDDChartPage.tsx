@@ -111,7 +111,7 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
       } as any); // Cast to any if types are strict and I'm missing something, but let's try to match interface
 
       // Add Test Execution Logs
-      if (commit.test_run && commit.test_run.runs) {
+      if (commit.test_run?.runs) {
         commit.test_run.runs.forEach(run => {
           tddLogs.push({
             numPassedTests: run.summary.passed,

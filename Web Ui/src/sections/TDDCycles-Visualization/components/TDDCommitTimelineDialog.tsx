@@ -37,7 +37,15 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
       numTests: item.summary?.total ?? item.numTotalTests ?? item.number_of_tests,
       passedTests: item.summary?.passed ?? item.numPassedTests ?? item.passed_tests,
       failedTests: item.summary?.failed ?? item.failedTests,
-      date: item.execution_timestamp ? new Date(item.execution_timestamp) : (item.timestamp ? new Date(item.timestamp) : new Date()),
+      date: (() => {
+        if (item.execution_timestamp) {
+          return new Date(item.execution_timestamp);
+        } else if (item.timestamp) {
+          return new Date(item.timestamp);
+        } else {
+          return new Date();
+        }
+      })(),
     }));
   };
 

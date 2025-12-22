@@ -136,7 +136,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
           
           return (
-            <g key={`commit-${commitIndex}`}>
+            <g key={`commit-${commit.commitNumber}`}>
               {commit.tests.map((test, testIndex) => {
                 const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
                 
@@ -158,7 +158,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         {/* X-axis labels */}
         {processedData.map((commit, index) => (
           <text
-            key={`x-label-${index}`}
+            key={`x-label-${commit.commitNumber}`}
             x={leftPadding + (index + 1) * commitSpacing}
             y={topPadding + plotHeight + 25}
             fill="#666"

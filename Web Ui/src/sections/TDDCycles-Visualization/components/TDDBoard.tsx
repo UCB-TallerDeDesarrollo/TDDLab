@@ -170,8 +170,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       const commit = commits.slice().reverse()[dataSetIndexNum];
       
       if (commit) {
-          if (commit.test_run && commit.test_run.runs) {
-             setCommitTimelineData(commit.test_run.runs);
+                      if (commit.test_run?.runs) {             setCommitTimelineData(commit.test_run.runs);
           } else {
              // Fallback to existing logic if no test_run data (e.g. for backward compatibility or if data missing)
              // Better to rely on commit.test_run if possible. 
