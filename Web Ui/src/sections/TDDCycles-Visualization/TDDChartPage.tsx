@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { GetCommitsOfRepo } from "../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
-import { GetCommitTddCycle } from "../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
-
-import { GetTDDLogs } from "../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../modules/TDDCycles-Visualization/application/GetUserName";
+import { GetDBBranchesWithCommits } from "../../modules/TDDCycles-Visualization/application/GetDBBranchesWithCommits";
 import TDDCharts from "./components/TDDChart";
 import { CommitDataObject } from "../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { IDBBranchWithCommits } from "../../modules/TDDCycles-Visualization/domain/IDBBranchWithCommits";
 import "./styles/TDDChartPageStyles.css";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
@@ -69,27 +67,95 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [feedback, setFeedback] = useState<string>("");
+  const [branches, setBranches] = useState<IDBBranchWithCommits[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<string>("");
 
   const [emails, setEmails] = useState<{ [key: number]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
-  const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
-  const getTDDLogsUseCase = new GetTDDLogs(port);
   const getUserNameUseCase = new GetUserName(port);
+  const getDBBranchesWithCommitsUseCase = new GetDBBranchesWithCommits(port);
+
+  const updateChartData = (branch: IDBBranchWithCommits) => {
+    const mappedCommits: CommitDataObject[] = branch.commits.map(c => ({
+      html_url: c.commit.url,
+      stats: {
+        total: c.stats.total,
+        additions: c.stats.additions,
+        deletions: c.stats.deletions
+      },
+      commit: {
+        date: new Date(c.commit.date),
+        message: c.commit.message,
+        url: c.commit.url,
+        comment_count: 0
+      },
+      sha: c.sha,
+      coverage: c.coverage,
+      test_count: c.test_count,
+      conclusion: c.conclusion,
+      test_run: c.test_run
+    }));
+    console.log("Mapped Commits:", mappedCommits);
+    setCommitsInfo(mappedCommits);
+    setCommitsTddCycles([]); 
+
+    const tddLogs: TDDLogEntry[] = [];
+    branch.commits.forEach(commit => {
+      // Add Commit Log
+      tddLogs.push({
+        commitId: commit.sha,
+        commitName: commit.commit.message,
+        commitTimestamp: new Date(commit.commit.date).getTime(),
+        testId: 0 // Default or derived?
+      } as any); // Cast to any if types are strict and I'm missing something, but let's try to match interface
+
+      // Add Test Execution Logs
+      if (commit.test_run && commit.test_run.runs) {
+        commit.test_run.runs.forEach(run => {
+          tddLogs.push({
+            numPassedTests: run.summary.passed,
+            failedTests: run.summary.failed,
+            numTotalTests: run.summary.total,
+            timestamp: run.execution_timestamp,
+            success: run.success,
+            testId: run.test_id
+          });
+        });
+      }
+    });
+
+    // Sort logs by timestamp
+    tddLogs.sort((a, b) => {
+      const timeA = 'commitTimestamp' in a ? a.commitTimestamp : a.timestamp;
+      const timeB = 'commitTimestamp' in b ? b.commitTimestamp : b.timestamp;
+      return timeA - timeB;
+    });
+
+    setTDDLogsInfo(tddLogs);
+  };
+
+  const handleBranchChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const branchName = event.target.value;
+    setSelectedBranch(branchName);
+    const branch = branches.find(b => b.branch_name === branchName);
+    if (branch) {
+      updateChartData(branch);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
     try {
-  const tddlogs = await getTDDLogsUseCase.execute(repoOwner, repoName);
-      setTDDLogsInfo(tddlogs);
-
-  const commits = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
-      setCommitsInfo(commits);
-
-  const tddCycles = await getCommitTddCycleUseCase.execute(repoOwner, repoName);
-      setCommitsTddCycles(tddCycles);
-
+      const branchesData = await getDBBranchesWithCommitsUseCase.execute(repoOwner, repoName);
+      setBranches(branchesData);
+      console.log("Branches Data:",repoOwner, repoName,  branchesData);
+      
+      if (branchesData.length > 0) {
+        const initialBranch = branchesData[0];
+        setSelectedBranch(initialBranch.branch_name);
+        updateChartData(initialBranch);
+      }
     } catch (error) {
       console.error("Error obtaining data:", error);
     } finally {
@@ -206,6 +272,17 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
       {!isStudent(role) && (
         <h1 data-testid="repoOwnerTitle">Autor: {ownerName}</h1>
       )}
+
+      <div className="branch-selector" style={{ margin: '10px 0' }}>
+        <label htmlFor="branch-select" style={{ marginRight: '10px' }}>Rama: </label>
+        <select id="branch-select" value={selectedBranch} onChange={handleBranchChange} style={{ padding: '5px' }}>
+          {branches.map((branch, index) => (
+            <option key={branch._id || index} value={branch.branch_name}>
+              {branch.branch_name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {loading && (
         <div className="mainInfoContainer">

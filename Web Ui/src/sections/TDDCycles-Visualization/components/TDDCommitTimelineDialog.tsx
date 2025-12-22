@@ -32,12 +32,12 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
       x: index + 1,
       y: 1,
       r: 15,
-      // Si el dato viene del tdd_log.json:
+      // Si el dato viene del tdd_log.json o de ITestRunResult:
       isPassed: item.success ?? (item.color === "green"),
-      numTests: item.numTotalTests ?? item.number_of_tests,
-      passedTests: item.numPassedTests ?? item.passed_tests,
-      failedTests: item.failedTests,
-      date: item.timestamp ? new Date(item.timestamp) : item.execution_timestamp,
+      numTests: item.summary?.total ?? item.numTotalTests ?? item.number_of_tests,
+      passedTests: item.summary?.passed ?? item.numPassedTests ?? item.passed_tests,
+      failedTests: item.summary?.failed ?? item.failedTests,
+      date: item.execution_timestamp ? new Date(item.execution_timestamp) : (item.timestamp ? new Date(item.timestamp) : new Date()),
     }));
   };
 
