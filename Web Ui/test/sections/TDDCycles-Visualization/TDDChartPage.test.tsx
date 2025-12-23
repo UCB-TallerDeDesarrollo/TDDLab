@@ -38,12 +38,12 @@ describe("TDDChartPage", () => {
   test.each([["admin"], ["student"]])(
     "displays an error message when no data is available for role %s",
     async (role) => {
-      const { getByText } = render(
+      const { getByTestId } = render(
         <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
       );
 
       await waitFor(() => {
-        const error = getByText("Hubo un problema al cargar los commits del repositorio");
+        const error = getByTestId("errorMessage");
         expect(error).toBeInTheDocument();
       });
     }
