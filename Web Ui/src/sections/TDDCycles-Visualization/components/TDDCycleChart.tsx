@@ -28,7 +28,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     }
     
     const commitMap = new Map<number, CommitData>();
-    let currentCommit = 0;
+    let currentCommit = 1;
 
     for (const log of data){
       if (log.commitId) {

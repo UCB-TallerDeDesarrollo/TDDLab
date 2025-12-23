@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { IGithubRepository } from '../../src/modules/TDDCycles/Domain/IGithubRepository';
 import { IDBCommitsRepository } from '../../src/modules/TDDCycles/Domain/IDBCommitsRepository';
 import { IDBJobsRepository } from '../../src/modules/TDDCycles/Domain/IDBJobsRepository';
-import { IFirebaseDBBranchesCommitsRepository } from '../../src/modules/TDDCycles/Domain/IFirebaseDBBranchesCommitsRepository';
 import TDDCyclesController from '../../src/controllers/TDDCycles/TDDCyclesController';
 
 jest.mock('../../src/modules/TDDCycles/Application/getTDDCyclesUseCase');
@@ -17,7 +16,6 @@ describe('TDDCyclesController', () => {
     let mockDBCommitsRepository: IDBCommitsRepository;
     let mockDBJobsRepository: IDBJobsRepository;
     let mockGithubRepository: IGithubRepository;
-    let mockFirebaseRepository: IFirebaseDBBranchesCommitsRepository;
 
     beforeEach(() => {
         mockRequest = {};
@@ -28,13 +26,7 @@ describe('TDDCyclesController', () => {
         mockDBCommitsRepository = {} as IDBCommitsRepository;
         mockDBJobsRepository = {} as IDBJobsRepository;
         mockGithubRepository = {} as IGithubRepository;
-        mockFirebaseRepository = {
-            getBranchesWithCommits: jest.fn(),
-            saveCommit: jest.fn(),
-            saveTestRuns: jest.fn(),
-        } as IFirebaseDBBranchesCommitsRepository; // Mock all methods
-
-        controller = new TDDCyclesController(mockDBCommitsRepository, mockDBJobsRepository, mockGithubRepository, mockFirebaseRepository);
+        controller = new TDDCyclesController(mockDBCommitsRepository, mockDBJobsRepository, mockGithubRepository);
     });
     // Tests que no se utilizan porque hay que eliminar estos métodos del controlador
     describe('getTDDCycles', () => {
