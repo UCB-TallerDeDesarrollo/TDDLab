@@ -50,7 +50,7 @@ function AssignmentManager({
           // ⬇⬇⬇  usa localStorage como respaldo antes de userGroupid
           groupid={
             selectedGroupId ??
-            (Number(localStorage.getItem("selectedGroup") ?? NaN) || userGroupid)
+            (Number(localStorage.getItem("selectedGroup") ?? Number.NaN) || userGroupid)
           }
           />
         )}

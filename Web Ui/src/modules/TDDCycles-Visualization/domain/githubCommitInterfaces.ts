@@ -1,3 +1,5 @@
+import { ITestRun } from "./ITestRun";
+
 export interface CommitDataObject {
   html_url: string;
   stats: Stats;
@@ -6,6 +8,7 @@ export interface CommitDataObject {
   coverage: number;
   test_count: number;
   conclusion: string;
+  test_run?: ITestRun;
 }
 export interface Stats {
   total: number;

@@ -6,6 +6,7 @@ import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
+import { IDBBranchWithCommits } from "../domain/IDBBranchWithCommits.ts";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
   octokit: Octokit;
@@ -109,11 +110,22 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       return response.data;
 
     } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+      if (error.response?.status === 404) {
         console.warn("Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.");
         return [];
       }
       console.error("Error al obtener tdd_log.json:", error);
+      throw error;
+    }
+  }
+
+  async obtainBranchesWithCommits(owner: string, repoName: string): Promise<IDBBranchWithCommits[]> {
+    try {
+      const url = `${this.backAPI}/branches`;
+      const response = await axios.get(url, { params: { owner, repoName } });
+      return response.data;
+    } catch (error) {
+      console.error("Error obtaining branches with commits:", error);
       throw error;
     }
   }

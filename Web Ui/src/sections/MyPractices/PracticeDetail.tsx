@@ -314,16 +314,16 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               variant="contained"
               onClick={() => {
                 localStorage.setItem("selectedMetric", "Dashboard");
-                if (practiceSubmissions[0]?.repository_link) {
+                if (submission?.repository_link) {
                   handleRedirectStudent(
-                    practiceSubmissions[0].repository_link,
-                    practiceSubmissions[0].id,
+                    submission.repository_link,
+                    submission.id,
                     navigate
                   );
                 }
               }}
               color="primary"
-              disabled={!practiceSubmissions[0]?.repository_link}
+              disabled={!submission?.repository_link}
               style={{
                 textTransform: "none",
                 fontSize: "15px",

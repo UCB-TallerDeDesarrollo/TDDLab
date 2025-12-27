@@ -199,7 +199,7 @@ useEffect(() => {
         // Preferir grupo seleccionado guardado
         const savedSelectedGroup = localStorage.getItem("selectedGroup");
         const preferredGroupId = savedSelectedGroup
-          ? parseInt(savedSelectedGroup, 10)
+          ? Number.parseInt(savedSelectedGroup, 10)
           : authData?.usergroupid;
 
         if (preferredGroupId === undefined || preferredGroupId === null) {
