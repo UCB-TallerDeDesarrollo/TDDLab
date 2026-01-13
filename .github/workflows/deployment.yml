@@ -180,6 +180,7 @@ jobs:
             echo "No changes to commit in TypeScript files."
             exit 0
           fi
+  
   deploy_firebase_staging:
     runs-on: ubuntu-latest
     environment:
