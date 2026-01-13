@@ -18,6 +18,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+import UpdateUserRole from "../../modules/Users/application/updateUserRole.ts";
+import GetCurrentUserRole from "../../modules/Users/application/getCurrentUserRole";
 
 import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail";
 
@@ -47,18 +49,20 @@ const FilterContainer = styled("div")({
 // -------------------------------------------------
 
 function UserPage() {
-  const [, setUsers] = useState<UserDataObject[]>([]);
+  const [users, setUsers] = useState<UserDataObject[]>([]);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string>("");
   const [filteredUsers, setFilteredUsers] = useState<UserDataObject[]>([]);
 
   // --- INSTANCIAS ---
   const userRepository = useMemo(() => new UsersRepository(), []);
   const getUsers = useMemo(() => new GetUsers(userRepository), [userRepository]);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
+  const getCurrentUserRole = useMemo(() => new GetCurrentUserRole(userRepository), [userRepository]);
 
   const searchUsersByEmail = useMemo(
     () => new SearchUsersByEmail(userRepository),
@@ -69,13 +73,15 @@ function UserPage() {
   useEffect(() => {
     const fetchUsersAndGroups = async () => {
       try {
-        const [userData, groupData] = await Promise.all([
+        const [userData, groupData, role] = await Promise.all([
           getUsers.getUsers(),
           getGroups.getGroups(),
+          getCurrentUserRole.execute(),
         ]);
 
         setUsers(userData);
         setGroups(groupData);
+        setCurrentUserRole(role);
       } catch (error) {
         console.error("Error fetching users or groups:", error);
         setError(error);
@@ -85,7 +91,7 @@ function UserPage() {
     };
 
     fetchUsersAndGroups();
-  }, [getUsers, getGroups]);
+  }, [getUsers, getGroups, getCurrentUserRole]);
 
   // ------------------- FILTRO DE USUARIOS -------------------
   useEffect(() => {
@@ -126,7 +132,61 @@ function UserPage() {
     }
   };
 
-  // ------------------- RENDER -------------------
+  const handleRoleChange = async (userId: number, newRole: string, oldRole: string, userName: string) => {
+    if (newRole === oldRole) {
+      return;
+    }
+
+    const confirmMessage = `¿Estás seguro que deseas cambiar el rol de ${userName} de ${oldRole} a ${newRole}?`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return; 
+    }
+
+    try {
+      const userRepository = new UsersRepository();
+      const updateRoleInstance = new UpdateUserRole(userRepository);
+      await updateRoleInstance.updateUserRole(userId, newRole);
+
+      setUsers(users.map(user =>
+        user.id === userId ? { ...user, role: newRole } : user
+      ));
+
+      alert("Rol actualizado con éxito");
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al actualizar el rol");
+      
+      setUsers(users.map(user =>
+        user.id === userId ? { ...user, role: oldRole } : user
+      ));
+    }
+  };
+
+  const getRoleOptions = (userRole: string) => {
+    if (currentUserRole === "admin") {
+      return [
+        <MenuItem key="student" value="student">Student</MenuItem>,
+        <MenuItem key="teacher" value="teacher">Teacher</MenuItem>,
+        <MenuItem key="admin" value="admin">Admin</MenuItem>
+      ];
+    }
+
+    if (currentUserRole === "teacher") {
+      const options = [];
+      if (userRole === "admin") {
+        options.push(<MenuItem key="admin" value="admin">Admin</MenuItem>);
+      }
+      options.push(
+        <MenuItem key="student" value="student">Student</MenuItem>,
+        <MenuItem key="teacher" value="teacher">Teacher</MenuItem>
+      );
+      return options;
+    }
+
+    return [<MenuItem key={userRole} value={userRole}>{userRole}</MenuItem>];
+  };
+
   if (loading) {
     return (
       <div
@@ -187,14 +247,77 @@ function UserPage() {
           <StyledTable>
             <TableHead>
               <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Eliminar</TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Nombre
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Apellido
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Correo electrónico
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Grupo
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "20%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Rol
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "10%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Eliminar
+                </TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
+
               {filteredUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} sx={{ textAlign: "center", py: 3 }}>
@@ -204,16 +327,49 @@ function UserPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
+                    <TableCell>{user.firstName}</TableCell>
+                    <TableCell>{user.lastName}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell>{user.role}</TableCell>
+                    <TableCell sx={{ lineHeight: "3" }}>
+                      <Select
+                        value={user.role || ""}
+                        onChange={(e) => handleRoleChange(
+                          user.id, 
+                          e.target.value, 
+                          user.role, 
+                          `${user.firstName} ${user.lastName}`
+                        )}
+                        size="small"
+                        sx={{
+                          minWidth: 120,
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#E7E7E7",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#333",
+                          },
+                        }}
+                        disabled={currentUserRole === "student"}
+                      >
+                      {getRoleOptions(user.role)}
+                      </Select>
+                    </TableCell>
                     <TableCell>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <RemoveCircleIcon
-                          onClick={() => handleRemoveUserFromGroup(user.id)}
-                          sx={{ color: "#d81b1b" }}
-                        />
-                      </Tooltip>
+                      <RemoveCircleIcon
+                        onClick={() => handleRemoveUserFromGroup(user.id)}
+                        aria-label="Eliminar usuario"
+                        sx={{
+                          color: "#d81b1b",
+                          transition: "color 0.3s ease",
+                          "&:hover": {
+                            color: "#a10e0e",
+                            cursor: "pointer"
+                          },
+                        }}
+                      />
+                    </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))
@@ -223,7 +379,7 @@ function UserPage() {
         </section>
       </CenteredContainer>
     </div>
-  );
+);
 }
 
 export default UserPage;

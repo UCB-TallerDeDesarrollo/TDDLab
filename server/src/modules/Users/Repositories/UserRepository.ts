@@ -1,4 +1,4 @@
-import { Pool } from "pg"; // Import the Pool from 'pg'
+import { Pool } from "pg";
 import config from "../../../config/db";
 import { User, UserCreationObect } from "../Domain/User";
 
@@ -13,6 +13,8 @@ export class UserRepository {
       email:row.email,
       role:row.role,
       groupid:row.groupid,
+      firstName:row.first_name,
+      lastName:row.last_name
     };
   }
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
@@ -27,8 +29,8 @@ export class UserRepository {
   async registerUser(user: UserCreationObect) {
     const client = await this.pool.connect();
     try {
-      const query = "INSERT INTO usersTable (email,groupid,role) VALUES ($1, $2, $3)";
-      const values = [user.email, user.groupid, user.role];
+      const query = "INSERT INTO usersTable (email,groupid,role,first_name,last_name) VALUES ($1, $2, $3, $4, $5)";
+      const values = [user.email, user.groupid, user.role, user.firstName, user.lastName];
 
       await client.query(query, values);
     } catch (error) {
@@ -40,32 +42,34 @@ export class UserRepository {
     }
   }
   async obtainUserByemail(email: string): Promise<User | null> {
-    const query = "SELECT id, email, groupid, role FROM usersTable WHERE email = $1";
+    const query = "SELECT id, email, groupid, role, first_name, last_name FROM usersTable WHERE email = $1";
     const values = [email];
     const rows = await this.executeQuery(query, values);
     if (rows.length >= 1) {
-      return { // Solo devuelve el primer usuario encontrado, considerar cambiarlo cuando se rediseñe la base de datos
+      return { 
         id: rows[0].id,
         email: rows[0].email,
         groupid: rows.map((row) => row.groupid),
         role: rows[0].role,
+        firstName: rows[0].first_name,
+        lastName: rows[0].last_name
       };
     }
     return null;
   }
   async obtainUser(id: number): Promise<User | null> {
-    const query = "SELECT id, email, groupid, role FROM usersTable WHERE id = $1";
+    const query = "SELECT id, email, groupid, role, first_name, last_name FROM usersTable WHERE id = $1";
     const values = [id];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
-      return rows[0];
+      return this.mapRowToUser(rows[0]);
     }
     return null;
   }
   async obtainUsers(): Promise<User[] | null> {
-    const query = "SELECT id, email, groupid, role FROM usersTable";
+    const query = "SELECT id, email, groupid, role, first_name, last_name FROM usersTable";
     const rows = await this.executeQuery(query);
-    return rows.length > 0 ? rows : null;
+    return rows.length > 0 ? rows.map(row => this.mapRowToUser(row)) : null;
   }
 
   async getUsersByGroupid(groupid: number): Promise<User[]> {
@@ -84,22 +88,43 @@ export class UserRepository {
       console.log(`Usuario con ID ${userId} ha sido eliminado`);
     } catch (error) {
       console.error("Error al eliminar usuario", error);
-      throw error; // Relanzar error para manejarlo en capas superiores
+      throw error;
     }
   }
   
-  async updateUser(
-    id: number,
-    groupid: number,
-  ): Promise<Promise<User | null>> {
+  async updateUser(id: number, groupid: number,): Promise<User | null> {
     const query =
-      "UPDATE userstable SET groupid = $2 WHERE id = $1 RETURNING *"; // Actualizado para modificar solo el ID del grupo
-    const values = [id,groupid]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario
+      "UPDATE userstable SET groupid = $2 WHERE id = $1 RETURNING *"; 
+    const values = [id,groupid]; 
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {
-      return rows[0];
+      return this.mapRowToUser(rows[0]);
     }
     return null;
   }
-  
+
+  async updateUserById(id: number, firstName: string, lastName: string): Promise<User | null> {
+    const query = `UPDATE userstable SET first_name = $2, last_name = $3 WHERE id = $1 RETURNING *`;
+    const values = [id, firstName, lastName];
+    const rows = await this.executeQuery(query, values);
+
+    if (rows.length === 1) {
+      return this.mapRowToUser(rows[0]);
+    }
+
+    return null;
+  }
+
+async updateUserRole(id: number, role: string): Promise<User | null> {
+  const query = `UPDATE userstable SET role = $2 WHERE id = $1 RETURNING *`;
+  const values = [id, role];
+  const rows = await this.executeQuery(query, values);
+
+  if (rows.length === 1) {
+    return this.mapRowToUser(rows[0]);
+  }
+
+  return null;
+}
+
 }

@@ -14,6 +14,8 @@ export function setCookieAndGlobalStateForValidUser(
       userEmail: userData.email,
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,
+      userFisrtName: usergroupid.firstName,
+      userLastName: usergroupid.lastName
     });
     positiveCallback();
   } else {
