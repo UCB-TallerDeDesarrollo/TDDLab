@@ -187,10 +187,72 @@ function UserPage() {
           <StyledTable>
             <TableHead>
               <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Eliminar</TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Nombre
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Apellido
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Correo electrónico
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "30%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Grupo
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "20%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Rol
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 560,
+                    color: "#333",
+                    fontSize: "1rem",
+                    width: "10%",
+                    lineHeight: "2",
+                  }}
+                >
+                  Eliminar
+                </TableCell>
               </TableRow>
             </TableHead>
 
@@ -204,6 +266,8 @@ function UserPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
+                    <TableCell>{user.firstName}</TableCell>
+                    <TableCell>{user.lastName}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
                     <TableCell>{user.role}</TableCell>
@@ -223,7 +287,7 @@ function UserPage() {
         </section>
       </CenteredContainer>
     </div>
-  );
+);
 }
 
 export default UserPage;
