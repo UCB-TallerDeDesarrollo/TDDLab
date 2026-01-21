@@ -1,11 +1,10 @@
 import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
-//import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
 import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
-import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
+import { ProcessedTDDLogs } from "../domain/ProcessedTDDLogInterfaces";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
   octokit: Octokit;
@@ -15,12 +14,6 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     this.octokit = new Octokit();
     //auth: 'coloca tu token github para mas requests'
     this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
-  }
-  
-
-  // function for obtain TDD_log.json
-  private getTDDLogUrl(owner: string, repoName: string): string {
-    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
   }
 
   async obtainUserName(owner: string): Promise<string> {
@@ -94,26 +87,22 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     }
   }
 
-  async obtainTDDLogs(
+  async obtainProcessedTDDLogs(
     owner: string,
     repoName: string,
-  ): Promise<TDDLogEntry[]> {
+  ): Promise<ProcessedTDDLogs> {
     try {
-      const tddLogUrl = this.getTDDLogUrl(owner, repoName);
-      const response = await axios.get<TDDLogEntry[]>(tddLogUrl);
+      const apiUrl = `http://localhost:3000/api/TDDCycles/tdd-logs?owner=${owner}&repoName=${repoName}`;
+
+      const response = await axios.get<ProcessedTDDLogs>(apiUrl);
 
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       return response.data;
-
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
-        console.warn("Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.");
-        return [];
-      }
-      console.error("Error al obtener tdd_log.json:", error);
+    } catch (error) {
+      console.error("Error obtaining processed TDD logs:", error);
       throw error;
     }
   }

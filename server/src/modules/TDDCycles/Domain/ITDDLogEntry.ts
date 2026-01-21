@@ -1,4 +1,3 @@
-// Representa una ejecución de pruebas en el log
 export interface TestExecutionLog {
   numPassedTests: number;
   failedTests: number;
@@ -8,7 +7,6 @@ export interface TestExecutionLog {
   testId: number;
 }
 
-// Representa un commit en el log
 export interface CommitLog {
   commitId: string;
   commitName: string;
@@ -16,5 +14,4 @@ export interface CommitLog {
   testId: number;
 }
 
-// Un tipo de unión para representar cualquier entrada en el archivo tdd_log.json
 export type TDDLogEntry = TestExecutionLog | CommitLog;

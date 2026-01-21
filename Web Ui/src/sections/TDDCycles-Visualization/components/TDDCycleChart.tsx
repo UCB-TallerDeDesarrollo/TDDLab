@@ -1,69 +1,77 @@
 import React, { useMemo } from 'react';
 
-interface TestLog {
-  numPassedTests?: number;
-  failedTests?: number;
-  numTotalTests?: number;
-  timestamp?: number;
-  success?: boolean;
-  testId: number;
-  commitId?: string;
-  commitName?: string;
-  commitTimestamp?: number;
-}
+import { ProcessedTDDLogs } from '../../../modules/TDDCycles-Visualization/domain/ProcessedTDDLogInterfaces';
 
 interface TDDCycleChartProps {
-  data: TestLog[];
+  data: ProcessedTDDLogs | null;
 }
 
-interface CommitData {
-  commitNumber: number;
-  tests: Array<{ passed: boolean; size: number }>;
-}
-
-const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
+const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data }) => {
+  console.log(data);
   const processedData = useMemo(() => {
-    if (!data || data.length === 0) {
-      return [];
-    }
-    
-    const commitMap = new Map<number, CommitData>();
-    let currentCommit = 1;
-
-    for (const log of data){
-      if (log.commitId) {
-        currentCommit++;
-      }
-      
-      if (log.numPassedTests !== undefined) {
-        if (!commitMap.has(currentCommit)) {
-          commitMap.set(currentCommit, {
-            commitNumber: currentCommit,
-            tests: []
-          });
-        }
-        
-        const commit = commitMap.get(currentCommit)!;
-        const passed = (log.failedTests === 0) && (log.success === true);
-        commit.tests.push({ passed, size: 1 });
-      }
-    };
-    
-    return Array.from(commitMap.values());
+    return data?.commits || [];
   }, [data]);
 
-  const chartHeight = 400;
-  const chartWidth = 1200;
+  const summary = useMemo(() => {
+    return data?.summary || { totalCommits: 0, totalExecutions: 0 };
+  }, [data]);
+
+  // --- NUEVO: Calcular el máximo número de tests para ajustar la altura ---
+  const maxTests = useMemo(() => {
+    if (processedData.length === 0) return 7;
+    const maxInCommits = Math.max(...processedData.map(c => c.tests.length));
+    return Math.max(maxInCommits, 7); // Mínimo 7 para mantener la estética base
+  }, [processedData]);
+  // ----------------------------------------------------------------------
+
+  if (!data) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        </div>
+        <div style={{...styles.summary, justifyContent: 'center'}}>
+          <span style={styles.legendText}>Cargando datos...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (processedData.length === 0) {
+     return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        </div>
+        <div style={{...styles.summary, justifyContent: 'center'}}>
+          <span style={styles.legendText}>No hay datos de ejecución de pruebas para mostrar.</span>
+        </div>
+      </div>
+    );
+  }
+
+  const iconSize = 36; 
+  const circleSpacing = 8;
+  const rowHeight = iconSize + circleSpacing; // Altura de cada fila de tests
+
   const leftPadding = 60;
   const rightPadding = 60;
   const topPadding = 40;
   const bottomPadding = 80;
+
+  // --- MODIFICADO: Altura dinámica basada en maxTests ---
+  // El área de dibujo (plotHeight) ahora depende de cuántas filas necesitamos
+  const plotHeight = maxTests * rowHeight; 
+  const chartHeight = plotHeight + topPadding + bottomPadding;
+  // -----------------------------------------------------
+  
+  const chartWidth = 1200;
   const plotWidth = chartWidth - leftPadding - rightPadding;
-  const plotHeight = chartHeight - topPadding - bottomPadding;
   
   const commitSpacing = plotWidth / (processedData.length + 1);
-  const circleRadius = 15;
-  const circleSpacing = 8;
+
+  // Generar array para el eje Y dinámico [0, 1, 2, ..., maxTests]
+  const yTicks = Array.from({ length: maxTests + 1 }, (_, i) => i);
 
   return (
     <div style={styles.container}>
@@ -72,14 +80,14 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       </div>
       
       <svg width={chartWidth} height={chartHeight} style={styles.svg}>
-        {/* Grid lines */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+        {/* Grid lines - MODIFICADO para usar yTicks dinámicos */}
+        {yTicks.map(i => (
           <line
             key={`grid-${i}`}
             x1={leftPadding}
-            y1={topPadding + (plotHeight / 7) * i}
+            y1={topPadding + plotHeight - (i * rowHeight)} // Calculado desde abajo
             x2={leftPadding + plotWidth}
-            y2={topPadding + (plotHeight / 7) * i}
+            y2={topPadding + plotHeight - (i * rowHeight)}
             stroke="#e0e0e0"
             strokeWidth="1"
           />
@@ -117,12 +125,12 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           Pruebas ejecutadas
         </text>
 
-        {/* Y-axis ticks */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+        {/* Y-axis ticks - MODIFICADO para usar yTicks dinámicos */}
+        {yTicks.map(i => (
           <text
             key={`y-tick-${i}`}
             x={leftPadding - 10}
-            y={topPadding + plotHeight - (plotHeight / 7) * i + 5}
+            y={topPadding + plotHeight - (i * rowHeight) + 5} // Alineado con la grid line
             fill="#666"
             fontSize="12"
             textAnchor="end"
@@ -131,24 +139,30 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           </text>
         ))}
 
-        {/* Data points - circles stacked vertically */}
+        {/* Data points - CHECKS Y X */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
           
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
-                const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
+                // Cálculo de Y ajustado a la nueva altura dinámica
+                const y = topPadding + plotHeight - (testIndex * rowHeight) - iconSize/2;
                 
                 return (
-                  <circle
+                  <text
                     key={`test-${commitIndex}-${testIndex}`}
-                    cx={x}
-                    cy={y}
-                    r={circleRadius}
-                    fill={test.passed ? '#2d8a2d' : '#c72828'}
-                    opacity="0.9"
-                  />
+                    x={x}
+                    y={y}
+                    fill={test.passed ? '#28A745' : '#D73A49'}
+                    fontSize={iconSize}
+                    fontWeight="bold"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    style={{ fontFamily: 'Arial' }}
+                  >
+                    {test.passed ? '✔' : '✖'}
+                  </text>
                 );
               })}
             </g>
@@ -185,22 +199,21 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       {/* Legend */}
       <div style={styles.legend}>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#2d8a2d'}}></div>
+          <span style={{...styles.legendIcon, color: '#28A745'}}>✔</span>
           <span style={styles.legendText}>Pruebas exitosas</span>
         </div>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#c72828'}}></div>
+          <span style={{...styles.legendIcon, color: '#D73A49'}}>✖</span>
           <span style={styles.legendText}>Pruebas fallidas</span>
         </div>
       </div>
 
-      {/* Summary */}
       <div style={styles.summary}>
         <div style={styles.summaryItem}>
-          <strong>Total de commits:</strong> {processedData.length}
+          <strong>Total de commits:</strong> {summary.totalCommits}
         </div>
         <div style={styles.summaryItem}>
-          <strong>Total de ejecuciones:</strong> {data.filter(d => d.numPassedTests !== undefined).length}
+          <strong>Total de ejecuciones:</strong> {summary.totalExecutions}
         </div>
       </div>
     </div>
@@ -242,10 +255,10 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '8px',
   },
-  legendCircle: {
-    width: '20px',
-    height: '20px',
-    borderRadius: '50%',
+  legendIcon: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    fontFamily: 'Arial',
   },
   legendText: {
     fontSize: '14px',
