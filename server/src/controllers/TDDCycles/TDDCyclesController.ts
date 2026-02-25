@@ -227,20 +227,18 @@ class TDDCyclesController {
   
       if (commitInCommitsTable) {
         if (commitInCommitsTable.test_count === "") {
-          console.log(`el test_count está vacío, actualizando con valor: ${numTotalTests}`);
           await this.dbCommitsRepository.updateTestCount(
             repoOwner,
             repoName,
             commitSha,
             numTotalTests
           );
-          console.log(`campo test_count actualizado para commit ${commitSha}`);
         }
       } else {
         console.error("commit no se encontró en commitsTable (esto no debería ocurrir).");
       }
     } catch (error) {
-      console.error(`error al manejar el campo test_count para el commit ${commitSha}:`, error);
+      console.error("error al manejar el campo test_count para el commit", error);
       throw error;
     }
   }
