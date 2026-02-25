@@ -17,7 +17,7 @@ class GetFeatureFlagByName {
       const featureFlag = await this.repository.obtainFeatureFlagByName(feature_name);
       return featureFlag;
     } catch (error) {
-      console.error(`Error obtaining feature flag with name ${feature_name}.`, error);
+      console.error("Error obtaining feature flag with name", error);
       throw error;
     }
   }

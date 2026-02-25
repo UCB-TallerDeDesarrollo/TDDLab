@@ -123,7 +123,6 @@ class TDDCyclesController {
   async getCommitTimeLine(req: Request, res: Response) {
     try {
       const { sha, owner, repoName } = req.query;
-      console.log("I am here");
       if (!sha || !owner || !repoName) {
         return res
           .status(400)
@@ -135,8 +134,6 @@ class TDDCyclesController {
         String(owner),
         String(repoName)
       );
-
-      console.log( "this is the job data",jobData);
   
       return res.status(200).json(jobData);
     } catch (error) {
@@ -163,9 +160,6 @@ class TDDCyclesController {
         reponame: repoName,
         conclusion,
       });
-      console.log(
-        `Insertado el commit ${actualCommitSha} en jobsTable con conclusión ${conclusion}.`
-      );
     } catch (error) {
       console.error(
         `Error al insertar el commit ${actualCommitSha} en jobsTable:`,
@@ -188,12 +182,7 @@ class TDDCyclesController {
     );
   
     if (commitInJobs) {
-      console.log(`El commit ${actualCommitSha} ya existe en jobsTable.`);
-      console.log(`Esta es toda la info que tengo de ese señor commit ${commitInJobs.conclusion}`);
       if (commitInJobs.conclusion === null) {
-        console.log(
-          `El campo conclusion del commit ${actualCommitSha} está vacío. Procediendo a actualizar.`
-        );
         const lastExecution = commitTimelineEntries.at(-1);
         const color = lastExecution?.color;
         const conclusion = color === "green" ? "success" : "failure";
@@ -205,9 +194,6 @@ class TDDCyclesController {
             repoName,
             conclusion
           );
-          console.log(
-            `Actualizada conclusión del commit ${actualCommitSha} a ${conclusion}`
-          );
         } catch (error) {
           console.error(
             `Error al actualizar conclusión del commit ${actualCommitSha}:`,
@@ -216,7 +202,6 @@ class TDDCyclesController {
         }
       }
     } else {
-      console.log(`No hay registro de job de este commit ${actualCommitSha}, procederé a insertar el registro en la BD`);
       await this.insertJobForCommit(
         actualCommitSha,
         repoOwner,
@@ -241,9 +226,6 @@ class TDDCyclesController {
       );
   
       if (commitInCommitsTable) {
-        console.log(`commit encontrado en commitsTable: ${commitSha}`);
-        console.log(`valor actual de test_count: ${commitInCommitsTable.test_count}`);
-        
         if (commitInCommitsTable.test_count === "") {
           console.log(`el test_count está vacío, actualizando con valor: ${numTotalTests}`);
           await this.dbCommitsRepository.updateTestCount(
@@ -255,7 +237,7 @@ class TDDCyclesController {
           console.log(`campo test_count actualizado para commit ${commitSha}`);
         }
       } else {
-        console.error(`commit ${commitSha} no se encontró en commitsTable (esto no debería ocurrir).`); //ojala que no
+        console.error("commit no se encontró en commitsTable (esto no debería ocurrir).");
       }
     } catch (error) {
       console.error(`error al manejar el campo test_count para el commit ${commitSha}:`, error);
@@ -283,7 +265,6 @@ class TDDCyclesController {
       if (!repoOwner || !repoName || !tddLog) {
         return res.status(400).json({ error: "Faltan campos requeridos: repoOwner, repoName o log." });
       }
-      console.log("Archivo TDD log recibido", tddLog);
       console.log("Ahora procederé a extraer los datos para insertarlos en la tabla");
       let actualCommitSha = null;
       let lastCommitIndex = 0;
@@ -355,7 +336,7 @@ class TDDCyclesController {
           lastCommitIndex = i + 1;
         }
       }
-      console.log("Entradas para registrar en la BD:", commitTimelineEntries);
+      console.log("Entradas para registrar en la BD:");
       await this.submitTDDLogToDB.execute(commitTimelineEntries); //anadi esta linea de codigo
 
       return res.status(200).json({ message: "Archivo TDD log procesado y registros creados", data: commitTimelineEntries });

@@ -93,7 +93,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
     }
 
     if (!Number.isFinite(groupid) || Number.isNaN(groupid)) {
-      console.warn("createAssignment: invalid groupid received:", rawGroupId);
+      //console.warn("createAssignment: invalid groupid received:", rawGroupId);
       res.status(400).json({ error: "Invalid groupid" });
       return;
     }
@@ -145,12 +145,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
       const assignmentId = parseInt(req.params.id, 10);
 
       console.log('=== INICIANDO ELIMINACIÓN ===');
-      console.log('Assignment ID:', assignmentId);
-      console.log('Tipo de ID:', typeof assignmentId);
-      console.log('URL completa:', req.url);
-
-      console.log('Intentando eliminar assignment ID:', assignmentId);
-
+      
       if (!assignmentId) {
         res.status(400).json({
           success: false,
