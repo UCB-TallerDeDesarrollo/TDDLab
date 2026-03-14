@@ -58,4 +58,9 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getCommitCycles(req, res)
 );
 
+TDDCyclesRouter.get(
+  "/tdd-logs",
+  async (req, res) => await tddCyclesController.getTDDLogs(req, res)
+);
+
 export default TDDCyclesRouter;
