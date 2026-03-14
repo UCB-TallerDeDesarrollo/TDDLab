@@ -5,4 +5,6 @@ export const dbUserMock: UserOnDb = {
   email: "test@gmail.com",
   groupid: 1,
   role: "student",
+  firstName: "John",
+  lastName: "Doe"
 };

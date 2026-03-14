@@ -57,6 +57,21 @@ export class ChatbotAssistantRepository {
         }
     }
 
+    private async getTddLogUrl(URL: string): Promise<string> {
+        try {
+            const match = URL.match(/github\.com\/([^/]+)\/([^/]+)/);
+            if (!match || match.length < 3) {
+                throw new Error('URL del repositorio inválida');
+            }
+            const owner = match[1];
+            const repoName = match[2];
+            return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+        } catch (error) {
+            console.error('Error construyendo la URL de tdd_log.json:', error);
+            throw error;
+        }
+    }
+
     private serializeCommits(commits: CommitDataObject[]): any[] {
         return commits.map(commit => ({
             ...commit,
@@ -107,7 +122,30 @@ export class ChatbotAssistantRepository {
         }
     }
 
-    private async getContextFromCommitHistory(URL: string): Promise<string> {
+    private async getTddLog(URL: string): Promise<any[] | null> {
+        try {
+            const fullUrl = await this.getTddLogUrl(URL);
+            const response = await fetch(fullUrl);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.log(`tdd_log.json no encontrado en ${fullUrl}. Continuando sin él.`);
+                    return null;
+                }
+                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+            }
+
+            const tddLog = await response.json();
+            return tddLog;
+
+        } catch (error) {
+            console.warn("Error obteniendo tdd_log.json:", error);
+            return null; 
+        }
+    }
+
+    //Antes llamado: getContextFromCommitHistory
+    private async buildAnalysisContext(URL: string): Promise<string> {
         try {
             const commits = await this.getCommitHistory(URL);
 
@@ -117,11 +155,17 @@ export class ChatbotAssistantRepository {
             }
 
             const serializableCommits = this.serializeCommits(commits);
-            return JSON.stringify(serializableCommits, null, 2);
+            const tddLog = await this.getTddLog(URL);
+            const combinedContext = {
+                commitHistory: serializableCommits,
+                tddLog: tddLog 
+            };
+
+            return JSON.stringify(combinedContext, null, 2);
 
         } catch (error) {
-            console.warn("Error al obtener commits. Usando la URL como contexto:", error);
-            return URL;
+            console.warn("Error al construir el contexto de análisis. Usando la URL como contexto:", error);
+            return URL; 
         }
     }
 
@@ -159,7 +203,7 @@ export class ChatbotAssistantRepository {
             let context: string;
 
             if (instructionValue === "analiza" || instructionValue === "califica") {
-                context = await this.getContextFromCommitHistory(instruction.URL);
+                context = await this.buildAnalysisContext(instruction.URL);
             } else {
                 context = instruction.URL;
             }
