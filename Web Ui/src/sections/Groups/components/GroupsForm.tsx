@@ -63,6 +63,8 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
           email: auth.userEmail,
           groupid: newGroup.id,
           role: "teacher",
+          firstName: auth.userFisrtName || " ",
+          lastName: auth.userLastName || " "
         });
       }
 

@@ -23,6 +23,8 @@ describe("RegisterUserOnDb class", () => {
       email: "test@example.com",
       groupid: 2,
       role: "student",
+      firstName: "John",
+      lastName: "Doe"
     };
 
     const mockRepository = new AuthRepository() as jest.Mocked<AuthRepository>;

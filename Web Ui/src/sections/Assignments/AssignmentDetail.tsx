@@ -46,6 +46,7 @@ import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Ap
 import {
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
+import { UserDataObject } from "../../modules/Users/domain/UsersInterface.ts";
 
 
 interface AssignmentDetailProps {
@@ -95,7 +96,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           setDisableAdditionalGraphs(!(flag?.is_enabled));
         } catch (error) {
           console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-          setDisableAdditionalGraphs(true); // por precaución
+          setDisableAdditionalGraphs(true); 
         }
       }
     };
@@ -133,7 +134,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
 
           if (assignmentid < 0 || userid < 0) {
-            return; // Validación silenciosa
+            return; 
           }
 
           const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
@@ -234,7 +235,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentid) { //means if the assignment id is in memory or somthn
+    if (assignmentid) { 
       const submissionsRepository = new SubmissionRepository();
       const createSubmission = new CreateSubmission(submissionsRepository);
       const startDate = new Date();
@@ -282,7 +283,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             repoOwner: user,
             repoName: repo,
             fetchedSubmissions: JSON.stringify(fetchedSubmissions),
-            submissionId: submissionId.toString(),  // Convertimos submissionId a cadena para pasarlo como parámetro
+            submissionId: submissionId.toString(),  
           }).toString(),
         });
       } else {
@@ -348,20 +349,16 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     }
   };
 
-  const getStudentEmailById = async (studentId: number): Promise<string> => {
-    try {
+  const getStudentById = async (studentId: number): Promise<UserDataObject> => {
       const student = await usersRepository.getUserById(studentId);
-      return student.email;
-    } catch (error) {
-      console.error("Error fetching student email:", error);
-      return "";
-    }
+      return student;
   };
+
   const renderStudentRows = async () => {
 
     const rows = await Promise.all(
       submissions.map(async (submission) => {
-        const studentEmail = await getStudentEmailById(submission.userid);
+        const student = await getStudentById(submission.userid);
         const formattedStartDate = formatDate(submission.start_date.toString());
         const formattedEndDate = submission.end_date
           ? formatDate(submission.end_date.toString())
@@ -369,7 +366,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
         return (
           <TableRow key={generateUniqueId()}>
-            <TableCell>{studentEmail}</TableCell>
+            <TableCell>{student.firstName}</TableCell>
+            <TableCell>{student.lastName}</TableCell>
+            <TableCell>{student.email}</TableCell>
             <TableCell>{getDisplayStatus(submission.status)}</TableCell>
             <TableCell>
               <a
@@ -409,7 +408,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   navigate("/asistente-ia", {
-                    state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
+                    state: { repositoryLink: submission.repository_link }, 
                   });
                 }}
                 color="primary"
@@ -740,6 +739,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell>Nombre</TableCell>
+                    <TableCell>Apellido</TableCell>
                     <TableCell>Email</TableCell>
                     <TableCell>Estado</TableCell>
                     <TableCell>Enlace</TableCell>
