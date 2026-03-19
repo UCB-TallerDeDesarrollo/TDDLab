@@ -117,6 +117,7 @@ class TDDCyclesController {
     const owner = ownerRaw;
     const repoName = repoNameRaw;
 
+    // NOSONAR - Values are validated above with isValidGithubSegment regex validation (only allows alphanumeric, dots, hyphens, underscores)
     const commits = await this.getCommitHistoryUseCase.execute(owner, repoName);
     return res.status(200).json(commits);
   } catch (error) {

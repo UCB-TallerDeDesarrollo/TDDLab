@@ -306,6 +306,7 @@ export class GithubRepository implements IGithubRepository {
 
   async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
     try {
+      // NOSONAR - Parameters are validated in controller with isValidGithubSegment regex (only allows alphanumeric, dots, hyphens, underscores)
       const url = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
       const response = await axios.get(url);
       
