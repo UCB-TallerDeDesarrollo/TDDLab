@@ -1,3 +1,39 @@
-body {
-  margin: 0;
+/* Contenedor principal para centrar contenido */
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  max-width: 1200px; /* Ajuste opcional para no ocupar toda la pantalla */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Tabla estandarizada al 82% */
+.styled-table {
+  width: 82% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: 20px;
+}
+
+/* Contenedor de filtros (Search + Select) */
+.filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+/* Bordes para las filas de la tabla */
+.table-row-bordered {
+  border-bottom: 2px solid #E7E7E7;
+}
+
+/* Encabezados en negrita */
+.table-cell-header {
+  font-weight: 560 !important;
 }
