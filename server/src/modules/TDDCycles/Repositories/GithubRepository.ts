@@ -306,7 +306,10 @@ export class GithubRepository implements IGithubRepository {
 
   async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
     try {
-      const url = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/commit-history.json`;
+      const encodedOwner = encodeURIComponent(owner);
+      const encodedRepoName = encodeURIComponent(repoName);
+      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/main/script/commit-history.json`;
+
       const response = await axios.get(url);
       
       if (response.status !== 200) {
