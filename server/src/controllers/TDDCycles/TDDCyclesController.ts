@@ -85,14 +85,36 @@ class TDDCyclesController {
     }
   }
 
+  isValidGithubSegment(value: unknown): value is string {
+    return (
+      typeof value === "string" &&
+      value.length > 0 &&
+      value.length <= 100 &&
+      /^[A-Za-z0-9._-]+$/.test(value)
+    );
+  }
+
   //SÍ SE USA
   // New: proxy and map commit-history.json from GitHub (frontend logic moved server-side)
   async getCommitHistory(req: Request, res: Response) {
     try {
-      const { owner, repoName } = req.query;
-      if (!owner || !repoName) {
-        return res.status(400).json({ error: "Bad request, missing owner or repoName" });
+      const ownerRaw = req.query.owner;
+      const repoNameRaw = req.query.repoName;
+
+      if (!ownerRaw || !repoNameRaw) {
+        return res.status(400).json({
+          error: "Bad request, missing owner or repoName"
+        });
       }
+
+      if (!this.isValidGithubSegment(ownerRaw) || !this.isValidGithubSegment(repoNameRaw)) {
+        return res.status(400).json({
+          error: "Bad request, invalid owner or repoName"
+        });
+      }
+
+      const owner = ownerRaw; 
+      const repoName = repoNameRaw;
 
       const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName));
       return res.status(200).json(commits);
@@ -110,6 +132,11 @@ class TDDCyclesController {
       if (!owner || !repoName) {
         return res.status(400).json({ error: "Bad request, missing owner or repoName" });
       }
+
+      if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+        return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+      }
+
 
       const commits = await this.getCommitCyclesUseCase.execute(String(owner), String(repoName));
       return res.status(200).json(commits);
