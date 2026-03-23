@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import firebase from "../../firebaseConfig";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
@@ -19,6 +19,7 @@ import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 import AdminAlertModal from "./components/AdminAlertModal";
+import "./styles/GroupInvitation.css";
 
 function InvitationPage() {
   const location = useLocation();
@@ -111,21 +112,7 @@ function InvitationPage() {
   };
 
   const LoadingOverlay = () => (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 99999,
-        backdropFilter: "blur(5px)", //blur
-      }}
-    >
+    <div className="gi-loading-overlay">
       <CircularProgress size={60} />
     </div>
   );
@@ -184,8 +171,13 @@ function InvitationPage() {
   const handleMouseLeave = () => {
     setRotation({ rotateX: 0, rotateY: 0 });
   };
+  const inviteMediaStyle: CSSProperties = {
+    "--gi-rotate-x": `${rotation.rotateX}deg`,
+    "--gi-rotate-y": `${rotation.rotateY}deg`,
+  } as CSSProperties;
+
   return (
-    <div style={{ position: "relative" }}>
+    <div className="gi-root">
       {isLoading && <LoadingOverlay />}
 
       {user ? (
@@ -195,43 +187,26 @@ function InvitationPage() {
             spacing={2} // Agrega la separación deseada entre los Card
             justifyContent="center" // Centra los elementos horizontalmente
             alignItems="center" // Centra los elementos verticalmente
-            style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
+            className="gi-full-height"
             direction="column" // Alinea los elementos en una sola columna
           >
             <Grid
               item
-              style={{
-                width: user.displayName ? "400px" : "600px",
-                transition: "width 0.3s ease",
-              }}
+              className={`gi-profile-card-item ${
+                user.displayName
+                  ? "gi-profile-card-item--compact"
+                  : "gi-profile-card-item--wide"
+              }`}
             >
               <Card
-                sx={{
-                  "&:hover": {
-                    boxShadow: "md",
-                    borderColor: "neutral.outlinedHoverBorder",
-                  },
-                }}
+                className="gi-card-hover"
                 variant="outlined"
               >
                 <CardContent>
                   <Grid container spacing={2}>
                     <Grid item xs={4}>
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: 100,
-                            height: 100,
-                            borderRadius: "10%",
-                            overflow: "hidden",
-                          }}
-                        >
+                      <div className="gi-avatar-wrapper">
+                        <div className="gi-avatar">
                           <CardMedia
                             component="img"
                             alt="Imagen"
@@ -250,11 +225,11 @@ function InvitationPage() {
                       justifyContent="space-between"
                     >
                       <Grid item>
-                        <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                        <Typography variant="h5" className="gi-user-name">
                           {user.displayName ?? user.email}
                         </Typography>
                       </Grid>
-                      <Grid item sx={{ marginTop: "auto" }}>
+                      <Grid item className="gi-signout-wrapper">
                         <Button
                           onClick={handleGithubSignOut}
                           variant="contained"
@@ -271,10 +246,11 @@ function InvitationPage() {
             </Grid>
             <Grid item>
               <Card
-                sx={{
-                  width: user.displayName ? "400px" : "500px",
-                  transition: "width 0.5s ease",
-                }}
+                className={`gi-invite-card-item ${
+                  user.displayName
+                    ? "gi-invite-card-item--compact"
+                    : "gi-invite-card-item--wide"
+                }`}
                 variant="outlined"
               >
                 <CardMedia
@@ -282,17 +258,13 @@ function InvitationPage() {
                   alt="Imagen de portada"
                   height="50%" // La mitad superior del card
                   image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
-                  sx={{
-                    transition: "transform 0.1s ease-out",
-                    transformStyle: "preserve-3d",
-                    transform: `rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
-                    boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.5)",
-                  }}
+                  className="gi-invite-media"
+                  style={inviteMediaStyle}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
                 />
                 <CardContent>
-                  <Typography variant="body1" sx={{ textAlign: "center" }}>
+                  <Typography variant="body1" className="gi-invite-text">
                     Israel Antezana te está invitando al curso
                   </Typography>
                   {userType === "student" && (
@@ -300,7 +272,7 @@ function InvitationPage() {
                       onClick={() => handleAcceptInvitation("student")}
                       variant="contained"
                       color="primary"
-                      sx={{ marginTop: 2 }}
+                      className="gi-invite-button"
                       fullWidth
                       disabled={isLoading}
                     >
@@ -312,7 +284,7 @@ function InvitationPage() {
                       onClick={handlePopPassword}
                       variant="contained"
                       color="primary"
-                      sx={{ marginTop: 2 }}
+                      className="gi-invite-button"
                       fullWidth
                       disabled={isLoading}
                     >
@@ -340,36 +312,20 @@ function InvitationPage() {
           direction="column"
           alignItems="center"
           justifyContent="center"
-          style={{ minHeight: "100vh" }}
+          className="gi-full-height"
         >
           <Grid item>
-            <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
+            <div className="gi-auth-buttons">
               <Button 
                 onClick={handleSignUp} 
                 disabled={isLoading}
                 variant="contained"
-                sx={{ 
-                  backgroundColor: "#24292e",
-                  color: "white",
-                  padding: "10px 20px",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  "&:hover": { 
-                    backgroundColor: "#1a1e22"
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc"
-                  }
-                }}
+                className="gi-auth-button gi-auth-button--github"
               >
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="gi-auth-button-content"
                 >
-                  <GitHubIcon style={{ marginRight: "8px" }} />
+                  <GitHubIcon className="gi-auth-icon" />
                   Registrarse con GitHub
                 </div>
               </Button>
@@ -377,28 +333,12 @@ function InvitationPage() {
                 onClick={handleSignUpWithGoogle} 
                 disabled={isLoading}
                 variant="contained"
-                sx={{ 
-                  backgroundColor: "#4285f4",
-                  color: "white",
-                  padding: "10px 20px",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  "&:hover": { 
-                    backgroundColor: "#3367d6"
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc"
-                  }
-                }}
+                className="gi-auth-button gi-auth-button--google"
               >
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="gi-auth-button-content"
                 >
-                  <GoogleIcon style={{ marginRight: "8px" }} />
+                  <GoogleIcon className="gi-auth-icon" />
                   Registrarse con Google
                 </div>
               </Button>

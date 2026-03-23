@@ -1,0 +1,191 @@
+.gi-root {
+  position: relative;
+}
+
+.gi-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  backdrop-filter: blur(5px);
+}
+
+.gi-full-height {
+  min-height: 100vh;
+}
+
+.gi-profile-card-item {
+  transition: width 0.3s ease;
+}
+
+.gi-profile-card-item--compact {
+  width: 400px;
+}
+
+.gi-profile-card-item--wide {
+  width: 600px;
+}
+
+.gi-card-hover:hover {
+  box-shadow: var(--mui-shadows-4, 0 4px 12px rgba(0, 0, 0, 0.12));
+  border-color: var(--mui-palette-neutral-outlinedHoverBorder, rgba(0, 0, 0, 0.23));
+}
+
+.gi-avatar-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.gi-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 10%;
+  overflow: hidden;
+}
+
+.gi-user-name {
+  margin-bottom: 8px;
+}
+
+.gi-signout-wrapper {
+  margin-top: auto;
+}
+
+.gi-invite-card-item {
+  transition: width 0.5s ease;
+}
+
+.gi-invite-card-item--compact {
+  width: 400px;
+}
+
+.gi-invite-card-item--wide {
+  width: 500px;
+}
+
+.gi-invite-media {
+  transition: transform 0.1s ease-out;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--gi-rotate-x, 0deg)) rotateY(var(--gi-rotate-y, 0deg));
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.gi-invite-text {
+  text-align: center;
+}
+
+.gi-invite-button {
+  margin-top: 16px;
+}
+
+.gi-auth-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gi-auth-button.MuiButton-root {
+  color: #ffffff;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.gi-auth-button--github.MuiButton-root {
+  background-color: #24292e;
+}
+
+.gi-auth-button--github.MuiButton-root:hover {
+  background-color: #1a1e22;
+}
+
+.gi-auth-button--google.MuiButton-root {
+  background-color: #4285f4;
+}
+
+.gi-auth-button--google.MuiButton-root:hover {
+  background-color: #3367d6;
+}
+
+.gi-auth-button.Mui-disabled {
+  background-color: #cccccc !important;
+  color: #ffffff;
+}
+
+.gi-auth-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gi-auth-icon {
+  margin-right: 8px;
+}
+
+.gi-admin-modal-paper {
+  background-color: #fdfdfd;
+  color: #2b2b2b;
+  border-radius: 16px;
+  padding: 32px;
+  font-family: Inter, Roboto, sans-serif;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  width: 380px;
+  margin: 0 auto;
+}
+
+.gi-admin-modal-backdrop {
+  backdrop-filter: blur(6px);
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.gi-admin-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.gi-admin-modal-icon {
+  font-size: 70px;
+  color: #1976d2;
+}
+
+.gi-admin-modal-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.gi-admin-modal-body {
+  max-width: 300px;
+  font-size: 0.95rem;
+  color: #4b4b4b;
+  line-height: 1.6;
+}
+
+.gi-admin-modal-highlight {
+  color: #1976d2;
+}
+
+.gi-admin-modal-button.MuiButton-root {
+  margin-top: 24px;
+  padding: 10px 32px;
+  font-weight: bold;
+  border-radius: 12px;
+  text-transform: none;
+  background-color: #1976d2;
+}
+
+.gi-admin-modal-button.MuiButton-root:hover {
+  background-color: #1565c0;
+}
