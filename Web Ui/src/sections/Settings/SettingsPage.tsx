@@ -133,7 +133,7 @@ const ConfigurationPage = () => {
     }
   };
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 , marginLeft: "220px"}}>
       <Box sx={{ mb: 4 }}>
         <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
           Configuración de Prompts

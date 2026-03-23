@@ -11,6 +11,8 @@ import { handleSignInWithGitHub } from "../../../modules/User-Authentication/app
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { useNavigate } from "react-router-dom";
+import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 
 export default function LoginComponent() {
@@ -53,18 +55,22 @@ export default function LoginComponent() {
       )}
       {authData[0].userEmail && (
         <React.Fragment>
-          <Button
+          <ListItemButton
             onClick={handleLogout}
-            variant="contained"
-            sx={{ marginLeft: "18px" }}
+            sx={{
+              borderRadius: 2,
+              color: "#1a1a2e",
+              "&:hover": { backgroundColor: "#f0f4ff" },
+              "& .MuiListItemIcon-root": { color: "#1a1a2e", minWidth: 40 },
+            }}
           >
-            Cerrar Sesion
-          </Button>
-          <img
-            src={authData[0].userProfilePic}
-            alt="Profile Picture"
-            className="profilePicture"
-          />
+            <ListItemIcon><LogoutIcon /></ListItemIcon>
+            <ListItemText
+              primary="Cerrar Sesión"
+              primaryTypographyProps={{ fontWeight: 500, fontSize: 15 }}
+            />
+          </ListItemButton>
+         
         </React.Fragment>
       )}
     </React.Fragment>

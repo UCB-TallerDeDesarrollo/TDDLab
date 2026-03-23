@@ -6,11 +6,14 @@ import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
+import HeaderNav from "./sections/MainMenu/components/HeaderNav";
 import MainMenu from "./sections/MainMenu/MainMenu";
+import MainMenu_v2 from "./sections/MainMenu/MainMenu_v2";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings"; 
+import HomeIcon from '@mui/icons-material/Home';
 import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
@@ -28,9 +31,16 @@ import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import {
   CircularProgress,
+  Box,
 } from "@mui/material";
 
 const navArrayLinks = [
+  {
+    title: "Inicio",
+    path: "/home",
+    icon: <HomeIcon />,
+    access: ["admin", "teacher", "student"], 
+  },
   {
     title: "Grupos",
     path: "/groups",
@@ -105,9 +115,19 @@ useEffect(() => {
   return (
     <Router>
       {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+        <MainMenu_v2 navArrayLinks={navArrayLinks} userRole={authData.userRole} />
       )}
-      <Routes>
+
+      <Box sx={{ ml: authData.userEmail !== "" && authData.userRole !== undefined ? "220px" : 0 }}>
+        {authData.userEmail !== "" && authData.userRole !== undefined && (
+          <Box sx={{ p: 2 }}>
+            <HeaderNav
+              userName={authData.userEmail ?? ""}
+              avatarUrl={authData.userProfilePic ?? ""}
+            />
+          </Box>
+        )}
+        <Routes>
         <Route
           path="/"
           element={
@@ -215,7 +235,8 @@ useEffect(() => {
          }
        /> 
 
-      </Routes>
+        </Routes>
+      </Box>
     </Router>
   );
 }

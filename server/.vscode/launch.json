@@ -6,7 +6,7 @@
       "request": "launch",
       "name": "Debug Server",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "program": "${workspaceFolder}/server/src/app.ts",
+      "program": "${workspaceFolder}/src/app.ts",
       "cwd": "${workspaceFolder}",
       "skipFiles": ["<node_internals>/**"]
     }
