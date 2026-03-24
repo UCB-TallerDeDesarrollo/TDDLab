@@ -33,40 +33,41 @@
   margin-top: 20px;
 }
 
-/* Estilos para el botón de GitHub */
-.github-button {
+/* Clase base para botones de autenticación */
+.auth-button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #18fca4;
-  color: black;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-top: 20px;
 }
-.login-Title {
-  font-size: 25px;
-  font-weight: 600;
+
+/* Variación GitHub */
+.auth-button--github {
+  background-color: #18fca4;
   color: black;
 }
-.github-button:hover {
+
+.auth-button--github:hover {
   background-color: #555;
   color: white;
 }
 
-/* Estilos para el botón de Google */
-.google-button {
-  padding: 10px 20px;
-  font-size: 16px;
+/* Variación Google */
+.auth-button--google {
   background-color: #4285f4;
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.google-button:hover {
+.auth-button--google:hover {
   background-color: #3367d6;
+}
+
+/* Estilos para el título del login */
+.login-Title {
+  font-size: 25px;
+  font-weight: 600;
+  color: black;
 }
