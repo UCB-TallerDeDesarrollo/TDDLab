@@ -188,10 +188,11 @@ function UserPage() {
         <section className="Usuarios">
           <StyledTable>
             <TableHead>
-                <TableRow sx={{ borderBottom: "1px solid #E0E0E0" }}>                <TableCell sx={{ fontWeight: 560, borderRight: "1px solid #E0E0E0" }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560, borderRight: "1px solid #E0E0E0" }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560, borderRight: "1px solid #E0E0E0" }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560, borderRight: "1px solid #E0E0E0" }}>Eliminar</TableCell>
+                <TableRow sx={{borderBottom: "1px solid #E0E0E0",backgroundColor: "#E5E5E5",}}>                
+                <TableCell sx={{fontWeight: 600,fontSize: "14px",color: "#222",borderRight: "1px solid #CFCFCF",textAlign: "center", fontFamily: "Roboto, Arial, sans-serif",}}>Correo</TableCell>
+                <TableCell sx={{fontWeight: 600,fontSize: "14px",color: "#222",borderRight: "1px solid #CFCFCF",textAlign: "center", fontFamily: "Roboto, Arial, sans-serif",}}>Grupo</TableCell>
+                <TableCell sx={{fontWeight: 600,fontSize: "14px",color: "#222",borderRight: "1px solid #CFCFCF",textAlign: "center", fontFamily: "Roboto, Arial, sans-serif",}}>Rol</TableCell>
+                <TableCell sx={{fontWeight: 600,fontSize: "14px",color: "#222",borderRight: "1px solid #CFCFCF",textAlign: "center", fontFamily: "Roboto, Arial, sans-serif",}}>Eliminar</TableCell>
               </TableRow>
             </TableHead>
 
