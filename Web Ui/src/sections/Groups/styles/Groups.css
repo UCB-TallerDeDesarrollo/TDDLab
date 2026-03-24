@@ -1,0 +1,19 @@
+.group-popup {}
+
+.group-popup-title {
+  font-size: 0.8rem;
+}
+
+.group-popup .MuiInputLabel-root {
+  font-size: 0.95rem;
+}
+
+
+.group-popup-cancel-button {
+  color: #555;
+  text-transform: none;
+}
+
+.group-popup-action-button {
+  text-transform: none;
+}

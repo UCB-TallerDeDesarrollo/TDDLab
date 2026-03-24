@@ -73,7 +73,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Editar grupo</DialogTitle>
+          <DialogTitle className="group-popup-title">Editar grupo</DialogTitle>
           <DialogContent>
             <TextField
               error={formInvalid() && !!save}
@@ -85,7 +85,6 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
               helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
@@ -102,10 +101,12 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} style={{ color: "#555", textTransform: "none" }}>
+            <Button onClick={handleClose} className="group-popup-cancel-button">
               Cancelar
             </Button>
-            <Button onClick={handleUpdate} color="primary" style={{ textTransform: "none" }}>
+            <Button               onClick={handleUpdate}
+              color="primary"
+              className="group-popup-action-button">
               Guardar Cambios
             </Button>
           </DialogActions>
