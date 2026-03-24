@@ -8,7 +8,7 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
   Select, MenuItem, InputLabel, FormControl, CircularProgress,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment
+  SelectChangeEvent, Tooltip, TextField, InputAdornment, TableContainer
 } from "@mui/material";
 
 import { styled } from "@mui/system";
@@ -29,10 +29,17 @@ const CenteredContainer = styled(Container)({
 });
 
 const StyledTable = styled(Table)({
+  width: "100%",
+  borderCollapse: "collapse",
+});
+
+const StyledTableContainer = styled(TableContainer)({
   width: "82%",
   marginLeft: "auto",
   marginRight: "auto",
   marginTop: "20px",
+  border: "1px solid #d9d9d9",
+  boxShadow: "none",
 });
 
 const FilterContainer = styled("div")({
@@ -184,43 +191,58 @@ function UserPage() {
         </FilterContainer>
 
         <section className="Usuarios">
-          <StyledTable>
-            <TableHead>
-              <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Eliminar</TableCell>
-              </TableRow>
-            </TableHead>
+  <StyledTableContainer>
+    <StyledTable>
+      <TableHead>
+        <TableRow>
+          <TableCell sx={{ fontWeight: 560, border: "1px solid #d9d9d9" }}>Correo</TableCell>
+          <TableCell sx={{ fontWeight: 560, border: "1px solid #d9d9d9" }}>Grupo</TableCell>
+          <TableCell sx={{ fontWeight: 560, border: "1px solid #d9d9d9" }}>Rol</TableCell>
+          <TableCell
+            sx={{
+              fontWeight: 560,
+              border: "1px solid #d9d9d9",
+              textAlign: "center",
+            }}
+          >
+            Eliminar
+          </TableCell>
+        </TableRow>
+      </TableHead>
 
-            <TableBody>
-              {filteredUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} sx={{ textAlign: "center", py: 3 }}>
-                    No se encontraron resultados
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
-                      <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <RemoveCircleIcon
-                          onClick={() => handleRemoveUserFromGroup(user.id)}
-                          sx={{ color: "#d81b1b" }}
-                        />
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </StyledTable>
-        </section>
+      <TableBody>
+        {filteredUsers.length === 0 ? (
+          <TableRow>
+            <TableCell
+              colSpan={4}
+              sx={{ textAlign: "center", py: 3, border: "1px solid #d9d9d9" }}
+            >
+              No se encontraron resultados
+            </TableCell>
+          </TableRow>
+        ) : (
+          filteredUsers.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell sx={{ border: "1px solid #d9d9d9" }}>{user.email}</TableCell>
+              <TableCell sx={{ border: "1px solid #d9d9d9" }}>
+                {groupMap[user.groupid] || "Unknown"}
+              </TableCell>
+              <TableCell sx={{ border: "1px solid #d9d9d9" }}>{user.role}</TableCell>
+              <TableCell sx={{ border: "1px solid #d9d9d9", textAlign: "center" }}>
+                <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
+                  <RemoveCircleIcon
+                    onClick={() => handleRemoveUserFromGroup(user.id)}
+                    sx={{ color: "#d81b1b", cursor: "pointer" }}
+                  />
+                </Tooltip>
+              </TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </StyledTable>
+  </StyledTableContainer>
+</section>
       </CenteredContainer>
     </div>
   );
