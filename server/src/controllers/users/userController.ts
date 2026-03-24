@@ -18,7 +18,7 @@ dotenv.config();
 
 admin.initializeApp({
   projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  credential: admin.credential.applicationDefault(),});
+});
 
 class UserController {
   private readonly userRepository: UserRepository;
