@@ -127,37 +127,37 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <Container>
       <section className="Practicas">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "16px",
+            paddingTop: "6px",
+          }}
+        >
+          <h2 style={{ margin: 0, fontWeight: 700, fontSize: "24px" }}>Practicas</h2>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleOrderPractices}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={showForm}
+              style={{ textTransform: "none", minWidth: "100px" }}
+            >
+              Crear +
+            </Button>
+          </div>
+        </div>
         <StyledTable>
-           <TableHead>
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
+              <TableCell colSpan={2} sx={{ borderBottom: "1px solid #D1D5DB" }}>
+                <div style={{ fontWeight: 600, fontSize: "16px" }}>Listado</div>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -170,6 +170,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                 handleClickDetail={handleClickDetail}
                 handleClickDelete={handleClickDelete}
                 handleRowHover={handleRowHover}
+                isHovered={_hoveredRow === index}
               />
             ))}
           </TableBody>

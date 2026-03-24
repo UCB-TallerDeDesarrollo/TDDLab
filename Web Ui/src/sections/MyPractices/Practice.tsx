@@ -16,6 +16,7 @@ interface PracticeProps {
   handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
   handleRowHover: (index: number | null) => void;
+  isHovered: boolean;
 }
 
 const Practice: React.FC<PracticeProps> = ({
@@ -24,6 +25,7 @@ const Practice: React.FC<PracticeProps> = ({
   handleClickDetail,
   handleClickDelete,
   handleRowHover,
+  isHovered,
 }) => {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
@@ -39,8 +41,12 @@ const Practice: React.FC<PracticeProps> = ({
   return (
     <TableRow
       key={practice.id}
+      onMouseEnter={() => handleRowHover(index)}
+      onMouseLeave={() => handleRowHover(null)}
       sx={{
         borderBottom: "2px solid #E7E7E7",
+        backgroundColor: isHovered ? "#EDF2FF" : "white",
+        transition: "background-color 0.2s",
       }}
     >
       <TableCell
