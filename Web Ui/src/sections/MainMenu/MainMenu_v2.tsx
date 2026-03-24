@@ -63,15 +63,15 @@ export default function MainMenu_v2({
         <img src={logo} alt="TDDLab Logo" style={{ width: 48, height: 48 }} />
         <Box sx={{ display: "flex", flexDirection: "column", lineHeight: 2 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-            {Array.from("TDD").map((char) => (
-                <Typography key={char} variant="h5" fontWeight={100} sx={{ color: "#000000" }}>
+            {Array.from("TDD").map((char, idx) => (
+                <Typography key={char+"tdd"+idx} variant="h5" fontWeight={100} sx={{ color: "#000000" }}>
                 {char}
                 </Typography>
             ))}
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-            {["L", "A", "B"].map((char) => (
-                <Typography key={char} variant="caption" fontWeight={500} sx={{ color: "#1565c0" }}>
+            {["L", "A", "B"].map((char, idx) => (
+                <Typography key={char+"lab"+idx} variant="caption" fontWeight={500} sx={{ color: "#1565c0" }}>
                 {char}
                 </Typography>
             ))}

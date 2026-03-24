@@ -38,6 +38,12 @@ class GroupRepository {
     return rows.map((row) => this.mapRowToGroup(row));
   }
 
+  async obtainGroupsFullData(): Promise<GroupDTO[]> {
+    const query = "SELECT * FROM Groups";
+    const rows = await this.executeQuery(query);
+    return rows.map((row) => this.mapRowToGroup(row));
+  }
+
   async obtainGroupById(id: number): Promise<GroupDTO | null> {
     const query = "SELECT * FROM Groups WHERE id = $1";
     const values = [id];

@@ -33,6 +33,7 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
+import UserProfilePage from "./sections/User/UserProfilePage";
 
 const navArrayLinks = [
   {
@@ -213,6 +214,21 @@ useEffect(() => {
           element={
             <ProtectedRouteComponent>
               <UsersByGroupPage />
+            </ProtectedRouteComponent>
+          }
+        />
+
+        <Route
+          path="/user_profile"
+          element={
+            <ProtectedRouteComponent>
+              <UserProfilePage
+                email={authData.userEmail ?? ""}
+                phone={"No PHONES ?"}
+                role={authData.userRole ?? ""}
+                projectsCount={authData.usergroupid ?? -1}
+                avatarUrl={authData.userProfilePic ?? ""}
+              />
             </ProtectedRouteComponent>
           }
         />

@@ -104,6 +104,8 @@ class UserController {
     }
   }
 
+  
+
   async getUserControllerGithub(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
     try {
@@ -252,6 +254,20 @@ async  logoutController (res: Response): Promise<void> {
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }
+  }
+
+  async getUsersCompleteDataController(_req: Request, res: Response): Promise<void> {
+    try {
+      const users = await this.userRepository.obtainUsersCompleteData();
+      if (users == null) {
+        res.status(404).json({ message: "Usuarios no encontrados" });
+      } else {
+        res.status(200).json(users);
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Server error while fetching users" });
+    }
+
   }
   async getUsersByGroupid(req: Request, res: Response): Promise<void> {
     const { groupid } = req.params;

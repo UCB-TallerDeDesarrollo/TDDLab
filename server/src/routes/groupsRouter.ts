@@ -26,6 +26,11 @@ groupsRouter.get(
   async (req, res) => await groupController.getGroups(req, res)
 );
 
+groupsRouter.get(
+  "/all",
+  async (req, res) => await groupController.getGroupsFullData(req, res)
+);
+
 // Retrieve a specific group by ID
 groupsRouter.get(
   "/:id",

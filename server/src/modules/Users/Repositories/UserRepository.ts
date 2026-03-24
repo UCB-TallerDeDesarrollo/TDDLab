@@ -68,6 +68,12 @@ export class UserRepository {
     return rows.length > 0 ? rows : null;
   }
 
+  async obtainUsersCompleteData(): Promise<User[] | null> {
+    const query = "SELECT * FROM usersTable";
+    const rows = await this.executeQuery(query);
+    return rows.length > 0 ? rows : null;
+  }
+
   async getUsersByGroupid(groupid: number): Promise<User[]> {
     const query = "SELECT * FROM userstable WHERE groupid = $1";
     const values = [groupid];

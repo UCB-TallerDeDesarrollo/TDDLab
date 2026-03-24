@@ -1,7 +1,8 @@
-import { useMemo } from "react";
-import { Avatar, Box, Typography } from "@mui/material";
+import { useMemo, useState } from "react";
+import { Avatar, Box, Typography, IconButton } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import ProfileOptions from "./ProfileOptions";
 
 type HeaderNavProps = {
     userName: string;
@@ -10,6 +11,8 @@ type HeaderNavProps = {
 };
 
 const HeaderNav = ({ userName, avatarUrl, currentDate }: HeaderNavProps) => {
+    
+    
     const formattedDate = useMemo(() => {
         const dateToUse = currentDate ? new Date(currentDate) : new Date();
         return new Intl.DateTimeFormat("es-ES", {
@@ -18,6 +21,16 @@ const HeaderNav = ({ userName, avatarUrl, currentDate }: HeaderNavProps) => {
             month: "long",
         }).format(dateToUse);
     }, [currentDate]);
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+    const handleOpenProfile = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseProfile = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <Box
@@ -44,7 +57,22 @@ const HeaderNav = ({ userName, avatarUrl, currentDate }: HeaderNavProps) => {
                 <Typography variant="body1" fontWeight={600} color="text.primary">
                     {userName}
                 </Typography>
-                <Avatar src={avatarUrl} alt={userName} sx={{ width: 36, height: 36 }} />
+                <IconButton aria-label={`${userName} profile`}
+                sx={{ p: 0 }}
+                onClick={(event) => {
+                    handleOpenProfile(event)
+                }}>
+                    <Avatar src={avatarUrl} alt={userName} sx={{ width: 36, height: 36 }} />
+                </IconButton>
+
+                <ProfileOptions
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleCloseProfile}
+                    userName={userName}
+                    email={userName}
+                    avatarUrl={avatarUrl}
+                />
             </Box>
 
         </Box>

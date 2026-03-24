@@ -14,8 +14,10 @@ class GroupsController {
   private readonly getGroupsUseCase: GetGroupsUseCase;
   private readonly updateGroupUseCase: UpdateGroupUseCase;
   private readonly checkGroupExistsUseCase: CheckGroupExistsUseCase;
+  private readonly groupRepository: GroupRepository;
 
   constructor(repository: GroupRepository) {
+    this.groupRepository = repository;
     this.createGroupUseCase = new CreateGroupUseCase(repository);
     this.deleteGroupUseCase = new DeleteGroupUseCase(repository);
     this.getGroupByIdUseCase = new GetGroupByIdUseCase(repository);
@@ -32,7 +34,14 @@ class GroupsController {
       res.status(500).json({ error: "Server error" });
     }
   }
-
+  async getGroupsFullData(_req: Request, res: Response): Promise<void> {
+    try {
+      const groups = await this.groupRepository.obtainGroupsFullData();
+      res.status(200).json(groups);
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  }
   async getGroupById(req: Request, res: Response): Promise<void> {
     try {
       const groupid = parseInt(req.params.id, 10);

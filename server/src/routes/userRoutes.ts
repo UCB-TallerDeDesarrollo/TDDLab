@@ -52,6 +52,11 @@ router.get(
   authorizeRoles("admin", "teacher", "student"),
   (req, res) => userController.getUsersByGroupid(req, res)
 );
+
+router.get(
+  "/all",
+  (req, res) => userController.getUsersCompleteDataController(req, res)
+);
 router.get(
   "/users/:id",
   authenticateJWT,
