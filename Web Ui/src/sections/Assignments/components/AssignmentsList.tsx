@@ -207,7 +207,7 @@ useEffect(() => {
         }
 
         const data = await assignmentsRepository.getAssignmentsByGroupid(preferredGroupId);
-        setSelectedGroup(preferredGroupId);
+        setSelectedGroup(preferredGroupId==-1 ? 0 : preferredGroupId);
         setAssignments(data);
         orderAssignments([...data], selectedSorting);
       } catch (error) {
@@ -224,7 +224,7 @@ useEffect(() => {
   };
 
   const loadAssignmentsByGroupId = async (groupId: number) => {
-    setSelectedGroup(groupId);
+    setSelectedGroup(groupId==-1 ? 0 : groupId);
     onGroupChange(groupId);
 
     // Guardar en localStorage
