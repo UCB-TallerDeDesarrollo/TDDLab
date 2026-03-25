@@ -1,0 +1,134 @@
+:root {
+  --practice-navy: #002b5b;
+  --practice-light-blue: #a8bed7;
+  --practice-page-bg: #eef1f4;
+  --practice-card-bg: #ffffff;
+  --practice-border: #d0d6de;
+  --practice-action: #1f74d6;
+  --practice-action-disabled: #8f8f8f;
+}
+
+.practice-detail-page {
+  min-height: calc(100vh - 120px);
+  background: linear-gradient(180deg, #f5f7f9 0%, var(--practice-page-bg) 100%);
+  padding: 24px 20px 36px;
+}
+
+.practice-content-shell {
+  width: min(1260px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.practice-center-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.practice-task-card {
+  background: var(--practice-light-blue);
+  border-radius: 6px;
+  padding: 34px 36px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  column-gap: 20px;
+  row-gap: 16px;
+}
+
+.practice-task-title-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.practice-task-title {
+  font-size: 56px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #0b0d0f;
+}
+
+.practice-task-meta-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  color: var(--practice-navy);
+}
+
+.practice-task-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+}
+
+.practice-task-meta-label {
+  font-weight: 700;
+}
+
+.practice-student-card {
+  background: var(--practice-card-bg);
+  border: 1px solid var(--practice-border);
+  border-radius: 6px;
+  padding: 18px;
+}
+
+.practice-section-title {
+  color: var(--practice-navy);
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.practice-student-row {
+  margin: 8px 0;
+  color: #243447;
+}
+
+.practice-student-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.practice-action-btn {
+  text-transform: none;
+  background-color: var(--practice-action);
+  min-width: 98px;
+}
+
+.practice-action-btn.Mui-disabled {
+  background-color: var(--practice-action-disabled);
+  color: #f2f2f2;
+}
+
+.practice-link-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 960px) {
+  .practice-task-card {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  .practice-task-title {
+    font-size: 40px;
+    text-align: center;
+  }
+
+  .practice-task-meta-row {
+    font-size: 18px;
+  }
+
+  .practice-section-title {
+    font-size: 32px;
+  }
+}
