@@ -151,38 +151,61 @@ function UserPage() {
     <div>
       <CenteredContainer>
         <FilterContainer>
-          <TextField
-            label="Buscar por email"
-            variant="outlined"
-            placeholder="Ej: nombre@ucb.edu.bo"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 360 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+          <div
+            style={{
+              width: "82%",
+              margin: "20px auto",
+              padding: "16px 20px",
+              border: "1px solid #CFCFCF",
+              borderRadius: "6px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "#F9F9F9",
             }}
-          />
+          >
+            <div
+              style={{
+                fontSize: "20px",
+                fontWeight: 600,
+                color: "#1B3A57",
+                marginLeft: "25%",
+              }}>
+                Usuarios
+            </div>
 
-          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-            <InputLabel id="group-filter-label">Grupo</InputLabel>
-            <Select
-              labelId="group-filter-label"
-              value={selectedGroup}
-              onChange={handleGroupChange}
-              label="Grupo"
-            >
-              <MenuItem value="all">Todos los grupos</MenuItem>
-              {groups.map((group) => (
-                <MenuItem key={group.id} value={group.id}>
-                  {group.groupName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <FormControl sx={{ minWidth: 220 }}>
+              <Select
+                value={selectedGroup}
+                onChange={handleGroupChange}
+                displayEmpty
+                sx={{
+                  backgroundColor: "#1976D2",
+                  color: "#fff",
+                  borderRadius: "6px",
+                  ".MuiSvgIcon-root": {
+                    color: "#fff",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
+                  },
+                }}
+              >
+                <MenuItem value="all">Filtrar todos los grupos</MenuItem>
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.groupName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
         </FilterContainer>
 
         <section className="Usuarios">
