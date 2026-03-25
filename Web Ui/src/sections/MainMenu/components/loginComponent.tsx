@@ -1,5 +1,12 @@
-import { Avatar, Button } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
@@ -20,6 +27,7 @@ export default function LoginComponent({
 }: Readonly<LoginComponentProps>) {
   const authData = useGlobalState("authData");
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleLogin = async () => {
     const userData = await handleSignInWithGitHub();
@@ -32,6 +40,7 @@ export default function LoginComponent({
   };
 
   const handleLogout = async () => {
+    setAnchorEl(null);
     await handleGithubSignOut();
     setGlobalState("authData", {
       userid: -1,
@@ -63,33 +72,53 @@ export default function LoginComponent({
         >
           Iniciar sesi{"\u00f3"}n
         </Button>
+      ) : compact ? (
+        <React.Fragment>
+          <IconButton
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+            sx={{ ml: 1 }}
+          >
+            <Avatar
+              src={authData[0].userProfilePic}
+              alt="Profile Picture"
+              sx={{
+                width: 38,
+                height: 38,
+                border: "2px solid rgba(255,255,255,0.24)",
+              }}
+            />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem onClick={handleLogout}>Salir</MenuItem>
+          </Menu>
+        </React.Fragment>
       ) : (
         <React.Fragment>
-          <Button
-            onClick={handleLogout}
-            variant={compact ? "text" : "outlined"}
-            sx={{
-              marginLeft: compact ? 0 : "18px",
-              textTransform: "none",
-              borderRadius: 999,
-              color: "#FFFFFF",
-              borderColor: "rgba(255,255,255,0.25)",
-              minWidth: compact ? "auto" : undefined,
-              px: compact ? 1.25 : 2,
-            }}
+          <IconButton
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+            sx={{ ml: 1 }}
           >
-            Salir
-          </Button>
-          <Avatar
-            src={authData[0].userProfilePic}
-            alt="Profile Picture"
-            sx={{
-              width: compact ? 36 : 50,
-              height: compact ? 36 : 50,
-              ml: 1,
-              border: "2px solid rgba(255,255,255,0.24)",
-            }}
-          />
+            <Avatar
+              src={authData[0].userProfilePic}
+              alt="Profile Picture"
+              sx={{
+                width: 50,
+                height: 50,
+                border: "2px solid rgba(255,255,255,0.24)",
+              }}
+            />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem onClick={handleLogout}>Salir</MenuItem>
+          </Menu>
         </React.Fragment>
       )}
     </React.Fragment>

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Button,
   Drawer,
@@ -11,7 +10,6 @@ import {
 import { styled } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import WindowIcon from "@mui/icons-material/Window";
 import { ReactElement, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import NavLateralMenu from "./components/LateralMenu";
@@ -51,16 +49,41 @@ const HeaderToolbar = styled(Toolbar)(({ theme }) => ({
 const LogoLink = styled(NavLink)({
   display: "inline-flex",
   alignItems: "center",
-  gap: 10,
+  gap: 14,
   color: "#FFFFFF",
   textDecoration: "none",
+});
+
+const LogoMark = styled(Box)({
+  position: "relative",
+  width: 30,
+  height: 30,
+  transform: "rotate(45deg)",
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 8px)",
+  gridTemplateRows: "repeat(3, 8px)",
+  gap: 3,
+  "& span": {
+    display: "block",
+    width: 8,
+    height: 8,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 1,
+  },
+});
+
+const LogoText = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  lineHeight: 1,
 });
 
 const DesktopNav = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: theme.spacing(1),
+  gap: theme.spacing(2.5),
   flex: 1,
   [theme.breakpoints.down("md")]: {
     display: "none",
@@ -90,6 +113,17 @@ function resolveActivePath(pathname: string): string {
   return pathname;
 }
 
+function getDisplayTitle(title: string): string {
+  const map: Record<string, string> = {
+    Grupos: "GRUPOS",
+    Tareas: "TAREAS",
+    "Mis Practicas": "MIS PRÁCTICAS",
+    Usuarios: "USUARIOS",
+  };
+
+  return map[title] ?? title.toUpperCase();
+}
+
 export default function MainMenu({
   navArrayLinks,
   userRole,
@@ -116,6 +150,7 @@ export default function MainMenu({
           boxShadow: "none",
           height: 85,
           justifyContent: "center",
+          borderBottom: "1px solid rgba(255,255,255,0.12)",
         }}
       >
         <HeaderToolbar>
@@ -130,26 +165,41 @@ export default function MainMenu({
             </IconButton>
 
             <LogoLink to="/">
-              <Avatar
-                variant="rounded"
-                sx={{
-                  width: 42,
-                  height: 42,
-                  bgcolor: "transparent",
-                  border: "2px solid #FFFFFF",
-                }}
-              >
-                <WindowIcon fontSize="small" />
-              </Avatar>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  letterSpacing: 0.4,
-                }}
-              >
-                TDDLab
-              </Typography>
+              <LogoMark aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </LogoMark>
+              <LogoText>
+                <Typography
+                  sx={{
+                    color: "#FFFFFF",
+                    fontWeight: 800,
+                    fontSize: 20,
+                    letterSpacing: 0.4,
+                    lineHeight: "18px",
+                  }}
+                >
+                  TDD
+                </Typography>
+                <Typography
+                  sx={{
+                    color: "rgba(255,255,255,0.65)",
+                    fontSize: 10,
+                    letterSpacing: 6,
+                    lineHeight: "12px",
+                    pl: "1px",
+                  }}
+                >
+                  LAB
+                </Typography>
+              </LogoText>
             </LogoLink>
           </Box>
 
@@ -171,16 +221,16 @@ export default function MainMenu({
                       fontSize: 20,
                       fontWeight: 600,
                       lineHeight: "36px",
-                      letterSpacing: 0,
-                      textTransform: "none",
+                      letterSpacing: 0.2,
+                      textTransform: "uppercase",
                       "&::after":
                         activePath === item.path
                           ? {
                               content: '""',
                               position: "absolute",
-                              left: 20,
-                              right: 20,
-                              bottom: 6,
+                              left: 26,
+                              right: 26,
+                              bottom: 8,
                               height: 3,
                               borderRadius: 999,
                               backgroundColor: "#D9D9D9",
@@ -188,7 +238,7 @@ export default function MainMenu({
                           : {},
                     }}
                   >
-                    {item.title}
+                    {getDisplayTitle(item.title)}
                   </Button>
                 ),
             )}
@@ -202,9 +252,9 @@ export default function MainMenu({
                 aria-label="Configuraciones"
                 sx={{
                   color: "#FFFFFF",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  width: 46,
-                  height: 46,
+                  width: 40,
+                  height: 40,
+                  mr: 1,
                 }}
               >
                 <SettingsOutlinedIcon />
