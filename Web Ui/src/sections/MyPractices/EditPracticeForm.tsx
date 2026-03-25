@@ -5,15 +5,16 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, TextField } from "@mui/material";
 import { useState } from "react";
-import { UpdatePractice } from "../../modules/Practices/application/UpdatePractice";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 
 interface EditPracticeDialogProps {
   readonly practiceId: number;
   readonly currentTitle: string;
   readonly currentDescription: string;
   readonly onClose: () => void;
+  readonly onPracticeUpdated: (practice: PracticeDataObject) => Promise<void>;
 }
 
 function EditPracticeDialog({
@@ -21,12 +22,17 @@ function EditPracticeDialog({
   currentTitle,
   currentDescription,
   onClose,
+  onPracticeUpdated,
 }: EditPracticeDialogProps) {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveChanges = async () => {
     try {
+      setIsSaving(true);
       const currentPractice = await getCurrentPractice();
 
       if (currentPractice) {
@@ -40,17 +46,20 @@ function EditPracticeDialog({
           userid: currentPractice.userid,
         };
 
-        const practiceRepository = new PracticesRepository();
-        const updatePractice = new UpdatePractice(practiceRepository);
-        await updatePractice.updatePractice(practiceId, updatedPracticeData);
-
-        onClose();
-        window.location.reload();
+        await onPracticeUpdated(updatedPracticeData);
+        setValidationMessage("Practica actualizada exitosamente");
+        setValidationDialogOpen(true);
       } else {
         console.error("La practica actual no se encontró.");
+        setValidationMessage("Error al actualizar la practica");
+        setValidationDialogOpen(true);
       }
     } catch (error) {
       console.error("Error al guardar los cambios:", error);
+      setValidationMessage("Error al actualizar la practica");
+      setValidationDialogOpen(true);
+    } finally {
+      setIsSaving(false);
     }
   };
   const getCurrentPractice = async () => {
@@ -99,10 +108,22 @@ function EditPracticeDialog({
             textTransform: "none",
           }}
           onClick={handleSaveChanges}
+          disabled={isSaving}
         >
-          Guardar Cambios
+          {isSaving ? "Guardando..." : "Guardar Cambios"}
         </Button>
       </DialogActions>
+      <ValidationDialog
+        open={validationDialogOpen}
+        title={validationMessage}
+        closeText="Cerrar"
+        onClose={() => {
+          setValidationDialogOpen(false);
+          if (!validationMessage.toLowerCase().includes("error")) {
+            onClose();
+          }
+        }}
+      />
     </Dialog>
   );
 }
