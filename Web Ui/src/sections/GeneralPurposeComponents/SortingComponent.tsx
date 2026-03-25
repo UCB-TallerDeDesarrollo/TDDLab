@@ -3,11 +3,13 @@ import { MenuItem, Select } from "@mui/material";
 interface SortingProps {
   selectedSorting: string;
   onChangeHandler: (event: { target: { value: string } }) => void;
+  prototypeStyle?: boolean;
 }
 
 const SortingComponent: React.FC<SortingProps> = ({
   selectedSorting,
   onChangeHandler,
+  prototypeStyle = false,
 }) => {
   return (
     <Select
@@ -15,7 +17,29 @@ const SortingComponent: React.FC<SortingProps> = ({
       onChange={onChangeHandler}
       inputProps={{ "aria-label": "Ordenar" }}
       displayEmpty
-      style={{ fontSize: "14px", height: "36px" }}
+      sx={
+        prototypeStyle
+          ? {
+              height: "34px",
+              minWidth: "110px",
+              fontSize: "14px",
+              borderRadius: "5px",
+              backgroundColor: "#D9D9D9",
+              ".MuiSelect-select": {
+                fontWeight: 700,
+                color: "#000000",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+              },
+              ".MuiOutlinedInput-notchedOutline": {
+                border: "0.5px solid #2F2F2F",
+              },
+            }
+          : {
+              fontSize: "14px",
+              height: "36px",
+            }
+      }
     >
       <MenuItem value="" disabled>
         Ordenar
