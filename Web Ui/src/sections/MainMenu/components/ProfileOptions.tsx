@@ -1,13 +1,8 @@
-import { Avatar, Box, Button, Divider, IconButton, Popover, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, IconButton, Popover, Stack, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { useNavigate } from "react-router-dom";
-import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
 import { setGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 
 
@@ -28,8 +23,6 @@ const ProfileOptions = ({
     email,
     avatarUrl,
 }: ProfileOptionsProps) => {
-    const initials = userName?.trim()?.charAt(0)?.toUpperCase() || "U";
-    
     const navigate = useNavigate();
     const handleLogout = async () => {
             setGlobalState("authData", {
@@ -48,8 +41,6 @@ const ProfileOptions = ({
             navigate("/user_profile");
         };
     
-    const recentGroupIds = localStorage.getItem("recentGroupIds");
-
     return (
         <Popover
             open={open}
@@ -86,10 +77,20 @@ const ProfileOptions = ({
                 </Stack>
 
                 <Stack spacing={2} alignItems="center" sx={{ mt: 3 }}>
-                   
+                    <Avatar
+                        src={avatarUrl}
+                        alt={userName}
+                        sx={{ width: 76, height: 76, bgcolor: "#d7e3fc", color: "#1d3557", fontWeight: 700 }}
+                    >
+                        {userName?.charAt(0)?.toUpperCase()}
+                    </Avatar>
 
                     <Typography variant="h5" fontWeight={500} textAlign="center">
                         Hola, {userName}!
+                    </Typography>
+
+                    <Typography variant="body2" color="text.secondary" textAlign="center">
+                        {email}
                     </Typography>
 
                     <Box display={'grid'}>

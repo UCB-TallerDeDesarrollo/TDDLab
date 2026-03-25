@@ -7,7 +7,6 @@ import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
 import HeaderNav from "./sections/MainMenu/components/HeaderNav";
-import MainMenu from "./sections/MainMenu/MainMenu";
 import MainMenu_v2 from "./sections/MainMenu/MainMenu_v2";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -32,6 +31,8 @@ import SettingsPage from "./sections/Settings/SettingsPage";
 import {
   CircularProgress,
   Box,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import UserProfilePage from "./sections/User/UserProfilePage";
 
@@ -75,6 +76,8 @@ const navArrayLinks = [
 ];
 
 function App() {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const authData = useGlobalState("authData")[0];
 useEffect(() => {
   getSessionCookie().then((storedSession) => {
@@ -119,7 +122,7 @@ useEffect(() => {
         <MainMenu_v2 navArrayLinks={navArrayLinks} userRole={authData.userRole} />
       )}
 
-      <Box sx={{ ml: authData.userEmail !== "" && authData.userRole !== undefined ? "220px" : 0 }}>
+      <Box sx={{ ml: authData.userEmail !== "" && authData.userRole !== undefined && isDesktop ? "220px" : 0 }}>
         {authData.userEmail !== "" && authData.userRole !== undefined && (
           <Box sx={{ p: 2 }}>
             <HeaderNav

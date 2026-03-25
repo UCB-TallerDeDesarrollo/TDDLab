@@ -1,4 +1,10 @@
-export const VITE_API = import.meta.env.VITE_API_URL;
+const defaultLocalApi = "http://localhost:3000/api";
+const configuredApi = import.meta.env.VITE_API_URL;
+const useRemoteApiInDev = import.meta.env.VITE_USE_REMOTE_API === "true";
+
+export const VITE_API = import.meta.env.DEV && !useRemoteApiInDev
+  ? defaultLocalApi
+  : (configuredApi || defaultLocalApi);
 export const VITE_FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
 export const VITE_FIREBASE_AUTH_DOMAIN = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN;
 export const VITE_FIREBASE_PROJECT_ID = import.meta.env.VITE_FIREBASE_PROJECT_ID;

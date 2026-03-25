@@ -11,8 +11,8 @@ import {
 import logo from '../../../public/tddlab.ico';
 import { ReactElement } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
+import { mainMenuStyles } from "./styles/mainMenuStyles";
 
 type NavLinkItem = {
   title: string;
@@ -33,34 +33,13 @@ export default function MainMenu_v2({
   const location = useLocation();
 
   return (
-    <Box
-      sx={{
-        width: 220,
-        height: "100vh",
-        backgroundColor: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        boxShadow: "2px 0 8px rgba(0,0,0,0.10)",
-        position: "fixed",
-        left: 0,
-        top: 0,
-        zIndex: 1200,
-      }}
-    >
+    <Box sx={mainMenuStyles.root}>
       <Box
         component={NavLink}
         to="/"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          px: 3,
-          py: 3,
-          textDecoration: "none",
-          color: "inherit",
-        }}
+        sx={mainMenuStyles.logoLink}
       >
-        <img src={logo} alt="TDDLab Logo" style={{ width: 48, height: 48 }} />
+        <Box component="img" src={logo} alt="TDDLab Logo" sx={mainMenuStyles.logoImage} />
         <Box sx={{ display: "flex", flexDirection: "column", lineHeight: 2 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
             {Array.from("TDD").map((char, idx) => (
@@ -79,16 +58,16 @@ export default function MainMenu_v2({
         </Box>
       </Box>
 
-      <List sx={{ flexGrow: 1, px: 1 }}>
+      <List sx={mainMenuStyles.list}>
         {navArrayLinks.map(
           (item) =>
             item.access.includes(userRole) && (
-              <ListItem disablePadding key={item.title} sx={{ mb: 4 }}>
+              <ListItem disablePadding key={item.title} sx={mainMenuStyles.listItem}>
                 <ListItemButton
                   component={NavLink}
                   to={item.path}
                   sx={{
-                    borderRadius: 2,
+                    ...mainMenuStyles.listItemButton,
                     color:
                       location.pathname === item.path ? "#1565c0" : "#1a1a2e",
                     backgroundColor:
@@ -103,7 +82,7 @@ export default function MainMenu_v2({
                         location.pathname === item.path
                           ? "#1565c0"
                           : "#1a1a2e",
-                      minWidth: 40,
+                      minWidth: { xs: 32, md: 40 },
                     },
                   }}
                 >
@@ -118,7 +97,7 @@ export default function MainMenu_v2({
         )}
       </List>
 
-      <Box sx={{ px: 2, py: 2 }}>
+      <Box sx={mainMenuStyles.loginWrapper}>
         <LoginComponent />
       </Box>
     </Box>

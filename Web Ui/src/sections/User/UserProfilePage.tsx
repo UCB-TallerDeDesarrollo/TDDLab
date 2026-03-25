@@ -3,6 +3,7 @@ import { Avatar, Box, Button, Tab, Tabs, Typography } from "@mui/material";
 import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
+import { userProfileStyles } from "./styles/userProfileStyles";
 
 type UserProfilePageProps = {
     email: string;
@@ -33,65 +34,26 @@ const UserProfilePage = ({
 
     useEffect(() => {
         async function fetchData() {
-            const groups = [];
-            for(let groupId of recentGroupIds) {
-                const groupDetail = await getGroupDetail.obtainGroupDetail(groupId);
-                groups.push(groupDetail);
-            }
+            const groups = await Promise.all(
+                recentGroupIds.map((groupId) => getGroupDetail.obtainGroupDetail(groupId))
+            );
             setRecentGroups(groups);
         }
         fetchData();
     }, []);
     return (
-        <Box
-            sx={{
-                width: "100%",
-                minHeight: "100%",
-                px: { xs: 2, md: 4 },
-                py: 3,
-                backgroundColor: "#ffffff",
-            }}
-        >
-            <Box
-                sx={{
-                    display: "grid",
-                    gridTemplateColumns: { xs: "1fr", md: "1fr auto" },
-                    gap: 4,
-                    alignItems: "start",
-                }}
-            >
+        <Box sx={userProfileStyles.page}>
+            <Box sx={userProfileStyles.headerGrid}>
                 <Box>
-                    <Typography
-                        sx={{
-                            fontSize: { xs: "2rem", md: "3rem" },
-                            fontWeight: 700,
-                            lineHeight: 1.05,
-                            color: "#111",
-                        }}
-                    >
+                    <Typography sx={userProfileStyles.title}>
                         {email.split("@")[0]}
                     </Typography>
 
-                    <Typography
-                        sx={{
-                            mt: 1,
-                            fontSize: { xs: "1.2rem", md: "2rem" },
-                            color: "#222",
-                        }}
-                    >
+                    <Typography sx={userProfileStyles.subtitle}>
                         {email}
                     </Typography>
 
-                    <Box
-                        sx={{
-                            mt: 4,
-                            display: "grid",
-                            gridTemplateColumns: "auto 1fr",
-                            columnGap: 3,
-                            rowGap: 1.5,
-                            maxWidth: 520,
-                        }}
-                    >
+                    <Box sx={userProfileStyles.detailsGrid}>
                         <Typography fontWeight={700}>CORREO:</Typography>
                         <Typography>{email}</Typography>
 
@@ -108,49 +70,25 @@ const UserProfilePage = ({
                     <Button
                         variant="contained"
                         onClick={onEdit}
-                        sx={{
-                            mt: 3,
-                            borderRadius: 1,
-                            textTransform: "none",
-                            px: 3,
-                            backgroundColor: "#69be4b",
-                            "&:hover": { backgroundColor: "#58a73c" },
-                        }}
+                        sx={userProfileStyles.editButton}
                     >
                         Editar
                     </Button>
                 </Box>
 
-                <Box sx={{ display: "flex", justifyContent: "left", mt: { xs: 1, md: 0 },
-            marginRight: 40 }}>
-                    <Avatar
-                        src={avatarUrl}
-                        sx={{
-                            width: { xs: 10, md: 260 },
-                            height: { xs: 180, md: 260 },
-                            border: "10px solid #d7d3ce",
-                            bgcolor: "#c7d6e5",
-                        }}
-                    >
+                <Box sx={userProfileStyles.avatarWrapper}>
+                    <Avatar src={avatarUrl} sx={userProfileStyles.avatar}>
                         {email?.charAt(0)?.toUpperCase()}
                     </Avatar>
                 </Box>
             </Box>
 
             <Box sx={{ mt: 5 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Typography sx={{ fontSize: "2rem", fontWeight: 700, color: "#1b1b1b" }}>
+                <Box sx={userProfileStyles.groupsTitleRow}>
+                    <Typography sx={userProfileStyles.groupsTitle}>
                         Grupos recientes
                     </Typography>
-                    <Box
-                        sx={{
-                            flex: 1,
-                            height: 3,
-                            borderRadius: 999,
-                            background:
-                                "linear-gradient(90deg, #d5dbe8 0%, #cfe6cf 55%, #f5c6cc 100%)",
-                        }}
-                    />
+                    <Box sx={userProfileStyles.groupsDivider} />
                 </Box>
 
                 <Tabs
@@ -160,7 +98,6 @@ const UserProfilePage = ({
                     TabIndicatorProps={{ sx: { backgroundColor: "#9aa3af" } }}
                 >
                     {recentGroups.map((group) => {
-                        console.log("Rendering tab for group ID:", group?.id);
                         return (
                         <Tab
                             key={group?.id}
