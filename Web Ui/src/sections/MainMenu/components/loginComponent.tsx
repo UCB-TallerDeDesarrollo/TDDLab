@@ -5,7 +5,6 @@ import {
   useGlobalState,
 } from "../../../modules/User-Authentication/domain/authStates";
 import React from "react";
-import "../styles/loginComponentStyles.css";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";

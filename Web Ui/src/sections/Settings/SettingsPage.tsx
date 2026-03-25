@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { FormControl, InputLabel, Select, MenuItem, 
          Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
 import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
+import { settingsLayoutStyles } from './styles/settingsStyles';
 
 const PROMPT_OPTIONS = [
   { label: "Prompt Analizar TDD", value: "tddPrompt" },
@@ -66,7 +68,7 @@ const ConfigurationPage = () => {
     }
   };
 
-  const handlePromptChange = (event: any) => {
+  const handlePromptChange = (event: SelectChangeEvent<string>) => {
     setSelectedPrompt(event.target.value);
     setEditing(false);
   };
@@ -133,24 +135,27 @@ const ConfigurationPage = () => {
     }
   };
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
+    <Container maxWidth={false} sx={settingsLayoutStyles.container}>
+      <Box sx={settingsLayoutStyles.card}>
+        <Typography sx={settingsLayoutStyles.sectionTitle}>
           Configuración de Prompts
-        </div>
+        </Typography>
+        <Typography sx={settingsLayoutStyles.sectionSubtitle}>
+          Administra los prompts utilizados por el asistente de IA.
+        </Typography>
       </Box>
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+        <Box sx={settingsLayoutStyles.loadingContainer}>
           <CircularProgress />
         </Box>
       ) : error ? (
-        <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
+        <Box sx={settingsLayoutStyles.errorBox}>
           <Typography color="error">{error}</Typography>
         </Box>
       ) : (
-        <>
-          <FormControl sx={{ mb: 2, width: '50%' }}>
+        <Box sx={{ ...settingsLayoutStyles.card, mt: 2 }}>
+          <FormControl sx={settingsLayoutStyles.formControl}>
             <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
             <Select
               labelId="prompt-select-label"
@@ -190,45 +195,31 @@ const ConfigurationPage = () => {
           </Snackbar>
           
           {saving && (
-            <Box
-              sx={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1300,
-              }}
-            >
+            <Box sx={settingsLayoutStyles.overlay}>
               <CircularProgress color="primary" />
             </Box>
           )}
-        </>
+        </Box>
       )}
-       
-      <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
-        Habilitación de Funcionalidades
-      </div> 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {flags.map((flag) => (
-        <div key={flag.id} style={{ marginBottom: "10px" }}>
-          <label>
+
+      <Box sx={{ ...settingsLayoutStyles.card, mt: 3 }}>
+        <Typography sx={settingsLayoutStyles.sectionTitle}>
+          Habilitación de Funcionalidades
+        </Typography>
+        {error && <Typography color="error">{error}</Typography>}
+        {flags.map((flag) => (
+          <Box key={flag.id} sx={settingsLayoutStyles.featureFlagRow}>
             <input
               type="checkbox"
               checked={flag.is_enabled}
               onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
             />
-            {flag.feature_name}
-          </label>
-        </div>
-      ))}
-     
+            <Typography sx={settingsLayoutStyles.checkboxLabel}>{flag.feature_name}</Typography>
+          </Box>
+        ))}
+      </Box>
+
     </Container>
-    
   );
 };
 

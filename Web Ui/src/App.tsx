@@ -6,11 +6,13 @@ import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
-import MainMenu from "./sections/MainMenu/MainMenu";
+import HeaderNav from "./sections/MainMenu/components/HeaderNav";
+import MainMenu_v2 from "./sections/MainMenu/MainMenu_v2";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings"; 
+import HomeIcon from '@mui/icons-material/Home';
 import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
@@ -28,9 +30,19 @@ import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import {
   CircularProgress,
+  Box,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import UserProfilePage from "./sections/User/UserProfilePage";
 
 const navArrayLinks = [
+  {
+    title: "Inicio",
+    path: "/home",
+    icon: <HomeIcon />,
+    access: ["admin", "teacher", "student"], 
+  },
   {
     title: "Grupos",
     path: "/groups",
@@ -64,6 +76,8 @@ const navArrayLinks = [
 ];
 
 function App() {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const authData = useGlobalState("authData")[0];
 useEffect(() => {
   getSessionCookie().then((storedSession) => {
@@ -105,9 +119,19 @@ useEffect(() => {
   return (
     <Router>
       {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+        <MainMenu_v2 navArrayLinks={navArrayLinks} userRole={authData.userRole} />
       )}
-      <Routes>
+
+      <Box sx={{ ml: authData.userEmail !== "" && authData.userRole !== undefined && isDesktop ? "220px" : 0 }}>
+        {authData.userEmail !== "" && authData.userRole !== undefined && (
+          <Box sx={{ p: 2 }}>
+            <HeaderNav
+              userName={authData.userEmail ?? ""}
+              avatarUrl={authData.userProfilePic ?? ""}
+            />
+          </Box>
+        )}
+        <Routes>
         <Route
           path="/"
           element={
@@ -198,6 +222,21 @@ useEffect(() => {
         />
 
         <Route
+          path="/user_profile"
+          element={
+            <ProtectedRouteComponent>
+              <UserProfilePage
+                email={authData.userEmail ?? ""}
+                phone={"No PHONES ?"}
+                role={authData.userRole ?? ""}
+                projectsCount={authData.usergroupid ?? -1}
+                avatarUrl={authData.userProfilePic ?? ""}
+              />
+            </ProtectedRouteComponent>
+          }
+        />
+
+        <Route
           path="/asistente-ia"
           element={
             <ProtectedRouteComponent>
@@ -215,7 +254,8 @@ useEffect(() => {
          }
        /> 
 
-      </Routes>
+        </Routes>
+      </Box>
     </Router>
   );
 }

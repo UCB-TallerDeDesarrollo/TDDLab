@@ -1,5 +1,18 @@
 # React + TypeScript + Vite.
 
+## Local environment
+
+Create `Web Ui/.env` with the shared project values.
+In dev mode, frontend uses `http://localhost:3000/api` by default.
+Set `VITE_USE_REMOTE_API=true` if you need to force `VITE_API_URL` while running `npm run dev`.
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
 # Todo - Idea de la aplicacion y tecnlogia necesario
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

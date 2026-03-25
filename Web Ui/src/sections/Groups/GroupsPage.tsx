@@ -18,39 +18,26 @@ import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
-  Table,
   TableHead,
   TableBody,
   TableRow,
   TableCell,
-  Container,
   Button,
   Collapse,
+  Box,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
-
-const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const ButtonContainer = styled("div")({
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: "8px",
-});
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
+import {
+  CenteredContainer,
+  ButtonContainer,
+  StyledTable,
+  groupPageStyles,
+} from "./styles/groupsStyles";
 
 // Normaliza cualquier id a number
 const asId = (v: unknown): number => {
@@ -299,8 +286,8 @@ function Groups() {
       <section className="Grupos">
         <StyledTable>
           <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
+            <TableRow sx={groupPageStyles.headRow}>
+              <TableCell sx={groupPageStyles.headCell}>
                 Grupos
               </TableCell>
               <TableCell>
@@ -313,7 +300,7 @@ function Groups() {
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
+                    sx={groupPageStyles.createButton}
                     onClick={handleCreateGroupClick}
                   >
                     Crear
@@ -381,13 +368,13 @@ function Groups() {
                 </TableRow>
 
                 <TableRow>
-                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
+                  <TableCell sx={groupPageStyles.collapseCell} colSpan={2}>
                     <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
-                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
+                      <Box sx={groupPageStyles.collapseWrapper}>
+                        <Box sx={groupPageStyles.collapseContent}>
                           Detalle del grupo: {groups[index].groupDetail}
-                        </div>
-                      </div>
+                        </Box>
+                      </Box>
                     </Collapse>
                   </TableCell>
                 </TableRow>
