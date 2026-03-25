@@ -1,32 +1,36 @@
+import { useState } from "react";
 import {
+  Box,
   CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Container,
-  Button,
+  Typography,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
+import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
-import Assignment from "./Assignment";
-import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
-import GroupFilter from "./GroupFilter";
 import { AssignmentListProps } from "../../../features/assignments/types/assignmentScreen";
 import { useAssignmentsScreen } from "../../../features/assignments/hooks/useAssignmentsScreen";
+import AssignmentsFilterPopover from "../../../features/assignments/components/AssignmentsFilterPopover";
+import AssignmentsListLayout from "../../../features/assignments/components/AssignmentsListLayout";
+import ActionButton from "../../../shared/components/ActionButton";
+import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
+import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivider";
+import Assignment from "./Assignment";
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
+const PageContainer = styled(Container)(({ theme }) => ({
+  paddingTop: theme.spacing(7.5),
+  paddingBottom: theme.spacing(5),
+}));
 
-const CustomTableCell1 = styled(TableCell)({
-  width: "80%",
-});
+const ScreenSection = styled(Box)(({ theme }) => ({
+  width: "100%",
+  maxWidth: 1301,
+  marginInline: "auto",
+  display: "grid",
+  gap: theme.spacing(4.25),
+}));
 
 const LoadingContainer = styled("div")({
   display: "flex",
@@ -34,6 +38,18 @@ const LoadingContainer = styled("div")({
   alignItems: "center",
   height: "100vh",
 });
+
+const ListHeader = styled(Typography)({
+  color: "#002346",
+  fontSize: 24,
+  fontWeight: 700,
+  lineHeight: "29px",
+});
+
+const ListSection = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gap: theme.spacing(2.5),
+}));
 
 function Assignments({
   ShowForm: showForm,
@@ -64,10 +80,14 @@ function Assignments({
     onGroupChange,
   });
 
+  const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(
+    null,
+  );
+
   const handleRowHover = (_index: number | null) => {};
 
   return (
-    <Container>
+    <PageContainer>
       {isLoading ? (
         <LoadingContainer>
           <div
@@ -83,70 +103,35 @@ function Assignments({
           </div>
         </LoadingContainer>
       ) : (
-        <section className="Tareas">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: "12px",
-              marginBottom: "1rem",
-              width: "82%",
-              marginLeft: "auto",
-              marginRight: "auto",
-              flexWrap: "nowrap",
-            }}
-          >
-            <GroupFilter
-              selectedGroup={selectedGroup}
-              groupList={groupList}
-              onChangeHandler={handleGroupChange}
-              defaultName={
-                groupList.find((group) => group.id === selectedGroup)?.groupName ||
-                groupList[0]?.groupName ||
-                "Selecciona un grupo"
-              }
-            />
-            <SortingComponent
-              selectedSorting={selectedSorting}
-              onChangeHandler={handleOrderAssignments}
-            />
-            {showCreateButton && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                sx={{
-                  borderRadius: "17px",
-                  textTransform: "none",
-                  fontSize: "0.95rem",
-                  paddingX: "16px",
-                  paddingY: "8px",
-                  minWidth: "90px",
-                  whiteSpace: "nowrap",
-                }}
-                onClick={showForm}
-              >
-                Crear
-              </Button>
-            )}
-          </div>
-
-          <StyledTable>
-            <TableHead>
-              <TableRow
-                sx={{
-                  borderBottom: "2px solid #E7E7E7",
-                }}
-              >
-                <CustomTableCell1
-                  sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+        <ScreenSection className="Tareas">
+          <FeaturePageHeader
+            title="Tareas"
+            actions={
+              <>
+                <ActionButton
+                  startIcon={<FilterListRoundedIcon />}
+                  variantStyle="secondary"
+                  onClick={(event) => setFiltersAnchorEl(event.currentTarget)}
                 >
-                  Tareas
-                </CustomTableCell1>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+                  Filtrar
+                </ActionButton>
+                {showCreateButton ? (
+                  <ActionButton
+                    startIcon={<AddIcon />}
+                    variantStyle="primary"
+                    onClick={showForm}
+                  >
+                    Crear
+                  </ActionButton>
+                ) : null}
+              </>
+            }
+          />
+          <FeatureSectionDivider />
+
+          <ListSection>
+            <ListHeader>Listado</ListHeader>
+            <AssignmentsListLayout>
               {assignments.map((assignment, index) => (
                 <Assignment
                   key={assignment.id}
@@ -158,10 +143,21 @@ function Assignments({
                   role={userRole}
                 />
               ))}
-            </TableBody>
-          </StyledTable>
+            </AssignmentsListLayout>
+          </ListSection>
 
-          {confirmationOpen && (
+          <AssignmentsFilterPopover
+            anchorEl={filtersAnchorEl}
+            groupList={groupList}
+            onClose={() => setFiltersAnchorEl(null)}
+            onGroupChange={handleGroupChange}
+            onSortingChange={handleOrderAssignments}
+            open={Boolean(filtersAnchorEl)}
+            selectedGroup={selectedGroup}
+            selectedSorting={selectedSorting}
+          />
+
+          {confirmationOpen ? (
             <ConfirmationDialog
               open={confirmationOpen}
               title="¿Eliminar la tarea?"
@@ -176,8 +172,9 @@ function Assignments({
               onCancel={() => setConfirmationOpen(false)}
               onDelete={handleConfirmDelete}
             />
-          )}
-          {validationDialogOpen && (
+          ) : null}
+
+          {validationDialogOpen ? (
             <ValidationDialog
               open={validationDialogOpen}
               title="Tarea eliminada exitosamente"
@@ -186,10 +183,10 @@ function Assignments({
                 setValidationDialogOpen(false);
               }}
             />
-          )}
-        </section>
+          ) : null}
+        </ScreenSection>
       )}
-    </Container>
+    </PageContainer>
   );
 }
 
