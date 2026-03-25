@@ -1,19 +1,23 @@
-import { Button } from "@mui/material";
-import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "../../../modules/User-Authentication/domain/authStates";
+import { Avatar, Button } from "@mui/material";
 import React from "react";
-import "../styles/loginComponentStyles.css";
+import { useNavigate } from "react-router-dom";
+import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
-import { useNavigate } from "react-router-dom";
+import {
+  setGlobalState,
+  useGlobalState,
+} from "../../../modules/User-Authentication/domain/authStates";
 
+interface LoginComponentProps {
+  compact?: boolean;
+}
 
-export default function LoginComponent() {
+export default function LoginComponent({
+  compact = false,
+}: Readonly<LoginComponentProps>) {
   const authData = useGlobalState("authData");
   const navigate = useNavigate();
 
@@ -26,6 +30,7 @@ export default function LoginComponent() {
       setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };
+
   const handleLogout = async () => {
     await handleGithubSignOut();
     setGlobalState("authData", {
@@ -42,28 +47,48 @@ export default function LoginComponent() {
 
   return (
     <React.Fragment>
-      {!authData[0].userEmail && (
+      {!authData[0].userEmail ? (
         <Button
           onClick={handleLogin}
           variant="contained"
-          sx={{ marginLeft: "18px" }}
+          sx={{
+            marginLeft: compact ? 0 : "18px",
+            textTransform: "none",
+            borderRadius: 999,
+            bgcolor: "#1370D2",
+            boxShadow: "none",
+            px: compact ? 2 : 2.5,
+            minWidth: compact ? "auto" : undefined,
+          }}
         >
-          Iniciar sesión
+          Iniciar sesi{"\u00f3"}n
         </Button>
-      )}
-      {authData[0].userEmail && (
+      ) : (
         <React.Fragment>
           <Button
             onClick={handleLogout}
-            variant="contained"
-            sx={{ marginLeft: "18px" }}
+            variant={compact ? "text" : "outlined"}
+            sx={{
+              marginLeft: compact ? 0 : "18px",
+              textTransform: "none",
+              borderRadius: 999,
+              color: "#FFFFFF",
+              borderColor: "rgba(255,255,255,0.25)",
+              minWidth: compact ? "auto" : undefined,
+              px: compact ? 1.25 : 2,
+            }}
           >
-            Cerrar Sesion
+            Salir
           </Button>
-          <img
+          <Avatar
             src={authData[0].userProfilePic}
             alt="Profile Picture"
-            className="profilePicture"
+            sx={{
+              width: compact ? 36 : 50,
+              height: compact ? 36 : 50,
+              ml: 1,
+              border: "2px solid rgba(255,255,255,0.24)",
+            }}
           />
         </React.Fragment>
       )}

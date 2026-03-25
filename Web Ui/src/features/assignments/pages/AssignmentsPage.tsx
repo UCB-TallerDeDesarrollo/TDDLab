@@ -22,7 +22,9 @@ function AssignmentsPage({
 }: Readonly<AssignmentScreenProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [selectedGroupId, setSelectedGroupId] = useState<number>(
+    userGroupid > 0 ? userGroupid : 0,
+  );
 
   const handleCreateAssignmentClick = () => {
     setCreateAssignmentPopupOpen(true);
@@ -44,11 +46,7 @@ function AssignmentsPage({
             data-testid="form-container"
             open={createAssignmentPopupOpen}
             handleClose={() => setCreateAssignmentPopupOpen(false)}
-            groupid={
-              selectedGroupId ??
-              (Number(localStorage.getItem("selectedGroup") ?? NaN) ||
-                userGroupid)
-            }
+            groupid={selectedGroupId}
           />
         )}
       </FormsContainer>

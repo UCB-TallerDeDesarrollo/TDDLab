@@ -188,9 +188,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   };
 
   useEffect(() => {
-  const effectiveGroupId =
-    groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
-
   setSave(false);
   setAssignmentData({
     id: 0,
@@ -201,7 +198,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     state: "pending",
     link: "",
     comment: "",
-    groupid: effectiveGroupId,
+    groupid: groupid > 0 ? groupid : 0,
   });
 }, [open, groupid]);
 
@@ -219,14 +216,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       } else if (auth?.userRole === "admin") {
         list = await getGroups.getGroups();
       } else if (auth?.userRole === "student") {
-        let ids: number[] = [];
-        try {
-          const fromLS = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
-          if (Array.isArray(fromLS) && fromLS.length) ids = fromLS;
-        } catch {}
-        if (!ids.length) {
-          ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
-        }
+        const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
         list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
       } else {
         list = [];
@@ -334,7 +324,9 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           closeText="Cerrar"
           onClose={() => {
             if (!validationMessage.includes("Error")) {
-              window.location.reload();
+              setValidationDialogOpen(false);
+              handleClose();
+              window.dispatchEvent(new CustomEvent("assignment-updated"));
             } else {
               setValidationDialogOpen(false);
             }
