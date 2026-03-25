@@ -242,10 +242,10 @@ function UserPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                    <TableCell sx={{ borderRight: "1px solid #E0E0E0" }}>{user.email}</TableCell>
-                    <TableCell sx={{ borderRight: "1px solid #E0E0E0" }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell sx={{ borderRight: "1px solid #E0E0E0" }}>{user.role}</TableCell>
-                    <TableCell sx={{ borderRight: "none" }}>
+                    <TableCell sx={{ borderRight: "1px solid #E0E0E0", textAlign: "left", paddingLeft: "10%" }}>{user.email}</TableCell>
+                    <TableCell sx={{ borderRight: "1px solid #E0E0E0", textAlign: "left", paddingLeft: "7%" }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
+                    <TableCell sx={{ borderRight: "1px solid #E0E0E0", textAlign: "center" }}>{user.role}</TableCell>
+                    <TableCell sx={{ borderRight: "none", textAlign: "center" }}>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
                         <RemoveCircleIcon
                           onClick={() => handleRemoveUserFromGroup(user.id)}
