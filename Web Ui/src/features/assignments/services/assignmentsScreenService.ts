@@ -1,6 +1,9 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
-import { AssignmentSorting } from "../types/assignmentScreen";
+import {
+  AssignmentListItemViewModel,
+  AssignmentSorting,
+} from "../types/assignmentScreen";
 
 export function normalizeGroupId(value: unknown): number | null {
   const parsed = Number(value);
@@ -11,28 +14,10 @@ export function normalizeGroupId(value: unknown): number | null {
   return parsed;
 }
 
-export function parseStoredGroupIds(rawValue: string | null): number[] {
-  if (!rawValue) {
-    return [];
-  }
-
-  try {
-    const parsed = JSON.parse(rawValue);
-    return Array.isArray(parsed)
-      ? parsed
-          .map((groupId) => normalizeGroupId(groupId))
-          .filter((groupId): groupId is number => groupId !== null)
-      : [];
-  } catch {
-    return [];
-  }
-}
-
 export function resolveInitialGroupId(params: {
   locationSearch: string;
   storedSelectedGroup: string | null;
   authGroupId: number | null | undefined;
-  storedUserGroups: string | null;
   fallbackGroups: GroupDataObject[];
 }): number | null {
   const groupIdFromUrl = normalizeGroupId(
@@ -53,12 +38,20 @@ export function resolveInitialGroupId(params: {
     return authGroupId;
   }
 
-  const firstStoredUserGroup = parseStoredGroupIds(params.storedUserGroups)[0];
-  if (firstStoredUserGroup) {
-    return firstStoredUserGroup;
+  return normalizeGroupId(params.fallbackGroups[0]?.id);
+}
+
+export function resolveStudentGroupIds(
+  userGroupid: number | number[],
+): number[] {
+  if (Array.isArray(userGroupid)) {
+    return userGroupid
+      .map((groupId) => normalizeGroupId(groupId))
+      .filter((groupId): groupId is number => groupId !== null);
   }
 
-  return normalizeGroupId(params.fallbackGroups[0]?.id);
+  const normalizedGroupId = normalizeGroupId(userGroupid);
+  return normalizedGroupId ? [normalizedGroupId] : [];
 }
 
 export function sortAssignments(
@@ -79,4 +72,21 @@ export function sortAssignments(
     default:
       return assignmentsCopy;
   }
+}
+
+export function buildAssignmentListItems(
+  assignments: AssignmentDataObject[],
+  groups: GroupDataObject[],
+): AssignmentListItemViewModel[] {
+  const groupsById = new Map(
+    groups.map((group) => [group.id, group.groupName] as const),
+  );
+
+  return assignments.map((assignment) => ({
+    id: assignment.id,
+    title: assignment.title,
+    description: assignment.description,
+    groupName: groupsById.get(assignment.groupid) ?? "",
+    state: assignment.state,
+  }));
 }

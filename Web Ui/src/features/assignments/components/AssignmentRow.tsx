@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -7,22 +7,15 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
-import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import EditAssignmentForm from "../../../sections/Assignments/components/EditAssignmentForm";
 import { getStatusIcon, getStatusTooltip } from "../../../sections/Shared/statusHelpers";
-
-function isAdmin(role: string): boolean {
-  return role === "admin" || role === "teacher";
-}
+import { AssignmentListItemViewModel } from "../types/assignmentScreen";
 
 interface AssignmentRowProps {
-  assignment: AssignmentDataObject;
-  index: number;
-  handleClickDetail: (index: number) => void;
-  handleClickDelete: (index: number) => void;
-  handleRowHover: (index: number | null) => void;
-  role: string;
+  item: AssignmentListItemViewModel;
+  canManage: boolean;
+  onDelete: (assignmentId: number) => void;
+  onView: (assignmentId: number) => void;
 }
 
 const RowContainer = styled(Box)(({ theme }) => ({
@@ -69,93 +62,52 @@ const ActionIcon = styled(IconButton)({
 });
 
 function AssignmentRow({
-  assignment,
-  index,
-  handleClickDetail,
-  handleClickDelete,
-  handleRowHover,
-  role,
+  item,
+  canManage,
+  onDelete,
+  onView,
 }: Readonly<AssignmentRowProps>) {
-  const [groupName, setGroupName] = useState("");
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchGroupName = async () => {
-      if (!assignment.groupid) {
-        return;
-      }
-
-      try {
-        const groupsRepository = new GroupsRepository();
-        const group = await groupsRepository.getGroupById(assignment.groupid);
-        if (group) {
-          setGroupName(group.groupName);
-        }
-      } catch (error) {
-        console.error("Error fetching group name:", error);
-      }
-    };
-
-    fetchGroupName();
-  }, [assignment.groupid]);
-
-  const statusIcon = getStatusIcon(assignment.state);
+  const statusIcon = getStatusIcon(item.state);
 
   return (
     <RowContainer>
-      <RowTitle>{assignment.title}</RowTitle>
+      <RowTitle>{item.title}</RowTitle>
       <ActionsContainer>
         <Tooltip title="Ver tarea" arrow>
-          <ActionIcon
-            aria-label="see"
-            onClick={() => handleClickDetail(index)}
-            onMouseEnter={() => handleRowHover(index)}
-            onMouseLeave={() => handleRowHover(null)}
-          >
+          <ActionIcon aria-label="see" onClick={() => onView(item.id)}>
             <VisibilityIcon />
           </ActionIcon>
         </Tooltip>
 
-        {isAdmin(role) && isEditFormOpen ? (
+        {canManage && isEditFormOpen ? (
           <EditAssignmentForm
-            assignmentId={assignment.id}
-            currentGroupName={groupName}
-            currentTitle={assignment.title}
-            currentDescription={assignment.description}
+            assignmentId={item.id}
+            currentGroupName={item.groupName}
+            currentTitle={item.title}
+            currentDescription={item.description}
             onClose={() => setIsEditFormOpen(false)}
           />
         ) : null}
 
-        {isAdmin(role) && !isEditFormOpen ? (
+        {canManage && !isEditFormOpen ? (
           <Tooltip title="Editar tarea" arrow>
-            <ActionIcon
-              aria-label="edit"
-              onClick={() => setIsEditFormOpen(true)}
-            >
+            <ActionIcon aria-label="edit" onClick={() => setIsEditFormOpen(true)}>
               <EditIcon />
             </ActionIcon>
           </Tooltip>
         ) : null}
 
-        {isAdmin(role) ? (
+        {canManage ? (
           <Tooltip title="Eliminar tarea" arrow>
-            <ActionIcon
-              aria-label="delete"
-              onClick={() => handleClickDelete(index)}
-              onMouseEnter={() => handleRowHover(index)}
-              onMouseLeave={() => handleRowHover(null)}
-            >
+            <ActionIcon aria-label="delete" onClick={() => onDelete(item.id)}>
               <DeleteIcon />
             </ActionIcon>
           </Tooltip>
         ) : null}
 
-        <Tooltip title={getStatusTooltip(assignment.state)} arrow>
-          <ActionIcon
-            aria-label="status"
-            onMouseEnter={() => handleRowHover(index)}
-            onMouseLeave={() => handleRowHover(null)}
-          >
+        <Tooltip title={getStatusTooltip(item.state)} arrow>
+          <ActionIcon aria-label="status">
             {statusIcon}
           </ActionIcon>
         </Tooltip>

@@ -89,8 +89,7 @@ function AssignmentsList({
   const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(
     null,
   );
-
-  const handleRowHover = (_index: number | null) => {};
+  const canManageAssignments = userRole === "teacher" || userRole === "admin";
 
   return (
     <PageContainer>
@@ -151,15 +150,13 @@ function AssignmentsList({
               />
             ) : (
               <AssignmentsListLayout>
-                {assignments.map((assignment, index) => (
+                {assignments.map((assignment) => (
                   <AssignmentRow
                     key={assignment.id}
-                    assignment={assignment}
-                    index={index}
-                    handleClickDetail={handleClickDetail}
-                    handleClickDelete={handleClickDelete}
-                    handleRowHover={handleRowHover}
-                    role={userRole}
+                    item={assignment}
+                    canManage={canManageAssignments}
+                    onDelete={handleClickDelete}
+                    onView={handleClickDetail}
                   />
                 ))}
               </AssignmentsListLayout>

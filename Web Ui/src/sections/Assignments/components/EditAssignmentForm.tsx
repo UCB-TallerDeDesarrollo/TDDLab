@@ -20,6 +20,7 @@ import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import { dispatchAssignmentUpdatedEvent } from "../../../features/assignments/services/assignmentEvents";
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
@@ -86,7 +87,7 @@ function EditAssignmentDialog({
   
         onClose();
         // Notificar a la lista para refrescar sin recargar la página
-        window.dispatchEvent(new CustomEvent('assignment-updated'));
+        dispatchAssignmentUpdatedEvent();
       } else {
         // Manejar el caso en el que la tarea actual no existe
         console.error("La tarea actual no se encontró.");

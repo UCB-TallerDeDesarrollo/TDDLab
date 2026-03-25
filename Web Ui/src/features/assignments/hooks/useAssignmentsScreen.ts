@@ -8,53 +8,17 @@ import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { addAssignmentUpdatedListener } from "../services/assignmentEvents";
 import {
-  normalizeGroupId,
-  parseStoredGroupIds,
+  buildAssignmentListItems,
   resolveInitialGroupId,
+  resolveStudentGroupIds,
   sortAssignments,
 } from "../services/assignmentsScreenService";
 import {
   AssignmentListProps,
   AssignmentSorting,
 } from "../types/assignmentScreen";
-
-async function resolveStudentGroups(params: {
-  getGroups: GetGroups;
-  authUserId: number;
-  userGroupid: number | number[];
-}) {
-  const storedGroups = localStorage.getItem("userGroups");
-
-  if (storedGroups === null) {
-    const studentGroups = params.userGroupid;
-    localStorage.setItem("userGroups", JSON.stringify(studentGroups));
-
-    if (Array.isArray(studentGroups)) {
-      return Promise.all(
-        studentGroups.map((groupId) => params.getGroups.getGroupById(groupId)),
-      );
-    }
-
-    return Promise.all([params.getGroups.getGroupById(studentGroups)]);
-  }
-
-  if (storedGroups === "[0]") {
-    const refreshedGroups = await params.getGroups.getGroupsByUserId(
-      params.authUserId,
-    );
-    localStorage.setItem("userGroups", JSON.stringify(refreshedGroups));
-
-    return Promise.all(
-      refreshedGroups.map((groupId) => params.getGroups.getGroupById(groupId)),
-    );
-  }
-
-  const parsedGroups = parseStoredGroupIds(storedGroups);
-  return Promise.all(
-    parsedGroups.map((groupId) => params.getGroups.getGroupById(groupId)),
-  );
-}
 
 export function useAssignmentsScreen({
   userRole,
@@ -63,7 +27,7 @@ export function useAssignmentsScreen({
 }: Readonly<AssignmentListProps>) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [authData, setAuthData] = useGlobalState("authData");
+  const [authData] = useGlobalState("authData");
 
   const assignmentsRepository = useMemo(() => new AssignmentsRepository(), []);
   const deleteAssignmentUseCase = useMemo(
@@ -80,9 +44,9 @@ export function useAssignmentsScreen({
   >("success");
   const [selectedSorting, setSelectedSorting] = useState<AssignmentSorting>("");
   const [selectedGroup, setSelectedGroup] = useState(0);
-  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-    number | null
-  >(null);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
@@ -96,10 +60,6 @@ export function useAssignmentsScreen({
         setSelectedGroup(normalizedGroupId);
         onGroupChange(groupId);
         localStorage.setItem("selectedGroup", groupId.toString());
-        setAuthData({
-          ...authData,
-          usergroupid: groupId,
-        });
       }
 
       try {
@@ -124,16 +84,20 @@ export function useAssignmentsScreen({
         return [];
       }
     },
-    [assignmentsRepository, authData, onGroupChange, setAuthData],
+    [assignmentsRepository, onGroupChange],
   );
 
   const loadUserGroups = useCallback(async () => {
     if (userRole === "student") {
-      return resolveStudentGroups({
-        getGroups,
-        authUserId: authData.userid ?? -1,
-        userGroupid,
-      });
+      const resolvedGroupIds = resolveStudentGroupIds(userGroupid);
+      const studentGroupIds =
+        resolvedGroupIds.length > 0
+          ? resolvedGroupIds
+          : await getGroups.getGroupsByUserId(authData.userid ?? -1);
+
+      return Promise.all(
+        studentGroupIds.map((groupId) => getGroups.getGroupById(groupId)),
+      );
     }
 
     if (userRole === "teacher") {
@@ -157,14 +121,15 @@ export function useAssignmentsScreen({
     setIsLoading(true);
 
     try {
-      const allGroups = await loadUserGroups();
+      const allGroups = (await loadUserGroups()).filter(
+        (group): group is GroupDataObject => Boolean(group),
+      );
       setGroupList(allGroups);
 
       const initialGroupId = resolveInitialGroupId({
         locationSearch: location.search,
         storedSelectedGroup: localStorage.getItem("selectedGroup"),
         authGroupId: Array.isArray(userGroupid) ? userGroupid[0] : userGroupid,
-        storedUserGroups: localStorage.getItem("userGroups"),
         fallbackGroups: allGroups,
       });
 
@@ -208,22 +173,9 @@ export function useAssignmentsScreen({
   }, [fetchData]);
 
   useEffect(() => {
-    const handler = () => {
-      const storedGroupId = normalizeGroupId(localStorage.getItem("selectedGroup"));
-      const currentGroupId = storedGroupId ?? normalizeGroupId(selectedGroup);
-
-      if (currentGroupId) {
-        loadAssignmentsForGroup(currentGroupId, false);
-      }
-    };
-
-    globalThis.addEventListener("assignment-updated", handler as EventListener);
-    return () => {
-      globalThis.removeEventListener(
-        "assignment-updated",
-        handler as EventListener,
-      );
-    };
+    return addAssignmentUpdatedListener(() => {
+      loadAssignmentsForGroup(selectedGroup || 0, false);
+    });
   }, [loadAssignmentsForGroup, selectedGroup]);
 
   const visibleAssignments = useMemo(() => {
@@ -231,8 +183,11 @@ export function useAssignmentsScreen({
       ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
       : assignments;
 
-    return sortAssignments(filteredAssignments, selectedSorting);
-  }, [assignments, selectedGroup, selectedSorting]);
+    return buildAssignmentListItems(
+      sortAssignments(filteredAssignments, selectedSorting),
+      groupList,
+    );
+  }, [assignments, groupList, selectedGroup, selectedSorting]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value as AssignmentSorting);
@@ -243,36 +198,27 @@ export function useAssignmentsScreen({
     await loadAssignmentsForGroup(groupId);
   };
 
-  const handleClickDetail = (index: number) => {
-    navigate(`/assignment/${visibleAssignments[index].id}`);
+  const handleClickDetail = (assignmentId: number) => {
+    navigate(`/assignment/${assignmentId}`);
   };
 
-  const handleClickDelete = (index: number) => {
-    const assignmentToDelete = visibleAssignments[index];
-    const originalIndex = assignments.findIndex(
-      (assignment) => assignment.id === assignmentToDelete.id,
-    );
-
-    setSelectedAssignmentIndex(originalIndex);
+  const handleClickDelete = (assignmentId: number) => {
+    setSelectedAssignmentId(assignmentId);
     setConfirmationOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (
-      selectedAssignmentIndex === null ||
-      !assignments[selectedAssignmentIndex]
-    ) {
+    if (selectedAssignmentId === null) {
       setConfirmationOpen(false);
       return;
     }
 
     try {
-      const assignmentToDelete = assignments[selectedAssignmentIndex];
-      await deleteAssignmentUseCase.deleteAssignment(assignmentToDelete.id);
+      await deleteAssignmentUseCase.deleteAssignment(selectedAssignmentId);
 
       setAssignments((currentAssignments) =>
         currentAssignments.filter(
-          (assignment) => assignment.id !== assignmentToDelete.id,
+          (assignment) => assignment.id !== selectedAssignmentId,
         ),
       );
       setValidationDialogOpen(true);
@@ -291,7 +237,7 @@ export function useAssignmentsScreen({
       console.error("Error eliminando assignment:", deleteError);
     } finally {
       setConfirmationOpen(false);
-      setSelectedAssignmentIndex(null);
+      setSelectedAssignmentId(null);
     }
   };
 

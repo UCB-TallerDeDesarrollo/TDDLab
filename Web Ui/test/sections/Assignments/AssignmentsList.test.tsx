@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import AssignmentsList from "../../../src/sections/Assignments/components/AssignmentsList";
 import { AssignmentDataObject } from "../../../src/modules/Assignments/domain/assignmentInterfaces";
 import { GroupDataObject } from "../../../src/modules/Groups/domain/GroupInterface";
+import { ASSIGNMENT_UPDATED_EVENT } from "../../../src/features/assignments/services/assignmentEvents";
 
 const mockAssignmentsRepo = {
   getAssignmentsByGroupid: jest.fn(),
@@ -220,7 +221,7 @@ describe("AssignmentsList Component", () => {
   });
 
   it("debería mostrar estado vacío cuando no hay tareas", async () => {
-    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValueOnce([]);
+    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue([]);
 
     renderAssignmentsList();
 
@@ -253,13 +254,7 @@ describe("AssignmentsList Component", () => {
     consoleSpy.mockRestore();
   });
 
-  it("debería usar datos de localStorage para grupos de estudiantes", async () => {
-    localStorageMock.getItem.mockImplementation((key: string) => {
-      if (key === "selectedGroup") return "1";
-      if (key === "userGroups") return "[1,2]";
-      return null;
-    });
-
+  it("debería cargar grupos para estudiantes usando sus ids disponibles", async () => {
     renderAssignmentsList({ userRole: "student", userGroupid: [1, 2] });
 
     await waitFor(() => {
@@ -273,7 +268,7 @@ describe("AssignmentsList Component", () => {
 
     await waitFor(() => {
       expect(addEventListenerSpy).toHaveBeenCalledWith(
-        "assignment-updated",
+        ASSIGNMENT_UPDATED_EVENT,
         expect.any(Function),
       );
     });

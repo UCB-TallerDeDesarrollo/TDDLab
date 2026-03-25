@@ -10,6 +10,14 @@ export interface AssignmentListProps {
   onGroupChange: (groupId: number) => void;
 }
 
+export interface AssignmentListItemViewModel {
+  id: number;
+  title: string;
+  description: string;
+  groupName: string;
+  state: string;
+}
+
 export type AssignmentSorting =
   | ""
   | "A_Up_Order"

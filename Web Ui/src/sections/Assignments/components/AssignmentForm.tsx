@@ -22,6 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { dispatchAssignmentUpdatedEvent } from "../../../features/assignments/services/assignmentEvents";
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
@@ -326,7 +327,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
             if (!validationMessage.includes("Error")) {
               setValidationDialogOpen(false);
               handleClose();
-              window.dispatchEvent(new CustomEvent("assignment-updated"));
+              dispatchAssignmentUpdatedEvent();
             } else {
               setValidationDialogOpen(false);
             }
