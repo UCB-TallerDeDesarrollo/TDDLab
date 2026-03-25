@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { ReactElement, Dispatch, SetStateAction } from "react";
 import LoginIcon from "@mui/icons-material/Login";
+import "../../../App.css";
+import "../../MainMenu/styles/LateralMenuStyles.css"
 
 interface NavItem {
   title: string;
@@ -27,11 +29,10 @@ export default function NavLateralMenu({
   setOpen,
 }: Readonly<NavLateralMenuProps>) {
   return (
-    <Box sx={{ width: 250 }}>
+    <Box className="drawer-container">
       <nav>
         <List>
-          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
-
+          <Typography className="drawer-header-title">TDDLab</Typography>
           {navArrayLinks.map((item) => (
             <ListItem disablePadding key={item.title}>
               <ListItemButton
@@ -51,7 +52,7 @@ export default function NavLateralMenu({
               onClick={() => setOpen(false)}
             >
               <ListItemIcon>
-                <LoginIcon />
+              <LoginIcon />
               </ListItemIcon>
               <ListItemText>Iniciar sesión</ListItemText>
             </ListItemButton>

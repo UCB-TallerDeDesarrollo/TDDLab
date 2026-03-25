@@ -1,0 +1,52 @@
+.main-navbar { 
+  background-color: #052845 !important; 
+  height: 64px; 
+}
+
+/* Usamos la lógica de flex-between */
+.navbar-toolbar { 
+  display: flex !important; 
+  justify-content: space-between !important;
+  align-items: center !important;
+  height: 100%; 
+  padding: 0 24px !important; 
+}
+
+.navbar-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-brand-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand-icon { margin-right: 8px; }
+
+.navbar-actions-group {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 24px;
+}
+
+/* Estilo de los links del header (Centrado Vertical) */
+.nav-link-btn {
+  height: 64px !important; /* Altura igual al navbar */
+  color: #A9A9A9 !important;
+  border-radius: 0px !important;
+  text-transform: none !important;
+  padding: 0 20px !important;
+  border-bottom: 4px solid transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.nav-link-active { 
+  color: #ffffff !important; 
+  border-bottom: 4px solid #ffffff !important; 
+}

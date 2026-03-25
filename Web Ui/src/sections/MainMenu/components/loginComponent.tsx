@@ -4,14 +4,13 @@ import {
   setGlobalState,
   useGlobalState,
 } from "../../../modules/User-Authentication/domain/authStates";
-import React from "react";
 import "../styles/loginComponentStyles.css";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { useNavigate } from "react-router-dom";
-
+import "../../../App.css";
 
 export default function LoginComponent() {
   const authData = useGlobalState("authData");
@@ -41,32 +40,29 @@ export default function LoginComponent() {
   };
 
   return (
-    <React.Fragment>
-      {!authData[0].userEmail && (
-        <Button
-          onClick={handleLogin}
-          variant="contained"
-          sx={{ marginLeft: "18px" }}
-        >
-          Iniciar sesión
-        </Button>
-      )}
-      {authData[0].userEmail && (
-        <React.Fragment>
+    <div className="user-profile-group">
+      {authData[0].userEmail ? (
+        <>
           <Button
             onClick={handleLogout}
-            variant="contained"
-            sx={{ marginLeft: "18px" }}
+            className="btn-std btn-primary"
           >
             Cerrar Sesion
           </Button>
           <img
             src={authData[0].userProfilePic}
-            alt="Profile Picture"
-            className="profilePicture"
+            alt="Profile"
+            className="profile-picture"
           />
-        </React.Fragment>
+        </>
+      ) : (
+        <Button
+          onClick={handleLogin}
+          className="btn-std btn-primary"
+        >
+          Iniciar sesión
+        </Button>
       )}
-    </React.Fragment>
+    </div>
   );
 }
