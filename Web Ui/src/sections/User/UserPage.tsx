@@ -174,18 +174,31 @@ function UserPage() {
                 Usuarios
             </div>
 
-            <FormControl sx={{ minWidth: 220 }}>
+            <FormControl sx={{ minWidth: 180  }}>
               <Select
                 value={selectedGroup}
                 onChange={handleGroupChange}
                 displayEmpty
+                size="small"
                 sx={{
                   backgroundColor: "#1976D2",
                   color: "#fff",
                   borderRadius: "6px",
+                  fontSize: "13px",
+                  height: "32px",
+                  minWidth: "160px",
+
+                  ".MuiSelect-select": {
+                    padding: "6px 10px",
+                    display: "flex",
+                    alignItems: "center",
+                  },
+
                   ".MuiSvgIcon-root": {
                     color: "#fff",
+                    fontSize: "18px",
                   },
+
                   "& .MuiOutlinedInput-notchedOutline": {
                     border: "none",
                   },
