@@ -4,64 +4,129 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
-  max-width: 1200px; /* Ajuste opcional para no ocupar toda la pantalla */
-  margin-left: auto;
-  margin-right: auto;
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.detail-header-title {
+  font-size: 30px !important;
+  line-height: 1.5 !important;
+  margin-bottom: 24px !important;
+  font-weight: 500 !important;
+}
+
+.detail-info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.detail-info-icon {
+  margin-right: 12px;
+  color: #666666;
+}
+
+.detail-info-text {
+  font-size: 16px !important;
+  line-height: 1.8 !important;
+}
+
+/* Contenedor de botones en el detalle (Consistencia y Espaciado) */
+.detail-actions-container {
+  display: flex;
+  gap: 16px; /* Espacio entre botones */
+}
+
+.table-container-full {
+  width: 100%;
 }
 
 /* Tabla estandarizada al 82% */
 .styled-table {
   width: 82% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  margin-top: 20px;
-}
-
-/* Contenedor de filtros (Search + Select) */
-.filter-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  gap: 20px;
+  margin: 20px auto !important;
 }
 
 /* Bordes para las filas de la tabla */
 .table-row-bordered {
-  border-bottom: 2px solid #E7E7E7;
+  border-bottom: 2px solid #E7E7E7 !important;
 }
 
 /* Encabezados en negrita */
 .table-cell-header {
-  font-weight: 560 !important;
+  font-weight: 600 !important;
 }
 
-/* Botones base: Redondos y texto en minúsculas */
-.btn-custom {
-  border-radius: 50px !important; /* Hace los botones redondos */
-  text-transform: lowercase !important; /* Todo en minúsculas como pediste */
-  padding: 8px 20px !important;
+.action-item-height {
+  height: 42px !important; 
 }
 
-/* Botón Cancelar Estándar (Rojo con borde) */
-.btn-cancel {
-  border: 1px solid #d32f2f !important;
-  color: #d32f2f !important;
-  background-color: transparent !important;
+.btn-std {
+  height: 36px !important;
+  min-width: 110px !important;
+  border-radius: 0px !important; /* Cuadrados */
+  text-transform: none !important; /* Texto tal cual se escribe */
+  font-size: 0.875rem !important;
+  padding: 0 16px !important;
 }
 
-.btn-cancel:hover {
-  background-color: rgba(211, 47, 47, 0.04) !important;
+.btn-std:disabled{
+  background-color: #e0e0e0 !important;
+  color: #9e9e9e !important;
+  border: 1px solid #bdbdbd !important;
+  cursor: not-allowed !important;
 }
 
-/* Bordes y Header */
-.table-row-bordered {
-  border-bottom: 2px solid #E7E7E7 !important;
+/* Variantes de Color */
+.btn-primary {
+  background-color: #1976d2 !important;
+  color: white !important;
 }
 
-.table-cell-header {
-  font-weight: 560 !important;
+.btn-primary:hover:not(:disabled) {
+  background-color: #1565c0 !important;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* Consistencia para el Selector de Ordenar */
+.sorting-container .MuiOutlinedInput-root {
+  height: 36px !important; 
+  border-radius: 0px !important;
+}
+
+/* --- Diálogos y Formularios --- */
+.dialog-title-std {
+  font-size: 1.2rem !important;
+  padding-bottom: 8px !important;
+}
+
+.dialog-content-box {
+  display: grid;
+  gap: 16px;
+  padding-top: 16px !important;
+}
+
+.dialog-footer {
+  display: flex !important;
+  gap: 12px !important; /* Espacio entre botones */
+  padding: 16px 24px !important;
+  justify-content: flex-end !important;
+}
+
+.action-buttons-group {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.practice-title-cell {
   font-size: 16px !important;
+  padding: 16px !important;
 }

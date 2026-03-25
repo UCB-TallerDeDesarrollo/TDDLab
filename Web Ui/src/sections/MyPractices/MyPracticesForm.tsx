@@ -10,6 +10,8 @@ import {
 import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import "../../App.css";
+
 interface CreatePracticePopupProps {
   open: boolean;
   handleClose: () => void;
@@ -77,13 +79,13 @@ function MyPracticesForm({
   }, [open]);
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>
+          <DialogTitle className="dialog-title-std">
             Crear una Practica
           </DialogTitle>
-          <DialogContent>
+          <DialogContent className="dialog-content-box">
             <TextField
               error={formInvalid() && !!save}
               autoFocus
@@ -111,18 +113,11 @@ function MyPracticesForm({
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
           </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
-            >
+          <DialogActions className="dialog-footer">
+            <Button onClick={handleCancel} className="btn-std btn-danger">
               Cancelar
             </Button>
-            <Button
-              onClick={handleSaveClick}
-              color="primary"
-              style={{ textTransform: "none" }}
-            >
+            <Button onClick={handleSaveClick} className="btn-std btn-primary">
               Crear
             </Button>
           </DialogActions>

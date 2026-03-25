@@ -3,11 +3,12 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useState } from "react";
 import { UpdatePractice } from "../../modules/Practices/application/UpdatePractice";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
+import "../../App.css";
 
 interface EditPracticeDialogProps {
   readonly practiceId: number;
@@ -66,40 +67,36 @@ function EditPracticeDialog({
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Practica : {currentTitle}</DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: "grid", gap: 2, marginTop: 2 }}>
-          <TextField
-            id="titulo"
-            label="Título"
-            variant="outlined"
-            size="small"
-            required
-            onChange={(e) => setTitle(e.target.value)}
-            defaultValue={currentTitle}
-          />
-          <TextField
-            id="descripcion"
-            label="Descripcion"
-            variant="outlined"
-            size="small"
-            required
-            multiline
-            rows = {5}
-            onChange={(e) => setDescription(e.target.value)}
-            defaultValue={currentDescription}
-          />
-        </Box>
+      <DialogTitle className="dialog-title-std">
+        Editar Practica : {currentTitle}
+      </DialogTitle>
+      <DialogContent className="dialog-content-box">
+        <TextField
+          id="titulo"
+          label="Título"
+          variant="outlined"
+          size="small"
+          required
+          onChange={(e) => setTitle(e.target.value)}
+          defaultValue={currentTitle}
+        />
+        <TextField
+          id="descripcion"
+          label="Descripcion"
+          variant="outlined"
+          size="small"
+          required
+          multiline
+          rows = {5}
+          onChange={(e) => setDescription(e.target.value)}
+          defaultValue={currentDescription}
+        />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button
-          variant="contained"
-          style={{
-            textTransform: "none",
-          }}
-          onClick={handleSaveChanges}
-        >
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="btn-std btn-cancel">
+          Cancelar
+        </Button>
+        <Button onClick={handleSaveChanges} className="btn-std btn-primary">
           Guardar Cambios
         </Button>
       </DialogActions>

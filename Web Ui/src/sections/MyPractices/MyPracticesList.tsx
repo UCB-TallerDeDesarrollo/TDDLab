@@ -8,10 +8,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Container,
   Button,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import AddIcon from "@mui/icons-material/Add";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
@@ -19,14 +17,10 @@ import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
+import "../../App.css";
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
-interface PracticesProps {
+interface PracticesProps 
+{
   ShowForm: () => void;
   userRole: string;
 }
@@ -125,33 +119,26 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     setHoveredRow(index);
   };
   return (
-    <Container>
-      <section className="Practicas">
-        <StyledTable>
-           <TableHead>
+    <div className="centered-container">
+      <section className="table-container-full">
+        <Table className="styled-table"> {}
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
+              <TableCell colSpan={2} className="table-cell-header">
+                Practicas
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
+                <div className="filter-container"> {/* Clase genérica */}
+                  <div className="sorting-container">
+                    <SortingComponent
+                      selectedSorting={selectedSorting}
+                      onChangeHandler={handleOrderPractices}
+                    />
+                  </div>
                   <Button
-                    variant="contained"
-                    color="primary"
+                    className="btn-std btn-primary"
                     startIcon={<AddIcon />}
                     onClick={showForm}
                   >
@@ -173,7 +160,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
               />
             ))}
           </TableBody>
-        </StyledTable>
+        </Table>
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
@@ -194,7 +181,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
         )}
       </section>
-    </Container>
+    </div>
   );
 }
 
