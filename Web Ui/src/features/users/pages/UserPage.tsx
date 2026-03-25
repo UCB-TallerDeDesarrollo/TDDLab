@@ -154,6 +154,7 @@ function UserPage() {
           <div
             style={{
               width: "82%",
+              boxSizing: "border-box", // <-- Esta línea es la que soluciona que la barra sobresalga
               margin: "20px auto",
               padding: "16px 20px",
               border: "1px solid #CFCFCF",
@@ -220,10 +221,10 @@ function UserPage() {
             </FormControl>
           </div>
         </FilterContainer>
-          
+                    
         <div
           style={{
-            width: "85%",
+            width: "82%", // <-- Cambias el 85% por 82% para que calce perfecto con todo lo demás
             height: "1px",
             backgroundColor: "#D3D3D3",
             margin: "10px auto 20px auto",
