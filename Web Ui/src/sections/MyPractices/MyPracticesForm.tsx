@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import {
   Dialog,
@@ -7,49 +7,47 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
-import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+
 interface CreatePracticePopupProps {
   open: boolean;
   handleClose: () => void;
   userid: number;
+  isSaving: boolean;
+  onCreate: (input: { title: string; description: string; userid: number }) => Promise<void>;
 }
 
 function MyPracticesForm({
   open,
   handleClose,
   userid,
+  isSaving,
+  onCreate,
 }: Readonly<CreatePracticePopupProps>) {
-  const [save, setSave] = useState(false);
+  const [saveAttempted, setSaveAttempted] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("Practica creada exitosamente");
   const [practiceData, setPracticeData] = useState({
-    id: 0,
     title: "",
     description: "",
-    state: "pending",
-    creation_date: new Date(),
     userid: userid,
   });
-  const isCreateButtonClicked = useRef(false);
 
   const handleSaveClick = async () => {
-    setSave(true);
+    setSaveAttempted(true);
     if (formInvalid()) {
       return;
     }
 
-    isCreateButtonClicked.current = true;
-    const practicesRepository = new PracticesRepository();
-    const createPractices = new CreatePractice(practicesRepository);
     try {
-      await createPractices.createPractice(practiceData);
+      await onCreate(practiceData);
+      setValidationMessage("Practica creada exitosamente");
+      setValidationDialogOpen(true);
     } catch (error) {
       console.error(error);
-    } finally {
-      setSave(false);
+      setValidationMessage("Error al crear la practica");
+      setValidationDialogOpen(true);
     }
-    setValidationDialogOpen(true);
   };
 
   const handleInputChange = (
@@ -69,12 +67,22 @@ function MyPracticesForm({
   };
 
   const formInvalid = () => {
-    return practiceData.title === "";
+    return practiceData.title.trim() === "";
   };
 
   useEffect(() => {
-    setSave(false);
-  }, [open]);
+    if (!open) {
+      return;
+    }
+
+    setSaveAttempted(false);
+    setValidationDialogOpen(false);
+    setPracticeData({
+      title: "",
+      description: "",
+      userid,
+    });
+  }, [open, userid]);
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -85,7 +93,7 @@ function MyPracticesForm({
           </DialogTitle>
           <DialogContent>
             <TextField
-              error={formInvalid() && !!save}
+              error={saveAttempted && formInvalid()}
               autoFocus
               margin="dense"
               id="assigment-title"
@@ -122,8 +130,9 @@ function MyPracticesForm({
               onClick={handleSaveClick}
               color="primary"
               style={{ textTransform: "none" }}
+              disabled={isSaving || formInvalid()}
             >
-              Crear
+              {isSaving ? "Creando..." : "Crear"}
             </Button>
           </DialogActions>
         </>
@@ -131,9 +140,14 @@ function MyPracticesForm({
       {!!validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}
-          title="Practica creada exitosamente"
+          title={validationMessage}
           closeText="Cerrar"
-          onClose={() => window.location.reload()}
+          onClose={() => {
+            setValidationDialogOpen(false);
+            if (!validationMessage.toLowerCase().includes("error")) {
+              handleClose();
+            }
+          }}
         />
       )}
     </Dialog>
