@@ -19,7 +19,7 @@ const port = 3000;
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: "https://tddlab-staging-firebase.web.app", //process.env.VITE_FRONT_URL, 
+  origin: "http://localhost:5173", //process.env.VITE_FRONT_URL, 
   credentials: true,
 }));
 app.use(express.json()); 
