@@ -173,7 +173,7 @@ function UserPage() {
               }}>
                 Usuarios
             </div>
-
+              
             <FormControl sx={{ minWidth: 180  }}>
               <Select
                 value={selectedGroup}
@@ -220,6 +220,15 @@ function UserPage() {
             </FormControl>
           </div>
         </FilterContainer>
+          
+        <div
+          style={{
+            width: "85%",
+            height: "1px",
+            backgroundColor: "#D3D3D3",
+            margin: "10px auto 20px auto",
+          }}
+        />
 
         <section className="Usuarios">
           <StyledTable>
