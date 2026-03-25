@@ -16,6 +16,10 @@
   width: 100%;
 }
 
+.page-top-spacer { 
+  margin-top: 80px; 
+}
+
 /* Contenedor para filtros (Busqueda + Ordenar) */
 .filter-container {
   display: flex;
@@ -35,6 +39,8 @@
   text-transform: none !important; 
   font-size: 0.875rem !important;
   padding: 0 16px !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
 }
 
 /* Variante Color Primario */
@@ -52,7 +58,6 @@
 .btn-std:disabled{
   background-color: #e0e0e0 !important;
   color: #5b5b5b !important;
-  border: 1px solid #bdbdbd !important;
   cursor: not-allowed !important;
 }
 
