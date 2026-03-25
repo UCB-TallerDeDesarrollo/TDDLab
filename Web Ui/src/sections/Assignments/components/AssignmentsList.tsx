@@ -15,6 +15,8 @@ import { useAssignmentsScreen } from "../../../features/assignments/hooks/useAss
 import AssignmentsFilterPopover from "../../../features/assignments/components/AssignmentsFilterPopover";
 import AssignmentsListLayout from "../../../features/assignments/components/AssignmentsListLayout";
 import ActionButton from "../../../shared/components/ActionButton";
+import ContentState from "../../../shared/components/ContentState";
+import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
 import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivider";
 import Assignment from "./Assignment";
@@ -60,6 +62,9 @@ function Assignments({
   const {
     assignments,
     confirmationOpen,
+    error,
+    feedbackMessage,
+    feedbackSeverity,
     groupList,
     handleClickDelete,
     handleClickDetail,
@@ -70,6 +75,7 @@ function Assignments({
     selectedGroup,
     selectedSorting,
     setConfirmationOpen,
+    setFeedbackMessage,
     setValidationDialogOpen,
     showCreateButton,
     validationDialogOpen,
@@ -131,19 +137,33 @@ function Assignments({
 
           <ListSection>
             <ListHeader>Listado</ListHeader>
-            <AssignmentsListLayout>
-              {assignments.map((assignment, index) => (
-                <Assignment
-                  key={assignment.id}
-                  assignment={assignment}
-                  index={index}
-                  handleClickDetail={handleClickDetail}
-                  handleClickDelete={handleClickDelete}
-                  handleRowHover={handleRowHover}
-                  role={userRole}
-                />
-              ))}
-            </AssignmentsListLayout>
+            {error ? (
+              <ContentState
+                variant="error"
+                title="No se pudieron cargar las tareas"
+                description={error.message}
+              />
+            ) : assignments.length === 0 ? (
+              <ContentState
+                variant="empty"
+                title="No hay tareas disponibles"
+                description="Cuando existan tareas para el grupo seleccionado, aparecerán en este listado."
+              />
+            ) : (
+              <AssignmentsListLayout>
+                {assignments.map((assignment, index) => (
+                  <Assignment
+                    key={assignment.id}
+                    assignment={assignment}
+                    index={index}
+                    handleClickDetail={handleClickDetail}
+                    handleClickDelete={handleClickDelete}
+                    handleRowHover={handleRowHover}
+                    role={userRole}
+                  />
+                ))}
+              </AssignmentsListLayout>
+            )}
           </ListSection>
 
           <AssignmentsFilterPopover
@@ -184,6 +204,13 @@ function Assignments({
               }}
             />
           ) : null}
+
+          <FeedbackSnackbar
+            open={Boolean(feedbackMessage) && !validationDialogOpen}
+            message={feedbackMessage}
+            severity={feedbackSeverity}
+            onClose={() => setFeedbackMessage("")}
+          />
         </ScreenSection>
       )}
     </PageContainer>

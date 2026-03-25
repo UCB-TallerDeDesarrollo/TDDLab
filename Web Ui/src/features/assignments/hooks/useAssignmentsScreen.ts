@@ -74,6 +74,10 @@ export function useAssignmentsScreen({
 
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSeverity, setFeedbackSeverity] = useState<
+    "success" | "error"
+  >("success");
   const [selectedSorting, setSelectedSorting] = useState<AssignmentSorting>("");
   const [selectedGroup, setSelectedGroup] = useState(0);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
@@ -106,6 +110,7 @@ export function useAssignmentsScreen({
 
         setAssignments(nextAssignments);
         setError(null);
+        setFeedbackMessage("");
         return nextAssignments;
       } catch (fetchError) {
         const nextError =
@@ -179,6 +184,7 @@ export function useAssignmentsScreen({
       setAssignments([]);
       setGroupList([]);
       setError(nextError);
+      setFeedbackMessage("");
       console.error("Error en fetchData:", fetchError);
     } finally {
       setIsLoading(false);
@@ -263,6 +269,8 @@ export function useAssignmentsScreen({
         ),
       );
       setValidationDialogOpen(true);
+      setFeedbackMessage("Tarea eliminada exitosamente");
+      setFeedbackSeverity("success");
       setError(null);
     } catch (deleteError) {
       const nextError =
@@ -271,6 +279,8 @@ export function useAssignmentsScreen({
           : new Error("Error eliminando assignment");
 
       setError(nextError);
+      setFeedbackMessage("No se pudo eliminar la tarea");
+      setFeedbackSeverity("error");
       console.error("Error eliminando assignment:", deleteError);
     } finally {
       setConfirmationOpen(false);
@@ -283,6 +293,8 @@ export function useAssignmentsScreen({
     authData,
     confirmationOpen,
     error,
+    feedbackMessage,
+    feedbackSeverity,
     groupList,
     handleClickDelete,
     handleClickDetail,
@@ -293,6 +305,7 @@ export function useAssignmentsScreen({
     selectedGroup,
     selectedSorting,
     setConfirmationOpen,
+    setFeedbackMessage,
     setValidationDialogOpen,
     showCreateButton: userRole !== "student",
     validationDialogOpen,
