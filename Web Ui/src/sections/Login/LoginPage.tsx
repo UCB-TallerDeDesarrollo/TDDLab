@@ -92,10 +92,10 @@ const Login = () => {
           ¡Bienvenido a TDDLab!, usa tu cuenta para acceder:
         </p>
         <div className="login-buttons">
-          <button className="github-button" onClick={handleGitHubLogin}>
+          <button className="auth-button auth-button--github" onClick={handleGitHubLogin}>
             Accede con GitHub
           </button>
-          <button className="google-button" onClick={handleGoogleLogin}>
+          <button className="auth-button auth-button--google" onClick={handleGoogleLogin}>
             Accede con Google
           </button>
         </div>
