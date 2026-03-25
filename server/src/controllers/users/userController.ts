@@ -12,13 +12,7 @@ import { decodeUserTokenFromCookie } from "../../modules/Users/Application/decod
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
 import { User } from "../../modules/Users/Domain/User";
-import admin from "firebase-admin";
-import * as dotenv from "dotenv";
-dotenv.config();
-
-admin.initializeApp({
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  credential: admin.credential.applicationDefault(),});
+import admin from "../../config/firebaseAdmin";
 
 class UserController {
   private readonly userRepository: UserRepository;
