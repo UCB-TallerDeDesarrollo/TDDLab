@@ -124,13 +124,11 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
         <Table className="styled-table"> {}
           <TableHead>
             <TableRow>
-              <TableCell colSpan={2} className="table-cell-header">
+              <TableCell className="table-cell-header">
                 Practicas
               </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div className="filter-container"> {/* Clase genérica */}
+              <TableCell>
+                <div className="filter-container">
                   <div className="sorting-container">
                     <SortingComponent
                       selectedSorting={selectedSorting}

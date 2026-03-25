@@ -21,7 +21,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
 /* ==========================================================================
@@ -52,7 +51,7 @@
 /* Estado Deshabilitado */
 .btn-std:disabled{
   background-color: #e0e0e0 !important;
-  color: #9e9e9e !important;
+  color: #5b5b5b !important;
   border: 1px solid #bdbdbd !important;
   cursor: not-allowed !important;
 }
@@ -95,39 +94,6 @@
 .sorting-container .MuiOutlinedInput-root {
   height: 36px !important; 
   border-radius: 0px !important;
-}
-
-/* ==========================================================================
-   VISTA DE DETALLE (PRACTICE DETAIL)
-   ========================================================================== */
-
-.detail-header-title {
-  font-size: 30px !important;
-  line-height: 1.5 !important;
-  margin-bottom: 24px !important;
-  font-weight: 500 !important;
-}
-
-.detail-info-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.detail-info-icon {
-  margin-right: 12px;
-  color: #666666;
-}
-
-.detail-info-text {
-  font-size: 16px !important;
-  line-height: 1.8 !important;
-}
-
-/* Contenedor de botones en el detalle */
-.detail-actions-container {
-  display: flex;
-  gap: 16px; /* Espacio entre botones */
 }
 
 /* ==========================================================================

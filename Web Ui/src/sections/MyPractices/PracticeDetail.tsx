@@ -24,6 +24,7 @@ import { GetPracticeById } from "../../modules/Practices/application/GetPractice
 import { formatDate } from "../../utils/dateUtils.ts";
 import { handleRedirectStudent } from "../Shared/handlers.ts";
 import "../../App.css";
+import "./styles/PracticeDetailStyle.css"; 
 
 interface PracticeDetailProps {
   title: string;

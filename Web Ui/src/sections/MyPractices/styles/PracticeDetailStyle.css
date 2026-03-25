@@ -1,0 +1,28 @@
+.detail-header-title {
+  font-size: 30px !important;
+  line-height: 1.5 !important;
+  margin-bottom: 24px !important;
+  font-weight: 500 !important;
+}
+
+.detail-info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.detail-info-icon {
+  margin-right: 12px;
+  color: #666666;
+}
+
+.detail-info-text {
+  font-size: 16px !important;
+  line-height: 1.8 !important;
+}
+
+/* Contenedor de botones en el detalle */
+.detail-actions-container {
+  display: flex;
+  gap: 16px; /* Espacio entre botones */
+}
