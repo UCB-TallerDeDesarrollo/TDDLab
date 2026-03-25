@@ -163,13 +163,19 @@ export function useAssignmentsScreen({
       const initialGroupId = resolveInitialGroupId({
         locationSearch: location.search,
         storedSelectedGroup: localStorage.getItem("selectedGroup"),
-        authGroupId: authData?.usergroupid,
+        authGroupId: Array.isArray(userGroupid) ? userGroupid[0] : userGroupid,
         storedUserGroups: localStorage.getItem("userGroups"),
         fallbackGroups: allGroups,
       });
 
       if (initialGroupId) {
-        await loadAssignmentsForGroup(initialGroupId);
+        const normalizedGroupId = initialGroupId === -1 ? 0 : initialGroupId;
+
+        setSelectedGroup(normalizedGroupId);
+        onGroupChange(initialGroupId);
+        localStorage.setItem("selectedGroup", initialGroupId.toString());
+
+        await loadAssignmentsForGroup(initialGroupId, false);
       } else {
         setSelectedGroup(0);
         setAssignments([]);
@@ -190,10 +196,11 @@ export function useAssignmentsScreen({
       setIsLoading(false);
     }
   }, [
-    authData?.usergroupid,
     loadAssignmentsForGroup,
     loadUserGroups,
     location.search,
+    onGroupChange,
+    userGroupid,
   ]);
 
   useEffect(() => {
