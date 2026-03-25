@@ -1,96 +1,125 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
-import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
+  Alert,
+  CircularProgress,
   Table,
-  TableHead,
   TableBody,
-  TableRow,
-  TableCell,
-  Container,
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import AddIcon from "@mui/icons-material/Add";
-import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
+import { MyPracticesViewState } from "./types/myPractices.types";
+
+const PageRoot = styled("div")({
+  width: "100%",
+  display: "flex",
+  justifyContent: "center",
+});
+
+const PageSection = styled("section")({
+  width: "min(1301px, calc(100vw - 40px))",
+  maxWidth: "1301px",
+  marginTop: "46px",
+});
 
 const StyledTable = styled(Table)({
-  width: "82%",
+  width: "100%",
+  tableLayout: "fixed",
+  borderCollapse: "separate",
+  borderSpacing: "0 0",
+});
+
+const HeaderActions = styled("div")({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  minHeight: "69px",
+  border: "1.5px solid #898989",
+  borderRadius: "5px",
+  padding: "8px 18px",
+  flexWrap: "wrap",
+  rowGap: "8px",
+});
+
+const HeaderTitle = styled("h2")({
+  fontFamily: "Inter, sans-serif",
+  fontStyle: "normal",
+  fontWeight: 700,
+  fontSize: "clamp(22px, 2.2vw, 24px)",
+  lineHeight: "29px",
+  margin: 0,
+  color: "#002346",
+});
+
+const HeaderButtons = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
   marginLeft: "auto",
-  marginRight: "auto",
+  flexShrink: 0,
+});
+
+const DividerBar = styled("div")({
+  width: "100%",
+  height: "5px",
+  background: "#D9D9D9",
+  borderRadius: "13px",
+  marginTop: "34px",
+  marginBottom: "34px",
+});
+
+const StateContainer = styled("div")({
+  width: "100%",
+  marginTop: "2rem",
+  display: "flex",
+  justifyContent: "center",
 });
 
 interface PracticesProps {
   ShowForm: () => void;
-  userRole: string;
+  practices: PracticeDataObject[];
+  selectedSorting: string;
+  isSaving: boolean;
+  viewState: MyPracticesViewState;
+  error: string | null;
+  canManagePractices: boolean;
+  canCreatePractices: boolean;
+  onRetry: () => Promise<void>;
+  onSortChange: (sorting: "" | "A_Up_Order" | "A_Down_Order" | "Time_Up" | "Time_Down") => void;
+  onDeletePractice: (practiceId: number) => Promise<void>;
+  onPracticeUpdated: (practice: PracticeDataObject) => Promise<void>;
 }
 
-function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
-  const [authData] = useGlobalState("authData");
+function Practices({
+  ShowForm: showForm,
+  practices,
+  selectedSorting,
+  isSaving,
+  viewState,
+  error,
+  canManagePractices,
+  canCreatePractices,
+  onRetry,
+  onSortChange,
+  onDeletePractice,
+  onPracticeUpdated,
+}: Readonly<PracticesProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState<string>("");
+  const [validationTitle, setValidationTitle] = useState("Practica eliminada exitosamente");
   const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<
     number | null
   >(null);
   const navigate = useNavigate();
 
-  const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
-  const [practices, setPractices] = useState<PracticeDataObject[]>([]);
-
-  const practicesRepository = new PracticesRepository();
-  const deletePractice = new DeletePractice(practicesRepository);
-
-  const orderPractices = (
-    practicesArray: PracticeDataObject[],
-    sorting: string
-  ) => {
-    if (practicesArray.length > 0) {
-      const sortedPractices = [...practicesArray].sort((a, b) => {
-        switch (sorting) {
-          case "A_Up_Order":
-            return a.title.localeCompare(b.title);
-          case "A_Down_Order":
-            return b.title.localeCompare(a.title);
-          case "Time_Up":
-            return b.id - a.id;
-          case "Time_Down":
-            return a.id - b.id;
-          default:
-            return 0;
-        }
-      });
-      setPractices(sortedPractices);
-    }
-  };
-  // Obtener prácticas
-
-  const fetchData = async () => {
-    try {
-      const data = await practicesRepository.getPracticeByUserId(
-        authData.userid
-      );
-      setPractices(data);
-      orderPractices(data, selectedSorting);
-    } catch (error) {
-      console.error("Error fetching practices:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [selectedSorting, authData]);
-
   const handleOrderPractices = (event: { target: { value: string } }) => {
-    const sorting = event.target.value;
-    setSelectedSorting(sorting);
-    orderPractices(practices, sorting);
+    onSortChange(event.target.value as "" | "A_Up_Order" | "A_Down_Order" | "Time_Up" | "Time_Down");
   };
 
   const handleClickDetail = (index: number) => {
@@ -105,62 +134,142 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleConfirmDelete = async () => {
     try {
       if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
-        
-        await deletePractice.DeletePractice(
-          practices[selectedPracticeIndex].id
-        );
-        const updatedPractices = [...practices];
-        updatedPractices.splice(selectedPracticeIndex, 1);
-        setPractices(updatedPractices);
+        await onDeletePractice(practices[selectedPracticeIndex].id);
+        setValidationTitle("Practica eliminada exitosamente");
+      } else {
+        setValidationTitle("Error al eliminar la practica");
       }
-      setConfirmationOpen(false);
     } catch (error) {
       console.error(error);
+      setValidationTitle("Error al eliminar la practica");
     }
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
   };
 
-  const handleRowHover = (index: number | null) => {
-    setHoveredRow(index);
-  };
-  return (
-    <Container>
-      <section className="Practicas">
-        <StyledTable>
-           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
+  if (viewState === "loading") {
+    return (
+      <PageRoot>
+        <PageSection>
+          <StateContainer>
+            <CircularProgress />
+          </StateContainer>
+        </PageSection>
+      </PageRoot>
+    );
+  }
+
+  if (viewState === "error") {
+    return (
+      <PageRoot>
+        <PageSection>
+          <StateContainer>
+            <Alert
+              severity="error"
+              action={
+                <Button color="inherit" size="small" onClick={onRetry}>
+                  Reintentar
+                </Button>
+              }
+            >
+              {error ?? "No pudimos cargar tus practicas"}
+            </Alert>
+          </StateContainer>
+        </PageSection>
+      </PageRoot>
+    );
+  }
+
+  if (viewState === "empty") {
+    return (
+      <PageRoot>
+        <PageSection className="Practicas">
+          <HeaderActions>
+            <HeaderTitle>Practicas</HeaderTitle>
+            <HeaderButtons>
+              <SortingComponent
+                selectedSorting={selectedSorting}
+                onChangeHandler={handleOrderPractices}
+                prototypeStyle
+              />
+              {canCreatePractices && (
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={showForm}
+                  disabled={isSaving}
+                  sx={{
+                    height: "34px",
+                    minWidth: "88px",
+                    textTransform: "none",
+                    fontWeight: 700,
+                    fontSize: "14px",
+                    lineHeight: "17px",
+                    backgroundColor: "#1370D2",
+                    borderRadius: "5px",
+                    boxShadow: "none",
+                    color: "#FFFFFF",
+                    "&:hover": {
+                      backgroundColor: "#0D63BE",
+                      boxShadow: "none",
+                    },
                   }}
                 >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
+                  Crear
+                </Button>
+              )}
+            </HeaderButtons>
+          </HeaderActions>
+          <DividerBar />
+          <StateContainer>
+            <Alert severity="info">Todavia no tenes practicas creadas.</Alert>
+          </StateContainer>
+        </PageSection>
+      </PageRoot>
+    );
+  }
+
+  return (
+    <PageRoot>
+      <PageSection className="Practicas">
+        <HeaderActions>
+          <HeaderTitle>Practicas</HeaderTitle>
+          <HeaderButtons>
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleOrderPractices}
+              prototypeStyle
+            />
+            {canCreatePractices && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={showForm}
+                disabled={isSaving}
+                sx={{
+                  height: "34px",
+                  minWidth: "88px",
+                  textTransform: "none",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  lineHeight: "17px",
+                  backgroundColor: "#1370D2",
+                  borderRadius: "5px",
+                  boxShadow: "none",
+                  color: "#FFFFFF",
+                  "&:hover": {
+                    backgroundColor: "#0D63BE",
+                    boxShadow: "none",
+                  },
+                }}
+              >
+                Crear
+              </Button>
+            )}
+          </HeaderButtons>
+        </HeaderActions>
+        <DividerBar />
+        <StyledTable>
           <TableBody>
             {practices.map((practice, index) => (
               <Practice
@@ -169,7 +278,8 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                 index={index}
                 handleClickDetail={handleClickDetail}
                 handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
+                canManagePractices={canManagePractices}
+                onPracticeUpdated={onPracticeUpdated}
               />
             ))}
           </TableBody>
@@ -188,13 +298,13 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}
-            title="Practica eliminada exitosamente"
+            title={validationTitle}
             closeText="Cerrar"
-            onClose={() => window.location.reload()}
+            onClose={() => setValidationDialogOpen(false)}
           />
         )}
-      </section>
-    </Container>
+      </PageSection>
+    </PageRoot>
   );
 }
 
