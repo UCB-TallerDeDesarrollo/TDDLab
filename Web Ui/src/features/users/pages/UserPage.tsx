@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 
-import GetUsers from "../../modules/Users/application/getUsers";
-import UsersRepository from "../../modules/Users/repository/UsersRepository";
-import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
-import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserFromGroup";
+import GetUsers from "../../../modules/Users/application/getUsers";
+import UsersRepository from "../../../modules/Users/repository/UsersRepository";
+import { UserDataObject } from "../../../modules/Users/domain/UsersInterface";
+import { RemoveUserFromGroup } from "../../../modules/Users/application/removeUserFromGroup";
 
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
@@ -15,11 +15,11 @@ import { styled } from "@mui/system";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import SearchIcon from "@mui/icons-material/Search";
 
-import GetGroups from "../../modules/Groups/application/GetGroups";
-import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
-import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
+import GetGroups from "../../../modules/Groups/application/GetGroups";
+import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 
-import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail";
+import { SearchUsersByEmail } from "../../../modules/Users/application/SearchUsersByEmail";
 
 // -------------------  ESTILOS  -------------------
 const CenteredContainer = styled(Container)({

@@ -5,7 +5,7 @@ import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/reposito
 import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
-import User from "./sections/User/UserPage";
+import User from "./features/users/pages/UserPage";
 import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -21,7 +21,7 @@ import {
 import { getSessionCookie } from "./modules/User-Authentication/application/getSessionCookie";
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
-import UsersByGroupPage from "./sections/User/UserBygroupPage";
+import UsersByGroupPage from "./features/users/pages/UserBygroupPage";
 import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
