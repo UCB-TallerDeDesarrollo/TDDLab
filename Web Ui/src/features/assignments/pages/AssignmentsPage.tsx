@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { styled } from "@mui/system";
 import Form from "../../../sections/Assignments/components/AssignmentForm";
-import Assignments from "../../../sections/Assignments/components/AssignmentsList";
+import AssignmentsList from "../components/AssignmentsList";
 import { AssignmentScreenProps } from "../types/assignmentScreen";
 
 const AssignmentsContainer = styled("div")({
@@ -31,7 +31,7 @@ function AssignmentsPage({
   return (
     <>
       <AssignmentsContainer data-testid="assignments-container">
-        <Assignments
+        <AssignmentsList
           ShowForm={handleCreateAssignmentClick}
           userRole={userRole}
           userGroupid={userGroupid}
