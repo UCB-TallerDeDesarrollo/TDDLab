@@ -9,6 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltipPractice } from "../Shared/statusHelpers";
+import { typographyVariants } from "../../styles/typography";
 
 interface PracticeProps {
   practice: PracticeDataObject;
@@ -45,7 +46,7 @@ const Practice: React.FC<PracticeProps> = ({
     >
       <TableCell
         sx={{
-          fontSize: "16px",
+          ...typographyVariants.paragraphMedium,
           padding: "16px",
           verticalAlign: "middle",
           maxWidth: "600px",

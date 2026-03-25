@@ -10,6 +10,7 @@ import {
 import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { typographyVariants } from "../../styles/typography";
 interface CreatePracticePopupProps {
   open: boolean;
   handleClose: () => void;
@@ -80,7 +81,7 @@ function MyPracticesForm({
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>
+          <DialogTitle style={{ ...typographyVariants.h5 }}>
             Crear una Practica
           </DialogTitle>
           <DialogContent>
@@ -95,7 +96,7 @@ function MyPracticesForm({
               fullWidth
               value={practiceData.title}
               onChange={(e) => handleInputChange(e, "title")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
             />
             <TextField
               multiline
@@ -108,7 +109,7 @@ function MyPracticesForm({
               fullWidth
               value={practiceData.description}
               onChange={(e) => handleInputChange(e, "description")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
             />
           </DialogContent>
           <DialogActions>

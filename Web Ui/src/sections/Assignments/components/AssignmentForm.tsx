@@ -22,6 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { typographyVariants } from "../../../styles/typography";
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
@@ -47,10 +48,8 @@ const ValidationDialog = ({
           alignItems: 'center', 
           gap: 1.5,
           color: isError ? '#d32f2f' : '#2e7d32',
-          fontSize: '1rem',
-          fontWeight: 400,
+          ...typographyVariants.paragraphBig,
           py: 2,
-          fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
         }}
       >
         {isError ? (
@@ -66,7 +65,7 @@ const ValidationDialog = ({
           style={{ 
             color: isError ? '#d32f2f' : '#2e7d32',
             textTransform: 'none',
-            fontSize: '0.875rem'
+            ...typographyVariants.paragraphMedium,
           }}
         >
           {closeText}
@@ -248,7 +247,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8rem" }}>Crear tarea</DialogTitle>
+          <DialogTitle style={{ ...typographyVariants.h5 }}>Crear tarea</DialogTitle>
           <DialogContent>
             <section className="mb-4">
               <FormControl fullWidth variant="outlined" margin="normal">
@@ -284,7 +283,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               fullWidth
               value={assignmentData.title}
               onChange={(e) => handleInputChange(e, "title")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
             />
             
             <TextField
@@ -298,7 +297,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               fullWidth
               value={assignmentData.description}
               onChange={(e) => handleInputChange(e, "description")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
             />
             
             <section className="mt-4">

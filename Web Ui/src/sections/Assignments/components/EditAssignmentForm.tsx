@@ -20,6 +20,7 @@ import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import { typographyVariants } from "../../../styles/typography";
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
@@ -195,9 +196,9 @@ function EditAssignmentDialog({
         </Button>
       </DialogActions>
       <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>
-        <DialogTitle style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '18px' }}>Error</DialogTitle>
+        <DialogTitle style={{ color: '#dc3545', ...typographyVariants.h5 }}>Error</DialogTitle>
         <DialogContent>
-          <p style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>{errorMessage}</p>
+          <p style={{ color: '#dc3545', ...typographyVariants.paragraphBig, textAlign: 'center' }}>{errorMessage}</p>
         </DialogContent>
         <DialogActions>
           <Button variant="contained" color="error" onClick={() => setErrorOpen(false)}>Cerrar</Button>

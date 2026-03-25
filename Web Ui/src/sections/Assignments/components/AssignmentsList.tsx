@@ -23,6 +23,7 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { typographyVariants } from "../../../styles/typography";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -353,7 +354,7 @@ useEffect(() => {
               sx={{
                 borderRadius: "17px",
                 textTransform: "none",
-                fontSize: "0.95rem",
+                ...typographyVariants.paragraphMedium,
                 paddingX: "16px",
                 paddingY: "8px",
                 minWidth: "90px",
@@ -376,7 +377,7 @@ useEffect(() => {
               }}
             >
               <CustomTableCell1
-                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
+                sx={{ ...typographyVariants.h5, color: "#333" }}
               >
                 Tareas
               </CustomTableCell1>

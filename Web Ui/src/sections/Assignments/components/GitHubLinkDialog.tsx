@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import { useGitHubLinkValidation } from "./GitValidationHook";
 import { useState } from "react";
+import { typographyVariants } from "../../../styles/typography";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -44,15 +45,15 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   };
 
   const dialogTitleStyle = {
-    fontSize: "1rem",
+    ...typographyVariants.h5,
   };
 
   const textFieldStyle = {
-    fontSize: "12px",
+    ...typographyVariants.paragraphMedium,
   };
 
   const contentStyle = {
-    fontSize: ".75rem",
+    ...typographyVariants.paragraphMedium,
     padding: "20px",
   };
 

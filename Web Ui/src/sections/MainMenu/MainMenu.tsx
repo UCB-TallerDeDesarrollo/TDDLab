@@ -14,6 +14,7 @@ import { ReactElement, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
+import { typographyVariants } from "../../styles/typography";
 
 type NavLink = {
   title: string;
@@ -63,7 +64,7 @@ export default function MainMenu({
               to="/"
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              <Typography variant="h5" sx={{ ...typographyVariants.h5, flexGrow: 1 }}>
                 TDDLab
               </Typography>
             </NavLink>
@@ -89,6 +90,7 @@ export default function MainMenu({
                             ? "2px solid #fff"
                             : "none",
                         color: activeButton === item.title ? "#fff" : "#A9A9A9",
+                        ...typographyVariants.paragraphMedium,
                       }}
                     >
                       {item.title}

@@ -19,6 +19,7 @@ import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
+import { typographyVariants } from "../../styles/typography";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -131,7 +132,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
            <TableHead>
             <TableRow>
               <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
+                <div style={{ ...typographyVariants.h5 }}>Practicas</div>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -153,6 +154,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
+                    sx={{ textTransform: "none", ...typographyVariants.paragraphMedium }}
                     onClick={showForm}
                   >
                     Crear

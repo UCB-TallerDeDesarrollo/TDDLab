@@ -46,6 +46,7 @@ import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Ap
 import {
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
+import { typographyVariants } from "../../styles/typography";
 
 
 interface AssignmentDetailProps {
@@ -67,6 +68,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   role,
   userid,
 }) => {
+  const actionButtonStyle = {
+    textTransform: "none",
+    ...typographyVariants.paragraphMedium,
+    marginRight: "8px",
+  };
+
+  const detailTextStyle = {
+    ...typographyVariants.paragraphBig,
+    lineHeight: "1.8",
+  };
+
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
     null
   );
@@ -392,11 +404,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")
                 }}
                 color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
+                style={actionButtonStyle}
               >
                 Ver gráfica
               </Button>
@@ -413,11 +421,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   });
                 }}
                 color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
+                style={actionButtonStyle}
               >
                 Asistente IA
               </Button>
@@ -433,11 +437,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
                   }}
                   color="primary"
-                  style={{
-                    textTransform: "none",
-                    fontSize: "15px",
-                    marginRight: "7px",
-                  }}
+                  style={{ ...actionButtonStyle, marginRight: "7px" }}
                 >
                   Ver gráficas adicionales
                 </Button>
@@ -470,7 +470,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Typography
                 variant="h5"
                 component="div"
-                style={{ fontSize: "30px", lineHeight: "3.8" }}
+                style={{ ...typographyVariants.h3, lineHeight: "3.8" }}
               >
                 {assignment.title}
               </Typography>
@@ -487,7 +487,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={detailTextStyle}
                 >
                   <strong>Grupo:</strong> {groupDetails?.groupName}
                 </Typography>
@@ -505,7 +505,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={detailTextStyle}
                 >
                   <strong>Instrucciones:</strong> {assignment.description}
                 </Typography>
@@ -524,7 +524,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={detailTextStyle}
                 >
                   <strong>Inicio:</strong>{" "}
                   {formatDate(assignment.start_date.toString())}
@@ -543,7 +543,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={detailTextStyle}
                 >
                   <strong>Fecha límite:</strong>{" "}
                   {formatDate(assignment.end_date.toString())}
@@ -563,7 +563,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    style={{ fontSize: "16px", lineHeight: "1.8" }}
+                    style={detailTextStyle}
                   >
                     <strong>Estado:</strong>{" "}
                     {getDisplayStatus(studentSubmission?.status)}
@@ -583,7 +583,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    style={{ fontSize: "16px", lineHeight: "1.8" }}
+                    style={detailTextStyle}
                   >
                     <strong>Enlace:</strong>
                     <a
@@ -612,7 +612,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     <Typography
                       variant="body2"
                       color="text.secondary"
-                      style={{ fontSize: "16px", lineHeight: "1.8" }}
+                      style={detailTextStyle}
                     >
                       <strong>Comentario:</strong> {studentSubmission?.repository_link === "" || studentSubmission == null}
                     </Typography>
@@ -624,11 +624,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 variant="contained"
                 disabled={!!studentSubmission}
                 onClick={handleOpenLinkDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
+                style={actionButtonStyle}
               >
                 Iniciar tarea
               </Button>
@@ -645,11 +641,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   }
                 }}
                 color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
+                style={actionButtonStyle}
               >
                 Ver gráfica
               </Button>
@@ -665,11 +657,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 variant="contained"
                 disabled={isTaskInProgress}
                 onClick={handleOpenCommentDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
+                style={actionButtonStyle}
               >
                 Finalizar tarea
               </Button>
@@ -685,11 +673,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   });
                 }}
                 color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
+                style={actionButtonStyle}
               >
                 Asistente IA
               </Button>
@@ -721,7 +705,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               variant="h6"
               component="div"
               align="center"
-              style={{ fontSize: "24px", lineHeight: "3.8" }}
+              style={{ ...typographyVariants.h4, lineHeight: "3.8" }}
             >
               Lista de Estudiantes
             </Typography>

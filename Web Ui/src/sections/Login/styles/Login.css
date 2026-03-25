@@ -5,7 +5,6 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  font-family: Arial, sans-serif;
 }
 
 /* Estilos para el encabezado */
@@ -36,7 +35,6 @@
 /* Estilos para el botón de GitHub */
 .github-button {
   padding: 10px 20px;
-  font-size: 16px;
   background-color: #18fca4;
   color: black;
   border: none;
@@ -46,8 +44,6 @@
   margin-top: 20px;
 }
 .login-Title {
-  font-size: 25px;
-  font-weight: 600;
   color: black;
 }
 .github-button:hover {
@@ -58,7 +54,6 @@
 /* Estilos para el botón de Google */
 .google-button {
   padding: 10px 20px;
-  font-size: 16px;
   background-color: #4285f4;
   color: white;
   border: none;

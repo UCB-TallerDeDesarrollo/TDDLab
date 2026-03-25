@@ -1,6 +1,7 @@
 import React from "react";
 import { MenuItem, SelectChangeEvent, Select } from "@mui/material";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+import { typographyVariants } from "../../../styles/typography";
 
 interface GroupFilterProps {
   selectedGroup: number;
@@ -21,7 +22,7 @@ const GroupFilter: React.FC<GroupFilterProps> = ({
       value={selectedGroup}
       onChange={onChangeHandler}
       displayEmpty
-      style={{ fontSize: "14px", height: "36px" }}
+      style={{ ...typographyVariants.paragraphMedium, height: "36px" }}
     >
       <MenuItem value={0} disabled>
         {defaultName}
