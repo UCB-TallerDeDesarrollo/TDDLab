@@ -1,39 +1,121 @@
-/* Contenedor principal para centrar contenido */
+/* ==========================================================================
+   LAYOUT & CONTENEDORES GLOBALES
+   ========================================================================== */
+
+/* Contenedor principal para centrar contenido de páginas*/
 .centered-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
-  max-width: 1200px; /* Ajuste opcional para no ocupar toda la pantalla */
-  margin-left: auto;
-  margin-right: auto;
+  margin: 20px auto;
+  max-width: 1200px;
 }
 
-/* Tabla estandarizada al 82% */
-.styled-table {
-  width: 82% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  margin-top: 20px;
+.table-container-full {
+  width: 100%;
 }
 
-/* Contenedor de filtros (Search + Select) */
+/* Contenedor para filtros (Busqueda + Ordenar) */
 .filter-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  gap: 20px;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-/* Bordes para las filas de la tabla */
-.table-row-bordered {
-  border-bottom: 2px solid #E7E7E7;
+/* ==========================================================================
+   SISTEMA DE BOTONES (ESTÁNDAR & VARIANTES)
+   ========================================================================== */
+
+/* Estructura base de botones (Cuadrados y medidas fijas) */
+.btn-std {
+  height: 36px !important;
+  min-width: 110px !important;
+  border-radius: 0px !important; 
+  text-transform: none !important; 
+  font-size: 0.875rem !important;
+  padding: 0 16px !important;
 }
 
-/* Encabezados en negrita */
+/* Variante Color Primario */
+.btn-primary {
+  background-color: #1976d2 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1565c0 !important;
+}
+
+/* Estado Deshabilitado */
+.btn-std:disabled{
+  background-color: #e0e0e0 !important;
+  color: #5b5b5b !important;
+  border: 1px solid #bdbdbd !important;
+  cursor: not-allowed !important;
+}
+
+/* ==========================================================================
+   TABLAS & LISTADOS
+   ========================================================================== */
+
+/* Tabla estandarizada (Ancho y márgenes) */
+.styled-table {
+  width: 82% !important;
+  margin: 20px auto !important;
+}
+
+/* Encabezados de tabla */
 .table-cell-header {
-  font-weight: 560 !important;
+  font-weight: 600 !important;
+}
+
+/* Filas con borde inferior */
+.table-row-bordered {
+  border-bottom: 2px solid #E7E7E7 !important;
+}
+
+/* Celdas de contenido (Títulos de prácticas) */
+.action-buttons-group {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Grupo de iconos de acción al final de cada fila */
+.practice-title-cell {
+  font-size: 16px !important;
+  padding: 16px !important;
+}
+
+/* Consistencia para el componente de Ordenar */
+.sorting-container .MuiOutlinedInput-root {
+  height: 36px !important; 
+  border-radius: 0px !important;
+}
+
+/* ==========================================================================
+   DIÁLOGOS & FORMULARIOS (POP-UPS)
+   ========================================================================== */
+
+.dialog-title-std {
+  font-size: 1.2rem !important;
+  padding-bottom: 8px !important;
+}
+
+/* Caja de contenido dentro de los formularios */
+.dialog-content-box {
+  display: grid;
+  gap: 16px;
+  padding-top: 16px !important;
+}
+
+/* Pie de página de diálogos (Contenedor de botones Cancelar/Guardar) */
+.dialog-footer {
+  display: flex !important;
+  gap: 12px !important; /* Espacio entre botones */
+  padding: 16px 24px !important;
+  justify-content: flex-end !important;
 }

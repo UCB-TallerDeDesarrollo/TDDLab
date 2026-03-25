@@ -23,6 +23,8 @@ import { GetPracticeSubmissionByUserandPracticeSubmissionId } from "../../module
 import { GetPracticeById } from "../../modules/Practices/application/GetPracticeById.ts";
 import { formatDate } from "../../utils/dateUtils.ts";
 import { handleRedirectStudent } from "../Shared/handlers.ts";
+import "../../App.css";
+import "./styles/PracticeDetailStyle.css"; 
 
 interface PracticeDetailProps {
   title: string;
@@ -230,60 +232,26 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "10px",
-      }}
-    >
+    <div className="centered-container">
       {practice ? (
         <Card variant="elevation" elevation={0}>
           <CardContent>
             <div style={{ marginBottom: "40px" }}>
-              <Typography
-                variant="h5"
-                component="div"
-                style={{ fontSize: "30px", lineHeight: "3.8" }}
-              >
+              <Typography variant="h5" className="detail-header-title">
                 {practice.title}
               </Typography>
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <AccessTimeIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
+              <div className="detail-info-row">
+                <AccessTimeIcon className="detail-info-icon" />
+                <Typography variant="body2" color="text.secondary" className="detail-info-text">
                   <strong>Fecha de Creación:</strong>{" "}
                   {formatDate(datePrac?.toString() ?? "")}
                 </Typography>
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
+              <div className="detail-info-row">
+                <LinkIcon className="detail-info-icon" />
+                <Typography variant="body2" color="text.secondary" className="detail-info-text">
                   <strong>Enlace:</strong>
                   <a
                     href={practiceSubmissions[0]?.repository_link}
@@ -297,62 +265,50 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               </div>
             </div>
 
-            <Button
-              variant="contained"
-              disabled={submissionStatus[userid.toString()] || false}
-              onClick={handleOpenLinkDialog}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
-            >
-              Iniciar Practica
-            </Button>
+            <div className="detail-actions-container">
+              <Button
+                variant="contained"
+                disabled={submissionStatus[userid.toString()] || false}
+                onClick={handleOpenLinkDialog}
+                className="btn-std btn-primary"
+              >
+                Iniciar Practica
+              </Button>
 
-            <Button
-              variant="contained"
-              onClick={() => {
-                localStorage.setItem("selectedMetric", "Dashboard");
-                if (practiceSubmissions[0]?.repository_link) {
-                  handleRedirectStudent(
-                    practiceSubmissions[0].repository_link,
-                    practiceSubmissions[0].id,
-                    navigate
-                  );
-                }
-              }}
-              color="primary"
-              disabled={!practiceSubmissions[0]?.repository_link}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
-            >
-              Ver gráfica
-            </Button>
+              <Button
+                variant="contained"
+                className="btn-std btn-primary"
+                onClick={() => {
+                  localStorage.setItem("selectedMetric", "Dashboard");
+                  if (practiceSubmissions[0]?.repository_link) {
+                    handleRedirectStudent(
+                      practiceSubmissions[0].repository_link,
+                      practiceSubmissions[0].id,
+                      navigate
+                    );
+                  }
+                }}
+                disabled={!practiceSubmissions[0]?.repository_link}
+              >
+                Ver gráfica
+              </Button>
 
+              <Button
+                variant="contained"
+                disabled={isTaskInProgress}
+                onClick={handleOpenCommentDialog}
+                className="btn-std btn-primary"
+              >
+                Finalizar Practica
+              </Button>
+            </div>
 
             <GitLinkDialog
               open={linkDialogOpen}
               onClose={handleCloseLinkDialog}
               onSend={handleSendGithubLink}
             />
-
-            <Button
-              variant="contained"
-              disabled={isTaskInProgress}
-              onClick={handleOpenCommentDialog}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
-            >
-              Finalizar Practica
-            </Button>
-
+              
             <CommentDialog
               open={isCommentDialogOpen}
               link={submission?.repository_link}
@@ -362,14 +318,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
           </CardContent>
         </Card>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "250px",
-          }}
-        >
+        <div className="centered-container">
           <CircularProgress
             size={60}
             thickness={5}
