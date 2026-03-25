@@ -1,4 +1,8 @@
-/* Contenedor principal para centrar contenido */
+/* ==========================================================================
+   LAYOUT & CONTENEDORES GLOBALES
+   ========================================================================== */
+
+/* Contenedor principal para centrar contenido de páginas*/
 .centered-container {
   display: flex;
   flex-direction: column;
@@ -7,6 +11,95 @@
   margin: 20px auto;
   max-width: 1200px;
 }
+
+.table-container-full {
+  width: 100%;
+}
+
+/* Contenedor para filtros (Busqueda + Ordenar) */
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* ==========================================================================
+   SISTEMA DE BOTONES (ESTÁNDAR & VARIANTES)
+   ========================================================================== */
+
+/* Estructura base de botones (Cuadrados y medidas fijas) */
+.btn-std {
+  height: 36px !important;
+  min-width: 110px !important;
+  border-radius: 0px !important; 
+  text-transform: none !important; 
+  font-size: 0.875rem !important;
+  padding: 0 16px !important;
+}
+
+/* Variante Color Primario */
+.btn-primary {
+  background-color: #1976d2 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1565c0 !important;
+}
+
+/* Estado Deshabilitado */
+.btn-std:disabled{
+  background-color: #e0e0e0 !important;
+  color: #9e9e9e !important;
+  border: 1px solid #bdbdbd !important;
+  cursor: not-allowed !important;
+}
+
+/* ==========================================================================
+   TABLAS & LISTADOS
+   ========================================================================== */
+
+/* Tabla estandarizada (Ancho y márgenes) */
+.styled-table {
+  width: 82% !important;
+  margin: 20px auto !important;
+}
+
+/* Encabezados de tabla */
+.table-cell-header {
+  font-weight: 600 !important;
+}
+
+/* Filas con borde inferior */
+.table-row-bordered {
+  border-bottom: 2px solid #E7E7E7 !important;
+}
+
+/* Celdas de contenido (Títulos de prácticas) */
+.action-buttons-group {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Grupo de iconos de acción al final de cada fila */
+.practice-title-cell {
+  font-size: 16px !important;
+  padding: 16px !important;
+}
+
+/* Consistencia para el componente de Ordenar */
+.sorting-container .MuiOutlinedInput-root {
+  height: 36px !important; 
+  border-radius: 0px !important;
+}
+
+/* ==========================================================================
+   VISTA DE DETALLE (PRACTICE DETAIL)
+   ========================================================================== */
 
 .detail-header-title {
   font-size: 30px !important;
@@ -31,102 +124,32 @@
   line-height: 1.8 !important;
 }
 
-/* Contenedor de botones en el detalle (Consistencia y Espaciado) */
+/* Contenedor de botones en el detalle */
 .detail-actions-container {
   display: flex;
   gap: 16px; /* Espacio entre botones */
 }
 
-.table-container-full {
-  width: 100%;
-}
+/* ==========================================================================
+   DIÁLOGOS & FORMULARIOS (POP-UPS)
+   ========================================================================== */
 
-/* Tabla estandarizada al 82% */
-.styled-table {
-  width: 82% !important;
-  margin: 20px auto !important;
-}
-
-/* Bordes para las filas de la tabla */
-.table-row-bordered {
-  border-bottom: 2px solid #E7E7E7 !important;
-}
-
-/* Encabezados en negrita */
-.table-cell-header {
-  font-weight: 600 !important;
-}
-
-.action-item-height {
-  height: 42px !important; 
-}
-
-.btn-std {
-  height: 36px !important;
-  min-width: 110px !important;
-  border-radius: 0px !important; /* Cuadrados */
-  text-transform: none !important; /* Texto tal cual se escribe */
-  font-size: 0.875rem !important;
-  padding: 0 16px !important;
-}
-
-.btn-std:disabled{
-  background-color: #e0e0e0 !important;
-  color: #9e9e9e !important;
-  border: 1px solid #bdbdbd !important;
-  cursor: not-allowed !important;
-}
-
-/* Variantes de Color */
-.btn-primary {
-  background-color: #1976d2 !important;
-  color: white !important;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #1565c0 !important;
-}
-
-.filter-container {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-/* Consistencia para el Selector de Ordenar */
-.sorting-container .MuiOutlinedInput-root {
-  height: 36px !important; 
-  border-radius: 0px !important;
-}
-
-/* --- Diálogos y Formularios --- */
 .dialog-title-std {
   font-size: 1.2rem !important;
   padding-bottom: 8px !important;
 }
 
+/* Caja de contenido dentro de los formularios */
 .dialog-content-box {
   display: grid;
   gap: 16px;
   padding-top: 16px !important;
 }
 
+/* Pie de página de diálogos (Contenedor de botones Cancelar/Guardar) */
 .dialog-footer {
   display: flex !important;
   gap: 12px !important; /* Espacio entre botones */
   padding: 16px 24px !important;
   justify-content: flex-end !important;
-}
-
-.action-buttons-group {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-}
-
-.practice-title-cell {
-  font-size: 16px !important;
-  padding: 16px !important;
 }
