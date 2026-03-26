@@ -46,6 +46,12 @@ const ButtonContainer = styled("div")({
   gap: "8px",
 });
 
+const ActionButtonContainer = styled("div")({
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: "1px",
+});
+
 const StyledTable = styled(Table)({
   width: "82%",
   marginLeft: "auto",
@@ -343,8 +349,8 @@ function Groups() {
                     />
                   </TableCell>
                   <TableCell style={{ fontSize: "0.8rem", borderRight: "1px solid #E7E7E7", paddingLeft: "1px", borderBottom: "none"}}>{group.groupName}</TableCell>
-                  <TableCell>
-                    <ButtonContainer>
+                  <TableCell sx={{ width: "220px", maxWidth: "220px" }}>
+                    <ActionButtonContainer>
                       <Tooltip title="Editar grupo" arrow>
                         <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
                           <EditIcon fontSize="small"/>
@@ -380,7 +386,7 @@ function Groups() {
                           <DeleteIcon fontSize="small"/>
                         </IconButton>
                       </Tooltip>
-                    </ButtonContainer>
+                    </ActionButtonContainer>
                   </TableCell>
                 </TableRow>
 
