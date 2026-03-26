@@ -1,0 +1,35 @@
+.assignments-list-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+  width: 82%;
+  margin-left: auto;
+  margin-right: auto;
+  flex-wrap: nowrap;
+}
+
+.assignments-list-create-btn {
+  border-radius: 17px !important;
+  text-transform: none !important;
+  font-size: 0.95rem !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-width: 90px !important;
+  white-space: nowrap !important;
+}
+
+.assignments-list-header-row {
+  border-bottom: 2px solid #E7E7E7;
+}
+
+.assignments-list-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}

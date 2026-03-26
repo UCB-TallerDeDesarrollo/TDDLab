@@ -9,8 +9,6 @@ import { CircularProgress, Table,
   Button,
   SelectChangeEvent } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-
-import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AddIcon from "@mui/icons-material/Add";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
@@ -23,25 +21,11 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
-const CustomTableCell1 = styled(TableCell)({
-  width: "80%",
-});
+import './AssignmentsList.css';
+import { CustomTableCell1, StyledTable, LoadingContainer } from "./AssigmentsStyledComponents";
 
 
 
-const LoadingContainer = styled("div")({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "100vh",
-});
 
 interface AssignmentsProps {
   ShowForm: () => void;
@@ -302,15 +286,7 @@ useEffect(() => {
   <Container>
     {isLoading ? (
       <LoadingContainer>
-         <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
+         <div className="assignments-list-loading">
       <CircularProgress />
     </div>
       </LoadingContainer>
@@ -318,19 +294,7 @@ useEffect(() => {
       <section className="Tareas">
         {/* 🔹 Botones separados de la tabla */}
         {/* 🔹 Botones arriba de la tabla en una sola línea */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "1rem",
-            width: "82%",
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexWrap: "nowrap"
-          }}
-        >
+        <div className="assignments-list-toolbar">
           <GroupFilter
             selectedGroup={selectedGroup}
             groupList={groupList}
@@ -350,15 +314,7 @@ useEffect(() => {
               variant="contained"
               color="primary"
               startIcon={<AddIcon />}
-              sx={{
-                borderRadius: "17px",
-                textTransform: "none",
-                fontSize: "0.95rem",
-                paddingX: "16px",
-                paddingY: "8px",
-                minWidth: "90px",
-                whiteSpace: "nowrap",
-              }}
+              className="assignments-list-create-btn"
               onClick={showForm}
             >
               Crear
@@ -371,12 +327,9 @@ useEffect(() => {
         <StyledTable>
           <TableHead>
             <TableRow
-              sx={{
-                borderBottom: "2px solid #E7E7E7",
-              }}
+              className="assignments-list-header-row"
             >
               <CustomTableCell1
-                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
               >
                 Tareas
               </CustomTableCell1>
