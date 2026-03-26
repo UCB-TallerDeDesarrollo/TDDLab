@@ -31,6 +31,7 @@ const StyledTable = styled(Table)({
   marginLeft: "auto",
   marginRight: "auto",
   marginTop: "24px",
+  borderCollapse: "collapse",
 });
 
 const HeaderContainer = styled("div")({
@@ -169,11 +170,11 @@ function UserPage() {
         <section className="Usuarios">
           <StyledTable>
             <TableHead>
-              <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
+              <TableRow sx={{ borderBottom: "1px solid #CFCFCF" }}>
                 <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Eliminar</TableCell>
+                <TableCell sx={{ fontWeight: 560, borderLeft: "1px solid #CFCFCF" }}>Grupo</TableCell>
+                <TableCell sx={{ fontWeight: 560, borderLeft: "1px solid #CFCFCF" }}>Rol</TableCell>
+                <TableCell sx={{ fontWeight: 560, borderLeft: "1px solid #CFCFCF" }}>Eliminar</TableCell>
               </TableRow>
             </TableHead>
 
@@ -186,11 +187,11 @@ function UserPage() {
                 </TableRow>
               ) : (
                 filteredUsers.map((user) => (
-                  <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
+                  <TableRow key={user.id} sx={{ borderBottom: "1px solid #CFCFCF" }}>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
+                    <TableCell sx={{ borderLeft: "1px solid #CFCFCF" }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
+                    <TableCell sx={{ borderLeft: "1px solid #CFCFCF" }}>{user.role}</TableCell>
+                    <TableCell sx={{ borderLeft: "1px solid #CFCFCF" }}>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
                         <RemoveCircleIcon
                           onClick={() => handleRemoveUserFromGroup(user.id)}
