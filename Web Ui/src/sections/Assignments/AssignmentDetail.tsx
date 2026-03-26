@@ -68,6 +68,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     submission,
     showIAButton,
     disableAdditionalGraphs,
+    refreshAssignmentDetailData,
   } = useAssignmentDetailData({ assignmentid, userid, role });
 
 
@@ -101,6 +102,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       try {
         await createSubmission.createSubmission(submissionData);
         handleCloseLinkDialog();
+        await refreshAssignmentDetailData();
       } catch (error) {
 
         throw error;
@@ -114,7 +116,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
-    window.location.reload();
   };
 
   const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url: string) => {
@@ -136,8 +137,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   };
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
-  const [_comment, setComment] = useState("");
-
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);
   };
@@ -148,7 +147,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const handleSendComment = async (comment: string) => {
     if (submission) {
-      setComment(comment);
       const submissionRepository = new SubmissionRepository();
       const finishSubmission = new FinishSubmission(submissionRepository);
       const endDate = new Date();
@@ -165,14 +163,13 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       };
       try {
         await finishSubmission.finishSubmission(submission.id, submissionData);
-        handleCloseLinkDialog();
+        await refreshAssignmentDetailData();
       } catch (error) {
 
         throw error;
       }
     }
     handleCloseCommentDialog();
-    window.location.reload();
   };
 
   const getStudentEmailById = async (studentId: number): Promise<string> => {

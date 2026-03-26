@@ -162,28 +162,27 @@ export function AssignmentDetailInfo({
         </div>
       )}
 
-      {isStudent(role) &&
-        (assignment.comment ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "8px",
-            }}
+      {isStudent(role) && studentSubmission && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "8px",
+          }}
+        >
+          <CommentIcon
+            style={{ marginRight: "8px", color: "#666666" }}
+          />
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            style={detailTextStyle}
           >
-            <CommentIcon
-              style={{ marginRight: "8px", color: "#666666" }}
-            />
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              style={detailTextStyle}
-            >
-              <strong>Comentario:</strong>{" "}
-              {studentSubmission?.repository_link === "" || studentSubmission == null}
-            </Typography>
-          </div>
-        ) : null)}
+            <strong>Comentario:</strong>{" "}
+            {studentSubmission.comment || "N/A"}
+          </Typography>
+        </div>
+      )}
     </div>
   );
 }

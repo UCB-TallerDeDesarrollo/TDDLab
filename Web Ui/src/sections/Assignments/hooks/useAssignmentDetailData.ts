@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GetAssignmentDetail } from "../../../modules/Assignments/application/GetAssignmentDetail";
 import { GetGroupDetail } from "../../../modules/Groups/application/GetGroupDetail";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -28,6 +28,70 @@ export function useAssignmentDetailData({ assignmentid, userid, role }: UseAssig
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const [showIAButton, setShowIAButton] = useState(false);
   const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
+
+  const refreshSubmissionStatus = useCallback(async () => {
+    if (assignmentid && userid && userid !== -1) {
+      try {
+        const submissionRepository = new SubmissionRepository();
+        const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
+
+        if (assignmentid < 0 || userid < 0) {
+          return;
+        }
+
+        const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
+        setSubmission(fetchedSubmission);
+      } catch (error) {
+        console.error("Error verifying submission status:", error);
+      }
+    }
+  }, [assignmentid, userid]);
+
+  const refreshTeacherSubmissions = useCallback(async () => {
+    if (!isStudent(role)) {
+      setLoadingSubmissions(true);
+      setSubmissionsError(null);
+      try {
+        const submissionRepository = new SubmissionRepository();
+        const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
+        const fetchedSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
+        setSubmissions(fetchedSubmissions);
+      } catch (error) {
+        setSubmissionsError("Error fetching submissions. Please try again later.");
+        console.error("Error fetching SubmissionByAssignmentAndUser:", error);
+      } finally {
+        setLoadingSubmissions(false);
+      }
+    }
+  }, [assignmentid, role]);
+
+  const refreshStudentSubmission = useCallback(async () => {
+    if (isStudent(role)) {
+      if (assignmentid && userid && userid !== -1) {
+        try {
+          const submissionRepository = new SubmissionRepository();
+          const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
+          const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
+          const userSubmission = allSubmissions.find((submissionItem) => submissionItem.userid === userid);
+          if (userSubmission) {
+            setStudentSubmission(userSubmission);
+          }
+        } catch (error) {
+          console.error("Error fetching student submission:", error);
+          setSubmissionsError("An error occurred while fetching the student submission.");
+        }
+      }
+    }
+  }, [assignmentid, userid, role]);
+
+  const refreshAssignmentDetailData = useCallback(async () => {
+    if (isStudent(role)) {
+      await Promise.all([refreshSubmissionStatus(), refreshStudentSubmission()]);
+      return;
+    }
+
+    await refreshTeacherSubmissions();
+  }, [role, refreshSubmissionStatus, refreshStudentSubmission, refreshTeacherSubmissions]);
 
   useEffect(() => {
     const fetchFlag = async () => {
@@ -66,26 +130,8 @@ export function useAssignmentDetailData({ assignmentid, userid, role }: UseAssig
   }, [role]);
 
   useEffect(() => {
-    const fetchSubmission = async () => {
-      if (assignmentid && userid && userid !== -1) {
-        try {
-          const submissionRepository = new SubmissionRepository();
-          const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
-
-          if (assignmentid < 0 || userid < 0) {
-            return;
-          }
-
-          const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
-          setSubmission(fetchedSubmission);
-        } catch (error) {
-          console.error("Error verifying submission status:", error);
-        }
-      }
-    };
-
-    fetchSubmission();
-  }, [assignmentid, userid]);
+    refreshSubmissionStatus();
+  }, [refreshSubmissionStatus]);
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
@@ -118,49 +164,12 @@ export function useAssignmentDetailData({ assignmentid, userid, role }: UseAssig
   }, [assignment]);
 
   useEffect(() => {
-    const fetchSubmissions = async () => {
-      if (!isStudent(role)) {
-        setLoadingSubmissions(true);
-        setSubmissionsError(null);
-        try {
-          const submissionRepository = new SubmissionRepository();
-          const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
-          const fetchedSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
-          setSubmissions(fetchedSubmissions);
-        } catch (error) {
-          setSubmissionsError("Error fetching submissions. Please try again later.");
-          console.error("Error fetching SubmissionByAssignmentAndUser:", error);
-        } finally {
-          setLoadingSubmissions(false);
-        }
-      }
-    };
-
-    fetchSubmissions();
-  }, [assignmentid, role]);
+    refreshTeacherSubmissions();
+  }, [refreshTeacherSubmissions]);
 
   useEffect(() => {
-    const fetchStudentSubmission = async () => {
-      if (isStudent(role)) {
-        if (assignmentid && userid && userid !== -1) {
-          try {
-            const submissionRepository = new SubmissionRepository();
-            const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
-            const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
-            const userSubmission = allSubmissions.find((submissionItem) => submissionItem.userid === userid);
-            if (userSubmission) {
-              setStudentSubmission(userSubmission);
-            }
-          } catch (error) {
-            console.error("Error fetching student submission:", error);
-            setSubmissionsError("An error occurred while fetching the student submission.");
-          }
-        }
-      }
-    };
-
-    fetchStudentSubmission();
-  }, [assignmentid, userid, role]);
+    refreshStudentSubmission();
+  }, [refreshStudentSubmission]);
 
   return {
     assignment,
@@ -172,8 +181,6 @@ export function useAssignmentDetailData({ assignmentid, userid, role }: UseAssig
     submission,
     showIAButton,
     disableAdditionalGraphs,
-    setSubmission,
-    setStudentSubmission,
-    setSubmissions,
+    refreshAssignmentDetailData,
   };
 }
