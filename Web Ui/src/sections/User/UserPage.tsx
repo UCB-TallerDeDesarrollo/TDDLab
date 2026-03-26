@@ -7,19 +7,17 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
-  Select, MenuItem, InputLabel, FormControl, CircularProgress,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment
+  Select, MenuItem, FormControl, CircularProgress,
+  SelectChangeEvent, Tooltip, Typography, Divider
 } from "@mui/material";
 
 import { styled } from "@mui/system";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import SearchIcon from "@mui/icons-material/Search";
 
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 
-import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail";
 
 // -------------------  ESTILOS  -------------------
 const CenteredContainer = styled(Container)({
@@ -32,15 +30,16 @@ const StyledTable = styled(Table)({
   width: "82%",
   marginLeft: "auto",
   marginRight: "auto",
-  marginTop: "20px",
+  marginTop: "24px",
 });
 
-const FilterContainer = styled("div")({
+const HeaderContainer = styled("div")({
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "space-between",
   alignItems: "center",
-  marginTop: "20px",
-  marginBottom: "20px",
+  width: "82%",
+  marginTop: "8px",
+  marginBottom: "8px",
   gap: "20px",
 });
 
@@ -50,7 +49,6 @@ function UserPage() {
   const [, setUsers] = useState<UserDataObject[]>([]);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<number | "all">("all");
-  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [filteredUsers, setFilteredUsers] = useState<UserDataObject[]>([]);
@@ -59,11 +57,6 @@ function UserPage() {
   const userRepository = useMemo(() => new UsersRepository(), []);
   const getUsers = useMemo(() => new GetUsers(userRepository), [userRepository]);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
-
-  const searchUsersByEmail = useMemo(
-    () => new SearchUsersByEmail(userRepository),
-    [userRepository]
-  );
 
   // ------------------- FETCH USERS + GROUPS -------------------
   useEffect(() => {
@@ -90,16 +83,18 @@ function UserPage() {
   // ------------------- FILTRO DE USUARIOS -------------------
   useEffect(() => {
     const runSearch = async () => {
-      const results = await searchUsersByEmail.execute({
-        query: searchQuery,
-        groupId: selectedGroup,
-      });
+      const allUsers = await getUsers.getUsers();
+
+      const results =
+        selectedGroup === "all"
+          ? allUsers
+          : allUsers.filter((user) => user.groupid === selectedGroup);
 
       setFilteredUsers(results);
     };
 
     runSearch();
-  }, [searchQuery, selectedGroup, searchUsersByEmail]);
+  }, [selectedGroup, getUsers]);
 
   // ------------------- MAPA DE GRUPOS -------------------
   const groupMap = groups.reduce((acc, group) => {
@@ -148,32 +143,18 @@ function UserPage() {
   return (
     <div>
       <CenteredContainer>
-        <FilterContainer>
-          <TextField
-            label="Buscar por email"
-            variant="outlined"
-            placeholder="Ej: nombre@ucb.edu.bo"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 360 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+        <HeaderContainer>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            Usuarios
+          </Typography>
 
-          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-            <InputLabel id="group-filter-label">Grupo</InputLabel>
+          <FormControl variant="outlined" size="small" sx={{ minWidth: 220 }}>
             <Select
-              labelId="group-filter-label"
               value={selectedGroup}
               onChange={handleGroupChange}
-              label="Grupo"
+              displayEmpty
             >
-              <MenuItem value="all">Todos los grupos</MenuItem>
+              <MenuItem value="all">Filtrar todos los grupos</MenuItem>
               {groups.map((group) => (
                 <MenuItem key={group.id} value={group.id}>
                   {group.groupName}
@@ -181,7 +162,9 @@ function UserPage() {
               ))}
             </Select>
           </FormControl>
-        </FilterContainer>
+        </HeaderContainer>
+
+        <Divider sx={{ width: "82%" }} />
 
         <section className="Usuarios">
           <StyledTable>
