@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, 
+import { FormControl, InputLabel, Select, MenuItem,
          Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
@@ -13,6 +13,7 @@ const PROMPT_OPTIONS = [
   { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" },
   { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" },
 ];
+
 const ConfigurationPage = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -22,16 +23,13 @@ const ConfigurationPage = () => {
     open: boolean;
     message: string;
     severity: 'success' | 'error' | 'info' | 'warning';
-  }>({
-    open: false,
-    message: '',
-    severity: 'info'
-  });
+  }>({ open: false, message: '', severity: 'info' });
   const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt: string }>({ tddPrompt: "", refactoringPrompt: "", evaluateTDDPrompt: "" });
   const [selectedPrompt, setSelectedPrompt] = useState<string>("tddPrompt");
   const [isEditing, setEditing] = useState(false);
   const getFlagsUseCase = new GetFeatureFlags();
   const updateFlagUseCase = new UpdateFeatureFlag();
+
   useEffect(() => {
     const fetchFlags = async () => {
       try {
@@ -51,7 +49,6 @@ const ConfigurationPage = () => {
       setLoading(true);
       const getPromptsUseCase = new GetPrompts();
       const promptsData = await getPromptsUseCase.execute();
-      
       setPrompts({
         tddPrompt: promptsData.tddPrompt,
         refactoringPrompt: promptsData.refactoringPrompt,
@@ -71,9 +68,7 @@ const ConfigurationPage = () => {
     setEditing(false);
   };
 
-  const handleEditPrompt = () => {
-    setEditing(true);
-  };
+  const handleEditPrompt = () => setEditing(true);
 
   const handleSavePrompt = async (newPrompt: string) => {
     try {
@@ -87,18 +82,10 @@ const ConfigurationPage = () => {
         updatePrompts.evaluateTDDPrompt
       );
       setPrompts(updatePrompts);
-      setNotification({
-        open: true,
-        message: "Prompt actualizado correctamente",
-        severity: "success"
-      });
+      setNotification({ open: true, message: "Prompt actualizado correctamente", severity: "success" });
       setEditing(false);
     } catch (error) {
-      setNotification({
-        open: true,
-        message: "Error al actualizar el prompt",
-        severity: "error"
-      });
+      setNotification({ open: true, message: "Error al actualizar el prompt", severity: "error" });
     } finally {
       setSaving(false);
     }
@@ -108,34 +95,31 @@ const ConfigurationPage = () => {
     setEditing(false);
     loadPrompts();
   };
-  const handleCloseNotification = () => {
-    setNotification({
-      ...notification,
-      open: false
-    });
-  };
+
+  const handleCloseNotification = () => setNotification({ ...notification, open: false });
+
   const handleCheckboxChange = async (id: number, currentValue: boolean) => {
     const confirmChange = window.confirm(
       `¿Estás seguro de que quieres ${!currentValue ? "habilitar" : "deshabilitar"} esta funcionalidad?`
     );
     if (!confirmChange) return;
-
     try {
       const updatedFlag = await updateFlagUseCase.execute(id, !currentValue);
-      setFlags((prevFlags) =>
-        prevFlags.map((flag) =>
-          flag.id === id ? updatedFlag : flag
-        )
-      );
+      setFlags((prevFlags) => prevFlags.map((flag) => flag.id === id ? updatedFlag : flag));
     } catch (err) {
       console.error("Error al actualizar el flag", err);
       setError("Error al actualizar el flag");
     }
   };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
+        {/*
+          CAMBIO 1: <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
+          → <div className="settings-section-title">
+        */}
+        <div className="settings-section-title">
           Configuración de Prompts
         </div>
       </Box>
@@ -174,48 +158,57 @@ const ConfigurationPage = () => {
             onCancel={handleCancelEdit}
           />
 
-          <Snackbar 
-            open={notification.open} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={notification.open}
+            autoHideDuration={6000}
             onClose={handleCloseNotification}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
           >
-            <Alert 
-              onClose={handleCloseNotification} 
+            <Alert
+              onClose={handleCloseNotification}
               severity={notification.severity}
               sx={{ width: '100%' }}
             >
               {notification.message}
             </Alert>
           </Snackbar>
-          
+
           {saving && (
-            <Box
-              sx={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1300,
-              }}
-            >
+            /*
+              CAMBIO 2: <Box sx={{ position:'fixed', top:0, left:0, width:'100%',
+              height:'100%', backgroundColor:'rgba(...)', display:'flex',
+              justifyContent:'center', alignItems:'center', zIndex:1300 }}>
+              → <div className="saving-overlay">
+              Nota: se reemplaza Box por div porque saving-overlay cubre
+              todos los valores que el sx tenía, sin necesidad del componente MUI.
+            */
+            <div className="saving-overlay">
               <CircularProgress color="primary" />
-            </Box>
+            </div>
           )}
         </>
       )}
-       
-      <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
+
+      {/*
+        CAMBIO 3: <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
+        → <div className="settings-section-title--spaced">
+      */}
+      <div className="settings-section-title--spaced">
         Habilitación de Funcionalidades
-      </div> 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      </div>
+
+      {/*
+        CAMBIO 4: <p style={{ color: "red" }}>{error}</p>
+        → <p className="settings-error-text">{error}</p>
+      */}
+      {error && <p className="settings-error-text">{error}</p>}
+
       {flags.map((flag) => (
-        <div key={flag.id} style={{ marginBottom: "10px" }}>
+        /*
+          CAMBIO 5: <div key={flag.id} style={{ marginBottom: "10px" }}>
+          → <div key={flag.id} className="settings-flag-item">
+        */
+        <div key={flag.id} className="settings-flag-item">
           <label>
             <input
               type="checkbox"
@@ -226,9 +219,7 @@ const ConfigurationPage = () => {
           </label>
         </div>
       ))}
-     
     </Container>
-    
   );
 };
 
