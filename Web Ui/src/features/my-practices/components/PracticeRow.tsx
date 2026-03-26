@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
 import { getStatusIcon, getStatusTooltipPractice } from "../../../sections/Shared/statusHelpers";
-import EditPracticeForm from "../../../sections/MyPractices/EditPracticeForm";
+import EditPracticeForm from "./EditPracticeForm";
 import { PracticeListItemViewModel } from "../types/myPracticesScreen";
 
 interface PracticeRowProps {
