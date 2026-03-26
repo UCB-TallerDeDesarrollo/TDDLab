@@ -18,7 +18,6 @@ import { DeletePractice } from "../../modules/Practices/application/DeletePracti
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
-import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -35,7 +34,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<
     number | null
   >(null);
@@ -47,28 +45,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const practicesRepository = new PracticesRepository();
   const deletePractice = new DeletePractice(practicesRepository);
 
-  const orderPractices = (
-    practicesArray: PracticeDataObject[],
-    sorting: string
-  ) => {
-    if (practicesArray.length > 0) {
-      const sortedPractices = [...practicesArray].sort((a, b) => {
-        switch (sorting) {
-          case "A_Up_Order":
-            return a.title.localeCompare(b.title);
-          case "A_Down_Order":
-            return b.title.localeCompare(a.title);
-          case "Time_Up":
-            return b.id - a.id;
-          case "Time_Down":
-            return a.id - b.id;
-          default:
-            return 0;
-        }
-      });
-      setPractices(sortedPractices);
-    }
-  };
   // Obtener prácticas
 
   const fetchData = async () => {
@@ -77,7 +53,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
         authData.userid
       );
       setPractices(data);
-      orderPractices(data, selectedSorting);
     } catch (error) {
       console.error("Error fetching practices:", error);
     }
@@ -85,13 +60,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
   useEffect(() => {
     fetchData();
-  }, [selectedSorting, authData]);
-
-  const handleOrderPractices = (event: { target: { value: string } }) => {
-    const sorting = event.target.value;
-    setSelectedSorting(sorting);
-    orderPractices(practices, sorting);
-  };
+  }, [authData]);
 
   const handleClickDetail = (index: number) => {
     navigate(`/mis-practicas/${practices[index].id}`);
@@ -134,14 +103,26 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             alignItems: "center",
             marginBottom: "16px",
             paddingTop: "6px",
+            borderBottom: "1px solid #D1D5DB",
+            paddingBottom: "16px",
           }}
         >
           <h2 style={{ margin: 0, fontWeight: 700, fontSize: "24px" }}>Practicas</h2>
           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <SortingComponent
-              selectedSorting={selectedSorting}
-              onChangeHandler={handleOrderPractices}
-            />
+            <Button
+              variant="outlined"
+              color="primary"
+              style={{
+                textTransform: "none",
+                minWidth: "88px",
+                borderColor: "#D1D5DB",
+                color: "#1F2937",
+                backgroundColor: "white",
+                boxShadow: "none",
+              }}
+            >
+              Filtrar
+            </Button>
             <Button
               variant="contained"
               color="primary"

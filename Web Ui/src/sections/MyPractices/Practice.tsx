@@ -44,7 +44,7 @@ const Practice: React.FC<PracticeProps> = ({
       onMouseEnter={() => handleRowHover(index)}
       onMouseLeave={() => handleRowHover(null)}
       sx={{
-        borderBottom: "2px solid #E7E7E7",
+        borderBottom: "3px solid #E7E7E7",
         backgroundColor: isHovered ? "#EDF2FF" : "white",
         transition: "background-color 0.2s",
       }}
