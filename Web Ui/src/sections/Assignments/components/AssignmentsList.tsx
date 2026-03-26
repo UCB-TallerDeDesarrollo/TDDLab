@@ -25,13 +25,13 @@ import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 
 const StyledTable = styled(Table)({
-  width: "82%",
+  width: "100%",
   marginLeft: "auto",
   marginRight: "auto",
 });
 
 const CustomTableCell1 = styled(TableCell)({
-  width: "80%",
+  width: "100%",
 });
 
 
@@ -302,84 +302,94 @@ useEffect(() => {
   <Container>
     {isLoading ? (
       <LoadingContainer>
-         <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <CircularProgress />
-    </div>
-      </LoadingContainer>
-    ) : (
-      <section className="Tareas">
-        {/* 🔹 Botones separados de la tabla */}
-        {/* 🔹 Botones arriba de la tabla en una sola línea */}
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: "center",
             alignItems: "center",
-            gap: "12px",
-            marginBottom: "1rem",
-            width: "82%",
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexWrap: "nowrap"
+            height: "100vh",
+            width: "100vw",
           }}
         >
-          <GroupFilter
-            selectedGroup={selectedGroup}
-            groupList={groupList}
-            onChangeHandler={handleGroupChange}
-            defaultName={
-              groupList.find((group) => group.id == selectedGroup)?.groupName ||
-              groupList[0]?.groupName ||
-              "Selecciona un grupo"
-            }
-          />
-          <SortingComponent
-            selectedSorting={selectedSorting}
-            onChangeHandler={handleOrderAssignments}
-          />
-          {userRole !== "student" && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              sx={{
-                borderRadius: "17px",
-                textTransform: "none",
-                fontSize: "0.95rem",
-                paddingX: "16px",
-                paddingY: "8px",
-                minWidth: "90px",
-                whiteSpace: "nowrap",
-              }}
-              onClick={showForm}
-            >
-              Crear
-            </Button>
-          )}
+          <CircularProgress />
+        </div>
+      </LoadingContainer>
+    ) : (
+      <section className="Tareas">
+        
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between", 
+            alignItems: "center",            
+            width: "100%",                   
+            marginBottom: "16px",  
+            marginLeft: "15px",
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 560,
+              color: "#333",
+              fontSize: "1.4rem",
+            }}
+          >
+            Tareas
+          </span>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              marginRight: "45px",
+              flexWrap: "nowrap",
+            }}
+          >
+            <GroupFilter
+              selectedGroup={selectedGroup}
+              groupList={groupList}
+              onChangeHandler={handleGroupChange}
+              defaultName={
+                groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                groupList[0]?.groupName ||
+                "Selecciona un grupo"
+              }
+            />
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleOrderAssignments}
+            />
+            {userRole !== "student" && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                sx={{
+                  borderRadius: "10px",
+                  textTransform: "none",
+                  fontSize: "0.95rem",
+                  paddingX: "4px",
+                  paddingY: "5px",
+                  minWidth: "90px",
+                  whiteSpace: "nowrap",
+                }}
+                onClick={showForm}
+              >
+                Crear
+              </Button>
+            )}
+          </div>
         </div>
 
-
-        {/* 🔹 Tabla solo con encabezado de columnas */}
         <StyledTable>
           <TableHead>
             <TableRow
               sx={{
-                borderBottom: "2px solid #E7E7E7",
+                borderBottom: "2px solid #000000", 
               }}
             >
-              <CustomTableCell1
-                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
-              >
-                Tareas
-              </CustomTableCell1>
+            <CustomTableCell1 sx={{ padding: "10px 0" }}></CustomTableCell1>
             </TableRow>
           </TableHead>
           <TableBody>
