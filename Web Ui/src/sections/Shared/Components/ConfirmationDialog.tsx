@@ -26,7 +26,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onDelete,
 }) => {
   return (
-    <Dialog open={open} maxWidth="xs" fullWidth>
+    <Dialog open={open}>
       <DialogTitle className="dialog-title-std">
         {title}
       </DialogTitle>
