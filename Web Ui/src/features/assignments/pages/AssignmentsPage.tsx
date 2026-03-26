@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { styled } from "@mui/system";
 import Form from "../../../sections/Assignments/components/AssignmentForm";
+import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
 import AssignmentsList from "../components/AssignmentsList";
 import { AssignmentScreenProps } from "../types/assignmentScreen";
 
@@ -31,8 +32,8 @@ function AssignmentsPage({
   };
 
   return (
-    <>
-      <AssignmentsContainer data-testid="assignments-container">
+    <FeatureScreenLayout className="Tareas" testId="assignments-container">
+      <AssignmentsContainer>
         <AssignmentsList
           ShowForm={handleCreateAssignmentClick}
           userRole={userRole}
@@ -41,16 +42,16 @@ function AssignmentsPage({
         />
       </AssignmentsContainer>
       <FormsContainer>
-        {createAssignmentPopupOpen && (
+        {createAssignmentPopupOpen ? (
           <Form
             data-testid="form-container"
             open={createAssignmentPopupOpen}
             handleClose={() => setCreateAssignmentPopupOpen(false)}
             groupid={selectedGroupId}
           />
-        )}
+        ) : null}
       </FormsContainer>
-    </>
+    </FeatureScreenLayout>
   );
 }
 

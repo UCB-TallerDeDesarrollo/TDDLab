@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
@@ -13,45 +8,21 @@ import { ValidationDialog } from "../../../sections/Shared/Components/Validation
 import ActionButton from "../../../shared/components/ActionButton";
 import ContentState from "../../../shared/components/ContentState";
 import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
+import FeatureItemsLayout from "../../../shared/components/FeatureItemsLayout";
+import FeatureListSection from "../../../shared/components/FeatureListSection";
 import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
 import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivider";
 import { useAssignmentsScreen } from "../hooks/useAssignmentsScreen";
 import { AssignmentListProps } from "../types/assignmentScreen";
 import AssignmentRow from "./AssignmentRow";
 import AssignmentsFilterPopover from "./AssignmentsFilterPopover";
-import AssignmentsListLayout from "./AssignmentsListLayout";
 
-const PageContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(7.5),
-  paddingBottom: theme.spacing(5),
-}));
-
-const ScreenSection = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: 1301,
-  marginInline: "auto",
-  display: "grid",
-  gap: theme.spacing(4.25),
-}));
-
-const LoadingContainer = styled("div")({
+const LoadingContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  height: "100vh",
+  minHeight: "60vh",
 });
-
-const ListHeader = styled(Typography)({
-  color: "#002346",
-  fontSize: 24,
-  fontWeight: 700,
-  lineHeight: "29px",
-});
-
-const ListSection = styled(Box)(({ theme }) => ({
-  display: "grid",
-  gap: theme.spacing(2.5),
-}));
 
 function AssignmentsList({
   ShowForm: showForm,
@@ -91,126 +62,115 @@ function AssignmentsList({
   );
   const canManageAssignments = userRole === "teacher" || userRole === "admin";
 
+  if (isLoading) {
+    return (
+      <LoadingContainer>
+        <CircularProgress />
+      </LoadingContainer>
+    );
+  }
+
   return (
-    <PageContainer>
-      {isLoading ? (
-        <LoadingContainer>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-              width: "100vw",
-            }}
-          >
-            <CircularProgress />
-          </div>
-        </LoadingContainer>
-      ) : (
-        <ScreenSection className="Tareas">
-          <FeaturePageHeader
-            title="Tareas"
-            actions={
-              <>
-                <ActionButton
-                  startIcon={<FilterListRoundedIcon />}
-                  variantStyle="secondary"
-                  onClick={(event) => setFiltersAnchorEl(event.currentTarget)}
-                >
-                  Filtrar
-                </ActionButton>
-                {showCreateButton ? (
-                  <ActionButton
-                    startIcon={<AddIcon />}
-                    variantStyle="primary"
-                    onClick={showForm}
-                  >
-                    Crear
-                  </ActionButton>
-                ) : null}
-              </>
-            }
-          />
-          <FeatureSectionDivider />
+    <>
+      <FeaturePageHeader
+        title="Tareas"
+        actions={
+          <>
+            <ActionButton
+              startIcon={<FilterListRoundedIcon />}
+              variantStyle="secondary"
+              onClick={(event) => setFiltersAnchorEl(event.currentTarget)}
+            >
+              Filtrar
+            </ActionButton>
+            {showCreateButton ? (
+              <ActionButton
+                startIcon={<AddIcon />}
+                variantStyle="primary"
+                onClick={showForm}
+              >
+                Crear
+              </ActionButton>
+            ) : null}
+          </>
+        }
+      />
+      <FeatureSectionDivider />
 
-          <ListSection>
-            <ListHeader>Listado</ListHeader>
-            {error ? (
-              <ContentState
-                variant="error"
-                title="No se pudieron cargar las tareas"
-                description={error.message}
+      <FeatureListSection title="Listado">
+        {error ? (
+          <ContentState
+            variant="error"
+            title="No se pudieron cargar las tareas"
+            description={error.message}
+          />
+        ) : assignments.length === 0 ? (
+          <ContentState
+            variant="empty"
+            title="No hay tareas disponibles"
+            description="Cuando existan tareas para el grupo seleccionado, apareceran en este listado."
+          />
+        ) : (
+          <FeatureItemsLayout>
+            {assignments.map((assignment) => (
+              <AssignmentRow
+                key={assignment.id}
+                item={assignment}
+                canManage={canManageAssignments}
+                onDelete={handleClickDelete}
+                onView={handleClickDetail}
               />
-            ) : assignments.length === 0 ? (
-              <ContentState
-                variant="empty"
-                title="No hay tareas disponibles"
-                description="Cuando existan tareas para el grupo seleccionado, aparecerán en este listado."
-              />
-            ) : (
-              <AssignmentsListLayout>
-                {assignments.map((assignment) => (
-                  <AssignmentRow
-                    key={assignment.id}
-                    item={assignment}
-                    canManage={canManageAssignments}
-                    onDelete={handleClickDelete}
-                    onView={handleClickDetail}
-                  />
-                ))}
-              </AssignmentsListLayout>
-            )}
-          </ListSection>
+            ))}
+          </FeatureItemsLayout>
+        )}
+      </FeatureListSection>
 
-          <AssignmentsFilterPopover
-            anchorEl={filtersAnchorEl}
-            groupList={groupList}
-            onClose={() => setFiltersAnchorEl(null)}
-            onGroupChange={handleGroupChange}
-            onSortingChange={handleOrderAssignments}
-            open={Boolean(filtersAnchorEl)}
-            selectedGroup={selectedGroup}
-            selectedSorting={selectedSorting}
-          />
+      <AssignmentsFilterPopover
+        anchorEl={filtersAnchorEl}
+        groupList={groupList}
+        onClose={() => setFiltersAnchorEl(null)}
+        onGroupChange={handleGroupChange}
+        onSortingChange={handleOrderAssignments}
+        open={Boolean(filtersAnchorEl)}
+        selectedGroup={selectedGroup}
+        selectedSorting={selectedSorting}
+      />
 
-          {confirmationOpen ? (
-            <ConfirmationDialog
-              open={confirmationOpen}
-              title="¿Eliminar la tarea?"
-              content={
-                <>
-                  Ten en cuenta que esta acción también eliminará <br /> todas las
-                  entregas asociadas.
-                </>
-              }
-              cancelText="Cancelar"
-              deleteText="Eliminar"
-              onCancel={() => setConfirmationOpen(false)}
-              onDelete={handleConfirmDelete}
-            />
-          ) : null}
+      {confirmationOpen ? (
+        <ConfirmationDialog
+          open={confirmationOpen}
+          title="Eliminar la tarea?"
+          content={
+            <>
+              Ten en cuenta que esta accion tambien eliminara <br /> todas las
+              entregas asociadas.
+            </>
+          }
+          cancelText="Cancelar"
+          deleteText="Eliminar"
+          onCancel={() => setConfirmationOpen(false)}
+          onDelete={handleConfirmDelete}
+        />
+      ) : null}
 
-          {validationDialogOpen ? (
-            <ValidationDialog
-              open={validationDialogOpen}
-              title="Tarea eliminada exitosamente"
-              closeText="Cerrar"
-              onClose={() => {
-                setValidationDialogOpen(false);
-              }}
-            />
-          ) : null}
+      {validationDialogOpen ? (
+        <ValidationDialog
+          open={validationDialogOpen}
+          title="Tarea eliminada exitosamente"
+          closeText="Cerrar"
+          onClose={() => {
+            setValidationDialogOpen(false);
+          }}
+        />
+      ) : null}
 
-          <FeedbackSnackbar
-            open={Boolean(feedbackMessage) && !validationDialogOpen}
-            message={feedbackMessage}
-            severity={feedbackSeverity}
-            onClose={() => setFeedbackMessage("")}
-          />
-        </ScreenSection>
-      )}
-    </PageContainer>
+      <FeedbackSnackbar
+        open={Boolean(feedbackMessage) && !validationDialogOpen}
+        message={feedbackMessage}
+        severity={feedbackSeverity}
+        onClose={() => setFeedbackMessage("")}
+      />
+    </>
   );
 }
 

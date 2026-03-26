@@ -1,7 +1,6 @@
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { Table, TableBody } from "@mui/material";
-import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { ConfirmationDialog } from "../../../sections/Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
@@ -9,10 +8,11 @@ import SortingComponent from "../../../sections/GeneralPurposeComponents/Sorting
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
 import ActionButton from "../../../shared/components/ActionButton";
 import ContentState from "../../../shared/components/ContentState";
+import FeatureItemsLayout from "../../../shared/components/FeatureItemsLayout";
+import FeatureListSection from "../../../shared/components/FeatureListSection";
 import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
 import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivider";
 import PracticeRow from "./PracticeRow";
-import MyPracticesListLayout from "./MyPracticesListLayout";
 import {
   MyPracticesSortOption,
   MyPracticesViewState,
@@ -24,13 +24,6 @@ const StyledTable = styled(Table)({
   tableLayout: "fixed",
   borderCollapse: "separate",
   borderSpacing: "0 0",
-});
-
-const ListHeader = styled(Typography)({
-  color: "#002346",
-  fontSize: 24,
-  fontWeight: 700,
-  lineHeight: "29px",
 });
 
 interface MyPracticesListProps {
@@ -118,7 +111,7 @@ export default function MyPracticesList({
   }
 
   return (
-    <MyPracticesListLayout>
+    <>
       <FeaturePageHeader
         title="Practicas"
         actions={
@@ -142,29 +135,32 @@ export default function MyPracticesList({
         }
       />
       <FeatureSectionDivider />
-      <ListHeader>Listado</ListHeader>
-      {viewState === "empty" ? (
-        <ContentState
-          variant="empty"
-          title="No hay practicas disponibles"
-          description="Cuando existan practicas creadas, apareceran en este listado."
-        />
-      ) : (
-        <StyledTable>
-          <TableBody>
-            {practices.map((practice) => (
-              <PracticeRow
-                key={practice.id}
-                practice={practice}
-                canManagePractices={canManagePractices}
-                onOpenDetail={onOpenDetail}
-                onDeletePractice={handleClickDelete}
-                onPracticeUpdated={onPracticeUpdated}
-              />
-            ))}
-          </TableBody>
-        </StyledTable>
-      )}
+      <FeatureListSection title="Listado">
+        {viewState === "empty" ? (
+          <ContentState
+            variant="empty"
+            title="No hay practicas disponibles"
+            description="Cuando existan practicas creadas, apareceran en este listado."
+          />
+        ) : (
+          <FeatureItemsLayout>
+            <StyledTable>
+              <TableBody>
+                {practices.map((practice) => (
+                  <PracticeRow
+                    key={practice.id}
+                    practice={practice}
+                    canManagePractices={canManagePractices}
+                    onOpenDetail={onOpenDetail}
+                    onDeletePractice={handleClickDelete}
+                    onPracticeUpdated={onPracticeUpdated}
+                  />
+                ))}
+              </TableBody>
+            </StyledTable>
+          </FeatureItemsLayout>
+        )}
+      </FeatureListSection>
       {confirmationOpen ? (
         <ConfirmationDialog
           open={confirmationOpen}
@@ -184,6 +180,6 @@ export default function MyPracticesList({
           onClose={() => setValidationDialogOpen(false)}
         />
       ) : null}
-    </MyPracticesListLayout>
+    </>
   );
 }
