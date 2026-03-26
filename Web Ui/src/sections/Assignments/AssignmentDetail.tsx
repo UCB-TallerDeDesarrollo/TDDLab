@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import GroupsIcon from "@mui/icons-material/Groups";
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
@@ -460,17 +460,29 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         flexDirection: 'column',
         justifyContent: "center",
         alignItems: "center",
-        gap: '10px',
+        width: "100%",
+        gap: '24px',
+        padding: "20px 0",
       }}
     >
       {assignment ? (
-        <Card variant="elevation" elevation={0}>
-          <CardContent>
-            <div style={{ marginBottom: "40px" }}>
+        <Card
+          variant="elevation"
+          elevation={0}
+          style={{
+            width: "100%",
+            maxWidth: "520px",
+            border: "1px solid #BFBFBF",
+            borderRadius: "6px",
+          }}
+        >
+          <CardContent style={{ padding: "20px 34px 18px" }}>
+            <div style={{ marginBottom: "20px" }}>
               <Typography
                 variant="h5"
                 component="div"
-                style={{ fontSize: "30px", lineHeight: "3.8" }}
+                align="center"
+                style={{ fontSize: "52px", fontWeight: 700, lineHeight: 1.1, marginBottom: "20px" }}
               >
                 {assignment.title}
               </Typography>
@@ -478,53 +490,55 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  marginBottom: "8px",
+                  marginBottom: "14px",
                 }}
               >
-                <ArchiveOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
+                <GroupsIcon
+                  style={{ marginRight: "10px", color: "#7A7A7A" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={{ fontSize: "30px", lineHeight: 1.45 }}
                 >
                   <strong>Grupo:</strong> {groupDetails?.groupName}
                 </Typography>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <NotesOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+              {isStudent(role) && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "14px",
+                  }}
                 >
-                  <strong>Instrucciones:</strong> {assignment.description}
-                </Typography>
-              </div>
+                  <NotesOutlinedIcon
+                    style={{ marginRight: "10px", color: "#7A7A7A" }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ fontSize: "30px", lineHeight: 1.45 }}
+                  >
+                    <strong>Instrucciones:</strong> {assignment.description}
+                  </Typography>
+                </div>
+              )}
 
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  marginBottom: "8px",
+                  marginBottom: "14px",
                 }}
               >
                 <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
+                  style={{ marginRight: "10px", color: "#7A7A7A" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={{ fontSize: "30px", lineHeight: 1.45 }}
                 >
                   <strong>Inicio:</strong>{" "}
                   {formatDate(assignment.start_date.toString())}
@@ -534,18 +548,18 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  marginBottom: "8px",
+                  marginBottom: "14px",
                 }}
               >
                 <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
+                  style={{ marginRight: "10px", color: "#7A7A7A" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={{ fontSize: "30px", lineHeight: 1.45 }}
                 >
-                  <strong>Fecha límite:</strong>{" "}
+                  <strong>Finalización:</strong>{" "}
                   {formatDate(assignment.end_date.toString())}
                 </Typography>
               </div>
