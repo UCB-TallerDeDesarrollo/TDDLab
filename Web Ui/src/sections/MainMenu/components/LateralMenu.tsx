@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { ReactElement, Dispatch, SetStateAction } from "react";
 import LoginIcon from "@mui/icons-material/Login";
+import './LateralMenu.css';
 
 interface NavItem {
   title: string;
@@ -30,7 +31,7 @@ export default function NavLateralMenu({
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
+          <Typography className="lateral-menu-title">TDDLab</Typography>
 
           {navArrayLinks.map((item) => (
             <ListItem disablePadding key={item.title}>

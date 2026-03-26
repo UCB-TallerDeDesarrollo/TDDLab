@@ -14,6 +14,9 @@ import { ReactElement, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
+import "./styles/MainMenu.css";
+import MainMenuSX from "./styles/MainMenu";
+
 
 type NavLink = {
   title: string;
@@ -39,43 +42,30 @@ export default function MainMenu({
   )?.title;
 
   return (
-    <div style={{ marginTop: "100px" }}>
+    <div className="main-menu-wrapper">
       <AppBar position="fixed" sx={{ background: "#052845" }}>
-        <Toolbar
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "row" }}>
+        <Toolbar className="main-menu-toolbar">
+          <div className="main-menu-left">
             <IconButton
               color="inherit"
               size="large"
               onClick={() => setOpen(true)}
-              sx={{ display: { xs: "flex", sm: "none" } }}
+              sx={MainMenuSX.dFlexNoSm}
             >
               <MenuIcon />
             </IconButton>
             <WindowIcon sx={{ marginRight: "6px", marginTop: "4px" }} />
             <NavLink
               to="/"
-              style={{ textDecoration: "none", color: "inherit" }}
+              className="main-menu-logo-link"
             >
               <Typography variant="h6" sx={{ flexGrow: 1 }}>
                 TDDLab
               </Typography>
             </NavLink>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginRight: "30px",
-            }}
-          >
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <div className="main-menu-right">
+            <Box sx={MainMenuSX.dNoneSmBlock}>
               {navArrayLinks.map(
                 (item) =>
                   item.access.includes(userRole) && (
@@ -83,13 +73,7 @@ export default function MainMenu({
                       key={item.title}
                       component={NavLink}
                       to={item.path}
-                      sx={{
-                        borderBottom:
-                          activeButton === item.title
-                            ? "2px solid #fff"
-                            : "none",
-                        color: activeButton === item.title ? "#fff" : "#A9A9A9",
-                      }}
+                      sx={MainMenuSX.button(activeButton === item.title)}
                     >
                       {item.title}
                     </Button>
@@ -105,7 +89,7 @@ export default function MainMenu({
         open={open}
         anchor="left"
         onClose={() => setOpen(false)}
-        sx={{ display: { xs: "flex", sm: "none" } }}
+        sx={MainMenuSX.dFlexNoSm}
       >
         <NavLateralMenu
           navArrayLinks={navArrayLinks}

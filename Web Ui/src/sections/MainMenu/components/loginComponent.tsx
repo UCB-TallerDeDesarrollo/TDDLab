@@ -6,6 +6,7 @@ import {
 } from "../../../modules/User-Authentication/domain/authStates";
 import React from "react";
 import "../styles/loginComponentStyles.css";
+import './loginComponent.css';
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
@@ -46,7 +47,7 @@ export default function LoginComponent() {
         <Button
           onClick={handleLogin}
           variant="contained"
-          sx={{ marginLeft: "18px" }}
+          className="login-btn"
         >
           Iniciar sesión
         </Button>
@@ -56,7 +57,7 @@ export default function LoginComponent() {
           <Button
             onClick={handleLogout}
             variant="contained"
-            sx={{ marginLeft: "18px" }}
+            className="login-btn"
           >
             Cerrar Sesion
           </Button>
