@@ -377,7 +377,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             <TableCell
               sx={{
                 py: 2.2,
-                fontSize: "1.6rem",
+                fontSize: "1.3rem",
                 maxWidth: 0,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -390,7 +390,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             <TableCell
               sx={{
                 py: 2.2,
-                fontSize: "1.6rem",
+                fontSize: "1.3rem",
                 color: statusColor,
                 borderLeft: "1px solid #C9C9C9",
                 whiteSpace: "nowrap",
@@ -412,8 +412,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <RemoveCircleIcon sx={{ color: "#F44336" }} />
               )}
             </TableCell>
-            <TableCell sx={{ py: 2.2, fontSize: "1.6rem", borderLeft: "1px solid #C9C9C9" }}>{formattedStartDate}</TableCell>
-            <TableCell sx={{ py: 2.2, fontSize: "1.6rem", borderLeft: "1px solid #C9C9C9" }}>{formattedEndDate}</TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedStartDate}</TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedEndDate}</TableCell>
             <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
               <Button
                 variant="contained"
@@ -425,7 +425,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 color="primary"
                 style={{
                   textTransform: "none",
-                  fontSize: "1.45rem",
+                  fontSize: "1.15rem",
                   marginRight: "8px",
                   backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
                   minWidth: "110px",
@@ -448,7 +448,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 color="primary"
                 style={{
                   textTransform: "none",
-                  fontSize: "1.45rem",
+                  fontSize: "1.15rem",
                   marginRight: "8px",
                   backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
                   minWidth: "110px",
@@ -470,7 +470,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   color="primary"
                   style={{
                     textTransform: "none",
-                    fontSize: "1.45rem",
+                    fontSize: "1.15rem",
                     marginRight: "7px",
                     backgroundColor: submission.repository_link === "" || disableAdditionalGraphs ? "#BDBDBD" : undefined,
                     minWidth: "84px",
