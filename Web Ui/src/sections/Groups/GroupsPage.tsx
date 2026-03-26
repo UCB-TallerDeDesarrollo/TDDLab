@@ -336,7 +336,7 @@ function Groups() {
                   onMouseEnter={() => handleRowHover(index)}
                   onMouseLeave={() => handleRowHover(null)}
                 >
-                  <TableCell>
+                  <TableCell sx={{ width: "20px", minWidth: "20px", maxWidth: "20px", padding: "0 1px", textAlign: "center" }}>
                     <Checkbox
                       checked={asId(currentSelectedGroupId) === asId(group.id)}
                       onChange={() => handleRowClick(index)}
