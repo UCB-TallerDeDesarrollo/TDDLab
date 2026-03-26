@@ -76,8 +76,17 @@ function Groups() {
     if (!id) return;
     setCurrentSelectedGroupId(id);
     localStorage.setItem("selectedGroup", String(id));
+
+    let recentGroupsIds = localStorage.getItem("recentGroupsIds");
+    if(!recentGroupsIds) recentGroupsIds = "";
+    const recentIds = recentGroupsIds.split(",").map(asId);
+    const updatedRecentIds = [id, ...recentIds.filter(rid => rid !== id)].slice(0, 2);
+    localStorage.setItem("recentGroupsIds", updatedRecentIds.join(","));
+
     if (asId(authData?.usergroupid) !== id) {
       setAuthData({ ...authData, usergroupid: id });
+
+
     }
   };
 
@@ -172,6 +181,7 @@ function Groups() {
     } else {
       setExpandedRows([index]);
     }
+    console.log("Clicked row index:", index, "Group ID:", groups[index]?.id);
 
     const clickedGroup = groups[index];
     if (!clickedGroup?.id) return;

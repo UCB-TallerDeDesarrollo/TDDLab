@@ -45,9 +45,11 @@ class AuthRepository implements AuthDBRepositoryInterface {
 
   async getAccountInfoWithGoogleToken(idToken: string): Promise<UserOnDb> {
     try {
+      console.log("Sending Google token to backend:", idToken);
       const response = await axios.post(API_URL + "/user/google",
       { idToken },
       { withCredentials: true } );
+      console.log("Response from Google login:", response.data);
       if (response.status === 200) {
         return response.data;
       } else {
