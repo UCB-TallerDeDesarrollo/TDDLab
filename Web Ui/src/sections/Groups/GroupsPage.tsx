@@ -347,19 +347,19 @@ function Groups() {
                     <ButtonContainer>
                       <Tooltip title="Editar grupo" arrow>
                         <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
-                          <EditIcon />
+                          <EditIcon fontSize="small"/>
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Tareas" arrow>
                         <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
-                          <AutoAwesomeMotionIcon />
+                          <AutoAwesomeMotionIcon fontSize="small"/>
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Participantes" arrow>
                         <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
-                          <GroupsIcon />
+                          <GroupsIcon fontSize="small"/>
                         </IconButton>
                       </Tooltip>
 
@@ -371,13 +371,13 @@ function Groups() {
 
                       <Tooltip title="Copiar enlace de invitacion a docente" arrow>
                         <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
-                          <PiChalkboardTeacherFill />
+                          <PiChalkboardTeacherFill size={18}/>
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Eliminar grupo" arrow>
                         <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                          <DeleteIcon />
+                          <DeleteIcon fontSize="small"/>
                         </IconButton>
                       </Tooltip>
                     </ButtonContainer>
