@@ -27,8 +27,11 @@ import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import {
+  Box,
   CircularProgress,
 } from "@mui/material";
+import MainMenu_v2 from "./sections/MainMenu/MainMenu_v2";
+import HeaderNav from "./sections/MainMenu/components/HeaderNav";
 
 const navArrayLinks = [
   {
@@ -105,9 +108,19 @@ useEffect(() => {
   return (
     <Router>
       {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+        <MainMenu_v2 navArrayLinks={navArrayLinks} userRole={authData.userRole} />
       )}
-      <Routes>
+      <Box sx={{ ml: authData.userEmail !== "" && authData.userRole !== undefined ? "220px" : 0 }}>
+        {authData.userEmail !== "" && authData.userRole !== undefined && (
+          <Box sx={{ p: 2 }}>
+            <HeaderNav
+              userName={authData.userEmail ?? ""}
+              avatarUrl={authData.userProfilePic ?? ""}
+            />
+          </Box>
+        )}
+        <Routes>
+        
         <Route
           path="/"
           element={
@@ -215,7 +228,7 @@ useEffect(() => {
          }
        /> 
 
-      </Routes>
+      </Routes></Box>
     </Router>
   );
 }
