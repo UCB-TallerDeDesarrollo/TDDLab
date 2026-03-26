@@ -27,7 +27,7 @@ const CenteredContainer = styled(Container)({
 });
 
 const StyledTable = styled(Table)({
-  width: "92%",
+  width: "96%",
   marginLeft: "auto",
   marginRight: "auto",
   marginTop: "12px",
@@ -39,7 +39,7 @@ const HeaderContainer = styled("div")({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  width: "92%",
+  width: "96%",
   marginTop: "8px",
   marginBottom: "10px",
   gap: "20px",
@@ -166,7 +166,7 @@ function UserPage() {
           </FormControl>
         </HeaderContainer>
 
-        <Divider sx={{ width: "92%" }} />
+        <Divider sx={{ width: "96%", borderBottomWidth: 3, borderColor: "#8F8F8F" }} />
 
         <section className="Usuarios">
           <StyledTable>
