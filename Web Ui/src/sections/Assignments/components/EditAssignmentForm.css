@@ -1,0 +1,21 @@
+.edit-assignment-form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.edit-assignment-title-field {
+  margin-top: 16px;
+}
+
+.edit-assignment-error-title {
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.edit-assignment-error-message {
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+}

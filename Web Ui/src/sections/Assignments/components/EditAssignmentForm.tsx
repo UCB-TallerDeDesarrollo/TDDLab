@@ -20,6 +20,8 @@ import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import './EditAssignmentForm.css';
+import './EditAssignmentFormSX.tsx';
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
@@ -122,7 +124,7 @@ function EditAssignmentDialog({
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Editar Tarea : {currentTitle}</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "grid", gap: 2 }}>
+        <Box className="edit-assignment-form-grid">
           <TextField
             id="titulo"
             label="Título"
@@ -132,12 +134,8 @@ function EditAssignmentDialog({
             fullWidth 
             onChange={(e) => setTitle(e.target.value)}
             defaultValue={currentTitle}
-            sx={{
-              marginTop: 2, 
-              "& .MuiInputBase-input": {
-                paddingTop: "14px",
-              },
-            }}
+            className="edit-assignment-title-field"
+            sx={t.class2}
           />
           <TextField
             id="descripcion"
@@ -148,16 +146,7 @@ function EditAssignmentDialog({
             multiline
             fullWidth
             rows={4}
-            sx={{
-              "& label.Mui-focused": {
-                color: "#001F3F",
-              },
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#001F3F",
-                },
-              },
-            }}
+            sx={t.class1}
             onChange={(e) => setDescription(e.target.value)}
             defaultValue={currentDescription}
           />
@@ -195,9 +184,9 @@ function EditAssignmentDialog({
         </Button>
       </DialogActions>
       <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>
-        <DialogTitle style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '18px' }}>Error</DialogTitle>
+        <DialogTitle className="edit-assignment-error-title">Error</DialogTitle>
         <DialogContent>
-          <p style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>{errorMessage}</p>
+          <p className="edit-assignment-error-message">{errorMessage}</p>
         </DialogContent>
         <DialogActions>
           <Button variant="contained" color="error" onClick={() => setErrorOpen(false)}>Cerrar</Button>
