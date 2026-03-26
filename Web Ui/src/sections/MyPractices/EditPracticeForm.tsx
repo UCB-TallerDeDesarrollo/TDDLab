@@ -6,21 +6,16 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Box, TextField } from "@mui/material";
 import { useState } from "react";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 
 interface EditPracticeDialogProps {
-  readonly practiceId: number;
-  readonly currentTitle: string;
-  readonly currentDescription: string;
+  readonly currentPractice: PracticeDataObject;
   readonly onClose: () => void;
   readonly onPracticeUpdated: (practice: PracticeDataObject) => Promise<void>;
 }
 
 function EditPracticeDialog({
-  practiceId,
-  currentTitle,
-  currentDescription,
+  currentPractice,
   onClose,
   onPracticeUpdated,
 }: EditPracticeDialogProps) {
@@ -33,27 +28,20 @@ function EditPracticeDialog({
   const handleSaveChanges = async () => {
     try {
       setIsSaving(true);
-      const currentPractice = await getCurrentPractice();
 
-      if (currentPractice) {
-        const updatedPracticeData: PracticeDataObject = {
-          title: title !== "" ? title : currentPractice.title,
-          description:
-            description !== "" ? description : currentPractice.description,
-          id: currentPractice.id,
-          state: currentPractice.state,
-          creation_date: currentPractice.creation_date,
-          userid: currentPractice.userid,
-        };
+      const updatedPracticeData: PracticeDataObject = {
+        title: title !== "" ? title : currentPractice.title,
+        description:
+          description !== "" ? description : currentPractice.description,
+        id: currentPractice.id,
+        state: currentPractice.state,
+        creation_date: currentPractice.creation_date,
+        userid: currentPractice.userid,
+      };
 
-        await onPracticeUpdated(updatedPracticeData);
-        setValidationMessage("Practica actualizada exitosamente");
-        setValidationDialogOpen(true);
-      } else {
-        console.error("La practica actual no se encontró.");
-        setValidationMessage("Error al actualizar la practica");
-        setValidationDialogOpen(true);
-      }
+      await onPracticeUpdated(updatedPracticeData);
+      setValidationMessage("Practica actualizada exitosamente");
+      setValidationDialogOpen(true);
     } catch (error) {
       console.error("Error al guardar los cambios:", error);
       setValidationMessage("Error al actualizar la practica");
@@ -62,30 +50,20 @@ function EditPracticeDialog({
       setIsSaving(false);
     }
   };
-  const getCurrentPractice = async () => {
-    const practicesRepository = new PracticesRepository();
-    try {
-      const practice = await practicesRepository.getPracticeById(practiceId);
-      return practice;
-    } catch (error) {
-      console.error("Error obteniendo la practica actual:", error);
-      throw error;
-    }
-  };
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Practica : {currentTitle}</DialogTitle>
+      <DialogTitle>Editar Practica : {currentPractice.title}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: "grid", gap: 2, marginTop: 2 }}>
           <TextField
             id="titulo"
-            label="Título"
+            label="TÃ­tulo"
             variant="outlined"
             size="small"
             required
             onChange={(e) => setTitle(e.target.value)}
-            defaultValue={currentTitle}
+            defaultValue={currentPractice.title}
           />
           <TextField
             id="descripcion"
@@ -94,9 +72,9 @@ function EditPracticeDialog({
             size="small"
             required
             multiline
-            rows = {5}
+            rows={5}
             onChange={(e) => setDescription(e.target.value)}
-            defaultValue={currentDescription}
+            defaultValue={currentPractice.description}
           />
         </Box>
       </DialogContent>
