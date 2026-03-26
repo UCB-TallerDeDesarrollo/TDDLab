@@ -30,7 +30,7 @@ const StyledTable = styled(Table)({
   width: "82%",
   marginLeft: "auto",
   marginRight: "auto",
-  marginTop: "24px",
+  marginTop: "12px",
   borderCollapse: "collapse",
 });
 
@@ -40,7 +40,7 @@ const HeaderContainer = styled("div")({
   alignItems: "center",
   width: "82%",
   marginTop: "8px",
-  marginBottom: "8px",
+  marginBottom: "10px",
   gap: "20px",
 });
 
@@ -145,7 +145,7 @@ function UserPage() {
     <div>
       <CenteredContainer>
         <HeaderContainer>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, fontSize: "2rem" }}>
             Usuarios
           </Typography>
 
@@ -171,10 +171,10 @@ function UserPage() {
           <StyledTable>
             <TableHead>
               <TableRow sx={{ borderBottom: "1px solid #CFCFCF" }}>
-                <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560, borderLeft: "1px solid #CFCFCF" }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560, borderLeft: "1px solid #CFCFCF" }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560, borderLeft: "1px solid #CFCFCF" }}>Eliminar</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "37%" }}>Correo</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "30%", borderLeft: "1px solid #CFCFCF" }}>Grupo</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "15%", borderLeft: "1px solid #CFCFCF" }}>Rol</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "18%", borderLeft: "1px solid #CFCFCF" }}>Eliminar</TableCell>
               </TableRow>
             </TableHead>
 
@@ -188,14 +188,14 @@ function UserPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} sx={{ borderBottom: "1px solid #CFCFCF" }}>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell sx={{ borderLeft: "1px solid #CFCFCF" }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell sx={{ borderLeft: "1px solid #CFCFCF" }}>{user.role}</TableCell>
-                    <TableCell sx={{ borderLeft: "1px solid #CFCFCF" }}>
+                    <TableCell sx={{ py: 2.2 }}>{user.email}</TableCell>
+                    <TableCell sx={{ py: 2.2, borderLeft: "1px solid #CFCFCF" }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
+                    <TableCell sx={{ py: 2.2, borderLeft: "1px solid #CFCFCF" }}>{user.role}</TableCell>
+                    <TableCell sx={{ py: 2.2, borderLeft: "1px solid #CFCFCF", textAlign: "left" }}>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
                         <RemoveCircleIcon
                           onClick={() => handleRemoveUserFromGroup(user.id)}
-                          sx={{ color: "#d81b1b" }}
+                          sx={{ color: "#d81b1b", cursor: "pointer" }}
                         />
                       </Tooltip>
                     </TableCell>
