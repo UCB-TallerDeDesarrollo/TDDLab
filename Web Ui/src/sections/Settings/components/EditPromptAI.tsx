@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Button, TextField } from "@mui/material";
+import "../../../App.css"; 
 
 interface EditPromptAIProps {
   initialPrompt: string;
@@ -34,14 +35,6 @@ const EditPromptAI = ({
             fullWidth
             InputProps={{
               readOnly: true,
-              /*
-                CAMBIO 1: style={{ background: "#f9f9f9" }} dentro de InputProps
-                → className="prompt-input-readonly" en inputProps (minúscula)
-                Nota: MUI acepta className dentro de inputProps (sin mayúscula)
-                para aplicar clases al elemento <input> o <textarea> interno.
-                Si el estilo no aplica por especificidad de MUI, dejarlo como style
-                es válido — en ese caso este es el único inline style justificado.
-              */
               inputProps: { className: "prompt-input-readonly" }
             }}
             variant="outlined"
@@ -49,7 +42,11 @@ const EditPromptAI = ({
             maxRows={16}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
-            <Button variant="contained" onClick={onEdit}>
+            <Button 
+              variant="contained" 
+              className="btn-std btn-primary" 
+              onClick={onEdit}
+            >
               Editar Prompt
             </Button>
           </Box>
@@ -67,13 +64,22 @@ const EditPromptAI = ({
             autoFocus
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
-            <Button variant="contained" color="primary" onClick={() => onSave(value)}>
+            <Button 
+              className="btn-std btn-primary" 
+              onClick={() => onSave(value)}
+            >
               Guardar
             </Button>
-            <Button variant="contained" color="primary" onClick={onCancel}>
+            <Button 
+              className="btn-std btn-primary" 
+              onClick={onCancel}
+            >
               Cancelar
             </Button>
-            <Button variant="contained" color="primary" onClick={handleClear}>
+            <Button 
+              className="btn-std btn-primary" 
+              onClick={handleClear}
+            >
               Limpiar
             </Button>
           </Box>

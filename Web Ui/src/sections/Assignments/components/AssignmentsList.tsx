@@ -108,38 +108,27 @@ function Assignments({
 
   const fetchData = async () => {
     try {
+      setIsLoading(true); // Iniciamos carga
       const allGroups = await getUserGroups();
       setGroupList(allGroups);
 
-      const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
-      const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
-      const savedSelectedGroup = localStorage.getItem("selectedGroup");
-      const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
-      const groupIdAuth = authData?.usergroupid ?? null;
+      // Lógica de prioridad de grupo
+      const savedGroup = localStorage.getItem("selectedGroup");
+      const initialGroupId = Number(savedGroup) || authData?.usergroupid || allGroups[0]?.id || 0;
 
-      let firstUserGroup: number | null = null;
-      try {
-        const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
-        if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
-          firstUserGroup = storedUserGroups[0];
-        }
-      } catch {}
-
-      const finalGroupId = groupIdUrl || groupIdLocal || groupIdAuth || firstUserGroup || allGroups?.[0]?.id || null;
-
-      if (finalGroupId) {
-        await loadAssignmentsByGroupId(finalGroupId);
+      if (initialGroupId) {
+        // Cargamos los datos para ese grupo específicamente
+        await loadAssignmentsByGroupId(initialGroupId);
       } else {
-        setSelectedGroup(0);
         setAssignments([]);
       }
     } catch (error) {
       console.error("Error en fetchData:", error);
     } finally {
-      setIsLoading(false);
+      // Nos aseguramos de apagar el loading para que el test no espere eternamente
+      setIsLoading(false); 
     }
   };
-
   useEffect(() => { fetchData(); }, [location]);
 
   useEffect(() => {

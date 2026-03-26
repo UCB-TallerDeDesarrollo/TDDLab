@@ -26,7 +26,6 @@ import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
-  Comment as CommentIcon,
 } from "@mui/icons-material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
@@ -453,311 +452,163 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
 
   return (
-
-    <div
-      style={{
-        display: "flex",
-        flexDirection: 'column',
-        justifyContent: "center",
-        alignItems: "center",
-        gap: '10px',
-      }}
-    >
+    <div className="centered-container">
       {assignment ? (
-        <Card variant="elevation" elevation={0}>
+        <Card variant="elevation" elevation={0} className="table-container-full">
           <CardContent>
-            <div style={{ marginBottom: "40px" }}>
-              <Typography
-                variant="h5"
-                component="div"
-                style={{ fontSize: "30px", lineHeight: "3.8" }}
-              >
-                {assignment.title}
-              </Typography>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <ArchiveOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
+            <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>
+              {assignment.title}
+            </Typography>
+
+            <div className="assignment-details-list">
+              {/* Grupo */}
+              <div className="detail-item">
+                <ArchiveOutlinedIcon className="detail-icon" />
+                <Typography variant="body1">
                   <strong>Grupo:</strong> {groupDetails?.groupName}
                 </Typography>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <NotesOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
+
+              {/* Instrucciones */}
+              <div className="detail-item">
+                <NotesOutlinedIcon className="detail-icon" />
+                <Typography variant="body1">
                   <strong>Instrucciones:</strong> {assignment.description}
                 </Typography>
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
-                  <strong>Inicio:</strong>{" "}
-                  {formatDate(assignment.start_date.toString())}
+              {/* Fechas */}
+              <div className="detail-item">
+                <CalendarMonthIcon className="detail-icon" />
+                <Typography variant="body1">
+                  <strong>Inicio:</strong> {formatDate(assignment.start_date.toString())}
                 </Typography>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
-                >
-                  <strong>Fecha límite:</strong>{" "}
-                  {formatDate(assignment.end_date.toString())}
+              <div className="detail-item">
+                <CalendarMonthIcon className="detail-icon" />
+                <Typography variant="body1">
+                  <strong>Fecha límite:</strong> {formatDate(assignment.end_date.toString())}
                 </Typography>
               </div>
-              {isStudent(role) && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <AccessTimeIcon
-                    style={{ marginRight: "8px", color: "#666666" }}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ fontSize: "16px", lineHeight: "1.8" }}
-                  >
-                    <strong>Estado:</strong>{" "}
-                    {getDisplayStatus(studentSubmission?.status)}
-                  </Typography>
-                </div>
-              )}
 
+              {/* Secciones exclusivas de Estudiante (Importante para los tests) */}
               {isStudent(role) && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ fontSize: "16px", lineHeight: "1.8" }}
-                  >
-                    <strong>Enlace:</strong>
-                    <a
-                      href={studentSubmission?.repository_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {studentSubmission?.repository_link}
-                    </a>
-                  </Typography>
-                </div>
-              )}
-
-              {isStudent(role) &&
-                (assignment.comment ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <CommentIcon
-                      style={{ marginRight: "8px", color: "#666666" }}
-                    />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      style={{ fontSize: "16px", lineHeight: "1.8" }}
-                    >
-                      <strong>Comentario:</strong> {studentSubmission?.repository_link === "" || studentSubmission == null}
+                <>
+                  <div className="detail-item">
+                    <AccessTimeIcon className="detail-icon" />
+                    <Typography variant="body1">
+                      {/* Texto plano compatible con getByText("Estado") */}
+                      <strong>Estado: </strong> {getDisplayStatus(studentSubmission?.status)}
                     </Typography>
                   </div>
-                ) : null)}
+
+                  <div className="detail-item">
+                    <LinkIcon className="detail-icon" />
+                    <Typography variant="body1">
+                      <strong>Enlace:</strong>{" "}
+                      <a href={studentSubmission?.repository_link} target="_blank" rel="noopener noreferrer">
+                        {studentSubmission?.repository_link}
+                      </a>
+                    </Typography>
+                  </div>
+                </>
+              )}
             </div>
-            {isStudent(role) && (
-              <Button
-                variant="contained"
-                disabled={!!studentSubmission}
-                onClick={handleOpenLinkDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Iniciar tarea
-              </Button>
-            )}
 
+            {/* Acciones de Estudiante */}
             {isStudent(role) && (
-              <Button
-                variant="contained"
-                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
-                  if (studentSubmission?.repository_link) {
-                    handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate)
-                  }
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Ver gráfica
-              </Button>
-            )}
-            <GitLinkDialog
-              open={linkDialogOpen}
-              onClose={handleCloseLinkDialog}
-              onSend={handleSendGithubLink}
-            />
+              <div className="action-buttons-group" style={{ justifyContent: 'flex-start', marginTop: '20px' }}>
+                <Button
+                  variant="contained"
+                  disabled={!!studentSubmission}
+                  onClick={handleOpenLinkDialog}
+                  className="btn-std btn-primary"
+                >
+                  Iniciar tarea
+                </Button>
 
-            {isStudent(role) && (
-              <Button
-                variant="contained"
-                disabled={isTaskInProgress}
-                onClick={handleOpenCommentDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Finalizar tarea
-              </Button>
+                <Button
+                  variant="contained"
+                  disabled={!studentSubmission?.repository_link}
+                  onClick={() => {
+                    localStorage.setItem("selectedMetric", "Dashboard");
+                    if (studentSubmission?.repository_link) {
+                      handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate)
+                    }
+                  }}
+                  className="btn-std btn-primary"
+                >
+                  Ver gráfica
+                </Button>
+
+                <Button
+                  variant="contained"
+                  disabled={isTaskInProgress}
+                  onClick={handleOpenCommentDialog}
+                  className="btn-std btn-primary"
+                >
+                  Finalizar tarea
+                </Button>
+
+                {showIAButton && (
+                  <Button
+                    variant="contained"
+                    disabled={!studentSubmission?.repository_link}
+                    onClick={() => {
+                      localStorage.setItem("selectedMetric", "AssistantAI");
+                      navigate("/asistente-ia", {
+                        state: { repositoryLink: studentSubmission?.repository_link }
+                      });
+                    }}
+                    className="btn-std btn-primary"
+                  >
+                    Asistente IA
+                  </Button>
+                )}
+              </div>
             )}
-            {isStudent(role) && showIAButton && (
-              <Button
-                variant="contained"
-                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "AssistantAI");
-                  navigate("/asistente-ia", {
-                    state: { repositoryLink: studentSubmission?.repository_link }
-                  });
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
-              >
-                Asistente IA
-              </Button>
-            )}
-            <CommentDialog
-              open={isCommentDialogOpen}
-              link={submission?.repository_link}
-              onSend={handleSendComment}
-              onClose={handleCloseCommentDialog}
-            />
+            
+            <GitLinkDialog open={linkDialogOpen} onClose={handleCloseLinkDialog} onSend={handleSendGithubLink} />
+            <CommentDialog open={isCommentDialogOpen} link={submission?.repository_link} onSend={handleSendComment} onClose={handleCloseCommentDialog} />
           </CardContent>
         </Card>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "250px",
-          }}
-        >
+        <div className="fullscreen-loading">
+          {/* data-testid crucial para los tests */}
           <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
         </div>
       )}
+
+      {/* Lista de Estudiantes (Vista Profesor/Admin) */}
       {!isStudent(role) && (
-        <Card variant="elevation" elevation={0}>
-          <CardContent>
-            <Typography
-              variant="h6"
-              component="div"
-              align="center"
-              style={{ fontSize: "24px", lineHeight: "3.8" }}
-            >
-              Lista de Estudiantes
-            </Typography>
-            {loadingSubmissions ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "150px",
-                }}
-              >
-                <CircularProgress size={40} thickness={4} />
-              </div>
-            ) : (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Estado</TableCell>
-                    <TableCell>Enlace</TableCell>
-                    <TableCell>Fecha de inicio</TableCell>
-                    <TableCell>Fecha de finalización</TableCell>
-                    <TableCell>Comentario</TableCell>
-                    <TableCell>Gráfica</TableCell>
-                    <TableCell>Asistente</TableCell>
-                    <TableCell>Gráficas Adicionales</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {studentRows}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <section className="table-container-full" style={{ marginTop: '40px' }}>
+          <Typography variant="h5" className="table-cell-header" sx={{ mb: 2, textAlign: 'center' }}>
+            Lista de Estudiantes
+          </Typography>
+          
+          {loadingSubmissions ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <Table className="styled-table">
+              <TableHead>
+                <TableRow className="table-row-bordered">
+                  <TableCell className="table-cell-header">Email</TableCell>
+                  <TableCell className="table-cell-header">Estado</TableCell>
+                  <TableCell className="table-cell-header">Enlace</TableCell>
+                  <TableCell className="table-cell-header">Inicio</TableCell>
+                  <TableCell className="table-cell-header">Entrega</TableCell>
+                  <TableCell className="table-cell-header">Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* Aquí renderizamos las filas usando los estilos de botón btn-std */}
+                {studentRows}
+              </TableBody>
+            </Table>
+          )}
+        </section>
       )}
     </div>
   );

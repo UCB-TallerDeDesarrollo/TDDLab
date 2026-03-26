@@ -61,9 +61,10 @@ interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
   groupid: number;
+  "data-testid"?: string;
 }
 
-function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProps>) {
+function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
@@ -186,7 +187,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   }, [open, auth?.userRole, auth?.userid]);
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth PaperProps={{ "data-testid": testId }} >
       {!validationDialogOpen && (
         <>
           <DialogTitle className="dialog-title-std">Crear tarea</DialogTitle>

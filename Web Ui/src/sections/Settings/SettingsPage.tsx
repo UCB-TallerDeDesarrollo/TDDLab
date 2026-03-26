@@ -7,6 +7,7 @@ import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePromp
 import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
+import "../../App.css";
 
 const PROMPT_OPTIONS = [
   { label: "Prompt Analizar TDD", value: "tddPrompt" },
@@ -113,113 +114,97 @@ const ConfigurationPage = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        {/*
-          CAMBIO 1: <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
-          → <div className="settings-section-title">
-        */}
-        <div className="settings-section-title">
-          Configuración de Prompts
-        </div>
-      </Box>
-
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-          <CircularProgress />
+    <div className="centered-container">
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <div className="settings-section-title">
+            Configuración de Prompts
+          </div>
         </Box>
-      ) : error ? (
-        <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
-          <Typography color="error">{error}</Typography>
-        </Box>
-      ) : (
-        <>
-          <FormControl sx={{ mb: 2, width: '50%' }}>
-            <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
-            <Select
-              labelId="prompt-select-label"
-              value={selectedPrompt}
-              label="Selecciona el tipo de Prompt"
-              onChange={handlePromptChange}
-            >
-              {PROMPT_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
-          <EditPromptAI
-            initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
-            isEditing={isEditing}
-            onEdit={handleEditPrompt}
-            onSave={handleSavePrompt}
-            onCancel={handleCancelEdit}
-          />
-
-          <Snackbar
-            open={notification.open}
-            autoHideDuration={6000}
-            onClose={handleCloseNotification}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          >
-            <Alert
-              onClose={handleCloseNotification}
-              severity={notification.severity}
-              sx={{ width: '100%' }}
-            >
-              {notification.message}
-            </Alert>
-          </Snackbar>
-
-          {saving && (
-            /*
-              CAMBIO 2: <Box sx={{ position:'fixed', top:0, left:0, width:'100%',
-              height:'100%', backgroundColor:'rgba(...)', display:'flex',
-              justifyContent:'center', alignItems:'center', zIndex:1300 }}>
-              → <div className="saving-overlay">
-              Nota: se reemplaza Box por div porque saving-overlay cubre
-              todos los valores que el sx tenía, sin necesidad del componente MUI.
-            */
-            <div className="saving-overlay">
-              <CircularProgress color="primary" />
+        {loading ? (
+          <div className="fullscreen-loading">
+            <CircularProgress />
+          </div>
+        ) : error ? (
+          <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        ) : (
+          <>
+            <div className="sorting-container">
+              <FormControl 
+                sx={{ mb: 2, width: '50%' }} 
+                size="small" // 'small' ayuda a que el label de MUI se alinee mejor con el alto de 36px
+              >
+                <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
+                <Select
+                  labelId="prompt-select-label"
+                  value={selectedPrompt}
+                  label="Selecciona el tipo de Prompt"
+                  onChange={handlePromptChange}
+                  className="select-compact"
+                >
+                  {PROMPT_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
-          )}
-        </>
-      )}
 
-      {/*
-        CAMBIO 3: <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
-        → <div className="settings-section-title--spaced">
-      */}
-      <div className="settings-section-title--spaced">
-        Habilitación de Funcionalidades
-      </div>
-
-      {/*
-        CAMBIO 4: <p style={{ color: "red" }}>{error}</p>
-        → <p className="settings-error-text">{error}</p>
-      */}
-      {error && <p className="settings-error-text">{error}</p>}
-
-      {flags.map((flag) => (
-        /*
-          CAMBIO 5: <div key={flag.id} style={{ marginBottom: "10px" }}>
-          → <div key={flag.id} className="settings-flag-item">
-        */
-        <div key={flag.id} className="settings-flag-item">
-          <label>
-            <input
-              type="checkbox"
-              checked={flag.is_enabled}
-              onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
+            <EditPromptAI
+              initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
+              isEditing={isEditing}
+              onEdit={handleEditPrompt}
+              onSave={handleSavePrompt}
+              onCancel={handleCancelEdit}
             />
-            {flag.feature_name}
-          </label>
+
+            <Snackbar
+              open={notification.open}
+              autoHideDuration={6000}
+              onClose={handleCloseNotification}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+              <Alert
+                onClose={handleCloseNotification}
+                severity={notification.severity}
+                sx={{ width: '100%' }}
+              >
+                {notification.message}
+              </Alert>
+            </Snackbar>
+
+            {saving && (
+              <div className="saving-overlay">
+                <CircularProgress color="primary" />
+              </div>
+            )}
+          </>
+        )}
+
+        <div className="settings-section-title--spaced">
+          Habilitación de Funcionalidades
         </div>
-      ))}
-    </Container>
+
+        {error && <p className="settings-error-text">{error}</p>}
+
+        {flags.map((flag) => (
+          <div key={flag.id} className="settings-flag-item">
+            <label>
+              <input
+                type="checkbox"
+                checked={flag.is_enabled}
+                onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
+              />
+              {flag.feature_name}
+            </label>
+          </div>
+        ))}
+      </Container>
+    </div>
   );
 };
 

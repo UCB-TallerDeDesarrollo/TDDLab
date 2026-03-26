@@ -55,14 +55,11 @@ const Assignment: React.FC<AssignmentProps> = ({
 
   return (
     <TableRow key={assignment.id} className="table-row-bordered">
-      {/* CAMBIO 1: Usar 'practice-title-cell' para el mismo padding y tamaño de letra */}
       <TableCell className="practice-title-cell">
         {assignment.title}
       </TableCell>
 
-      {/* CAMBIO 2: align="right" para empujar los botones al final */}
       <TableCell align="right">
-        {/* CAMBIO 3: Usar la clase 'action-buttons-group' que usa Prácticas */}
         <div className="action-buttons-group">
           <Tooltip title="Ver tarea" arrow>
             <IconButton

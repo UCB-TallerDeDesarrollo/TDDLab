@@ -19,7 +19,7 @@ function AssignmentManager({
   };
 
   return (
-    <div className="centered-container">
+    <div className="centered-container" data-testid="assignments-container">
       <div className="table-container-full">
         <Assignments
           ShowForm={handleCreateAssignmentClick}
@@ -31,10 +31,10 @@ function AssignmentManager({
 
       {createAssignmentPopupOpen && (
         <Form
+          /* Pasamos el data-testid al formulario */
           data-testid="form-container"
           open={createAssignmentPopupOpen}
           handleClose={() => setCreateAssignmentPopupOpen(false)}
-          // Mantiene tu lógica de grupo seleccionado o localStorage
           groupid={
             selectedGroupId ??
             (Number(localStorage.getItem("selectedGroup") ?? NaN) || userGroupid)
