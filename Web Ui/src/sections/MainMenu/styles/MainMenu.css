@@ -1,0 +1,26 @@
+.main-menu-wrapper {
+  margin-top: 100px;
+}
+
+.main-menu-toolbar {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.main-menu-left {
+  display: flex;
+  flex-direction: row;
+}
+
+.main-menu-logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.main-menu-right {
+  display: flex;
+  flex-direction: row;
+  margin-right: 30px;
+}
