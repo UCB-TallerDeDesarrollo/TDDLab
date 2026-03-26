@@ -6,9 +6,7 @@ import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
 import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserFromGroup";
 
 import {
-  Table, TableHead, TableBody, TableRow, TableCell, Container,
-  Select, MenuItem, InputLabel, FormControl, CircularProgress,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment
+  Table,TableHead,TableBody,TableRow,TableCell,Container,Select,MenuItem,FormControl,CircularProgress,SelectChangeEvent,Tooltip,TableContainer,TextField,InputAdornment,
 } from "@mui/material";
 
 import { styled } from "@mui/system";
@@ -21,29 +19,50 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 
 import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail";
 
-// -------------------  ESTILOS  -------------------
+// ------------------- ESTILOS -------------------
 const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "20px",
+  marginTop: "28px",
 });
 
-const StyledTable = styled(Table)({
+const HeaderContainer = styled("div")({
+  width: "82%",
+  margin: "0 auto",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+});
+
+const HeaderFilters = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  gap: "16px",
+});
+
+const Title = styled("h2")({
+  fontSize: "18px",
+  fontWeight: 600,
+  margin: 0,
+});
+
+const DividerLine = styled("div")({
+  width: "82%",
+  height: "1px",
+  backgroundColor: "#8f8f8f",
+  margin: "10px auto 16px auto",
+});
+
+const StyledTableContainer = styled(TableContainer)({
   width: "82%",
   marginLeft: "auto",
   marginRight: "auto",
-  marginTop: "20px",
+  boxShadow: "none",
+  backgroundColor: "#fff",
 });
 
-const FilterContainer = styled("div")({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "20px",
-  marginBottom: "20px",
-  gap: "20px",
+const StyledTable = styled(Table)({
+  width: "100%",
+  borderCollapse: "collapse",
 });
-
 // -------------------------------------------------
 
 function UserPage() {
@@ -59,7 +78,6 @@ function UserPage() {
   const userRepository = useMemo(() => new UsersRepository(), []);
   const getUsers = useMemo(() => new GetUsers(userRepository), [userRepository]);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
-
   const searchUsersByEmail = useMemo(
     () => new SearchUsersByEmail(userRepository),
     [userRepository]
@@ -148,78 +166,157 @@ function UserPage() {
   return (
     <div>
       <CenteredContainer>
-        <FilterContainer>
-          <TextField
-            label="Buscar por email"
-            variant="outlined"
-            placeholder="Ej: nombre@ucb.edu.bo"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 360 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+        <HeaderContainer>
+          <Title>Usuarios</Title>
 
-          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-            <InputLabel id="group-filter-label">Grupo</InputLabel>
-            <Select
-              labelId="group-filter-label"
-              value={selectedGroup}
-              onChange={handleGroupChange}
-              label="Grupo"
-            >
-              <MenuItem value="all">Todos los grupos</MenuItem>
-              {groups.map((group) => (
-                <MenuItem key={group.id} value={group.id}>
-                  {group.groupName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </FilterContainer>
+          <HeaderFilters>
+            <TextField
+              placeholder="Buscar por email"
+              size="small"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ width: 260 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-        <section className="Usuarios">
-          <StyledTable>
-            <TableHead>
-              <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Eliminar</TableCell>
-              </TableRow>
-            </TableHead>
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <Select
+                value={selectedGroup}
+                onChange={handleGroupChange}
+                displayEmpty
+              >
+                <MenuItem value="all">Filtrar todos los grupos</MenuItem>
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.groupName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </HeaderFilters>
+        </HeaderContainer>
 
-            <TableBody>
-              {filteredUsers.length === 0 ? (
+        <DividerLine />
+
+        <section className="Usuarios" style={{ width: "100%" }}>
+          <StyledTableContainer>
+            <StyledTable>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={4} sx={{ textAlign: "center", py: 3 }}>
-                    No se encontraron resultados
+                  <TableCell
+                    sx={{
+                      fontWeight: 600,
+                      borderBottom: "1px solid #d9d9d9",
+                      borderRight: "1px solid #d9d9d9",
+                      padding: "10px 8px",
+                    }}
+                  >
+                    Correo
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 600,
+                      borderBottom: "1px solid #d9d9d9",
+                      borderRight: "1px solid #d9d9d9",
+                      padding: "10px 8px",
+                    }}
+                  >
+                    Grupo
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 600,
+                      borderBottom: "1px solid #d9d9d9",
+                      borderRight: "1px solid #d9d9d9",
+                      padding: "10px 8px",
+                    }}
+                  >
+                    Rol
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 600,
+                      borderBottom: "1px solid #d9d9d9",
+                      padding: "10px 8px",
+                    }}
+                  >
+                    Eliminar
                   </TableCell>
                 </TableRow>
-              ) : (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
-                      <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <RemoveCircleIcon
-                          onClick={() => handleRemoveUserFromGroup(user.id)}
-                          sx={{ color: "#d81b1b" }}
-                        />
-                      </Tooltip>
+              </TableHead>
+
+              <TableBody>
+                {filteredUsers.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={4}
+                      sx={{
+                        textAlign: "center",
+                        py: 3,
+                        borderBottom: "1px solid #d9d9d9",
+                      }}
+                    >
+                      No se encontraron resultados
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </StyledTable>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell
+                        sx={{
+                          borderBottom: "1px solid #d9d9d9",
+                          borderRight: "1px solid #d9d9d9",
+                          padding: "10px 8px",
+                        }}
+                      >
+                        {user.email}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          borderBottom: "1px solid #d9d9d9",
+                          borderRight: "1px solid #d9d9d9",
+                          padding: "10px 8px",
+                        }}
+                      >
+                        {groupMap[user.groupid] || "Unknown"}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          borderBottom: "1px solid #d9d9d9",
+                          borderRight: "1px solid #d9d9d9",
+                          padding: "10px 8px",
+                        }}
+                      >
+                        {user.role}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          borderBottom: "1px solid #d9d9d9",
+                          padding: "10px 8px",
+                        }}
+                      >
+                        <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
+                          <RemoveCircleIcon
+                            onClick={() => handleRemoveUserFromGroup(user.id)}
+                            sx={{
+                              color: "#ff1a1a",
+                              cursor: "pointer",
+                            }}
+                          />
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </StyledTable>
+          </StyledTableContainer>
         </section>
       </CenteredContainer>
     </div>
