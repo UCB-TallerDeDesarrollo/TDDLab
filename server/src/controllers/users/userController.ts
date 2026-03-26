@@ -16,14 +16,12 @@ import admin from "firebase-admin";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-admin.initializeApp({
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-});
+if (!admin.apps?.length) {
+  admin.initializeApp({
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID || "tddlab-staging-firebase",
+  });
+}
 
-const getErrorDebugCode = (error: unknown): string => {
-  const err = error as { code?: string; message?: string };
-  return err?.code || "UNKNOWN_AUTH_ERROR";
-};
 class UserController {
   private readonly userRepository: UserRepository;
 
@@ -80,8 +78,7 @@ class UserController {
       } else if (error.message === "Token inválido o expirado" || 
                  error.message === "Token expirado" || 
                  error.message === "Token inválido") {
-        const debugCode = getErrorDebugCode(error);
-        res.status(401).json({ error: error.message, debugCode });
+        res.status(401).json({ error: error.message });
       } else if (error.message === "No se pudo obtener email de Firebase") {
         res.status(400).json({ error: error.message });
       } else {
@@ -185,10 +182,11 @@ class UserController {
 
 
 async  logoutController (res: Response): Promise<void> {
+  const isProduction = process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test";
   res.clearCookie("userSession", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
   });
   res.status(200).json({ message: "Sesión cerrada correctamente" });
 };

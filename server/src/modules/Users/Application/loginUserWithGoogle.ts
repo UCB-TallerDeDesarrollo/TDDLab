@@ -1,24 +1,24 @@
 import { getUserByemail } from "./getUserByemailUseCase";
 import { getUserToken } from "./getUserToken";
-import { TokenVerifier } from "../Domain/TokenVerifier";
-import { FirebaseTokenVerifier } from "../Infrastructure/FirebaseTokenVerifier";
 import { User } from "../Domain/User";
 import admin from "firebase-admin";
 
 export const loginUserWithGoogle = async (
-  idToken: string,
-  tokenVerifier: TokenVerifier = new FirebaseTokenVerifier()
+  idToken: string
 ): Promise<{ user: User; jwtToken: string }> => {
-  const email = await tokenVerifier.verifyAndExtractEmail(idToken);
-  
-  // Verificar el proveedor del token
+  let email = "";
+
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
+    email = decodedToken.email || "";
+
+    if (!email) {
+      throw new Error("No se pudo obtener email de Firebase");
+    }
+
     const firebaseData = decodedToken.firebase as any;
     const providerId = firebaseData?.sign_in_provider;
-    
-    // Si el token no es de Google, verificar si el usuario existe
-    // Si existe, significa que está usando el proveedor equivocado
+
     if (providerId && providerId !== "google.com") {
       const userResult = await getUserByemail(email);
       if (userResult && !("error" in userResult) && userResult !== null) {
@@ -30,10 +30,27 @@ export const loginUserWithGoogle = async (
     if (error.message === "DEBE_USAR_GOOGLE") {
       throw error;
     }
-    // Si no es el error de proveedor y el error es sobre token, relanzarlo
-    if (error.message && !error.message.includes("Usuario no encontrado")) {
+    if (error.message === "Usuario no encontrado") {
       throw error;
     }
+    if (error.message === "No se pudo obtener email de Firebase") {
+      throw error;
+    }
+
+    if (error instanceof Error) {
+      if (error.message.includes("expired")) {
+        throw new Error("Token expirado");
+      }
+      if (error.message.includes("invalid")) {
+        throw new Error("Token inválido");
+      }
+    }
+
+    if (error.message) {
+      throw error;
+    }
+
+    throw new Error("Token inválido o expirado");
   }
 
   const userResult = await getUserByemail(email);

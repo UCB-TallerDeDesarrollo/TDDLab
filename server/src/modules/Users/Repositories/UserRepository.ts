@@ -53,6 +53,29 @@ export class UserRepository {
     }
     return null;
   }
+
+  async obtainUserByEmailAndGroup(email: string, groupid: number): Promise<User | null> {
+    const query = "SELECT id, email, groupid, role FROM usersTable WHERE email = $1 AND groupid = $2 LIMIT 1";
+    const values = [email, groupid];
+    const rows = await this.executeQuery(query, values);
+
+    if (rows.length === 1) {
+      return this.mapRowToUser(rows[0]);
+    }
+
+    return null;
+  }
+
+  async updateUserRoleByEmailAndGroup(
+    email: string,
+    groupid: number,
+    role: string,
+  ): Promise<void> {
+    const query = "UPDATE usersTable SET role = $3 WHERE email = $1 AND groupid = $2";
+    const values = [email, groupid, role];
+    await this.executeQuery(query, values);
+  }
+
   async obtainUser(id: number): Promise<User | null> {
     const query = "SELECT id, email, groupid, role FROM usersTable WHERE id = $1";
     const values = [id];

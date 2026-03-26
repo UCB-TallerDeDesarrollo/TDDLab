@@ -13,12 +13,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onView:tddTestExecution",
-    "onCommand:TDD.runTest",
-    "onCommand:TDD.openTerminal",
-    "onView:tddTerminalView"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "keybindings": [
@@ -69,7 +63,7 @@
         {
           "id": "timelineContainer",
           "title": "TDD TIMELINE",
-          "icon": ""
+          "icon": "resources/TddLab_v2.png"
         },
         {
           "id": "tddTerminalPanel",
@@ -82,17 +76,20 @@
       "myExtension": [
         {
           "id": "tddTestExecution",
-          "name": "TDD test execution"
+          "name": "TDD test execution",
+          "icon": "resources/TddLab_v2.png"
         },
         {
           "id": "abrirTerminal",
-          "name": "Abrir Terminal"
+          "name": "Abrir Terminal",
+          "icon": "resources/TddLab_v2.png"
         }
       ],
       "timelineContainer": [
         {
           "id": "tddTimelineView",
           "name": "Timeline",
+          "icon": "resources/TddLab_v2.png",
           "type": "webview",
           "retainContextWhenHidden": true
         }
@@ -101,6 +98,7 @@
         {
           "id": "tddTerminalView",
           "name": "Terminal Simulada",
+          "icon": "resources/TddLab_v2.png",
           "type": "webview"
         }
       ]

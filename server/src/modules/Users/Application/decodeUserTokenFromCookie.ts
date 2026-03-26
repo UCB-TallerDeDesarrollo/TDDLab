@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken";
 export const decodeUserTokenFromCookie = (
   token: string
 ): { id: number; role: string; groupid: number } => { 
-    return jwt.verify(token, process.env.JWT_SECRET!) as {
+    const jwtSecret = process.env.JWT_SECRET || "supersecreto";
+    return jwt.verify(token, jwtSecret) as {
       id: number;
       role: string;
       groupid: number;

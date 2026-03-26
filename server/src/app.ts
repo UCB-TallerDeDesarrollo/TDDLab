@@ -16,38 +16,26 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 3000;
-
+const frontendOrigin = process.env.VITE_FRONT_URL || "http://localhost:5173";
 const allowedOrigins = [
-  process.env.VITE_FRONT_URL,
+  frontendOrigin,
   "http://localhost:5173",
   "https://tddlab-staging-firebase.web.app",
-].filter((origin): origin is string => Boolean(origin));
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-  })
-);
-
-app.use(express.json());
+];
 
 // Enable CORS for all routes
-//app.use(cors({
-//  origin: "https://tddlab-staging-firebase.web.app/", //process.env.VITE_FRONT_URL, 
-//  credentials: true,
-//}));
-//app.use(express.json()); 
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error("CORS origin not allowed"));
+  },
+  credentials: true,
+}));
+app.use(express.json()); 
 
 app.use(bodyParser.json());
 
