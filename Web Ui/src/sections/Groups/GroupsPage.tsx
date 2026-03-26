@@ -336,13 +336,13 @@ function Groups() {
                   onMouseEnter={() => handleRowHover(index)}
                   onMouseLeave={() => handleRowHover(null)}
                 >
-                  <TableCell sx={{ width: "20px", minWidth: "20px", maxWidth: "20px", padding: "0 1px", textAlign: "center" }}>
+                  <TableCell sx={{ width: "20px", minWidth: "20px", maxWidth: "20px", padding: "0 1px", textAlign: "center", borderBottom: "none" }}>
                     <Checkbox
                       checked={asId(currentSelectedGroupId) === asId(group.id)}
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
-                  <TableCell style={{ fontSize: "0.8rem"}}>{group.groupName}</TableCell>
+                  <TableCell style={{ fontSize: "0.8rem", borderBottom: "none"}}>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
                       <Tooltip title="Editar grupo" arrow>
