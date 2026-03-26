@@ -6,23 +6,9 @@ import {
   Button,
   Card,
   CardContent,
-  Table,
-  TableBody,
   TableCell,
-  TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
-import {
-  AccessTime as AccessTimeIcon,
-  Link as LinkIcon,
-  Comment as CommentIcon,
-} from "@mui/icons-material";
-import { GitLinkDialog } from "./components/GitHubLinkDialog";
-import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
@@ -44,6 +30,9 @@ import {
   redirectToAdminGraph,
 } from "./utils/assignmentDetailHelpers";
 import { useAssignmentDetailData } from "./hooks/useAssignmentDetailData";
+import { AssignmentDetailInfo } from "./components/AssignmentDetailInfo";
+import { StudentAssignmentActions } from "./components/StudentAssignmentActions";
+import { AssignmentSubmissionsTable } from "./components/AssignmentSubmissionsTable";
 
 
 interface AssignmentDetailProps {
@@ -292,223 +281,41 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       {assignment ? (
         <Card variant="elevation" elevation={0}>
           <CardContent>
-            <div style={{ marginBottom: "40px" }}>
-              <Typography
-                variant="h5"
-                component="div"
-                style={{ ...typographyVariants.h3, lineHeight: "3.8" }}
-              >
-                {assignment.title}
-              </Typography>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <ArchiveOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={detailTextStyle}
-                >
-                  <strong>Grupo:</strong> {groupDetails?.groupName}
-                </Typography>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <NotesOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={detailTextStyle}
-                >
-                  <strong>Instrucciones:</strong> {assignment.description}
-                </Typography>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={detailTextStyle}
-                >
-                  <strong>Inicio:</strong>{" "}
-                  {formatDate(assignment.start_date.toString())}
-                </Typography>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={detailTextStyle}
-                >
-                  <strong>Fecha límite:</strong>{" "}
-                  {formatDate(assignment.end_date.toString())}
-                </Typography>
-              </div>
-              {isStudent(role) && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <AccessTimeIcon
-                    style={{ marginRight: "8px", color: "#666666" }}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={detailTextStyle}
-                  >
-                    <strong>Estado:</strong>{" "}
-                    {getDisplayStatus(studentSubmission?.status)}
-                  </Typography>
-                </div>
-              )}
-
-              {isStudent(role) && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={detailTextStyle}
-                  >
-                    <strong>Enlace:</strong>
-                    <a
-                      href={studentSubmission?.repository_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {studentSubmission?.repository_link}
-                    </a>
-                  </Typography>
-                </div>
-              )}
-
-              {isStudent(role) &&
-                (assignment.comment ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <CommentIcon
-                      style={{ marginRight: "8px", color: "#666666" }}
-                    />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      style={detailTextStyle}
-                    >
-                      <strong>Comentario:</strong> {studentSubmission?.repository_link === "" || studentSubmission == null}
-                    </Typography>
-                  </div>
-                ) : null)}
-            </div>
-            {isStudent(role) && (
-              <Button
-                variant="contained"
-                disabled={!!studentSubmission}
-                onClick={handleOpenLinkDialog}
-                style={actionButtonStyle}
-              >
-                Iniciar tarea
-              </Button>
-            )}
-
-            {isStudent(role) && (
-              <Button
-                variant="contained"
-                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
-                  if (studentSubmission?.repository_link) {
-                    handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate)
-                  }
-                }}
-                color="primary"
-                style={actionButtonStyle}
-              >
-                Ver gráfica
-              </Button>
-            )}
-            <GitLinkDialog
-              open={linkDialogOpen}
-              onClose={handleCloseLinkDialog}
-              onSend={handleSendGithubLink}
+            <AssignmentDetailInfo
+              assignment={assignment}
+              groupDetails={groupDetails}
+              role={role}
+              studentSubmission={studentSubmission}
+              detailTextStyle={detailTextStyle}
             />
 
-            {isStudent(role) && (
-              <Button
-                variant="contained"
-                disabled={isTaskInProgress}
-                onClick={handleOpenCommentDialog}
-                style={actionButtonStyle}
-              >
-                Finalizar tarea
-              </Button>
-            )}
-            {isStudent(role) && showIAButton && (
-              <Button
-                variant="contained"
-                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "AssistantAI");
-                  navigate("/asistente-ia", {
-                    state: { repositoryLink: studentSubmission?.repository_link }
-                  });
-                }}
-                color="primary"
-                style={actionButtonStyle}
-              >
-                Asistente IA
-              </Button>
-            )}
-            <CommentDialog
-              open={isCommentDialogOpen}
-              link={submission?.repository_link}
-              onSend={handleSendComment}
-              onClose={handleCloseCommentDialog}
+            <StudentAssignmentActions
+              role={role}
+              studentSubmission={studentSubmission}
+              submissionLink={submission?.repository_link}
+              showIAButton={showIAButton}
+              isTaskInProgress={isTaskInProgress}
+              actionButtonStyle={actionButtonStyle}
+              linkDialogOpen={linkDialogOpen}
+              isCommentDialogOpen={isCommentDialogOpen}
+              onOpenLinkDialog={handleOpenLinkDialog}
+              onStudentGraph={() => {
+                localStorage.setItem("selectedMetric", "Dashboard");
+                if (studentSubmission?.repository_link) {
+                  handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate);
+                }
+              }}
+              onOpenCommentDialog={handleOpenCommentDialog}
+              onOpenAssistant={() => {
+                localStorage.setItem("selectedMetric", "AssistantAI");
+                navigate("/asistente-ia", {
+                  state: { repositoryLink: studentSubmission?.repository_link },
+                });
+              }}
+              onCloseLinkDialog={handleCloseLinkDialog}
+              onSendGithubLink={handleSendGithubLink}
+              onCloseCommentDialog={handleCloseCommentDialog}
+              onSendComment={handleSendComment}
             />
           </CardContent>
         </Card>
@@ -524,51 +331,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
         </div>
       )}
-      {!isStudent(role) && (
-        <Card variant="elevation" elevation={0}>
-          <CardContent>
-            <Typography
-              variant="h6"
-              component="div"
-              align="center"
-              style={{ ...typographyVariants.h4, lineHeight: "3.8" }}
-            >
-              Lista de Estudiantes
-            </Typography>
-            {loadingSubmissions ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "150px",
-                }}
-              >
-                <CircularProgress size={40} thickness={4} />
-              </div>
-            ) : (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Estado</TableCell>
-                    <TableCell>Enlace</TableCell>
-                    <TableCell>Fecha de inicio</TableCell>
-                    <TableCell>Fecha de finalización</TableCell>
-                    <TableCell>Comentario</TableCell>
-                    <TableCell>Gráfica</TableCell>
-                    <TableCell>Asistente</TableCell>
-                    <TableCell>Gráficas Adicionales</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {studentRows}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      <AssignmentSubmissionsTable
+        role={role}
+        loadingSubmissions={loadingSubmissions}
+        studentRows={studentRows}
+      />
     </div>
   );
 };
