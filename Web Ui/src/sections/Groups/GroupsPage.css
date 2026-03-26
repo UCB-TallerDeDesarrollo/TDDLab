@@ -1,0 +1,9 @@
+.groups-table-header-row {
+  border-bottom: 2px solid #E7E7E7;
+}
+
+.groups-create-btn {
+  border-radius: 17px !important;
+  text-transform: none !important;
+  font-size: 0.95rem !important;
+}

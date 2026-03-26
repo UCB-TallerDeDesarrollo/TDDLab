@@ -18,39 +18,23 @@ import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
-  Table,
   TableHead,
   TableBody,
   TableRow,
   TableCell,
-  Container,
   Button,
   Collapse,
 } from "@mui/material";
-import { styled } from "@mui/system";
+
+import { CenteredContainer, StyledTable, ButtonContainer } from "./components/WrappedStyledComponents";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
+import './GroupsPage.css';
 
-const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const ButtonContainer = styled("div")({
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: "8px",
-});
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
 
 // Normaliza cualquier id a number
 const asId = (v: unknown): number => {
@@ -61,7 +45,6 @@ const asId = (v: unknown): number => {
 function Groups() {
   const navigate = useNavigate();
 
-  // UI state
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -71,7 +54,6 @@ function Groups() {
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
-  // data
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
@@ -80,10 +62,8 @@ function Groups() {
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
-  // id seleccionado (sincronizado con auth/localStorage)
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
-  // Sincroniza selección en toda la app
   const selectAndSync = (rawId: unknown) => {
     const id = asId(rawId);
     if (!id) return;
@@ -299,8 +279,8 @@ function Groups() {
       <section className="Grupos">
         <StyledTable>
           <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
+            <TableRow className="groups-table-header-row">
+              <TableCell>
                 Grupos
               </TableCell>
               <TableCell>
@@ -313,7 +293,7 @@ function Groups() {
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
+                    className="groups-create-btn"
                     onClick={handleCreateGroupClick}
                   >
                     Crear
