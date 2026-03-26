@@ -63,6 +63,8 @@ export function useAssignmentDetailData({
   assignmentid,
   navigate,
 }: Readonly<UseAssignmentDetailDataProps>) {
+  const [refreshTick, setRefreshTick] = useState(0);
+  const [uiMessage, setUiMessage] = useState<string | null>(null);
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(null);
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
   const [assignmentState, setAssignmentState] = useState<ViewState>("loading");
@@ -100,7 +102,7 @@ export function useAssignmentDetailData({
     };
 
     fetchAssignment();
-  }, [assignmentid]);
+  }, [assignmentid, refreshTick]);
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -122,7 +124,7 @@ export function useAssignmentDetailData({
     };
 
     fetchGroup();
-  }, [assignment]);
+  }, [assignment, refreshTick]);
 
   useEffect(() => {
     const fetchTeacherFlags = async () => {
@@ -186,7 +188,7 @@ export function useAssignmentDetailData({
     };
 
     fetchStudentSubmission();
-  }, [assignmentid, userid, role]);
+  }, [assignmentid, userid, role, refreshTick]);
 
   useEffect(() => {
     const fetchDeliveries = async () => {
@@ -244,7 +246,7 @@ export function useAssignmentDetailData({
     };
 
     fetchDeliveries();
-  }, [assignmentid, role]);
+  }, [assignmentid, role, refreshTick]);
 
   const isTaskInProgress = submission?.status !== "in progress";
 
@@ -257,9 +259,12 @@ export function useAssignmentDetailData({
     setLinkDialogOpen(true);
   };
 
+  const refreshDetailData = () => {
+    setRefreshTick((prev) => prev + 1);
+  };
+
   const closeLinkDialog = () => {
     setLinkDialogOpen(false);
-    window.location.reload();
   };
 
   const openCommentDialog = () => {
@@ -294,6 +299,7 @@ export function useAssignmentDetailData({
 
     await createSubmission.createSubmission(submissionData);
     closeLinkDialog();
+    refreshDetailData();
   };
 
   const sendComment = async (comment: string) => {
@@ -319,7 +325,7 @@ export function useAssignmentDetailData({
 
     await finishSubmission.finishSubmission(submission.id, submissionData);
     closeCommentDialog();
-    window.location.reload();
+    refreshDetailData();
   };
 
   const redirectStudentToGraph = () => {
@@ -331,7 +337,8 @@ export function useAssignmentDetailData({
     handleRedirectStudent(
       studentSubmission.repository_link,
       studentSubmission.id,
-      navigate
+      navigate,
+      setUiMessage
     );
   };
 
@@ -353,7 +360,7 @@ export function useAssignmentDetailData({
     selectedMetric: "Dashboard" | "Complejidad"
   ) => {
     if (!link) {
-      alert("No se encontro un link para esta tarea.");
+      setUiMessage("No se encontro un link para esta tarea.");
       return;
     }
 
@@ -361,7 +368,7 @@ export function useAssignmentDetailData({
     const match = regex.exec(link);
 
     if (!match) {
-      alert("Link Invalido, por favor ingrese un link valido.");
+      setUiMessage("Link invalido, por favor ingrese un link valido.");
       return;
     }
 
@@ -420,5 +427,7 @@ export function useAssignmentDetailData({
     openTeacherAdditionalGraphs,
     studentRepositoryLink: studentSubmission?.repository_link,
     submissionRepositoryLink: submission?.repository_link,
+    uiMessage,
+    closeUiMessage: () => setUiMessage(null),
   };
 }

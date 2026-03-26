@@ -29,9 +29,10 @@ const StyledTable = styled(Table)({
 interface PracticesProps {
   ShowForm: () => void;
   userRole: string;
+  refreshToken: number;
 }
 
-function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
+function Practices({ ShowForm: showForm, refreshToken }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -85,6 +86,17 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
   useEffect(() => {
     fetchData();
+  }, [selectedSorting, authData, refreshToken]);
+
+  useEffect(() => {
+    const handlePracticeUpdated = () => {
+      fetchData();
+    };
+
+    window.addEventListener("practice-updated", handlePracticeUpdated as EventListener);
+    return () => {
+      window.removeEventListener("practice-updated", handlePracticeUpdated as EventListener);
+    };
   }, [selectedSorting, authData]);
 
   const handleOrderPractices = (event: { target: { value: string } }) => {
@@ -190,7 +202,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             open={validationDialogOpen}
             title="Practica eliminada exitosamente"
             closeText="Cerrar"
-            onClose={() => window.location.reload()}
+            onClose={() => setValidationDialogOpen(false)}
           />
         )}
       </section>

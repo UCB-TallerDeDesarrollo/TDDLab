@@ -44,8 +44,8 @@ function EditPracticeDialog({
         const updatePractice = new UpdatePractice(practiceRepository);
         await updatePractice.updatePractice(practiceId, updatedPracticeData);
 
+        window.dispatchEvent(new Event("practice-updated"));
         onClose();
-        window.location.reload();
       } else {
         console.error("La practica actual no se encontró.");
       }

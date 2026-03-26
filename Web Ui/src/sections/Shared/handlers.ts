@@ -8,12 +8,13 @@ export const createDialogHandlers = (setDialogState: Dispatch<SetStateAction<boo
 };
 
 export const createLinkDialogHandlers = (
-  setDialogState: Dispatch<SetStateAction<boolean>>
+  setDialogState: Dispatch<SetStateAction<boolean>>,
+  onClose?: () => void
 ) => {
   const openDialog = () => setDialogState(true);
   const closeDialog = () => {
     setDialogState(false);
-    window.location.reload();
+    onClose?.();
   };
   return { openDialog, closeDialog };
 };
@@ -21,7 +22,8 @@ export const createLinkDialogHandlers = (
 export const handleRedirectStudent = (
   link: string,
   id : number,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  onError?: (message: string) => void
 ) => {
   if (link) {
     const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
@@ -38,10 +40,9 @@ export const handleRedirectStudent = (
         }).toString(),
       });
     } else {
-      console.log("No entra");
-      alert("Link Inválido, por favor ingrese un link válido.");
+      onError?.("Link invalido, por favor ingrese un link valido.");
     }
   } else {
-    alert("No se encontró un link para esta tarea.");
+    onError?.("No se encontro un link para esta tarea.");
   }
 };

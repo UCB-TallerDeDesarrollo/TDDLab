@@ -14,15 +14,18 @@ interface CreatePracticePopupProps {
   open: boolean;
   handleClose: () => void;
   userid: number;
+  onCreated: () => void;
 }
 
 function MyPracticesForm({
   open,
   handleClose,
   userid,
+  onCreated,
 }: Readonly<CreatePracticePopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [createdSuccessfully, setCreatedSuccessfully] = useState(false);
   const [practiceData, setPracticeData] = useState({
     id: 0,
     title: "",
@@ -44,7 +47,9 @@ function MyPracticesForm({
     const createPractices = new CreatePractice(practicesRepository);
     try {
       await createPractices.createPractice(practiceData);
+      setCreatedSuccessfully(true);
     } catch (error) {
+      setCreatedSuccessfully(false);
       console.error(error);
     } finally {
       setSave(false);
@@ -74,6 +79,7 @@ function MyPracticesForm({
 
   useEffect(() => {
     setSave(false);
+    setCreatedSuccessfully(false);
   }, [open]);
 
   return (
@@ -133,7 +139,13 @@ function MyPracticesForm({
           open={validationDialogOpen}
           title="Practica creada exitosamente"
           closeText="Cerrar"
-          onClose={() => window.location.reload()}
+          onClose={() => {
+            setValidationDialogOpen(false);
+            handleClose();
+            if (createdSuccessfully) {
+              onCreated();
+            }
+          }}
         />
       )}
     </Dialog>

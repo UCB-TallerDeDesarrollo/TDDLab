@@ -21,15 +21,24 @@ interface PracticeManagerProps {
 function PracticeManager({ userRole, userid }: Readonly<PracticeManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
 
   const handleCreateAssignmentClick = () => {
     setCreateAssignmentPopupOpen(true);
   };
 
+  const refreshPractices = () => {
+    setRefreshToken((prev) => prev + 1);
+  };
+
   return (
     <>
       <PrcticesContainer data-testid="assignments-container">
-        <Practices ShowForm={handleCreateAssignmentClick} userRole={userRole} />
+        <Practices
+          ShowForm={handleCreateAssignmentClick}
+          userRole={userRole}
+          refreshToken={refreshToken}
+        />
       </PrcticesContainer>
       <FormsContainer>
         {createAssignmentPopupOpen && (
@@ -38,6 +47,7 @@ function PracticeManager({ userRole, userid }: Readonly<PracticeManagerProps>) {
             open={createAssignmentPopupOpen}
             handleClose={() => setCreateAssignmentPopupOpen(false)}
             userid={userid}
+            onCreated={refreshPractices}
           />
         )}
       </FormsContainer>

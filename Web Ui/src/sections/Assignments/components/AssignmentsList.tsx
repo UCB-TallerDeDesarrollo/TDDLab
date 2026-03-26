@@ -48,6 +48,7 @@ interface AssignmentsProps {
   userRole: string;
   userGroupid: number | number[] ;
   onGroupChange: (groupId: number) => void;
+  refreshToken: number;
 }
 
 function Assignments({
@@ -55,6 +56,7 @@ function Assignments({
                        userRole,
                        userGroupid,
                        onGroupChange,
+                       refreshToken,
                      }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -178,7 +180,7 @@ function Assignments({
 
 useEffect(() => {
   fetchData();
-}, [location]);
+}, [location, refreshToken]);
 
   // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {

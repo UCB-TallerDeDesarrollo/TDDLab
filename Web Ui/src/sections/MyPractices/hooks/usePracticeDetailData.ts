@@ -53,6 +53,8 @@ export function usePracticeDetailData({
   practiceid,
   navigate,
 }: Readonly<UsePracticeDetailDataProps>) {
+  const [refreshTick, setRefreshTick] = useState(0);
+  const [uiMessage, setUiMessage] = useState<string | null>(null);
   const [practiceState, setPracticeState] = useState<ViewState>("loading");
   const [submissionState, setSubmissionState] = useState<ViewState>("loading");
 
@@ -89,7 +91,7 @@ export function usePracticeDetailData({
     };
 
     fetchPractice();
-  }, [practiceid]);
+  }, [practiceid, refreshTick]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -119,7 +121,7 @@ export function usePracticeDetailData({
     };
 
     fetchSubmissions();
-  }, [practiceid, userid]);
+  }, [practiceid, userid, refreshTick]);
 
   useEffect(() => {
     const fetchUserSubmission = async () => {
@@ -147,7 +149,7 @@ export function usePracticeDetailData({
     };
 
     fetchUserSubmission();
-  }, [practiceid, userid]);
+  }, [practiceid, userid, refreshTick]);
 
   const isTaskInProgress = submission?.status !== "in progress";
 
@@ -165,9 +167,12 @@ export function usePracticeDetailData({
     setLinkDialogOpen(true);
   };
 
+  const refreshDetailData = () => {
+    setRefreshTick((prev) => prev + 1);
+  };
+
   const closeLinkDialog = () => {
     setLinkDialogOpen(false);
-    window.location.reload();
   };
 
   const openCommentDialog = () => {
@@ -204,6 +209,7 @@ export function usePracticeDetailData({
 
     await createPracticeSubmission.createPracticeSubmission(practiceSubmissionData);
     closeLinkDialog();
+    refreshDetailData();
   };
 
   const sendComment = async (comment: string) => {
@@ -229,7 +235,7 @@ export function usePracticeDetailData({
 
     await finishSubmission.finishSubmission(submission.id, submissionData);
     closeCommentDialog();
-    window.location.reload();
+    refreshDetailData();
   };
 
   const redirectToGraph = () => {
@@ -238,7 +244,7 @@ export function usePracticeDetailData({
     }
 
     localStorage.setItem("selectedMetric", "Dashboard");
-    handleRedirectStudent(submission.repository_link, submission.id, navigate);
+    handleRedirectStudent(submission.repository_link, submission.id, navigate, setUiMessage);
   };
 
   return {
@@ -259,5 +265,7 @@ export function usePracticeDetailData({
     closeCommentDialog,
     sendComment,
     redirectToGraph,
+    uiMessage,
+    closeUiMessage: () => setUiMessage(null),
   };
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { Alert, Button, CircularProgress, Snackbar, Typography } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
 import { TaskOverviewCard } from "./components/detail/TaskOverviewCard";
@@ -56,6 +56,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     openTeacherAdditionalGraphs,
     studentRepositoryLink,
     submissionRepositoryLink,
+    uiMessage,
+    closeUiMessage,
   } = useAssignmentDetailData({ role, userid, assignmentid, navigate });
 
   if (assignmentState === "loading") {
@@ -164,6 +166,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
         onSend={sendComment}
         onClose={closeCommentDialog}
       />
+
+      <Snackbar
+        open={Boolean(uiMessage)}
+        autoHideDuration={4000}
+        onClose={closeUiMessage}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={closeUiMessage} severity="warning" variant="filled">
+          {uiMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

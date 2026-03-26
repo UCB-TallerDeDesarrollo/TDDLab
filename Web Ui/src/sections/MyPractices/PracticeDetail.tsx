@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { Alert, Button, CircularProgress, Snackbar, Typography } from "@mui/material";
 import { Link as LinkIcon } from "@mui/icons-material";
 import { GitLinkDialog } from "../Assignments/components/GitHubLinkDialog";
 import { CommentDialog } from "../Assignments/components/CommentDialog";
@@ -35,6 +35,8 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
     closeCommentDialog,
     sendComment,
     redirectToGraph,
+    uiMessage,
+    closeUiMessage,
   } = usePracticeDetailData({ userid, practiceid, navigate });
 
   if (practiceState === "loading") {
@@ -138,6 +140,17 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         onSend={sendComment}
         onClose={closeCommentDialog}
       />
+
+      <Snackbar
+        open={Boolean(uiMessage)}
+        autoHideDuration={4000}
+        onClose={closeUiMessage}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={closeUiMessage} severity="warning" variant="filled">
+          {uiMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

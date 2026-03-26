@@ -22,18 +22,58 @@ interface CycleReportViewProps {
   typegraphs: string;
 }
 
+const options = [
+  { value: 'Complejidad', label: 'Lista de Complejidad' },
+  { value: 'Pie', label: 'Distribución de Commits' },
+  { value: 'Dashboard', label: 'Dashboard' },
+  { value: 'Total Número de Tests', label: 'Total Número de Tests' },
+  { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
+  { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
+  { value: 'Lista', label: 'Lista de Commits' },
+  { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
+];
+
 function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
+
+  const getAvailableOptions = () => {
+    return options.filter((option) => {
+      if (!tddLogs || tddLogs.length === 0) {
+        if (option.value === 'Dashboard' || option.value === 'Ciclo de ejecución de pruebas') {
+          return false;
+        }
+      }
+
+      if (typegraphs === 'aditionalgraph') {
+        return ['Complejidad', 'Pie'].includes(option.value);
+      }
+
+      return !['Complejidad', 'Pie'].includes(option.value);
+    });
+  };
+
+  const resolveMetric = (storedMetric: string | null) => {
+    const availableOptions = getAvailableOptions();
+    const fallbackMetric = availableOptions[0]?.value ?? 'Dashboard';
+
+    if (!storedMetric) {
+      return fallbackMetric;
+    }
+
+    return availableOptions.some((option) => option.value === storedMetric)
+      ? storedMetric
+      : fallbackMetric;
+  };
+
   const [metricSelected, setMetricSelected] = useState(() => {
-    const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-    return initialMetric;
+    return resolveMetric(localStorage.getItem("selectedMetric"));
   });
 
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-      setMetricSelected(storedMetric);
-      setMetric(storedMetric);
+      const nextMetric = resolveMetric(localStorage.getItem("selectedMetric"));
+      setMetricSelected(nextMetric);
+      setMetric(nextMetric);
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -42,6 +82,16 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
       window.removeEventListener("storage", handleStorageChange);
     };
   }, [setMetric]);
+
+  useEffect(() => {
+    const nextMetric = resolveMetric(metricSelected);
+
+    if (nextMetric !== metricSelected) {
+      setMetricSelected(nextMetric);
+      setMetric(nextMetric);
+      localStorage.setItem("selectedMetric", nextMetric);
+    }
+  }, [metricSelected, setMetric, tddLogs, typegraphs]);
 
   const filteredCommitsObject = (() => {
     if (commits != null) {
@@ -74,16 +124,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     window.dispatchEvent(storageEvent);
   };
 
-  const options = [
-    { value: 'Complejidad', label: 'Lista de Complejidad' },
-    { value: 'Pie', label: 'Distribución de Commits' },
-    { value: 'Dashboard', label: 'Dashboard' },
-    { value: 'Total Número de Tests', label: 'Total Número de Tests' },
-    { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
-    { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
-    { value: 'Lista', label: 'Lista de Commits' },
-    { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
-  ];
+  const availableOptions = getAvailableOptions();
 
   return (
     <div className="lineChartContainer">
@@ -98,18 +139,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
             data-testid="select-graph-type"
             label="Métricas"
           >
-            {options.filter(option => {
-              if (!tddLogs || tddLogs.length === 0) {
-                if (option.value === 'Dashboard' || option.value === 'Ciclo de ejecución de pruebas') {
-                  return false;
-                }
-              }
-              if (typegraphs === 'aditionalgraph') {
-                return ['Complejidad', 'Pie'].includes(option.value);
-              } else {
-                return !['Complejidad', 'Pie'].includes(option.value);
-              }
-            }).map((option) => (
+            {availableOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
