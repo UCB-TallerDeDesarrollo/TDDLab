@@ -131,10 +131,38 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCancel} style={{ color: "#555", textTransform: "none" }}>
+            <Button 
+              onClick={handleCancel} 
+              sx={{
+                color: "#555",
+                textTransform: "none",
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
+            >
               Cancelar
             </Button>
-            <Button onClick={handleCreate} color="primary" style={{ textTransform: "none" }}>
+            <Button 
+              onClick={handleCreate} 
+              color="primary" 
+              sx={{
+                textTransform: "none",
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
+            >
               Crear
             </Button>
           </DialogActions>

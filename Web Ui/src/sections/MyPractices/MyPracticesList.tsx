@@ -154,7 +154,18 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                     variant="contained"
                     color="primary"
                     startIcon={<IconifyIcon icon="mdi:plus" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
-                    sx={{ textTransform: "none", ...typographyVariants.paragraphMedium }}
+                    sx={{ 
+                      textTransform: "none", 
+                      ...typographyVariants.paragraphMedium,
+                      transition: "all 0.175s ease-out",
+                      "&:hover": {
+                        filter: "brightness(0.9)",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                      },
+                      "&:active": {
+                        transform: "scale(0.97)",
+                      },
+                    }}
                     onClick={showForm}
                   >
                     Crear

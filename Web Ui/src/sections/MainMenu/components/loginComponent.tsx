@@ -46,7 +46,17 @@ export default function LoginComponent() {
         <Button
           onClick={handleLogin}
           variant="contained"
-          sx={{ marginLeft: "18px" }}
+          sx={{ 
+            marginLeft: "18px",
+            transition: "all 0.175s ease-out",
+            "&:hover": {
+              filter: "brightness(0.9)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            "&:active": {
+              transform: "scale(0.97)",
+            },
+          }}
         >
           Iniciar sesión
         </Button>
@@ -56,7 +66,17 @@ export default function LoginComponent() {
           <Button
             onClick={handleLogout}
             variant="contained"
-            sx={{ marginLeft: "18px" }}
+            sx={{ 
+              marginLeft: "18px",
+              transition: "all 0.175s ease-out",
+              "&:hover": {
+                filter: "brightness(0.9)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              },
+              "&:active": {
+                transform: "scale(0.97)",
+              },
+            }}
           >
             Cerrar Sesion
           </Button>

@@ -308,7 +308,19 @@ function Groups() {
                     variant="contained"
                     color="primary"
                     startIcon={<IconifyIcon icon="mdi:plus" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
+                    sx={{ 
+                      borderRadius: "17px", 
+                      textTransform: "none", 
+                      fontSize: "0.95rem",
+                      transition: "all 0.175s ease-out",
+                      "&:hover": {
+                        filter: "brightness(0.9)",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                      },
+                      "&:active": {
+                        transform: "scale(0.97)",
+                      },
+                    }}
                     onClick={handleCreateGroupClick}
                   >
                     Crear
@@ -337,31 +349,96 @@ function Groups() {
                   <TableCell>
                     <ButtonContainer>
                       <Tooltip title="Editar grupo" arrow>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
+                        <IconButton 
+                          aria-label="editar" 
+                          onClick={(e) => handleEditClick(e, index)}
+                          sx={{
+                            transition: "all 0.175s ease-out",
+                            "&:hover": {
+                              filter: "brightness(0.9)",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            },
+                            "&:active": {
+                              transform: "scale(0.97)",
+                            },
+                          }}
+                        >
                           <IconifyIcon icon="mdi:pencil" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
+                        <IconButton 
+                          aria-label="tareas" 
+                          onClick={(e) => handleHomeworksClick(e, index)}
+                          sx={{
+                            transition: "all 0.175s ease-out",
+                            "&:hover": {
+                              filter: "brightness(0.9)",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            },
+                            "&:active": {
+                              transform: "scale(0.97)",
+                            },
+                          }}
+                        >
                           <IconifyIcon icon="mdi:motion" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Participantes" arrow>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
+                        <IconButton 
+                          aria-label="estudiantes" 
+                          onClick={(e) => handleStudentsClick(e, index)}
+                          sx={{
+                            transition: "all 0.175s ease-out",
+                            "&:hover": {
+                              filter: "brightness(0.9)",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            },
+                            "&:active": {
+                              transform: "scale(0.97)",
+                            },
+                          }}
+                        >
                           <IconifyIcon icon="mdi:account-multiple" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
+                        <IconButton 
+                          aria-label="enlace" 
+                          onClick={(e) => handleLinkClick(e, index)}
+                          sx={{
+                            transition: "all 0.175s ease-out",
+                            "&:hover": {
+                              filter: "brightness(0.9)",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            },
+                            "&:active": {
+                              transform: "scale(0.97)",
+                            },
+                          }}
+                        >
                           <IconifyIcon icon="mdi:link" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
+                        <IconButton 
+                          aria-label="enlace"
+                          sx={{
+                            transition: "all 0.175s ease-out",
+                            "&:hover": {
+                              filter: "brightness(0.9)",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            },
+                            "&:active": {
+                              transform: "scale(0.97)",
+                            },
+                          }}
+                          onClick={(e) => handleLinkClickTeacher(e, index)}
+                        >
                           <PiChalkboardTeacherFill />
                         </IconButton>
                       </Tooltip>

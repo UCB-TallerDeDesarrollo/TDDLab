@@ -95,6 +95,16 @@ const Assignment: React.FC<AssignmentProps> = ({
               onClick={() => handleClickDetail(index)}
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
               <VisibilityIcon />
             </IconButton>
@@ -111,7 +121,20 @@ const Assignment: React.FC<AssignmentProps> = ({
           ) : (
             isAdmin(role) && (
               <Tooltip title="Editar tarea" arrow>
-                <IconButton aria-label="edit" onClick={handleEditClick}>
+                <IconButton 
+                  aria-label="edit" 
+                  onClick={handleEditClick}
+                  sx={{
+                    transition: "all 0.175s ease-out",
+                    "&:hover": {
+                      filter: "brightness(0.9)",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                    },
+                    "&:active": {
+                      transform: "scale(0.97)",
+                    },
+                  }}
+                >
                   <EditIcon />
                 </IconButton>
               </Tooltip>
@@ -125,6 +148,16 @@ const Assignment: React.FC<AssignmentProps> = ({
                 onClick={() => handleClickDelete(index)}
                 onMouseEnter={() => handleRowHover(index)}
                 onMouseLeave={() => handleRowHover(null)}
+                sx={{
+                  transition: "all 0.175s ease-out",
+                  "&:hover": {
+                    filter: "brightness(0.9)",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  },
+                  "&:active": {
+                    transform: "scale(0.97)",
+                  },
+                }}
               >
                 <DeleteIcon />
               </IconButton>
@@ -136,6 +169,16 @@ const Assignment: React.FC<AssignmentProps> = ({
               aria-label="status"
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
               {statusIcon}
             </IconButton>

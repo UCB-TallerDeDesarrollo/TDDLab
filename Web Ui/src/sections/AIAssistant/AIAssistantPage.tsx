@@ -189,7 +189,21 @@ const AIAssistantPage = () => {
             />
             <Tooltip title="Enviar">
               <span>
-                <IconButton onClick={handleChatSubmit} disabled={loadingChat || !userMessage.trim()} color="primary">
+                <IconButton 
+                  onClick={handleChatSubmit} 
+                  disabled={loadingChat || !userMessage.trim()} 
+                  color="primary"
+                  sx={{
+                    transition: "all 0.175s ease-out",
+                    "&:hover:not(:disabled)": {
+                      filter: "brightness(0.9)",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                    },
+                    "&:active:not(:disabled)": {
+                      transform: "scale(0.97)",
+                    },
+                  }}
+                >
                   {loadingChat ? <CircularProgress size={24} /> : <IconifyIcon icon="mdi:send" color="#1976D2" hoverColor="#1565c0" />}
                 </IconButton>
               </span>
@@ -206,6 +220,16 @@ const AIAssistantPage = () => {
             disabled={loadingAction !== null}
             fullWidth
             startIcon={<IconifyIcon icon="mdi:code-braces" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
+            sx={{
+              transition: "all 0.175s ease-out",
+              "&:hover:not(:disabled)": {
+                filter: "brightness(0.9)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              },
+              "&:active:not(:disabled)": {
+                transform: "scale(0.97)",
+              },
+            }}
           >
             {loadingAction === "analiza" ? <CircularProgress size={20} /> : " Analizar TDD"}
           </Button>
@@ -216,6 +240,16 @@ const AIAssistantPage = () => {
             disabled={loadingAction !== null}
             fullWidth
             startIcon={<IconifyIcon icon="mdi:refresh" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
+            sx={{
+              transition: "all 0.175s ease-out",
+              "&:hover:not(:disabled)": {
+                filter: "brightness(0.9)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              },
+              "&:active:not(:disabled)": {
+                transform: "scale(0.97)",
+              },
+            }}
           >
             {loadingAction === "refactoriza" ? <CircularProgress size={20} /> : " Analizar Refactoring"}
           </Button>
@@ -226,6 +260,16 @@ const AIAssistantPage = () => {
             disabled={loadingAction !== null}
             fullWidth
             startIcon={<IconifyIcon icon="mdi:star" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
+            sx={{
+              transition: "all 0.175s ease-out",
+              "&:hover:not(:disabled)": {
+                filter: "brightness(0.9)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              },
+              "&:active:not(:disabled)": {
+                transform: "scale(0.97)",
+              },
+            }}
           >
             {loadingAction === "califica" ? <CircularProgress size={20} /> : "Evaluar TDD"}
             </Button>
