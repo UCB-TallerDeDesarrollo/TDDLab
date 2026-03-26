@@ -14,7 +14,10 @@ import { GetPracticeById } from "../../../modules/Practices/application/GetPract
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../../modules/Practices/repository/PracticesRepository";
 import { formatDate } from "../../../utils/dateUtils";
-import { handleRedirectStudent, setSelectedMetric } from "../../Shared/handlers";
+import {
+  handleRedirectStudent,
+  setSelectedMetric,
+} from "../../../shared/helpers/navigationHandlers";
 
 type ViewState = "loading" | "error" | "empty" | "success";
 

@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import LinkIcon from "@mui/icons-material/Link";
-import { SubmissionRowView, ViewState } from "./assignmentDetailTypes";
+import { SubmissionRowView, ViewState } from "../../types/assignmentDetail";
 
 interface DeliveriesTableProps {
   state: ViewState;

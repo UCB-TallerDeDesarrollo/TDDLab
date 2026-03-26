@@ -19,8 +19,11 @@ import {
 import SubmissionRepository from "../../../modules/Submissions/Repository/SubmissionRepository";
 import UsersRepository from "../../../modules/Users/repository/UsersRepository";
 import { formatDate } from "../../../utils/dateUtils";
-import { handleRedirectStudent, setSelectedMetric } from "../../Shared/handlers";
-import { SubmissionRowView, ViewState } from "../components/detail/assignmentDetailTypes";
+import {
+  handleRedirectStudent,
+  setSelectedMetric,
+} from "../../../shared/helpers/navigationHandlers";
+import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
 
 function isStudent(role: string) {
   return role === "student";

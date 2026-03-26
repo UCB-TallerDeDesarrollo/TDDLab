@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { styled } from "@mui/system";
-import Form from "../../../sections/Assignments/components/AssignmentForm";
 import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
+import AssignmentForm from "../components/AssignmentForm";
 import AssignmentsList from "../components/AssignmentsList";
 import { AssignmentScreenProps } from "../types/assignmentScreen";
 
@@ -43,7 +43,7 @@ function AssignmentsPage({
       </AssignmentsContainer>
       <FormsContainer>
         {createAssignmentPopupOpen ? (
-          <Form
+          <AssignmentForm
             data-testid="form-container"
             open={createAssignmentPopupOpen}
             handleClose={() => setCreateAssignmentPopupOpen(false)}
