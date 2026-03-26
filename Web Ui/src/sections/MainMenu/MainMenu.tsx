@@ -1,15 +1,15 @@
 import {
+  AppBar,
   Box,
   Button,
   Drawer,
-  AppBar,
   IconButton,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import MenuIcon from "@mui/icons-material/Menu";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
+import { styled } from "@mui/material/styles";
 import { ReactElement, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import NavLateralMenu from "./components/LateralMenu";
@@ -206,7 +206,7 @@ export default function MainMenu({
           <DesktopNav>
             {primaryLinks.map(
               (item) =>
-                item.access.includes(userRole) && (
+                item.access.includes(userRole) ? (
                   <Button
                     key={item.title}
                     component={NavLink}
@@ -240,7 +240,7 @@ export default function MainMenu({
                   >
                     {getDisplayTitle(item.title)}
                   </Button>
-                ),
+                ) : null,
             )}
           </DesktopNav>
 
