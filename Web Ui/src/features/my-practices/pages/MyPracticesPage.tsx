@@ -1,20 +1,23 @@
-import { styled } from "@mui/system";
 import { useEffect } from "react";
-import MyPracticesForm from "../../../sections/MyPractices/MyPracticesForm";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import { styled } from "@mui/material/styles";
+import MyPracticesForm from "../components/MyPracticesForm";
 import MyPracticesList from "../components/MyPracticesList";
 import { useMyPracticesScreen } from "../hooks/useMyPracticesScreen";
 
-const PracticesContainer = styled("div")({
-  justifyContent: "center",
-  alignItems: "center",
-});
+const PageContainer = styled(Container)(({ theme }) => ({
+  paddingTop: theme.spacing(7.5),
+  paddingBottom: theme.spacing(5),
+}));
 
-const FormsContainer = styled("div")({
-  flex: "1",
-  marginLeft: "8px",
-  marginRight: "2px",
-  marginTop: "68px",
-});
+const ScreenSection = styled(Box)(({ theme }) => ({
+  width: "100%",
+  maxWidth: 1301,
+  marginInline: "auto",
+  display: "grid",
+  gap: theme.spacing(4.25),
+}));
 
 interface PracticeManagerProps {
   userRole: string;
@@ -49,8 +52,8 @@ export default function MyPracticesPage({
   }, [loadPractices]);
 
   return (
-    <>
-      <PracticesContainer data-testid="assignments-container">
+    <PageContainer>
+      <ScreenSection data-testid="assignments-container">
         <MyPracticesList
           onShowForm={openCreateForm}
           practices={practiceItems}
@@ -60,14 +63,11 @@ export default function MyPracticesPage({
           error={error}
           canManagePractices={canManagePractices}
           canCreatePractices={canCreatePractices}
-          onRetry={loadPractices}
           onSortChange={changeSorting}
           onOpenDetail={openPracticeDetail}
           onDeletePractice={deletePractice}
           onPracticeUpdated={updatePractice}
         />
-      </PracticesContainer>
-      <FormsContainer>
         {isCreateFormOpen ? (
           <MyPracticesForm
             data-testid="form-container"
@@ -78,7 +78,7 @@ export default function MyPracticesPage({
             onCreate={createPractice}
           />
         ) : null}
-      </FormsContainer>
-    </>
+      </ScreenSection>
+    </PageContainer>
   );
 }
