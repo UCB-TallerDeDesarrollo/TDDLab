@@ -4,7 +4,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import "../../App.css";
+import "../../../App.css";
 
 interface ConfirmationDialogProps {
   open: boolean;
