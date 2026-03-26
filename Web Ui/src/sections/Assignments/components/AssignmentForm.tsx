@@ -23,7 +23,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 
-// Componente ValidationDialog
+// ─── ValidationDialog interno ────────────────────────────────────────────────
 interface ValidationDialogProps {
   open: boolean;
   title: string;
@@ -31,43 +31,34 @@ interface ValidationDialogProps {
   onClose: () => void;
 }
 
-const ValidationDialog = ({
-  open,
-  title,
-  closeText,
-  onClose,
-}: ValidationDialogProps) => {
+const ValidationDialog = ({ open, title, closeText, onClose }: ValidationDialogProps) => {
   const isError = title.toLowerCase().includes('error');
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle 
-        sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 1.5,
-          color: isError ? '#d32f2f' : '#2e7d32',
-          fontSize: '1rem',
-          fontWeight: 400,
-          py: 2,
-          fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
-        }}
-      >
-        {isError ? (
-          <Warning sx={{ color: '#d32f2f', fontSize: 22 }} />
-        ) : (
-          <CheckCircle sx={{ color: '#2e7d32', fontSize: 22 }} />
-        )}
+      {/*
+        CAMBIO 1: sx inline con display/alignItems/gap/color/fontSize/fontWeight/py/fontFamily
+        → reemplazado por className condicional (.dialog-title-error / .dialog-title-success)
+        definidas en App.css
+      */}
+      <DialogTitle className={isError ? "dialog-title-error" : "dialog-title-success"}>
+        {isError
+          ? <Warning sx={{ fontSize: 22 }} />
+          : <CheckCircle sx={{ fontSize: 22 }} />
+        }
         {title}
       </DialogTitle>
       <DialogActions sx={{ pb: 2, pr: 2 }}>
-        <Button 
+        {/*
+          CAMBIO 2: style inline con color condicional y textTransform/fontSize
+          → se mantiene el color condicional como style (es dinámico por variable),
+            pero textTransform y fontSize pasan a className .btn-std
+          Nota: el color condicional requiere style porque depende de isError
+        */}
+        <Button
           onClick={onClose}
-          style={{ 
-            color: isError ? '#d32f2f' : '#2e7d32',
-            textTransform: 'none',
-            fontSize: '0.875rem'
-          }}
+          className="btn-std"
+          style={{ color: isError ? '#d32f2f' : '#2e7d32' }}
         >
           {closeText}
         </Button>
@@ -76,7 +67,7 @@ const ValidationDialog = ({
   );
 };
 
-// Componente Form principal
+// ─── Form principal ───────────────────────────────────────────────────────────
 interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
@@ -103,14 +94,12 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
 
   const handleSaveClick = async () => {
     setSave(true);
-    if (formInvalid()) {
-      return;
-    }
+    if (formInvalid()) return;
 
     isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
-    
+
     if (assignmentData.start_date > assignmentData.end_date) {
       setValidationMessage("Error: La fecha de inicio no puede ser posterior a la fecha de fin");
       setValidationDialogOpen(true);
@@ -123,20 +112,17 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       const duplicateAssignment = assignments.find(
         (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
       );
-    
       if (duplicateAssignment) {
         setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
         setValidationDialogOpen(true);
         setSave(false);
         return;
       }
-    
       await createAssignments.createAssignment(assignmentData);
       setValidationMessage("Tarea creada exitosamente");
       setValidationDialogOpen(true);
     } catch (error) {
       if (error instanceof Error) {
-        // Verifica si el mensaje del backend menciona el límite de caracteres
         if (error.message.includes("Limite de caracteres excedido")) {
           setValidationMessage("Error: El título no puede tener más de 50 caracteres.");
         } else {
@@ -149,70 +135,44 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     } finally {
       setSave(false);
     }
-    
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
-    setAssignmentData((prevData) => ({
-      ...prevData,
-      start_date: newStartDate,
-      end_date: newEndDate,
-    }));
+    setAssignmentData((prevData) => ({ ...prevData, start_date: newStartDate, end_date: newEndDate }));
   };
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: string,
-  ) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
     const { value } = event.target;
-    setAssignmentData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
+    setAssignmentData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleGroupChange = (event: SelectChangeEvent<number>) => {
     const groupid = event.target.value as number;
-    setAssignmentData((prevData) => ({
-      ...prevData,
-      groupid,
-    }));
+    setAssignmentData((prevData) => ({ ...prevData, groupid }));
   };
 
-  const handleCancel = () => {
-    handleClose();
-  };
+  const handleCancel = () => handleClose();
 
-  const formInvalid = () => {
-    return assignmentData.title.trim() === "" || assignmentData.groupid === 0;
-  };
+  const formInvalid = () => assignmentData.title.trim() === "" || assignmentData.groupid === 0;
 
   useEffect(() => {
-  const effectiveGroupId =
-    groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
-
-  setSave(false);
-  setAssignmentData({
-    id: 0,
-    title: "",
-    description: "",
-    start_date: new Date(),
-    end_date: new Date(),
-    state: "pending",
-    link: "",
-    comment: "",
-    groupid: effectiveGroupId,
-  });
-}, [open, groupid]);
+    const effectiveGroupId = groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
+    setSave(false);
+    setAssignmentData({
+      id: 0, title: "", description: "",
+      start_date: new Date(), end_date: new Date(),
+      state: "pending", link: "", comment: "",
+      groupid: effectiveGroupId,
+    });
+  }, [open, groupid]);
 
   const groupRepository = new GroupsRepository();
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
-  
+
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
       let list: GroupDataObject[] = [];
-
       if (auth?.userRole === "teacher") {
         const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
         list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
@@ -224,23 +184,15 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           const fromLS = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
           if (Array.isArray(fromLS) && fromLS.length) ids = fromLS;
         } catch {}
-        if (!ids.length) {
-          ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
-        }
+        if (!ids.length) ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
         list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
-      } else {
-        list = [];
       }
-
       setGroups(list);
-
       setAssignmentData(prev => {
         const keepCurrent = list.some(g => g.id === prev.groupid);
-        const fallbackId = list[0]?.id ?? 0;
-        return { ...prev, groupid: keepCurrent ? prev.groupid : fallbackId };
+        return { ...prev, groupid: keepCurrent ? prev.groupid : (list[0]?.id ?? 0) };
       });
     };
-
     if (open) fetchGroups();
   }, [open, auth?.userRole, auth?.userid]);
 
@@ -248,13 +200,13 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8rem" }}>Crear tarea</DialogTitle>
+          {/* CAMBIO 3: style={{ fontSize: "0.8rem" }} → eliminado, es un detalle menor
+              que puede manejarse con la clase .dialog-title-std si se desea */}
+          <DialogTitle className="dialog-title-std">Crear tarea</DialogTitle>
           <DialogContent>
             <section className="mb-4">
               <FormControl fullWidth variant="outlined" margin="normal">
-                <InputLabel htmlFor="group-select">
-                  Grupo
-                </InputLabel>
+                <InputLabel htmlFor="group-select">Grupo</InputLabel>
                 <Select
                   id="group-select"
                   value={assignmentData.groupid}
@@ -264,14 +216,12 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
                 >
                   <MenuItem value={0}>Selecciona un grupo</MenuItem>
                   {groups.map((group) => (
-                    <MenuItem key={group.id} value={group.id}>
-                      {group.groupName}
-                    </MenuItem>
+                    <MenuItem key={group.id} value={group.id}>{group.groupName}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </section>
-            
+
             <TextField
               error={save && !assignmentData.title.trim()}
               helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
@@ -286,7 +236,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               onChange={(e) => handleInputChange(e, "title")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
-            
+
             <TextField
               multiline
               rows={3.7}
@@ -300,25 +250,30 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               onChange={(e) => handleInputChange(e, "description")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
-            
+
             <section className="mt-4">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
               </LocalizationProvider>
             </section>
           </DialogContent>
-          
+
           <DialogActions>
-            <Button
-              onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
-            >
+            {/*
+              CAMBIO 4: style={{ color: "#555", textTransform: "none" }}
+              → color queda como style (es específico de este botón),
+                textTransform se cubre con btn-std
+            */}
+            <Button onClick={handleCancel} className="btn-std" style={{ color: "#555" }}>
               Cancelar
             </Button>
+            {/*
+              CAMBIO 5: style={{ textTransform: "none" }} → clase btn-std ya lo cubre
+            */}
             <Button
               onClick={handleSaveClick}
               color="primary"
-              style={{ textTransform: "none" }}
+              className="btn-std"
               disabled={formInvalid()}
             >
               Crear
@@ -326,7 +281,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           </DialogActions>
         </>
       )}
-      
+
       {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}

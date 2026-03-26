@@ -2,7 +2,6 @@
    LAYOUT & CONTENEDORES GLOBALES
    ========================================================================== */
 
-/* Contenedor principal para centrar contenido de páginas*/
 .centered-container {
   display: flex;
   flex-direction: column;
@@ -16,34 +15,40 @@
   width: 100%;
 }
 
-.page-top-spacer { 
-  margin-top: 80px; 
+.page-top-spacer {
+  margin-top: 80px;
 }
 
-/* Contenedor para filtros (Busqueda + Ordenar) */
 .filter-container {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
 
+/* Contenedor de pantalla completa para loading */
+.fullscreen-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
 /* ==========================================================================
    SISTEMA DE BOTONES (ESTÁNDAR & VARIANTES)
    ========================================================================== */
 
-/* Estructura base de botones (Cuadrados y medidas fijas) */
 .btn-std {
   height: 36px !important;
   min-width: 110px !important;
-  border-radius: 0px !important; 
-  text-transform: none !important; 
+  border-radius: 0px !important;
+  text-transform: none !important;
   font-size: 0.875rem !important;
   padding: 0 16px !important;
   box-shadow: none !important;
   font-weight: 500 !important;
 }
 
-/* Variante Color Primario */
 .btn-primary {
   background-color: #1976d2 !important;
   color: white !important;
@@ -54,34 +59,39 @@
   background-color: #1565c0 !important;
 }
 
-/* Estado Deshabilitado */
-.btn-std:disabled{
+.btn-std:disabled {
   background-color: #e0e0e0 !important;
   color: #5b5b5b !important;
   cursor: not-allowed !important;
+}
+
+/* Botón pill (redondeado) — usado en AssignmentsList para "Crear" */
+.btn-pill {
+  border-radius: 17px !important;
+  text-transform: none !important;
+  font-size: 0.95rem !important;
+  padding: 8px 16px !important;
+  min-width: 90px !important;
+  white-space: nowrap !important;
 }
 
 /* ==========================================================================
    TABLAS & LISTADOS
    ========================================================================== */
 
-/* Tabla estandarizada (Ancho y márgenes) */
 .styled-table {
   width: 82% !important;
   margin: 20px auto !important;
 }
 
-/* Encabezados de tabla */
 .table-cell-header {
   font-weight: 600 !important;
 }
 
-/* Filas con borde inferior */
 .table-row-bordered {
   border-bottom: 2px solid #E7E7E7 !important;
 }
 
-/* Celdas de contenido (Títulos de prácticas) */
 .action-buttons-group {
   display: flex;
   justify-content: flex-end;
@@ -89,15 +99,48 @@
   gap: 12px;
 }
 
-/* Grupo de iconos de acción al final de cada fila */
 .practice-title-cell {
   font-size: 16px !important;
   padding: 16px !important;
 }
 
-/* Consistencia para el componente de Ordenar */
+/* Barra de herramientas sobre la tabla (filtros + botones) */
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+  width: 82%;
+  margin-left: auto;
+  margin-right: auto;
+  flex-wrap: nowrap;
+}
+
+/* Celda de título de assignment (columna izquierda) */
+.assignment-title-cell {
+  width: 20%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Celda de acciones de assignment (columna derecha) */
+.assignment-actions-cell {
+  width: 30%;
+  max-width: 300px;
+}
+
+/* Grupo de íconos dentro de la celda de acciones */
+.assignment-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
 .sorting-container .MuiOutlinedInput-root {
-  height: 36px !important; 
+  height: 36px !important;
   border-radius: 0px !important;
 }
 
@@ -110,17 +153,52 @@
   padding-bottom: 8px !important;
 }
 
-/* Caja de contenido dentro de los formularios */
 .dialog-content-box {
   display: grid;
   gap: 16px;
   padding-top: 16px !important;
 }
 
-/* Pie de página de diálogos (Contenedor de botones Cancelar/Guardar) */
 .dialog-footer {
   display: flex !important;
-  gap: 12px !important; /* Espacio entre botones */
+  gap: 12px !important;
   padding: 16px 24px !important;
   justify-content: flex-end !important;
+}
+
+/* Título de diálogo con ícono de estado (success/error) */
+.dialog-title-success {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #2e7d32;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.dialog-title-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #d32f2f;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* Texto de error grande dentro de un diálogo (EditAssignmentForm) */
+.dialog-error-text {
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   SELECTS & FILTROS
+   ========================================================================== */
+
+/* Select compacto reutilizable (GroupFilter, etc.) */
+.select-compact {
+  font-size: 14px !important;
+  height: 36px !important;
 }
