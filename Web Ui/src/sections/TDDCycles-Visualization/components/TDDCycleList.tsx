@@ -2,7 +2,7 @@ import { useState } from 'react';
 import TDDCycleCard from "./TDDCycleCard";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { Box, Typography } from '@mui/material';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { IconifyIcon } from '../../Shared/Components';
 
 interface CycleReportViewProps {
   commitsInfo: CommitDataObject[] | null;
@@ -41,7 +41,7 @@ function TDDCycleList({ commitsInfo }: Readonly<CycleReportViewProps>) {
           <Typography variant="body1" fontWeight="bold">
             Fecha
           </Typography>
-          {sortOrder === 'asc' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          {sortOrder === 'asc' ? <IconifyIcon icon="mdi:chevron-up" color="#1976D2" hoverColor="#1565c0" /> : <IconifyIcon icon="mdi:chevron-down" color="#1976D2" hoverColor="#1565c0" />}
         </Box>
       </div>
       <div style={{ display: "flex", gap: "5px", alignItems: "flex-start", marginBottom: "40px", marginRight: "59px" }}>

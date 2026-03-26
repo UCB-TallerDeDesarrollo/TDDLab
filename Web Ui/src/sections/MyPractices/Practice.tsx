@@ -3,9 +3,7 @@ import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInter
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { IconifyIcon } from "../Shared/Components";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltipPractice } from "../Shared/statusHelpers";
@@ -80,7 +78,7 @@ const Practice: React.FC<PracticeProps> = ({
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
             >
-              <VisibilityIcon />
+              <IconifyIcon icon="mdi:eye" color="primary" hoverColor="#1565c0" />
             </IconButton>
           </Tooltip>
           {isEditFormOpen ? (
@@ -93,7 +91,7 @@ const Practice: React.FC<PracticeProps> = ({
           ) : (
             <Tooltip title="Editar practica" arrow>
               <IconButton aria-label="edit" onClick={handleEditClick}>
-                <EditIcon />
+                <IconifyIcon icon="mdi:pencil" color="primary" hoverColor="#1565c0" />
               </IconButton>
             </Tooltip>
           )}
@@ -104,7 +102,7 @@ const Practice: React.FC<PracticeProps> = ({
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
             >
-              <DeleteIcon />
+              <IconifyIcon icon="mdi:trash-can" color="error" hoverColor="#d32f2f" />
             </IconButton>
           </Tooltip>
 

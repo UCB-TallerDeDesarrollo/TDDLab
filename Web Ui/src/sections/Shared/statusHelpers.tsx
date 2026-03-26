@@ -1,17 +1,13 @@
-import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-import { FaCheck } from "react-icons/fa6";
-import { TbRotateClockwise2 } from "react-icons/tb";
+import { IconifyIcon } from "./Components";
 
 export const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending":
-        return <PriorityHighIcon style={{ fontSize: 26 }} />;
+        return <IconifyIcon icon="mdi:alert" color="warning" hoverColor="#f57c00" />;
       case "in progress":
-        return (
-          <TbRotateClockwise2 size={27.4} style={{ strokeWidth: "2.7px" }} />
-        );
+        return <IconifyIcon icon="mdi:progress-clock" color="info" hoverColor="#0288d1" />;
       case "delivered":
-        return <FaCheck size={24.4} style={{ strokeWidth: "9.5px" }} />;
+        return <IconifyIcon icon="mdi:check-circle" color="success" hoverColor="#2e7d32" />;
       default:
         return null;
     }

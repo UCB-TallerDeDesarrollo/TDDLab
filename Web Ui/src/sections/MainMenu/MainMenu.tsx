@@ -9,17 +9,16 @@ import {
 } from "@mui/material";
 
 import NavLateralMenu from "./components/LateralMenu";
-import MenuIcon from "@mui/icons-material/Menu";
-import { ReactElement, useState } from "react";
+import { IconifyIcon } from "../../sections/Shared/Components";
+import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
 import { typographyVariants } from "../../styles/typography";
 
 type NavLink = {
   title: string;
   path: string;
-  icon: ReactElement;
+  icon: string;
   access: string[];
 };
 
@@ -57,9 +56,9 @@ export default function MainMenu({
               onClick={() => setOpen(true)}
               sx={{ display: { xs: "flex", sm: "none" } }}
             >
-              <MenuIcon />
+              <IconifyIcon icon="mdi:menu" color="white" hoverColor="#e0e0e0" />
             </IconButton>
-            <WindowIcon sx={{ marginRight: "6px", marginTop: "4px" }} />
+            <IconifyIcon icon="mdi:window" color="white" hoverColor="#e0e0e0" sx={{ marginRight: "6px", marginTop: "4px" }} />
             <NavLink
               to="/"
               style={{ textDecoration: "none", color: "inherit" }}
