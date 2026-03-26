@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -11,9 +11,7 @@ import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
-import GetGroups from "../../modules/Groups/application/GetGroups";
 import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
-import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
@@ -33,14 +31,11 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
+import { useGroups, asId } from "./hooks/useGroups";
+import { useGroupSelection } from "./hooks/useGroupSelection";
 import './GroupsPage.css';
 
 
-// Normaliza cualquier id a number
-const asId = (v: unknown): number => {
-  const n = Number(v);
-  return Number.isFinite(n) && n > 0 ? n : 0;
-};
 
 function Groups() {
   const navigate = useNavigate();
@@ -54,72 +49,12 @@ function Groups() {
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
-  const [groups, setGroups] = useState<GroupDataObject[]>([]);
-  const [selectedSorting, setSelectedSorting] = useState<string>("");
-
-  const groupRepository = new GroupsRepository();
-  const userRepository = new UsersRepository();
-  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
+  const userRepository = useMemo(() => new UsersRepository(), []);
+  const getUsersByGroupId = useMemo(() => new GetUsersByGroupId(userRepository), [userRepository]);
   const [authData, setAuthData] = useGlobalState("authData");
 
-  const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
-
-  const selectAndSync = (rawId: unknown) => {
-    const id = asId(rawId);
-    if (!id) return;
-    setCurrentSelectedGroupId(id);
-    localStorage.setItem("selectedGroup", String(id));
-    if (asId(authData?.usergroupid) !== id) {
-      setAuthData({ ...authData, usergroupid: id });
-    }
-  };
-
-  // Cargar 
-  useEffect(() => {
-  const fetchGroups = async () => {
-    const getGroupsApp = new GetGroups(groupRepository);
-    const role = authData?.userRole ?? "";
-    const uid  = authData?.userid ?? -1;
-
-    if (role === "teacher") {
-      const ids = await getGroupsApp.getGroupsByUserId(uid);
-      const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
-        .filter(Boolean) as GroupDataObject[];
-        setGroups(allGroups);
-    } else {
-      const allGroups = await getGroupsApp.getGroups();
-      setGroups(allGroups);
-    }
-    };
-      fetchGroups();
-  }, [authData?.userRole, authData?.userid]);
-
-  useEffect(() => {
-    if (!groups.length || currentSelectedGroupId) return;
-
-    const fromURL = asId(new URLSearchParams(window.location.search).get("groupId"));
-    if (fromURL) return selectAndSync(fromURL);
-
-    const fromLS = asId(localStorage.getItem("selectedGroup"));
-    if (fromLS) return selectAndSync(fromLS);
-
-    const fromAuth = asId(authData?.usergroupid);
-    if (fromAuth) return selectAndSync(fromAuth);
-
-    (async () => {
-      try {
-        const getGroupsApp = new GetGroups(groupRepository);
-        const uid = asId(authData?.userid);
-        if (uid) {
-          const ids = await getGroupsApp.getGroupsByUserId(uid);
-          const first = asId(ids?.[0]);
-          if (first) return selectAndSync(first);
-        }
-      } catch { /* ignore */ }
-      const firstVisible = asId(groups[0]?.id);
-      if (firstVisible) selectAndSync(firstVisible);
-    })();
-  }, [groups, currentSelectedGroupId, authData?.usergroupid, authData?.userid]);
+  const { groups, setGroups, groupRepository, selectedSorting, handleGroupsOrder, handleGroupUpdated } = useGroups(authData);
+  const { currentSelectedGroupId, selectAndSync, clearSelection } = useGroupSelection(groups, authData, setAuthData);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
@@ -134,41 +69,14 @@ function Groups() {
     }
   };
 
-  const handleGroupsOrder = (event: { target: { value: string } }) => {
-    setSelectedSorting(event.target.value);
-    const sortings = {
-      A_Up_Order: () =>
-        [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
-      A_Down_Order: () =>
-        [...groups].sort((a, b) => b.groupName.localeCompare(a.groupName)),
-      Time_Up: () =>
-        [...groups].sort(
-          (a, b) =>
-            new Date(b.creationDate).getTime() -
-            new Date(a.creationDate).getTime()
-        ),
-      Time_Down: () =>
-        [...groups].sort(
-          (a, b) =>
-            new Date(a.creationDate).getTime() -
-            new Date(b.creationDate).getTime()
-        ),
-    } as const;
-
-    const key = event.target.value as keyof typeof sortings;
-    setGroups(sortings[key]());
-  };
-
   const handleRowClick = async (index: number) => {
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((row) => row !== index));
     } else {
       setExpandedRows([index]);
     }
-
     const clickedGroup = groups[index];
     if (!clickedGroup?.id) return;
-
     setSelectedRow(index);
     selectAndSync(clickedGroup.id);
   };
@@ -176,19 +84,13 @@ function Groups() {
   const handleRowHover = (index: number | null) => setHoveredRow(index);
   const isRowSelected = (index: number) => index === selectedRow || index === hoveredRow;
 
-  const handleHomeworksClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
+  const handleHomeworksClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     event.stopPropagation();
     const clickedGroup = groups[index];
     if (clickedGroup?.id) navigate(`/?groupId=${clickedGroup.id}`);
   };
 
-  const handleStudentsClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
+  const handleStudentsClick = async (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     event.stopPropagation();
     const groupid = asId(groups[index]?.id);
     if (!groupid) return;
@@ -201,28 +103,19 @@ function Groups() {
     setSelectedRow(index);
   };
 
-  const handleDeleteClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
+  const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     event.stopPropagation();
     setSelectedRow(index);
     setConfirmationOpen(true);
   };
 
-  const handleLinkClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
+  const handleLinkClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     event.stopPropagation();
     const id = asId(groups[index]?.id);
     if (id) getCourseLink(id, "student");
   };
 
-  const handleLinkClickTeacher = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
+  const handleLinkClickTeacher = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     event.stopPropagation();
     const id = asId(groups[index]?.id);
     if (id) getCourseLink(id, "teacher");
@@ -244,11 +137,7 @@ function Groups() {
           if (asId(currentSelectedGroupId) === asId(itemFound.id)) {
             const next = asId(copy[0]?.id);
             if (next) selectAndSync(next);
-            else {
-              setCurrentSelectedGroupId(0);
-              localStorage.removeItem("selectedGroup");
-              setAuthData({ ...authData, usergroupid: 0 });
-            }
+            else clearSelection();
           }
         }
       }
@@ -268,11 +157,6 @@ function Groups() {
     selectAndSync(newGroup.id);
   };
 
-  const handleGroupUpdated = (updatedGroup: GroupDataObject) => {
-    setGroups((prevGroups) =>
-      prevGroups.map((g) => (g.id === updatedGroup.id ? updatedGroup : g))
-    );
-  };
 
   return (
     <CenteredContainer>
