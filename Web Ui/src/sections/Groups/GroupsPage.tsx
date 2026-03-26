@@ -342,7 +342,7 @@ function Groups() {
                       onChange={() => handleRowClick(index)}
                     />
                   </TableCell>
-                  <TableCell style={{ fontSize: "0.8rem", borderBottom: "none"}}>{group.groupName}</TableCell>
+                  <TableCell style={{ fontSize: "0.8rem", borderRight: "1px solid #E7E7E7", paddingLeft: "1px", borderBottom: "none"}}>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
                       <Tooltip title="Editar grupo" arrow>
