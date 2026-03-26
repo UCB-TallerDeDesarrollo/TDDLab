@@ -299,29 +299,33 @@ function Groups() {
       <section className="Grupos">
         <StyledTable>
           <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
-                Grupos
-              </TableCell>
-              <TableCell>
-                <ButtonContainer>
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleGroupsOrder}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
-                    onClick={handleCreateGroupClick}
-                  >
-                    Crear
-                  </Button>
-                </ButtonContainer>
-              </TableCell>
-            </TableRow>
+            <TableRow sx={{ borderBottom: "3px solid #D0D0D0" }}>
+                <TableCell />
+                <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" , paddingLeft: "1px" }}>
+                    Grupos
+                </TableCell>
+                <TableCell align="right">
+                    <ButtonContainer sx={{ alignItems: "center" }}>
+                    <SortingComponent
+                        selectedSorting={selectedSorting}
+                        onChangeHandler={handleGroupsOrder}
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        startIcon={<AddIcon />}
+                        sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
+                        onClick={handleCreateGroupClick}
+                    >
+                        Crear
+                    </Button>
+                    </ButtonContainer>
+                </TableCell>
+                </TableRow>
           </TableHead>
+
+          
 
           <TableBody>
             {groups.map((group, index) => (
