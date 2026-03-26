@@ -57,7 +57,7 @@ const Practice: React.FC<PracticeProps> = ({
           fontSize: "16px",
           padding: "12px 16px",
           verticalAlign: "middle",
-          maxWidth: "600px",
+          maxWidth: "200px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
@@ -72,7 +72,7 @@ const Practice: React.FC<PracticeProps> = ({
       sx={{
         padding: "12px 16px",
         verticalAlign: "middle",
-        width: "240px", // Fija el ancho
+        width: "200px", // Fija el ancho
         height: "60px",
         minHeight: "60px",
       }}

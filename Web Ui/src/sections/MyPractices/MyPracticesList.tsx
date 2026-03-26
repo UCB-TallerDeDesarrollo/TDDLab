@@ -94,7 +94,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     setHoveredRow(index);
   };
   return (
-    <Container>
+    <div style={{ width: "95%", padding: "0 16px", margin: "0 auto" }}>
       <section className="Practicas" style={{ width: "100%", margin: "0 auto" }}>
         <div
           style={{
@@ -177,7 +177,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
         )}
       </section>
-    </Container>
+    </div>
   );
 }
 
