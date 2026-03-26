@@ -10,7 +10,7 @@ export function generateUniqueId(): string {
   return timestamp + randomChars;
 }
 
-export function getDisplayStatus(status: string | undefined): string | undefined {
+export function getDisplayStatus(status: string | undefined): string {
   switch (status) {
     case "pending":
       return "Pendiente";
@@ -21,7 +21,7 @@ export function getDisplayStatus(status: string | undefined): string | undefined
     case undefined:
       return "Pendiente";
     default:
-      return status;
+      return status ?? "Pendiente";
   }
 }
 

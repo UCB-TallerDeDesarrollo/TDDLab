@@ -24,7 +24,6 @@ import {
 } from '../Shared/handlers.ts';
 import { typographyVariants } from "../../styles/typography";
 import {
-  generateUniqueId,
   getDisplayStatus,
   isStudent,
   redirectToAdminGraph,
@@ -33,6 +32,7 @@ import { useAssignmentDetailData } from "./hooks/useAssignmentDetailData";
 import { AssignmentDetailInfo } from "./components/AssignmentDetailInfo";
 import { StudentAssignmentActions } from "./components/StudentAssignmentActions";
 import { AssignmentSubmissionsTable } from "./components/AssignmentSubmissionsTable";
+import { SubmissionDataObject } from "../../modules/Submissions/Domain/submissionInterfaces";
 
 
 interface AssignmentDetailProps {
@@ -58,7 +58,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
+  const [studentRows, setStudentRows] = useState<React.ReactElement[]>([]);
   const {
     assignment,
     groupDetails,
@@ -118,7 +118,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     setLinkDialogOpen(false);
   };
 
-  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url: string) => {
+  const handleRedirectAdmin = (link: string, fetchedSubmissions: SubmissionDataObject[], submissionId: number, url: string) => {
     if (link) {
       const redirected = redirectToAdminGraph(
         navigate,
@@ -192,7 +192,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           : "N/A";
 
         return (
-          <TableRow key={generateUniqueId()}>
+          <TableRow key={submission.id}>
             <TableCell>{studentEmail}</TableCell>
             <TableCell>{getDisplayStatus(submission.status)}</TableCell>
             <TableCell>
