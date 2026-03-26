@@ -7,13 +7,13 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { ReactElement, Dispatch, SetStateAction } from "react";
-import LoginIcon from "@mui/icons-material/Login";
+import { Dispatch, SetStateAction } from "react";
+import { IconifyIcon } from "../../../sections/Shared/Components";
 
 interface NavItem {
   title: string;
   path: string;
-  icon: ReactElement;
+  icon: string;
 }
 interface NavLateralMenuProps {
   navArrayLinks: NavItem[];
@@ -39,7 +39,9 @@ export default function NavLateralMenu({
                 to={item.path}
                 onClick={() => setOpen(false)}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemIcon>
+                  <IconifyIcon icon={item.icon} color="primary" hoverColor="#1565c0" />
+                </ListItemIcon>
                 <ListItemText>{item.title}</ListItemText>
               </ListItemButton>
             </ListItem>
@@ -51,7 +53,7 @@ export default function NavLateralMenu({
               onClick={() => setOpen(false)}
             >
               <ListItemIcon>
-                <LoginIcon />
+                <IconifyIcon icon="mdi:login" color="primary" hoverColor="#1565c0" />
               </ListItemIcon>
               <ListItemText>Iniciar sesión</ListItemText>
             </ListItemButton>

@@ -3,8 +3,7 @@ import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import firebase from "../../firebaseConfig";
 import SuccessfulEnrollmentPopUp from "./components/SuccessfulEnrollmentPopUp";
 import Button from "@mui/material/Button";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import GoogleIcon from "@mui/icons-material/Google";
+import { IconifyIcon } from "../../sections/Shared/Components";
 import { UserOnDb } from "../../modules/User-Authentication/domain/userOnDb.interface";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -369,7 +368,7 @@ function InvitationPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <GitHubIcon style={{ marginRight: "8px" }} />
+                  <IconifyIcon icon="mdi:github" width={20} height={20} color="white" hoverColor="#e0e0e0" sx={{ marginRight: "8px" }} />
                   Registrarse con GitHub
                 </div>
               </Button>
@@ -398,7 +397,7 @@ function InvitationPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <GoogleIcon style={{ marginRight: "8px" }} />
+                  <IconifyIcon icon="mdi:google" width={20} height={20} color="white" hoverColor="#e0e0e0" sx={{ marginRight: "8px" }} />
                   Registrarse con Google
                 </div>
               </Button>

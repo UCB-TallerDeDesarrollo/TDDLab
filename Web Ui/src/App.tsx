@@ -7,11 +7,6 @@ import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
 import MainMenu from "./sections/MainMenu/MainMenu";
-import GroupsIcon from "@mui/icons-material/Groups";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PersonIcon from "@mui/icons-material/Person";
-import SettingsIcon from "@mui/icons-material/Settings"; 
-import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
@@ -34,31 +29,31 @@ const navArrayLinks = [
   {
     title: "Grupos",
     path: "/groups",
-    icon: <GroupsIcon />,
+    icon: "mdi:account-multiple",
     access: ["admin", "teacher"],
   },
   {
     title: "Tareas",
     path: "/",
-    icon: <DescriptionIcon />,
+    icon: "mdi:document-text",
     access: ["admin", "student", "teacher"],
   },
   {
     title: "Mis Practicas",
     path: "/mis-practicas",
-    icon: <NoteAdd />,
+    icon: "mdi:note-plus",
     access: ["admin", "teacher", "student"],
   },
   {
     title: "Usuarios",
     path: "/user",
-    icon: <PersonIcon />,
+    icon: "mdi:account",
     access: ["admin", "teacher"],
   },
   {
     title: "Configuraciones",
     path: "/configuraciones",
-    icon: <SettingsIcon />,
+    icon: "mdi:cog",
     access: ["admin", "teacher"], 
   },
 ];

@@ -6,13 +6,7 @@ import {
 import { EvaluateWithAI } from '../../modules/AIAssistant/application/EvaluateWithAI';
 import { ChatbotUseCase } from '../../modules/AIAssistant/application/ChatbotUseCase';
 import { v4 as generateUniqueId } from 'uuid';
-import SendIcon from '@mui/icons-material/Send';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import CodeIcon from '@mui/icons-material/Code';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import GradeIcon from '@mui/icons-material/Grade';
+import { IconifyIcon } from '../../sections/Shared/Components';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 const chatbotUseCase = new ChatbotUseCase();
@@ -102,11 +96,11 @@ const AIAssistantPage = () => {
       {/* Header */}
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box display="flex" alignItems="center" gap={1}>
-          <ChatBubbleOutlineIcon fontSize="small" sx={{ color: '#1976D2' }} />
+          <IconifyIcon icon="mdi:chat-outline" color="#1976D2" hoverColor="#1565c0" />
           <Typography variant="h5" fontWeight="bold">Asistente IA</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap={1}>
-          <GitHubIcon fontSize="small" sx={{ color: 'gray' }} />
+          <IconifyIcon icon="mdi:github" color="gray" hoverColor="#333" />
           <a
             href={repositoryLink}
             target="_blank"
@@ -142,7 +136,7 @@ const AIAssistantPage = () => {
                 {msg.from === 'bot' ? (
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, maxWidth: '75%' }}>
                     <Avatar sx={{ color:'#1976D2' ,bgcolor: '#F1F5F9', width: 32, height: 32 }}>
-                      <SmartToyIcon fontSize="small" />
+                      <IconifyIcon icon="mdi:robot" width={20} height={20} color="#1976D2" hoverColor="#1565c0" />
                     </Avatar>
                     <Box
                       sx={{
@@ -196,7 +190,7 @@ const AIAssistantPage = () => {
             <Tooltip title="Enviar">
               <span>
                 <IconButton onClick={handleChatSubmit} disabled={loadingChat || !userMessage.trim()} color="primary">
-                  {loadingChat ? <CircularProgress size={24} /> : <SendIcon />}
+                  {loadingChat ? <CircularProgress size={24} /> : <IconifyIcon icon="mdi:send" color="#1976D2" hoverColor="#1565c0" />}
                 </IconButton>
               </span>
             </Tooltip>
@@ -211,7 +205,7 @@ const AIAssistantPage = () => {
             onClick={() => handleApiCall("analiza")}
             disabled={loadingAction !== null}
             fullWidth
-            startIcon={<CodeIcon />}
+            startIcon={<IconifyIcon icon="mdi:code-braces" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
           >
             {loadingAction === "analiza" ? <CircularProgress size={20} /> : " Analizar TDD"}
           </Button>
@@ -221,7 +215,7 @@ const AIAssistantPage = () => {
             onClick={() => handleApiCall("refactoriza")}
             disabled={loadingAction !== null}
             fullWidth
-            startIcon={<AutorenewIcon />}
+            startIcon={<IconifyIcon icon="mdi:refresh" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
           >
             {loadingAction === "refactoriza" ? <CircularProgress size={20} /> : " Analizar Refactoring"}
           </Button>
@@ -231,7 +225,7 @@ const AIAssistantPage = () => {
             onClick={() => handleApiCall("califica")}
             disabled={loadingAction !== null}
             fullWidth
-            startIcon={<GradeIcon />}
+            startIcon={<IconifyIcon icon="mdi:star" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
           >
             {loadingAction === "califica" ? <CircularProgress size={20} /> : "Evaluar TDD"}
             </Button>

@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import GroupsIcon from "@mui/icons-material/Groups";
-import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import LinkIcon from "@mui/icons-material/Link";
-import EditIcon from "@mui/icons-material/Edit";
+import { IconifyIcon } from "../Shared/Components";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
@@ -312,7 +307,7 @@ function Groups() {
                   <Button
                     variant="contained"
                     color="primary"
-                    startIcon={<AddIcon />}
+                    startIcon={<IconifyIcon icon="mdi:plus" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
                     sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
                     onClick={handleCreateGroupClick}
                   >
@@ -343,25 +338,25 @@ function Groups() {
                     <ButtonContainer>
                       <Tooltip title="Editar grupo" arrow>
                         <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
-                          <EditIcon />
+                          <IconifyIcon icon="mdi:pencil" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Tareas" arrow>
                         <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
-                          <AutoAwesomeMotionIcon />
+                          <IconifyIcon icon="mdi:motion" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Participantes" arrow>
                         <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
-                          <GroupsIcon />
+                          <IconifyIcon icon="mdi:account-multiple" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
                         <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
-                          <LinkIcon />
+                          <IconifyIcon icon="mdi:link" color="primary" hoverColor="#1565c0" />
                         </IconButton>
                       </Tooltip>
 
@@ -373,7 +368,7 @@ function Groups() {
 
                       <Tooltip title="Eliminar grupo" arrow>
                         <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                          <DeleteIcon />
+                          <IconifyIcon icon="mdi:trash-can" color="error" hoverColor="#d32f2f" />
                         </IconButton>
                       </Tooltip>
                     </ButtonContainer>

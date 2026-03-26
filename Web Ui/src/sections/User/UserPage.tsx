@@ -12,8 +12,7 @@ import {
 } from "@mui/material";
 
 import { styled } from "@mui/system";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import SearchIcon from "@mui/icons-material/Search";
+import { IconifyIcon } from "../../sections/Shared/Components";
 
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
@@ -159,7 +158,7 @@ function UserPage() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <IconifyIcon icon="mdi:magnify" width={20} height={20} color="gray" hoverColor="#333" />
                 </InputAdornment>
               ),
             }}
@@ -209,10 +208,9 @@ function UserPage() {
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <RemoveCircleIcon
-                          onClick={() => handleRemoveUserFromGroup(user.id)}
-                          sx={{ color: "#d81b1b" }}
-                        />
+                        <div onClick={() => handleRemoveUserFromGroup(user.id)} style={{ cursor: 'pointer' }}>
+                          <IconifyIcon icon="mdi:minus-circle" color="#d81b1b" width={24} height={24} hoverColor="#b71c1c" />
+                        </div>
                       </Tooltip>
                     </TableCell>
                   </TableRow>
