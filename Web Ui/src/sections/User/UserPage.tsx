@@ -32,6 +32,7 @@ const StyledTable = styled(Table)({
   marginRight: "auto",
   marginTop: "12px",
   borderCollapse: "collapse",
+  tableLayout: "fixed",
 });
 
 const HeaderContainer = styled("div")({
@@ -171,10 +172,10 @@ function UserPage() {
           <StyledTable>
             <TableHead>
               <TableRow sx={{ borderBottom: "1px solid #CFCFCF" }}>
-                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "37%", pl: 0 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "30%", borderLeft: "1px solid #CFCFCF" }}>Grupo</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "38%", pl: 0 }}>Correo</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "31%", borderLeft: "1px solid #CFCFCF" }}>Grupo</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "15%", borderLeft: "1px solid #CFCFCF" }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "18%", borderLeft: "1px solid #CFCFCF" }}>Eliminar</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "16%", borderLeft: "1px solid #CFCFCF" }}>Eliminar</TableCell>
               </TableRow>
             </TableHead>
 
