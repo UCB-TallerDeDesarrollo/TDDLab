@@ -7,8 +7,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
-import EditAssignmentForm from "../../../sections/Assignments/components/EditAssignmentForm";
-import { getStatusIcon, getStatusTooltip } from "../../../sections/Shared/statusHelpers";
+import EditAssignmentForm from "./EditAssignmentForm";
+import { getStatusIcon, getStatusTooltip } from "../../../shared/helpers/statusHelpers";
 import { AssignmentListItemViewModel } from "../types/assignmentScreen";
 
 interface AssignmentRowProps {

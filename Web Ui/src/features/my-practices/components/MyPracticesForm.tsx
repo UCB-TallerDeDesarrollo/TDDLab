@@ -7,7 +7,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
+import ValidationDialog from "../../../shared/components/ValidationDialog";
 
 interface CreatePracticePopupProps {
   open: boolean;

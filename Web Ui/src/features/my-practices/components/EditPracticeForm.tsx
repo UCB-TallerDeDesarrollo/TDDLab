@@ -6,7 +6,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Box, TextField } from "@mui/material";
 import { useState } from "react";
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
-import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
+import ValidationDialog from "../../../shared/components/ValidationDialog";
 
 interface EditPracticeDialogProps {
   readonly currentPractice: PracticeDataObject;

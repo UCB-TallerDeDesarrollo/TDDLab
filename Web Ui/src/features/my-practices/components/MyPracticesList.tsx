@@ -2,16 +2,16 @@ import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { Table, TableBody } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ConfirmationDialog } from "../../../sections/Shared/Components/ConfirmationDialog";
-import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
-import SortingComponent from "../../../sections/GeneralPurposeComponents/SortingComponent";
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
 import ActionButton from "../../../shared/components/ActionButton";
+import ConfirmationDialog from "../../../shared/components/ConfirmationDialog";
 import ContentState from "../../../shared/components/ContentState";
 import FeatureItemsLayout from "../../../shared/components/FeatureItemsLayout";
 import FeatureListSection from "../../../shared/components/FeatureListSection";
 import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
 import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivider";
+import SortingComponent from "../../../shared/components/SortingComponent";
+import ValidationDialog from "../../../shared/components/ValidationDialog";
 import PracticeRow from "./PracticeRow";
 import {
   MyPracticesSortOption,
