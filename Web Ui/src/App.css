@@ -169,3 +169,95 @@
   color: #666666;
   font-size: 20px;
 }
+/* ==========================================================================
+   ADICIONES AL SISTEMA DE BOTONES
+   ========================================================================== */
+
+/* Botón Rojo Sólido (Usado en botones de Cancelar de formularios) */
+.btn-danger {
+  background-color: #d32f2f !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #b71c1c !important;
+}
+
+/* Botón con Borde Rojo (Usado específicamente en ConfirmationDialog) */
+.btn-std.btn-danger-outline {
+  color: #d32f2f !important;
+  border: 2px solid #d32f2f !important;
+  background-color: transparent !important;
+  padding: 5px 20px !important;
+  transition: all 0.2s ease;
+}
+
+.btn-std.btn-danger-outline:hover {
+    background-color: #fdf5f5 !important; /* Color sólido equivalente */
+    border-color: #b71c1c !important;
+    color: #b71c1c !important;
+}
+
+/* ==========================================================================
+   ADICIONES PARA DIÁLOGOS
+   ========================================================================== */
+
+/* Texto descriptivo dentro de pop-ups (ej: "¿Estás seguro de eliminar...?") */
+.dialog-text-content {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
+  padding-top: 8px;
+}
+
+/* ==========================================================================
+   MÓDULO DE CONFIGURACIÓN (SETTINGS)
+   ========================================================================== */
+
+/* Títulos de sección en Settings */
+.settings-section-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.settings-section-title--spaced {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+/* Overlay de carga al guardar prompts */
+.saving-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1500; /* Por encima de todo */
+}
+
+/* Items de checkboxes en settings */
+.settings-flag-item {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-error-text {
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Estilo para el input de Prompt cuando está bloqueado */
+.prompt-input-readonly {
+  background-color: #f5f5f5 !important;
+  cursor: default;
+}
