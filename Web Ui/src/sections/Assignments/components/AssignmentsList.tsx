@@ -359,6 +359,14 @@ useEffect(() => {
                 paddingY: "8px",
                 minWidth: "90px",
                 whiteSpace: "nowrap",
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
               }}
               onClick={showForm}
             >

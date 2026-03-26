@@ -62,10 +62,18 @@ const ValidationDialog = ({
       <DialogActions sx={{ pb: 2, pr: 2 }}>
         <Button 
           onClick={onClose}
-          style={{ 
+          sx={{
             color: isError ? '#d32f2f' : '#2e7d32',
             textTransform: 'none',
             ...typographyVariants.paragraphMedium,
+            transition: "all 0.175s ease-out",
+            "&:hover": {
+              filter: "brightness(0.9)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            "&:active": {
+              transform: "scale(0.97)",
+            },
           }}
         >
           {closeText}
@@ -310,14 +318,35 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           <DialogActions>
             <Button
               onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
+              sx={{
+                color: "#555",
+                textTransform: "none",
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
               Cancelar
             </Button>
             <Button
               onClick={handleSaveClick}
               color="primary"
-              style={{ textTransform: "none" }}
+              sx={{
+                textTransform: "none",
+                transition: "all 0.175s ease-out",
+                "&:hover:not(:disabled)": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active:not(:disabled)": {
+                  transform: "scale(0.97)",
+                },
+              }}
               disabled={formInvalid()}
             >
               Crear

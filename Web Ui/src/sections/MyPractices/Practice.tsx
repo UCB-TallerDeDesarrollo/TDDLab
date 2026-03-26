@@ -77,6 +77,16 @@ const Practice: React.FC<PracticeProps> = ({
               onClick={() => handleClickDetail(index)}
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
               <IconifyIcon icon="mdi:eye" color="primary" hoverColor="#1565c0" />
             </IconButton>
@@ -90,7 +100,20 @@ const Practice: React.FC<PracticeProps> = ({
             />
           ) : (
             <Tooltip title="Editar practica" arrow>
-              <IconButton aria-label="edit" onClick={handleEditClick}>
+              <IconButton 
+                aria-label="edit" 
+                onClick={handleEditClick}
+                sx={{
+                  transition: "all 0.175s ease-out",
+                  "&:hover": {
+                    filter: "brightness(0.9)",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  },
+                  "&:active": {
+                    transform: "scale(0.97)",
+                  },
+                }}
+              >
                 <IconifyIcon icon="mdi:pencil" color="primary" hoverColor="#1565c0" />
               </IconButton>
             </Tooltip>
@@ -101,6 +124,16 @@ const Practice: React.FC<PracticeProps> = ({
               onClick={() => handleClickDelete(index)}
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
               <IconifyIcon icon="mdi:trash-can" color="error" hoverColor="#d32f2f" />
             </IconButton>
@@ -111,6 +144,16 @@ const Practice: React.FC<PracticeProps> = ({
               aria-label="status"
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
               {statusIcon}
             </IconButton>

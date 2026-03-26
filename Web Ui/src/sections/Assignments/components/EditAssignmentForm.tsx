@@ -184,13 +184,35 @@ function EditAssignmentDialog({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
+        <Button 
+          onClick={onClose}
+          sx={{
+            transition: "all 0.175s ease-out",
+            "&:hover": {
+              filter: "brightness(0.9)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            "&:active": {
+              transform: "scale(0.97)",
+            },
+          }}
+        >
+          Cancelar
+        </Button>
         <Button
           variant="contained"
-          style={{
+          sx={{
             textTransform: "none",
+            transition: "all 0.175s ease-out",
+            "&:hover": {
+              filter: "brightness(0.9)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            "&:active": {
+              transform: "scale(0.97)",
+            },
           }}
-          onClick={handleSaveChanges} // Asocia la función handleSaveChanges al evento onClick del botón
+          onClick={handleSaveChanges}
         >
           Guardar Cambios
         </Button>
@@ -201,7 +223,23 @@ function EditAssignmentDialog({
           <p style={{ color: '#dc3545', ...typographyVariants.paragraphBig, textAlign: 'center' }}>{errorMessage}</p>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="error" onClick={() => setErrorOpen(false)}>Cerrar</Button>
+          <Button 
+            variant="contained" 
+            color="error" 
+            onClick={() => setErrorOpen(false)}
+            sx={{
+              transition: "all 0.175s ease-out",
+              "&:hover": {
+                filter: "brightness(0.9)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              },
+              "&:active": {
+                transform: "scale(0.97)",
+              },
+            }}
+          >
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
     </Dialog>

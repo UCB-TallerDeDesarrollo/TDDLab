@@ -102,10 +102,38 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} style={{ color: "#555", textTransform: "none" }}>
+            <Button 
+              onClick={handleClose} 
+              sx={{
+                color: "#555",
+                textTransform: "none",
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
+            >
               Cancelar
             </Button>
-            <Button onClick={handleUpdate} color="primary" style={{ textTransform: "none" }}>
+            <Button 
+              onClick={handleUpdate} 
+              color="primary" 
+              sx={{
+                textTransform: "none",
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
+            >
               Guardar Cambios
             </Button>
           </DialogActions>
