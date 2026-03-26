@@ -27,7 +27,7 @@ const CenteredContainer = styled(Container)({
 });
 
 const StyledTable = styled(Table)({
-  width: "82%",
+  width: "92%",
   marginLeft: "auto",
   marginRight: "auto",
   marginTop: "12px",
@@ -38,7 +38,7 @@ const HeaderContainer = styled("div")({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  width: "82%",
+  width: "92%",
   marginTop: "8px",
   marginBottom: "10px",
   gap: "20px",
@@ -165,13 +165,13 @@ function UserPage() {
           </FormControl>
         </HeaderContainer>
 
-        <Divider sx={{ width: "82%" }} />
+        <Divider sx={{ width: "92%" }} />
 
         <section className="Usuarios">
           <StyledTable>
             <TableHead>
               <TableRow sx={{ borderBottom: "1px solid #CFCFCF" }}>
-                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "37%" }}>Correo</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "37%", pl: 0 }}>Correo</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "30%", borderLeft: "1px solid #CFCFCF" }}>Grupo</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "15%", borderLeft: "1px solid #CFCFCF" }}>Rol</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "1.05rem", py: 1.6, width: "18%", borderLeft: "1px solid #CFCFCF" }}>Eliminar</TableCell>
@@ -188,7 +188,7 @@ function UserPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} sx={{ borderBottom: "1px solid #CFCFCF" }}>
-                    <TableCell sx={{ py: 2.2 }}>{user.email}</TableCell>
+                    <TableCell sx={{ py: 2.2, pl: 0 }}>{user.email}</TableCell>
                     <TableCell sx={{ py: 2.2, borderLeft: "1px solid #CFCFCF" }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
                     <TableCell sx={{ py: 2.2, borderLeft: "1px solid #CFCFCF" }}>{user.role}</TableCell>
                     <TableCell sx={{ py: 2.2, borderLeft: "1px solid #CFCFCF", textAlign: "left" }}>
