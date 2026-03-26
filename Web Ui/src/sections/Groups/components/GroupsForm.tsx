@@ -14,6 +14,8 @@ import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
 
+// Importamos el CSS global para que las clases funcionen
+import "../../../App.css";
 
 interface CreateGroupPopupProps {
   open: boolean;
@@ -30,8 +32,8 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
+  
   const groupRepository = new GroupsRepository();
-
   const [auth] = useGlobalState("authData");
   const dbAuthPort = new RegisterUserOnDb();
 
@@ -57,7 +59,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
     try {
       const newGroup = await createGroup.createGroup(payload);
-      // avisa al padre
+      
       if (auth?.userEmail) {
         await dbAuthPort.register({
           email: auth.userEmail,
@@ -66,6 +68,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
         });
       }
 
+      // Actualización de localStorage para consistencia
       try {
         const raw = localStorage.getItem("userGroups");
         if (raw) {
@@ -74,9 +77,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
             localStorage.setItem("userGroups", JSON.stringify([newGroup.id, ...arr]));
           }
         }
-      } catch {
-        // ignore
-      }
+      } catch { /* ignore */ }
 
       onCreated?.(newGroup);
       setValidationDialogOpen(true);
@@ -97,11 +98,16 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   }, [open]);
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear grupo</DialogTitle>
-          <DialogContent>
+          {/* Título con estilo estándar */}
+          <DialogTitle className="dialog-title-std">
+            Crear un Grupo
+          </DialogTitle>
+          
+          {/* Contenido con espaciado grid estándar */}
+          <DialogContent className="dialog-content-box">
             <TextField
               error={formInvalid() && !!save}
               autoFocus
@@ -114,7 +120,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
-              helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
+              helperText={formInvalid() && !!save ? "El nombre del grupo es requerido" : ""}
             />
             <TextField
               multiline
@@ -122,7 +128,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               margin="dense"
               id="group-description"
               name="groupDescription"
-              label="Descripcion"
+              label="Descripción"
               type="text"
               fullWidth
               value={groupDescription}
@@ -130,11 +136,13 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCancel} style={{ color: "#555", textTransform: "none" }}>
+
+          {/* Footer con botones alineados y estilos de Prácticas */}
+          <DialogActions className="dialog-footer">
+            <Button onClick={handleCancel} className="btn-std btn-danger">
               Cancelar
             </Button>
-            <Button onClick={handleCreate} color="primary" style={{ textTransform: "none" }}>
+            <Button onClick={handleCreate} className="btn-std btn-primary">
               Crear
             </Button>
           </DialogActions>
@@ -148,7 +156,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
           closeText="Cerrar"
           onClose={() => {
             setValidationDialogOpen(false);
-            handleClose(); // cierra el popup después de mostrar el mensaje
+            handleClose();
           }}
         />
       )}

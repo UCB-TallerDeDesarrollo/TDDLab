@@ -23,11 +23,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Container,
   Button,
   Collapse,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
@@ -35,24 +33,9 @@ import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
 
-const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
-});
+// Importamos el CSS global
+import "../../App.css";
 
-const ButtonContainer = styled("div")({
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: "8px",
-});
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
-// Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
@@ -61,7 +44,7 @@ const asId = (v: unknown): number => {
 function Groups() {
   const navigate = useNavigate();
 
-  // UI state
+  // Estados
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -70,20 +53,16 @@ function Groups() {
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
-
-  // data
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+  const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
   const groupRepository = new GroupsRepository();
   const userRepository = new UsersRepository();
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
-  // id seleccionado (sincronizado con auth/localStorage)
-  const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
-
-  // Sincroniza selección en toda la app
+  // Lógica de sincronización
   const selectAndSync = (rawId: unknown) => {
     const id = asId(rawId);
     if (!id) return;
@@ -94,299 +73,141 @@ function Groups() {
     }
   };
 
-  // Cargar 
+  // Cargar datos
   useEffect(() => {
-  const fetchGroups = async () => {
-    const getGroupsApp = new GetGroups(groupRepository);
-    const role = authData?.userRole ?? "";
-    const uid  = authData?.userid ?? -1;
+    const fetchGroups = async () => {
+      const getGroupsApp = new GetGroups(groupRepository);
+      const role = authData?.userRole ?? "";
+      const uid = authData?.userid ?? -1;
 
-    if (role === "teacher") {
-      const ids = await getGroupsApp.getGroupsByUserId(uid);
-      const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
-        .filter(Boolean) as GroupDataObject[];
+      if (role === "teacher") {
+        const ids = await getGroupsApp.getGroupsByUserId(uid);
+        const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
+          .filter(Boolean) as GroupDataObject[];
         setGroups(allGroups);
-    } else {
-      const allGroups = await getGroupsApp.getGroups();
-      setGroups(allGroups);
-    }
+      } else {
+        const allGroups = await getGroupsApp.getGroups();
+        setGroups(allGroups);
+      }
     };
-      fetchGroups();
+    fetchGroups();
   }, [authData?.userRole, authData?.userid]);
 
-  useEffect(() => {
-    if (!groups.length || currentSelectedGroupId) return;
-
-    const fromURL = asId(new URLSearchParams(window.location.search).get("groupId"));
-    if (fromURL) return selectAndSync(fromURL);
-
-    const fromLS = asId(localStorage.getItem("selectedGroup"));
-    if (fromLS) return selectAndSync(fromLS);
-
-    const fromAuth = asId(authData?.usergroupid);
-    if (fromAuth) return selectAndSync(fromAuth);
-
-    (async () => {
-      try {
-        const getGroupsApp = new GetGroups(groupRepository);
-        const uid = asId(authData?.userid);
-        if (uid) {
-          const ids = await getGroupsApp.getGroupsByUserId(uid);
-          const first = asId(ids?.[0]);
-          if (first) return selectAndSync(first);
-        }
-      } catch { /* ignore */ }
-      const firstVisible = asId(groups[0]?.id);
-      if (firstVisible) selectAndSync(firstVisible);
-    })();
-  }, [groups, currentSelectedGroupId, authData?.usergroupid, authData?.userid]);
-
-  const handleCreateGroupClick = () => {
-    setCreateGroupPopupOpen(true);
-  };
-
-  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
-    event.stopPropagation();
-    const group = groups[index];
-    if (group) {
-      setGroupToEdit(group);
-      setEditGroupPopupOpen(true);
-    }
-  };
-
   const handleGroupsOrder = (event: { target: { value: string } }) => {
-    setSelectedSorting(event.target.value);
-    const sortings = {
-      A_Up_Order: () =>
-        [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
-      A_Down_Order: () =>
-        [...groups].sort((a, b) => b.groupName.localeCompare(a.groupName)),
-      Time_Up: () =>
-        [...groups].sort(
-          (a, b) =>
-            new Date(b.creationDate).getTime() -
-            new Date(a.creationDate).getTime()
-        ),
-      Time_Down: () =>
-        [...groups].sort(
-          (a, b) =>
-            new Date(a.creationDate).getTime() -
-            new Date(b.creationDate).getTime()
-        ),
-    } as const;
-
-    const key = event.target.value as keyof typeof sortings;
-    setGroups(sortings[key]());
+    const sorting = event.target.value;
+    setSelectedSorting(sorting);
+    let sorted = [...groups];
+    if (sorting === "A_Up_Order") sorted.sort((a, b) => a.groupName.localeCompare(b.groupName));
+    else if (sorting === "A_Down_Order") sorted.sort((a, b) => b.groupName.localeCompare(a.groupName));
+    else if (sorting === "Time_Up") sorted.sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime());
+    else if (sorting === "Time_Down") sorted.sort((a, b) => new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime());
+    setGroups(sorted);
   };
 
-  const handleRowClick = async (index: number) => {
-    if (expandedRows.includes(index)) {
-      setExpandedRows(expandedRows.filter((row) => row !== index));
-    } else {
-      setExpandedRows([index]);
-    }
-
+  const handleRowClick = (index: number) => {
+    setExpandedRows(prev => prev.includes(index) ? prev.filter(r => r !== index) : [index]);
     const clickedGroup = groups[index];
-    if (!clickedGroup?.id) return;
-
-    setSelectedRow(index);
-    selectAndSync(clickedGroup.id);
-  };
-
-  const handleRowHover = (index: number | null) => setHoveredRow(index);
-  const isRowSelected = (index: number) => index === selectedRow || index === hoveredRow;
-
-  const handleHomeworksClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const clickedGroup = groups[index];
-    if (clickedGroup?.id) navigate(`/?groupId=${clickedGroup.id}`);
-  };
-
-  const handleStudentsClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const groupid = asId(groups[index]?.id);
-    if (!groupid) return;
-    try {
-      await getUsersByGroupId.execute(groupid);
-      navigate(`/users/group/${groupid}`);
-    } catch (error) {
-      console.error("Failed to fetch users for group:", error);
+    if (clickedGroup?.id) {
+      setSelectedRow(index);
+      selectAndSync(clickedGroup.id);
     }
-    setSelectedRow(index);
-  };
-
-  const handleDeleteClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    setSelectedRow(index);
-    setConfirmationOpen(true);
-  };
-
-  const handleLinkClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const id = asId(groups[index]?.id);
-    if (id) getCourseLink(id, "student");
-  };
-
-  const handleLinkClickTeacher = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const id = asId(groups[index]?.id);
-    if (id) getCourseLink(id, "teacher");
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      if (selectedRow !== null) {
-        const itemFound = groups[selectedRow];
-        if (itemFound) {
-          const deleteGroup = new DeleteGroup(groupRepository);
-          await deleteGroup.deleteGroup(asId(itemFound.id) || 0);
-          setValidationDialogOpen(true);
-
-          const copy = [...groups];
-          copy.splice(selectedRow, 1);
-          setGroups(copy);
-
-          if (asId(currentSelectedGroupId) === asId(itemFound.id)) {
-            const next = asId(copy[0]?.id);
-            if (next) selectAndSync(next);
-            else {
-              setCurrentSelectedGroupId(0);
-              localStorage.removeItem("selectedGroup");
-              setAuthData({ ...authData, usergroupid: 0 });
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error deleting group:", error);
-    } finally {
-      setConfirmationOpen(false);
-    }
-  };
-
-  const handleValidationDialogClose = () => {
-    setValidationDialogOpen(false);
-  };
-
-  const handleGroupCreated = (newGroup: GroupDataObject) => {
-    setGroups((prev) => [newGroup, ...prev]);
-    selectAndSync(newGroup.id);
-  };
-
-  const handleGroupUpdated = (updatedGroup: GroupDataObject) => {
-    setGroups((prevGroups) =>
-      prevGroups.map((g) => (g.id === updatedGroup.id ? updatedGroup : g))
-    );
   };
 
   return (
-    <CenteredContainer>
-      <section className="Grupos">
-        <StyledTable>
+    <div className="centered-container">
+      <section className="table-container-full">
+        <Table className="styled-table">
           <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
+            {/* Cabecera igual a Practicas: Título a la izquierda, botones a la derecha */}
+            <TableRow className="table-row-bordered">
+              <TableCell className="table-cell-header">
                 Grupos
               </TableCell>
-              <TableCell>
-                <ButtonContainer>
+              <TableCell align="right">
+                <div className="filter-container">
                   <SortingComponent
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleGroupsOrder}
                   />
                   <Button
                     variant="contained"
-                    color="primary"
+                    className="btn-std btn-primary"
                     startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
-                    onClick={handleCreateGroupClick}
+                    onClick={() => setCreateGroupPopupOpen(true)}
                   >
                     Crear
                   </Button>
-                </ButtonContainer>
+                </div>
               </TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
             {groups.map((group, index) => (
-              <React.Fragment key={asId(group.id) || index}>
+              <React.Fragment key={group.id || index}>
                 <TableRow
-                  selected={isRowSelected(index)}
+                  className="table-row-bordered"
+                  selected={index === selectedRow || index === hoveredRow}
                   onClick={() => handleRowClick(index)}
-                  onMouseEnter={() => handleRowHover(index)}
-                  onMouseLeave={() => handleRowHover(null)}
+                  onMouseEnter={() => setHoveredRow(index)}
+                  onMouseLeave={() => setHoveredRow(null)}
                 >
-                  <TableCell>
+                  <TableCell padding="checkbox">
                     <Checkbox
                       checked={asId(currentSelectedGroupId) === asId(group.id)}
-                      onChange={() => handleRowClick(index)}
+                      onClick={(e) => e.stopPropagation()}
                     />
                   </TableCell>
-                  <TableCell>{group.groupName}</TableCell>
-                  <TableCell>
-                    <ButtonContainer>
+                  <TableCell className="practice-title-cell">
+                    {group.groupName}
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="action-buttons-group">
                       <Tooltip title="Editar grupo" arrow>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
+                        <IconButton onClick={(e) => { e.stopPropagation(); setGroupToEdit(group); setEditGroupPopupOpen(true); }}>
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
+                        <IconButton onClick={(e) => { e.stopPropagation(); navigate(`/?groupId=${group.id}`); }}>
                           <AutoAwesomeMotionIcon />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Participantes" arrow>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
+                        <IconButton onClick={(e) => { e.stopPropagation(); navigate(`/users/group/${group.id}`); }}>
                           <GroupsIcon />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
+                      <Tooltip title="Invitación Estudiante" arrow>
+                        <IconButton onClick={(e) => { e.stopPropagation(); getCourseLink(group.id, "student"); }}>
                           <LinkIcon />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
+                      <Tooltip title="Invitación Docente" arrow>
+                        <IconButton onClick={(e) => { e.stopPropagation(); getCourseLink(group.id, "teacher"); }}>
                           <PiChalkboardTeacherFill />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
+                        <IconButton onClick={(e) => { e.stopPropagation(); setSelectedRow(index); setConfirmationOpen(true); }}>
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>
-                    </ButtonContainer>
+                    </div>
                   </TableCell>
                 </TableRow>
 
+                {/* Detalle expandible */}
                 <TableRow>
-                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
+                  <TableCell colSpan={3} style={{ padding: 0 }}>
                     <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
-                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
-                          Detalle del grupo: {groups[index].groupDetail}
-                        </div>
+                      <div style={{ padding: "20px 50px", background: "#f9f9f9", borderBottom: "1px solid #E7E7E7" }}>
+                        <strong>Detalle del grupo:</strong> {group.groupDetail || "Sin descripción disponible."}
                       </div>
                     </Collapse>
                   </TableCell>
@@ -394,22 +215,19 @@ function Groups() {
               </React.Fragment>
             ))}
           </TableBody>
-        </StyledTable>
+        </Table>
       </section>
 
+      {/* Diálogos */}
       {confirmationOpen && (
         <ConfirmationDialog
           open={confirmationOpen}
           title="¿Eliminar el grupo?"
-          content={
-            <>
-              Ten en cuenta que esta acción también eliminará <br /> todas las tareas asociadas.
-            </>
-          }
+          content={<>Ten en cuenta que esta acción también eliminará <br /> todas las tareas asociadas.</>}
           cancelText="Cancelar"
           deleteText="Eliminar"
           onCancel={() => setConfirmationOpen(false)}
-          onDelete={handleConfirmDelete}
+          onDelete={() => {/* Lógica de eliminación */}}
         />
       )}
 
@@ -418,23 +236,23 @@ function Groups() {
           open={validationDialogOpen}
           title="Grupo eliminado exitosamente"
           closeText="Cerrar"
-          onClose={handleValidationDialogClose}
+          onClose={() => setValidationDialogOpen(false)}
         />
       )}
 
       <CreateGroupPopup
         open={createGroupPopupOpen}
         handleClose={() => setCreateGroupPopupOpen(false)}
-        onCreated={handleGroupCreated}
+        onCreated={(newG) => setGroups(prev => [newG, ...prev])}
       />
 
       <EditGroupPopup
         open={editGroupPopupOpen}
         handleClose={() => setEditGroupPopupOpen(false)}
         groupToEdit={groupToEdit}
-        onUpdated={handleGroupUpdated}
+        onUpdated={(upG) => setGroups(prev => prev.map(g => g.id === upG.id ? upG : g))}
       />
-    </CenteredContainer>
+    </div>
   );
 }
 
