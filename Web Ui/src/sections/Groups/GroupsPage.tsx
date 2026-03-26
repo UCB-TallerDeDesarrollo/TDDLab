@@ -361,10 +361,10 @@ function Groups() {
                 </TableRow>
 
                 <TableRow>
-                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
+                  <TableCell className="groups-detail-cell" colSpan={2}>
                     <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
-                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
+                      <div className="groups-detail-wrapper">
+                        <div className="groups-detail-content">
                           Detalle del grupo: {groups[index].groupDetail}
                         </div>
                       </div>

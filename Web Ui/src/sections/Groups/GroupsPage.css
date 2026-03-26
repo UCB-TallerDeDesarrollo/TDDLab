@@ -7,3 +7,19 @@
   text-transform: none !important;
   font-size: 0.95rem !important;
 }
+
+.groups-detail-cell {
+  width: 100%;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.groups-detail-wrapper {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.groups-detail-content {
+  padding: 50px;
+  margin-left: -30px;
+}
