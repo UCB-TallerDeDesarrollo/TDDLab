@@ -1,7 +1,7 @@
 /* ==========================================================================
    LAYOUT & CONTENEDORES GLOBALES
    ========================================================================== */
-
+.fullscreen-loading,
 .centered-container {
   display: flex;
   flex-direction: column;
@@ -23,15 +23,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-}
-
-/* Contenedor de pantalla completa para loading */
-.fullscreen-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
 }
 
 /* ==========================================================================
@@ -63,16 +54,6 @@
   background-color: #e0e0e0 !important;
   color: #5b5b5b !important;
   cursor: not-allowed !important;
-}
-
-/* Botón pill (redondeado) — usado en AssignmentsList para "Crear" */
-.btn-pill {
-  border-radius: 17px !important;
-  text-transform: none !important;
-  font-size: 0.95rem !important;
-  padding: 8px 16px !important;
-  min-width: 90px !important;
-  white-space: nowrap !important;
 }
 
 /* ==========================================================================
@@ -117,28 +98,7 @@
   flex-wrap: nowrap;
 }
 
-/* Celda de título de assignment (columna izquierda) */
-.assignment-title-cell {
-  width: 20%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Celda de acciones de assignment (columna derecha) */
-.assignment-actions-cell {
-  width: 30%;
-  max-width: 300px;
-}
-
-/* Grupo de íconos dentro de la celda de acciones */
-.assignment-actions-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: nowrap;
-}
-
+.select-compact,
 .sorting-container .MuiOutlinedInput-root {
   height: 36px !important;
   border-radius: 0px !important;
@@ -191,14 +151,4 @@
   font-weight: bold;
   font-size: 16px;
   text-align: center;
-}
-
-/* ==========================================================================
-   SELECTS & FILTROS
-   ========================================================================== */
-
-/* Select compacto reutilizable (GroupFilter, etc.) */
-.select-compact {
-  font-size: 14px !important;
-  height: 36px !important;
 }

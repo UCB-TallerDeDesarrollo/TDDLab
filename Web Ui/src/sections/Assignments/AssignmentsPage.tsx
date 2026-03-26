@@ -1,19 +1,6 @@
 import Form from "./components/AssignmentForm";
 import Assignments from "./components/AssignmentsList";
-import { styled } from "@mui/system";
 import { useState } from "react";
-
-const AssignmentsContainer = styled("div")({
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const FormsContainer = styled("div")({
-  flex: "1",
-  marginLeft: "8px",
-  marginRight: "2px",
-  marginTop: "68px",
-});
 
 interface AssignmentManagerProps {
   userRole: string;
@@ -21,7 +8,7 @@ interface AssignmentManagerProps {
 }
 function AssignmentManager({
   userRole,
-  userGroupid, // Recibir userGroupid como prop
+  userGroupid, 
 }: Readonly<AssignmentManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
@@ -32,30 +19,29 @@ function AssignmentManager({
   };
 
   return (
-    <>
-      <AssignmentsContainer data-testid="assignments-container">
+    <div className="centered-container">
+      <div className="table-container-full">
         <Assignments
           ShowForm={handleCreateAssignmentClick}
           userRole={userRole}
           userGroupid={userGroupid}
           onGroupChange={setSelectedGroupId}
         />
-      </AssignmentsContainer>
-      <FormsContainer>
+      </div>
+
       {createAssignmentPopupOpen && (
         <Form
           data-testid="form-container"
           open={createAssignmentPopupOpen}
           handleClose={() => setCreateAssignmentPopupOpen(false)}
-          // ⬇⬇⬇  usa localStorage como respaldo antes de userGroupid
+          // Mantiene tu lógica de grupo seleccionado o localStorage
           groupid={
             selectedGroupId ??
             (Number(localStorage.getItem("selectedGroup") ?? NaN) || userGroupid)
           }
-          />
-        )}
-      </FormsContainer>
-    </>
+        />
+      )}
+    </div>
   );
 }
 

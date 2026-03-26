@@ -36,11 +36,6 @@ const ValidationDialog = ({ open, title, closeText, onClose }: ValidationDialogP
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      {/*
-        CAMBIO 1: sx inline con display/alignItems/gap/color/fontSize/fontWeight/py/fontFamily
-        → reemplazado por className condicional (.dialog-title-error / .dialog-title-success)
-        definidas en App.css
-      */}
       <DialogTitle className={isError ? "dialog-title-error" : "dialog-title-success"}>
         {isError
           ? <Warning sx={{ fontSize: 22 }} />
@@ -49,12 +44,6 @@ const ValidationDialog = ({ open, title, closeText, onClose }: ValidationDialogP
         {title}
       </DialogTitle>
       <DialogActions sx={{ pb: 2, pr: 2 }}>
-        {/*
-          CAMBIO 2: style inline con color condicional y textTransform/fontSize
-          → se mantiene el color condicional como style (es dinámico por variable),
-            pero textTransform y fontSize pasan a className .btn-std
-          Nota: el color condicional requiere style porque depende de isError
-        */}
         <Button
           onClick={onClose}
           className="btn-std"
@@ -200,27 +189,23 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          {/* CAMBIO 3: style={{ fontSize: "0.8rem" }} → eliminado, es un detalle menor
-              que puede manejarse con la clase .dialog-title-std si se desea */}
           <DialogTitle className="dialog-title-std">Crear tarea</DialogTitle>
-          <DialogContent>
-            <section className="mb-4">
-              <FormControl fullWidth variant="outlined" margin="normal">
-                <InputLabel htmlFor="group-select">Grupo</InputLabel>
-                <Select
-                  id="group-select"
-                  value={assignmentData.groupid}
-                  onChange={handleGroupChange}
-                  label="Grupo"
-                  error={save && assignmentData.groupid === 0}
-                >
-                  <MenuItem value={0}>Selecciona un grupo</MenuItem>
-                  {groups.map((group) => (
-                    <MenuItem key={group.id} value={group.id}>{group.groupName}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </section>
+          <DialogContent className="dialog-content-box">
+            <FormControl fullWidth variant="outlined" margin="dense">
+              <InputLabel htmlFor="group-select">Grupo</InputLabel>
+              <Select
+                id="group-select"
+                value={assignmentData.groupid}
+                onChange={handleGroupChange}
+                label="Grupo"
+                error={save && assignmentData.groupid === 0}
+              >
+                <MenuItem value={0}>Selecciona un grupo</MenuItem>
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>{group.groupName}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <TextField
               error={save && !assignmentData.title.trim()}
@@ -251,29 +236,19 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
 
-            <section className="mt-4">
+            <div style={{ marginTop: "10px" }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
               </LocalizationProvider>
-            </section>
+            </div>
           </DialogContent>
-
-          <DialogActions>
-            {/*
-              CAMBIO 4: style={{ color: "#555", textTransform: "none" }}
-              → color queda como style (es específico de este botón),
-                textTransform se cubre con btn-std
-            */}
-            <Button onClick={handleCancel} className="btn-std" style={{ color: "#555" }}>
+          <DialogActions className="dialog-footer">
+            <Button onClick={handleCancel} className="btn-std">
               Cancelar
             </Button>
-            {/*
-              CAMBIO 5: style={{ textTransform: "none" }} → clase btn-std ya lo cubre
-            */}
             <Button
               onClick={handleSaveClick}
-              color="primary"
-              className="btn-std"
+              className="btn-std btn-primary"
               disabled={formInvalid()}
             >
               Crear

@@ -16,10 +16,6 @@ const GroupFilter: React.FC<GroupFilterProps> = ({
   defaultName = "Prueba",
 }) => {
   return (
-    /*
-      CAMBIO 1: style={{ fontSize: "14px", height: "36px" }}
-      → className="select-compact" (definida en App.css)
-    */
     <Select
       value={selectedGroup}
       onChange={onChangeHandler}

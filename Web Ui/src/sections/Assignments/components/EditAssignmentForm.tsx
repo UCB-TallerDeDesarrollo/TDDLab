@@ -3,7 +3,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, TextField, MenuItem, Select } from "@mui/material";
+import { TextField, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import { useState, useEffect } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
@@ -101,61 +101,58 @@ function EditAssignmentDialog({
 
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      {/* CAMBIO 1: sin cambios en DialogTitle principal */}
-      <DialogTitle>Editar Tarea : {currentTitle}</DialogTitle>
-      {/* CAMBIO 2: className="dialog-content-box" reemplaza sx={{ display: "grid", gap: 2 }} */}
-      <DialogContent>
-        <Box className="dialog-content-box">
-          <TextField
-            id="titulo"
-            label="Título"
-            variant="outlined"
-            size="small"
-            required
-            fullWidth
-            onChange={(e) => setTitle(e.target.value)}
-            defaultValue={currentTitle}
-            sx={{ marginTop: 2, "& .MuiInputBase-input": { paddingTop: "14px" } }}
-          />
-          <TextField
-            id="descripcion"
-            label="Descripción"
-            variant="outlined"
-            size="small"
-            required
-            multiline
-            fullWidth
-            rows={4}
-            sx={{
-              "& label.Mui-focused": { color: "#001F3F" },
-              "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "#001F3F" } },
-            }}
-            onChange={(e) => setDescription(e.target.value)}
-            defaultValue={currentDescription}
-          />
+      <DialogTitle className="dialog-title-std">
+        Editar Tarea : {currentTitle}
+      </DialogTitle>
+      
+      <DialogContent className="dialog-content-box">
+        {/* Selector de Grupo */}
+        <FormControl fullWidth variant="outlined" size="small" sx={{ mt: 1 }}>
+          <InputLabel>Grupo</InputLabel>
           <Select
-            label="Grupos"
             value={selectedGroup}
             onChange={handleGroupChange}
-            variant="outlined"
-            size="small"
-            required
+            label="Grupo"
           >
             <MenuItem value={0}>{currentGroupName}</MenuItem>
             {groups.map((group) => (
               <MenuItem key={group.id} value={group.id}>{group.groupName}</MenuItem>
             ))}
           </Select>
-          <section />
-        </Box>
+        </FormControl>
+
+        <TextField
+          id="titulo"
+          label="Título"
+          variant="outlined"
+          size="small"
+          fullWidth
+          required
+          onChange={(e) => setTitle(e.target.value)}
+          defaultValue={currentTitle}
+        />
+
+        <TextField
+          id="descripcion"
+          label="Descripción"
+          variant="outlined"
+          size="small"
+          fullWidth
+          required
+          multiline
+          rows={5}
+          onChange={(e) => setDescription(e.target.value)}
+          defaultValue={currentDescription}
+        />
       </DialogContent>
-      <DialogActions>
-        {/* CAMBIO 3: botones sin style inline → btn-std cubre textTransform */}
-        <Button className="btn-std" onClick={onClose}>Cancelar</Button>
+
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="btn-std btn-cancel">
+          Cancelar
+        </Button>
         <Button
-          variant="contained"
-          className="btn-std btn-primary"
           onClick={handleSaveChanges}
+          className="btn-std btn-primary"
         >
           Guardar Cambios
         </Button>
@@ -163,20 +160,16 @@ function EditAssignmentDialog({
 
       {/* Diálogo de error interno */}
       <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>
-        {/*
-          CAMBIO 4: style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '18px' }}
-          → className="dialog-title-error" (definida en App.css)
-        */}
         <DialogTitle className="dialog-title-error">Error</DialogTitle>
         <DialogContent>
-          {/*
-            CAMBIO 5: style={{ color/fontWeight/fontSize/textAlign }} inline en <p>
-            → className="dialog-error-text" (definida en App.css)
-          */}
           <p className="dialog-error-text">{errorMessage}</p>
         </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={() => setErrorOpen(false)}>
+        <DialogActions className="dialog-footer">
+          <Button 
+            variant="contained" 
+            className="btn-std btn-primary" 
+            onClick={() => setErrorOpen(false)}
+          >
             Cerrar
           </Button>
         </DialogActions>

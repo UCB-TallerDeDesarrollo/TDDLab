@@ -54,17 +54,16 @@ const Assignment: React.FC<AssignmentProps> = ({
   const statusIcon = getStatusIcon(assignment.state);
 
   return (
-    // CAMBIO 1: sx={{ borderBottom: "2px solid #E7E7E7" }} → className="table-row-bordered"
     <TableRow key={assignment.id} className="table-row-bordered">
-      {/* CAMBIO 2: style con width/overflow/ellipsis → className="assignment-title-cell" */}
-      <TableCell className="assignment-title-cell">
+      {/* CAMBIO 1: Usar 'practice-title-cell' para el mismo padding y tamaño de letra */}
+      <TableCell className="practice-title-cell">
         {assignment.title}
       </TableCell>
 
-      {/* CAMBIO 3: style con width/maxWidth → className="assignment-actions-cell" */}
-      <TableCell className="assignment-actions-cell">
-        {/* CAMBIO 4: div con display/alignItems/gap/flexWrap inline → className="assignment-actions-group" */}
-        <div className="assignment-actions-group">
+      {/* CAMBIO 2: align="right" para empujar los botones al final */}
+      <TableCell align="right">
+        {/* CAMBIO 3: Usar la clase 'action-buttons-group' que usa Prácticas */}
+        <div className="action-buttons-group">
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"

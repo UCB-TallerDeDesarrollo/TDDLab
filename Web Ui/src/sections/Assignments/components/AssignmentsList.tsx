@@ -5,7 +5,6 @@ import { CircularProgress, Table,
   TableBody,
   TableRow,
   TableCell,
-  Container,
   Button,
   SelectChangeEvent } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
@@ -24,9 +23,6 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 
-// ─── CAMBIO 1: StyledTable y CustomTableCell1 se reemplazan por clases CSS.
-// Eliminadas: StyledTable (→ .styled-table), CustomTableCell1 (→ ancho inline mínimo).
-// Se mantiene LoadingContainer porque envuelve el spinner con altura 100vh.
 const LoadingContainer = styled("div")({
   display: "flex",
   justifyContent: "center",
@@ -240,60 +236,55 @@ function Assignments({
   const handleRowHover = (index: number | null) => setHoveredRow(index);
 
   return (
-    <Container>
+    <div className="centered-container">
       {isLoading ? (
         <LoadingContainer>
-          {/* CAMBIO 2: div con inline style reemplazado por clase .fullscreen-loading */}
           <div className="fullscreen-loading">
             <CircularProgress />
           </div>
         </LoadingContainer>
       ) : (
-        <section className="Tareas">
-          {/* CAMBIO 3: div con inline styles reemplazado por clase .table-toolbar */}
-          <div className="table-toolbar">
-            <GroupFilter
-              selectedGroup={selectedGroup}
-              groupList={groupList}
-              onChangeHandler={handleGroupChange}
-              defaultName={
-                groupList.find((group) => group.id == selectedGroup)?.groupName ||
-                groupList[0]?.groupName ||
-                "Selecciona un grupo"
-              }
-            />
-            <SortingComponent
-              selectedSorting={selectedSorting}
-              onChangeHandler={handleOrderAssignments}
-            />
-            {userRole !== "student" && (
-              // CAMBIO 4: sx inline reemplazado por clase .btn-pill
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                className="btn-pill"
-                onClick={showForm}
-              >
-                Crear
-              </Button>
-            )}
-          </div>
-
-          {/* CAMBIO 5: StyledTable (styled-component) reemplazado por className .styled-table */}
+        <section className="table-container-full">
           <Table className="styled-table">
             <TableHead>
-              {/* CAMBIO 6: sx inline reemplazado por className .table-row-bordered */}
-              <TableRow className="table-row-bordered">
-                {/* CAMBIO 7: CustomTableCell1 + sx inline → className .table-cell-header con width inline mínimo */}
-                <TableCell
-                  style={{ width: "80%" }}
-                  className="table-cell-header"
-                >
+              <TableRow>
+                <TableCell className="table-cell-header">
                   Tareas
+                </TableCell>
+                <TableCell>
+                  <div className="filter-container">
+                    <div className="sorting-container" style={{ display: 'flex', gap: '8px' }}>
+                      <GroupFilter
+                        selectedGroup={selectedGroup}
+                        groupList={groupList}
+                        onChangeHandler={handleGroupChange}
+                        defaultName={
+                          groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                          groupList[0]?.groupName ||
+                          "Selecciona un grupo"
+                        }
+                      />
+                      <SortingComponent
+                        selectedSorting={selectedSorting}
+                        onChangeHandler={handleOrderAssignments}
+                      />
+                    </div>
+                    
+                    {userRole !== "student" && (
+                      <Button
+                        variant="contained"
+                        className="btn-std btn-primary"
+                        startIcon={<AddIcon />}
+                        onClick={showForm}
+                      >
+                        Crear
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {filteredAssignments.map((assignment, index) => (
                 <Assignment
@@ -313,11 +304,7 @@ function Assignments({
             <ConfirmationDialog
               open={confirmationOpen}
               title="¿Eliminar la tarea?"
-              content={
-                <>
-                  Ten en cuenta que esta acción también eliminará <br /> todas las entregas asociadas.
-                </>
-              }
+              content={<>Ten en cuenta que esta acción también eliminará <br /> todas las entregas asociadas.</>}
               cancelText="Cancelar"
               deleteText="Eliminar"
               onCancel={() => setConfirmationOpen(false)}
@@ -341,7 +328,7 @@ function Assignments({
           )}
         </section>
       )}
-    </Container>
+    </div>
   );
 }
 
