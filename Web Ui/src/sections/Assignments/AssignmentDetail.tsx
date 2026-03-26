@@ -374,8 +374,30 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
         return (
           <TableRow key={generateUniqueId()} sx={{ borderBottom: "1px solid #C9C9C9" }}>
-            <TableCell sx={{ py: 2.2, fontSize: "1.6rem" }}>{studentEmail}</TableCell>
-            <TableCell sx={{ py: 2.2, fontSize: "1.6rem", color: statusColor, borderLeft: "1px solid #C9C9C9" }}>{teacherStatus}</TableCell>
+            <TableCell
+              sx={{
+                py: 2.2,
+                fontSize: "1.6rem",
+                maxWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={studentEmail}
+            >
+              {studentEmail}
+            </TableCell>
+            <TableCell
+              sx={{
+                py: 2.2,
+                fontSize: "1.6rem",
+                color: statusColor,
+                borderLeft: "1px solid #C9C9C9",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {teacherStatus}
+            </TableCell>
             <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9", textAlign: "center" }}>
               {hasRepositoryLink ? (
                 <a
