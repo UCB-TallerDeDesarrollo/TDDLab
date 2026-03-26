@@ -22,6 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import './AssignmentForm.css';
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
@@ -42,32 +43,19 @@ const ValidationDialog = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle 
-        sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 1.5,
-          color: isError ? '#d32f2f' : '#2e7d32',
-          fontSize: '1rem',
-          fontWeight: 400,
-          py: 2,
-          fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
-        }}
+        className={`assignment-form-validation-title ${isError ? 'assignment-form-validation-title--error' : 'assignment-form-validation-title--success'}`}
       >
         {isError ? (
-          <Warning sx={{ color: '#d32f2f', fontSize: 22 }} />
+          <Warning className="assignment-form-validation-icon--error" />
         ) : (
-          <CheckCircle sx={{ color: '#2e7d32', fontSize: 22 }} />
+          <CheckCircle className="assignment-form-validation-icon--success" />
         )}
         {title}
       </DialogTitle>
-      <DialogActions sx={{ pb: 2, pr: 2 }}>
+      <DialogActions className="assignment-form-validation-actions">
         <Button 
           onClick={onClose}
-          style={{ 
-            color: isError ? '#d32f2f' : '#2e7d32',
-            textTransform: 'none',
-            fontSize: '0.875rem'
-          }}
+          className={isError ? 'assignment-form-validation-close--error' : 'assignment-form-validation-close--success'}
         >
           {closeText}
         </Button>
@@ -311,7 +299,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           <DialogActions>
             <Button
               onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
+              className="assignment-form-cancel-button"
             >
               Cancelar
             </Button>

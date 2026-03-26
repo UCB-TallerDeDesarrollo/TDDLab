@@ -10,6 +10,7 @@ import EditAssignmentForm from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltip } from "../../Shared/statusHelpers";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
+import './Assignment.css';
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
 }
@@ -67,28 +68,12 @@ const Assignment: React.FC<AssignmentProps> = ({
   return (
     <TableRow 
     key={assignment.id}
-    sx={{ 
-      borderBottom: "2px solid #E7E7E7" 
-    }}>
-      <TableCell
-        style={{
-          width: "20%",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
+    className="assignment-row">
+      <TableCell className="assignment-title-cell">
         {assignment.title}
       </TableCell>
-      <TableCell style={{ width: "30%", maxWidth: "300px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              flexWrap: "nowrap",
-            }}
-          >
+      <TableCell className="assignment-actions-cell">
+          <div className="assignment-actions-row">
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"

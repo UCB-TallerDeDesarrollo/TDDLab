@@ -1,0 +1,22 @@
+.assignment-row {
+  border-bottom: 2px solid #E7E7E7;
+}
+
+.assignment-title-cell {
+  width: 20%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assignment-actions-cell {
+  width: 30%;
+  max-width: 300px;
+}
+
+.assignment-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}

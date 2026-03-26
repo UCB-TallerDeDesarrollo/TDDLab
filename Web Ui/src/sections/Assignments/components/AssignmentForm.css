@@ -1,0 +1,50 @@
+.assignment-form-validation-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  font-weight: 400;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+.assignment-form-validation-title--error {
+  color: #d32f2f;
+}
+
+.assignment-form-validation-title--success {
+  color: #2e7d32;
+}
+
+.assignment-form-validation-icon--error {
+  color: #d32f2f;
+  font-size: 22px !important;
+}
+
+.assignment-form-validation-icon--success {
+  color: #2e7d32;
+  font-size: 22px !important;
+}
+
+.assignment-form-validation-actions {
+  padding-bottom: 16px;
+  padding-right: 16px;
+}
+
+.assignment-form-validation-close--error {
+  color: #d32f2f;
+  text-transform: none;
+  font-size: 0.875rem;
+}
+
+.assignment-form-validation-close--success {
+  color: #2e7d32;
+  text-transform: none;
+  font-size: 0.875rem;
+}
+
+.assignment-form-cancel-button {
+  color: #555;
+  text-transform: none;
+}
