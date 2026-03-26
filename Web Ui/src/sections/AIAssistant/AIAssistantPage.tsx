@@ -13,6 +13,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CodeIcon from '@mui/icons-material/Code';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import GradeIcon from '@mui/icons-material/Grade';
+import './AIAssistantPage.css';
 
 const evaluateWithAIUseCase = new EvaluateWithAI();
 const chatbotUseCase = new ChatbotUseCase();
@@ -98,24 +99,20 @@ const AIAssistantPage = () => {
 
 
   return (
-    <Box sx={{ padding: 4, display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <Box className="ai-assistant-page">
       {/* Header */}
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box className="ai-assistant-header">
         <Box display="flex" alignItems="center" gap={1}>
-          <ChatBubbleOutlineIcon fontSize="small" sx={{ color: '#1976D2' }} />
+          <ChatBubbleOutlineIcon fontSize="small" className="ai-assistant-header-icon" />
           <Typography variant="h5" fontWeight="bold">Asistente IA</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap={1}>
-          <GitHubIcon fontSize="small" sx={{ color: 'gray' }} />
+          <GitHubIcon fontSize="small" className="ai-assistant-github-icon" />
           <a
             href={repositoryLink}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              textDecoration: 'none',
-              color: 'gray',
-              fontSize: 14
-            }}
+            className="ai-assistant-repo-link"
           >
             {repositoryLink}
           </a>
@@ -123,54 +120,30 @@ const AIAssistantPage = () => {
       </Box>
 
       {/* Contenedor Chat + Botones */}
-      <Box sx={{ display: 'flex', flexGrow: 1, gap: 3 }}>
+      <Box className="ai-assistant-chat-container">
         {/* Chat Section */}
         <Paper
           elevation={3}
-          sx={{maxWidth: '1100px',flexGrow: 1,display: 'flex',flexDirection: 'column',padding: 2,borderRadius: 2,height: '100%',maxHeight: '80vh', overflow: 'hidden'}}>
+          className="ai-assistant-chat-paper">
                   {/* Mensajes */}
         <Box
-          sx={{flexGrow: 1, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 2, height: '100%'}}>
+          className="ai-assistant-messages">
             {messages.map((msg) => (
               <Box
                 key={msg.id}
-                sx={{
-                  display: 'flex',
-                  justifyContent: msg.from === 'user' ? 'flex-end' : 'flex-start'
-                }}
+                className={msg.from === 'user' ? 'ai-assistant-msg-user' : 'ai-assistant-msg-bot'}
               >
                 {msg.from === 'bot' ? (
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, maxWidth: '75%' }}>
-                    <Avatar sx={{ color:'#1976D2' ,bgcolor: '#F1F5F9', width: 32, height: 32 }}>
+                  <Box className="ai-assistant-bot-row">
+                    <Avatar className="ai-assistant-bot-avatar">
                       <SmartToyIcon fontSize="small" />
                     </Avatar>
-                    <Box
-                      sx={{
-                        backgroundColor: '#F1F5F9',
-                        color: '#000',
-                        px: 2,
-                        py: 1,
-                        borderRadius: 2,
-                        whiteSpace: 'pre-line',
-                        maxWidth: '100%',
-                      }}
-                    >
+                    <Box className="ai-assistant-bot-bubble">
                       <Typography variant="body2">{msg.text}</Typography>
                     </Box>
                   </Box>
                 ) : (
-                  <Box
-                    sx={{
-                      backgroundColor: '#e3f2fd',
-                      color: '#000',
-                      px: 2,
-                      py: 1,
-                      borderRadius: 2,
-                      maxWidth: '75%',
-                      whiteSpace: 'pre-line',
-                      wordBreak: 'break-word',
-                    }}
-                  >
+                  <Box className="ai-assistant-user-bubble">
                     <Typography variant="body2">{msg.text}</Typography>
                   </Box>
                 )}

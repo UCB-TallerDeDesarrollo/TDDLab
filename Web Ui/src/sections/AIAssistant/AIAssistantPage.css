@@ -1,0 +1,98 @@
+.ai-assistant-page {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.ai-assistant-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-assistant-header-icon {
+  color: #1976D2;
+}
+
+.ai-assistant-github-icon {
+  color: gray;
+}
+
+.ai-assistant-repo-link {
+  text-decoration: none;
+  color: gray;
+  font-size: 14px;
+}
+
+.ai-assistant-chat-container {
+  display: flex;
+  flex-grow: 1;
+  gap: 24px;
+}
+
+.ai-assistant-chat-paper {
+  max-width: 1100px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: 8px;
+  height: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.ai-assistant-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.ai-assistant-msg-user {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ai-assistant-msg-bot {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.ai-assistant-bot-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 75%;
+}
+
+.ai-assistant-bot-avatar {
+  color: #1976D2;
+  background-color: #F1F5F9;
+  width: 32px;
+  height: 32px;
+}
+
+.ai-assistant-bot-bubble {
+  background-color: #F1F5F9;
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  white-space: pre-line;
+  max-width: 100%;
+}
+
+.ai-assistant-user-bubble {
+  background-color: #e3f2fd;
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  max-width: 75%;
+  white-space: pre-line;
+  word-break: break-word;
+}
