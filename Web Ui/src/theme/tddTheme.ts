@@ -16,7 +16,7 @@ const tddTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Afacad", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Afacad", "Consolas", sans-serif',
     fontWeightRegular: 400,
     fontWeightMedium: 500,
     fontWeightBold: 700,
