@@ -44,20 +44,25 @@ const Practice: React.FC<PracticeProps> = ({
       onMouseEnter={() => handleRowHover(index)}
       onMouseLeave={() => handleRowHover(null)}
       sx={{
-        borderBottom: "3px solid #E7E7E7",
-        backgroundColor: isHovered ? "#EDF2FF" : "white",
+        borderBottom: "1px solid #E5E7EB",
+        backgroundColor: isHovered ? "#EBF5FF" : "white",
         transition: "background-color 0.2s",
+        height: "60px",
+        minHeight: "60px",
+        boxSizing: "border-box",
       }}
     >
       <TableCell
         sx={{
           fontSize: "16px",
-          padding: "16px",
+          padding: "12px 16px",
           verticalAlign: "middle",
           maxWidth: "600px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          height: "60px",
+          minHeight: "60px",
         }}
       >
         {practice.title}
@@ -65,9 +70,11 @@ const Practice: React.FC<PracticeProps> = ({
       
         <TableCell
       sx={{
-        padding: "16px",
+        padding: "12px 16px",
         verticalAlign: "middle",
         width: "240px", // Fija el ancho
+        height: "60px",
+        minHeight: "60px",
       }}
     >
       <div

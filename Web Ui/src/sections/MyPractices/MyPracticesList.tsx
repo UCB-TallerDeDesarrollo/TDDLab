@@ -20,9 +20,9 @@ import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
 
 const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
+  width: "100%",
+  marginLeft: "0",
+  marginRight: "0",
 });
 
 interface PracticesProps {
@@ -95,7 +95,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   };
   return (
     <Container>
-      <section className="Practicas">
+      <section className="Practicas" style={{ width: "100%", margin: "0 auto" }}>
         <div
           style={{
             display: "flex",
@@ -105,6 +105,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             paddingTop: "6px",
             borderBottom: "1px solid #D1D5DB",
             paddingBottom: "16px",
+            width: "100%",
           }}
         >
           <h2 style={{ margin: 0, fontWeight: 700, fontSize: "24px" }}>Practicas</h2>
