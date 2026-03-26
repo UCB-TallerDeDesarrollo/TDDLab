@@ -13,6 +13,7 @@ import {
   Button,
   Card,
   CardContent,
+  Divider,
   Table,
   TableBody,
   TableCell,
@@ -729,16 +730,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         </div>
       )}
       {!isStudent(role) && (
-        <Card variant="elevation" elevation={0}>
-          <CardContent>
-            <Typography
-              variant="h6"
-              component="div"
-              align="center"
-              style={{ fontSize: "24px", lineHeight: "3.8" }}
-            >
-              Lista de Estudiantes
-            </Typography>
+        <div style={{ width: "96%", maxWidth: "1260px" }}>
+          <Typography
+            variant="h6"
+            component="div"
+            style={{ fontSize: "42px", fontWeight: 700, marginBottom: "8px" }}
+          >
+            Lista de entregas
+          </Typography>
+          <Divider sx={{ borderBottomWidth: 3, borderColor: "#7F7F7F", mb: 3 }} />
             {loadingSubmissions ? (
               <div
                 style={{
@@ -770,8 +770,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 </TableBody>
               </Table>
             )}
-          </CardContent>
-        </Card>
+        </div>
       )}
     </div>
   );
