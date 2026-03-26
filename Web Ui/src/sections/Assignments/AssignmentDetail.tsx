@@ -374,8 +374,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
         return (
           <TableRow key={generateUniqueId()} sx={{ borderBottom: "1px solid #C9C9C9" }}>
-            <TableCell sx={{ py: 2.2 }}>{studentEmail}</TableCell>
-            <TableCell sx={{ py: 2.2, color: statusColor, borderLeft: "1px solid #C9C9C9" }}>{teacherStatus}</TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.6rem" }}>{studentEmail}</TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.6rem", color: statusColor, borderLeft: "1px solid #C9C9C9" }}>{teacherStatus}</TableCell>
             <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9", textAlign: "center" }}>
               {hasRepositoryLink ? (
                 <a
@@ -390,8 +390,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <RemoveCircleIcon sx={{ color: "#F44336" }} />
               )}
             </TableCell>
-            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>{formattedStartDate}</TableCell>
-            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>{formattedEndDate}</TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.6rem", borderLeft: "1px solid #C9C9C9" }}>{formattedStartDate}</TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.6rem", borderLeft: "1px solid #C9C9C9" }}>{formattedEndDate}</TableCell>
             <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
               <Button
                 variant="contained"
@@ -403,7 +403,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 color="primary"
                 style={{
                   textTransform: "none",
-                  fontSize: "15px",
+                  fontSize: "1.45rem",
                   marginRight: "8px",
                   backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
                   minWidth: "110px",
@@ -426,7 +426,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 color="primary"
                 style={{
                   textTransform: "none",
-                  fontSize: "15px",
+                  fontSize: "1.45rem",
                   marginRight: "8px",
                   backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
                   minWidth: "110px",
@@ -448,7 +448,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   color="primary"
                   style={{
                     textTransform: "none",
-                    fontSize: "15px",
+                    fontSize: "1.45rem",
                     marginRight: "7px",
                     backgroundColor: submission.repository_link === "" || disableAdditionalGraphs ? "#BDBDBD" : undefined,
                     minWidth: "84px",
@@ -497,7 +497,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 variant="h5"
                 component="div"
                 align="center"
-                style={{ fontSize: "52px", fontWeight: 700, lineHeight: 1.1, marginBottom: "20px" }}
+                style={{ fontSize: "46px", fontWeight: 700, lineHeight: 1.1, marginBottom: "20px" }}
               >
                 {assignment.title}
               </Typography>
@@ -509,12 +509,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 }}
               >
                 <GroupsIcon
-                  style={{ marginRight: "10px", color: "#7A7A7A" }}
+                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "30px", lineHeight: 1.45 }}
+                  style={{ fontSize: "26px", lineHeight: 1.45 }}
                 >
                   <strong>Grupo:</strong> {groupDetails?.groupName}
                 </Typography>
@@ -528,12 +528,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   }}
                 >
                   <NotesOutlinedIcon
-                    style={{ marginRight: "10px", color: "#7A7A7A" }}
+                    style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
                   />
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    style={{ fontSize: "30px", lineHeight: 1.45 }}
+                    style={{ fontSize: "26px", lineHeight: 1.45 }}
                   >
                     <strong>Instrucciones:</strong> {assignment.description}
                   </Typography>
@@ -548,12 +548,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 }}
               >
                 <CalendarMonthIcon
-                  style={{ marginRight: "10px", color: "#7A7A7A" }}
+                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "30px", lineHeight: 1.45 }}
+                  style={{ fontSize: "26px", lineHeight: 1.45 }}
                 >
                   <strong>Inicio:</strong>{" "}
                   {formatDate(assignment.start_date.toString())}
@@ -567,12 +567,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 }}
               >
                 <CalendarMonthIcon
-                  style={{ marginRight: "10px", color: "#7A7A7A" }}
+                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "30px", lineHeight: 1.45 }}
+                  style={{ fontSize: "26px", lineHeight: 1.45 }}
                 >
                   <strong>Finalización:</strong>{" "}
                   {formatDate(assignment.end_date.toString())}
@@ -748,7 +748,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           <Typography
             variant="h6"
             component="div"
-            style={{ fontSize: "42px", fontWeight: 700, marginBottom: "8px" }}
+            style={{ fontSize: "38px", fontWeight: 700, marginBottom: "8px" }}
           >
             Lista de entregas
           </Typography>
@@ -768,14 +768,14 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               <Table sx={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
                 <TableHead>
                   <TableRow sx={{ borderBottom: "1px solid #C9C9C9" }}>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "18%" }}>Correo</TableCell>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "11%", borderLeft: "1px solid #C9C9C9" }}>Estado</TableCell>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "10%", borderLeft: "1px solid #C9C9C9" }}>Enlace</TableCell>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Inicio</TableCell>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "14%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Finalización</TableCell>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Grafica</TableCell>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Asistente AI</TableCell>
-                    <TableCell sx={{ fontWeight: 700, fontSize: "1.95rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Graficas Adicionales</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "18%" }}>Correo</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "11%", borderLeft: "1px solid #C9C9C9" }}>Estado</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "10%", borderLeft: "1px solid #C9C9C9" }}>Enlace</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Inicio</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "14%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Finalización</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Grafica</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Asistente AI</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Graficas Adicionales</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
