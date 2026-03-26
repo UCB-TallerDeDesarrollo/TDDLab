@@ -34,10 +34,18 @@ const EditPromptAI = ({
             fullWidth
             InputProps={{
               readOnly: true,
-              style: { background: "#f9f9f9" }
+              /*
+                CAMBIO 1: style={{ background: "#f9f9f9" }} dentro de InputProps
+                → className="prompt-input-readonly" en inputProps (minúscula)
+                Nota: MUI acepta className dentro de inputProps (sin mayúscula)
+                para aplicar clases al elemento <input> o <textarea> interno.
+                Si el estilo no aplica por especificidad de MUI, dejarlo como style
+                es válido — en ese caso este es el único inline style justificado.
+              */
+              inputProps: { className: "prompt-input-readonly" }
             }}
             variant="outlined"
-            minRows={8} 
+            minRows={8}
             maxRows={16}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
@@ -54,7 +62,7 @@ const EditPromptAI = ({
             multiline
             fullWidth
             variant="outlined"
-            minRows={8} 
+            minRows={8}
             maxRows={16}
             autoFocus
           />
