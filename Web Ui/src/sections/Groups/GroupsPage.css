@@ -23,3 +23,20 @@
   padding: 50px;
   margin-left: -30px;
 }
+
+.groups-edit-title {
+  font-size: 0.8rem;
+}
+
+.groups-edit-label {
+  font-size: 0.95rem;
+}
+
+.groups-edit-cancel-btn {
+  color: #555 !important;
+  text-transform: none !important;
+}
+
+.groups-edit-save-btn {
+  text-transform: none !important;
+}
