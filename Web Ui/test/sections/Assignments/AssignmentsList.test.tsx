@@ -178,7 +178,6 @@ describe("AssignmentsList Component", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Tareas")).toBeInTheDocument();
-      expect(screen.getByText("Listado")).toBeInTheDocument();
       expect(screen.getByText("Tarea 1")).toBeInTheDocument();
       expect(screen.getByText("Tarea 2")).toBeInTheDocument();
     });

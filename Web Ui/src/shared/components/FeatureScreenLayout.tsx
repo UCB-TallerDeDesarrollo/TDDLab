@@ -10,8 +10,9 @@ interface FeatureScreenLayoutProps {
 }
 
 const PageContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(7.5),
+  paddingTop: theme.spacing(7.625),
   paddingBottom: theme.spacing(5),
+  backgroundColor: "#FFFFFF",
 }));
 
 const ScreenSection = styled(Box)(({ theme }) => ({

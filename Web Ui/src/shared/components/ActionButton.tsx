@@ -8,10 +8,10 @@ interface ActionButtonProps extends ButtonProps {
 const StyledActionButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== "variantStyle",
 })<ActionButtonProps>(({ theme, variantStyle = "secondary" }) => ({
-  minWidth: 96,
-  height: 36,
+  minWidth: 88,
+  height: 34,
   borderRadius: 5,
-  paddingInline: theme.spacing(1.5),
+  paddingInline: theme.spacing(1.25),
   fontSize: 14,
   fontWeight: 700,
   lineHeight: "17px",
@@ -23,6 +23,13 @@ const StyledActionButton = styled(Button, {
   color: variantStyle === "primary" ? theme.palette.common.white : "#111111",
   backgroundColor:
     variantStyle === "primary" ? theme.palette.primary.main : "#D9D9D9",
+  "& .MuiButton-startIcon": {
+    marginRight: 6,
+    marginLeft: 0,
+    "& > *:nth-of-type(1)": {
+      fontSize: 17,
+    },
+  },
   "&:hover": {
     boxShadow: "none",
     backgroundColor:

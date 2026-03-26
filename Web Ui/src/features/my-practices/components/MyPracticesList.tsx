@@ -1,7 +1,5 @@
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
-import { Table, TableBody } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
 import ActionButton from "../../../shared/components/ActionButton";
 import ConfirmationDialog from "../../../shared/components/ConfirmationDialog";
@@ -18,13 +16,6 @@ import {
   MyPracticesViewState,
   PracticeListItemViewModel,
 } from "../types/myPracticesScreen";
-
-const StyledTable = styled(Table)({
-  width: "100%",
-  tableLayout: "fixed",
-  borderCollapse: "separate",
-  borderSpacing: "0 0",
-});
 
 interface MyPracticesListProps {
   practices: PracticeListItemViewModel[];
@@ -135,7 +126,7 @@ export default function MyPracticesList({
         }
       />
       <FeatureSectionDivider />
-      <FeatureListSection title="Listado">
+      <FeatureListSection>
         {viewState === "empty" ? (
           <ContentState
             variant="empty"
@@ -144,20 +135,16 @@ export default function MyPracticesList({
           />
         ) : (
           <FeatureItemsLayout>
-            <StyledTable>
-              <TableBody>
-                {practices.map((practice) => (
-                  <PracticeRow
-                    key={practice.id}
-                    practice={practice}
-                    canManagePractices={canManagePractices}
-                    onOpenDetail={onOpenDetail}
-                    onDeletePractice={handleClickDelete}
-                    onPracticeUpdated={onPracticeUpdated}
-                  />
-                ))}
-              </TableBody>
-            </StyledTable>
+            {practices.map((practice) => (
+              <PracticeRow
+                key={practice.id}
+                practice={practice}
+                canManagePractices={canManagePractices}
+                onOpenDetail={onOpenDetail}
+                onDeletePractice={handleClickDelete}
+                onPracticeUpdated={onPracticeUpdated}
+              />
+            ))}
           </FeatureItemsLayout>
         )}
       </FeatureListSection>

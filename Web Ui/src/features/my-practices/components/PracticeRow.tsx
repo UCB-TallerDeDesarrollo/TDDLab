@@ -1,11 +1,12 @@
 import { useState } from "react";
+import Box from "@mui/material/Box";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
 import {
   getStatusIcon,
@@ -21,6 +22,56 @@ interface PracticeRowProps {
   onDeletePractice: (practiceId: number) => void;
   onPracticeUpdated: (practice: PracticeDataObject) => Promise<void>;
 }
+
+const RowContainer = styled(Box)(({ theme }) => ({
+  width: "100%",
+  height: 69,
+  border: "0.5px solid #898989",
+  borderRadius: 5,
+  backgroundColor: "#FFFFFF",
+  padding: theme.spacing(1.625, 2.5),
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: theme.spacing(2),
+  boxSizing: "border-box",
+  [theme.breakpoints.down("md")]: {
+    height: "auto",
+    minHeight: 69,
+    alignItems: "flex-start",
+    flexDirection: "column",
+  },
+}));
+
+const RowTitle = styled(Typography)({
+  color: "#000000",
+  fontSize: 20,
+  fontWeight: 400,
+  lineHeight: "24px",
+  fontFamily: '"Inter", sans-serif',
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
+const ActionsContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: theme.spacing(1),
+  flexWrap: "wrap",
+}));
+
+const ActionIcon = styled(IconButton)({
+  width: 40,
+  height: 40,
+  borderRadius: "50%",
+  color: "#002346",
+  backgroundColor: "transparent",
+  "&:hover": {
+    backgroundColor: "rgba(0, 35, 70, 0.08)",
+  },
+});
 
 export default function PracticeRow({
   practice,
@@ -53,56 +104,16 @@ export default function PracticeRow({
   const statusIcon = getStatusIcon(practice.state);
 
   return (
-    <TableRow key={practice.id}>
-      <TableCell
-        sx={{
-          fontSize: "20px",
-          fontWeight: 400,
-          border: "0.5px solid #898989",
-          borderRight: "none",
-          borderRadius: "5px",
-          borderTopRightRadius: 0,
-          borderBottomRightRadius: 0,
-          height: "69px",
-          padding: "10px 16px",
-          verticalAlign: "middle",
-          width: "auto",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {practice.title}
-      </TableCell>
-      <TableCell
-        sx={{
-          border: "0.5px solid #898989",
-          borderLeft: "none",
-          borderRadius: "5px",
-          borderTopLeftRadius: 0,
-          borderBottomLeftRadius: 0,
-          height: "69px",
-          padding: { xs: "10px 8px", sm: "10px 16px" },
-          verticalAlign: "middle",
-          width: { xs: "188px", sm: "230px", md: "280px" },
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
+    <RowContainer key={practice.id}>
+      <RowTitle>{practice.title}</RowTitle>
+      <ActionsContainer>
           <Tooltip title="Ver practica" arrow>
-            <IconButton
+            <ActionIcon
               aria-label="see"
               onClick={() => onOpenDetail(practice.id)}
-              sx={{ color: "#002346" }}
             >
               <VisibilityIcon />
-            </IconButton>
+            </ActionIcon>
           </Tooltip>
           {isEditFormOpen && canManagePractices ? (
             <EditPracticeForm
@@ -120,14 +131,13 @@ export default function PracticeRow({
             arrow
           >
             <span>
-              <IconButton
+              <ActionIcon
                 aria-label="edit"
                 onClick={handleEditClick}
                 disabled={!canManagePractices}
-                sx={{ color: "#002346" }}
               >
                 <EditIcon />
-              </IconButton>
+              </ActionIcon>
             </span>
           </Tooltip>
           <Tooltip
@@ -139,24 +149,22 @@ export default function PracticeRow({
             arrow
           >
             <span>
-              <IconButton
+              <ActionIcon
                 aria-label="delete"
                 onClick={() => onDeletePractice(practice.id)}
                 disabled={!canManagePractices}
-                sx={{ color: "#002346" }}
               >
                 <DeleteIcon />
-              </IconButton>
+              </ActionIcon>
             </span>
           </Tooltip>
 
           <Tooltip title={getStatusTooltipPractice(practice.state)} arrow>
-            <IconButton aria-label="status" sx={{ color: "#002346" }}>
+            <ActionIcon aria-label="status">
               {statusIcon}
-            </IconButton>
+            </ActionIcon>
           </Tooltip>
-        </div>
-      </TableCell>
-    </TableRow>
+      </ActionsContainer>
+    </RowContainer>
   );
 }

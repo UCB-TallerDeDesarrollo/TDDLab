@@ -6,11 +6,11 @@ interface FeatureItemsLayoutProps {
   children: ReactNode;
 }
 
-const ListContainer = styled(Box)(({ theme }) => ({
+const ListContainer = styled(Box)({
   width: "100%",
   display: "grid",
-  gap: theme.spacing(1.5),
-}));
+  gap: 0,
+});
 
 function FeatureItemsLayout({
   children,

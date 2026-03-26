@@ -97,7 +97,7 @@ function AssignmentsList({
       />
       <FeatureSectionDivider />
 
-      <FeatureListSection title="Listado">
+      <FeatureListSection>
         {error ? (
           <ContentState
             variant="error"

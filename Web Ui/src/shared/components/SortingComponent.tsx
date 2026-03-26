@@ -17,22 +17,29 @@ const SortingComponent: React.FC<SortingProps> = ({
       onChange={onChangeHandler}
       inputProps={{ "aria-label": "Ordenar" }}
       displayEmpty
+      renderValue={() => (prototypeStyle ? "Filtrar" : selectedSorting || "Ordenar")}
       sx={
         prototypeStyle
           ? {
               height: "34px",
-              minWidth: "110px",
+              width: "89px",
               fontSize: "14px",
               borderRadius: "5px",
               backgroundColor: "#D9D9D9",
               ".MuiSelect-select": {
                 fontWeight: 700,
                 color: "#000000",
+                paddingLeft: "14px",
+                paddingRight: "24px !important",
                 paddingTop: "8px",
                 paddingBottom: "8px",
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "0.5px solid #2F2F2F",
+              },
+              ".MuiSelect-icon": {
+                color: "#000000",
+                right: 8,
               },
             }
           : {

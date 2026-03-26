@@ -228,11 +228,19 @@ export default function MainMenu({
                           ? {
                               content: '""',
                               position: "absolute",
-                              left: 26,
-                              right: 26,
-                              bottom: 8,
+                              left: "50%",
+                              transform: "translateX(-50%)",
+                              bottom: 6,
+                              width:
+                                item.title === "Mis Practicas"
+                                  ? 145
+                                  : item.title === "Usuarios"
+                                    ? 100
+                                    : item.title === "Grupos"
+                                      ? 81
+                                      : 66,
                               height: 3,
-                              borderRadius: 999,
+                              borderRadius: 8,
                               backgroundColor: "#D9D9D9",
                             }
                           : {},

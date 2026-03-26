@@ -4,13 +4,13 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 
 interface FeatureListSectionProps {
-  title: string;
+  title?: string;
   children: ReactNode;
 }
 
 const SectionContainer = styled(Box)(({ theme }) => ({
   display: "grid",
-  gap: theme.spacing(2.5),
+  gap: theme.spacing(1.75),
 }));
 
 const SectionTitle = styled(Typography)({
@@ -26,7 +26,7 @@ function FeatureListSection({
 }: Readonly<FeatureListSectionProps>) {
   return (
     <SectionContainer>
-      <SectionTitle>{title}</SectionTitle>
+      {title ? <SectionTitle>{title}</SectionTitle> : null}
       {children}
     </SectionContainer>
   );

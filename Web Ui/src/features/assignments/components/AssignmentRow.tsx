@@ -20,16 +20,19 @@ interface AssignmentRowProps {
 
 const RowContainer = styled(Box)(({ theme }) => ({
   width: "100%",
-  minHeight: 69,
+  height: 69,
   border: "0.5px solid #898989",
   borderRadius: 5,
   backgroundColor: "#FFFFFF",
-  padding: theme.spacing(1.5, 2.5),
+  padding: theme.spacing(1.625, 2.5),
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   gap: theme.spacing(2),
+  boxSizing: "border-box",
   [theme.breakpoints.down("md")]: {
+    height: "auto",
+    minHeight: 69,
     alignItems: "flex-start",
     flexDirection: "column",
   },
@@ -40,6 +43,7 @@ const RowTitle = styled(Typography)({
   fontSize: 20,
   fontWeight: 400,
   lineHeight: "24px",
+  fontFamily: '"Inter", sans-serif',
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
@@ -58,7 +62,10 @@ const ActionIcon = styled(IconButton)({
   height: 40,
   borderRadius: "50%",
   color: "#002346",
-  backgroundColor: "rgba(71, 133, 196, 0.08)",
+  backgroundColor: "transparent",
+  "&:hover": {
+    backgroundColor: "rgba(0, 35, 70, 0.08)",
+  },
 });
 
 function AssignmentRow({

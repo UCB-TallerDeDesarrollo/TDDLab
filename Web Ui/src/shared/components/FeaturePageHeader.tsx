@@ -10,17 +10,20 @@ interface FeaturePageHeaderProps {
 
 const HeaderContainer = styled(Box)(({ theme }) => ({
   width: "100%",
-  minHeight: 69,
+  height: 69,
   border: "1.5px solid #898989",
   borderRadius: 5,
-  padding: theme.spacing(2, 2.25),
+  paddingInline: theme.spacing(12.75, 2.25),
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   gap: theme.spacing(2),
   [theme.breakpoints.down("md")]: {
-    alignItems: "stretch",
+    height: "auto",
+    minHeight: 69,
+    padding: theme.spacing(2),
     flexDirection: "column",
+    alignItems: "stretch",
   },
 }));
 
@@ -29,6 +32,7 @@ const HeaderTitle = styled(Typography)({
   fontSize: 24,
   fontWeight: 700,
   lineHeight: "29px",
+  fontFamily: '"Inter", sans-serif',
 });
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
@@ -36,7 +40,12 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   gap: theme.spacing(1.25),
-  flexWrap: "wrap",
+  flexWrap: "nowrap",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+  },
 }));
 
 function FeaturePageHeader({
