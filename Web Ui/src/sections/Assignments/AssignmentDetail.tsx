@@ -1,12 +1,13 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Alert, Button, CircularProgress, Snackbar, Typography } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
 import { TaskOverviewCard } from "./components/detail/TaskOverviewCard";
 import { StudentSubmissionSummary } from "./components/detail/StudentSubmissionSummary";
 import { DeliveriesTable } from "./components/detail/DeliveriesTable";
 import { useAssignmentDetailData } from "./hooks/useAssignmentDetailData";
+import FeedbackSnackbar from "../../shared/components/FeedbackSnackbar";
 import { formatDate } from "../../utils/dateUtils";
 import "./AssignmentDetail.css";
 
@@ -167,16 +168,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
         onClose={closeCommentDialog}
       />
 
-      <Snackbar
+      <FeedbackSnackbar
         open={Boolean(uiMessage)}
-        autoHideDuration={4000}
+        message={uiMessage ?? ""}
         onClose={closeUiMessage}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert onClose={closeUiMessage} severity="warning" variant="filled">
-          {uiMessage}
-        </Alert>
-      </Snackbar>
+        severity="warning"
+      />
     </div>
   );
 };

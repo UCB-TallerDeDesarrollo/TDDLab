@@ -19,7 +19,7 @@ import {
 import SubmissionRepository from "../../../modules/Submissions/Repository/SubmissionRepository";
 import UsersRepository from "../../../modules/Users/repository/UsersRepository";
 import { formatDate } from "../../../utils/dateUtils";
-import { handleRedirectStudent } from "../../Shared/handlers";
+import { handleRedirectStudent, setSelectedMetric } from "../../Shared/handlers";
 import { SubmissionRowView, ViewState } from "../components/detail/assignmentDetailTypes";
 
 function isStudent(role: string) {
@@ -333,7 +333,7 @@ export function useAssignmentDetailData({
       return;
     }
 
-    localStorage.setItem("selectedMetric", "Dashboard");
+    setSelectedMetric("Dashboard");
     handleRedirectStudent(
       studentSubmission.repository_link,
       studentSubmission.id,
@@ -347,7 +347,7 @@ export function useAssignmentDetailData({
       return;
     }
 
-    localStorage.setItem("selectedMetric", "AssistantAI");
+    setSelectedMetric("AssistantAI");
     navigate("/asistente-ia", {
       state: { repositoryLink: studentSubmission.repository_link },
     });
@@ -373,7 +373,7 @@ export function useAssignmentDetailData({
     }
 
     const [, user, repo] = match;
-    localStorage.setItem("selectedMetric", selectedMetric);
+    setSelectedMetric(selectedMetric);
 
     navigate({
       pathname: path,

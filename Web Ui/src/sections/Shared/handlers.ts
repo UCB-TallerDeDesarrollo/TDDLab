@@ -21,7 +21,7 @@ export const createLinkDialogHandlers = (
 
 export const handleRedirectStudent = (
   link: string,
-  id : number,
+  id: number,
   navigate: NavigateFunction,
   onError?: (message: string) => void
 ) => {
@@ -45,4 +45,9 @@ export const handleRedirectStudent = (
   } else {
     onError?.("No se encontro un link para esta tarea.");
   }
+};
+
+export const setSelectedMetric = (metric: string) => {
+  localStorage.setItem("selectedMetric", metric);
+  window.dispatchEvent(new Event("storage"));
 };

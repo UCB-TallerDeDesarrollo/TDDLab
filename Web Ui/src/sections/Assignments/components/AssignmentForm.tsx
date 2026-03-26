@@ -22,6 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { dispatchAssignmentUpdatedEvent } from "../../../features/assignments/services/assignmentEvents";
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
@@ -81,14 +82,12 @@ interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
   groupid: number;
-  onCreated: () => void;
 }
 
-function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignmentPopupProps>) {
+function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
-  const [createdSuccessfully, setCreatedSuccessfully] = useState(false);
   const [auth] = useGlobalState("authData");
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
@@ -135,10 +134,8 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
     
       await createAssignments.createAssignment(assignmentData);
       setValidationMessage("Tarea creada exitosamente");
-      setCreatedSuccessfully(true);
       setValidationDialogOpen(true);
     } catch (error) {
-      setCreatedSuccessfully(false);
       if (error instanceof Error) {
         // Verifica si el mensaje del backend menciona el límite de caracteres
         if (error.message.includes("Limite de caracteres excedido")) {
@@ -192,10 +189,7 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
   };
 
   useEffect(() => {
-  const effectiveGroupId = groupid || auth?.usergroupid || 0;
-
   setSave(false);
-  setCreatedSuccessfully(false);
   setAssignmentData({
     id: 0,
     title: "",
@@ -205,7 +199,7 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
     state: "pending",
     link: "",
     comment: "",
-    groupid: effectiveGroupId,
+    groupid: groupid > 0 ? groupid : 0,
   });
 }, [open, groupid]);
 
@@ -223,7 +217,7 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
       } else if (auth?.userRole === "admin") {
         list = await getGroups.getGroups();
       } else if (auth?.userRole === "student") {
-          const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
+        const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
         list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
       } else {
         list = [];
@@ -330,10 +324,12 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
           title={validationMessage}
           closeText="Cerrar"
           onClose={() => {
-            setValidationDialogOpen(false);
-            if (createdSuccessfully) {
+            if (!validationMessage.includes("Error")) {
+              setValidationDialogOpen(false);
               handleClose();
-              onCreated();
+              dispatchAssignmentUpdatedEvent();
+            } else {
+              setValidationDialogOpen(false);
             }
           }}
         />

@@ -8,7 +8,7 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
   Select, MenuItem, InputLabel, FormControl, CircularProgress,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment, Snackbar, Alert
+  SelectChangeEvent, Tooltip, TextField, InputAdornment
 } from "@mui/material";
 
 import { styled } from "@mui/system";
@@ -54,15 +54,6 @@ function UserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [filteredUsers, setFilteredUsers] = useState<UserDataObject[]>([]);
-  const [feedback, setFeedback] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({
-    open: false,
-    message: "",
-    severity: "success",
-  });
 
   // --- INSTANCIAS ---
   const userRepository = useMemo(() => new UsersRepository(), []);
@@ -126,19 +117,11 @@ function UserPage() {
       try {
         const removeUserInstance = new RemoveUserFromGroup(userRepository);
         await removeUserInstance.removeUserFromGroup(userId);
-        setFilteredUsers((prev) => prev.filter((user) => user.id !== userId));
-        setFeedback({
-          open: true,
-          message: "Estudiante eliminado con exito del grupo.",
-          severity: "success",
-        });
+        alert("Estudiante eliminado con éxito del grupo.");
+        window.location.reload();
       } catch (error) {
         console.error(error);
-        setFeedback({
-          open: true,
-          message: "Hubo un error al eliminar al estudiante del grupo.",
-          severity: "error",
-        });
+        alert("Hubo un error al eliminar al estudiante del grupo.");
       }
     }
   };
@@ -239,20 +222,6 @@ function UserPage() {
           </StyledTable>
         </section>
       </CenteredContainer>
-      <Snackbar
-        open={feedback.open}
-        autoHideDuration={3500}
-        onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          variant="filled"
-          severity={feedback.severity}
-          onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
-        >
-          {feedback.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }
