@@ -1,0 +1,23 @@
+.edit-prompt-container {
+  margin-top: 32px;
+  margin-bottom: 64px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),
+              0px 1px 1px 0px rgba(0,0,0,0.14),
+              0px 1px 3px 0px rgba(0,0,0,0.12);
+}
+
+.edit-prompt-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.edit-prompt-actions--editing {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}

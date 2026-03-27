@@ -1,0 +1,46 @@
+.settings-page-header {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.settings-page-loading {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.settings-page-error-box {
+  padding: 16px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  margin-bottom: 32px;
+}
+
+.settings-page-saving-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1300;
+}
+
+.settings-features-header {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.settings-flag-item {
+  margin-bottom: 10px;
+}
+
+.settings-error-text {
+  color: red;
+}
