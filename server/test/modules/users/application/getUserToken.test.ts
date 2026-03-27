@@ -10,6 +10,8 @@ describe("getUserToken", () => {
     email: "test@gmail.com",
     role: "admin",
     groupid: [10],
+    firstName: "Test",
+    lastName:"User"
   };
 
   beforeEach(() => {
