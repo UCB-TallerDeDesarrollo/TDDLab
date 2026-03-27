@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { AIAssistantAnswerObject } from '../domain/AIAssistant';
+import { mapToAIAssistantAnswer } from '../utils/mapToAIAssistantAnswer'; 
 
 dotenv.config();
 const MODEL = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
@@ -8,21 +9,10 @@ export class AIAssistantRepository {
     private readonly apiKey = process.env.TOGETHER_API_KEY;
     private readonly apiUrl = process.env.LLM_API_URL || '';
 
-    private mapToAIAssistantAnswer(data: any): AIAssistantAnswerObject {
-        if (!data) {
-            return { result: 'No se recibio ninguna respuesta del modelo.' };
-        }
-
-        if (data.error) {
-            return { result: `Error del modelo: ${data.error}` };
-        }
-
-        return { result: data };
-    }
+    // 🧩 Eliminada la función duplicada, ahora usamos la importada
 
     public buildPromptByTestExecuted(tddlog: any, promptInstructions: string): string {
         const tddlogString = JSON.stringify(tddlog, null, 2);
-
         return `
                   ${promptInstructions}
                   ${tddlogString}`;
@@ -74,11 +64,11 @@ export class AIAssistantRepository {
     public async sendTDDExtensionPrompt(tddlog: any, promptInstructions: string): Promise<AIAssistantAnswerObject> {
         const prompt = this.buildPromptByTestExecuted(tddlog, promptInstructions);
         const raw = await this.sendRequestToAIAssistant(prompt, '');
-        return this.mapToAIAssistantAnswer(raw);
+        return mapToAIAssistantAnswer(raw); // ✅ Uso de la utilidad
     }
 
     public async sendChat(chatHistory: string, input: string): Promise<AIAssistantAnswerObject> {
         const raw = await this.sendRequestToAIAssistant(chatHistory, input);
-        return this.mapToAIAssistantAnswer(raw);
+        return mapToAIAssistantAnswer(raw); // ✅ Uso de la utilidad
     }
 }
