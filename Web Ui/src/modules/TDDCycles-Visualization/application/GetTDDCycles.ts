@@ -1,19 +1,11 @@
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { CommitCycle } from "../domain/TddCycleInterface";
-import { TDDLogEntry } from "../domain/TDDLogInterfaces";
 
 export class PortGetTDDCycles {
   adapter: CommitHistoryRepository;
   constructor(commitHistoryRepository: CommitHistoryRepository) {
     this.adapter = commitHistoryRepository;
-  }
-
-  async obtainTDDLogs(
-    owner: string,
-    repoName: string,
-  ): Promise<TDDLogEntry[]>{
-    return await this.adapter.obtainTDDLogs(owner, repoName);
   }
 
   async obtainCommitsOfRepo(
@@ -22,8 +14,6 @@ export class PortGetTDDCycles {
   ): Promise<CommitDataObject[]> {
     return await this.adapter.obtainCommitsOfRepo(owner, repoName);
   }
-
-
 
   async obtainCommitTddCycle(
     owner: string,
