@@ -17,11 +17,37 @@ import cookieParser from "cookie-parser";
 const app = express();
 const port = 3000;
 
-const allowedOrigins = [
+const parseEnvOrigins = (value?: string): string[] => {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+};
+
+const allowedOrigins = new Set([
+  ...parseEnvOrigins(process.env.FRONTEND_ORIGINS),
   process.env.VITE_FRONT_URL,
   "http://localhost:5173",
   "https://tddlab-staging-firebase.web.app",
-].filter((origin): origin is string => Boolean(origin));
+  "https://tddlab-firebase.web.app",
+].filter((origin): origin is string => Boolean(origin)));
+
+const trustedFirebaseProjectOrigins = [
+  /^https:\/\/tddlab(?:-staging)?-firebase\.web\.app$/,
+  /^https:\/\/tddlab(?:-staging)?-firebase\.firebaseapp\.com$/,
+];
+
+const isAllowedOrigin = (origin: string) => {
+  if (allowedOrigins.has(origin)) {
+    return true;
+  }
+
+  return trustedFirebaseProjectOrigins.some((pattern) => pattern.test(origin));
+};
 
 app.use(
   cors({
@@ -30,7 +56,7 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
 
@@ -42,19 +68,12 @@ app.use(
 
 app.use(express.json());
 
-// Enable CORS for all routes
-//app.use(cors({
-//  origin: "https://tddlab-staging-firebase.web.app/", //process.env.VITE_FRONT_URL, 
-//  credentials: true,
-//}));
-//app.use(express.json()); 
-
 app.use(bodyParser.json());
 
 app.use(cookieParser());
 
 // Define routes
-app.use("/api/user", router,);
+app.use("/api/user", router);
 app.use("/api/assignments", assignmentsRouter);
 app.use("/api/TDDCycles", TDDCyclesRouter);
 app.use("/api/groups", groupsRouter);
@@ -64,11 +83,8 @@ app.use("/api/practices", practicesRouter);
 app.use("/api/practiceSubmissions", practiceSubmissionsRouter);
 app.use("/api/AIAssistant", aiAssistantRouter);
 
-
 app.use("/api/featureFlags", featureFlagsRouter);
 
 // Start the server
 server(app, port);
 export default app;
-
-
