@@ -78,6 +78,38 @@ export class UsersRepository implements UsersRepositoryInterface {
     }
   }
 
+  
+  async updateUserById(id: number, updatedData: Partial<UserDataObject>): Promise<void> {
+    try {
+      await axios.put(`${API_URL}/changeNames/${id}`, updatedData, {  
+        withCredentials: true 
+      });
+    } catch (error) {
+      console.error("Error updating user by ID:", error);
+      throw error;
+    }
+  }
+
+  async updateUserRoleById(id: number, updatedData: Partial<UserDataObject>): Promise<void> {
+    try {
+      await axios.put(`${API_URL}/change-role/${id}`, updatedData, {  
+        withCredentials: true 
+      });
+    } catch (error) {
+      console.error("Error updating user by ID:", error);
+      throw error;
+    }
+  }
+  async getCurrentUser(): Promise<UserDataObject> {
+     const response = await fetch(`${VITE_API}/user/me`,{
+      method: "GET",
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Error fetching current user: ${response.status}");
+    }
+    return await response.json();
+  }
   async getFilteredUsersByEmail(params: SearchParams): Promise<UserDataObject[]> {
   const { query, groupId } = params;
   const users = await this.getUsers();

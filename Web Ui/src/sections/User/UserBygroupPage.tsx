@@ -59,12 +59,16 @@ function UsersByGroupPage() {
         <StyledTable>
           <TableHead>
             <TableRow>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Apellido</TableCell>
               <TableCell>Email</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id}>
+                <TableCell>{user.firstName}</TableCell>
+                <TableCell>{user.lastName}</TableCell>
                 <TableCell>{user.email}</TableCell>
               </TableRow>
             ))}
