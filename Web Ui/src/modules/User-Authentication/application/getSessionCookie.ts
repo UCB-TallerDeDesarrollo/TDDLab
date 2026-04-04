@@ -7,6 +7,7 @@ export const getSessionCookie = () => {
   return axios
     .get(API_URL + "/user/me", {
       withCredentials: true,
+      timeout: 2000,
     })
     .then((res) => {
       const userData = res.data;

@@ -1,21 +1,32 @@
-import { Button } from "@mui/material";
-import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import {
-  setGlobalState,
-  useGlobalState,
-} from "../../../modules/User-Authentication/domain/authStates";
-import React from "react";
-import "../styles/loginComponentStyles.css";
+  Avatar,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
-import { useNavigate } from "react-router-dom";
+import {
+  setGlobalState,
+  useGlobalState,
+} from "../../../modules/User-Authentication/domain/authStates";
 
+interface LoginComponentProps {
+  compact?: boolean;
+}
 
-export default function LoginComponent() {
+export default function LoginComponent({
+  compact = false,
+}: Readonly<LoginComponentProps>) {
   const authData = useGlobalState("authData");
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleLogin = async () => {
     const userData = await handleSignInWithGitHub();
@@ -26,7 +37,9 @@ export default function LoginComponent() {
       setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };
+
   const handleLogout = async () => {
+    setAnchorEl(null);
     await handleGithubSignOut();
     setGlobalState("authData", {
       userid: -1,
@@ -42,29 +55,69 @@ export default function LoginComponent() {
 
   return (
     <React.Fragment>
-      {!authData[0].userEmail && (
+      {!authData[0].userEmail ? (
         <Button
           onClick={handleLogin}
           variant="contained"
-          sx={{ marginLeft: "18px" }}
+          sx={{
+            marginLeft: compact ? 0 : "18px",
+            textTransform: "none",
+            borderRadius: 999,
+            bgcolor: "#1370D2",
+            boxShadow: "none",
+            px: compact ? 2 : 2.5,
+            minWidth: compact ? "auto" : undefined,
+          }}
         >
-          Iniciar sesión
+          Iniciar sesi{"\u00f3"}n
         </Button>
-      )}
-      {authData[0].userEmail && (
+      ) : compact ? (
         <React.Fragment>
-          <Button
-            onClick={handleLogout}
-            variant="contained"
-            sx={{ marginLeft: "18px" }}
+          <IconButton
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+            sx={{ ml: 1 }}
           >
-            Cerrar Sesion
-          </Button>
-          <img
-            src={authData[0].userProfilePic}
-            alt="Profile Picture"
-            className="profilePicture"
-          />
+            <Avatar
+              src={authData[0].userProfilePic}
+              alt="Profile Picture"
+              sx={{
+                width: 38,
+                height: 38,
+                border: "2px solid rgba(255,255,255,0.24)",
+              }}
+            />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem onClick={handleLogout}>Salir</MenuItem>
+          </Menu>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <IconButton
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+            sx={{ ml: 1 }}
+          >
+            <Avatar
+              src={authData[0].userProfilePic}
+              alt="Profile Picture"
+              sx={{
+                width: 50,
+                height: 50,
+                border: "2px solid rgba(255,255,255,0.24)",
+              }}
+            />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem onClick={handleLogout}>Salir</MenuItem>
+          </Menu>
         </React.Fragment>
       )}
     </React.Fragment>
