@@ -141,16 +141,6 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the list of submissions for teacher role", async () => {
-    jest.mock('react-router-dom', () => ({
-      ...jest.requireActual('react-router-dom'),
-      useSearchParams: () => [
-        new URLSearchParams({
-          repoOwner: 'danTerra45',
-          repoName: 'parcel-jest-cars'
-        })
-      ]
-    }));
-  
     render(
       <BrowserRouter>
         <AssignmentDetail role="teacher" userid={123} />
@@ -159,12 +149,14 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
-        expect(screen.getByText("Enviado")).toBeInTheDocument();
-        expect(screen.getByText("En progreso")).toBeInTheDocument();
-        
-        expect(screen.getByText("https://github.com/student/repo1")).toBeInTheDocument();
-        expect(screen.getByText("https://github.com/student/repo2")).toBeInTheDocument();
+        expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
+        expect(screen.getByText("Correo")).toBeInTheDocument();
+        expect(screen.getByText("Estado")).toBeInTheDocument();
+
+        expect(screen.getAllByText("Enviado")).toHaveLength(2);
+        expect(screen.getAllByRole("link")).toHaveLength(2);
+        expect(screen.getAllByRole("button", { name: "Ver grafica" })).toHaveLength(2);
+        expect(screen.getAllByRole("button", { name: "Asistente" })).toHaveLength(2);
       },
       { timeout: 3000 }
     );
