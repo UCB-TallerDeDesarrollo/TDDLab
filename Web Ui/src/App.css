@@ -3,3 +3,23 @@
 body {
   margin: 0;
 }
+
+/* ===== Utilidades Globales ===== */
+
+/* Contenedor de pantalla completa centrado */
+.fullscreen-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Loader de pantalla completa */
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}

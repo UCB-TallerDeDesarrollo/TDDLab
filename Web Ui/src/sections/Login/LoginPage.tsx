@@ -6,7 +6,6 @@ import { handleSignInWithGoogle } from "../../modules/User-Authentication/applic
 import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { useEffect } from "react";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
-import { typographyVariants } from "../../styles/typography";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -89,21 +88,19 @@ const Login = () => {
         <h1>TDDLab</h1>
       </header>
       <div className="login-content">
-        <p className="login-Title" style={{ ...typographyVariants.h4 }}>
+        <p className="login-Title">
           ¡Bienvenido a TDDLab!, usa tu cuenta para acceder:
         </p>
         <div className="login-buttons">
           <button
             className="github-button"
             onClick={handleGitHubLogin}
-            style={{ ...typographyVariants.paragraphMedium }}
           >
             Accede con GitHub
           </button>
           <button
             className="google-button"
             onClick={handleGoogleLogin}
-            style={{ ...typographyVariants.paragraphMedium }}
           >
             Accede con Google
           </button>

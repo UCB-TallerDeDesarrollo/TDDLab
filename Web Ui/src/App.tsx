@@ -21,9 +21,7 @@ import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
-import {
-  CircularProgress,
-} from "@mui/material";
+import { FullScreenLoader } from "./components/FullScreenLoader";
 
 const navArrayLinks = [
   {
@@ -83,19 +81,7 @@ useEffect(() => {
   });
 }, []);
   if (authData.userid === undefined) {
-     return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <CircularProgress />
-    </div>
-  );
+    return <FullScreenLoader isLoading={true} />;
   }
   return (
     <Router>

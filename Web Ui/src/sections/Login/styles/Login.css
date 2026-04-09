@@ -24,6 +24,15 @@
   text-align: center;
 }
 
+/* Título principal de login */
+.login-Title {
+  color: black;
+  font-family: "Afacad", "Segoe UI", sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+}
+
 /* Estilos para el contenedor de botones */
 .login-buttons {
   display: flex;
@@ -42,10 +51,11 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-top: 20px;
+  font-family: "Afacad", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
 }
-.login-Title {
-  color: black;
-}
+
 .github-button:hover {
   background-color: #555;
   color: white;
@@ -60,6 +70,9 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-family: "Afacad", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .google-button:hover {
