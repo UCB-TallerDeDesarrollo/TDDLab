@@ -85,7 +85,6 @@ class TDDCyclesController {
     }
   }
 
-
   isValidGithubSegment(value: unknown): value is string {
     return (
       typeof value === "string" &&
@@ -112,19 +111,18 @@ class TDDCyclesController {
         return res.status(400).json({
           error: "Bad request, invalid owner or repoName"
         });
-     }
+      }
 
-    const owner = ownerRaw;
-    const repoName = repoNameRaw;
+      const owner = ownerRaw; 
+      const repoName = repoNameRaw;
 
-    // NOSONAR - Values are validated above with isValidGithubSegment regex validation (only allows alphanumeric, dots, hyphens, underscores)
-    const commits = await this.getCommitHistoryUseCase.execute(owner, repoName);
-    return res.status(200).json(commits);
-  } catch (error) {
-    console.error("Error fetching commit history:", error);
-    return res.status(500).json({ error: "Server error" });
-  }   
-}
+      const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName));
+      return res.status(200).json(commits);
+    } catch (error) {
+      console.error("Error fetching commit history:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
 
   // SÍ SE USA
   // New: commit cycles endpoint using the same raw file
@@ -134,6 +132,11 @@ class TDDCyclesController {
       if (!owner || !repoName) {
         return res.status(400).json({ error: "Bad request, missing owner or repoName" });
       }
+
+      if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+        return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+      }
+
 
       const commits = await this.getCommitCyclesUseCase.execute(String(owner), String(repoName));
       return res.status(200).json(commits);
