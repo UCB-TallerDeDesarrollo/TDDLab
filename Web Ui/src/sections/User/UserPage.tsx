@@ -208,9 +208,9 @@ function UserPage() {
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <div onClick={() => handleRemoveUserFromGroup(user.id)} style={{ cursor: 'pointer' }}>
+                        <button onClick={() => handleRemoveUserFromGroup(user.id)} style={{ cursor: 'pointer' }}>
                           <IconifyIcon icon="mdi:minus-circle" color="#d81b1b" width={24} height={24} hoverColor="#b71c1c" />
-                        </div>
+                        </button>
                       </Tooltip>
                     </TableCell>
                   </TableRow>
