@@ -1,11 +1,14 @@
+/*Estilos del StatusHelpers*/
 .status-icon-pending {
   font-size: 26px;
 }
 
 .status-icon-progress {
+  font-size: 27.4px;
   stroke-width: 2.7px;
 }
 
 .status-icon-delivered {
+  font-size: 24.4px;
   stroke-width: 9.5px;
 }

@@ -8,9 +8,9 @@ export const getStatusIcon = (status: string) => {
       case "pending":
         return <PriorityHighIcon className="status-icon-pending" />;
       case "in progress":
-        return <TbRotateClockwise2 size={27.4} className="status-icon-progress" />;
+        return <TbRotateClockwise2 className="status-icon-progress" />;
       case "delivered":
-        return <FaCheck size={24.4} className="status-icon-delivered" />;
+        return <FaCheck className="status-icon-delivered" />;
       default:
         return null;
     }
