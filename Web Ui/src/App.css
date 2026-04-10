@@ -126,23 +126,26 @@
   justify-content: flex-end !important;
 }
 
-/* Título de diálogo con ícono de estado (success/error) */
-.dialog-title-success {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #2e7d32;
-  font-size: 1rem;
-  font-weight: 400;
-}
 
+.dialog-title-success,
 .dialog-title-error {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+
+  padding: 16px 24px 8px 24px !important;
+}
+
+/* Colores específicos */
+.dialog-title-success {
+  color: #2e7d32;
+}
+
+.dialog-title-error {
   color: #d32f2f;
-  font-size: 1rem;
-  font-weight: 400;
 }
 
 /* Texto de error grande dentro de un diálogo (EditAssignmentForm) */

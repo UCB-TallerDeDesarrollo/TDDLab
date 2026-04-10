@@ -31,23 +31,33 @@ interface ValidationDialogProps {
   onClose: () => void;
 }
 
-const ValidationDialog = ({ open, title, closeText, onClose }: ValidationDialogProps) => {
-  const isError = title.toLowerCase().includes('error');
+const ValidationDialog = ({
+  open,
+  title,
+  closeText,
+  onClose,
+}: ValidationDialogProps) => {
+  const isError = title.toLowerCase().includes("error");
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle className={isError ? "dialog-title-error" : "dialog-title-success"}>
-        {isError
-          ? <Warning sx={{ fontSize: 22 }} />
-          : <CheckCircle sx={{ fontSize: 22 }} />
-        }
+        <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      className="dialog-success-compact"
+    >
+      <DialogTitle
+        className={`${isError ? "dialog-title-error" : "dialog-title-success"} dialog-title-centered`}
+      >
+        {isError ? <Warning sx={{ fontSize: 20 }} /> : <CheckCircle sx={{ fontSize: 20 }} />}
         {title}
       </DialogTitle>
-      <DialogActions sx={{ pb: 2, pr: 2 }}>
+
+      <DialogActions className="dialog-footer dialog-footer-centered">
         <Button
           onClick={onClose}
-          className="btn-std"
-          style={{ color: isError ? '#d32f2f' : '#2e7d32' }}
+          className="btn-std btn-primary"
         >
           {closeText}
         </Button>
@@ -55,7 +65,6 @@ const ValidationDialog = ({ open, title, closeText, onClose }: ValidationDialogP
     </Dialog>
   );
 };
-
 // ─── Form principal ───────────────────────────────────────────────────────────
 interface CreateAssignmentPopupProps {
   open: boolean;

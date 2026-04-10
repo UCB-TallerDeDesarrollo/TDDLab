@@ -27,11 +27,11 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onDelete,
 }) => {
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
       <DialogTitle className="shared-dialog-title">
         {title}
       </DialogTitle>
-      
+
       <DialogContent className="shared-dialog-content">
         <div className="shared-dialog-text">
           {content}

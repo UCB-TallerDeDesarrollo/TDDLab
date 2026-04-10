@@ -41,3 +41,17 @@
   padding: 16px 24px 20px 24px !important;
   justify-content: flex-end !important;
 }
+.dialog-title-centered {
+  justify-content: center;
+  text-align: center;
+}
+
+.dialog-footer-centered {
+  justify-content: center !important;
+  padding-top: 8px !important;
+}
+
+.dialog-success-compact .MuiDialog-paper {
+  min-width: 320px;
+  max-width: 420px;
+}
