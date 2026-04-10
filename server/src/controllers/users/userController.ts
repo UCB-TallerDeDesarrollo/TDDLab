@@ -18,8 +18,12 @@ dotenv.config();
 
 admin.initializeApp({
   projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  credential: admin.credential.applicationDefault(),});
+});
 
+const getErrorDebugCode = (error: unknown): string => {
+  const err = error as { code?: string; message?: string };
+  return err?.code || "UNKNOWN_AUTH_ERROR";
+};
 class UserController {
   private readonly userRepository: UserRepository;
 
@@ -76,7 +80,8 @@ class UserController {
       } else if (error.message === "Token inválido o expirado" || 
                  error.message === "Token expirado" || 
                  error.message === "Token inválido") {
-        res.status(401).json({ error: error.message });
+        const debugCode = getErrorDebugCode(error);
+        res.status(401).json({ error: error.message, debugCode });
       } else if (error.message === "No se pudo obtener email de Firebase") {
         res.status(400).json({ error: error.message });
       } else {
@@ -150,7 +155,6 @@ class UserController {
 
   async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
-    console.log("Received Google login request with token:", idToken);
     if (!idToken) {
       res.status(400).json({ error: "Debes proporcionar un token válido" });
       return;
