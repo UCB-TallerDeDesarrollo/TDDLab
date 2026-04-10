@@ -1,8 +1,10 @@
 import React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import "../Styles/sharedStyles.css";
 import "../../../App.css";
 
 interface ValidationDialogProps {
@@ -19,12 +21,19 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
   onClose,
 }) => {
   return (
-    <Dialog open={open}>
-      <DialogTitle className="dialog-title-std">{title}</DialogTitle>
-      <DialogActions className="dialog-footer">
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle className="shared-dialog-title">
+        Confirmación
+      </DialogTitle>
+
+      <DialogContent className="shared-dialog-content">
+        <div className="shared-dialog-text">{title}</div>
+      </DialogContent>
+
+      <DialogActions className="shared-dialog-footer">
         <Button
           onClick={onClose}
-          className="dialog-footer"
+          className="btn-std btn-primary"
         >
           {closeText}
         </Button>
