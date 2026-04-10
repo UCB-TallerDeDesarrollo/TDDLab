@@ -1,0 +1,11 @@
+.status-icon-pending {
+  font-size: 26px;
+}
+
+.status-icon-progress {
+  stroke-width: 2.7px;
+}
+
+.status-icon-delivered {
+  stroke-width: 9.5px;
+}

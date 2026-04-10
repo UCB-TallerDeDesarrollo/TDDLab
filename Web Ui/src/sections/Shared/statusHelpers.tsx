@@ -1,17 +1,16 @@
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { FaCheck } from "react-icons/fa6";
 import { TbRotateClockwise2 } from "react-icons/tb";
+import "./Styles/sharedStyles.css";
 
 export const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending":
-        return <PriorityHighIcon style={{ fontSize: 26 }} />;
+        return <PriorityHighIcon className="status-icon-pending" />;
       case "in progress":
-        return (
-          <TbRotateClockwise2 size={27.4} style={{ strokeWidth: "2.7px" }} />
-        );
+        return <TbRotateClockwise2 size={27.4} className="status-icon-progress" />;
       case "delivered":
-        return <FaCheck size={24.4} style={{ strokeWidth: "9.5px" }} />;
+        return <FaCheck size={24.4} className="status-icon-delivered" />;
       default:
         return null;
     }
