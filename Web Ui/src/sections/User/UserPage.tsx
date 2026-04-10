@@ -6,7 +6,21 @@ import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
 import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserFromGroup";
 
 import {
-  Table,TableHead,TableBody,TableRow,TableCell,Container,Select,MenuItem,FormControl,CircularProgress,SelectChangeEvent,Tooltip,TableContainer,TextField,InputAdornment,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Container,
+  Select,
+  MenuItem,
+  FormControl,
+  CircularProgress,
+  SelectChangeEvent,
+  Tooltip,
+  TableContainer,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 
 import { styled } from "@mui/system";
@@ -63,7 +77,6 @@ const StyledTable = styled(Table)({
   width: "100%",
   borderCollapse: "collapse",
 });
-// -------------------------------------------------
 
 // ------------------- ESTILOS DE CELDAS -------------------
 const headerCellSx = {
@@ -100,7 +113,6 @@ function UserPage() {
   const [error, setError] = useState<unknown>(null);
   const [filteredUsers, setFilteredUsers] = useState<UserDataObject[]>([]);
 
-  // --- INSTANCIAS ---
   const userRepository = useMemo(() => new UsersRepository(), []);
   const getUsers = useMemo(() => new GetUsers(userRepository), [userRepository]);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
@@ -109,7 +121,6 @@ function UserPage() {
     [userRepository]
   );
 
-  // ------------------- FETCH USERS + GROUPS -------------------
   useEffect(() => {
     const fetchUsersAndGroups = async () => {
       try {
@@ -131,7 +142,6 @@ function UserPage() {
     fetchUsersAndGroups();
   }, [getUsers, getGroups]);
 
-  // ------------------- FILTRO DE USUARIOS -------------------
   useEffect(() => {
     const runSearch = async () => {
       const results = await searchUsersByEmail.execute({
@@ -145,13 +155,11 @@ function UserPage() {
     runSearch();
   }, [searchQuery, selectedGroup, searchUsersByEmail]);
 
-  // ------------------- MAPA DE GRUPOS -------------------
   const groupMap = groups.reduce((acc, group) => {
     acc[group.id] = group.groupName;
     return acc;
   }, {} as { [key: number]: string });
 
-  // ------------------- HANDLERS -------------------
   const handleGroupChange = (event: SelectChangeEvent<number | "all">) => {
     setSelectedGroup(event.target.value as number | "all");
   };
@@ -170,18 +178,9 @@ function UserPage() {
     }
   };
 
-  // ------------------- RENDER -------------------
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "center", height: "100vh" }}>
         <CircularProgress />
       </div>
     );
@@ -190,162 +189,82 @@ function UserPage() {
   if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
-    <div>
-      <CenteredContainer>
-        <HeaderContainer>
-          <Title>Usuarios</Title>
+    <CenteredContainer>
+      <HeaderContainer>
+        <Title>Usuarios</Title>
 
-          <HeaderFilters>
-            <TextField
-              placeholder="Buscar por email"
-              size="small"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              sx={{ width: 260 }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
+        <HeaderFilters>
+          <TextField
+            placeholder="Buscar por email"
+            size="small"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ width: 260 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
 
-            <FormControl size="small" sx={{ minWidth: 180 }}>
-              <Select
-                value={selectedGroup}
-                onChange={handleGroupChange}
-                displayEmpty
-              >
-                <MenuItem value="all">Filtrar todos los grupos</MenuItem>
-                {groups.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.groupName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </HeaderFilters>
-        </HeaderContainer>
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <Select value={selectedGroup} onChange={handleGroupChange} displayEmpty>
+              <MenuItem value="all">Filtrar todos los grupos</MenuItem>
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.groupName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </HeaderFilters>
+      </HeaderContainer>
 
-        <DividerLine />
+      <DividerLine />
 
-        <section className="Usuarios" style={{ width: "100%" }}>
-          <StyledTableContainer>
-            <StyledTable>
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      fontWeight: 600,
-                      borderBottom: "1px solid #d9d9d9",
-                      borderRight: "1px solid #d9d9d9",
-                      padding: "10px 8px",
-                    }}
-                  >
-                    Correo
+      <StyledTableContainer>
+        <StyledTable>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={headerCellSx}>Correo</TableCell>
+              <TableCell sx={headerCellSx}>Grupo</TableCell>
+              <TableCell sx={headerCellSx}>Rol</TableCell>
+              <TableCell sx={lastHeaderCellSx}>Eliminar</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {filteredUsers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} sx={{ textAlign: "center", py: 3 }}>
+                  No se encontraron resultados
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredUsers.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell sx={bodyCellSx}>{user.email}</TableCell>
+                  <TableCell sx={bodyCellSx}>
+                    {groupMap[user.groupid] || "Unknown"}
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 600,
-                      borderBottom: "1px solid #d9d9d9",
-                      borderRight: "1px solid #d9d9d9",
-                      padding: "10px 8px",
-                    }}
-                  >
-                    Grupo
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 600,
-                      borderBottom: "1px solid #d9d9d9",
-                      borderRight: "1px solid #d9d9d9",
-                      padding: "10px 8px",
-                    }}
-                  >
-                    Rol
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: 600,
-                      borderBottom: "1px solid #d9d9d9",
-                      padding: "10px 8px",
-                    }}
-                  >
-                    Eliminar
+                  <TableCell sx={bodyCellSx}>{user.role}</TableCell>
+                  <TableCell sx={lastBodyCellSx}>
+                    <Tooltip title="Eliminar" arrow>
+                      <RemoveCircleIcon
+                        onClick={() => handleRemoveUserFromGroup(user.id)}
+                        sx={{ color: "#ff1a1a", cursor: "pointer" }}
+                      />
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {filteredUsers.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      sx={{
-                        textAlign: "center",
-                        py: 3,
-                        borderBottom: "1px solid #d9d9d9",
-                      }}
-                    >
-                      No se encontraron resultados
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell
-                        sx={{
-                          borderBottom: "1px solid #d9d9d9",
-                          borderRight: "1px solid #d9d9d9",
-                          padding: "10px 8px",
-                        }}
-                      >
-                        {user.email}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: "1px solid #d9d9d9",
-                          borderRight: "1px solid #d9d9d9",
-                          padding: "10px 8px",
-                        }}
-                      >
-                        {groupMap[user.groupid] || "Unknown"}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: "1px solid #d9d9d9",
-                          borderRight: "1px solid #d9d9d9",
-                          padding: "10px 8px",
-                        }}
-                      >
-                        {user.role}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: "1px solid #d9d9d9",
-                          padding: "10px 8px",
-                        }}
-                      >
-                        <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                          <RemoveCircleIcon
-                            onClick={() => handleRemoveUserFromGroup(user.id)}
-                            sx={{
-                              color: "#ff1a1a",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </StyledTable>
-          </StyledTableContainer>
-        </section>
-      </CenteredContainer>
-    </div>
+              ))
+            )}
+          </TableBody>
+        </StyledTable>
+      </StyledTableContainer>
+    </CenteredContainer>
   );
 }
 
