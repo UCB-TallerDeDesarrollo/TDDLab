@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
-import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { ValidationDialog } from "../../features/users/components/dialogs/ValidationDialog";
 interface CreatePracticePopupProps {
   open: boolean;
   handleClose: () => void;

@@ -15,8 +15,8 @@ import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import AddIcon from "@mui/icons-material/Add";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
-import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
-import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { ConfirmationDialog } from "../../features/users/components/dialogs/ConfirmationDialog";
+import { ValidationDialog } from "../../features/users/components/dialogs/ValidationDialog";
 import Practice from "./Practice";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 

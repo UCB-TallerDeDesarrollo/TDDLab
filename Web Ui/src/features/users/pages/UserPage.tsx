@@ -1,12 +1,12 @@
 import { CircularProgress } from "@mui/material";
 import useUsersPage from "../hooks/useUsersPage";
 
-import UsersHeader from "../components/UserHeader";
+import UsersHeader from "../components/UsersHeader";
 import UsersTable from "../components/UsersTable";
 import UsersDivider from "../components/UsersDivider";
 
-import { ConfirmationDialog } from "../../../sections/Shared/Components/ConfirmationDialog";
-import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
+import { ValidationDialog } from "../components/dialogs/ValidationDialog";
+import { ConfirmationDialog } from "../components/dialogs/ConfirmationDialog";
 
 function UserPage() {
   const {
