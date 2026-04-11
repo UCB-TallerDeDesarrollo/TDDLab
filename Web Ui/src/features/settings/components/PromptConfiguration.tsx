@@ -120,16 +120,56 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
             backgroundColor: '#E5E5E5',
             borderRadius: 1,
             p: { xs: 2, md: 4 },
-            maxHeight: 350,
-            overflowY: 'auto',
-            overflowX: 'hidden',
             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 2px rgba(0,0,0,0.24)',
             display: 'flex',
             flexDirection: 'column',
             boxSizing: 'border-box'
           }}
         >
-          {isEditing ? (
+          <Box
+            sx={{
+              maxHeight: 350,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              pr: 2, // Espacio entre el texto y la scrollbar
+              display: 'flex',
+              flexDirection: 'column',
+              '&::-webkit-scrollbar': {
+                width: '18px',
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: '#FFFFFF',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#4A4A4A',
+                borderRadius: '10px',
+                border: '5px solid #FFFFFF',
+                backgroundClip: 'content-box',
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: '#333333',
+              },
+              '&::-webkit-scrollbar-button:single-button': {
+                backgroundColor: '#FFFFFF',
+                display: 'block',
+                backgroundSize: '10px',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                height: '20px',
+              },
+              '&::-webkit-scrollbar-button:single-button:vertical:decrement': {
+                borderTopLeftRadius: '10px',
+                borderTopRightRadius: '10px',
+                backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'10\' height=\'6\' viewBox=\'0 0 10 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M5 0L10 6H0L5 0Z\' fill=\'%234A4A4A\'/%3E%3C/svg%3E")',
+              },
+              '&::-webkit-scrollbar-button:single-button:vertical:increment': {
+                borderBottomLeftRadius: '10px',
+                borderBottomRightRadius: '10px',
+                backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'10\' height=\'6\' viewBox=\'0 0 10 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M5 6L0 0H10L5 6Z\' fill=\'%234A4A4A\'/%3E%3C/svg%3E")',
+              }
+            }}
+          >
+            {isEditing ? (
             <TextField
               multiline
               fullWidth
@@ -172,6 +212,7 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
               </Typography>
             </Box>
           )}
+          </Box>
         </Box>
       </Box>
 
