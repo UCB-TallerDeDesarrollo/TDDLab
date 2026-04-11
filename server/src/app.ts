@@ -1,4 +1,4 @@
-import express from "express";
+  import express from "express";
 import cors from "cors"; // Import the cors middleware
 import bodyParser from "body-parser";
 import server from "./config/server";
@@ -16,6 +16,31 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 3000;
+
+const allowedOrigins = [
+  process.env.VITE_FRONT_URL,
+  "http://localhost:5173",
+  "https://tddlab-staging-firebase.web.app",
+].filter((origin): origin is string => Boolean(origin));
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+  })
+);
+
+app.use(express.json());
 
 // Enable CORS for all routes
 app.use(cors({
