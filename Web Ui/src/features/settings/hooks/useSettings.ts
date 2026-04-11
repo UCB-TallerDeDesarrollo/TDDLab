@@ -7,7 +7,8 @@ export const useSettings = () => {
   const [prompts, setPrompts] = useState<AIPromptResponse | null>(null);
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [saving, setSaving] = useState<boolean>(false);
+  const [savingPrompt, setSavingPrompt] = useState<boolean>(false);
+  const [savingFlag, setSavingFlag] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadSettings = useCallback(async () => {
@@ -28,7 +29,7 @@ export const useSettings = () => {
   }, []);
 
   const savePrompt = useCallback(async (tddPrompt: string, refactoringPrompt: string, evaluateTDDPrompt: string) => {
-    setSaving(true);
+    setSavingPrompt(true);
     setError(null);
     try {
       const updatedPrompts = await settingsService.updatePrompts(tddPrompt, refactoringPrompt, evaluateTDDPrompt);
@@ -38,12 +39,12 @@ export const useSettings = () => {
       setError("Error al guardar los prompts");
       throw err;
     } finally {
-      setSaving(false);
+      setSavingPrompt(false);
     }
   }, []);
 
   const toggleFeatureFlag = useCallback(async (id: number, currentValue: boolean) => {
-    setSaving(true);
+    setSavingFlag(true);
     setError(null);
     try {
       const updatedFlag = await settingsService.updateFeatureFlag(id, !currentValue);
@@ -55,7 +56,7 @@ export const useSettings = () => {
       setError("Error al actualizar la flag");
       throw err;
     } finally {
-      setSaving(false);
+      setSavingFlag(false);
     }
   }, []);
 
@@ -63,7 +64,8 @@ export const useSettings = () => {
     prompts,
     flags,
     loading,
-    saving,
+    savingPrompt,
+    savingFlag,
     error,
     loadSettings,
     savePrompt,

@@ -63,9 +63,19 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
 
   return (
     <Stack spacing={3} sx={{ width: '100%' }}>
-      <Box sx={{ width: '100%', mb: 2 }}>
+      <Box sx={{ width: '100%', mb: 2, pl: 0 }}>
         <FormControl fullWidth variant="outlined" sx={{ maxWidth: 400 }}>
-          <InputLabel id="prompt-select-label">Selecciona el tipo de prompt</InputLabel>
+          <InputLabel 
+            id="prompt-select-label"
+            sx={{
+              color: '#6F6F6F', // Matching the Figma text color
+              '&.Mui-focused': {
+                color: '#6F6F6F',
+              }
+            }}
+          >
+            Selecciona el tipo de prompt
+          </InputLabel>
           <Select
             labelId="prompt-select-label"
             id="prompt-select"
@@ -73,6 +83,20 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
             onChange={handleSelectChange}
             disabled={isEditing || saving}
             label="Selecciona el tipo de prompt"
+            sx={{
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#898989',
+                borderWidth: '1.5px',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#898989',
+                borderWidth: '1.5px',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#898989',
+                borderWidth: '1.5px',
+              }
+            }}
           >
             {prompts.map((prompt) => (
               <MenuItem key={prompt.id} value={prompt.id}>
@@ -83,7 +107,7 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
         </FormControl>
       </Box>
 
-      <Box sx={{ border: '1.5px solid #898989', borderRadius: 2, p: 2 }}>
+      <Box sx={{ border: '1.5px solid #898989', borderRadius: 2, px: '14px', py: 3 }}>
         <Box
           sx={{
             backgroundColor: '#E5E5E5',

@@ -9,7 +9,8 @@ const SettingsPage: React.FC = () => {
     prompts,
     flags,
     loading,
-    saving,
+    savingPrompt,
+    savingFlag,
     error,
     loadSettings,
     savePrompt,
@@ -67,7 +68,8 @@ const SettingsPage: React.FC = () => {
         sx={{
           border: '1.5px solid #898989',
           borderRadius: '5px',
-          p: 2,
+          py: 2,
+          px: '14px',
           mb: 4,
           backgroundColor: '#fff', // Or something matching the design
         }}
@@ -99,15 +101,17 @@ const SettingsPage: React.FC = () => {
             selectedPrompt={selectedPrompt}
             onChangePrompt={setSelectedPrompt}
             onSavePrompt={handleSavePrompt}
-            saving={saving}
+            saving={savingPrompt}
           />
         )}
 
         {flags && flags.length > 0 && (
-          <FeatureFlags
-            flags={flags as any} // Need to align types if necessary, but fields match based on earlier read.
-            onToggleFlag={handleToggleFlag}
-          />
+          <Box sx={{ pl: '14px' }}>
+            <FeatureFlags
+              flags={flags as any} // Need to align types if necessary, but fields match based on earlier read.
+              onToggleFlag={handleToggleFlag}
+            />
+          </Box>
         )}
       </Box>
     </Container>
