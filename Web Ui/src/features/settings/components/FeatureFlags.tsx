@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Checkbox, FormControlLabel, Stack } from '@mui/material';
+import { Box, Typography, Checkbox, FormControlLabel, Stack, SvgIcon } from '@mui/material';
 import { FeatureFlag } from '../types/settings.types';
 
 interface FeatureFlagsProps {
@@ -31,6 +31,7 @@ export const FeatureFlags: React.FC<FeatureFlagsProps> = ({ flags, onToggleFlag 
                 checked={flag.is_enabled}
                 onChange={(e) => onToggleFlag(flag.id, e.target.checked)}
                 color="primary"
+                icon={<Box sx={{ width: 24, height: 24, backgroundColor: '#D9D9D9', border: '1px solid #737373', borderRadius: '4px' }} />}
               />
             }
             label={flag.feature_name}

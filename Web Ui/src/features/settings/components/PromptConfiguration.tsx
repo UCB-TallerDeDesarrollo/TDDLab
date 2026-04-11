@@ -83,12 +83,12 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
         </FormControl>
       </Box>
 
-      <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 2 }}>
+      <Box sx={{ border: '1.5px solid #898989', borderRadius: 2, p: 2 }}>
         <Box
           sx={{
             backgroundColor: '#E5E5E5',
             borderRadius: 1,
-            p: 2,
+            p: 0,
             maxHeight: 350,
             overflowY: 'auto',
             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 2px rgba(0,0,0,0.24)',
@@ -123,16 +123,18 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
               }}
             />
           ) : (
-            <Typography
-              variant="body2"
-              sx={{
-                whiteSpace: 'pre-wrap',
-                color: 'text.primary',
-                fontFamily: 'monospace',
-              }}
-            >
-              {currentPrompt?.content || 'Selecciona un prompt para visualizar su contenido.'}
-            </Typography>
+            <Box sx={{ p: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  whiteSpace: 'pre-wrap',
+                  color: 'text.primary',
+                  fontFamily: 'monospace',
+                }}
+              >
+                {currentPrompt?.content || 'Selecciona un prompt para visualizar su contenido.'}
+              </Typography>
+            </Box>
           )}
         </Box>
       </Box>
