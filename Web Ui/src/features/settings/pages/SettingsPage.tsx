@@ -63,18 +63,28 @@ const SettingsPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography
-        variant="h4"
-        component="h1"
+      <Box
         sx={{
+          border: '1.5px solid #898989',
+          borderRadius: '5px',
+          p: 2,
           mb: 4,
-          fontSize: '24px',
-          fontWeight: 'bold',
-          color: '#002346',
+          backgroundColor: '#fff', // Or something matching the design
         }}
       >
-        Configuración de Prompt
-      </Typography>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#002346',
+            m: 0,
+          }}
+        >
+          Configuración de Prompt
+        </Typography>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>

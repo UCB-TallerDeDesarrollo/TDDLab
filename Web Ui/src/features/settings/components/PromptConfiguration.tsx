@@ -9,7 +9,8 @@ import {
   TextField,
   Button,
   CircularProgress,
-  SelectChangeEvent
+  SelectChangeEvent,
+  InputLabel
 } from '@mui/material';
 
 export interface PromptItem {
@@ -62,16 +63,16 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
 
   return (
     <Stack spacing={3} sx={{ width: '100%' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Typography variant="subtitle1" fontWeight={600}>
-          Seleccionar Prompt
-        </Typography>
-        <FormControl size="small" sx={{ maxWidth: 400 }}>
+      <Box sx={{ width: '100%', mb: 2 }}>
+        <FormControl fullWidth variant="outlined" sx={{ maxWidth: 400 }}>
+          <InputLabel id="prompt-select-label">Selecciona el tipo de prompt</InputLabel>
           <Select
+            labelId="prompt-select-label"
+            id="prompt-select"
             value={selectedPrompt}
             onChange={handleSelectChange}
             disabled={isEditing || saving}
-            displayEmpty
+            label="Selecciona el tipo de prompt"
           >
             {prompts.map((prompt) => (
               <MenuItem key={prompt.id} value={prompt.id}>
@@ -82,58 +83,58 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
         </FormControl>
       </Box>
 
-      <Box
-        sx={{
-          backgroundColor: '#E5E5E5',
-          borderRadius: 2,
-          p: 2,
-          minHeight: 250,
-          display: 'flex',
-          flexDirection: 'column',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        {isEditing ? (
-          <TextField
-            multiline
-            fullWidth
-            minRows={10}
-            variant="outlined"
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            disabled={saving}
-            sx={{
-              backgroundColor: 'background.paper',
-              borderRadius: 1,
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'transparent',
+      <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 2 }}>
+        <Box
+          sx={{
+            backgroundColor: '#E5E5E5',
+            borderRadius: 1,
+            p: 2,
+            maxHeight: 350,
+            overflowY: 'auto',
+            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 2px rgba(0,0,0,0.24)',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {isEditing ? (
+            <TextField
+              multiline
+              fullWidth
+              minRows={10}
+              variant="outlined"
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              disabled={saving}
+              sx={{
+                backgroundColor: 'background.paper',
+                borderRadius: 1,
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'primary.main',
+                    borderWidth: 1,
+                  },
                 },
-                '&:hover fieldset': {
-                  borderColor: 'transparent',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'primary.main',
-                  borderWidth: 1,
-                },
-              },
-            }}
-          />
-        ) : (
-          <Typography
-            variant="body2"
-            sx={{
-              whiteSpace: 'pre-wrap',
-              color: 'text.primary',
-              fontFamily: 'monospace',
-              flexGrow: 1,
-              overflowY: 'auto',
-            }}
-          >
-            {currentPrompt?.content || 'Selecciona un prompt para visualizar su contenido.'}
-          </Typography>
-        )}
+              }}
+            />
+          ) : (
+            <Typography
+              variant="body2"
+              sx={{
+                whiteSpace: 'pre-wrap',
+                color: 'text.primary',
+                fontFamily: 'monospace',
+              }}
+            >
+              {currentPrompt?.content || 'Selecciona un prompt para visualizar su contenido.'}
+            </Typography>
+          )}
+        </Box>
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
