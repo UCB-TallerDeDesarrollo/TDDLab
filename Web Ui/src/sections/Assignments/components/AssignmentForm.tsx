@@ -19,52 +19,10 @@ import AssignmentsRepository from "../../../modules/Assignments/repository/Assig
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
-import { SelectChangeEvent } from '@mui/material/Select';
-import { Warning, CheckCircle } from "@mui/icons-material";
+import { SelectChangeEvent } from "@mui/material/Select";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 
-// ─── ValidationDialog interno ────────────────────────────────────────────────
-interface ValidationDialogProps {
-  open: boolean;
-  title: string;
-  closeText: string;
-  onClose: () => void;
-}
-
-const ValidationDialog = ({
-  open,
-  title,
-  closeText,
-  onClose,
-}: ValidationDialogProps) => {
-  const isError = title.toLowerCase().includes("error");
-
-  return (
-        <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="xs"
-      fullWidth
-      className="dialog-success-compact"
-    >
-      <DialogTitle
-        className={`${isError ? "dialog-title-error" : "dialog-title-success"} dialog-title-centered`}
-      >
-        {isError ? <Warning sx={{ fontSize: 20 }} /> : <CheckCircle sx={{ fontSize: 20 }} />}
-        {title}
-      </DialogTitle>
-
-      <DialogActions className="dialog-footer dialog-footer-centered">
-        <Button
-          onClick={onClose}
-          className="btn-std btn-primary"
-        >
-          {closeText}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
 // ─── Form principal ───────────────────────────────────────────────────────────
 interface CreateAssignmentPopupProps {
   open: boolean;
@@ -73,10 +31,17 @@ interface CreateAssignmentPopupProps {
   "data-testid"?: string;
 }
 
-function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<CreateAssignmentPopupProps>) {
+function Form({
+  open,
+  handleClose,
+  groupid,
+  "data-testid": testId,
+}: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
+  const [validationMessage, setValidationMessage] = useState(
+    "Tarea creada exitosamente"
+  );
   const [auth] = useGlobalState("authData");
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
@@ -100,19 +65,26 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
     const createAssignments = new CreateAssignments(assignmentsRepository);
 
     if (assignmentData.start_date > assignmentData.end_date) {
-      setValidationMessage("Error: La fecha de inicio no puede ser posterior a la fecha de fin");
+      setValidationMessage(
+        "Error: La fecha de inicio no puede ser posterior a la fecha de fin"
+      );
       setValidationDialogOpen(true);
       setSave(false);
       return;
     }
 
     try {
-      const assignments = await assignmentsRepository.getAssignmentsByGroupid(assignmentData.groupid);
+      const assignments = await assignmentsRepository.getAssignmentsByGroupid(
+        assignmentData.groupid
+      );
       const duplicateAssignment = assignments.find(
-        (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
+        (assignment) =>
+          assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
       );
       if (duplicateAssignment) {
-        setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
+        setValidationMessage(
+          "Error: Ya existe una tarea con el mismo nombre en este grupo"
+        );
         setValidationDialogOpen(true);
         setSave(false);
         return;
@@ -123,7 +95,9 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes("Limite de caracteres excedido")) {
-          setValidationMessage("Error: El título no puede tener más de 50 caracteres.");
+          setValidationMessage(
+            "Error: El título no puede tener más de 50 caracteres."
+          );
         } else {
           setValidationMessage(`Error: ${error.message}`);
         }
@@ -137,10 +111,17 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
-    setAssignmentData((prevData) => ({ ...prevData, start_date: newStartDate, end_date: newEndDate }));
+    setAssignmentData((prevData) => ({
+      ...prevData,
+      start_date: newStartDate,
+      end_date: newEndDate,
+    }));
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: string
+  ) => {
     const { value } = event.target;
     setAssignmentData((prevData) => ({ ...prevData, [field]: value }));
   };
@@ -152,15 +133,22 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
 
   const handleCancel = () => handleClose();
 
-  const formInvalid = () => assignmentData.title.trim() === "" || assignmentData.groupid === 0;
+  const formInvalid = () =>
+    assignmentData.title.trim() === "" || assignmentData.groupid === 0;
 
   useEffect(() => {
-    const effectiveGroupId = groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
+    const effectiveGroupId =
+      groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
     setSave(false);
     setAssignmentData({
-      id: 0, title: "", description: "",
-      start_date: new Date(), end_date: new Date(),
-      state: "pending", link: "", comment: "",
+      id: 0,
+      title: "",
+      description: "",
+      start_date: new Date(),
+      end_date: new Date(),
+      state: "pending",
+      link: "",
+      comment: "",
       groupid: effectiveGroupId,
     });
   }, [open, groupid]);
@@ -174,29 +162,51 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
       let list: GroupDataObject[] = [];
       if (auth?.userRole === "teacher") {
         const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
-        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
+        list = (
+          await Promise.all(
+            ids.map((id: number) => getGroups.getGroupById(id))
+          )
+        ).filter(Boolean) as GroupDataObject[];
       } else if (auth?.userRole === "admin") {
         list = await getGroups.getGroups();
       } else if (auth?.userRole === "student") {
         let ids: number[] = [];
         try {
-          const fromLS = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
+          const fromLS = JSON.parse(
+            localStorage.getItem("userGroups") ?? "[]"
+          );
           if (Array.isArray(fromLS) && fromLS.length) ids = fromLS;
         } catch {}
-        if (!ids.length) ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
-        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
+        if (!ids.length)
+          ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
+        list = (
+          await Promise.all(
+            ids.map((id: number) => getGroups.getGroupById(id))
+          )
+        ).filter(Boolean) as GroupDataObject[];
       }
       setGroups(list);
-      setAssignmentData(prev => {
-        const keepCurrent = list.some(g => g.id === prev.groupid);
-        return { ...prev, groupid: keepCurrent ? prev.groupid : (list[0]?.id ?? 0) };
+      setAssignmentData((prev) => {
+        const keepCurrent = list.some((g) => g.id === prev.groupid);
+        return {
+          ...prev,
+          groupid: keepCurrent ? prev.groupid : list[0]?.id ?? 0,
+        };
       });
     };
     if (open) fetchGroups();
   }, [open, auth?.userRole, auth?.userid]);
 
+  const isError = validationMessage.toLowerCase().includes("error");
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth PaperProps={{ "data-testid": testId }} >
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{ "data-testid": testId }}
+    >
       {!validationDialogOpen && (
         <>
           <DialogTitle className="dialog-title-std">Crear tarea</DialogTitle>
@@ -212,14 +222,20 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
               >
                 <MenuItem value={0}>Selecciona un grupo</MenuItem>
                 {groups.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>{group.groupName}</MenuItem>
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.groupName}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
 
             <TextField
               error={save && !assignmentData.title.trim()}
-              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
+              helperText={
+                save && !assignmentData.title.trim()
+                  ? "El título es requerido"
+                  : ""
+              }
               autoFocus
               margin="dense"
               id="assignment-title"
@@ -252,8 +268,9 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
               </LocalizationProvider>
             </div>
           </DialogContent>
+
           <DialogActions className="dialog-footer">
-            <Button onClick={handleCancel} className="btn-std">
+            <Button onClick={handleCancel} className="btn-std btn-danger-outline">
               Cancelar
             </Button>
             <Button
@@ -267,20 +284,20 @@ function Form({ open, handleClose, groupid, "data-testid": testId }: Readonly<Cr
         </>
       )}
 
-      {validationDialogOpen && (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title={validationMessage}
-          closeText="Cerrar"
-          onClose={() => {
-            if (!validationMessage.includes("Error")) {
-              window.location.reload();
-            } else {
-              setValidationDialogOpen(false);
-            }
-          }}
-        />
-      )}
+      {/* Usa el ValidationDialog compartido — soporta éxito y error vía prop title */}
+      <ValidationDialog
+        open={validationDialogOpen}
+        title={validationMessage}
+        isError={isError}
+        closeText="Cerrar"
+        onClose={() => {
+          if (!isError) {
+            window.location.reload();
+          } else {
+            setValidationDialogOpen(false);
+          }
+        }}
+      />
     </Dialog>
   );
 }

@@ -1,10 +1,10 @@
 import React from "react";
 import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import "../Styles/sharedStyles.css";
 import "../../../App.css";
 
@@ -13,6 +13,7 @@ interface ValidationDialogProps {
   title: string;
   closeText: string;
   onClose: () => void;
+  isError?: boolean;
 }
 
 export const ValidationDialog: React.FC<ValidationDialogProps> = ({
@@ -20,11 +21,20 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
   title,
   closeText,
   onClose,
+  isError,
 }) => {
+  const showAsError = isError ?? title.toLowerCase().startsWith("error");
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle className="dialog-title-success">
-        <CheckCircleOutlineIcon fontSize="small" />
+      <DialogTitle
+        className={showAsError ? "dialog-title-error" : "dialog-title-success"}
+      >
+        {showAsError ? (
+          <ErrorOutlineIcon fontSize="small" />
+        ) : (
+          <CheckCircleOutlineIcon fontSize="small" />
+        )}
         {title}
       </DialogTitle>
 
