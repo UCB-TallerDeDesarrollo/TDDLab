@@ -9,19 +9,7 @@ interface FeatureFlagsProps {
 
 export const FeatureFlags: React.FC<FeatureFlagsProps> = ({ flags, onToggleFlag }) => {
   return (
-    <Box>
-      <Typography
-        variant="h6"
-        sx={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          color: '#002346',
-          mb: 2,
-        }}
-      >
-        Habilitación de Funcionalidades:
-      </Typography>
-      
+    <Box sx={{ width: '100%', pl: 0 }}>
       <Stack spacing={1}>
         {flags.map((flag) => (
           <FormControlLabel

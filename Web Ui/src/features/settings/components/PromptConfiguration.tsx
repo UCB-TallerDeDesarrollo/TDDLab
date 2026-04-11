@@ -62,8 +62,8 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
   };
 
   return (
-    <Stack spacing={3} sx={{ width: '100%' }}>
-      <Box sx={{ width: '100%', mb: 2, pl: 0 }}>
+    <Stack spacing={4.25} sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%', pl: 0 }}>
         <FormControl fullWidth variant="outlined" sx={{ maxWidth: 400 }}>
           <InputLabel 
             id="prompt-select-label"
@@ -107,17 +107,19 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
         </FormControl>
       </Box>
 
-      <Box sx={{ border: '1.5px solid #898989', borderRadius: 2, px: '14px', py: 3 }}>
+      <Box sx={{ border: '1.5px solid #898989', borderRadius: 2, p: { xs: 2, md: 4 }, width: '100%', boxSizing: 'border-box' }}>
         <Box
           sx={{
             backgroundColor: '#E5E5E5',
             borderRadius: 1,
-            p: 0,
+            p: { xs: 2, md: 4 },
             maxHeight: 350,
             overflowY: 'auto',
+            overflowX: 'hidden',
             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 2px rgba(0,0,0,0.24)',
             display: 'flex',
             flexDirection: 'column',
+            boxSizing: 'border-box'
           }}
         >
           {isEditing ? (
@@ -147,13 +149,16 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
               }}
             />
           ) : (
-            <Box sx={{ p: 2 }}>
+            <Box sx={{ p: 0 }}>
               <Typography
                 variant="body2"
                 sx={{
                   whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
                   color: 'text.primary',
-                  fontFamily: 'monospace',
+                  fontFamily: '"Inter", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500
                 }}
               >
                 {currentPrompt?.content || 'Selecciona un prompt para visualizar su contenido.'}

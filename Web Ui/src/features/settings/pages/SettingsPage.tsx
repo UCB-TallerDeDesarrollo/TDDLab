@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography, CircularProgress, Alert } from '@mui/material';
+import { Box, CircularProgress, Alert } from '@mui/material';
 import { useSettings } from '../hooks/useSettings';
 import { PromptConfiguration, PromptItem } from '../components/PromptConfiguration';
 import { FeatureFlags } from '../components/FeatureFlags';
+import FeatureScreenLayout from '../../../shared/components/FeatureScreenLayout';
+import FeaturePageHeader from '../../../shared/components/FeaturePageHeader';
+import FeatureSectionDivider from '../../../shared/components/FeatureSectionDivider';
+import FeatureListSection from '../../../shared/components/FeatureListSection';
+import ContentState from '../../../shared/components/ContentState';
 
 const SettingsPage: React.FC = () => {
   const {
@@ -25,9 +30,9 @@ const SettingsPage: React.FC = () => {
 
   const promptItems: PromptItem[] = prompts
     ? [
-        { id: 'tddPrompt', name: 'TDD Analysis Prompt', content: prompts.tddPrompt },
-        { id: 'refactoringPrompt', name: 'Refactoring Prompt', content: prompts.refactoringPrompt },
-        { id: 'evaluateTDDPrompt', name: 'Evaluation Prompt', content: prompts.evaluateTDDPrompt },
+        { id: 'tddPrompt', name: 'Analizar TDD Prompt', content: prompts.tddPrompt },
+        { id: 'refactoringPrompt', name: 'Analizar Refactoring Prompt', content: prompts.refactoringPrompt },
+        { id: 'evaluateTDDPrompt', name: 'Evaluar TDD Prompt', content: prompts.evaluateTDDPrompt },
       ]
     : [];
 
@@ -46,8 +51,6 @@ const SettingsPage: React.FC = () => {
 
   const handleToggleFlag = async (id: number, newValue: boolean) => {
     try {
-      // The hook toggles the value passed to it (`!currentValue`). 
-      // Since newValue is what we want, we pass `!newValue` so the hook negates it back to `newValue`.
       await toggleFeatureFlag(id, !newValue);
     } catch (e) {
       console.error(e);
@@ -56,45 +59,27 @@ const SettingsPage: React.FC = () => {
 
   if (loading && !prompts) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress />
-      </Container>
+      <FeatureScreenLayout>
+        <ContentState
+          variant="loading"
+          title="Cargando configuración"
+          description="Se están cargando los ajustes del sistema."
+        />
+      </FeatureScreenLayout>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box
-        sx={{
-          border: '1.5px solid #898989',
-          borderRadius: '5px',
-          py: 2,
-          px: '14px',
-          mb: 4,
-          backgroundColor: '#fff', // Or something matching the design
-        }}
-      >
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: '#002346',
-            m: 0,
-          }}
-        >
-          Configuración de Prompt
-        </Typography>
-      </Box>
+    <FeatureScreenLayout className="Ajustes">
+      <FeaturePageHeader title="Configuración de Prompt" />
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, mt: 3 }}>
           {error}
         </Alert>
       )}
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
         {prompts && (
           <PromptConfiguration
             prompts={promptItems}
@@ -104,17 +89,19 @@ const SettingsPage: React.FC = () => {
             saving={savingPrompt}
           />
         )}
+      </Box>
 
-        {flags && flags.length > 0 && (
-          <Box sx={{ pl: '14px' }}>
+      <Box sx={{ pl: { xs: 2, md: 12.75 } }}>
+        <FeatureListSection title="Habilitación de Funcionalidades:">
+          {flags && flags.length > 0 && (
             <FeatureFlags
-              flags={flags as any} // Need to align types if necessary, but fields match based on earlier read.
+              flags={flags as any}
               onToggleFlag={handleToggleFlag}
             />
-          </Box>
-        )}
+          )}
+        </FeatureListSection>
       </Box>
-    </Container>
+    </FeatureScreenLayout>
   );
 };
 
