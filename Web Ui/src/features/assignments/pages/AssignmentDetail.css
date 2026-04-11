@@ -1,0 +1,270 @@
+:root {
+  --assignment-navy: #002346;
+  --assignment-light-blue: #b7d0e8;
+  --assignment-border: #898989;
+  --assignment-soft-gray: #d9d9d9;
+  --assignment-btn: #1370d2;
+  --assignment-btn-disabled: #818181;
+}
+
+.assignment-detail-page {
+  min-height: calc(100vh - 85px);
+  background: #ffffff;
+  padding: 24px 0 48px;
+}
+
+.assignment-content-shell {
+  width: min(1301px, calc(100% - 32px));
+  margin: 0 auto;
+  display: grid;
+  gap: 28px;
+}
+
+.assignment-center-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 360px;
+}
+
+.assignment-task-card {
+  width: 100%;
+  min-height: 204px;
+  background: var(--assignment-light-blue);
+  border: 0.5px solid #adadad;
+  border-radius: 5px;
+  padding: 40px 48px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  align-items: center;
+  column-gap: 60px;
+}
+
+.assignment-task-title-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assignment-task-title {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 53px;
+  color: #000000;
+  text-align: center;
+}
+
+.assignment-task-meta-block {
+  display: grid;
+  gap: 16px;
+}
+
+.assignment-task-meta-row {
+  display: grid;
+  grid-template-columns: 22px auto 1fr;
+  align-items: center;
+  column-gap: 12px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+}
+
+.assignment-task-meta-row .MuiSvgIcon-root {
+  font-size: 18px;
+  color: var(--assignment-navy);
+}
+
+.assignment-task-meta-label {
+  font-weight: 700;
+}
+
+.assignment-section-title {
+  margin: 4px 0 0;
+  color: var(--assignment-navy);
+  font-family: "Inter", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 29px;
+}
+
+.assignment-student-card,
+.assignment-deliveries-card {
+  background: #ffffff;
+}
+
+.assignment-student-card {
+  border: 0.5px solid var(--assignment-border);
+  border-radius: 5px;
+  padding: 24px;
+}
+
+.assignment-student-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.assignment-student-row {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 19px;
+  color: #000000;
+}
+
+.assignment-student-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.assignment-deliveries-card {
+  border: 0.5px solid var(--assignment-border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.assignment-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.assignment-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.assignment-table-wrapper .MuiTableCell-head {
+  background: var(--assignment-soft-gray);
+  border: 0.5px solid var(--assignment-border);
+  border-top: none;
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
+  color: #000000;
+  text-align: center;
+  padding: 10px 8px;
+}
+
+.assignment-table-wrapper .MuiTableCell-body {
+  background: #ffffff;
+  border: 0.5px solid var(--assignment-border);
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 400;
+  color: #000000;
+  text-align: center;
+  padding: 10px 8px;
+}
+
+.assignment-status-chip {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.assignment-status-chip.is-sent {
+  color: #257800;
+}
+
+.assignment-status-chip.is-progress {
+  color: #c07c00;
+}
+
+.assignment-status-chip.is-pending {
+  color: #e00000;
+}
+
+.assignment-link-cell,
+.assignment-no-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assignment-link-cell {
+  color: #4785c4;
+}
+
+.assignment-no-link {
+  color: #e00000;
+}
+
+.assignment-link-cell .MuiSvgIcon-root,
+.assignment-no-link .MuiSvgIcon-root {
+  font-size: 22px;
+}
+
+.assignment-action-btn {
+  width: 88px;
+  height: 34px;
+  min-width: 88px;
+  padding: 10px;
+  border-radius: 5px;
+  text-transform: none;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: var(--assignment-btn);
+  box-shadow: none;
+}
+
+.assignment-action-btn:hover {
+  background-color: #0f63bb;
+  box-shadow: none;
+}
+
+.assignment-action-btn.Mui-disabled {
+  background-color: var(--assignment-btn-disabled);
+  color: #ffffff;
+}
+
+.assignment-deliveries-state {
+  min-height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  font-family: "Inter", sans-serif;
+}
+
+@media (max-width: 960px) {
+  .assignment-detail-page {
+    padding-inline: 16px;
+  }
+
+  .assignment-content-shell {
+    width: 100%;
+  }
+
+  .assignment-task-card {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+    padding: 28px 24px;
+  }
+
+  .assignment-task-title {
+    font-size: 34px;
+    line-height: 1.2;
+  }
+
+  .assignment-task-meta-block {
+    gap: 12px;
+  }
+
+  .assignment-table-wrapper table {
+    min-width: 980px;
+  }
+}

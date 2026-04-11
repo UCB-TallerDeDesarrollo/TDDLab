@@ -12,13 +12,7 @@ import { decodeUserTokenFromCookie } from "../../modules/Users/Application/decod
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
 import { User } from "../../modules/Users/Domain/User";
-import admin from "firebase-admin";
-import * as dotenv from "dotenv";
-dotenv.config();
-
-admin.initializeApp({
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  credential: admin.credential.applicationDefault(),});
+import admin from "../../config/firebaseAdmin";
 
 class UserController {
   private readonly userRepository: UserRepository;
@@ -150,7 +144,7 @@ class UserController {
 
   async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
-    console.log("Received Google login request with token:", idToken);
+    console.log("Received Google login request");
     if (!idToken) {
       res.status(400).json({ error: "Debes proporcionar un token válido" });
       return;
