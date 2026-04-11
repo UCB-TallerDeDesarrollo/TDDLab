@@ -11,6 +11,7 @@ interface ContentStateProps {
 
 const StateContainer = styled(Box)(({ theme }) => ({
   width: "100%",
+  boxSizing: "border-box",
   minHeight: 220,
   border: "0.5px solid #898989",
   borderRadius: 5,
@@ -22,6 +23,10 @@ const StateContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1.5),
   textAlign: "center",
   backgroundColor: "#FFFFFF",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
+    minHeight: 180,
+  },
 }));
 
 const StateTitle = styled(Typography)(({ theme }) => ({
