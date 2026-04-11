@@ -8,6 +8,7 @@ import { useState } from "react";
 import { UpdatePractice } from "../../modules/Practices/application/UpdatePractice";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import "../../App.css";
 
 interface EditPracticeDialogProps {
@@ -25,6 +26,9 @@ function EditPracticeDialog({
 }: EditPracticeDialogProps) {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [validationOpen, setValidationOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleSaveChanges = async () => {
     try {
@@ -45,61 +49,84 @@ function EditPracticeDialog({
         const updatePractice = new UpdatePractice(practiceRepository);
         await updatePractice.updatePractice(practiceId, updatedPracticeData);
 
-        onClose();
-        window.location.reload();
+        setIsError(false);
+        setValidationMessage("Práctica actualizada exitosamente");
+        setValidationOpen(true);
       } else {
         console.error("La practica actual no se encontró.");
       }
     } catch (error) {
       console.error("Error al guardar los cambios:", error);
+      setIsError(true);
+      setValidationMessage("Error al actualizar la práctica");
+      setValidationOpen(true);
     }
   };
+
   const getCurrentPractice = async () => {
     const practicesRepository = new PracticesRepository();
     try {
-      const practice = await practicesRepository.getPracticeById(practiceId);
-      return practice;
+      return await practicesRepository.getPracticeById(practiceId);
     } catch (error) {
       console.error("Error obteniendo la practica actual:", error);
       throw error;
     }
   };
 
+  const handleValidationClose = () => {
+    setValidationOpen(false);
+    if (!isError) {
+      window.location.reload();
+    }
+  };
+
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle className="dialog-title-std">
-        Editar Practica : {currentTitle}
+        Editar Práctica: {currentTitle}
       </DialogTitle>
+
       <DialogContent className="dialog-content-box">
         <TextField
           id="titulo"
           label="Título"
           variant="outlined"
           size="small"
+          fullWidth
           required
           onChange={(e) => setTitle(e.target.value)}
           defaultValue={currentTitle}
         />
         <TextField
           id="descripcion"
-          label="Descripcion"
+          label="Descripción"
           variant="outlined"
           size="small"
+          fullWidth
           required
           multiline
-          rows = {5}
+          rows={5}
           onChange={(e) => setDescription(e.target.value)}
           defaultValue={currentDescription}
         />
       </DialogContent>
+
       <DialogActions className="dialog-footer">
-        <Button onClick={onClose} className="btn-std btn-cancel">
+        <Button onClick={onClose} className="btn-std btn-danger-outline">
           Cancelar
         </Button>
         <Button onClick={handleSaveChanges} className="btn-std btn-primary">
           Guardar Cambios
         </Button>
       </DialogActions>
+
+      <ValidationDialog
+        open={validationOpen}
+        title={validationMessage}
+        isError={isError}
+        closeText="Cerrar"
+        onClose={handleValidationClose}
+      />
     </Dialog>
   );
 }

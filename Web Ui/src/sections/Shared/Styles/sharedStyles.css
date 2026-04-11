@@ -1,4 +1,4 @@
-/*Estilos del StatusHelpers*/
+/* Shared - StatusHelpers */
 .status-icon-pending {
   font-size: 26px;
 }
@@ -11,4 +11,47 @@
 .status-icon-delivered {
   font-size: 24.4px;
   stroke-width: 9.5px;
+}
+
+/* Shared - dialogs */
+.shared-dialog-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  padding: 16px 24px 8px 24px !important;
+  color: #24292f;
+}
+
+.shared-dialog-content {
+  display: grid;
+  gap: 12px;
+  padding: 8px 24px !important;
+  min-width: 320px;
+  max-width: 420px;
+}
+
+.shared-dialog-text {
+  font-size: 0.92rem;
+  color: #57606a;
+  line-height: 1.45;
+}
+
+.shared-dialog-footer {
+  display: flex !important;
+  gap: 8px !important;
+  padding: 16px 24px 20px 24px !important;
+  justify-content: flex-end !important;
+}
+.dialog-title-centered {
+  justify-content: center;
+  text-align: center;
+}
+
+.dialog-footer-centered {
+  justify-content: center !important;
+  padding-top: 8px !important;
+}
+
+.dialog-success-compact .MuiDialog-paper {
+  min-width: 320px;
+  max-width: 420px;
 }

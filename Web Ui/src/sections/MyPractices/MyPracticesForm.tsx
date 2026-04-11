@@ -37,9 +37,7 @@ function MyPracticesForm({
 
   const handleSaveClick = async () => {
     setSave(true);
-    if (formInvalid()) {
-      return;
-    }
+    if (formInvalid()) return;
 
     isCreateButtonClicked.current = true;
     const practicesRepository = new PracticesRepository();
@@ -59,20 +57,12 @@ function MyPracticesForm({
     field: string
   ) => {
     const { value } = event.target;
-
-    setPracticeData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
+    setPracticeData((prevData) => ({ ...prevData, [field]: value }));
   };
 
-  const handleCancel = () => {
-    handleClose();
-  };
+  const handleCancel = () => handleClose();
 
-  const formInvalid = () => {
-    return practiceData.title === "";
-  };
+  const formInvalid = () => practiceData.title === "";
 
   useEffect(() => {
     setSave(false);
@@ -83,21 +73,23 @@ function MyPracticesForm({
       {!validationDialogOpen && (
         <>
           <DialogTitle className="dialog-title-std">
-            Crear una Practica
+            Crear una Práctica
           </DialogTitle>
+
           <DialogContent className="dialog-content-box">
             <TextField
               error={formInvalid() && !!save}
               autoFocus
               margin="dense"
-              id="assigment-title"
+              id="practice-title"
               name="practiceTitle"
-              label="Nombre de la Practica*"
+              label="Nombre de la Práctica*"
               type="text"
               fullWidth
               value={practiceData.title}
               onChange={(e) => handleInputChange(e, "title")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              helperText={formInvalid() && !!save ? "El nombre de la práctica es requerido" : ""}
             />
             <TextField
               multiline
@@ -113,8 +105,9 @@ function MyPracticesForm({
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
           </DialogContent>
+
           <DialogActions className="dialog-footer">
-            <Button onClick={handleCancel} className="btn-std btn-danger">
+            <Button onClick={handleCancel} className="btn-std btn-danger-outline">
               Cancelar
             </Button>
             <Button onClick={handleSaveClick} className="btn-std btn-primary">
@@ -123,14 +116,13 @@ function MyPracticesForm({
           </DialogActions>
         </>
       )}
-      {!!validationDialogOpen && (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title="Practica creada exitosamente"
-          closeText="Cerrar"
-          onClose={() => window.location.reload()}
-        />
-      )}
+
+      <ValidationDialog
+        open={validationDialogOpen}
+        title="Práctica creada exitosamente"
+        closeText="Cerrar"
+        onClose={() => window.location.reload()}
+      />
     </Dialog>
   );
 }

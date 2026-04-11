@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-import "../../App.css"; // Importante importar los estilos
+import "../../App.css"; 
 
 function UsersByGroupPage() {
   const [users, setUsers] = useState<UserDataObject[]>([]);
