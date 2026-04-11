@@ -23,9 +23,9 @@ const AssignmentDetail = lazy(() => import("./sections/Assignments/AssignmentDet
 const TDDChartPage = lazy(() => import("./sections/TDDCycles-Visualization/TDDChartPage"));
 const Login = lazy(() => import("./sections/Login/LoginPage"));
 const Groups = lazy(() => import("./sections/Groups/GroupsPage"));
-const User = lazy(() => import("./sections/User/UserPage"));
+const User = lazy(() => import("./features/users/pages/UserPage"));
 const InvitationPage = lazy(() => import("./sections/GroupInvitation/InvitationPage"));
-const UsersByGroupPage = lazy(() => import("./sections/User/UserBygroupPage"));
+const UsersByGroupPage = lazy(() => import("./features/users/pages/UserBygroupPage"));
 const MyPracticesPage = lazy(() => import("./sections/MyPractices/MyPracticesPage"));
 const PracticeDetail = lazy(() => import("./sections/MyPractices/PracticeDetail"));
 const AIAssistantPage = lazy(() => import("./sections/AIAssistant/AIAssistantPage"));
