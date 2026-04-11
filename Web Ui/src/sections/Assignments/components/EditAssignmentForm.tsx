@@ -125,9 +125,16 @@ function EditAssignmentDialog({
       </DialogTitle>
 
       <DialogContent className="dialog-content-box">
-        <FormControl fullWidth variant="outlined" size="small" sx={{ mt: 1 }}>
-          <InputLabel>Grupo</InputLabel>
-          <Select value={selectedGroup} onChange={handleGroupChange} label="Grupo">
+        <FormControl fullWidth variant="outlined" margin="dense">
+          <InputLabel htmlFor="group-select" style={{ fontSize: "0.95rem" }}>
+            Grupo
+          </InputLabel>
+          <Select
+            id="group-select"
+            value={selectedGroup}
+            onChange={handleGroupChange}
+            label="Grupo"
+          >
             <MenuItem value={0}>{currentGroupName}</MenuItem>
             {groups.map((group) => (
               <MenuItem key={group.id} value={group.id}>
@@ -140,25 +147,25 @@ function EditAssignmentDialog({
         <TextField
           id="titulo"
           label="Título"
-          variant="outlined"
-          size="small"
+          margin="dense"
           fullWidth
           required
           onChange={(e) => setTitle(e.target.value)}
           defaultValue={currentTitle}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
         />
 
         <TextField
           id="descripcion"
           label="Descripción"
-          variant="outlined"
-          size="small"
+          margin="dense"
           fullWidth
           required
           multiline
-          rows={5}
+          rows={3.7}
           onChange={(e) => setDescription(e.target.value)}
           defaultValue={currentDescription}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
         />
       </DialogContent>
 
