@@ -1,51 +1,136 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import InvitationPage from "../../../src/sections/GroupInvitation/InvitationPage";
 
-jest.mock("../../../src/sections/GroupInvitation/InvitationPage", () => {
-  return {
-    __esModule: true,
-    default: () => (
-      <div>
-        <button onClick={() => {}} aria-label="register">
-          Registrarse
-        </button>
-        <p>Te has registrado exitosamente</p>
-        <p>Error al registrar</p>
-      </div>
-    ),
-  };
-});
+import UserPage from "../../../src/features/users/pages/UserPage";
 
-describe("InvitationPage component", () => {
-  it("Renders the Sign Up button and press it", async () => {
-    render(<InvitationPage />);
+import {
+  getGroupsService,
+  getUsersService,
+  removeUserFromGroupService,
+  searchUsersByEmailService,
+} from "../../../src/features/users/services/users.service";
 
-    // Verifica que el botón "Registrarse" esté presente
-    const signUpButton = screen.getByText("Registrarse");
-    expect(signUpButton).toBeInTheDocument();
+jest.mock("../../../src/features/users/services/users.service", () => ({
+  getUsersService: jest.fn(),
+  getGroupsService: jest.fn(),
+  searchUsersByEmailService: jest.fn(),
+  removeUserFromGroupService: jest.fn(),
+}));
 
-    // Simula el clic en el botón
-    fireEvent.click(signUpButton);
+const mockedGetUsersService = getUsersService as jest.MockedFunction<
+  typeof getUsersService
+>;
+const mockedGetGroupsService = getGroupsService as jest.MockedFunction<
+  typeof getGroupsService
+>;
+const mockedSearchUsersByEmailService =
+  searchUsersByEmailService as jest.MockedFunction<
+    typeof searchUsersByEmailService
+  >;
+const mockedRemoveUserFromGroupService =
+  removeUserFromGroupService as jest.MockedFunction<
+    typeof removeUserFromGroupService
+  >;
 
-    // Simula una respuesta exitosa
+const users = [
+  {
+    id: 1,
+    email: "ana@ucb.edu.bo",
+    groupid: 10,
+    role: "student",
+  },
+  {
+    id: 2,
+    email: "bruno@ucb.edu.bo",
+    groupid: 11,
+    role: "teacher",
+  },
+];
+
+const groups = [
+  {
+    id: 10,
+    groupName: "Grupo A",
+  },
+  {
+    id: 11,
+    groupName: "Grupo B",
+  },
+];
+
+describe("UserPage", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mockedGetUsersService.mockResolvedValue(users as never);
+    mockedGetGroupsService.mockResolvedValue(groups as never);
+    mockedRemoveUserFromGroupService.mockResolvedValue(undefined);
+    mockedSearchUsersByEmailService.mockImplementation(
+      async (query, groupId) => {
+        return users.filter((user) => {
+          const matchesGroup =
+            groupId === "all" ? true : user.groupid === groupId;
+          const matchesQuery = user.email
+            .toLowerCase()
+            .includes(query.toLowerCase());
+
+          return matchesGroup && matchesQuery;
+        });
+      }
+    );
+  });
+
+  it("renders the search field and filters users by email", async () => {
+    const user = userEvent.setup();
+
+    render(<UserPage />);
+
+    const filterButton = await screen.findByRole("button", {
+      name: /filtrar/i,
+    });
+
+    await user.click(filterButton);
+
+    expect(
+      await screen.findByRole("textbox", { name: /buscar por correo/i })
+    ).toBeInTheDocument();
+
     await waitFor(() => {
-      expect(
-        screen.getByText(/Te has registrado exitosamente/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText("ana@ucb.edu.bo")).toBeInTheDocument();
+      expect(screen.getByText("bruno@ucb.edu.bo")).toBeInTheDocument();
+    });
+
+    await user.type(
+      screen.getByRole("textbox", { name: /buscar por correo/i }),
+      "ana"
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("ana@ucb.edu.bo")).toBeInTheDocument();
+      expect(screen.queryByText("bruno@ucb.edu.bo")).not.toBeInTheDocument();
     });
   });
 
-  it("Displays error message when registration fails", async () => {
-    render(<InvitationPage />);
+  it("shows the empty state when the search has no matches", async () => {
+    const user = userEvent.setup();
 
-    // Simula que el botón "Registrarse" esté presente
-    const signUpButton = screen.getByText("Registrarse");
-    fireEvent.click(signUpButton);
+    render(<UserPage />);
 
-    // Simula un mensaje de error
+    await user.click(
+      await screen.findByRole("button", {
+        name: /filtrar/i,
+      })
+    );
+
+    const searchInput = await screen.findByRole("textbox", {
+      name: /buscar por correo/i,
+    });
+
+    await user.type(searchInput, "zzz");
+
     await waitFor(() => {
-      expect(screen.getByText(/Error al registrar/i)).toBeInTheDocument();
+      expect(screen.getByText("No se encontraron resultados")).toBeInTheDocument();
     });
   });
 });

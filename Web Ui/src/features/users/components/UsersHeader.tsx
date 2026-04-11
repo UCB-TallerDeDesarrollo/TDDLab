@@ -1,87 +1,119 @@
-import { FormControl, MenuItem, Select } from "@mui/material";
+import { useId, useState } from "react";
+import SearchIcon from "@mui/icons-material/Search";
+import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
+import {
+  Box,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Popover,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
+import ActionButton from "../../../shared/components/ActionButton";
+import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
 
 interface UsersHeaderProps {
   groups: GroupDataObject[];
   selectedGroup: number | "all";
+  searchQuery: string;
   onGroupChange: (value: number | "all") => void;
+  onSearchChange: (value: string) => void;
 }
+
+const FiltersContainer = styled(Box)(({ theme }) => ({
+  minWidth: 320,
+  padding: theme.spacing(2),
+  display: "grid",
+  gap: theme.spacing(2),
+}));
+
+const FiltersTitle = styled(Typography)({
+  color: "#002346",
+  fontSize: 18,
+  fontWeight: 700,
+  lineHeight: "22px",
+});
 
 function UsersHeader({
   groups,
   selectedGroup,
+  searchQuery,
   onGroupChange,
+  onSearchChange,
 }: UsersHeaderProps) {
-  return (
-    <div
-      style={{
-        width: "82%",
-        boxSizing: "border-box",
-        margin: "20px auto",
-        padding: "16px 20px",
-        border: "1px solid #CFCFCF",
-        borderRadius: "6px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: "#F9F9F9",
-      }}
-    >
-      <div
-        style={{
-          fontSize: "20px",
-          fontWeight: 600,
-          color: "#1B3A57",
-          marginLeft: "25%",
-        }}
-      >
-        Usuarios
-      </div>
+  const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(
+    null,
+  );
+  const groupFieldId = useId();
+  const searchFieldId = useId();
 
-      <FormControl sx={{ minWidth: 180 }}>
-        <Select
-          value={selectedGroup}
-          onChange={(event) =>
-            onGroupChange(event.target.value as number | "all")
-          }
-          displayEmpty
-          size="small"
-          sx={{
-            backgroundColor: "#1976D2",
-            color: "#fff",
-            borderRadius: "6px",
-            fontSize: "13px",
-            height: "32px",
-            minWidth: "160px",
-            ".MuiSelect-select": {
-              padding: "6px 10px",
-              display: "flex",
-              alignItems: "center",
-            },
-            ".MuiSvgIcon-root": {
-              color: "#fff",
-              fontSize: "18px",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              border: "none",
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              border: "none",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              border: "none",
-            },
-          }}
-        >
-          <MenuItem value="all">Filtrar todos los grupos</MenuItem>
-          {groups.map((group) => (
-            <MenuItem key={group.id} value={group.id}>
-              {group.groupName}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </div>
+  return (
+    <>
+      <FeaturePageHeader
+        title="Usuarios"
+        actions={
+          <ActionButton
+            startIcon={<FilterListRoundedIcon />}
+            variantStyle="secondary"
+            onClick={(event) => setFiltersAnchorEl(event.currentTarget)}
+          >
+            Filtrar
+          </ActionButton>
+        }
+      />
+
+      <Popover
+        open={Boolean(filtersAnchorEl)}
+        anchorEl={filtersAnchorEl}
+        onClose={() => setFiltersAnchorEl(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <FiltersContainer>
+          <FiltersTitle>Filtros de usuarios</FiltersTitle>
+
+          <TextField
+            id={searchFieldId}
+            size="small"
+            label="Buscar por correo"
+            placeholder="Ej: nombre@ucb.edu.bo"
+            value={searchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "#6B7280" }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <FormControl fullWidth size="small">
+            <InputLabel id={groupFieldId}>Grupo</InputLabel>
+            <Select
+              labelId={groupFieldId}
+              value={selectedGroup}
+              label="Grupo"
+              onChange={(event) =>
+                onGroupChange(event.target.value as number | "all")
+              }
+            >
+              <MenuItem value="all">Todos los grupos</MenuItem>
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.groupName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </FiltersContainer>
+      </Popover>
+    </>
   );
 }
 

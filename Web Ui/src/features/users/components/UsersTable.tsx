@@ -1,13 +1,14 @@
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import {
+  Box,
   Table,
-  TableHead,
   TableBody,
-  TableRow,
   TableCell,
+  TableHead,
+  TableRow,
   Tooltip,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { UserDataObject } from "../../../modules/Users/domain/UsersInterface";
 
 interface UsersTableProps {
@@ -16,69 +17,78 @@ interface UsersTableProps {
   onRemove: (userId: number) => void;
 }
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-  marginTop: "20px",
-  borderCollapse: "collapse",
-  border: "1px solid #E0E0E0",
+const TABLE_BORDER = "#898989";
+const HEADER_BACKGROUND = "#D9D9D9";
+const CELL_BORDER = "#D0D0D0";
+
+const TableWrapper = styled(Box)({
+  width: "100%",
+  overflowX: "auto",
 });
+
+const StyledTable = styled(Table)({
+  width: "100%",
+  borderCollapse: "collapse",
+  tableLayout: "fixed",
+  border: `0.5px solid ${TABLE_BORDER}`,
+});
+
+const sharedHeaderCellStyles = {
+  fontWeight: 700,
+  fontSize: "20px",
+  lineHeight: "24px",
+  color: "#000000",
+  textAlign: "center",
+  fontFamily: '"Inter", sans-serif',
+  borderRight: `0.5px solid ${TABLE_BORDER}`,
+  padding: "14px 18px",
+};
+
+const sharedBodyCellStyles = {
+  fontSize: "16px",
+  lineHeight: "20px",
+  color: "#000000",
+  fontFamily: '"Inter", sans-serif',
+  borderRight: `0.5px solid ${TABLE_BORDER}`,
+  borderBottom: `0.5px solid ${CELL_BORDER}`,
+  padding: "18px 20px",
+};
 
 function UsersTable({ users, groupMap, onRemove }: UsersTableProps) {
   return (
-    <section className="Usuarios">
+    <TableWrapper component="section" className="Usuarios">
       <StyledTable>
         <TableHead>
-          <TableRow
-            sx={{
-              borderBottom: "1px solid #E0E0E0",
-              backgroundColor: "#E5E5E5",
-            }}
-          >
+          <TableRow sx={{ backgroundColor: HEADER_BACKGROUND }}>
             <TableCell
               sx={{
-                fontWeight: 600,
-                fontSize: "18px",
-                color: "#222",
-                borderRight: "1px solid #CFCFCF",
-                textAlign: "center",
-                fontFamily: "Roboto, Arial, sans-serif",
+                ...sharedHeaderCellStyles,
+                width: "26%",
               }}
             >
               Correo
             </TableCell>
             <TableCell
               sx={{
-                fontWeight: 600,
-                fontSize: "18px",
-                color: "#222",
-                borderRight: "1px solid #CFCFCF",
-                textAlign: "center",
-                fontFamily: "Roboto, Arial, sans-serif",
+                ...sharedHeaderCellStyles,
+                width: "42%",
               }}
             >
               Grupo
             </TableCell>
             <TableCell
               sx={{
-                fontWeight: 600,
-                fontSize: "18px",
-                color: "#222",
-                borderRight: "1px solid #CFCFCF",
-                textAlign: "center",
-                fontFamily: "Roboto, Arial, sans-serif",
+                ...sharedHeaderCellStyles,
+                width: "16%",
               }}
             >
               Rol
             </TableCell>
             <TableCell
               sx={{
-                fontWeight: 600,
-                fontSize: "18px",
-                color: "#222",
-                textAlign: "center",
-                fontFamily: "Roboto, Arial, sans-serif",
+                ...sharedHeaderCellStyles,
+                width: "16%",
+                borderRight: "none",
               }}
             >
               Eliminar
@@ -89,44 +99,57 @@ function UsersTable({ users, groupMap, onRemove }: UsersTableProps) {
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} sx={{ textAlign: "center", py: 3 }}>
+              <TableCell
+                colSpan={4}
+                sx={{
+                  ...sharedBodyCellStyles,
+                  borderRight: "none",
+                  textAlign: "center",
+                  py: 4,
+                }}
+              >
                 No se encontraron resultados
               </TableCell>
             </TableRow>
           ) : (
             users.map((user) => (
-              <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
+              <TableRow key={user.id}>
                 <TableCell
                   sx={{
-                    borderRight: "1px solid #E0E0E0",
+                    ...sharedBodyCellStyles,
                     textAlign: "left",
-                    paddingLeft: "10%",
                   }}
                 >
                   {user.email}
                 </TableCell>
                 <TableCell
                   sx={{
-                    borderRight: "1px solid #E0E0E0",
+                    ...sharedBodyCellStyles,
                     textAlign: "left",
-                    paddingLeft: "7%",
                   }}
                 >
                   {groupMap[user.groupid] || "Unknown"}
                 </TableCell>
                 <TableCell
                   sx={{
-                    borderRight: "1px solid #E0E0E0",
+                    ...sharedBodyCellStyles,
                     textAlign: "center",
+                    textTransform: "capitalize",
                   }}
                 >
                   {user.role}
                 </TableCell>
-                <TableCell sx={{ borderRight: "none", textAlign: "center" }}>
+                <TableCell
+                  sx={{
+                    ...sharedBodyCellStyles,
+                    borderRight: "none",
+                    textAlign: "center",
+                  }}
+                >
                   <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
                     <RemoveCircleIcon
                       onClick={() => onRemove(user.id)}
-                      sx={{ color: "#d81b1b", cursor: "pointer" }}
+                      sx={{ color: "#D81B1B", cursor: "pointer" }}
                     />
                   </Tooltip>
                 </TableCell>
@@ -135,7 +158,7 @@ function UsersTable({ users, groupMap, onRemove }: UsersTableProps) {
           )}
         </TableBody>
       </StyledTable>
-    </section>
+    </TableWrapper>
   );
 }
 

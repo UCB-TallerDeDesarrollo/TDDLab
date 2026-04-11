@@ -1,4 +1,4 @@
-import { Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
+import { Box, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import { styled } from "@mui/system";
 import { UserDataObject } from "../../../modules/Users/domain/UsersInterface";
 
@@ -6,35 +6,40 @@ interface UsersByGroupTableProps {
   users: UserDataObject[];
 }
 
+const TABLE_BORDER = "#898989";
+const HEADER_BACKGROUND = "#D9D9D9";
+const CELL_BORDER = "#D0D0D0";
+
+const TableWrapper = styled(Box)({
+  width: "100%",
+  overflowX: "auto",
+});
+
 const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
+  width: "100%",
   borderCollapse: "collapse",
-  border: "1px solid #E0E0E0",
+  tableLayout: "fixed",
+  border: `0.5px solid ${TABLE_BORDER}`,
 });
 
 function UsersByGroupTable({ users }: UsersByGroupTableProps) {
   return (
-    <section className="UsersByGroup">
+    <TableWrapper component="section" className="UsersByGroup">
       <StyledTable>
         <TableHead>
-          <TableRow
-            sx={{
-              borderBottom: "1px solid #E0E0E0",
-              backgroundColor: "#E5E5E5",
-            }}
-          >
+          <TableRow sx={{ backgroundColor: HEADER_BACKGROUND }}>
             <TableCell
               sx={{
-                fontWeight: 600,
-                fontSize: "18px",
-                color: "#222",
+                fontWeight: 700,
+                fontSize: "20px",
+                lineHeight: "24px",
+                color: "#000000",
                 textAlign: "center",
-                fontFamily: "Roboto, Arial, sans-serif",
+                fontFamily: '"Inter", sans-serif',
+                padding: "14px 18px",
               }}
             >
-              Email
+              Correo
             </TableCell>
           </TableRow>
         </TableHead>
@@ -42,20 +47,41 @@ function UsersByGroupTable({ users }: UsersByGroupTableProps) {
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell sx={{ textAlign: "center", py: 3 }}>
+              <TableCell
+                sx={{
+                  fontSize: "16px",
+                  lineHeight: "20px",
+                  textAlign: "center",
+                  fontFamily: '"Inter", sans-serif',
+                  borderBottom: `0.5px solid ${CELL_BORDER}`,
+                  py: 4,
+                }}
+              >
                 No hay usuarios en este grupo
               </TableCell>
             </TableRow>
           ) : (
             users.map((user) => (
-              <TableRow key={user.id} sx={{ borderBottom: "1px solid #E7E7E7" }}>
-                <TableCell sx={{ textAlign: "center" }}>{user.email}</TableCell>
+              <TableRow key={user.id}>
+                <TableCell
+                  sx={{
+                    fontSize: "16px",
+                    lineHeight: "20px",
+                    color: "#000000",
+                    textAlign: "left",
+                    fontFamily: '"Inter", sans-serif',
+                    borderBottom: `0.5px solid ${CELL_BORDER}`,
+                    padding: "18px 20px",
+                  }}
+                >
+                  {user.email}
+                </TableCell>
               </TableRow>
             ))
           )}
         </TableBody>
       </StyledTable>
-    </section>
+    </TableWrapper>
   );
 }
 

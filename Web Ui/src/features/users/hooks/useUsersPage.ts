@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { SelectChangeEvent } from "@mui/material";
 
 import { UserDataObject } from "../../../modules/Users/domain/UsersInterface";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
@@ -14,7 +13,7 @@ import {
 function useUsersPage() {
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<number | "all">("all");
-  const [searchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [filteredUsers, setFilteredUsers] = useState<UserDataObject[]>([]);
@@ -72,12 +71,12 @@ function useUsersPage() {
     return acc;
   }, {} as Record<number, string>);
 
-  const handleGroupChange = (event: SelectChangeEvent<number | "all">) => {
-    setSelectedGroup(event.target.value as number | "all");
-  };
-
   const handleGroupValueChange = (value: number | "all") => {
     setSelectedGroup(value);
+  };
+
+  const handleSearchQueryChange = (value: string) => {
+    setSearchQuery(value);
   };
 
   const openRemoveDialog = (userId: number) => {
@@ -117,6 +116,7 @@ function useUsersPage() {
   return {
     groups,
     selectedGroup,
+    searchQuery,
     filteredUsers,
     loading,
     error,
@@ -124,8 +124,8 @@ function useUsersPage() {
     isRemoveDialogOpen,
     isFeedbackDialogOpen,
     feedbackMessage,
-    handleGroupChange,
     handleGroupValueChange,
+    handleSearchQueryChange,
     openRemoveDialog,
     closeRemoveDialog,
     closeFeedbackDialog,

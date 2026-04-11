@@ -1,5 +1,6 @@
 import { CircularProgress } from "@mui/material";
 import useUsersPage from "../hooks/useUsersPage";
+import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
 
 import UsersHeader from "../components/UsersHeader";
 import UsersTable from "../components/UsersTable";
@@ -12,11 +13,13 @@ function UserPage() {
   const {
     groups,
     selectedGroup,
+    searchQuery,
     filteredUsers,
     loading,
     error,
     groupMap,
     handleGroupValueChange,
+    handleSearchQueryChange,
     openRemoveDialog,
     confirmRemoveUser,
     closeRemoveDialog,
@@ -30,11 +33,13 @@ function UserPage() {
   if (error) return <div>Error</div>;
 
   return (
-    <>
+    <FeatureScreenLayout className="Usuarios">
       <UsersHeader
         groups={groups}
         selectedGroup={selectedGroup}
+        searchQuery={searchQuery}
         onGroupChange={handleGroupValueChange}
+        onSearchChange={handleSearchQueryChange}
       />
 
       <UsersDivider />
@@ -61,7 +66,7 @@ function UserPage() {
         closeText="Cerrar"
         onClose={closeFeedbackDialog}
       />
-    </>
+    </FeatureScreenLayout>
   );
 }
 

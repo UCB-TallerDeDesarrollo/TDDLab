@@ -1,4 +1,4 @@
-import { ConfirmationDialog } from "../../../sections/Shared/Components/ConfirmationDialog";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 
 interface RemoveUserDialogProps {
   open: boolean;

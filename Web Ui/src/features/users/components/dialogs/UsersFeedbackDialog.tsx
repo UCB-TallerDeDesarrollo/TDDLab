@@ -1,4 +1,4 @@
-import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
+import { ValidationDialog } from "./ValidationDialog";
 
 interface UsersFeedbackDialogProps {
   open: boolean;
