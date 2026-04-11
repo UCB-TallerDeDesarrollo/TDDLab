@@ -1,9 +1,10 @@
 import React from "react";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import "../Styles/sharedStyles.css";
 import "../../../App.css";
 
@@ -21,20 +22,14 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
   onClose,
 }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle className="shared-dialog-title">
-        Confirmación
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle className="dialog-title-success">
+        <CheckCircleOutlineIcon fontSize="small" />
+        {title}
       </DialogTitle>
 
-      <DialogContent className="shared-dialog-content">
-        <div className="shared-dialog-text">{title}</div>
-      </DialogContent>
-
-      <DialogActions className="shared-dialog-footer">
-        <Button
-          onClick={onClose}
-          className="btn-std btn-primary"
-        >
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="btn-std btn-primary">
           {closeText}
         </Button>
       </DialogActions>

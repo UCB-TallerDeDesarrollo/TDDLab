@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import "../../../App.css";
 
-const EditGroupPopup: React.FC<{ open: boolean; handleClose: () => void; groupToEdit: any; onUpdated?: (g: any) => void }> = ({ open, handleClose, groupToEdit, onUpdated }) => {
+const EditGroupPopup: React.FC<{
+  open: boolean;
+  handleClose: () => void;
+  groupToEdit: any;
+  onUpdated?: (g: any) => void;
+}> = ({ open, handleClose, groupToEdit, onUpdated }) => {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -26,7 +38,9 @@ const EditGroupPopup: React.FC<{ open: boolean; handleClose: () => void; groupTo
       await updater.updateGroup(groupToEdit.id, payload);
       onUpdated?.(payload);
       setValidationDialogOpen(true);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -34,24 +48,50 @@ const EditGroupPopup: React.FC<{ open: boolean; handleClose: () => void; groupTo
       {!validationDialogOpen && (
         <>
           <DialogTitle className="dialog-title-std">Editar grupo</DialogTitle>
+
           <DialogContent className="dialog-content-box">
             <TextField
-              autoFocus margin="dense" label="Nombre del grupo*" fullWidth
-              value={groupName} onChange={(e) => setGroupName(e.target.value)}
+              autoFocus
+              margin="dense"
+              label="Nombre del grupo*"
+              fullWidth
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
             />
             <TextField
-              multiline rows={3.7} margin="dense" label="Descripción" fullWidth
-              value={groupDescription} onChange={(e) => setGroupDescription(e.target.value)}
+              multiline
+              rows={3.7}
+              margin="dense"
+              label="Descripción"
+              fullWidth
+              value={groupDescription}
+              onChange={(e) => setGroupDescription(e.target.value)}
             />
           </DialogContent>
+
           <DialogActions className="dialog-footer">
-            <Button onClick={handleClose} className="btn-std" style={{ color: "#555" }}>Cancelar</Button>
-            <Button onClick={handleUpdate} className="btn-std btn-primary">Guardar Cambios</Button>
+            {/* Outline rojo — consistente con el resto de formularios */}
+            <Button onClick={handleClose} className="btn-std btn-danger-outline">
+              Cancelar
+            </Button>
+            <Button onClick={handleUpdate} className="btn-std btn-primary">
+              Guardar Cambios
+            </Button>
           </DialogActions>
         </>
       )}
-      <ValidationDialog open={validationDialogOpen} title="Grupo actualizado exitosamente" closeText="Cerrar" onClose={() => { setValidationDialogOpen(false); handleClose(); }} />
+
+      <ValidationDialog
+        open={validationDialogOpen}
+        title="Grupo actualizado exitosamente"
+        closeText="Cerrar"
+        onClose={() => {
+          setValidationDialogOpen(false);
+          handleClose();
+        }}
+      />
     </Dialog>
   );
 };
+
 export default EditGroupPopup;
