@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography, CircularProgress, Alert, Paper, Divider } from '@mui/material';
+import { Box, Container, Typography, CircularProgress, Alert } from '@mui/material';
 import { useSettings } from '../hooks/useSettings';
 import { PromptConfiguration, PromptItem } from '../components/PromptConfiguration';
 import { FeatureFlags } from '../components/FeatureFlags';
@@ -92,7 +92,7 @@ const SettingsPage: React.FC = () => {
         </Alert>
       )}
 
-      <Paper sx={{ p: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {prompts && (
           <PromptConfiguration
             prompts={promptItems}
@@ -104,15 +104,12 @@ const SettingsPage: React.FC = () => {
         )}
 
         {flags && flags.length > 0 && (
-          <>
-            <Divider />
-            <FeatureFlags
-              flags={flags as any} // Need to align types if necessary, but fields match based on earlier read.
-              onToggleFlag={handleToggleFlag}
-            />
-          </>
+          <FeatureFlags
+            flags={flags as any} // Need to align types if necessary, but fields match based on earlier read.
+            onToggleFlag={handleToggleFlag}
+          />
         )}
-      </Paper>
+      </Box>
     </Container>
   );
 };
