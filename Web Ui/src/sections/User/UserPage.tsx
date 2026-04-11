@@ -4,9 +4,21 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
 import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserFromGroup";
 import {
-  Table, TableHead, TableBody, TableRow, TableCell, Container,
-  Select, MenuItem, InputLabel, FormControl, CircularProgress,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Container,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  CircularProgress,
+  SelectChangeEvent,
+  Tooltip,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import SearchIcon from "@mui/icons-material/Search";
@@ -14,6 +26,8 @@ import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail";
+import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import "../../App.css";
 
 function UserPage() {
@@ -25,10 +39,17 @@ function UserPage() {
   const [error, setError] = useState<unknown>(null);
   const [filteredUsers, setFilteredUsers] = useState<UserDataObject[]>([]);
 
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
   const userRepository = useMemo(() => new UsersRepository(), []);
   const getUsers = useMemo(() => new GetUsers(userRepository), [userRepository]);
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
-  const searchUsersByEmail = useMemo(() => new SearchUsersByEmail(userRepository), [userRepository]);
+  const searchUsersByEmail = useMemo(
+    () => new SearchUsersByEmail(userRepository),
+    [userRepository]
+  );
 
   useEffect(() => {
     const fetchUsersAndGroups = async () => {
@@ -68,19 +89,42 @@ function UserPage() {
     setSelectedGroup(event.target.value as number | "all");
   };
 
-  const handleRemoveUserFromGroup = async (userId: number) => {
-    if (window.confirm("¿Estás seguro que deseas eliminar...?")) {
-      try {
+  const handleOpenRemoveDialog = (userId: number) => {
+    setSelectedUserId(userId);
+    setConfirmationOpen(true);
+  };
+
+  const handleConfirmRemoveUser = async () => {
+    try {
+      if (selectedUserId !== null) {
         const removeUserInstance = new RemoveUserFromGroup(userRepository);
-        await removeUserInstance.removeUserFromGroup(userId);
-        alert("Éxito");
-        window.location.reload();
-      } catch (error) { console.error(error); }
+        await removeUserInstance.removeUserFromGroup(selectedUserId);
+
+        setFilteredUsers((prev) =>
+          prev.filter((user) => user.id !== selectedUserId)
+        );
+
+        setValidationDialogOpen(true);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setConfirmationOpen(false);
+      setSelectedUserId(null);
     }
   };
 
-  if (loading) return <div className="loading-spinner"><CircularProgress /></div>;
-  if (error) return <div>Error: {(error as Error).message}</div>;
+  if (loading) {
+    return (
+      <div className="loading-spinner">
+        <CircularProgress />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {(error as Error).message}</div>;
+  }
 
   return (
     <Container className="centered-container">
@@ -91,7 +135,11 @@ function UserPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ width: 360 }}
           InputProps={{
-            startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>),
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
           }}
         />
 
@@ -99,7 +147,11 @@ function UserPage() {
           <InputLabel>Grupo</InputLabel>
           <Select value={selectedGroup} onChange={handleGroupChange} label="Grupo">
             <MenuItem value="all">Todos los grupos</MenuItem>
-            {groups.map((g) => <MenuItem key={g.id} value={g.id}>{g.groupName}</MenuItem>)}
+            {groups.map((g) => (
+              <MenuItem key={g.id} value={g.id}>
+                {g.groupName}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </div>
@@ -115,7 +167,11 @@ function UserPage() {
         </TableHead>
         <TableBody>
           {filteredUsers.length === 0 ? (
-            <TableRow><TableCell colSpan={4} align="center">No hay resultados</TableCell></TableRow>
+            <TableRow>
+              <TableCell colSpan={4} align="center">
+                No hay resultados
+              </TableCell>
+            </TableRow>
           ) : (
             filteredUsers.map((user) => (
               <TableRow key={user.id} className="table-row-bordered">
@@ -124,9 +180,9 @@ function UserPage() {
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
                   <Tooltip title="Eliminar" arrow>
-                    <RemoveCircleIcon 
-                      onClick={() => handleRemoveUserFromGroup(user.id)} 
-                      sx={{ color: "#d81b1b", cursor: 'pointer' }} 
+                    <RemoveCircleIcon
+                      onClick={() => handleOpenRemoveDialog(user.id)}
+                      sx={{ color: "#d81b1b", cursor: "pointer" }}
                     />
                   </Tooltip>
                 </TableCell>
@@ -135,6 +191,26 @@ function UserPage() {
           )}
         </TableBody>
       </Table>
+
+      <ConfirmationDialog
+        open={confirmationOpen}
+        title="¿Estás seguro que deseas eliminar este estudiante?"
+        content="El estudiante será removido del grupo actual."
+        cancelText="Cancelar"
+        deleteText="Eliminar"
+        onCancel={() => {
+          setConfirmationOpen(false);
+          setSelectedUserId(null);
+        }}
+        onDelete={handleConfirmRemoveUser}
+      />
+
+      <ValidationDialog
+        open={validationDialogOpen}
+        title="Estudiante eliminado exitosamente"
+        closeText="Cerrar"
+        onClose={() => setValidationDialogOpen(false)}
+      />
     </Container>
   );
 }
