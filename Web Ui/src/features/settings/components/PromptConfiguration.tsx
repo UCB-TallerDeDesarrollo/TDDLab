@@ -68,6 +68,7 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
           <InputLabel 
             id="prompt-select-label"
             sx={{
+              ml: { xs: '2px', md: '18px' },
               color: '#6F6F6F', // Matching the Figma text color
               '&.Mui-focused': {
                 color: '#6F6F6F',
@@ -84,6 +85,12 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
             disabled={isEditing || saving}
             label="Selecciona el tipo de prompt"
             sx={{
+              '& .MuiSelect-select': {
+                pl: { xs: '16px', md: '32px' },
+              },
+              '& fieldset legend': {
+                ml: { xs: '2px', md: '18px' },
+              },
               '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: '#898989',
                 borderWidth: '1.5px',
