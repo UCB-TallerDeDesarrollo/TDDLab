@@ -45,15 +45,15 @@ const SettingsPage: React.FC = () => {
     try {
       await savePrompt(tdd, refac, evalPrompt);
     } catch (e) {
-      console.error(e);
+      // Error handled by useSettings hook (UI feedback)
     }
   };
 
   const handleToggleFlag = async (id: number, newValue: boolean) => {
     try {
-      await toggleFeatureFlag(id, !newValue);
+      await toggleFeatureFlag(id, newValue);
     } catch (e) {
-      console.error(e);
+      // Error handled by useSettings hook (UI feedback)
     }
   };
 
@@ -95,7 +95,7 @@ const SettingsPage: React.FC = () => {
         <FeatureListSection title="Habilitación de Funcionalidades:">
           {flags && flags.length > 0 && (
             <FeatureFlags
-              flags={flags as any}
+              flags={flags}
               onToggleFlag={handleToggleFlag}
             />
           )}
