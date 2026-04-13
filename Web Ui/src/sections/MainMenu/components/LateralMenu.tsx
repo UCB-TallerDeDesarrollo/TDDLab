@@ -6,13 +6,14 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
-  Button
+  Button,
+  IconButton
 } from "@mui/material";
 import { ReactElement, Dispatch, SetStateAction } from "react";
-import LogoutIcon from "@mui/icons-material/Logout";
-import logoTddLab from "../../../assets/logo-tddlab.svg"; 
+import LogoutIcon from "@mui/icons-material/Logout"; 
 import "../../../App.css";
 import "../../MainMenu/styles/LateralMenuStyles.css"
+import MenuIcon from "@mui/icons-material/Menu";
 
 interface NavItem {
   title: string;
@@ -38,10 +39,15 @@ export default function NavLateralMenu({
   return (
     <Box className="drawer-container">
       <Box className="drawer-header">
-        <img src={logoTddLab} alt="Logo" className="drawer-logo" />
+        <IconButton 
+          onClick={() => setOpen(false)} 
+          className="drawer-close-btn"
+        >
+          <MenuIcon />
+        </IconButton>
       </Box>
       <nav className="drawer-nav">
-        <List sx={{ p: 0 }}>
+        <List className="drawer-list-container">
           {navArrayLinks.map((item) => (
             <Box key={item.title}>
               <ListItem disablePadding>

@@ -18,26 +18,6 @@
   padding: 5px 0; 
 }
 
-.logo-text-container {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.logo-tdd {
-  font-weight: 800;
-  font-size: 24px;
-  letter-spacing: 1px;
-}
-
-.logo-lab {
-  font-size: 10px;
-  letter-spacing: 4px;
-  text-align: justify;
-  margin-top: -2px;
-  opacity: 0.8;
-}
-
 .navbar-brand-group {
   display: flex !important;
   flex-direction: row !important;
@@ -85,4 +65,47 @@
   height: 3px;
   background-color: #ffffff;
   border-radius: 2px; 
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+}
+
+.mobile-menu-btn {
+  margin-right: 8px !important;
+}
+
+@media (min-width: 600px) {
+  .mobile-menu-btn { display: none !important; }
+}
+
+.desktop-nav-links {
+  display: flex;
+  height: 100%;
+}
+
+@media (max-width: 600px) {
+  .navbar-brand-group {
+    width: 100%;
+    justify-content: space-between; 
+    flex-direction: row; 
+  }
+
+  .navbar-actions-group {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    order: 1; 
+  }
+
+  .navbar-brand-link {
+    order: 2; 
+  }
+}
+
+.main-drawer .MuiDrawer-paper {
+  background-color: var(--primary-dark) !important;
+  width: 280px;
 }

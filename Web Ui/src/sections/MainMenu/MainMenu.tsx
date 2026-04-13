@@ -55,26 +55,21 @@ export default function MainMenu({
     <div className="page-top-spacer">
       <AppBar position="fixed" className="main-navbar" elevation={0}>
         <Toolbar className="navbar-toolbar">
-
           <div className="navbar-brand-group">
             <IconButton
               color="inherit"
               onClick={() => setOpen(true)}
-              sx={{ display: { xs: "flex", sm: "none" }, mr:1 }}
+              className="mobile-menu-btn"
             >
               <MenuIcon />
             </IconButton>
             <NavLink to="/" className="navbar-brand-link">
-              <img 
-                src={logoTddLab} 
-                alt="TDDLab Logo" 
-                style={{ height: '40px', width: 'auto' }} 
-              />
+              <img src={logoTddLab} alt="TDDLab Logo" className="navbar-logo" />
             </NavLink>
           </div>
 
           <div className="navbar-actions-group">
-            <Box sx={{ display: { xs: "none", sm: "flex" }, height: '100%' }}>
+            <Box className="desktop-nav-links">
               {navArrayLinks.map((item) =>
                 item.access.includes(userRole) && (
                   <Button
@@ -97,8 +92,7 @@ export default function MainMenu({
         open={open}
         anchor="left"
         onClose={() => setOpen(false)}
-        sx={{ display: { xs: "flex", sm: "none" } }}
-        PaperProps={{ sx: { backgroundColor: '#001f3d' } }} 
+        className="main-drawer"
       >
         <NavLateralMenu
           navArrayLinks={navArrayLinks}

@@ -16,7 +16,6 @@ export default function LoginComponent() {
   const authData = useGlobalState("authData");
   const navigate = useNavigate();
   
-  // Estado para el menú desplegable
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -28,7 +27,6 @@ export default function LoginComponent() {
     setAnchorEl(null);
   };
 
-  // Lógica de Login original
   const handleLogin = async () => {
     const userData = await handleSignInWithGitHub();
     if (userData?.email) {
@@ -39,9 +37,8 @@ export default function LoginComponent() {
     }
   };
 
-  // Lógica de Logout original (Integrada)
   const handleLogoutAction = async () => {
-    handleClose(); // Cerrar el menú
+    handleClose();
     await handleGithubSignOut();
     setGlobalState("authData", {
       userid: -1,
@@ -63,35 +60,24 @@ export default function LoginComponent() {
             src={authData[0].userProfilePic}
             alt="Profile"
             onClick={handleClick}
-            sx={{ width: 45, height: 45, cursor: 'pointer', border: '2px solid rgba(255,255,255,0.2)' }}
+            className="user-avatar"
           />
           <Menu
             anchorEl={anchorEl}
             open={open}
             onClose={handleClose}
-            disableScrollLock={true} // Evita que la pantalla salte al abrir el menú
+            disableScrollLock={true}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            slotProps={{
-              paper: {
-                elevation: 3,
-                sx: { 
-                  mt: 1.5,
-                  overflow: 'visible',
-                  '&:before': {
-                    content: '""', display: 'block', position: 'absolute', top: 0, right: 14, width: 10, height: 10, bgcolor: 'background.paper', transform: 'translateY(-50%) rotate(45deg)', zIndex: 0 
-                  } 
-                }
-              }
-            }}
+            slotProps={{ paper: { className: 'user-menu-paper' } }}
           >
-            <MenuItem disabled sx={{ fontSize: '0.8rem' }}>
+            <MenuItem disabled className="user-menu-email">
               {authData[0].userEmail}
             </MenuItem>
             <Divider />
-            <MenuItem onClick={handleLogoutAction} sx={{ color: '#d32f2f' }}>
+            <MenuItem onClick={handleLogoutAction} className="logout-menu-item">
               <ListItemIcon>
-                <Logout fontSize="small" sx={{ color: '#d32f2f' }} />
+                <Logout className="logout-icon-red" />
               </ListItemIcon>
               Cerrar Sesión
             </MenuItem>

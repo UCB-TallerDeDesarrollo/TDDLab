@@ -1,28 +1,22 @@
-.drawer-content {
-  width: 280px;
+.drawer-container {
+  width: 100%; 
   height: 100%;
-  background-color: #001f3d !important; 
+  background-color: var(--primary-dark);
   display: flex;
   flex-direction: column;
 }
 
+.drawer-list-container {
+  padding: 0 !important;
+}
+
 .drawer-header {
-  padding: 20px;
+  padding: 0 20px; /* Alineado con el padding del navbar */
   display: flex;
   justify-content: flex-start; 
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  height: 70px; 
-}
-
-.drawer-logo {
-  height: 35px;
-  width: auto;
-}
-
-.drawer-nav {
-  flex-grow: 1;
-  overflow-y: auto; 
+  height: 70px; /* Debe coincidir exactamente con var(--nav-height) */
 }
 
 .drawer-item-button {
@@ -70,4 +64,9 @@
   background-color: var(--primary-blue) !important;
   text-transform: none !important;
   font-weight: 600 !important;
+}
+
+.drawer-close-btn {
+  color: white !important;
+  padding: 8px !important;
 }
