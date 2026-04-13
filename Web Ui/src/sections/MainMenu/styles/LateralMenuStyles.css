@@ -1,3 +1,73 @@
-.drawer-container { 
-  width: 250px; 
+.drawer-content {
+  width: 280px;
+  height: 100%;
+  background-color: #001f3d !important; 
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header {
+  padding: 20px;
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: 70px; 
+}
+
+.drawer-logo {
+  height: 35px;
+  width: auto;
+}
+
+.drawer-nav {
+  flex-grow: 1;
+  overflow-y: auto; 
+}
+
+.drawer-item-button {
+  padding: 12px 20px !important;
+}
+
+.drawer-item-button:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.drawer-icon {
+  color: rgba(255, 255, 255, 0.7) !important; 
+  min-width: 40px !important;
+}
+
+.drawer-text span {
+  color: #ffffff !important; 
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+}
+
+.drawer-divider {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.drawer-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.drawer-logout-btn {
+  color: #ff5252 !important;
+  border-color: rgba(255, 82, 82, 0.5) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  padding: 10px !important;
+}
+
+.drawer-logout-btn:hover {
+  background-color: rgba(255, 82, 82, 0.1) !important;
+  border-color: #ff5252 !important;
+}
+
+.drawer-login-btn {
+  background-color: var(--primary-blue) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
 }

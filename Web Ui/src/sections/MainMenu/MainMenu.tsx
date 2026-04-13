@@ -1,16 +1,19 @@
 import { Button, Box, Drawer, AppBar, IconButton, Toolbar } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import { ReactElement, useState } from "react";
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation, NavLink, useNavigate } from "react-router-dom"; 
+import MenuIcon from "@mui/icons-material/Menu";
 import NavLateralMenu from "./components/LateralMenu";
 import LoginComponent from "./components/loginComponent";
 
-import logoTddLab from "../../assets/logo-tddlab.svg";
+import { useGlobalState, setGlobalState } from "../../modules/User-Authentication/domain/authStates";
+import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
+import { removeSessionCookie } from "../../modules/User-Authentication/application/deleteSessionCookie";
 
+import logoTddLab from "../../assets/logo-tddlab.svg";
 import "../../App.css";
 import "../MainMenu/styles/MainMenuStyles.css" 
 
-type NavLink = {
+type NavLinkType = { 
   title: string;
   path: string;
   icon: ReactElement;
@@ -18,7 +21,7 @@ type NavLink = {
 };
 
 interface NavbarProps {
-  navArrayLinks: NavLink[];
+  navArrayLinks: NavLinkType[];
   userRole: string;
 }
 
@@ -27,8 +30,26 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const authData = useGlobalState("authData"); 
+  
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogoutAction = async () => {
+    await handleGithubSignOut();
+    setGlobalState("authData", {
+      userid: -1,
+      userProfilePic: "",
+      userEmail: "",
+      usergroupid: -1,
+      userRole: "",
+    });
+    await removeSessionCookie();
+    localStorage.clear();
+    setOpen(false); 
+    navigate("/login");
+  };
 
   return (
     <div className="page-top-spacer">
@@ -47,7 +68,7 @@ export default function MainMenu({
               <img 
                 src={logoTddLab} 
                 alt="TDDLab Logo" 
-                style={{ height: '40px', width: 'auto' }} // Ajusta el alto según prefieras
+                style={{ height: '40px', width: 'auto' }} 
               />
             </NavLink>
           </div>
@@ -77,11 +98,14 @@ export default function MainMenu({
         anchor="left"
         onClose={() => setOpen(false)}
         sx={{ display: { xs: "flex", sm: "none" } }}
+        PaperProps={{ sx: { backgroundColor: '#001f3d' } }} 
       >
         <NavLateralMenu
           navArrayLinks={navArrayLinks}
           NavLink={NavLink}
           setOpen={setOpen}
+          userEmail={authData[0].userEmail ?? ""} 
+          onLogout={handleLogoutAction}
         />
       </Drawer>
     </div>

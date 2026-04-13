@@ -8,15 +8,14 @@
   justify-content: space-between !important;
   align-items: center !important;
   height: 100%; 
-  padding: 0 40px !important; /* Más margen a los lados */
+  padding: 0 40px !important; 
 }
 
-/* Estilo del Logo */
 .navbar-brand-link {
   text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 5px 0; /* Un poco de aire arriba y abajo */
+  padding: 5px 0; 
 }
 
 .logo-text-container {
@@ -39,24 +38,30 @@
   opacity: 0.8;
 }
 
-/* Grupo de Links */
+.navbar-brand-group {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px;
+}
+
 .navbar-actions-group {
   display: flex;
   align-items: center;
   height: 100%;
-  gap: 5px; /* Espacio entre botones */
+  gap: 15px;
 }
 
 .nav-link-btn {
-  position: relative; /* IMPORTANTE: necesario para posicionar la línea respecto al botón */
+  position: relative; 
   height: 70px !important; 
   color: #ffffff !important;
   opacity: 0.7;
   border-radius: 0px !important;
   text-transform: none !important;
-  font-size: 1.1rem !important;
-  padding: 0 25px !important;
-  /* Quitamos el border-bottom que teníamos antes */
+  font-size: 1rem !important; 
+  padding: 0 15px !important; 
+  white-space: nowrap !important; 
   border-bottom: none !important; 
   transition: all 0.2s ease !important;
 }
@@ -68,23 +73,16 @@
 
 .nav-link-active { 
   opacity: 1 !important;
-  font-weight: 700 !important; /* Negrita más marcada como en tu imagen */
+  font-weight: 700 !important; 
 }
 
 .nav-link-active::after {
   content: "";
   position: absolute;
-  
-  /* POSICIÓN: Aquí controlas la elevación */
-  bottom: 12px; /* Sube la línea desde el fondo. Ajústalo a tu gusto */
-  
-  /* ANCHO Y CENTRADO: */
-  left: 20px;   /* Margen izquierdo de la línea */
-  right: 20px;  /* Margen derecho de la línea */
-  /* Si prefieres un ancho fijo, usa: width: 60%; left: 20%; */
-  
-  /* GROSOR Y COLOR */
+  bottom: 12px; 
+  left: 20px;   
+  right: 20px;  
   height: 3px;
   background-color: #ffffff;
-  border-radius: 2px; /* Opcional: puntas redondeadas */
+  border-radius: 2px; 
 }
