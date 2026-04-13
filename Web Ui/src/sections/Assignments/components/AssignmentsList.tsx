@@ -261,7 +261,6 @@ function Assignments({
                     
                     {userRole !== "student" && (
                       <Button
-                        variant="contained"
                         className="btn-std btn-primary"
                         startIcon={<AddIcon />}
                         onClick={showForm}

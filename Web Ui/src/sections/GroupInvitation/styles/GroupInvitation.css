@@ -81,10 +81,6 @@
   text-align: center;
 }
 
-.gi-invite-button {
-  margin-top: 16px;
-}
-
 .gi-auth-buttons {
   display: flex;
   gap: 15px;
@@ -92,27 +88,25 @@
   justify-content: center;
 }
 
-.gi-auth-button.MuiButton-root {
-  color: #ffffff;
-  padding: 10px 20px;
-  text-transform: uppercase;
-  font-weight: 500;
+
+.gi-auth-button--github {
+  background-color: #24292e !important;
+  color: white !important;
+  border: none !important;
 }
 
-.gi-auth-button--github.MuiButton-root {
-  background-color: #24292e;
+.gi-auth-button--github:hover {
+  background-color: #1a1e22 !important;
 }
 
-.gi-auth-button--github.MuiButton-root:hover {
-  background-color: #1a1e22;
+.gi-auth-button--google {
+  background-color: #4285f4 !important;
+  color: white !important;
+  border: none !important;
 }
 
-.gi-auth-button--google.MuiButton-root {
-  background-color: #4285f4;
-}
-
-.gi-auth-button--google.MuiButton-root:hover {
-  background-color: #3367d6;
+.gi-auth-button--google:hover {
+  background-color: #3367d6 !important;
 }
 
 .gi-auth-button.Mui-disabled {
@@ -131,15 +125,11 @@
 }
 
 .gi-admin-modal-paper {
-  background-color: #fdfdfd;
-  color: #2b2b2b;
-  border-radius: 16px;
+  background-color: var(--white);
+  border-radius: 8px; /* Unificado con el sistema */
   padding: 32px;
-  font-family: Inter, Roboto, sans-serif;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   text-align: center;
-  width: 380px;
-  margin: 0 auto;
 }
 
 .gi-admin-modal-backdrop {
@@ -174,7 +164,8 @@
 }
 
 .gi-admin-modal-highlight {
-  color: #1976d2;
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 .gi-admin-modal-button.MuiButton-root {

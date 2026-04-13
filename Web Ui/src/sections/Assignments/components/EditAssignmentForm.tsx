@@ -127,7 +127,7 @@ function EditAssignmentDialog({
       <DialogContent className="dialog-content-box">
         <FormControl fullWidth variant="outlined" size="small" sx={{ mt: 1 }}>
           <InputLabel>Grupo</InputLabel>
-          <Select value={selectedGroup} onChange={handleGroupChange} label="Grupo">
+          <Select value={selectedGroup} onChange={handleGroupChange} label="Grupo" className="select-compact" >
             <MenuItem value={0}>{currentGroupName}</MenuItem>
             {groups.map((group) => (
               <MenuItem key={group.id} value={group.id}>
@@ -163,7 +163,7 @@ function EditAssignmentDialog({
       </DialogContent>
 
       <DialogActions className="dialog-footer">
-        <Button onClick={onClose} className="btn-std btn-danger-outline">
+        <Button onClick={onClose} className="btn-std btn-secondary">
           Cancelar
         </Button>
         <Button onClick={handleSaveChanges} className="btn-std btn-primary">

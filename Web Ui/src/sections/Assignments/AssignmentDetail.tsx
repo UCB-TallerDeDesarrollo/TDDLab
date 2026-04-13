@@ -384,17 +384,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             <TableCell>{submission.comment || "N/A"}</TableCell>
             <TableCell>
               <Button
-                variant="contained"
+                className="btn-std btn-primary"
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
                   handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
                 }}
               >
                 Ver gráfica
@@ -402,43 +396,30 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             </TableCell>
 
             <TableCell>
-
               <Button
-                variant="contained"
+                className="btn-std btn-primary"
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   navigate("/asistente-ia", {
                     state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
                   });
                 }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
               >
-                Asistente IA
+                Asistente
               </Button>
 
             </TableCell>
             {!isStudent(role) && (
               <TableCell>
                 <Button
-                  variant="contained"
+                  className="btn-std btn-primary"
                   disabled={submission.repository_link === "" || disableAdditionalGraphs}
                   onClick={() => {
                     localStorage.setItem("selectedMetric", "Complejidad");
                     handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
                   }}
-                  color="primary"
-                  style={{
-                    textTransform: "none",
-                    fontSize: "15px",
-                    marginRight: "7px",
-                  }}
                 >
-                  Ver gráficas adicionales
+                  Ver mas
                 </Button>
               </TableCell>
             )}
@@ -519,7 +500,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             {isStudent(role) && (
               <div className="action-buttons-group" style={{ justifyContent: 'flex-start', marginTop: '20px' }}>
                 <Button
-                  variant="contained"
                   disabled={!!studentSubmission}
                   onClick={handleOpenLinkDialog}
                   className="btn-std btn-primary"
@@ -528,7 +508,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 </Button>
 
                 <Button
-                  variant="contained"
                   disabled={!studentSubmission?.repository_link}
                   onClick={() => {
                     localStorage.setItem("selectedMetric", "Dashboard");
@@ -542,7 +521,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 </Button>
 
                 <Button
-                  variant="contained"
                   disabled={isTaskInProgress}
                   onClick={handleOpenCommentDialog}
                   className="btn-std btn-primary"
@@ -552,7 +530,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
                 {showIAButton && (
                   <Button
-                    variant="contained"
                     disabled={!studentSubmission?.repository_link}
                     onClick={() => {
                       localStorage.setItem("selectedMetric", "AssistantAI");

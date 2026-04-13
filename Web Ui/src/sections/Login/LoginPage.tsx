@@ -7,6 +7,9 @@ import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authenti
 import { useEffect, useState } from "react";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import GoogleIcon from "@mui/icons-material/Google";
+import { Button } from "@mui/material"; 
 
 const Login = () => {
   const navigate = useNavigate();
@@ -117,18 +120,22 @@ const Login = () => {
             ¡Bienvenido a TDDLab!, usa tu cuenta para acceder:
           </p>
           <div className="login-buttons">
-            <button
-              className="auth-button auth-button--github"
+            <Button
+              className="btn-std btn-auth-github"
               onClick={handleGitHubLogin}
+              startIcon={<GitHubIcon />}
+              fullWidth
             >
               Accede con GitHub
-            </button>
-            <button
-              className="auth-button auth-button--google"
+            </Button>
+            <Button
+              className="btn-std btn-auth-google"
               onClick={handleGoogleLogin}
+              startIcon={<GoogleIcon />}
+              fullWidth
             >
               Accede con Google
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -85,34 +85,85 @@
 }
 
 /* ==========================================================================
-   SISTEMA DE BOTONES (ESTÁNDAR & VARIANTES)
+   SISTEMA UNIFICADO DE BOTONES
    ========================================================================== */
 
+/* 1. Clase Base: Estructura y Tipografía (Inter 14 Medium) */
 .btn-std {
   height: 36px !important;
   min-width: 110px !important;
-  border-radius: 0px !important;
-  text-transform: none !important;
-  font-size: 0.875rem !important;
-  padding: 0 16px !important;
-  box-shadow: none !important;
+  border-radius: 4px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
+  text-transform: none !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease-in-out !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important; /* Base para variantes con borde */
 }
 
+/* 2. Variantes de Color */
+
+/* Primario: Azul Sólido (Crear, Guardar) */
 .btn-primary {
   background-color: var(--primary-color) !important;
   color: var(--white) !important;
-  border: none !important;
 }
-
 .btn-primary:hover:not(:disabled) {
   background-color: var(--primary-color-hover) !important;
 }
 
+/* Secundario: Borde Plomo (Cancelar) */
+.btn-secondary {
+  background-color: transparent !important;
+  color: var(--gray-700) !important;
+  border-color: var(--gray-400) !important; /* Color plomo del borde */
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-readonly) !important;
+  border-color: var(--gray-600) !important;
+}
+
+/* Success: Verde Sólido (Confirmar, Finalizar) */
+.btn-success {
+  background-color: var(--success-color) !important;
+  color: var(--white) !important;
+}
+.btn-success:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+/* Failure/Danger: Rojo Sólido (Eliminar) */
+.btn-danger {
+  background-color: var(--danger-color) !important;
+  color: var(--white) !important;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--danger-color-hover) !important;
+}
+
+/* 3. Estado Deshabilitado (Fondo plomo sólido) */
 .btn-std:disabled {
-  background-color: var(--bg-disabled) !important;
-  color: var(--text-disabled) !important;
+  background-color: var(--bg-disabled) !important; /* Fondo plomo */
+  color: var(--text-disabled) !important; /* Texto gris suave */
+  border-color: transparent !important;
   cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 4. Dropdowns (Filtros y Ordenamiento) */
+.select-compact, 
+.sorting-container .MuiOutlinedInput-root {
+  height: 36px !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  background-color: var(--white) !important;
 }
 
 /* ==========================================================================
@@ -155,12 +206,6 @@
   margin-left: auto;
   margin-right: auto;
   flex-wrap: nowrap;
-}
-
-.select-compact,
-.sorting-container .MuiOutlinedInput-root {
-  height: 36px !important;
-  border-radius: 0px !important;
 }
 
 /* ==========================================================================
@@ -231,77 +276,6 @@
   font-size: 20px;
 }
 
-/* ==========================================================================
-   ADICIONES AL SISTEMA DE BOTONES
-   ========================================================================== */
-
-/* Botón Rojo Sólido (Usado en botones de Cancelar de formularios) */
-.btn-danger {
-  background-color: var(--danger-color) !important;
-  color: var(--white) !important;
-  border: none !important;
-}
-
-.btn-danger:hover:not(:disabled) {
-  background-color: var(--danger-color-hover) !important;
-}
-
-/* Botón con Borde Rojo (Usado específicamente en ConfirmationDialog) */
-.btn-std.btn-danger-outline {
-  color: var(--danger-color) !important;
-  border: var(--border-width-outline) solid var(--danger-color) !important;
-  background-color: transparent !important;
-  padding: 5px 20px !important;
-  transition: all 0.2s ease;
-}
-
-.btn-std.btn-danger-outline:hover {
-  background-color: var(--danger-color-bg-hover) !important;
-  border-color: var(--danger-color-hover) !important;
-  color: var(--danger-color-hover) !important;
-}
-
-/* Botón Secondary Outline (Cancelar) */
-.btn-std.btn-secondary-outline {
-  color: var(--secondary-color) !important;
-  border: var(--border-width-outline) solid var(--secondary-color) !important;
-  background-color: transparent !important;
-  padding: 5px 20px !important;
-  transition: all 0.2s ease;
-}
-
-.btn-std.btn-secondary-outline:hover:not(:disabled) {
-  background-color: var(--secondary-color-hover-bg) !important;
-  border-color: var(--secondary-color) !important;
-  color: var(--secondary-color) !important;
-}
-
-/* Botón Tertiary (Ver Gráfica) */
-.btn-std.btn-tertiary {
-  background-color: var(--tertiary-color-bg) !important;
-  color: var(--tertiary-color-text) !important;
-  border: none !important;
-  transition: background-color 0.2s ease;
-}
-
-.btn-std.btn-tertiary:hover:not(:disabled) {
-  background-color: var(--tertiary-color-bg-hover) !important;
-}
-
-/* Botón Success Outline (Cerrar) */
-.btn-std.btn-success-outline {
-  color: var(--success-color) !important;
-  border: var(--border-width-outline) solid var(--success-color) !important;
-  background-color: transparent !important;
-  padding: 5px 20px !important;
-  transition: all 0.2s ease;
-}
-
-.btn-std.btn-success-outline:hover:not(:disabled) {
-  background-color: var(--success-color-hover-bg) !important;
-  border-color: var(--success-color) !important;
-  color: var(--success-color) !important;
-}
 
 /* ==========================================================================
    ADICIONES PARA DIÁLOGOS

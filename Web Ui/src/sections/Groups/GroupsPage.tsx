@@ -334,7 +334,6 @@ function Groups() {
                     onChangeHandler={handleGroupsOrder}
                   />
                   <Button
-                    variant="contained"
                     className="btn-std btn-primary"
                     startIcon={<AddIcon />}
                     onClick={handleCreateGroupClick}

@@ -232,8 +232,7 @@ function InvitationPage() {
                       <Grid item className="gi-signout-wrapper">
                         <Button
                           onClick={handleGithubSignOut}
-                          variant="contained"
-                          color="primary"
+                          className="btn-std btn-primary"
                           disabled={isLoading}
                         >
                           Cerrar sesión
@@ -270,9 +269,7 @@ function InvitationPage() {
                   {userType === "student" && (
                     <Button
                       onClick={() => handleAcceptInvitation("student")}
-                      variant="contained"
-                      color="primary"
-                      className="gi-invite-button"
+                      className="btn-std btn-primary"
                       fullWidth
                       disabled={isLoading}
                     >
@@ -282,9 +279,7 @@ function InvitationPage() {
                   {userType === "teacher" && (
                     <Button
                       onClick={handlePopPassword}
-                      variant="contained"
-                      color="primary"
-                      className="gi-invite-button"
+                      className="btn-std btn-primary"
                       fullWidth
                       disabled={isLoading}
                     >
@@ -319,8 +314,7 @@ function InvitationPage() {
               <Button 
                 onClick={handleSignUp} 
                 disabled={isLoading}
-                variant="contained"
-                className="gi-auth-button gi-auth-button--github"
+                className="btn-std gi-auth-button--github"
               >
                 <div
                   className="gi-auth-button-content"
@@ -332,8 +326,7 @@ function InvitationPage() {
               <Button 
                 onClick={handleSignUpWithGoogle} 
                 disabled={isLoading}
-                variant="contained"
-                className="gi-auth-button gi-auth-button--google"
+                className="btn-std gi-auth-button--google"
               >
                 <div
                   className="gi-auth-button-content"

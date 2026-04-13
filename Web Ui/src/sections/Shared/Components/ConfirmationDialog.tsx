@@ -41,14 +41,14 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       <DialogActions className="shared-dialog-footer">
         <Button
           onClick={onCancel}
-          className="btn-std btn-danger-outline"
+          className="btn-std btn-secondary"
         >
           {cancelText}
         </Button>
 
         <Button
           onClick={onDelete}
-          className="btn-std btn-primary"
+          className="btn-std btn-danger"
         >
           {deleteText}
         </Button>
