@@ -28,9 +28,9 @@ import { CircularProgress } from "@mui/material";
 const navArrayLinks = [
   { title: "Grupos", path: "/groups", icon: <GroupsIcon />, access: ["admin", "teacher"] },
   { title: "Tareas", path: "/", icon: <DescriptionIcon />, access: ["admin", "student", "teacher"] },
-  { title: "Mis Practicas", path: "/mis-practicas", icon: <NoteAdd />, access: ["admin", "teacher", "student"] },
+  { title: "Mis prácticas", path: "/mis-practicas", icon: <NoteAdd />, access: ["admin", "teacher", "student"] },
   { title: "Usuarios", path: "/user", icon: <PersonIcon />, access: ["admin", "teacher"] },
-  { title: "Configuraciones", path: "/configuraciones", icon: <SettingsIcon />, access: ["admin", "teacher"] },
+  { title: "Ajustes", path: "/configuraciones", icon: <SettingsIcon />, access: ["admin", "teacher"] },
 ];
 
 function App() {

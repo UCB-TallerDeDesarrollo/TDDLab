@@ -1,11 +1,15 @@
 .profile-picture {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%; /* Hace la imagen circular */
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  margin-left: 20px;
+  cursor: pointer;
 }
 
-/* Grupo de Perfil (Soluciona espaciado) */
 .user-profile-group {
   display: flex;
   align-items: center;
-  gap: 20px; /* Separación entre botón y foto */
+  margin-left: 10px;
 }
