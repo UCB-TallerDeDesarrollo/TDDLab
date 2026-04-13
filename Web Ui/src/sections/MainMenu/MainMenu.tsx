@@ -99,6 +99,7 @@ export default function MainMenu({
           NavLink={NavLink}
           setOpen={setOpen}
           userEmail={authData[0].userEmail ?? ""} 
+          userRole={userRole}
           onLogout={handleLogoutAction}
         />
       </Drawer>

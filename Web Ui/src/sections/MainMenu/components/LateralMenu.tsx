@@ -26,6 +26,7 @@ interface NavLateralMenuProps {
   NavLink: React.ComponentType<any>;
   setOpen: Dispatch<SetStateAction<boolean>>;
   userEmail: string;
+  userRole: string;
   onLogout: () => void;
 }
 
@@ -34,6 +35,7 @@ export default function NavLateralMenu({
   NavLink,
   setOpen,
   userEmail,
+  userRole,
   onLogout
 }: Readonly<NavLateralMenuProps>) {
   return (
@@ -48,21 +50,23 @@ export default function NavLateralMenu({
       </Box>
       <nav className="drawer-nav">
         <List className="drawer-list-container">
-          {navArrayLinks.map((item) => (
-            <Box key={item.title}>
-              <ListItem disablePadding>
-                <ListItemButton
-                  component={NavLink}
-                  to={item.path}
-                  onClick={() => setOpen(false)}
-                  className="drawer-item-button"
-                >
-                  <ListItemIcon className="drawer-icon">{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.title} className="drawer-text" />
-                </ListItemButton>
-              </ListItem>
-              <Divider className="drawer-divider" />
-            </Box>
+          {navArrayLinks.map((item: any) => (
+            item.access.includes(userRole) && (
+              <Box key={item.title}>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    component={NavLink}
+                    to={item.path}
+                    onClick={() => setOpen(false)}
+                    className="drawer-item-button"
+                  >
+                    <ListItemIcon className="drawer-icon">{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.title} className="drawer-text" />
+                  </ListItemButton>
+                </ListItem>
+                <Divider className="drawer-divider" />
+              </Box>
+            )
           ))}
         </List>
       </nav>
