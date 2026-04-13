@@ -112,7 +112,7 @@ function EditPracticeDialog({
       </DialogContent>
 
       <DialogActions className="dialog-footer">
-        <Button onClick={onClose} className="btn-std btn-danger-outline">
+        <Button onClick={onClose} className="btn-std btn-secondary">
           Cancelar
         </Button>
         <Button onClick={handleSaveChanges} className="btn-std btn-primary">

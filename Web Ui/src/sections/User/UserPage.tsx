@@ -128,24 +128,35 @@ function UserPage() {
 
   return (
     <Container className="centered-container">
-      <div className="filter-container">
+      <div className="filter-container" style={{ marginBottom: '24px', gap: '16px' }}>
         <TextField
           label="Buscar por email"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 360 }}
+          variant="outlined"
+          size="small"
+          sx={{ 
+            width: 360,
+            '& .MuiOutlinedInput-root': { height: 36, borderRadius: '4px' } 
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <SearchIcon fontSize="small" />
               </InputAdornment>
             ),
           }}
         />
 
         <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>Grupo</InputLabel>
-          <Select value={selectedGroup} onChange={handleGroupChange} label="Grupo">
+          <InputLabel id="group-select-label">Filtrar por Grupo</InputLabel>
+          <Select 
+            labelId="group-select-label"
+            value={selectedGroup} 
+            onChange={handleGroupChange} 
+            label="Filtrar por Grupo"
+            className="select-compact" // Altura de 36px y fuente Inter
+          >
             <MenuItem value="all">Todos los grupos</MenuItem>
             {groups.map((g) => (
               <MenuItem key={g.id} value={g.id}>

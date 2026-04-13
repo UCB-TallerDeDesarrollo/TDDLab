@@ -163,15 +163,14 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         <Button
           onClick={handleCancel}
           color="primary"
-          style={{ textTransform: "none", color: "#555" }}
+          className="btn-std btn-secondary"
         >
           Cancelar
         </Button>
         <Button
           onClick={handleSend}
-          color="primary"
+          className="btn-std btn-primary"
           disabled={!validLink || repo === ""}
-          style={{ textTransform: "none" }}
         >
           Enviar
         </Button>

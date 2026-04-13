@@ -71,7 +71,7 @@ const EditGroupPopup: React.FC<{
 
           <DialogActions className="dialog-footer">
             {/* Outline rojo — consistente con el resto de formularios */}
-            <Button onClick={handleClose} className="btn-std btn-danger-outline">
+            <Button onClick={handleClose} className="btn-std btn-secondary">
               Cancelar
             </Button>
             <Button onClick={handleUpdate} className="btn-std btn-primary">

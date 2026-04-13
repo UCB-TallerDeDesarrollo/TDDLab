@@ -1,4 +1,63 @@
 /* ==========================================================================
+   VARIABLES GLOBALES 
+   ========================================================================== */
+:root {
+  /* Colores primarios */
+  --primary-color: #1976d2;
+  --primary-color-hover: #1565c0;
+
+  /* Colores de peligro / error */
+  --danger-color: #d32f2f;
+  --danger-color-hover: #b71c1c;
+  --danger-color-bg-hover: #fdf5f5;
+  --danger-color-text-dialog: #dc3545;
+
+  /* Colores de éxito */
+  --success-color: #2e7d32;
+  --success-color-hover-bg: rgba(46, 125, 50, 0.1);
+
+  /* Escala base de grises */
+  --gray-400: #c8c8c8;
+  --gray-500: #e0e0e0;
+  --gray-600: #555555;
+  --gray-700: #666666;
+  --gray-800: #5b5b5b;
+
+  /* Colores secundarios (outline / cancelar) */
+  --secondary-color: var(--gray-600);
+  --secondary-color-hover-bg: var(--gray-500);
+
+  /* Colores terciarios (ver gráfica) */
+  --tertiary-color-bg: var(--gray-500);
+  --tertiary-color-bg-hover: var(--gray-400);
+  --tertiary-color-text: var(--gray-600);
+
+  /* Escala de grises semántica */
+  --gray-light: #e7e7e7;
+  --gray-medium: var(--gray-500);
+  --gray-dark: var(--gray-700);
+
+  /* Texto */
+  --text-primary: #555;
+  --text-secondary: var(--gray-800);
+  --text-disabled: var(--gray-800);
+  --white: #ffffff;
+
+  /* Fondos */
+  --bg-disabled: var(--gray-500);
+  --bg-readonly: #f5f5f5;
+  --bg-settings-group: #f9f9f9;
+
+  /* Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.4);
+
+  /* Bordes */
+  --border-table: #e7e7e7;
+  --border-group-detail: #e7e7e7;
+  --border-width-outline: 2px;
+}
+
+/* ==========================================================================
    LAYOUT & CONTENEDORES GLOBALES
    ========================================================================== */
 .fullscreen-loading,
@@ -26,34 +85,85 @@
 }
 
 /* ==========================================================================
-   SISTEMA DE BOTONES (ESTÁNDAR & VARIANTES)
+   SISTEMA UNIFICADO DE BOTONES
    ========================================================================== */
 
+/* 1. Clase Base: Estructura y Tipografía (Inter 14 Medium) */
 .btn-std {
   height: 36px !important;
   min-width: 110px !important;
-  border-radius: 0px !important;
-  text-transform: none !important;
-  font-size: 0.875rem !important;
-  padding: 0 16px !important;
-  box-shadow: none !important;
+  border-radius: 4px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
+  text-transform: none !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease-in-out !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important; /* Base para variantes con borde */
 }
 
+/* 2. Variantes de Color */
+
+/* Primario: Azul Sólido (Crear, Guardar) */
 .btn-primary {
-  background-color: #1976d2 !important;
-  color: white !important;
-  border: none !important;
+  background-color: var(--primary-color) !important;
+  color: var(--white) !important;
 }
-
 .btn-primary:hover:not(:disabled) {
-  background-color: #1565c0 !important;
+  background-color: var(--primary-color-hover) !important;
 }
 
+/* Secundario: Borde Plomo (Cancelar) */
+.btn-secondary {
+  background-color: transparent !important;
+  color: var(--gray-700) !important;
+  border-color: var(--gray-400) !important; /* Color plomo del borde */
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-readonly) !important;
+  border-color: var(--gray-600) !important;
+}
+
+/* Success: Verde Sólido (Confirmar, Finalizar) */
+.btn-success {
+  background-color: var(--success-color) !important;
+  color: var(--white) !important;
+}
+.btn-success:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+/* Failure/Danger: Rojo Sólido (Eliminar) */
+.btn-danger {
+  background-color: var(--danger-color) !important;
+  color: var(--white) !important;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--danger-color-hover) !important;
+}
+
+/* 3. Estado Deshabilitado (Fondo plomo sólido) */
 .btn-std:disabled {
-  background-color: #e0e0e0 !important;
-  color: #5b5b5b !important;
+  background-color: var(--bg-disabled) !important; /* Fondo plomo */
+  color: var(--text-disabled) !important; /* Texto gris suave */
+  border-color: transparent !important;
   cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 4. Dropdowns (Filtros y Ordenamiento) */
+.select-compact, 
+.sorting-container .MuiOutlinedInput-root {
+  height: 36px !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  background-color: var(--white) !important;
 }
 
 /* ==========================================================================
@@ -70,7 +180,7 @@
 }
 
 .table-row-bordered {
-  border-bottom: 2px solid #E7E7E7 !important;
+  border-bottom: 2px solid var(--border-table) !important;
 }
 
 .action-buttons-group {
@@ -98,12 +208,6 @@
   flex-wrap: nowrap;
 }
 
-.select-compact,
-.sorting-container .MuiOutlinedInput-root {
-  height: 36px !important;
-  border-radius: 0px !important;
-}
-
 /* ==========================================================================
    DIÁLOGOS & FORMULARIOS (POP-UPS)
    ========================================================================== */
@@ -126,7 +230,6 @@
   justify-content: flex-end !important;
 }
 
-
 .dialog-title-success,
 .dialog-title-error {
   display: flex;
@@ -141,16 +244,16 @@
 
 /* Colores específicos */
 .dialog-title-success {
-  color: #2e7d32;
+  color: var(--success-color);
 }
 
 .dialog-title-error {
-  color: #d32f2f;
+  color: var(--danger-color);
 }
 
 /* Texto de error grande dentro de un diálogo (EditAssignmentForm) */
 .dialog-error-text {
-  color: #dc3545;
+  color: var(--danger-color-text-dialog);
   font-weight: bold;
   font-size: 16px;
   text-align: center;
@@ -169,38 +272,10 @@
 
 .detail-icon {
   margin-right: 12px;
-  color: #666666;
+  color: var(--gray-dark);
   font-size: 20px;
 }
-/* ==========================================================================
-   ADICIONES AL SISTEMA DE BOTONES
-   ========================================================================== */
 
-/* Botón Rojo Sólido (Usado en botones de Cancelar de formularios) */
-.btn-danger {
-  background-color: #d32f2f !important;
-  color: white !important;
-  border: none !important;
-}
-
-.btn-danger:hover:not(:disabled) {
-  background-color: #b71c1c !important;
-}
-
-/* Botón con Borde Rojo (Usado específicamente en ConfirmationDialog) */
-.btn-std.btn-danger-outline {
-  color: #d32f2f !important;
-  border: 2px solid #d32f2f !important;
-  background-color: transparent !important;
-  padding: 5px 20px !important;
-  transition: all 0.2s ease;
-}
-
-.btn-std.btn-danger-outline:hover {
-    background-color: #fdf5f5 !important; /* Color sólido equivalente */
-    border-color: #b71c1c !important;
-    color: #b71c1c !important;
-}
 
 /* ==========================================================================
    ADICIONES PARA DIÁLOGOS
@@ -209,7 +284,7 @@
 /* Texto descriptivo dentro de pop-ups (ej: "¿Estás seguro de eliminar...?") */
 .dialog-text-content {
   font-size: 1rem;
-  color: #555;
+  color: var(--text-primary);
   line-height: 1.5;
   padding-top: 8px;
 }
@@ -238,7 +313,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--overlay-bg);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -254,18 +329,19 @@
 }
 
 .settings-error-text {
-  color: #d32f2f;
+  color: var(--danger-color);
   font-size: 0.875rem;
   margin-top: 4px;
 }
 
 /* Estilo para el input de Prompt cuando está bloqueado */
 .prompt-input-readonly {
-  background-color: #f5f5f5 !important;
+  background-color: var(--bg-readonly) !important;
   cursor: default;
 }
+
 .group-detail-box {
   padding: 20px 50px;
-  background: #f9f9f9;
-  border-bottom: 1px solid #e7e7e7;
+  background: var(--bg-settings-group);
+  border-bottom: 1px solid var(--border-group-detail);
 }

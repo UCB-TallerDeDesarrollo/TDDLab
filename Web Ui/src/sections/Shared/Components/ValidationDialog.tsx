@@ -39,7 +39,7 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
       </DialogTitle>
 
       <DialogActions className="dialog-footer">
-        <Button onClick={onClose} className="btn-std btn-primary">
+        <Button onClick={onClose} className={`btn-std ${showAsError ? "btn-danger" : "btn-success"}`}>
           {closeText}
         </Button>
       </DialogActions>

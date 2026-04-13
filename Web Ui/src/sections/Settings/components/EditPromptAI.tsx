@@ -43,7 +43,6 @@ const EditPromptAI = ({
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
             <Button 
-              variant="contained" 
               className="btn-std btn-primary" 
               onClick={onEdit}
             >
