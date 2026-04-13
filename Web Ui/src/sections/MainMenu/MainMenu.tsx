@@ -1,23 +1,19 @@
-import {
-  Button,
-  Box,
-  Drawer,
-  AppBar,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-
-import NavLateralMenu from "./components/LateralMenu";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Button, Box, Drawer, AppBar, IconButton, Toolbar } from "@mui/material";
 import { ReactElement, useState } from "react";
-import { useLocation, NavLink } from "react-router-dom";
-import WindowIcon from "@mui/icons-material/Window";
+import { useLocation, NavLink, useNavigate } from "react-router-dom"; 
+import MenuIcon from "@mui/icons-material/Menu";
+import NavLateralMenu from "./components/LateralMenu";
 import LoginComponent from "./components/loginComponent";
-import "../../App.css";
-import "../MainMenu/styles/MainMenuStyles.css"
 
-type NavLink = {
+import { useGlobalState, setGlobalState } from "../../modules/User-Authentication/domain/authStates";
+import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
+import { removeSessionCookie } from "../../modules/User-Authentication/application/deleteSessionCookie";
+
+import logoTddLab from "../../assets/logo-tddlab.svg";
+import "../../App.css";
+import "../MainMenu/styles/MainMenuStyles.css" 
+
+type NavLinkType = { 
   title: string;
   path: string;
   icon: ReactElement;
@@ -25,7 +21,7 @@ type NavLink = {
 };
 
 interface NavbarProps {
-  navArrayLinks: NavLink[];
+  navArrayLinks: NavLinkType[];
   userRole: string;
 }
 
@@ -34,31 +30,46 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-
+  const authData = useGlobalState("authData"); 
+  
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogoutAction = async () => {
+    await handleGithubSignOut();
+    setGlobalState("authData", {
+      userid: -1,
+      userProfilePic: "",
+      userEmail: "",
+      usergroupid: -1,
+      userRole: "",
+    });
+    await removeSessionCookie();
+    localStorage.clear();
+    setOpen(false); 
+    navigate("/login");
+  };
 
   return (
     <div className="page-top-spacer">
-      <AppBar position="fixed" className="main-navbar" elevation={0}
-      >
+      <AppBar position="fixed" className="main-navbar" elevation={0}>
         <Toolbar className="navbar-toolbar">
           <div className="navbar-brand-group">
             <IconButton
               color="inherit"
-              size="large"
               onClick={() => setOpen(true)}
-              sx={{ display: { xs: "flex", sm: "none" } }}
+              className="mobile-menu-btn"
             >
               <MenuIcon />
             </IconButton>
             <NavLink to="/" className="navbar-brand-link">
-              <WindowIcon className="navbar-brand-icon" />
-              <Typography variant="h6">TDDLab</Typography>
+              <img src={logoTddLab} alt="TDDLab Logo" className="navbar-logo" />
             </NavLink>
           </div>
+
           <div className="navbar-actions-group">
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Box className="desktop-nav-links">
               {navArrayLinks.map((item) =>
                 item.access.includes(userRole) && (
                   <Button
@@ -81,12 +92,15 @@ export default function MainMenu({
         open={open}
         anchor="left"
         onClose={() => setOpen(false)}
-        sx={{ display: { xs: "flex", sm: "none" } }}
+        className="main-drawer"
       >
         <NavLateralMenu
           navArrayLinks={navArrayLinks}
           NavLink={NavLink}
           setOpen={setOpen}
+          userEmail={authData[0].userEmail ?? ""} 
+          userRole={userRole}
+          onLogout={handleLogoutAction}
         />
       </Drawer>
     </div>
