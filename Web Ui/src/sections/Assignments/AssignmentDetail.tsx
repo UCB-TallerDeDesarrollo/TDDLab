@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { formatDate } from "../../utils/dateUtils";
+import { getSubmissionStatusLabel } from "../../utils/submissionStatus";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { Card, CardContent, Divider, Typography } from "@mui/material";
@@ -196,20 +197,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const getDisplayStatus = (status: string | undefined) => {
-    switch (status) {
-      case "pending":
-        return "Pendiente";
-      case "in progress":
-        return "En progreso";
-      case "delivered":
-        return "Enviado";
-      case undefined:
-        return "Pendiente";
-      default:
-        return status;
-    }
-  };
   const handleViewGraph = (targetSubmission: SubmissionDataObject) => {
     localStorage.setItem("selectedMetric", "Dashboard");
     handleRedirectAdmin(
@@ -303,7 +290,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <InfoRow
                   icon={<AccessTimeIcon sx={{ color: "#666666" }} />}
                   label="Estado"
-                  value={getDisplayStatus(studentSubmission?.status)}
+                  value={getSubmissionStatusLabel(studentSubmission?.status)}
                   containerSx={{ mb: 1 }}
                   textSx={{ fontSize: "16px", lineHeight: "1.8" }}
                 />
