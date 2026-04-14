@@ -3,7 +3,6 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
@@ -24,7 +23,6 @@ import {
   TableRow,
   TableCell,
   Container,
-  Button,
   Collapse,
 } from "@mui/material";
 import { styled } from "@mui/system";
@@ -34,6 +32,7 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
+import CreateButton from "../GeneralPurposeComponents/CreateButton";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -52,7 +51,6 @@ const StyledTable = styled(Table)({
   marginRight: "auto",
 });
 
-// Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
@@ -61,7 +59,6 @@ const asId = (v: unknown): number => {
 function Groups() {
   const navigate = useNavigate();
 
-  // UI state
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -71,7 +68,6 @@ function Groups() {
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
-  // data
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
@@ -80,10 +76,8 @@ function Groups() {
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
-  // id seleccionado (sincronizado con auth/localStorage)
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
-  // Sincroniza selección en toda la app
   const selectAndSync = (rawId: unknown) => {
     const id = asId(rawId);
     if (!id) return;
@@ -94,24 +88,24 @@ function Groups() {
     }
   };
 
-  // Cargar 
   useEffect(() => {
-  const fetchGroups = async () => {
-    const getGroupsApp = new GetGroups(groupRepository);
-    const role = authData?.userRole ?? "";
-    const uid  = authData?.userid ?? -1;
+    const fetchGroups = async () => {
+      const getGroupsApp = new GetGroups(groupRepository);
+      const role = authData?.userRole ?? "";
+      const uid = authData?.userid ?? -1;
 
-    if (role === "teacher") {
-      const ids = await getGroupsApp.getGroupsByUserId(uid);
-      const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
-        .filter(Boolean) as GroupDataObject[];
+      if (role === "teacher") {
+        const ids = await getGroupsApp.getGroupsByUserId(uid);
+        const allGroups = (
+          await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id)))
+        ).filter(Boolean) as GroupDataObject[];
         setGroups(allGroups);
-    } else {
-      const allGroups = await getGroupsApp.getGroups();
-      setGroups(allGroups);
-    }
+      } else {
+        const allGroups = await getGroupsApp.getGroups();
+        setGroups(allGroups);
+      }
     };
-      fetchGroups();
+    fetchGroups();
   }, [authData?.userRole, authData?.userid]);
 
   useEffect(() => {
@@ -135,7 +129,7 @@ function Groups() {
           const first = asId(ids?.[0]);
           if (first) return selectAndSync(first);
         }
-      } catch { /* ignore */ }
+      } catch {}
       const firstVisible = asId(groups[0]?.id);
       if (firstVisible) selectAndSync(firstVisible);
     })();
@@ -145,7 +139,10 @@ function Groups() {
     setCreateGroupPopupOpen(true);
   };
 
-  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+  const handleEditClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
     event.stopPropagation();
     const group = groups[index];
     if (group) {
@@ -309,15 +306,11 @@ function Groups() {
                     selectedSorting={selectedSorting}
                     onChangeHandler={handleGroupsOrder}
                   />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
+                  <CreateButton
                     onClick={handleCreateGroupClick}
-                  >
-                    Crear
-                  </Button>
+                    label="Crear"
+                    borderRadius="17px"
+                  />
                 </ButtonContainer>
               </TableCell>
             </TableRow>
@@ -383,7 +376,12 @@ function Groups() {
                 <TableRow>
                   <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
                     <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
+                      <div
+                        style={{
+                          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                          borderRadius: "2px",
+                        }}
+                      >
                         <div style={{ padding: "50px", marginLeft: "-30px" }}>
                           Detalle del grupo: {groups[index].groupDetail}
                         </div>
