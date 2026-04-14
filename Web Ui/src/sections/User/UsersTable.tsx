@@ -1,10 +1,6 @@
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
+  Table, TableBody, TableCell,
+  TableHead, TableRow, Tooltip,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";

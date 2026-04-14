@@ -1,10 +1,6 @@
 import {
-  FormControl,
-  InputAdornment,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  TextField,
+  FormControl, InputAdornment, MenuItem, Select,
+  SelectChangeEvent, TextField,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import SearchIcon from "@mui/icons-material/Search";
