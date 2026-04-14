@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import type { CSSProperties } from "react";
 import { formatDate } from "../../utils/dateUtils";
 import { getSubmissionStatusLabel } from "../../utils/submissionStatus";
 import { useParams, useNavigate } from "react-router-dom";
@@ -16,6 +15,7 @@ import {
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
+import { assignmentDetailStyles } from "./AssignmentDetail.styles";
 import { ActionButton } from "../Shared/Components/ActionButton";
 import { InfoRow } from "../Shared/Components/InfoRow";
 import { SubmissionTable } from "./components/SubmissionTable";
@@ -51,57 +51,6 @@ interface AssignmentDetailProps {
 function isStudent(role: string) {
   return role === "student";
 }
-
-const styles: Record<string, CSSProperties> = {
-  pageContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    gap: "24px",
-    padding: "20px 0",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "520px",
-    border: "1px solid #BFBFBF",
-    borderRadius: "6px",
-  },
-  cardContent: {
-    padding: "20px 34px 18px",
-  },
-  detailsSection: {
-    marginBottom: "20px",
-  },
-  assignmentTitle: {
-    fontSize: "46px",
-    fontWeight: 700,
-    lineHeight: 1.1,
-    marginBottom: "20px",
-  },
-  loadingContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "250px",
-  },
-  adminContainer: {
-    width: "96%",
-    maxWidth: "1260px",
-  },
-  adminTitle: {
-    fontSize: "38px",
-    fontWeight: 700,
-    marginBottom: "8px",
-  },
-  tableLoadingContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "150px",
-  },
-};
 
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   role,
@@ -283,20 +232,20 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   return (
 
-    <div style={styles.pageContainer}>
+    <div style={assignmentDetailStyles.pageContainer}>
       {assignment ? (
         <Card
           variant="elevation"
           elevation={0}
-          style={styles.card}
+          style={assignmentDetailStyles.card}
         >
-          <CardContent style={styles.cardContent}>
-            <div style={styles.detailsSection}>
+          <CardContent style={assignmentDetailStyles.cardContent}>
+            <div style={assignmentDetailStyles.detailsSection}>
               <Typography
                 variant="h5"
                 component="div"
                 align="center"
-                style={styles.assignmentTitle}
+                style={assignmentDetailStyles.assignmentTitle}
               >
                 {assignment.title}
               </Typography>
@@ -432,22 +381,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           </CardContent>
         </Card>
       ) : (
-        <div style={styles.loadingContainer}>
+        <div style={assignmentDetailStyles.loadingContainer}>
           <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
         </div>
       )}
       {!isStudent(role) && (
-        <div style={styles.adminContainer}>
+        <div style={assignmentDetailStyles.adminContainer}>
           <Typography
             variant="h6"
             component="div"
-            style={styles.adminTitle}
+            style={assignmentDetailStyles.adminTitle}
           >
             Lista de entregas
           </Typography>
           <Divider sx={{ borderBottomWidth: 3, borderColor: "#7F7F7F", mb: 3 }} />
             {loadingSubmissions ? (
-              <div style={styles.tableLoadingContainer}>
+              <div style={assignmentDetailStyles.tableLoadingContainer}>
                 <CircularProgress size={40} thickness={4} />
               </div>
             ) : (
