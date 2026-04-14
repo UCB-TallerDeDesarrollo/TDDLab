@@ -184,7 +184,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
               window.open(selectedCommit.html_url, "_blank");
             }
           }}
-          color="primary"
+          color="primary" 
           variant="contained"
         >
           Ir al Commit en GitHub
