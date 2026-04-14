@@ -63,16 +63,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const usersRepository = useMemo(() => new UsersRepository(), []);
   const assignment = useAssignmentDetail(assignmentid);
   const groupDetails = useGroupDetail(assignment?.groupid);
-  const { submissions, loading: loadingSubmissions } = useAssignmentSubmissions(
-    assignmentid,
-    !isStudent(role)
-  );
-  const { studentSubmission } = useStudentSubmission(
-    assignmentid,
-    userid,
-    isStudent(role)
-  );
-  const submission = useSubmissionByUserAndAssignment(assignmentid, userid);
+  const {
+    submissions,
+    loading: loadingSubmissions,
+    refresh: refreshSubmissions,
+  } = useAssignmentSubmissions(assignmentid, !isStudent(role));
+  const { studentSubmission, refresh: refreshStudentSubmission } =
+    useStudentSubmission(assignmentid, userid, isStudent(role));
+  const { submission, refresh: refreshSubmission } =
+    useSubmissionByUserAndAssignment(assignmentid, userid);
   const additionalGraphsEnabled = useFeatureFlagEnabled(
     "Mostrar Graficas Adicionales",
     { enabled: !isStudent(role), defaultValue: false }
@@ -120,6 +119,14 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     loadStudentEmails();
   }, [missingUserIds, usersRepository]);
 
+  const refreshSubmissionData = async () => {
+    await Promise.all([
+      refreshSubmissions(),
+      refreshStudentSubmission(),
+      refreshSubmission(),
+    ]);
+  };
+
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) { //means if the assignment id is in memory or somthn
       const submissionsRepository = new SubmissionRepository();
@@ -139,6 +146,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       };
       try {
         await createSubmission.createSubmission(submissionData);
+        await refreshSubmissionData();
         handleCloseLinkDialog();
       } catch (error) {
 
@@ -153,7 +161,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
-    window.location.reload();
   };
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
@@ -187,6 +194,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       };
       try {
         await finishSubmission.finishSubmission(submission.id, submissionData);
+        await refreshSubmissionData();
         handleCloseLinkDialog();
       } catch (error) {
 
@@ -194,7 +202,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       }
     }
     handleCloseCommentDialog();
-    window.location.reload();
   };
 
   const handleViewGraph = (targetSubmission: SubmissionDataObject) => {

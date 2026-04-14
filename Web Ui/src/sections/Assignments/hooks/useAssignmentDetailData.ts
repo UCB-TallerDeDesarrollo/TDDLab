@@ -104,31 +104,30 @@ export const useSubmissionByUserAndAssignment = (
     () => new GetSubmissionByUserandAssignmentId(submissionRepository),
     [submissionRepository]
   );
-
-  useEffect(() => {
-    const fetchSubmission = async () => {
-      if (assignmentId && userId && userId !== -1) {
-        try {
-          if (assignmentId < 0 || userId < 0) {
-            return;
-          }
-
-          const fetchedSubmission =
-            await submissionData.getSubmisssionByUserandSubmissionId(
-              assignmentId,
-              userId
-            );
-          setSubmission(fetchedSubmission);
-        } catch (error) {
-          console.error("Error verifying submission status:", error);
+  const fetchSubmission = useCallback(async () => {
+    if (assignmentId && userId && userId !== -1) {
+      try {
+        if (assignmentId < 0 || userId < 0) {
+          return;
         }
-      }
-    };
 
-    fetchSubmission();
+        const fetchedSubmission =
+          await submissionData.getSubmisssionByUserandSubmissionId(
+            assignmentId,
+            userId
+          );
+        setSubmission(fetchedSubmission);
+      } catch (error) {
+        console.error("Error verifying submission status:", error);
+      }
+    }
   }, [assignmentId, submissionData, userId]);
 
-  return submission;
+  useEffect(() => {
+    fetchSubmission();
+  }, [fetchSubmission]);
+
+  return { submission, refresh: fetchSubmission };
 };
 
 export const useAssignmentSubmissions = (
@@ -185,34 +184,33 @@ export const useStudentSubmission = (
     () => new GetSubmissionsByAssignmentId(submissionRepository),
     [submissionRepository]
   );
+  const fetchStudentSubmission = useCallback(async () => {
+    if (!enabled) {
+      return;
+    }
 
-  useEffect(() => {
-    const fetchStudentSubmission = async () => {
-      if (!enabled) {
-        return;
-      }
-
-      if (assignmentId && userId && userId !== -1) {
-        try {
-          const allSubmissions =
-            await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(
-              assignmentId
-            );
-          const userSubmission = allSubmissions.find(
-            (submission) => submission.userid === userId
+    if (assignmentId && userId && userId !== -1) {
+      try {
+        const allSubmissions =
+          await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(
+            assignmentId
           );
-          if (userSubmission) {
-            setStudentSubmission(userSubmission);
-          }
-        } catch (error) {
-          console.error("Error fetching student submission:", error);
-          setError("An error occurred while fetching the student submission.");
+        const userSubmission = allSubmissions.find(
+          (submission) => submission.userid === userId
+        );
+        if (userSubmission) {
+          setStudentSubmission(userSubmission);
         }
+      } catch (error) {
+        console.error("Error fetching student submission:", error);
+        setError("An error occurred while fetching the student submission.");
       }
-    };
-
-    fetchStudentSubmission();
+    }
   }, [assignmentId, enabled, getSubmissionsByAssignmentId, userId]);
 
-  return { studentSubmission, error };
+  useEffect(() => {
+    fetchStudentSubmission();
+  }, [fetchStudentSubmission]);
+
+  return { studentSubmission, error, refresh: fetchStudentSubmission };
 };
