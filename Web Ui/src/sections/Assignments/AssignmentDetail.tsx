@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { formatDate } from "../../utils/dateUtils";
 import { getSubmissionStatusLabel } from "../../utils/submissionStatus";
 import { useParams, useNavigate } from "react-router-dom";
@@ -51,7 +52,7 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-const styles = {
+const styles: Record<string, CSSProperties> = {
   pageContainer: {
     display: "flex",
     flexDirection: "column",
@@ -195,14 +196,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         repository_link: repository_link,
         start_date: start_date,
       };
-      try {
-        await createSubmission.createSubmission(submissionData);
-        await refreshSubmissionData();
-        handleCloseLinkDialog();
-      } catch (error) {
-
-        throw error;
-      }
+      await createSubmission.createSubmission(submissionData);
+      await refreshSubmissionData();
+      handleCloseLinkDialog();
     }
   };
 
@@ -216,8 +212,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
-  const [_comment, setComment] = useState("");
-
   const handleOpenCommentDialog = () => {
     setIsCommentDialogOpen(true);
   };
@@ -228,7 +222,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   const handleSendComment = async (comment: string) => {
     if (submission) {
-      setComment(comment);
       const submissionRepository = new SubmissionRepository();
       const finishSubmission = new FinishSubmission(submissionRepository);
       const endDate = new Date();
@@ -243,14 +236,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         end_date: end_date,
         comment: comment
       };
-      try {
-        await finishSubmission.finishSubmission(submission.id, submissionData);
-        await refreshSubmissionData();
-        handleCloseLinkDialog();
-      } catch (error) {
-
-        throw error;
-      }
+      await finishSubmission.finishSubmission(submission.id, submissionData);
+      await refreshSubmissionData();
+      handleCloseLinkDialog();
     }
     handleCloseCommentDialog();
   };
