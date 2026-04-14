@@ -65,6 +65,33 @@ const StyledTable = styled(Table)({
 });
 // -------------------------------------------------
 
+// ------------------- ESTILOS DE CELDAS -------------------
+const headerCellSx = {
+  fontWeight: 600,
+  borderBottom: "1px solid #d9d9d9",
+  borderRight: "1px solid #d9d9d9",
+  padding: "10px 8px",
+};
+
+const lastHeaderCellSx = {
+  fontWeight: 600,
+  borderBottom: "1px solid #d9d9d9",
+  padding: "10px 8px",
+};
+
+const bodyCellSx = {
+  borderBottom: "1px solid #d9d9d9",
+  borderRight: "1px solid #d9d9d9",
+  padding: "10px 8px",
+};
+
+const lastBodyCellSx = {
+  borderBottom: "1px solid #d9d9d9",
+  padding: "10px 8px",
+};
+// -------------------------------------------------
+
+
 function UserPage() {
   const [, setUsers] = useState<UserDataObject[]>([]);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
