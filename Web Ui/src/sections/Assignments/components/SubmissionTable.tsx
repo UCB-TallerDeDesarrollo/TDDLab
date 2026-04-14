@@ -12,6 +12,7 @@ import {
 } from "@mui/icons-material";
 import { formatDate } from "../../../utils/dateUtils";
 import type { SubmissionDataObject } from "../../../modules/Submissions/Domain/submissionInterfaces";
+import { submissionTableStyles } from "./SubmissionTable.styles";
 
 interface SubmissionTableProps {
   submissions: SubmissionDataObject[];
@@ -35,18 +36,18 @@ export const SubmissionTable = ({
   const shouldShowAdditionalGraphs = showAdditionalGraphs && !!onViewAdditionalGraph;
 
   return (
-    <Table sx={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
+    <Table sx={submissionTableStyles.table}>
       <TableHead>
-        <TableRow sx={{ borderBottom: "1px solid #C9C9C9" }}>
-          <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "18%" }}>Correo</TableCell>
-          <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "11%", borderLeft: "1px solid #C9C9C9" }}>Estado</TableCell>
-          <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "10%", borderLeft: "1px solid #C9C9C9" }}>Enlace</TableCell>
-          <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Inicio</TableCell>
-          <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "14%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Finalización</TableCell>
-          <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Grafica</TableCell>
-          <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Asistente AI</TableCell>
+        <TableRow sx={submissionTableStyles.headerRow}>
+          <TableCell sx={submissionTableStyles.headerCorreoCell}>Correo</TableCell>
+          <TableCell sx={submissionTableStyles.headerEstadoCell}>Estado</TableCell>
+          <TableCell sx={submissionTableStyles.headerEnlaceCell}>Enlace</TableCell>
+          <TableCell sx={submissionTableStyles.headerFechaInicioCell}>Fecha de Inicio</TableCell>
+          <TableCell sx={submissionTableStyles.headerFechaFinCell}>Fecha de Finalización</TableCell>
+          <TableCell sx={submissionTableStyles.headerGraficaCell}>Grafica</TableCell>
+          <TableCell sx={submissionTableStyles.headerAsistenteCell}>Asistente AI</TableCell>
           {shouldShowAdditionalGraphs && (
-            <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Graficas Adicionales</TableCell>
+            <TableCell sx={submissionTableStyles.headerAdicionalesCell}>Graficas Adicionales</TableCell>
           )}
         </TableRow>
       </TableHead>
@@ -62,38 +63,23 @@ export const SubmissionTable = ({
           const statusColor = hasRepositoryLink ? "#4CAF50" : "#F44336";
 
           return (
-            <TableRow key={submission.id} sx={{ borderBottom: "1px solid #C9C9C9" }}>
+            <TableRow key={submission.id} sx={submissionTableStyles.row}>
               <TableCell
-                sx={{
-                  py: 2.2,
-                  fontSize: "1.3rem",
-                  maxWidth: 0,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
+                sx={submissionTableStyles.emailCell}
                 title={studentEmail}
               >
                 {studentEmail}
               </TableCell>
-              <TableCell
-                sx={{
-                  py: 2.2,
-                  fontSize: "1.3rem",
-                  color: statusColor,
-                  borderLeft: "1px solid #C9C9C9",
-                  whiteSpace: "nowrap",
-                }}
-              >
+              <TableCell sx={submissionTableStyles.statusCell(statusColor)}>
                 {teacherStatus}
               </TableCell>
-              <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9", textAlign: "center" }}>
+              <TableCell sx={submissionTableStyles.linkCell}>
                 {hasRepositoryLink ? (
                   <a
                     href={submission.repository_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ display: "inline-flex", alignItems: "center", color: "#5C6BC0" }}
+                    style={submissionTableStyles.linkIcon}
                   >
                     <LinkIcon />
                   </a>
@@ -101,58 +87,41 @@ export const SubmissionTable = ({
                   <RemoveCircleIcon sx={{ color: "#F44336" }} />
                 )}
               </TableCell>
-              <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedStartDate}</TableCell>
-              <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedEndDate}</TableCell>
-              <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
+              <TableCell sx={submissionTableStyles.dateCell}>{formattedStartDate}</TableCell>
+              <TableCell sx={submissionTableStyles.dateCell}>{formattedEndDate}</TableCell>
+              <TableCell sx={submissionTableStyles.actionCell}>
                 <Button
                   variant="contained"
                   disabled={!hasRepositoryLink}
                   onClick={() => onViewGraph(submission)}
                   color="primary"
-                  style={{
-                    textTransform: "none",
-                    fontSize: "1.15rem",
-                    marginRight: "8px",
-                    backgroundColor: !hasRepositoryLink ? "#BDBDBD" : undefined,
-                    minWidth: "110px",
-                  }}
+                  style={submissionTableStyles.actionButton(!hasRepositoryLink)}
                 >
                   Ver grafica
                 </Button>
               </TableCell>
 
-              <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
+              <TableCell sx={submissionTableStyles.actionCell}>
                 <Button
                   variant="contained"
                   disabled={!hasRepositoryLink}
                   onClick={() => onOpenAssistant(submission)}
                   color="primary"
-                  style={{
-                    textTransform: "none",
-                    fontSize: "1.15rem",
-                    marginRight: "8px",
-                    backgroundColor: !hasRepositoryLink ? "#BDBDBD" : undefined,
-                    minWidth: "110px",
-                  }}
+                  style={submissionTableStyles.actionButton(!hasRepositoryLink)}
                 >
                   Asistente
                 </Button>
               </TableCell>
               {shouldShowAdditionalGraphs && (
-                <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
+                <TableCell sx={submissionTableStyles.actionCell}>
                   <Button
                     variant="contained"
                     disabled={!hasRepositoryLink || disableAdditionalGraphs}
                     onClick={() => onViewAdditionalGraph?.(submission)}
                     color="primary"
-                    style={{
-                      textTransform: "none",
-                      fontSize: "1.15rem",
-                      marginRight: "7px",
-                      backgroundColor:
-                        !hasRepositoryLink || disableAdditionalGraphs ? "#BDBDBD" : undefined,
-                      minWidth: "84px",
-                    }}
+                    style={submissionTableStyles.additionalActionButton(
+                      !hasRepositoryLink || disableAdditionalGraphs
+                    )}
                   >
                     Ver
                   </Button>
