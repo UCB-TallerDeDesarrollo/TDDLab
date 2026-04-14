@@ -26,6 +26,7 @@ import {
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
+import { InfoRow } from "../Shared/Components/InfoRow";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import {
@@ -425,120 +426,47 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
               >
                 {assignment.title}
               </Typography>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "14px",
-                }}
-              >
-                <GroupsIcon
-                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "26px", lineHeight: 1.45 }}
-                >
-                  <strong>Grupo:</strong> {groupDetails?.groupName}
-                </Typography>
-              </div>
+              <InfoRow
+                icon={<GroupsIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                label="Grupo"
+                value={groupDetails?.groupName}
+                textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+              />
               {isStudent(role) && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "14px",
-                  }}
-                >
-                  <NotesOutlinedIcon
-                    style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ fontSize: "26px", lineHeight: 1.45 }}
-                  >
-                    <strong>Instrucciones:</strong> {assignment.description}
-                  </Typography>
-                </div>
+                <InfoRow
+                  icon={<NotesOutlinedIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                  label="Instrucciones"
+                  value={assignment.description}
+                  textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+                />
               )}
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "14px",
-                }}
-              >
-                <CalendarMonthIcon
-                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "26px", lineHeight: 1.45 }}
-                >
-                  <strong>Inicio:</strong>{" "}
-                  {formatDate(assignment.start_date.toString())}
-                </Typography>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "14px",
-                }}
-              >
-                <CalendarMonthIcon
-                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "26px", lineHeight: 1.45 }}
-                >
-                  <strong>Finalización:</strong>{" "}
-                  {formatDate(assignment.end_date.toString())}
-                </Typography>
-              </div>
+              <InfoRow
+                icon={<CalendarMonthIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                label="Inicio"
+                value={formatDate(assignment.start_date.toString())}
+                textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+              />
+              <InfoRow
+                icon={<CalendarMonthIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                label="Finalización"
+                value={formatDate(assignment.end_date.toString())}
+                textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+              />
               {isStudent(role) && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <AccessTimeIcon
-                    style={{ marginRight: "8px", color: "#666666" }}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ fontSize: "16px", lineHeight: "1.8" }}
-                  >
-                    <strong>Estado:</strong>{" "}
-                    {getDisplayStatus(studentSubmission?.status)}
-                  </Typography>
-                </div>
+                <InfoRow
+                  icon={<AccessTimeIcon sx={{ color: "#666666" }} />}
+                  label="Estado"
+                  value={getDisplayStatus(studentSubmission?.status)}
+                  containerSx={{ mb: 1 }}
+                  textSx={{ fontSize: "16px", lineHeight: "1.8" }}
+                />
               )}
 
               {isStudent(role) && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ fontSize: "16px", lineHeight: "1.8" }}
-                  >
-                    <strong>Enlace:</strong>
+                <InfoRow
+                  icon={<LinkIcon sx={{ color: "#666666" }} />}
+                  label="Enlace"
+                  value={
                     <a
                       href={studentSubmission?.repository_link}
                       target="_blank"
@@ -546,30 +474,24 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     >
                       {studentSubmission?.repository_link}
                     </a>
-                  </Typography>
-                </div>
+                  }
+                  containerSx={{ mb: 1 }}
+                  textSx={{ fontSize: "16px", lineHeight: "1.8" }}
+                />
               )}
 
               {isStudent(role) &&
                 (assignment.comment ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <CommentIcon
-                      style={{ marginRight: "8px", color: "#666666" }}
-                    />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      style={{ fontSize: "16px", lineHeight: "1.8" }}
-                    >
-                      <strong>Comentario:</strong> {studentSubmission?.repository_link === "" || studentSubmission == null}
-                    </Typography>
-                  </div>
+                  <InfoRow
+                    icon={<CommentIcon sx={{ color: "#666666" }} />}
+                    label="Comentario"
+                    value={
+                      studentSubmission?.repository_link === "" ||
+                      studentSubmission == null
+                    }
+                    containerSx={{ mb: 1 }}
+                    textSx={{ fontSize: "16px", lineHeight: "1.8" }}
+                  />
                 ) : null)}
             </div>
             {isStudent(role) && (
