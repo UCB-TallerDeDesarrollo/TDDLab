@@ -11,6 +11,12 @@ const mockAssignmentsRepo = {
   deleteAssignment: jest.fn(),
 };
 
+const mockGroupsRepo = {
+  getGroups: jest.fn(),
+  getGroupById: jest.fn(),
+  getGroupsByUserId: jest.fn(),
+};
+
 const mockGetGroups = {
   getGroups: jest.fn(),
   getGroupById: jest.fn(),
@@ -31,7 +37,7 @@ jest.mock("../../../src/modules/Assignments/repository/AssignmentsRepository", (
 jest.mock("../../../src/modules/Groups/repository/GroupsRepository", () => {
   return {
     __esModule: true,
-    default: jest.fn(() => ({})),
+    default: jest.fn(() => mockGroupsRepo),
   };
 });
 
@@ -134,6 +140,8 @@ describe("AssignmentsList Component", () => {
     globalThis.location.search = '';
     
     mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue(mockAssignments);
+    mockGroupsRepo.getGroups.mockResolvedValue(mockGroups);
+    mockGroupsRepo.getGroupById.mockResolvedValue(mockGroups[0]);
     mockGetGroups.getGroups.mockResolvedValue(mockGroups);
     mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);
   });
