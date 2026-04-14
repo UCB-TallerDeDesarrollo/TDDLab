@@ -9,7 +9,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import { Grid, Box, useTheme } from "@mui/material";
 import FullScreenLoader from "../../components/FullScreenLoader/FullScreenLoader";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
 import { handleSignInWithGoogle } from "../../modules/User-Authentication/application/signInWithGoogle";
@@ -22,6 +22,7 @@ import AdminAlertModal from "./components/AdminAlertModal";
 import "../../App.css";
 
 function InvitationPage() {
+  const theme = useTheme();
   const location = useLocation();
   const getQueryParam = (param: string): string | number | undefined => {
     const searchParams = new URLSearchParams(location.search);
@@ -168,35 +169,39 @@ function InvitationPage() {
       transform: "scale(0.97)",
     },
     "&:disabled": {
-      backgroundColor: "#ccc",
+      backgroundColor: theme.palette.action.disabled,
     },
   };
 
   return (
-    <div style={{ position: "relative" }}>
+    <Box sx={{ position: "relative" }}>
       <FullScreenLoader isLoading={isLoading} />
 
       {user ? (
-        <div className="invitation-card-container">
-          <Grid
-            item
+        <Box className="invitation-card-container" sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "100vh", gap: 4 }}>
+          <Box
             className={`invitation-user-card ${
               user.displayName ? "expanded" : ""
             }`}
+            sx={{
+              width: "100%",
+              maxWidth: user.displayName ? 600 : 400,
+              transition: "width 0.3s ease",
+            }}
           >
             <Card variant="outlined">
               <CardContent>
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
-                    <div
-                      style={{
+                    <Box
+                      sx={{
                         width: "100%",
                         display: "flex",
                         justifyContent: "center",
                       }}
                     >
-                      <div
-                        style={{
+                      <Box
+                        sx={{
                           width: 100,
                           height: 100,
                           borderRadius: "10%",
@@ -210,8 +215,8 @@ function InvitationPage() {
                           width="100%"
                           image={user.photoURL ?? "URL_POR_DEFECTO"}
                         />
-                      </div>
-                    </div>
+                      </Box>
+                    </Box>
                   </Grid>
                   <Grid
                     item
@@ -240,13 +245,17 @@ function InvitationPage() {
                 </Grid>
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
 
-          <Grid
-            item
+          <Box
             className={`invitation-content-card ${
               user.displayName ? "expanded" : ""
             }`}
+            sx={{
+              width: "100%",
+              maxWidth: user.displayName ? 400 : 500,
+              transition: "width 0.5s ease",
+            }}
           >
             <Card variant="outlined">
               <CardMedia
@@ -264,7 +273,7 @@ function InvitationPage() {
                 onMouseLeave={handleMouseLeave}
               />
               <CardContent>
-                <Typography variant="body1" className="invitation-message-text">
+                <Typography variant="body1" sx={{ textAlign: "center", my: 1, color: theme.palette.text.primary }}>
                   Israel Antezana te está invitando al curso
                 </Typography>
 
@@ -295,7 +304,7 @@ function InvitationPage() {
                 )}
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
           {showPasswordPopup && (
             <PasswordComponent
               open={showPasswordPopup}
@@ -309,7 +318,7 @@ function InvitationPage() {
             ></SuccessfulEnrollmentPopUp>
           )}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
-        </div>
+        </Box>
       ) : (
         <Grid
           container
@@ -320,10 +329,10 @@ function InvitationPage() {
           style={{ minHeight: "100vh" }}
         >
           <Grid item>
-            <div
-              style={{
+            <Box
+              sx={{
                 display: "flex",
-                gap: "15px",
+                gap: 2,
                 flexWrap: "wrap",
                 justifyContent: "center",
               }}
@@ -335,7 +344,8 @@ function InvitationPage() {
                 sx={{
                   backgroundColor: "#24292e",
                   color: "white",
-                  padding: "10px 20px",
+                  px: 3,
+                  py: 1.25,
                   fontWeight: 500,
                   ...primaryButtonStyles,
                   "&:hover:not(:disabled)": {
@@ -343,11 +353,12 @@ function InvitationPage() {
                   },
                 }}
               >
-                <div
-                  style={{
+                <Box
+                  sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    gap: 1,
                   }}
                 >
                   <IconifyIcon
@@ -356,10 +367,9 @@ function InvitationPage() {
                     height={20}
                     color="white"
                     hoverColor="#e0e0e0"
-                    sx={{ marginRight: "8px" }}
                   />
                   Registrarse con GitHub
-                </div>
+                </Box>
               </Button>
               <Button
                 onClick={() => handleSignUpWithProvider("google")}
@@ -368,7 +378,8 @@ function InvitationPage() {
                 sx={{
                   backgroundColor: "#4285f4",
                   color: "white",
-                  padding: "10px 20px",
+                  px: 3,
+                  py: 1.25,
                   fontWeight: 500,
                   ...primaryButtonStyles,
                   "&:hover:not(:disabled)": {
@@ -376,11 +387,12 @@ function InvitationPage() {
                   },
                 }}
               >
-                <div
-                  style={{
+                <Box
+                  sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    gap: 1,
                   }}
                 >
                   <IconifyIcon
@@ -389,17 +401,16 @@ function InvitationPage() {
                     height={20}
                     color="white"
                     hoverColor="#e0e0e0"
-                    sx={{ marginRight: "8px" }}
                   />
                   Registrarse con Google
-                </div>
+                </Box>
               </Button>
-            </div>
+            </Box>
           </Grid>
         </Grid>
       )}
       <AdminAlertModal open={showAdminModal} />
-    </div>
+    </Box>
   );
 }
 
