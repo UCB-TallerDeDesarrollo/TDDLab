@@ -32,7 +32,7 @@
 .btn-std {
   height: 36px !important;
   min-width: 110px !important;
-  border-radius: 0px !important;
+  border-radius: 8px !important;
   text-transform: none !important;
   font-size: 0.875rem !important;
   padding: 0 16px !important;
@@ -369,3 +369,18 @@ a:hover {
 .status-success { background-color: #28a745; }
 .status-danger { background-color: #d73a49; }
 .status-primary { background-color: #0366d6; }
+
+.text-status-enviado {
+  color: #28a745 !important; /* Verde */
+  font-weight: 600;
+}
+
+.text-status-no-enviado {
+  color: #d73a49 !important; /* Rojo */
+  font-weight: 600;
+}
+
+/*Clase para iconos grises */
+.icon-gray {
+  color: #757575 !important;
+}

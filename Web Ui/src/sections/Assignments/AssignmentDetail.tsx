@@ -19,17 +19,19 @@ import {
   TableHead,
   TableRow,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline"; // Icono de negación
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
 } from "@mui/icons-material";
+
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
-import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import {
@@ -42,10 +44,7 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
 import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
 
-import {
-  handleRedirectStudent,
-} from '../Shared/handlers.ts';
-
+import { handleRedirectStudent } from '../Shared/handlers.ts';
 
 interface AssignmentDetailProps {
   role: string;
@@ -62,28 +61,24 @@ function generateUniqueId() {
   return timestamp + randomChars;
 }
 
-const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
-  role,
-  userid,
-}) => {
-  const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
-    null
-  );
+const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => {
+  const [assignment, setAssignment] = useState<AssignmentDataObject | null>(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(
-    null
-  );
+  const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
   const [studentSubmission, setStudentSubmission] = useState<SubmissionDataObject>();
-  const [_submissionsError, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const [showIAButton, setShowIAButton] = useState(false);
   const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
 
+  const navigate = useNavigate();
+  const usersRepository = new UsersRepository();
+
+  // --- USE EFFECTS (Lógica de Datos) ---
 
   useEffect(() => {
     const fetchFlag = async () => {
@@ -93,36 +88,27 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
           setDisableAdditionalGraphs(!(flag?.is_enabled));
         } catch (error) {
-          console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-          setDisableAdditionalGraphs(true); // por precaución
+          console.error("Error al obtener flag gráficas:", error);
+          setDisableAdditionalGraphs(true);
         }
       }
     };
-
     fetchFlag();
   }, [role]);
 
   useEffect(() => {
     if (!isStudent(role)) return;
-
-    const getFlagUseCase = new GetFeatureFlagByName();
-
     const fetchFeatureFlag = async () => {
       try {
+        const getFlagUseCase = new GetFeatureFlagByName();
         const flag = await getFlagUseCase.execute("Boton Asistente IA");
         setShowIAButton(flag?.is_enabled ?? true);
       } catch (error) {
         console.error("Error fetching feature flag IA_ASSISTANT:", error);
       }
     };
-
     fetchFeatureFlag();
   }, [role]);
-
-
-  const navigate = useNavigate();
-  const usersRepository = new UsersRepository();
-
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -130,11 +116,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         try {
           const submissionRepository = new SubmissionRepository();
           const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
-
-          if (assignmentid < 0 || userid < 0) {
-            return; // Validación silenciosa
-          }
-
           const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
           setSubmission(fetchedSubmission);
         } catch (error) {
@@ -142,36 +123,24 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         }
       }
     };
-
     fetchSubmission();
   }, [assignmentid, userid]);
 
   useEffect(() => {
     const assignmentsRepository = new AssignmentsRepository();
     const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
-
-    getAssignmentDetail
-      .obtainAssignmentDetail(assignmentid)
-      .then((fetchedAssignment) => {
-        setAssignment(fetchedAssignment);
-      })
-      .catch((error) => {
-        console.error("Error fetching assignment:", error);
-      });
+    getAssignmentDetail.obtainAssignmentDetail(assignmentid)
+      .then(setAssignment)
+      .catch((error) => console.error("Error fetching assignment:", error));
   }, [assignmentid]);
-  useEffect(() => {
-    const groupsRepository = new GroupsRepository();
-    const getGroupDetail = new GetGroupDetail(groupsRepository);
 
+  useEffect(() => {
     if (assignment?.groupid) {
-      getGroupDetail
-        .obtainGroupDetail(assignment.groupid)
-        .then((fetchedGroupDetails) => {
-          setGroupDetails(fetchedGroupDetails);
-        })
-        .catch((error) => {
-          console.error("Error fetching group details:", error);
-        });
+      const groupsRepository = new GroupsRepository();
+      const getGroupDetail = new GetGroupDetail(groupsRepository);
+      getGroupDetail.obtainGroupDetail(assignment.groupid)
+        .then(setGroupDetails)
+        .catch((error) => console.error("Error fetching group details:", error));
     }
   }, [assignment]);
 
@@ -179,100 +148,54 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     const fetchSubmissions = async () => {
       if (!isStudent(role)) {
         setLoadingSubmissions(true);
-        setSubmissionsError(null);
         try {
           const submissionRepository = new SubmissionRepository();
-          const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(
-            submissionRepository
-          );
-          const fetchedSubmissions =
-            await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(
-              assignmentid
-            );
+          const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
+          const fetchedSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
           setSubmissions(fetchedSubmissions);
         } catch (error) {
-          setSubmissionsError(
-            "Error fetching submissions. Please try again later."
-          );
-          console.error("Error fetching SubmissionByAssignmentAndUser:", error);
+          console.error("Error fetching submissions:", error);
         } finally {
           setLoadingSubmissions(false);
         }
       }
     };
-
     fetchSubmissions();
   }, [assignmentid, role]);
 
   useEffect(() => {
     renderStudentRows();
-  }, [submissions]);
+  }, [submissions, disableAdditionalGraphs]);
 
-  const isTaskInProgress = submission?.status !== "in progress";
-  useEffect(() => {
-    const fetchStudentSubmission = async () => {
-      if (isStudent(role)) {
-        if (assignmentid && userid && userid !== -1) {
-          try {
-            const submissionRepository = new SubmissionRepository();
-            const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
-            const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
-            const userSubmission = allSubmissions.find(submission => submission.userid === userid);
-            if (userSubmission) {
-              setStudentSubmission(userSubmission);
-            }
-          } catch (error) {
-            console.error("Error fetching student submission:", error);
-            setSubmissionsError("An error occurred while fetching the student submission.");
-          }
-        }
-      }
-    };
+  // --- HANDLERS ---
 
-    fetchStudentSubmission();
-  }, [assignmentid, userid, role]);
-
-  const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentid) { //means if the assignment id is in memory or somthn
-      const submissionsRepository = new SubmissionRepository();
-      const createSubmission = new CreateSubmission(submissionsRepository);
-      const startDate = new Date();
-      const start_date = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate()
-      );
-      const submissionData: SubmissionCreationObject = {
-        assignmentid: assignmentid,
-        userid: userid,
-        status: "in progress",
-        repository_link: repository_link,
-        start_date: start_date,
-      };
-      try {
-        await createSubmission.createSubmission(submissionData);
-        handleCloseLinkDialog();
-      } catch (error) {
-
-        throw error;
-      }
-    }
-  };
-
-  const handleOpenLinkDialog = () => {
-    setLinkDialogOpen(true);
-  };
-
+  const handleOpenLinkDialog = () => setLinkDialogOpen(true);
   const handleCloseLinkDialog = () => {
     setLinkDialogOpen(false);
     window.location.reload();
+  };
+
+  const handleSendGithubLink = async (repository_link: string) => {
+    if (assignmentid) {
+      const submissionsRepository = new SubmissionRepository();
+      const createSubmission = new CreateSubmission(submissionsRepository);
+      const startDate = new Date();
+      const submissionData: SubmissionCreationObject = {
+        assignmentid,
+        userid,
+        status: "in progress",
+        repository_link,
+        start_date: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()),
+      };
+      await createSubmission.createSubmission(submissionData);
+      handleCloseLinkDialog();
+    }
   };
 
   const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url: string) => {
     if (link) {
       const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
       const match = regex.exec(link);
-
       if (match) {
         const [, user, repo] = match;
         navigate({
@@ -281,69 +204,34 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             repoOwner: user,
             repoName: repo,
             fetchedSubmissions: JSON.stringify(fetchedSubmissions),
-            submissionId: submissionId.toString(),  // Convertimos submissionId a cadena para pasarlo como parámetro
+            submissionId: submissionId.toString(),
           }).toString(),
         });
       } else {
-        alert("Link Invalido, por favor ingrese un link valido.");
+        alert("Link Invalido.");
       }
     } else {
-      alert("No se encontro un link para esta tarea.");
+      alert("No se encontró link.");
     }
   };
+
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-
-  const [_comment, setComment] = useState("");
-
-  const handleOpenCommentDialog = () => {
-    setIsCommentDialogOpen(true);
-  };
-
-  const handleCloseCommentDialog = () => {
-    setIsCommentDialogOpen(false);
-  };
+  const handleOpenCommentDialog = () => setIsCommentDialogOpen(true);
+  const handleCloseCommentDialog = () => setIsCommentDialogOpen(false);
 
   const handleSendComment = async (comment: string) => {
     if (submission) {
-      setComment(comment);
       const submissionRepository = new SubmissionRepository();
       const finishSubmission = new FinishSubmission(submissionRepository);
       const endDate = new Date();
-      const end_date = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate()
-      );
       const submissionData: SubmissionUpdateObject = {
-        id: submission?.id,
+        id: submission.id,
         status: "delivered",
-        end_date: end_date,
-        comment: comment
+        end_date: new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()),
+        comment,
       };
-      try {
-        await finishSubmission.finishSubmission(submission.id, submissionData);
-        handleCloseLinkDialog();
-      } catch (error) {
-
-        throw error;
-      }
-    }
-    handleCloseCommentDialog();
-    window.location.reload();
-  };
-
-  const getDisplayStatus = (status: string | undefined) => {
-    switch (status) {
-      case "pending":
-        return "Pendiente";
-      case "in progress":
-        return "En progreso";
-      case "delivered":
-        return "Enviado";
-      case undefined:
-        return "Pendiente";
-      default:
-        return status;
+      await finishSubmission.finishSubmission(submission.id, submissionData);
+      window.location.reload();
     }
   };
 
@@ -351,86 +239,80 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     try {
       const student = await usersRepository.getUserById(studentId);
       return student.email;
-    } catch (error) {
-      console.error("Error fetching student email:", error);
-      return "";
-    }
+    } catch { return ""; }
   };
-  const renderStudentRows = async () => {
 
+  // --- RENDERIZADO DE FILAS (CAMBIOS SOLICITADOS) ---
+
+  const renderStudentRows = async () => {
     const rows = await Promise.all(
-      submissions.map(async (submission) => {
-        const studentEmail = await getStudentEmailById(submission.userid);
-        const formattedStartDate = formatDate(submission.start_date.toString());
-        const formattedEndDate = submission.end_date
-          ? formatDate(submission.end_date.toString())
-          : "N/A";
+      submissions.map(async (sub) => {
+        const studentEmail = await getStudentEmailById(sub.userid);
+        const formattedStartDate = formatDate(sub.start_date.toString());
+        const formattedEndDate = sub.end_date ? formatDate(sub.end_date.toString()) : "N/A";
+
+        // Estilos de estado
+        const isDelivered = sub.status === "delivered";
+        const statusClass = isDelivered ? "text-status-enviado" : "text-status-no-enviado";
+        const statusLabel = isDelivered ? "Enviado" : "No enviado";
 
         return (
-          <TableRow key={generateUniqueId()}>
+          <TableRow key={generateUniqueId()} className="table-row-bordered">
             <TableCell>{studentEmail}</TableCell>
-            <TableCell>{getDisplayStatus(submission.status)}</TableCell>
-            <TableCell>
-              <a
-                href={submission.repository_link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {submission.repository_link}
-              </a>
+            <TableCell className={statusClass}>{statusLabel}</TableCell>
+            
+            {/* Icono de Enlace Gris */}
+            <TableCell align="center">
+              {sub.repository_link ? (
+                <a href={sub.repository_link} target="_blank" rel="noopener noreferrer">
+                  <LinkIcon className="icon-gray" />
+                </a>
+              ) : (
+                <RemoveCircleOutlineIcon className="icon-gray" />
+              )}
             </TableCell>
+
             <TableCell>{formattedStartDate}</TableCell>
             <TableCell>{formattedEndDate}</TableCell>
-            <TableCell>{submission.comment || "N/A"}</TableCell>
+
+            {/* Botón Gráfica */}
             <TableCell>
               <Button
                 className="btn-std btn-primary"
-                disabled={submission.repository_link === ""}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")
-                }}
+                disabled={!sub.repository_link}
+                onClick={() => handleRedirectAdmin(sub.repository_link, submissions, sub.id, "/graph")}
               >
                 Ver gráfica
               </Button>
             </TableCell>
 
+            {/* Botón Asistente */}
             <TableCell>
               <Button
                 className="btn-std btn-primary"
-                disabled={submission.repository_link === ""}
-                onClick={() => {
-                  navigate("/asistente-ia", {
-                    state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
-                  });
-                }}
+                disabled={!sub.repository_link}
+                onClick={() => navigate("/asistente-ia", { state: { repositoryLink: sub.repository_link } })}
               >
                 Asistente
               </Button>
-
             </TableCell>
-            {!isStudent(role) && (
-              <TableCell>
-                <Button
-                  className="btn-std btn-primary"
-                  disabled={submission.repository_link === "" || disableAdditionalGraphs}
-                  onClick={() => {
-                    localStorage.setItem("selectedMetric", "Complejidad");
-                    handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
-                  }}
-                >
-                  Ver mas
-                </Button>
-              </TableCell>
-            )}
+
+            {/* Botón Ver Más (Gráficas Adicionales) */}
+            <TableCell>
+              <Button
+                className="btn-std btn-primary"
+                disabled={!sub.repository_link || disableAdditionalGraphs}
+                onClick={() => handleRedirectAdmin(sub.repository_link, submissions, sub.id, "/aditionalgraph")}
+              >
+                Ver
+              </Button>
+            </TableCell>
           </TableRow>
         );
       })
     );
-
     setStudentRows(rows);
   };
-
 
   return (
     <div className="centered-container">
@@ -442,105 +324,31 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             </Typography>
 
             <div className="assignment-details-list">
-              {/* Grupo */}
               <div className="detail-item">
                 <ArchiveOutlinedIcon className="detail-icon" />
-                <Typography variant="body1">
-                  <strong>Grupo:</strong> {groupDetails?.groupName}
-                </Typography>
+                <Typography variant="body1"><strong>Grupo:</strong> {groupDetails?.groupName}</Typography>
               </div>
-
-              {/* Instrucciones */}
               <div className="detail-item">
                 <NotesOutlinedIcon className="detail-icon" />
-                <Typography variant="body1">
-                  <strong>Instrucciones:</strong> {assignment.description}
-                </Typography>
-              </div>
-
-              {/* Fechas */}
-              <div className="detail-item">
-                <CalendarMonthIcon className="detail-icon" />
-                <Typography variant="body1">
-                  <strong>Inicio:</strong> {formatDate(assignment.start_date.toString())}
-                </Typography>
+                <Typography variant="body1"><strong>Instrucciones:</strong> {assignment.description}</Typography>
               </div>
               <div className="detail-item">
                 <CalendarMonthIcon className="detail-icon" />
-                <Typography variant="body1">
-                  <strong>Fecha límite:</strong> {formatDate(assignment.end_date.toString())}
-                </Typography>
+                <Typography variant="body1"><strong>Inicio:</strong> {formatDate(assignment.start_date.toString())}</Typography>
               </div>
-
-              {/* Secciones exclusivas de Estudiante (Importante para los tests) */}
-              {isStudent(role) && (
-                <>
-                  <div className="detail-item">
-                    <AccessTimeIcon className="detail-icon" />
-                    <Typography variant="body1">
-                      {/* Texto plano compatible con getByText("Estado") */}
-                      <strong>Estado: </strong> {getDisplayStatus(studentSubmission?.status)}
-                    </Typography>
-                  </div>
-
-                  <div className="detail-item">
-                    <LinkIcon className="detail-icon" />
-                    <Typography variant="body1">
-                      <strong>Enlace:</strong>{" "}
-                      <a href={studentSubmission?.repository_link} target="_blank" rel="noopener noreferrer">
-                        {studentSubmission?.repository_link}
-                      </a>
-                    </Typography>
-                  </div>
-                </>
-              )}
+              <div className="detail-item">
+                <CalendarMonthIcon className="detail-icon" />
+                <Typography variant="body1"><strong>Fecha límite:</strong> {formatDate(assignment.end_date.toString())}</Typography>
+              </div>
             </div>
 
-            {/* Acciones de Estudiante */}
             {isStudent(role) && (
               <div className="action-buttons-group" style={{ justifyContent: 'flex-start', marginTop: '20px' }}>
-                <Button
-                  disabled={!!studentSubmission}
-                  onClick={handleOpenLinkDialog}
-                  className="btn-std btn-primary"
-                >
-                  Iniciar tarea
-                </Button>
-
-                <Button
-                  disabled={!studentSubmission?.repository_link}
-                  onClick={() => {
-                    localStorage.setItem("selectedMetric", "Dashboard");
-                    if (studentSubmission?.repository_link) {
-                      handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate)
-                    }
-                  }}
-                  className="btn-std btn-primary"
-                >
-                  Ver gráfica
-                </Button>
-
-                <Button
-                  disabled={isTaskInProgress}
-                  onClick={handleOpenCommentDialog}
-                  className="btn-std btn-primary"
-                >
-                  Finalizar tarea
-                </Button>
-
+                <Button disabled={!!submission} onClick={handleOpenLinkDialog} className="btn-std btn-primary">Iniciar tarea</Button>
+                <Button disabled={!submission?.repository_link} onClick={() => handleRedirectStudent(submission!.repository_link, submission!.id, navigate)} className="btn-std btn-primary">Ver gráfica</Button>
+                <Button disabled={submission?.status !== "in progress"} onClick={handleOpenCommentDialog} className="btn-std btn-primary">Finalizar tarea</Button>
                 {showIAButton && (
-                  <Button
-                    disabled={!studentSubmission?.repository_link}
-                    onClick={() => {
-                      localStorage.setItem("selectedMetric", "AssistantAI");
-                      navigate("/asistente-ia", {
-                        state: { repositoryLink: studentSubmission?.repository_link }
-                      });
-                    }}
-                    className="btn-std btn-primary"
-                  >
-                    Asistente IA
-                  </Button>
+                  <Button disabled={!submission?.repository_link} onClick={() => navigate("/asistente-ia", { state: { repositoryLink: submission?.repository_link } })} className="btn-std btn-primary">Asistente IA</Button>
                 )}
               </div>
             )}
@@ -550,37 +358,32 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           </CardContent>
         </Card>
       ) : (
-        <div className="fullscreen-loading">
-          {/* data-testid crucial para los tests */}
-          <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
-        </div>
+        <div className="fullscreen-loading"><CircularProgress size={60} thickness={5} /></div>
       )}
 
-      {/* Lista de Estudiantes (Vista Profesor/Admin) */}
       {!isStudent(role) && (
         <section className="table-container-full" style={{ marginTop: '40px' }}>
-          <Typography variant="h5" className="table-cell-header" sx={{ mb: 2, textAlign: 'center' }}>
-            Lista de Estudiantes
+          <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #eee', pb: 1 }}>
+            Lista de entregas
           </Typography>
           
           {loadingSubmissions ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-              <CircularProgress />
-            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}><CircularProgress /></div>
           ) : (
             <Table className="styled-table">
               <TableHead>
                 <TableRow className="table-row-bordered">
-                  <TableCell className="table-cell-header">Email</TableCell>
+                  <TableCell className="table-cell-header">Correo</TableCell>
                   <TableCell className="table-cell-header">Estado</TableCell>
-                  <TableCell className="table-cell-header">Enlace</TableCell>
-                  <TableCell className="table-cell-header">Inicio</TableCell>
-                  <TableCell className="table-cell-header">Entrega</TableCell>
-                  <TableCell className="table-cell-header">Acciones</TableCell>
+                  <TableCell className="table-cell-header" align="center">Enlace</TableCell>
+                  <TableCell className="table-cell-header">Fecha de Inicio</TableCell>
+                  <TableCell className="table-cell-header">Fecha de finalización</TableCell>
+                  <TableCell className="table-cell-header">Grafica</TableCell>
+                  <TableCell className="table-cell-header">Asistente AI</TableCell>
+                  <TableCell className="table-cell-header">Graficas Adicionales</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* Aquí renderizamos las filas usando los estilos de botón btn-std */}
                 {studentRows}
               </TableBody>
             </Table>
