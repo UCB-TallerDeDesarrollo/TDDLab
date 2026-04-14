@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { formatDate } from "../../utils/dateUtils";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 
@@ -57,12 +57,6 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-function generateUniqueId() {
-  const timestamp = Date.now().toString(36);
-  const randomChars = Math.random().toString(36).substring(2, 8);
-  return timestamp + randomChars;
-}
-
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   role,
   userid,
@@ -70,9 +64,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
+  const [studentEmails, setStudentEmails] = useState<Record<number, string>>({});
   const navigate = useNavigate();
-  const usersRepository = new UsersRepository();
+  const usersRepository = useMemo(() => new UsersRepository(), []);
   const assignment = useAssignmentDetail(assignmentid);
   const groupDetails = useGroupDetail(assignment?.groupid);
   const { submissions, loading: loadingSubmissions } = useAssignmentSubmissions(
@@ -95,11 +89,42 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     fallbackValue: true,
   });
   const disableAdditionalGraphs = !additionalGraphsEnabled;
-  useEffect(() => {
-    renderStudentRows();
-  }, [submissions]);
-
   const isTaskInProgress = submission?.status !== "in progress";
+  const missingUserIds = useMemo(() => {
+    const uniqueIds = new Set(submissions.map((item) => item.userid));
+    return Array.from(uniqueIds).filter(
+      (studentId) => studentEmails[studentId] === undefined
+    );
+  }, [studentEmails, submissions]);
+
+  useEffect(() => {
+    const loadStudentEmails = async () => {
+      if (missingUserIds.length === 0) {
+        return;
+      }
+
+      try {
+        const entries = await Promise.all(
+          missingUserIds.map(async (studentId) => {
+            const student = await usersRepository.getUserById(studentId);
+            return [studentId, student.email] as const;
+          })
+        );
+
+        setStudentEmails((prev) => {
+          const next = { ...prev };
+          entries.forEach(([studentId, email]) => {
+            next[studentId] = email;
+          });
+          return next;
+        });
+      } catch (error) {
+        console.error("Error fetching student emails:", error);
+      }
+    };
+
+    loadStudentEmails();
+  }, [missingUserIds, usersRepository]);
 
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) { //means if the assignment id is in memory or somthn
@@ -216,143 +241,154 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     }
   };
 
-  const getStudentEmailById = async (studentId: number): Promise<string> => {
-    try {
-      const student = await usersRepository.getUserById(studentId);
-      return student.email;
-    } catch (error) {
-      console.error("Error fetching student email:", error);
-      return "";
-    }
-  };
-  const renderStudentRows = async () => {
+  const submissionRows = submissions.map((submission) => {
+    const studentEmail = studentEmails[submission.userid] ?? "";
+    const formattedStartDate = formatDate(submission.start_date.toString());
+    const formattedEndDate = submission.end_date
+      ? formatDate(submission.end_date.toString())
+      : "N/A";
+    const hasRepositoryLink = submission.repository_link !== "";
+    const teacherStatus = hasRepositoryLink ? "Enviado" : "No enviado";
+    const statusColor = hasRepositoryLink ? "#4CAF50" : "#F44336";
 
-    const rows = await Promise.all(
-      submissions.map(async (submission) => {
-        const studentEmail = await getStudentEmailById(submission.userid);
-        const formattedStartDate = formatDate(submission.start_date.toString());
-        const formattedEndDate = submission.end_date
-          ? formatDate(submission.end_date.toString())
-          : "N/A";
-        const hasRepositoryLink = submission.repository_link !== "";
-        const teacherStatus = hasRepositoryLink ? "Enviado" : "No enviado";
-        const statusColor = hasRepositoryLink ? "#4CAF50" : "#F44336";
-
-        return (
-          <TableRow key={generateUniqueId()} sx={{ borderBottom: "1px solid #C9C9C9" }}>
-            <TableCell
-              sx={{
-                py: 2.2,
-                fontSize: "1.3rem",
-                maxWidth: 0,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
+    return (
+      <TableRow key={submission.id} sx={{ borderBottom: "1px solid #C9C9C9" }}>
+        <TableCell
+          sx={{
+            py: 2.2,
+            fontSize: "1.3rem",
+            maxWidth: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+          title={studentEmail}
+        >
+          {studentEmail}
+        </TableCell>
+        <TableCell
+          sx={{
+            py: 2.2,
+            fontSize: "1.3rem",
+            color: statusColor,
+            borderLeft: "1px solid #C9C9C9",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {teacherStatus}
+        </TableCell>
+        <TableCell
+          sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9", textAlign: "center" }}
+        >
+          {hasRepositoryLink ? (
+            <a
+              href={submission.repository_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                color: "#5C6BC0",
               }}
-              title={studentEmail}
             >
-              {studentEmail}
-            </TableCell>
-            <TableCell
-              sx={{
-                py: 2.2,
-                fontSize: "1.3rem",
-                color: statusColor,
-                borderLeft: "1px solid #C9C9C9",
-                whiteSpace: "nowrap",
+              <LinkIcon />
+            </a>
+          ) : (
+            <RemoveCircleIcon sx={{ color: "#F44336" }} />
+          )}
+        </TableCell>
+        <TableCell
+          sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}
+        >
+          {formattedStartDate}
+        </TableCell>
+        <TableCell
+          sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}
+        >
+          {formattedEndDate}
+        </TableCell>
+        <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
+          <Button
+            variant="contained"
+            disabled={submission.repository_link === ""}
+            onClick={() => {
+              localStorage.setItem("selectedMetric", "Dashboard");
+              handleRedirectAdmin(
+                submission.repository_link,
+                submissions,
+                submission.id,
+                "/graph"
+              );
+            }}
+            color="primary"
+            style={{
+              textTransform: "none",
+              fontSize: "1.15rem",
+              marginRight: "8px",
+              backgroundColor:
+                submission.repository_link === "" ? "#BDBDBD" : undefined,
+              minWidth: "110px",
+            }}
+          >
+            Ver grafica
+          </Button>
+        </TableCell>
+
+        <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
+          <Button
+            variant="contained"
+            disabled={submission.repository_link === ""}
+            onClick={() => {
+              navigate("/asistente-ia", {
+                state: { repositoryLink: submission.repository_link },
+              });
+            }}
+            color="primary"
+            style={{
+              textTransform: "none",
+              fontSize: "1.15rem",
+              marginRight: "8px",
+              backgroundColor:
+                submission.repository_link === "" ? "#BDBDBD" : undefined,
+              minWidth: "110px",
+            }}
+          >
+            Asistente
+          </Button>
+        </TableCell>
+        {!isStudent(role) && (
+          <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
+            <Button
+              variant="contained"
+              disabled={submission.repository_link === "" || disableAdditionalGraphs}
+              onClick={() => {
+                localStorage.setItem("selectedMetric", "Complejidad");
+                handleRedirectAdmin(
+                  submission.repository_link,
+                  submissions,
+                  submission.id,
+                  "/aditionalgraph"
+                );
+              }}
+              color="primary"
+              style={{
+                textTransform: "none",
+                fontSize: "1.15rem",
+                marginRight: "7px",
+                backgroundColor:
+                  submission.repository_link === "" || disableAdditionalGraphs
+                    ? "#BDBDBD"
+                    : undefined,
+                minWidth: "84px",
               }}
             >
-              {teacherStatus}
-            </TableCell>
-            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9", textAlign: "center" }}>
-              {hasRepositoryLink ? (
-                <a
-                  href={submission.repository_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ display: "inline-flex", alignItems: "center", color: "#5C6BC0" }}
-                >
-                  <LinkIcon />
-                </a>
-              ) : (
-                <RemoveCircleIcon sx={{ color: "#F44336" }} />
-              )}
-            </TableCell>
-            <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedStartDate}</TableCell>
-            <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedEndDate}</TableCell>
-            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
-              <Button
-                variant="contained"
-                disabled={submission.repository_link === ""}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
-                  handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "1.15rem",
-                  marginRight: "8px",
-                  backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
-                  minWidth: "110px",
-                }}
-              >
-                Ver grafica
-              </Button>
-            </TableCell>
-
-            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
-
-              <Button
-                variant="contained"
-                disabled={submission.repository_link === ""}
-                onClick={() => {
-                  navigate("/asistente-ia", {
-                    state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
-                  });
-                }}
-                color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "1.15rem",
-                  marginRight: "8px",
-                  backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
-                  minWidth: "110px",
-                }}
-              >
-                Asistente
-              </Button>
-
-            </TableCell>
-            {!isStudent(role) && (
-              <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
-                <Button
-                  variant="contained"
-                  disabled={submission.repository_link === "" || disableAdditionalGraphs}
-                  onClick={() => {
-                    localStorage.setItem("selectedMetric", "Complejidad");
-                    handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
-                  }}
-                  color="primary"
-                  style={{
-                    textTransform: "none",
-                    fontSize: "1.15rem",
-                    marginRight: "7px",
-                    backgroundColor: submission.repository_link === "" || disableAdditionalGraphs ? "#BDBDBD" : undefined,
-                    minWidth: "84px",
-                  }}
-                >
-                  Ver
-                </Button>
-              </TableCell>
-            )}
-          </TableRow>
-        );
-      })
+              Ver
+            </Button>
+          </TableCell>
+        )}
+      </TableRow>
     );
-
-    setStudentRows(rows);
-  };
+  });
 
 
   return (
@@ -667,7 +703,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {studentRows}
+                  {submissionRows}
                 </TableBody>
               </Table>
             )}
