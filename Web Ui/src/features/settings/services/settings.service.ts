@@ -3,7 +3,7 @@ import { UpdatePrompts } from "../../../modules/AIAssistant/application/UpdatePr
 import { GetFeatureFlags } from "../../../modules/FeatureFlags/application/GetFeatureFlags";
 import { UpdateFeatureFlag } from "../../../modules/FeatureFlags/application/UpdateFeatureFlag";
 import { AIPromptResponse } from "../../../modules/AIAssistant/domain/AIAssistantRepositoryInterface";
-import { FeatureFlag } from "../../../modules/FeatureFlags/domain/FeatureFlag";
+import { FeatureFlag } from "../types/settings.types";
 
 const getPromptsUseCase = new GetPrompts();
 const updatePromptsUseCase = new UpdatePrompts();
