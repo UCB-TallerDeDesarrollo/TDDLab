@@ -13,6 +13,7 @@ import {
   Button,
   Card,
   CardContent,
+  Divider,
   Table,
   TableBody,
   TableCell,
@@ -22,10 +23,11 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import GroupsIcon from "@mui/icons-material/Groups";
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
+  RemoveCircle as RemoveCircleIcon,
   Comment as CommentIcon,
 } from "@mui/icons-material";
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
@@ -366,24 +368,53 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         const formattedEndDate = submission.end_date
           ? formatDate(submission.end_date.toString())
           : "N/A";
+        const hasRepositoryLink = submission.repository_link !== "";
+        const teacherStatus = hasRepositoryLink ? "Enviado" : "No enviado";
+        const statusColor = hasRepositoryLink ? "#4CAF50" : "#F44336";
 
         return (
-          <TableRow key={generateUniqueId()}>
-            <TableCell>{studentEmail}</TableCell>
-            <TableCell>{getDisplayStatus(submission.status)}</TableCell>
-            <TableCell>
-              <a
-                href={submission.repository_link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {submission.repository_link}
-              </a>
+          <TableRow key={generateUniqueId()} sx={{ borderBottom: "1px solid #C9C9C9" }}>
+            <TableCell
+              sx={{
+                py: 2.2,
+                fontSize: "1.3rem",
+                maxWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={studentEmail}
+            >
+              {studentEmail}
             </TableCell>
-            <TableCell>{formattedStartDate}</TableCell>
-            <TableCell>{formattedEndDate}</TableCell>
-            <TableCell>{submission.comment || "N/A"}</TableCell>
-            <TableCell>
+            <TableCell
+              sx={{
+                py: 2.2,
+                fontSize: "1.3rem",
+                color: statusColor,
+                borderLeft: "1px solid #C9C9C9",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {teacherStatus}
+            </TableCell>
+            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9", textAlign: "center" }}>
+              {hasRepositoryLink ? (
+                <a
+                  href={submission.repository_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: "inline-flex", alignItems: "center", color: "#5C6BC0" }}
+                >
+                  <LinkIcon />
+                </a>
+              ) : (
+                <RemoveCircleIcon sx={{ color: "#F44336" }} />
+              )}
+            </TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedStartDate}</TableCell>
+            <TableCell sx={{ py: 2.2, fontSize: "1.3rem", borderLeft: "1px solid #C9C9C9" }}>{formattedEndDate}</TableCell>
+            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
@@ -394,15 +425,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 color="primary"
                 style={{
                   textTransform: "none",
-                  fontSize: "15px",
+                  fontSize: "1.15rem",
                   marginRight: "8px",
+                  backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
+                  minWidth: "110px",
                 }}
               >
-                Ver gráfica
+                Ver grafica
               </Button>
             </TableCell>
 
-            <TableCell>
+            <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
 
               <Button
                 variant="contained"
@@ -415,16 +448,18 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 color="primary"
                 style={{
                   textTransform: "none",
-                  fontSize: "15px",
+                  fontSize: "1.15rem",
                   marginRight: "8px",
+                  backgroundColor: submission.repository_link === "" ? "#BDBDBD" : undefined,
+                  minWidth: "110px",
                 }}
               >
-                Asistente IA
+                Asistente
               </Button>
 
             </TableCell>
             {!isStudent(role) && (
-              <TableCell>
+              <TableCell sx={{ py: 2.2, borderLeft: "1px solid #C9C9C9" }}>
                 <Button
                   variant="contained"
                   disabled={submission.repository_link === "" || disableAdditionalGraphs}
@@ -435,11 +470,13 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   color="primary"
                   style={{
                     textTransform: "none",
-                    fontSize: "15px",
+                    fontSize: "1.15rem",
                     marginRight: "7px",
+                    backgroundColor: submission.repository_link === "" || disableAdditionalGraphs ? "#BDBDBD" : undefined,
+                    minWidth: "84px",
                   }}
                 >
-                  Ver gráficas adicionales
+                  Ver
                 </Button>
               </TableCell>
             )}
@@ -460,17 +497,29 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         flexDirection: 'column',
         justifyContent: "center",
         alignItems: "center",
-        gap: '10px',
+        width: "100%",
+        gap: '24px',
+        padding: "20px 0",
       }}
     >
       {assignment ? (
-        <Card variant="elevation" elevation={0}>
-          <CardContent>
-            <div style={{ marginBottom: "40px" }}>
+        <Card
+          variant="elevation"
+          elevation={0}
+          style={{
+            width: "100%",
+            maxWidth: "520px",
+            border: "1px solid #BFBFBF",
+            borderRadius: "6px",
+          }}
+        >
+          <CardContent style={{ padding: "20px 34px 18px" }}>
+            <div style={{ marginBottom: "20px" }}>
               <Typography
                 variant="h5"
                 component="div"
-                style={{ fontSize: "30px", lineHeight: "3.8" }}
+                align="center"
+                style={{ fontSize: "46px", fontWeight: 700, lineHeight: 1.1, marginBottom: "20px" }}
               >
                 {assignment.title}
               </Typography>
@@ -478,53 +527,55 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  marginBottom: "8px",
+                  marginBottom: "14px",
                 }}
               >
-                <ArchiveOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
+                <GroupsIcon
+                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={{ fontSize: "26px", lineHeight: 1.45 }}
                 >
                   <strong>Grupo:</strong> {groupDetails?.groupName}
                 </Typography>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <NotesOutlinedIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+              {isStudent(role) && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "14px",
+                  }}
                 >
-                  <strong>Instrucciones:</strong> {assignment.description}
-                </Typography>
-              </div>
+                  <NotesOutlinedIcon
+                    style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ fontSize: "26px", lineHeight: 1.45 }}
+                  >
+                    <strong>Instrucciones:</strong> {assignment.description}
+                  </Typography>
+                </div>
+              )}
 
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  marginBottom: "8px",
+                  marginBottom: "14px",
                 }}
               >
                 <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
+                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={{ fontSize: "26px", lineHeight: 1.45 }}
                 >
                   <strong>Inicio:</strong>{" "}
                   {formatDate(assignment.start_date.toString())}
@@ -534,18 +585,18 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  marginBottom: "8px",
+                  marginBottom: "14px",
                 }}
               >
                 <CalendarMonthIcon
-                  style={{ marginRight: "8px", color: "#666666" }}
+                  style={{ marginRight: "10px", color: "#7A7A7A", fontSize: "28px" }}
                 />
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={{ fontSize: "26px", lineHeight: 1.45 }}
                 >
-                  <strong>Fecha límite:</strong>{" "}
+                  <strong>Finalización:</strong>{" "}
                   {formatDate(assignment.end_date.toString())}
                 </Typography>
               </div>
@@ -715,16 +766,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         </div>
       )}
       {!isStudent(role) && (
-        <Card variant="elevation" elevation={0}>
-          <CardContent>
-            <Typography
-              variant="h6"
-              component="div"
-              align="center"
-              style={{ fontSize: "24px", lineHeight: "3.8" }}
-            >
-              Lista de Estudiantes
-            </Typography>
+        <div style={{ width: "96%", maxWidth: "1260px" }}>
+          <Typography
+            variant="h6"
+            component="div"
+            style={{ fontSize: "38px", fontWeight: 700, marginBottom: "8px" }}
+          >
+            Lista de entregas
+          </Typography>
+          <Divider sx={{ borderBottomWidth: 3, borderColor: "#7F7F7F", mb: 3 }} />
             {loadingSubmissions ? (
               <div
                 style={{
@@ -737,18 +787,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 <CircularProgress size={40} thickness={4} />
               </div>
             ) : (
-              <Table>
+              <Table sx={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
                 <TableHead>
-                  <TableRow>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Estado</TableCell>
-                    <TableCell>Enlace</TableCell>
-                    <TableCell>Fecha de inicio</TableCell>
-                    <TableCell>Fecha de finalización</TableCell>
-                    <TableCell>Comentario</TableCell>
-                    <TableCell>Gráfica</TableCell>
-                    <TableCell>Asistente</TableCell>
-                    <TableCell>Gráficas Adicionales</TableCell>
+                  <TableRow sx={{ borderBottom: "1px solid #C9C9C9" }}>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "18%" }}>Correo</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "11%", borderLeft: "1px solid #C9C9C9" }}>Estado</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "10%", borderLeft: "1px solid #C9C9C9" }}>Enlace</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Inicio</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "14%", borderLeft: "1px solid #C9C9C9" }}>Fecha de Finalización</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "13%", borderLeft: "1px solid #C9C9C9" }}>Grafica</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Asistente AI</TableCell>
+                    <TableCell sx={{ fontWeight: 700, fontSize: "1.65rem", py: 1.3, width: "12%", borderLeft: "1px solid #C9C9C9" }}>Graficas Adicionales</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -756,8 +805,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 </TableBody>
               </Table>
             )}
-          </CardContent>
-        </Card>
+        </div>
       )}
     </div>
   );

@@ -8,7 +8,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Container,
   Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
@@ -18,12 +17,11 @@ import { DeletePractice } from "../../modules/Practices/application/DeletePracti
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
-import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 
 const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
+  width: "100%",
+  marginLeft: "0",
+  marginRight: "0",
 });
 
 interface PracticesProps {
@@ -35,7 +33,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<
     number | null
   >(null);
@@ -47,28 +44,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const practicesRepository = new PracticesRepository();
   const deletePractice = new DeletePractice(practicesRepository);
 
-  const orderPractices = (
-    practicesArray: PracticeDataObject[],
-    sorting: string
-  ) => {
-    if (practicesArray.length > 0) {
-      const sortedPractices = [...practicesArray].sort((a, b) => {
-        switch (sorting) {
-          case "A_Up_Order":
-            return a.title.localeCompare(b.title);
-          case "A_Down_Order":
-            return b.title.localeCompare(a.title);
-          case "Time_Up":
-            return b.id - a.id;
-          case "Time_Down":
-            return a.id - b.id;
-          default:
-            return 0;
-        }
-      });
-      setPractices(sortedPractices);
-    }
-  };
   // Obtener prácticas
 
   const fetchData = async () => {
@@ -77,7 +52,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
         authData.userid
       );
       setPractices(data);
-      orderPractices(data, selectedSorting);
     } catch (error) {
       console.error("Error fetching practices:", error);
     }
@@ -85,13 +59,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
   useEffect(() => {
     fetchData();
-  }, [selectedSorting, authData]);
-
-  const handleOrderPractices = (event: { target: { value: string } }) => {
-    const sorting = event.target.value;
-    setSelectedSorting(sorting);
-    orderPractices(practices, sorting);
-  };
+  }, [authData]);
 
   const handleClickDetail = (index: number) => {
     navigate(`/mis-practicas/${practices[index].id}`);
@@ -125,39 +93,52 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     setHoveredRow(index);
   };
   return (
-    <Container>
-      <section className="Practicas">
+    <div style={{ width: "95%", padding: "0 16px", margin: "0 auto" }}>
+      <section className="Practicas" style={{ width: "100%", margin: "0 auto" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "16px",
+            paddingTop: "6px",
+            borderBottom: "1px solid #D1D5DB",
+            paddingBottom: "16px",
+            width: "100%",
+          }}
+        >
+          <h2 style={{ margin: 0, fontWeight: 700, fontSize: "24px" }}>Practicas</h2>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              style={{
+                textTransform: "none",
+                minWidth: "88px",
+                borderColor: "#D1D5DB",
+                color: "#1F2937",
+                backgroundColor: "white",
+                boxShadow: "none",
+              }}
+            >
+              Filtrar
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={showForm}
+              style={{ textTransform: "none", minWidth: "100px" }}
+            >
+              Crear +
+            </Button>
+          </div>
+        </div>
         <StyledTable>
-           <TableHead>
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
+              <TableCell colSpan={2} sx={{ borderBottom: "1px solid #D1D5DB" }}>
+                <div style={{ fontWeight: 600, fontSize: "16px" }}>Listado</div>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -170,6 +151,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                 handleClickDetail={handleClickDetail}
                 handleClickDelete={handleClickDelete}
                 handleRowHover={handleRowHover}
+                isHovered={_hoveredRow === index}
               />
             ))}
           </TableBody>
@@ -194,7 +176,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
         )}
       </section>
-    </Container>
+    </div>
   );
 }
 

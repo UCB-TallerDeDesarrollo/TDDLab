@@ -43,11 +43,11 @@ app.use(
 app.use(express.json());
 
 // Enable CORS for all routes
-app.use(cors({
-  origin: "http://localhost:5173", // Replace with your frontend URL,
-  credentials: true,
-}));
-app.use(express.json()); 
+//app.use(cors({
+//  origin: "https://tddlab-staging-firebase.web.app/", //process.env.VITE_FRONT_URL, 
+//  credentials: true,
+//}));
+//app.use(express.json()); 
 
 app.use(bodyParser.json());
 

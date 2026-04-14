@@ -18,7 +18,7 @@ dotenv.config();
 
 admin.initializeApp({
   projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  credential: admin.credential.applicationDefault(),});
+});
 
 const getErrorDebugCode = (error: unknown): string => {
   const err = error as { code?: string; message?: string };
@@ -155,7 +155,6 @@ class UserController {
 
   async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
-    console.log("Received Google login request with token:", idToken);
     if (!idToken) {
       res.status(400).json({ error: "Debes proporcionar un token válido" });
       return;
