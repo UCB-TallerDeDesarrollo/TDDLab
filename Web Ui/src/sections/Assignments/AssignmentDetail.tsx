@@ -1,27 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { formatDate } from "../../utils/dateUtils";
-import { getSubmissionStatusLabel } from "../../utils/submissionStatus";
 import { useParams, useNavigate } from "react-router-dom";
-
-import { Card, CardContent, Divider, Typography } from "@mui/material";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import GroupsIcon from "@mui/icons-material/Groups";
-import {
-  AccessTime as AccessTimeIcon,
-  Link as LinkIcon,
-  Comment as CommentIcon,
-} from "@mui/icons-material";
-import { GitLinkDialog } from "./components/GitHubLinkDialog";
-import { CommentDialog } from "./components/CommentDialog";
-import CircularProgress from "@mui/material/CircularProgress";
-import {
-  assignmentDetailStyles,
-  assignmentDetailSx,
-} from "./AssignmentDetail.styles";
-import { ActionButton } from "../Shared/Components/ActionButton";
-import { InfoRow } from "../Shared/Components/InfoRow";
-import { SubmissionTable } from "./components/SubmissionTable";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import {
@@ -31,6 +9,7 @@ import {
 } from "../../modules/Submissions/Domain/submissionInterfaces";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
+import { AssignmentDetailView } from "./AssignmentDetailView";
 import {
   useAssignmentDetail,
   useAssignmentSubmissions,
@@ -231,191 +210,51 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     },
     [navigate, submissions]
   );
+  const handleViewStudentGraph = useCallback(() => {
+    localStorage.setItem("selectedMetric", "Dashboard");
+    if (studentSubmission?.repository_link) {
+      handleRedirectStudent(
+        studentSubmission.repository_link,
+        studentSubmission.id,
+        navigate
+      );
+    }
+  }, [navigate, studentSubmission]);
 
+  const handleOpenStudentAssistant = useCallback(() => {
+    localStorage.setItem("selectedMetric", "AssistantAI");
+    navigate("/asistente-ia", {
+      state: { repositoryLink: studentSubmission?.repository_link },
+    });
+  }, [navigate, studentSubmission?.repository_link]);
 
   return (
-
-    <div style={assignmentDetailStyles.pageContainer}>
-      {assignment ? (
-        <Card
-          variant="elevation"
-          elevation={0}
-          style={assignmentDetailStyles.card}
-        >
-          <CardContent style={assignmentDetailStyles.cardContent}>
-            <div style={assignmentDetailStyles.detailsSection}>
-              <Typography
-                variant="h5"
-                component="div"
-                align="center"
-                style={assignmentDetailStyles.assignmentTitle}
-              >
-                {assignment.title}
-              </Typography>
-              <InfoRow
-                icon={<GroupsIcon sx={assignmentDetailSx.metaIcon} />}
-                label="Grupo"
-                value={groupDetails?.groupName}
-                textSx={assignmentDetailSx.metaText}
-              />
-              {isStudent(role) && (
-                <InfoRow
-                  icon={<NotesOutlinedIcon sx={assignmentDetailSx.metaIcon} />}
-                  label="Instrucciones"
-                  value={assignment.description}
-                  textSx={assignmentDetailSx.metaText}
-                />
-              )}
-              <InfoRow
-                icon={<CalendarMonthIcon sx={assignmentDetailSx.metaIcon} />}
-                label="Inicio"
-                value={formatDate(assignment.start_date.toString())}
-                textSx={assignmentDetailSx.metaText}
-              />
-              <InfoRow
-                icon={<CalendarMonthIcon sx={assignmentDetailSx.metaIcon} />}
-                label="Finalización"
-                value={formatDate(assignment.end_date.toString())}
-                textSx={assignmentDetailSx.metaText}
-              />
-              {isStudent(role) && (
-                <InfoRow
-                  icon={<AccessTimeIcon sx={assignmentDetailSx.secondaryIcon} />}
-                  label="Estado"
-                  value={getSubmissionStatusLabel(studentSubmission?.status)}
-                  containerSx={assignmentDetailSx.compactRow}
-                  textSx={assignmentDetailSx.secondaryText}
-                />
-              )}
-
-              {isStudent(role) && (
-                <InfoRow
-                  icon={<LinkIcon sx={assignmentDetailSx.secondaryIcon} />}
-                  label="Enlace"
-                  value={
-                    <a
-                      href={studentSubmission?.repository_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {studentSubmission?.repository_link}
-                    </a>
-                  }
-                  containerSx={assignmentDetailSx.compactRow}
-                  textSx={assignmentDetailSx.secondaryText}
-                />
-              )}
-
-              {isStudent(role) &&
-                (assignment.comment ? (
-                  <InfoRow
-                    icon={<CommentIcon sx={assignmentDetailSx.secondaryIcon} />}
-                    label="Comentario"
-                    value={
-                      studentSubmission?.repository_link === "" ||
-                      studentSubmission == null
-                    }
-                    containerSx={assignmentDetailSx.compactRow}
-                    textSx={assignmentDetailSx.secondaryText}
-                  />
-                ) : null)}
-            </div>
-            {isStudent(role) && (
-              <ActionButton
-                variant="contained"
-                disabled={!!studentSubmission}
-                onClick={handleOpenLinkDialog}
-              >
-                Iniciar tarea
-              </ActionButton>
-            )}
-
-            {isStudent(role) && (
-              <ActionButton
-                variant="contained"
-                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "Dashboard");
-                  if (studentSubmission?.repository_link) {
-                    handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate)
-                  }
-                }}
-                color="primary"
-              >
-                Ver gráfica
-              </ActionButton>
-            )}
-            <GitLinkDialog
-              open={linkDialogOpen}
-              onClose={handleCloseLinkDialog}
-              onSend={handleSendGithubLink}
-            />
-
-            {isStudent(role) && (
-              <ActionButton
-                variant="contained"
-                disabled={isTaskInProgress}
-                onClick={handleOpenCommentDialog}
-              >
-                Finalizar tarea
-              </ActionButton>
-            )}
-            {isStudent(role) && showIAButton && (
-              <ActionButton
-                variant="contained"
-                disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
-                onClick={() => {
-                  localStorage.setItem("selectedMetric", "AssistantAI");
-                  navigate("/asistente-ia", {
-                    state: { repositoryLink: studentSubmission?.repository_link }
-                  });
-                }}
-                color="primary"
-              >
-                Asistente IA
-              </ActionButton>
-            )}
-            <CommentDialog
-              open={isCommentDialogOpen}
-              link={submission?.repository_link}
-              onSend={handleSendComment}
-              onClose={handleCloseCommentDialog}
-            />
-          </CardContent>
-        </Card>
-      ) : (
-        <div style={assignmentDetailStyles.loadingContainer}>
-          <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
-        </div>
-      )}
-      {!isStudent(role) && (
-        <div style={assignmentDetailStyles.adminContainer}>
-          <Typography
-            variant="h6"
-            component="div"
-            style={assignmentDetailStyles.adminTitle}
-          >
-            Lista de entregas
-          </Typography>
-          <Divider sx={{ borderBottomWidth: 3, borderColor: "#7F7F7F", mb: 3 }} />
-            {loadingSubmissions ? (
-              <div style={assignmentDetailStyles.tableLoadingContainer}>
-                <CircularProgress size={40} thickness={4} />
-              </div>
-            ) : (
-              <SubmissionTable
-                submissions={submissions}
-                studentEmails={studentEmails}
-                disableAdditionalGraphs={disableAdditionalGraphs}
-                showAdditionalGraphs={!isStudent(role)}
-                onViewGraph={handleViewGraph}
-                onOpenAssistant={handleOpenAssistant}
-                onViewAdditionalGraph={handleViewAdditionalGraph}
-              />
-            )}
-        </div>
-      )}
-    </div>
+    <AssignmentDetailView
+      role={role}
+      assignment={assignment}
+      groupName={groupDetails?.groupName}
+      studentSubmission={studentSubmission}
+      submissionRepositoryLink={submission?.repository_link}
+      linkDialogOpen={linkDialogOpen}
+      isCommentDialogOpen={isCommentDialogOpen}
+      showIAButton={showIAButton}
+      isTaskInProgress={isTaskInProgress}
+      loadingSubmissions={loadingSubmissions}
+      submissions={submissions}
+      studentEmails={studentEmails}
+      disableAdditionalGraphs={disableAdditionalGraphs}
+      onOpenLinkDialog={handleOpenLinkDialog}
+      onCloseLinkDialog={handleCloseLinkDialog}
+      onSendGithubLink={handleSendGithubLink}
+      onOpenCommentDialog={handleOpenCommentDialog}
+      onCloseCommentDialog={handleCloseCommentDialog}
+      onSendComment={handleSendComment}
+      onViewStudentGraph={handleViewStudentGraph}
+      onOpenStudentAssistant={handleOpenStudentAssistant}
+      onViewGraph={handleViewGraph}
+      onOpenAssistant={handleOpenAssistant}
+      onViewAdditionalGraph={handleViewAdditionalGraph}
+    />
   );
 };
 
