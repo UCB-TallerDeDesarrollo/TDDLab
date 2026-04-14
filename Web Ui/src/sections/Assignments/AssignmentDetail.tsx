@@ -51,6 +51,57 @@ function isStudent(role: string) {
   return role === "student";
 }
 
+const styles = {
+  pageContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    gap: "24px",
+    padding: "20px 0",
+  },
+  card: {
+    width: "100%",
+    maxWidth: "520px",
+    border: "1px solid #BFBFBF",
+    borderRadius: "6px",
+  },
+  cardContent: {
+    padding: "20px 34px 18px",
+  },
+  detailsSection: {
+    marginBottom: "20px",
+  },
+  assignmentTitle: {
+    fontSize: "46px",
+    fontWeight: 700,
+    lineHeight: 1.1,
+    marginBottom: "20px",
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "250px",
+  },
+  adminContainer: {
+    width: "96%",
+    maxWidth: "1260px",
+  },
+  adminTitle: {
+    fontSize: "38px",
+    fontWeight: 700,
+    marginBottom: "8px",
+  },
+  tableLoadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "150px",
+  },
+};
+
 const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   role,
   userid,
@@ -244,35 +295,20 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   return (
 
-    <div
-      style={{
-        display: "flex",
-        flexDirection: 'column',
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        gap: '24px',
-        padding: "20px 0",
-      }}
-    >
+    <div style={styles.pageContainer}>
       {assignment ? (
         <Card
           variant="elevation"
           elevation={0}
-          style={{
-            width: "100%",
-            maxWidth: "520px",
-            border: "1px solid #BFBFBF",
-            borderRadius: "6px",
-          }}
+          style={styles.card}
         >
-          <CardContent style={{ padding: "20px 34px 18px" }}>
-            <div style={{ marginBottom: "20px" }}>
+          <CardContent style={styles.cardContent}>
+            <div style={styles.detailsSection}>
               <Typography
                 variant="h5"
                 component="div"
                 align="center"
-                style={{ fontSize: "46px", fontWeight: 700, lineHeight: 1.1, marginBottom: "20px" }}
+                style={styles.assignmentTitle}
               >
                 {assignment.title}
               </Typography>
@@ -408,36 +444,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           </CardContent>
         </Card>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "250px",
-          }}
-        >
+        <div style={styles.loadingContainer}>
           <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
         </div>
       )}
       {!isStudent(role) && (
-        <div style={{ width: "96%", maxWidth: "1260px" }}>
+        <div style={styles.adminContainer}>
           <Typography
             variant="h6"
             component="div"
-            style={{ fontSize: "38px", fontWeight: 700, marginBottom: "8px" }}
+            style={styles.adminTitle}
           >
             Lista de entregas
           </Typography>
           <Divider sx={{ borderBottomWidth: 3, borderColor: "#7F7F7F", mb: 3 }} />
             {loadingSubmissions ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "150px",
-                }}
-              >
+              <div style={styles.tableLoadingContainer}>
                 <CircularProgress size={40} thickness={4} />
               </div>
             ) : (
