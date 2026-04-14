@@ -1,14 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
-import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import {
-  SubmissionCreationObject,
   SubmissionDataObject,
-  SubmissionUpdateObject,
 } from "../../modules/Submissions/Domain/submissionInterfaces";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
-import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
 import { AssignmentDetailView } from "./AssignmentDetailView";
 import {
   useAssignmentDetail,
@@ -18,6 +13,7 @@ import {
   useStudentSubmission,
   useSubmissionByUserAndAssignment,
 } from "./hooks/useAssignmentDetailData";
+import { useAssignmentSubmissionActions } from "./hooks/useAssignmentSubmissionActions";
 
 import {
   handleRedirectAdmin,
@@ -109,29 +105,6 @@ const AssignmentDetailContainer: React.FC<AssignmentDetailProps> = ({
     ]);
   }, [refreshSubmissions, refreshStudentSubmission, refreshSubmission]);
 
-  const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentid) {
-      const submissionsRepository = new SubmissionRepository();
-      const createSubmission = new CreateSubmission(submissionsRepository);
-      const startDate = new Date();
-      const start_date = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate()
-      );
-      const submissionData: SubmissionCreationObject = {
-        assignmentid: assignmentid,
-        userid: userid,
-        status: "in progress",
-        repository_link: repository_link,
-        start_date: start_date,
-      };
-      await createSubmission.createSubmission(submissionData);
-      await refreshSubmissionData();
-      handleCloseLinkDialog();
-    }
-  };
-
   const handleOpenLinkDialog = () => {
     setLinkDialogOpen(true);
   };
@@ -150,28 +123,14 @@ const AssignmentDetailContainer: React.FC<AssignmentDetailProps> = ({
     setIsCommentDialogOpen(false);
   };
 
-  const handleSendComment = async (comment: string) => {
-    if (submission) {
-      const submissionRepository = new SubmissionRepository();
-      const finishSubmission = new FinishSubmission(submissionRepository);
-      const endDate = new Date();
-      const end_date = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate()
-      );
-      const submissionData: SubmissionUpdateObject = {
-        id: submission?.id,
-        status: "delivered",
-        end_date: end_date,
-        comment: comment,
-      };
-      await finishSubmission.finishSubmission(submission.id, submissionData);
-      await refreshSubmissionData();
-      handleCloseLinkDialog();
-    }
-    handleCloseCommentDialog();
-  };
+  const { sendGithubLink, sendComment } = useAssignmentSubmissionActions({
+    assignmentId: assignmentid,
+    userId: userid,
+    submission,
+    onRefresh: refreshSubmissionData,
+    onCloseLinkDialog: handleCloseLinkDialog,
+    onCloseCommentDialog: handleCloseCommentDialog,
+  });
 
   const handleViewGraph = useCallback(
     (targetSubmission: SubmissionDataObject) => {
@@ -244,10 +203,10 @@ const AssignmentDetailContainer: React.FC<AssignmentDetailProps> = ({
       disableAdditionalGraphs={disableAdditionalGraphs}
       onOpenLinkDialog={handleOpenLinkDialog}
       onCloseLinkDialog={handleCloseLinkDialog}
-      onSendGithubLink={handleSendGithubLink}
+      onSendGithubLink={sendGithubLink}
       onOpenCommentDialog={handleOpenCommentDialog}
       onCloseCommentDialog={handleCloseCommentDialog}
-      onSendComment={handleSendComment}
+      onSendComment={sendComment}
       onViewStudentGraph={handleViewStudentGraph}
       onOpenStudentAssistant={handleOpenStudentAssistant}
       onViewGraph={handleViewGraph}
