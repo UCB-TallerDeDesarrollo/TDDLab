@@ -2,13 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { formatDate } from "../../utils/dateUtils";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, Divider, Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -20,6 +14,7 @@ import {
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
+import { ActionButton } from "../Shared/Components/ActionButton";
 import { InfoRow } from "../Shared/Components/InfoRow";
 import { SubmissionTable } from "./components/SubmissionTable";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
@@ -367,22 +362,17 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 ) : null)}
             </div>
             {isStudent(role) && (
-              <Button
+              <ActionButton
                 variant="contained"
                 disabled={!!studentSubmission}
                 onClick={handleOpenLinkDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
               >
                 Iniciar tarea
-              </Button>
+              </ActionButton>
             )}
 
             {isStudent(role) && (
-              <Button
+              <ActionButton
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
                 onClick={() => {
@@ -392,14 +382,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   }
                 }}
                 color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
               >
                 Ver gráfica
-              </Button>
+              </ActionButton>
             )}
             <GitLinkDialog
               open={linkDialogOpen}
@@ -408,21 +393,16 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
             />
 
             {isStudent(role) && (
-              <Button
+              <ActionButton
                 variant="contained"
                 disabled={isTaskInProgress}
                 onClick={handleOpenCommentDialog}
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
               >
                 Finalizar tarea
-              </Button>
+              </ActionButton>
             )}
             {isStudent(role) && showIAButton && (
-              <Button
+              <ActionButton
                 variant="contained"
                 disabled={studentSubmission?.repository_link === "" || studentSubmission == null}
                 onClick={() => {
@@ -432,14 +412,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   });
                 }}
                 color="primary"
-                style={{
-                  textTransform: "none",
-                  fontSize: "15px",
-                  marginRight: "8px",
-                }}
               >
                 Asistente IA
-              </Button>
+              </ActionButton>
             )}
             <CommentDialog
               open={isCommentDialogOpen}
