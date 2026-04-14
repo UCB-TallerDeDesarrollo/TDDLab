@@ -27,6 +27,8 @@ interface NavbarProps {
   userRole: string;
 }
 
+import TeacherSidebar from "./components/TeacherSidebar";
+
 export default function MainMenu({
   navArrayLinks,
   userRole,
@@ -37,6 +39,16 @@ export default function MainMenu({
   const activeButton = navArrayLinks.find(
     (navLink) => navLink.path === location.pathname
   )?.title;
+
+  if (userRole === "teacher") {
+    // Si es docente retornamos el Sidebar sin el contenedor con margen superior
+    return (
+      <div style={{ display: 'flex' }}>
+        <TeacherSidebar navArrayLinks={navArrayLinks} />
+        {/* Aquí la AppBar principal de logout no va, o se puede ubicar diferente. Según el requerimiento, la vista cambia al Sidebar */}
+      </div>
+    );
+  }
 
   return (
     <div style={{ marginTop: "100px" }}>
