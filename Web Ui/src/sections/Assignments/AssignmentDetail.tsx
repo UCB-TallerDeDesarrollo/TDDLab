@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { formatDate } from "../../utils/dateUtils";
 import { getSubmissionStatusLabel } from "../../utils/submissionStatus";
 import { useParams, useNavigate } from "react-router-dom";
@@ -119,13 +119,13 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     loadStudentEmails();
   }, [missingUserIds, usersRepository]);
 
-  const refreshSubmissionData = async () => {
+  const refreshSubmissionData = useCallback(async () => {
     await Promise.all([
       refreshSubmissions(),
       refreshStudentSubmission(),
       refreshSubmission(),
     ]);
-  };
+  }, [refreshSubmissions, refreshStudentSubmission, refreshSubmission]);
 
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) { //means if the assignment id is in memory or somthn
@@ -204,33 +204,42 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     handleCloseCommentDialog();
   };
 
-  const handleViewGraph = (targetSubmission: SubmissionDataObject) => {
-    localStorage.setItem("selectedMetric", "Dashboard");
-    handleRedirectAdmin(
-      targetSubmission.repository_link,
-      submissions,
-      targetSubmission.id,
-      "/graph",
-      navigate
-    );
-  };
+  const handleViewGraph = useCallback(
+    (targetSubmission: SubmissionDataObject) => {
+      localStorage.setItem("selectedMetric", "Dashboard");
+      handleRedirectAdmin(
+        targetSubmission.repository_link,
+        submissions,
+        targetSubmission.id,
+        "/graph",
+        navigate
+      );
+    },
+    [navigate, submissions]
+  );
 
-  const handleOpenAssistant = (targetSubmission: SubmissionDataObject) => {
-    navigate("/asistente-ia", {
-      state: { repositoryLink: targetSubmission.repository_link },
-    });
-  };
+  const handleOpenAssistant = useCallback(
+    (targetSubmission: SubmissionDataObject) => {
+      navigate("/asistente-ia", {
+        state: { repositoryLink: targetSubmission.repository_link },
+      });
+    },
+    [navigate]
+  );
 
-  const handleViewAdditionalGraph = (targetSubmission: SubmissionDataObject) => {
-    localStorage.setItem("selectedMetric", "Complejidad");
-    handleRedirectAdmin(
-      targetSubmission.repository_link,
-      submissions,
-      targetSubmission.id,
-      "/aditionalgraph",
-      navigate
-    );
-  };
+  const handleViewAdditionalGraph = useCallback(
+    (targetSubmission: SubmissionDataObject) => {
+      localStorage.setItem("selectedMetric", "Complejidad");
+      handleRedirectAdmin(
+        targetSubmission.repository_link,
+        submissions,
+        targetSubmission.id,
+        "/aditionalgraph",
+        navigate
+      );
+    },
+    [navigate, submissions]
+  );
 
 
   return (
