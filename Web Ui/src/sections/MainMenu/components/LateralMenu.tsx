@@ -30,7 +30,10 @@ export default function NavLateralMenu({
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', ml: '14px', mt: 2, mb: 1 }}>
+            <img src="/logo.svg" alt="TDDLab Logo" style={{ width: 24, height: 24, marginRight: "8px" }} />
+            <Typography variant="h6">TDDLab</Typography>
+          </Box>
 
           {navArrayLinks.map((item) => (
             <ListItem disablePadding key={item.title}>

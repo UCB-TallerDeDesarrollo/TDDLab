@@ -50,7 +50,7 @@ export default function TeacherSidebar({ navArrayLinks }: Readonly<TeacherSideba
         }}
       >
          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconifyIcon icon="mdi:view-grid" color="#4a8bff" width={32} height={32} />
+            <img src="/logo.svg" alt="TDDLab Logo" style={{ width: 44, height: 44 }} />
             <Box sx={{ display: 'flex', flexDirection: 'column', color: 'white', lineHeight: 1 }}>
                 <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '1px', m: 0 }}>
                   TDD

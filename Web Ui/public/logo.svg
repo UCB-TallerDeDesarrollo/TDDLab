@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 102 102" width="102" height="102">
+  <g transform="translate(51, 51) rotate(45) translate(-36, -36)">
+    <!-- Row 0 -->
+    <rect x="0" y="0" width="20" height="20" fill="#3B5BA5" /> <!-- Blue -->
+    <rect x="26" y="0" width="20" height="20" fill="#68BE54" /> <!-- Green -->
+    <rect x="52" y="0" width="20" height="20" fill="#3B5BA5" /> <!-- Blue -->
+
+    <!-- Row 1 -->
+    <rect x="0" y="26" width="20" height="20" fill="#68BE54" /> <!-- Green -->
+    <rect x="26" y="26" width="20" height="20" fill="#E32828" /> <!-- Red -->
+    <rect x="52" y="26" width="20" height="20" fill="#68BE54" /> <!-- Green -->
+
+    <!-- Row 2 -->
+    <rect x="0" y="52" width="20" height="20" fill="#3B5BA5" /> <!-- Blue -->
+    <rect x="26" y="52" width="20" height="20" fill="#68BE54" /> <!-- Green -->
+    <rect x="52" y="52" width="20" height="20" fill="#3B5BA5" /> <!-- Blue -->
+  </g>
+</svg>

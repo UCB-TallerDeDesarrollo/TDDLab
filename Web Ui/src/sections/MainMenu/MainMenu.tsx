@@ -70,7 +70,7 @@ export default function MainMenu({
             >
               <IconifyIcon icon="mdi:menu" color="white" hoverColor="#e0e0e0" />
             </IconButton>
-            <IconifyIcon icon="mdi:window" color="white" hoverColor="#e0e0e0" sx={{ marginRight: "6px", marginTop: "4px" }} />
+            <img src="/logo.svg" alt="TDDLab Logo" style={{ width: 28, height: 28, marginRight: "10px", marginTop: "2px" }} />
             <NavLink
               to="/"
               style={{ textDecoration: "none", color: "inherit" }}
