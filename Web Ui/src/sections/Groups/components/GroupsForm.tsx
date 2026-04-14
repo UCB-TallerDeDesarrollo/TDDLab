@@ -30,6 +30,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
+   const [createdGroup, setCreatedGroup] = useState<GroupDataObject | null>(null);
   const groupRepository = new GroupsRepository();
 
   const [auth] = useGlobalState("authData");
@@ -89,15 +90,28 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
   useEffect(() => {
     if (!open) {
-      setSave(false);
-      setValidationDialogOpen(false);
-      setGroupName("");
-      setGroupDescription("");
+      if (!validationDialogOpen) {
+        setSave(false);
+        setValidationDialogOpen(false);
+        setGroupName("");
+        setGroupDescription("");
+      }
     }
   }, [open]);
 
+  const handleValidationClose = () => {
+    setValidationDialogOpen(false);
+    if (createdGroup) {
+      onCreated?.(createdGroup);
+    }
+    setGroupName("");
+    setGroupDescription("");
+    setCreatedGroup(null);
+    handleClose();
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} disableRestoreFocus>
       {!validationDialogOpen && (
         <>
           <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear grupo</DialogTitle>
@@ -146,10 +160,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
           open={validationDialogOpen}
           title="Grupo creado exitosamente"
           closeText="Cerrar"
-          onClose={() => {
-            setValidationDialogOpen(false);
-            handleClose(); // cierra el popup después de mostrar el mensaje
-          }}
+          onClose={handleValidationClose}
         />
       )}
     </Dialog>

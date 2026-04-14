@@ -326,6 +326,7 @@ function Groups() {
                         color="primary"
                         size="small"
                         startIcon={<AddIcon />}
+                        title=""
                         sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
                         onClick={handleCreateGroupClick}
                     >
