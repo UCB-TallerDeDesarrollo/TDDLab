@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, 
-         Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem,
+         Typography, Container, Box, Snackbar, Alert } from '@mui/material';
+import { FullScreenLoader } from '../../components/FullScreenLoader';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
@@ -141,9 +142,7 @@ const ConfigurationPage = () => {
       </Box>
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-          <CircularProgress />
-        </Box>
+        <FullScreenLoader isLoading={true} />
       ) : error ? (
         <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
           <Typography color="error">{error}</Typography>
@@ -189,24 +188,7 @@ const ConfigurationPage = () => {
             </Alert>
           </Snackbar>
           
-          {saving && (
-            <Box
-              sx={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1300,
-              }}
-            >
-              <CircularProgress color="primary" />
-            </Box>
-          )}
+          <FullScreenLoader isLoading={saving} variant="overlay" />
         </>
       )}
        
