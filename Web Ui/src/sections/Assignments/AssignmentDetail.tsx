@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { GetAssignmentDetail } from "../../modules/Assignments/application/GetAssignmentDetail";
-import { GetGroupDetail } from "../../modules/Groups/application/GetGroupDetail";
 import { formatDate } from "../../utils/dateUtils";
-import { AssignmentDataObject } from "../../modules/Assignments/domain/assignmentInterfaces";
-import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import { useParams, createSearchParams, useNavigate } from "react-router-dom";
-import AssignmentsRepository from "../../modules/Assignments/repository/AssignmentsRepository";
-import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-import { GetFeatureFlagByName } from "../../modules/FeatureFlags/application/GetFeatureFlagByName";
 
 import {
   Button,
@@ -37,13 +30,18 @@ import SubmissionRepository from "../../modules/Submissions/Repository/Submissio
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
 import {
   SubmissionCreationObject,
-  SubmissionDataObject,
   SubmissionUpdateObject,
 } from "../../modules/Submissions/Domain/submissionInterfaces";
-import { GetSubmissionsByAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
-import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
+import {
+  useAssignmentDetail,
+  useAssignmentSubmissions,
+  useFeatureFlagEnabled,
+  useGroupDetail,
+  useStudentSubmission,
+  useSubmissionByUserAndAssignment,
+} from "./hooks/useAssignmentDetailData";
 
 import {
   handleRedirectStudent,
@@ -69,171 +67,39 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   role,
   userid,
 }) => {
-  const [assignment, setAssignment] = useState<AssignmentDataObject | null>(
-    null
-  );
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(
-    null
-  );
-  const [loadingSubmissions, setLoadingSubmissions] = useState(true);
-  const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
-  const [studentSubmission, setStudentSubmission] = useState<SubmissionDataObject>();
-  const [_submissionsError, setSubmissionsError] = useState<string | null>(null);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
-  const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
-  const [showIAButton, setShowIAButton] = useState(false);
-  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
-
-
-  useEffect(() => {
-    const fetchFlag = async () => {
-      if (!isStudent(role)) {
-        const getFlagUseCase = new GetFeatureFlagByName();
-        try {
-          const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
-          setDisableAdditionalGraphs(!(flag?.is_enabled));
-        } catch (error) {
-          console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-          setDisableAdditionalGraphs(true); // por precaución
-        }
-      }
-    };
-
-    fetchFlag();
-  }, [role]);
-
-  useEffect(() => {
-    if (!isStudent(role)) return;
-
-    const getFlagUseCase = new GetFeatureFlagByName();
-
-    const fetchFeatureFlag = async () => {
-      try {
-        const flag = await getFlagUseCase.execute("Boton Asistente IA");
-        setShowIAButton(flag?.is_enabled ?? true);
-      } catch (error) {
-        console.error("Error fetching feature flag IA_ASSISTANT:", error);
-      }
-    };
-
-    fetchFeatureFlag();
-  }, [role]);
-
-
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
-
-
-  useEffect(() => {
-    const fetchSubmission = async () => {
-      if (assignmentid && userid && userid !== -1) {
-        try {
-          const submissionRepository = new SubmissionRepository();
-          const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
-
-          if (assignmentid < 0 || userid < 0) {
-            return; // Validación silenciosa
-          }
-
-          const fetchedSubmission = await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
-          setSubmission(fetchedSubmission);
-        } catch (error) {
-          console.error("Error verifying submission status:", error);
-        }
-      }
-    };
-
-    fetchSubmission();
-  }, [assignmentid, userid]);
-
-  useEffect(() => {
-    const assignmentsRepository = new AssignmentsRepository();
-    const getAssignmentDetail = new GetAssignmentDetail(assignmentsRepository);
-
-    getAssignmentDetail
-      .obtainAssignmentDetail(assignmentid)
-      .then((fetchedAssignment) => {
-        setAssignment(fetchedAssignment);
-      })
-      .catch((error) => {
-        console.error("Error fetching assignment:", error);
-      });
-  }, [assignmentid]);
-  useEffect(() => {
-    const groupsRepository = new GroupsRepository();
-    const getGroupDetail = new GetGroupDetail(groupsRepository);
-
-    if (assignment?.groupid) {
-      getGroupDetail
-        .obtainGroupDetail(assignment.groupid)
-        .then((fetchedGroupDetails) => {
-          setGroupDetails(fetchedGroupDetails);
-        })
-        .catch((error) => {
-          console.error("Error fetching group details:", error);
-        });
-    }
-  }, [assignment]);
-
-  useEffect(() => {
-    const fetchSubmissions = async () => {
-      if (!isStudent(role)) {
-        setLoadingSubmissions(true);
-        setSubmissionsError(null);
-        try {
-          const submissionRepository = new SubmissionRepository();
-          const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(
-            submissionRepository
-          );
-          const fetchedSubmissions =
-            await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(
-              assignmentid
-            );
-          setSubmissions(fetchedSubmissions);
-        } catch (error) {
-          setSubmissionsError(
-            "Error fetching submissions. Please try again later."
-          );
-          console.error("Error fetching SubmissionByAssignmentAndUser:", error);
-        } finally {
-          setLoadingSubmissions(false);
-        }
-      }
-    };
-
-    fetchSubmissions();
-  }, [assignmentid, role]);
-
+  const assignment = useAssignmentDetail(assignmentid);
+  const groupDetails = useGroupDetail(assignment?.groupid);
+  const { submissions, loading: loadingSubmissions } = useAssignmentSubmissions(
+    assignmentid,
+    !isStudent(role)
+  );
+  const { studentSubmission } = useStudentSubmission(
+    assignmentid,
+    userid,
+    isStudent(role)
+  );
+  const submission = useSubmissionByUserAndAssignment(assignmentid, userid);
+  const additionalGraphsEnabled = useFeatureFlagEnabled(
+    "Mostrar Graficas Adicionales",
+    { enabled: !isStudent(role), defaultValue: false }
+  );
+  const showIAButton = useFeatureFlagEnabled("Boton Asistente IA", {
+    enabled: isStudent(role),
+    defaultValue: false,
+    fallbackValue: true,
+  });
+  const disableAdditionalGraphs = !additionalGraphsEnabled;
   useEffect(() => {
     renderStudentRows();
   }, [submissions]);
 
   const isTaskInProgress = submission?.status !== "in progress";
-  useEffect(() => {
-    const fetchStudentSubmission = async () => {
-      if (isStudent(role)) {
-        if (assignmentid && userid && userid !== -1) {
-          try {
-            const submissionRepository = new SubmissionRepository();
-            const getSubmissionsByAssignmentId = new GetSubmissionsByAssignmentId(submissionRepository);
-            const allSubmissions = await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(assignmentid);
-            const userSubmission = allSubmissions.find(submission => submission.userid === userid);
-            if (userSubmission) {
-              setStudentSubmission(userSubmission);
-            }
-          } catch (error) {
-            console.error("Error fetching student submission:", error);
-            setSubmissionsError("An error occurred while fetching the student submission.");
-          }
-        }
-      }
-    };
-
-    fetchStudentSubmission();
-  }, [assignmentid, userid, role]);
 
   const handleSendGithubLink = async (repository_link: string) => {
     if (assignmentid) { //means if the assignment id is in memory or somthn
