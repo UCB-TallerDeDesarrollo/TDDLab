@@ -50,3 +50,11 @@ export const assignmentDetailStyles: Record<string, CSSProperties> = {
     height: "150px",
   },
 };
+
+export const assignmentDetailSx = {
+  metaIcon: { color: "#7A7A7A", fontSize: 28 },
+  secondaryIcon: { color: "#666666" },
+  metaText: { fontSize: "26px", lineHeight: 1.45 },
+  secondaryText: { fontSize: "16px", lineHeight: "1.8" },
+  compactRow: { mb: 1 },
+};

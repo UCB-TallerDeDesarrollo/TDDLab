@@ -15,7 +15,10 @@ import {
 import { GitLinkDialog } from "./components/GitHubLinkDialog";
 import { CommentDialog } from "./components/CommentDialog";
 import CircularProgress from "@mui/material/CircularProgress";
-import { assignmentDetailStyles } from "./AssignmentDetail.styles";
+import {
+  assignmentDetailStyles,
+  assignmentDetailSx,
+} from "./AssignmentDetail.styles";
 import { ActionButton } from "../Shared/Components/ActionButton";
 import { InfoRow } from "../Shared/Components/InfoRow";
 import { SubmissionTable } from "./components/SubmissionTable";
@@ -250,44 +253,44 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 {assignment.title}
               </Typography>
               <InfoRow
-                icon={<GroupsIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                icon={<GroupsIcon sx={assignmentDetailSx.metaIcon} />}
                 label="Grupo"
                 value={groupDetails?.groupName}
-                textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+                textSx={assignmentDetailSx.metaText}
               />
               {isStudent(role) && (
                 <InfoRow
-                  icon={<NotesOutlinedIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                  icon={<NotesOutlinedIcon sx={assignmentDetailSx.metaIcon} />}
                   label="Instrucciones"
                   value={assignment.description}
-                  textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+                  textSx={assignmentDetailSx.metaText}
                 />
               )}
               <InfoRow
-                icon={<CalendarMonthIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                icon={<CalendarMonthIcon sx={assignmentDetailSx.metaIcon} />}
                 label="Inicio"
                 value={formatDate(assignment.start_date.toString())}
-                textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+                textSx={assignmentDetailSx.metaText}
               />
               <InfoRow
-                icon={<CalendarMonthIcon sx={{ color: "#7A7A7A", fontSize: 28 }} />}
+                icon={<CalendarMonthIcon sx={assignmentDetailSx.metaIcon} />}
                 label="Finalización"
                 value={formatDate(assignment.end_date.toString())}
-                textSx={{ fontSize: "26px", lineHeight: 1.45 }}
+                textSx={assignmentDetailSx.metaText}
               />
               {isStudent(role) && (
                 <InfoRow
-                  icon={<AccessTimeIcon sx={{ color: "#666666" }} />}
+                  icon={<AccessTimeIcon sx={assignmentDetailSx.secondaryIcon} />}
                   label="Estado"
                   value={getSubmissionStatusLabel(studentSubmission?.status)}
-                  containerSx={{ mb: 1 }}
-                  textSx={{ fontSize: "16px", lineHeight: "1.8" }}
+                  containerSx={assignmentDetailSx.compactRow}
+                  textSx={assignmentDetailSx.secondaryText}
                 />
               )}
 
               {isStudent(role) && (
                 <InfoRow
-                  icon={<LinkIcon sx={{ color: "#666666" }} />}
+                  icon={<LinkIcon sx={assignmentDetailSx.secondaryIcon} />}
                   label="Enlace"
                   value={
                     <a
@@ -298,22 +301,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                       {studentSubmission?.repository_link}
                     </a>
                   }
-                  containerSx={{ mb: 1 }}
-                  textSx={{ fontSize: "16px", lineHeight: "1.8" }}
+                  containerSx={assignmentDetailSx.compactRow}
+                  textSx={assignmentDetailSx.secondaryText}
                 />
               )}
 
               {isStudent(role) &&
                 (assignment.comment ? (
                   <InfoRow
-                    icon={<CommentIcon sx={{ color: "#666666" }} />}
+                    icon={<CommentIcon sx={assignmentDetailSx.secondaryIcon} />}
                     label="Comentario"
                     value={
                       studentSubmission?.repository_link === "" ||
                       studentSubmission == null
                     }
-                    containerSx={{ mb: 1 }}
-                    textSx={{ fontSize: "16px", lineHeight: "1.8" }}
+                    containerSx={assignmentDetailSx.compactRow}
+                    textSx={assignmentDetailSx.secondaryText}
                   />
                 ) : null)}
             </div>
