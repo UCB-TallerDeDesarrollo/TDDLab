@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { formatDate } from "../../utils/dateUtils";
-import { useParams, createSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { Card, CardContent, Divider, Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -36,6 +36,7 @@ import {
 } from "./hooks/useAssignmentDetailData";
 
 import {
+  handleRedirectAdmin,
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
 
@@ -154,29 +155,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     window.location.reload();
   };
 
-  const handleRedirectAdmin = (link: string, fetchedSubmissions: any[], submissionId: number, url: string) => {
-    if (link) {
-      const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-      const match = regex.exec(link);
-
-      if (match) {
-        const [, user, repo] = match;
-        navigate({
-          pathname: url,
-          search: createSearchParams({
-            repoOwner: user,
-            repoName: repo,
-            fetchedSubmissions: JSON.stringify(fetchedSubmissions),
-            submissionId: submissionId.toString(),  // Convertimos submissionId a cadena para pasarlo como parámetro
-          }).toString(),
-        });
-      } else {
-        alert("Link Invalido, por favor ingrese un link valido.");
-      }
-    } else {
-      alert("No se encontro un link para esta tarea.");
-    }
-  };
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
   const [_comment, setComment] = useState("");
@@ -238,7 +216,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       targetSubmission.repository_link,
       submissions,
       targetSubmission.id,
-      "/graph"
+      "/graph",
+      navigate
     );
   };
 
@@ -254,7 +233,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
       targetSubmission.repository_link,
       submissions,
       targetSubmission.id,
-      "/aditionalgraph"
+      "/aditionalgraph",
+      navigate
     );
   };
 

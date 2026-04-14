@@ -45,3 +45,33 @@ export const handleRedirectStudent = (
     alert("No se encontró un link para esta tarea.");
   }
 };
+
+export const handleRedirectAdmin = (
+  link: string,
+  fetchedSubmissions: any[],
+  submissionId: number,
+  url: string,
+  navigate: NavigateFunction
+) => {
+  if (link) {
+    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+    const match = regex.exec(link);
+
+    if (match) {
+      const [, user, repo] = match;
+      navigate({
+        pathname: url,
+        search: createSearchParams({
+          repoOwner: user,
+          repoName: repo,
+          fetchedSubmissions: JSON.stringify(fetchedSubmissions),
+          submissionId: submissionId.toString(),
+        }).toString(),
+      });
+    } else {
+      alert("Link Invalido, por favor ingrese un link valido.");
+    }
+  } else {
+    alert("No se encontro un link para esta tarea.");
+  }
+};
