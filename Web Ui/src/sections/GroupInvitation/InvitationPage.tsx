@@ -9,7 +9,8 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { CircularProgress, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
+import FullScreenLoader from "../../components/FullScreenLoader/FullScreenLoader";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
 import { handleSignInWithGoogle } from "../../modules/User-Authentication/application/signInWithGoogle";
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
@@ -18,6 +19,7 @@ import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 import AdminAlertModal from "./components/AdminAlertModal";
+import "../../App.css";
 
 function InvitationPage() {
   const location = useLocation();
@@ -64,26 +66,17 @@ function InvitationPage() {
 
   const [showPopUp, setShowPopUp] = useState(false);
 
-  const handleSignUp = async () => {
+  const handleSignUpWithProvider = async (provider: "github" | "google") => {
     setIsLoading(true);
     try {
-      const userData = await handleSignInWithGitHub();
-      if (userData) {
-        setUser(userData);
-        setAuthProvider("github");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      const userData =
+        provider === "github"
+          ? await handleSignInWithGitHub()
+          : await handleSignInWithGoogle();
 
-  const handleSignUpWithGoogle = async () => {
-    setIsLoading(true);
-    try {
-      const userData = await handleSignInWithGoogle();
       if (userData) {
         setUser(userData);
-        setAuthProvider("google");
+        setAuthProvider(provider);
       }
     } finally {
       setIsLoading(false);
@@ -108,26 +101,6 @@ function InvitationPage() {
   const handlePopPassword = async () => {
     setShowPasswordPopup(true);
   };
-
-  const LoadingOverlay = () => (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 99999,
-        backdropFilter: "blur(5px)", //blur
-      }}
-    >
-      <CircularProgress size={60} />
-    </div>
-  );
 
   const handleAcceptInvitation = async (type: string) => {
     setIsLoading(true);
@@ -183,144 +156,145 @@ function InvitationPage() {
   const handleMouseLeave = () => {
     setRotation({ rotateX: 0, rotateY: 0 });
   };
+
+  const primaryButtonStyles = {
+    textTransform: "none" as const,
+    transition: "all 0.175s ease-out",
+    "&:hover": {
+      filter: "brightness(0.9)",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+    },
+    "&:active": {
+      transform: "scale(0.97)",
+    },
+    "&:disabled": {
+      backgroundColor: "#ccc",
+    },
+  };
+
   return (
     <div style={{ position: "relative" }}>
-      {isLoading && <LoadingOverlay />}
+      <FullScreenLoader isLoading={isLoading} />
 
       {user ? (
-        <div>
+        <div className="invitation-card-container">
           <Grid
-            container
-            spacing={2} // Agrega la separación deseada entre los Card
-            justifyContent="center" // Centra los elementos horizontalmente
-            alignItems="center" // Centra los elementos verticalmente
-            style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
-            direction="column" // Alinea los elementos en una sola columna
+            item
+            className={`invitation-user-card ${
+              user.displayName ? "expanded" : ""
+            }`}
           >
-            <Grid
-              item
-              style={{
-                width: user.displayName ? "400px" : "600px",
-                transition: "width 0.3s ease",
-              }}
-            >
-              <Card
-                sx={{
-                  "&:hover": {
-                    boxShadow: "md",
-                    borderColor: "neutral.outlinedHoverBorder",
-                  },
-                }}
-                variant="outlined"
-              >
-                <CardContent>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
+            <Card variant="outlined">
+              <CardContent>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
                       <div
                         style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "center",
+                          width: 100,
+                          height: 100,
+                          borderRadius: "10%",
+                          overflow: "hidden",
                         }}
                       >
-                        <div
-                          style={{
-                            width: 100,
-                            height: 100,
-                            borderRadius: "10%",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <CardMedia
-                            component="img"
-                            alt="Imagen"
-                            height="100%"
-                            width="100%"
-                            image={user.photoURL ?? "URL_POR_DEFECTO"} // Reemplaza con la ruta de tu imagen.
-                          />
-                        </div>
+                        <CardMedia
+                          component="img"
+                          alt="Imagen"
+                          height="100%"
+                          width="100%"
+                          image={user.photoURL ?? "URL_POR_DEFECTO"}
+                        />
                       </div>
+                    </div>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={8}
+                    container
+                    direction="column"
+                    justifyContent="space-between"
+                  >
+                    <Grid item>
+                      <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                        {user.displayName ?? user.email}
+                      </Typography>
                     </Grid>
-                    <Grid
-                      item
-                      xs={8}
-                      container
-                      direction="column"
-                      justifyContent="space-between"
-                    >
-                      <Grid item>
-                        <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                          {user.displayName ?? user.email}
-                        </Typography>
-                      </Grid>
-                      <Grid item sx={{ marginTop: "auto" }}>
-                        <Button
-                          onClick={handleGithubSignOut}
-                          variant="contained"
-                          color="primary"
-                          disabled={isLoading}
-                        >
-                          Cerrar sesión
-                        </Button>
-                      </Grid>
+                    <Grid item sx={{ marginTop: "auto" }}>
+                      <Button
+                        onClick={handleGithubSignOut}
+                        variant="contained"
+                        color="primary"
+                        disabled={isLoading}
+                        sx={primaryButtonStyles}
+                      >
+                        Cerrar sesión
+                      </Button>
                     </Grid>
                   </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item>
-              <Card
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid
+            item
+            className={`invitation-content-card ${
+              user.displayName ? "expanded" : ""
+            }`}
+          >
+            <Card variant="outlined">
+              <CardMedia
+                component="img"
+                alt="Imagen de portada"
+                height="50%"
+                image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 sx={{
-                  width: user.displayName ? "400px" : "500px",
-                  transition: "width 0.5s ease",
+                  transition: "transform 0.1s ease-out",
+                  transformStyle: "preserve-3d",
+                  transform: `rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
+                  boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.5)",
                 }}
-                variant="outlined"
-              >
-                <CardMedia
-                  component="img"
-                  alt="Imagen de portada"
-                  height="50%" // La mitad superior del card
-                  image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
-                  sx={{
-                    transition: "transform 0.1s ease-out",
-                    transformStyle: "preserve-3d",
-                    transform: `rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
-                    boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.5)",
-                  }}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
-                />
-                <CardContent>
-                  <Typography variant="body1" sx={{ textAlign: "center" }}>
-                    Israel Antezana te está invitando al curso
-                  </Typography>
-                  {userType === "student" && (
-                    <Button
-                      onClick={() => handleAcceptInvitation("student")}
-                      variant="contained"
-                      color="primary"
-                      sx={{ marginTop: 2 }}
-                      fullWidth
-                      disabled={isLoading}
-                    >
-                      Aceptar invitación al curso
-                    </Button>
-                  )}
-                  {userType === "teacher" && (
-                    <Button
-                      onClick={handlePopPassword}
-                      variant="contained"
-                      color="primary"
-                      sx={{ marginTop: 2 }}
-                      fullWidth
-                      disabled={isLoading}
-                    >
-                      Aceptar invitación al curso como Docente
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+              />
+              <CardContent>
+                <Typography variant="body1" className="invitation-message-text">
+                  Israel Antezana te está invitando al curso
+                </Typography>
+
+                {userType === "student" && (
+                  <Button
+                    onClick={() => handleAcceptInvitation("student")}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disabled={isLoading}
+                    sx={{ ...primaryButtonStyles, marginTop: 2 }}
+                  >
+                    Aceptar invitación al curso
+                  </Button>
+                )}
+
+                {userType === "teacher" && (
+                  <Button
+                    onClick={handlePopPassword}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disabled={isLoading}
+                    sx={{ ...primaryButtonStyles, marginTop: 2 }}
+                  >
+                    Aceptar invitación al curso como Docente
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
           </Grid>
           {showPasswordPopup && (
             <PasswordComponent
@@ -329,7 +303,11 @@ function InvitationPage() {
               onSend={handlePassVerification}
             />
           )}
-          {showPopUp && <SuccessfulEnrollmentPopUp authProvider={authProvider}></SuccessfulEnrollmentPopUp>}
+          {showPopUp && (
+            <SuccessfulEnrollmentPopUp
+              authProvider={authProvider}
+            ></SuccessfulEnrollmentPopUp>
+          )}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
         </div>
       ) : (
@@ -342,23 +320,27 @@ function InvitationPage() {
           style={{ minHeight: "100vh" }}
         >
           <Grid item>
-            <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
-              <Button 
-                onClick={handleSignUp} 
+            <div
+              style={{
+                display: "flex",
+                gap: "15px",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                onClick={() => handleSignUpWithProvider("github")}
                 disabled={isLoading}
                 variant="contained"
-                sx={{ 
+                sx={{
                   backgroundColor: "#24292e",
                   color: "white",
                   padding: "10px 20px",
-                  textTransform: "uppercase",
                   fontWeight: 500,
-                  "&:hover": { 
-                    backgroundColor: "#1a1e22"
+                  ...primaryButtonStyles,
+                  "&:hover:not(:disabled)": {
+                    backgroundColor: "#1a1e22",
                   },
-                  "&:disabled": {
-                    backgroundColor: "#ccc"
-                  }
                 }}
               >
                 <div
@@ -368,26 +350,30 @@ function InvitationPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <IconifyIcon icon="mdi:github" width={20} height={20} color="white" hoverColor="#e0e0e0" sx={{ marginRight: "8px" }} />
+                  <IconifyIcon
+                    icon="mdi:github"
+                    width={20}
+                    height={20}
+                    color="white"
+                    hoverColor="#e0e0e0"
+                    sx={{ marginRight: "8px" }}
+                  />
                   Registrarse con GitHub
                 </div>
               </Button>
-              <Button 
-                onClick={handleSignUpWithGoogle} 
+              <Button
+                onClick={() => handleSignUpWithProvider("google")}
                 disabled={isLoading}
                 variant="contained"
-                sx={{ 
+                sx={{
                   backgroundColor: "#4285f4",
                   color: "white",
                   padding: "10px 20px",
-                  textTransform: "uppercase",
                   fontWeight: 500,
-                  "&:hover": { 
-                    backgroundColor: "#3367d6"
+                  ...primaryButtonStyles,
+                  "&:hover:not(:disabled)": {
+                    backgroundColor: "#3367d6",
                   },
-                  "&:disabled": {
-                    backgroundColor: "#ccc"
-                  }
                 }}
               >
                 <div
@@ -397,7 +383,14 @@ function InvitationPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <IconifyIcon icon="mdi:google" width={20} height={20} color="white" hoverColor="#e0e0e0" sx={{ marginRight: "8px" }} />
+                  <IconifyIcon
+                    icon="mdi:google"
+                    width={20}
+                    height={20}
+                    color="white"
+                    hoverColor="#e0e0e0"
+                    sx={{ marginRight: "8px" }}
+                  />
                   Registrarse con Google
                 </div>
               </Button>
@@ -405,9 +398,7 @@ function InvitationPage() {
           </Grid>
         </Grid>
       )}
-      <AdminAlertModal
-        open={showAdminModal}
-      />
+      <AdminAlertModal open={showAdminModal} />
     </div>
   );
 }
