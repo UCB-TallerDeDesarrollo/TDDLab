@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { NavigateFunction, createSearchParams } from "react-router-dom";
+import type { SubmissionDataObject } from "../../modules/Submissions/Domain/submissionInterfaces";
 
 export const createDialogHandlers = (setDialogState: Dispatch<SetStateAction<boolean>>) => {
   const openDialog = () => setDialogState(true);
@@ -48,7 +49,7 @@ export const handleRedirectStudent = (
 
 export const handleRedirectAdmin = (
   link: string,
-  fetchedSubmissions: any[],
+  fetchedSubmissions: SubmissionDataObject[],
   submissionId: number,
   url: string,
   navigate: NavigateFunction
