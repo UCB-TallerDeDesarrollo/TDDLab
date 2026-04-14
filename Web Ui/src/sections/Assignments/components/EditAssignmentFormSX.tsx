@@ -1,4 +1,4 @@
-const t = {
+export const t = {
   class1: {
               "& label.Mui-focused": {
                 color: "#001F3F",

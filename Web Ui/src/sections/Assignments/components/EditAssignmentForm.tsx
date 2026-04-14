@@ -21,7 +21,7 @@ import { UpdateAssignment } from "../../../modules/Assignments/application/Updat
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import './EditAssignmentForm.css';
-import './EditAssignmentFormSX.tsx';
+import { t } from './EditAssignmentFormSX.tsx';
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
