@@ -1,19 +1,15 @@
 import {
   Button,
   Box,
-  Drawer,
   AppBar,
-  IconButton,
   Toolbar,
   Typography,
 } from "@mui/material";
 
-import NavLateralMenu from "./components/LateralMenu";
-import MenuIcon from "@mui/icons-material/Menu";
-import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
+import MobileDrawer from "./components/MobileDrawer";
 import { NavLink as NavLinkType } from "../../types/navigation.types";
 import { useFilteredNavLinks } from "../../hooks/useFilteredNavLinks";
 
@@ -28,7 +24,6 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
-  const [open, setOpen] = useState(false);
 
   const filteredLinks = useFilteredNavLinks(navArrayLinks, userRole);
 
@@ -48,14 +43,7 @@ export default function MainMenu({
           }}
         >
           <div style={{ display: "flex", flexDirection: "row" }}>
-            <IconButton
-              color="inherit"
-              size="large"
-              onClick={() => setOpen(true)}
-              sx={{ display: { xs: "flex", sm: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
+            <MobileDrawer navArrayLinks={filteredLinks} />
             <WindowIcon sx={{ marginRight: "6px", marginTop: "4px" }} />
             <NavLink
               to="/"
@@ -74,15 +62,6 @@ export default function MainMenu({
             }}
           >
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {navArrayLinks.map(
-                (item) =>
-                  item.access.includes(userRole) && (
-                    <Button>
-                      {item.title}
-                    </Button>
-                  )
-              )}
-
               {filteredLinks.map((item) => (
                 <Button
                   key={item.title}
@@ -101,19 +80,6 @@ export default function MainMenu({
           </div>
         </Toolbar>
       </AppBar>
-
-      <Drawer
-        open={open}
-        anchor="left"
-        onClose={() => setOpen(false)}
-        sx={{ display: { xs: "flex", sm: "none" } }}
-      >
-        <NavLateralMenu
-          navArrayLinks={filteredLinks}
-          NavLink={NavLink}
-          setOpen={setOpen}
-        />
-      </Drawer>
     </div>
   );
 }
