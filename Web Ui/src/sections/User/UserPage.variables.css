@@ -1,0 +1,8 @@
+:root {
+  --users-table-bg: #ececec;
+  --users-table-border: #c8c8c8;
+  --users-table-header-text: #1b1b1b;
+  --users-table-cell-text: #2a2a2a;
+  --users-table-empty-text: #5f5f5f;
+  --users-table-remove: #ff1e1e;
+}

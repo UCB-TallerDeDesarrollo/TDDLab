@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 import { styled } from "@mui/system";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import SearchIcon from "@mui/icons-material/Search";
 
 import GetGroups from "../../modules/Groups/application/GetGroups";
@@ -20,19 +20,25 @@ import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 
 import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersByEmail";
+import "./UserPage.variables.css";
+import "./UserPage.css";
 
 // -------------------  ESTILOS  -------------------
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
   marginTop: "20px",
+  paddingBottom: "20px",
 });
 
 const StyledTable = styled(Table)({
-  width: "82%",
+  width: "90%",
   marginLeft: "auto",
   marginRight: "auto",
-  marginTop: "20px",
+  marginTop: "4px",
+  borderCollapse: "collapse",
+  tableLayout: "fixed",
+  backgroundColor: "var(--users-table-bg)",
 });
 
 const FilterContainer = styled("div")({
@@ -184,34 +190,34 @@ function UserPage() {
         </FilterContainer>
 
         <section className="Usuarios">
-          <StyledTable>
+          <StyledTable className="users-table">
             <TableHead>
-              <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Eliminar</TableCell>
+              <TableRow className="users-table-header-row">
+                <TableCell className="users-table-header users-table-col-email">Correo</TableCell>
+                <TableCell className="users-table-header users-table-col-group">Grupo</TableCell>
+                <TableCell className="users-table-header users-table-col-role">Rol</TableCell>
+                <TableCell className="users-table-header users-table-col-delete">Eliminar</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filteredUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} sx={{ textAlign: "center", py: 3 }}>
+                <TableRow className="users-table-row">
+                  <TableCell colSpan={4} className="users-table-empty">
                     No se encontraron resultados
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredUsers.map((user) => (
-                  <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
+                  <TableRow key={user.id} className="users-table-row">
+                    <TableCell className="users-table-cell users-table-col-email">{user.email}</TableCell>
+                    <TableCell className="users-table-cell users-table-col-group">{groupMap[user.groupid] || "Unknown"}</TableCell>
+                    <TableCell className="users-table-cell users-table-col-role">{user.role}</TableCell>
+                    <TableCell className="users-table-cell users-table-col-delete users-delete-cell">
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <RemoveCircleIcon
+                        <DoNotDisturbOnIcon
                           onClick={() => handleRemoveUserFromGroup(user.id)}
-                          sx={{ color: "#d81b1b" }}
+                          className="users-remove-icon"
                         />
                       </Tooltip>
                     </TableCell>

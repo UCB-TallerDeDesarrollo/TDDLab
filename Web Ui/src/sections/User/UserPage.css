@@ -1,0 +1,101 @@
+.users-table {
+  background-color: var(--users-table-bg);
+}
+
+.users-table .MuiTableCell-root {
+  border-bottom: 1px solid var(--users-table-border);
+  border-right: 1px solid var(--users-table-border);
+  color: var(--users-table-cell-text);
+  font-size: 1.02rem;
+  line-height: 1.25;
+  padding: 16px 16px;
+  vertical-align: middle;
+}
+
+.users-table .MuiTableCell-root:first-of-type {
+  border-left: 1px solid var(--users-table-border);
+}
+
+.users-table-header {
+  color: var(--users-table-header-text) !important;
+  font-size: 1.18rem !important;
+  font-weight: 650 !important;
+  line-height: 1.15 !important;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+
+.users-table-row {
+  background-color: var(--users-table-bg);
+}
+
+.users-table-col-email {
+  width: 20%;
+  word-break: break-all;
+}
+
+.users-table-col-group {
+  width: 30%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.users-table-col-role {
+  width: 36%;
+}
+
+.users-table-col-delete {
+  width: 14%;
+}
+
+.users-delete-cell {
+  text-align: left;
+}
+
+.users-remove-icon {
+  color: var(--users-table-remove);
+  cursor: pointer;
+  font-size: 2.2rem !important;
+}
+
+.users-table-empty {
+  color: var(--users-table-empty-text) !important;
+  font-weight: 500;
+  padding-top: 20px !important;
+  padding-bottom: 20px !important;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .users-table {
+    width: 96% !important;
+  }
+
+  .users-table .MuiTableCell-root {
+    font-size: 0.96rem;
+    padding: 12px 10px;
+  }
+
+  .users-table-header {
+    font-size: 1.08rem !important;
+  }
+
+  .users-remove-icon {
+    font-size: 2rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .users-table .MuiTableCell-root {
+    font-size: 0.89rem;
+    padding: 10px 8px;
+  }
+
+  .users-table-header {
+    font-size: 0.99rem !important;
+  }
+
+  .users-remove-icon {
+    font-size: 1.7rem !important;
+  }
+}
