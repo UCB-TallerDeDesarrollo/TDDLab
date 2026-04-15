@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -18,11 +18,6 @@ import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   Container,
   Button,
   Collapse,
@@ -34,6 +29,7 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
+import { TableView, type TableViewColumn } from "../Shared/Components/TableView";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -46,17 +42,16 @@ const ButtonContainer = styled("div")({
   gap: "8px",
 });
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
 // Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
 };
+
+interface GroupTableRow {
+  group: GroupDataObject;
+  index: number;
+}
 
 function Groups() {
   const navigate = useNavigate();
@@ -294,107 +289,133 @@ function Groups() {
     );
   };
 
+  const groupRows = useMemo<GroupTableRow[]>(
+    () => groups.map((group, index) => ({ group, index })),
+    [groups]
+  );
+
+  const groupColumns = useMemo<TableViewColumn<GroupTableRow>[]>(
+    () => [
+      {
+        id: "selection",
+        header: "",
+        headerSx: { width: "6%" },
+        cellSx: { width: "6%" },
+        renderCell: ({ group, index }) => (
+          <Checkbox
+            checked={asId(currentSelectedGroupId) === asId(group.id)}
+            onClick={(event) => event.stopPropagation()}
+            onChange={() => handleRowClick(index)}
+          />
+        ),
+      },
+      {
+        id: "name",
+        header: "Grupos",
+        headerSx: { fontWeight: 560, color: "#333", fontSize: "1rem" },
+        renderCell: ({ group }) => group.groupName,
+      },
+      {
+        id: "actions",
+        header: (
+          <ButtonContainer>
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleGroupsOrder}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
+              onClick={handleCreateGroupClick}
+            >
+              Crear
+            </Button>
+          </ButtonContainer>
+        ),
+        renderCell: ({ index }) => (
+          <ButtonContainer>
+            <Tooltip title="Editar grupo" arrow>
+              <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Tareas" arrow>
+              <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
+                <AutoAwesomeMotionIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Participantes" arrow>
+              <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
+                <GroupsIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
+              <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
+                <LinkIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+              <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
+                <PiChalkboardTeacherFill />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Eliminar grupo" arrow>
+              <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </ButtonContainer>
+        ),
+      },
+    ],
+    [
+      currentSelectedGroupId,
+      selectedSorting,
+      handleGroupsOrder,
+      handleCreateGroupClick,
+      handleRowClick,
+      handleEditClick,
+      handleHomeworksClick,
+      handleStudentsClick,
+      handleLinkClick,
+      handleLinkClickTeacher,
+      handleDeleteClick,
+    ]
+  );
+
   return (
     <CenteredContainer>
       <section className="Grupos">
-        <StyledTable>
-          <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
-                Grupos
-              </TableCell>
-              <TableCell>
-                <ButtonContainer>
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleGroupsOrder}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
-                    onClick={handleCreateGroupClick}
-                  >
-                    Crear
-                  </Button>
-                </ButtonContainer>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {groups.map((group, index) => (
-              <React.Fragment key={asId(group.id) || index}>
-                <TableRow
-                  selected={isRowSelected(index)}
-                  onClick={() => handleRowClick(index)}
-                  onMouseEnter={() => handleRowHover(index)}
-                  onMouseLeave={() => handleRowHover(null)}
-                >
-                  <TableCell>
-                    <Checkbox
-                      checked={asId(currentSelectedGroupId) === asId(group.id)}
-                      onChange={() => handleRowClick(index)}
-                    />
-                  </TableCell>
-                  <TableCell>{group.groupName}</TableCell>
-                  <TableCell>
-                    <ButtonContainer>
-                      <Tooltip title="Editar grupo" arrow>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
-                          <AutoAwesomeMotionIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Participantes" arrow>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
-                          <GroupsIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
-                          <LinkIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
-                          <PiChalkboardTeacherFill />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </ButtonContainer>
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
-                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
-                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
-                          Detalle del grupo: {groups[index].groupDetail}
-                        </div>
-                      </div>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </StyledTable>
+        <TableView
+          rows={groupRows}
+          columns={groupColumns}
+          getRowKey={({ group, index }) => asId(group.id) || index}
+          tableSx={{ width: "82%", marginLeft: "auto", marginRight: "auto" }}
+          headRowSx={{ borderBottom: "2px solid #E7E7E7" }}
+          isRowSelected={({ index }) => isRowSelected(index)}
+          onRowClick={({ index }) => {
+            void handleRowClick(index);
+          }}
+          onRowMouseEnter={({ index }) => handleRowHover(index)}
+          onRowMouseLeave={() => handleRowHover(null)}
+          renderExpandedRow={({ group, index }) => (
+            <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
+              <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
+                <div style={{ padding: "50px", marginLeft: "-30px" }}>
+                  Detalle del grupo: {group.groupDetail}
+                </div>
+              </div>
+            </Collapse>
+          )}
+          expandedRowCellSx={{ width: "100%", padding: 0, margin: 0 }}
+        />
       </section>
 
       {confirmationOpen && (
