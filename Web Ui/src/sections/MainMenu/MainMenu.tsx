@@ -1,11 +1,11 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar} from "@mui/material";
 import { useLocation, NavLink } from "react-router-dom";
-import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
 import MobileDrawer from "./components/MobileDrawer";
 import NavButtons from "./components/NavButtons";
 import { NavLink as NavLinkType } from "../../types/navigation.types";
 import { useFilteredNavLinks } from "../../hooks/useFilteredNavLinks";
+import TDDLabLogo from "../../assets/TDDLabLogo";
 
 
 interface NavbarProps {
@@ -26,20 +26,22 @@ export default function MainMenu({
 
   return (
     <div style={{ marginTop: "100px" }}>
-      <AppBar position="fixed" sx={{ background: "#052845" }}>
+      <AppBar position="fixed" color="primary">
         <Toolbar
           style={{
             display: "flex",
             flexDirection: "row",
             width: "100%",
             justifyContent: "space-between",
+            minHeight: "72px",
+            paddingLeft: "72px",
+            paddingRight: "32px",
           }}
         >
           <div style={{ display: "flex", flexDirection: "row" }}>
             <MobileDrawer navArrayLinks={filteredLinks} />
-            <WindowIcon sx={{ marginRight: "6px", marginTop: "4px" }} />
-            <NavLink to="/" style={{ textDecoration: "none", color: "inherit" }}>
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>TDDLab</Typography>
+            <NavLink to="/" style={{ textDecoration: "none", color: "inherit", display: "flex", alignItems: "center" }}>
+              <TDDLabLogo />
             </NavLink>
           </div>
           <div

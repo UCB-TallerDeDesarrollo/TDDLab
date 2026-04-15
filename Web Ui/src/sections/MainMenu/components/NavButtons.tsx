@@ -18,6 +18,7 @@ export default function NavButtons({ links, activeButton }: Readonly<NavButtonsP
           sx={{
             borderBottom: activeButton === item.title ? "2px solid #fff" : "none",
             color: activeButton === item.title ? "#fff" : "#A9A9A9",
+            fontSize: "20px",
           }}
         >
           {item.title}
