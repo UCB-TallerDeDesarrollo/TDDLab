@@ -1,6 +1,4 @@
 import {
-  Button,
-  Box,
   AppBar,
   Toolbar,
   Typography,
@@ -10,6 +8,7 @@ import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
 import MobileDrawer from "./components/MobileDrawer";
+import NavButtons from "./components/NavButtons";
 import { NavLink as NavLinkType } from "../../types/navigation.types";
 import { useFilteredNavLinks } from "../../hooks/useFilteredNavLinks";
 
@@ -61,21 +60,7 @@ export default function MainMenu({
               marginRight: "30px",
             }}
           >
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {filteredLinks.map((item) => (
-                <Button
-                  key={item.title}
-                  component={NavLink}
-                  to={item.path}
-                  sx={{
-                    borderBottom: activeButton === item.title ? "2px solid #fff" : "none",
-                    color: activeButton === item.title ? "#fff" : "#A9A9A9",
-                  }}
-                >
-                  {item.title}
-                </Button>
-              ))}
-            </Box>
+            <NavButtons links={filteredLinks} activeButton={activeButton} />
             <LoginComponent></LoginComponent>
           </div>
         </Toolbar>
