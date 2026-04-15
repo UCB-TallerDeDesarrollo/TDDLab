@@ -94,8 +94,9 @@ useEffect(() => {
           component="main"
           sx={{
             flexGrow: 1,
-            width: authData.userRole === "teacher" ? "calc(100% - 260px)" : "100%",
-            marginLeft: authData.userRole === "teacher" ? "260px" : 0,
+            width: authData.userRole === "teacher" ? "calc(100% - 280px)" : "100%",
+            marginLeft: authData.userRole === "teacher" ? "280px" : 0,
+            paddingTop: authData.userRole === "teacher" ? "120px" : "100px",
             overflowX: "hidden"
           }}
         >

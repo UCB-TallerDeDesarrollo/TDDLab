@@ -41,13 +41,13 @@ export default function MainMenu({
 
   if (userRole === "teacher") {
     return (
-      <div style={{ display: "flex", marginTop: "90px" }}>
+      <div style={{ position: "absolute" }}>
         <TeacherSidebar navArrayLinks={navArrayLinks} />
         <AppBar
           position="fixed"
           sx={{
-            width: `calc(100% - 260px)`,
-            left: "260px",
+            width: `calc(100% - 280px)`,
+            left: "280px",
             background: "#0d1b2a",
             boxShadow: "none",
             height: 90,
@@ -69,7 +69,7 @@ export default function MainMenu({
   }
 
   return (
-    <div style={{ marginTop: "100px" }}>
+    <div>
       <AppBar position="fixed" sx={{ background: "#052845" }}>
         <Toolbar
           style={{

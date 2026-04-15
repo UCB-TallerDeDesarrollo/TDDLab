@@ -30,7 +30,7 @@ export default function TeacherSidebar({ navArrayLinks }: Readonly<TeacherSideba
         width: 260,
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: {
-          width: 260,
+          width: 280,
           boxSizing: "border-box",
           backgroundColor: "#ffffff",
           borderRight: "none",
@@ -53,7 +53,7 @@ export default function TeacherSidebar({ navArrayLinks }: Readonly<TeacherSideba
       </Box>
 
       {/* Menu items */}
-      <Box sx={{ px: 2, pt: 8 }}>
+      <Box sx={{ px: 2, pt: 3 }}>
         <List sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
           {navArrayLinks
             .filter((item) => item.access.includes("teacher"))

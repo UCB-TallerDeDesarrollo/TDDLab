@@ -24,7 +24,6 @@ import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersB
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
-  marginTop: "20px",
 });
 
 const StyledTable = styled(Table)({
