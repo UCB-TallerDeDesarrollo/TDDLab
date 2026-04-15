@@ -10,20 +10,15 @@ import {
 
 import NavLateralMenu from "./components/LateralMenu";
 import MenuIcon from "@mui/icons-material/Menu";
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
+import { NavLink as NavLinkType } from "../../types/navigation.types";
 
-type NavLink = {
-  title: string;
-  path: string;
-  icon: ReactElement;
-  access: string[];
-};
 
 interface NavbarProps {
-  navArrayLinks: NavLink[];
+  navArrayLinks: NavLinkType[];
   userRole: string;
 }
 

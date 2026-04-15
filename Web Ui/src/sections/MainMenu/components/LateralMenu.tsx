@@ -7,16 +7,12 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { ReactElement, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import LoginIcon from "@mui/icons-material/Login";
+import { NavLink as NavLinkType } from "../../../types/navigation.types";
 
-interface NavItem {
-  title: string;
-  path: string;
-  icon: ReactElement;
-}
 interface NavLateralMenuProps {
-  navArrayLinks: NavItem[];
+  navArrayLinks: NavLinkType[];
   NavLink: React.ComponentType<any>;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
