@@ -3,7 +3,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useState } from "react";
 import { UpdatePractice } from "../../modules/Practices/application/UpdatePractice";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
@@ -68,15 +68,22 @@ function EditPracticeDialog({
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Editar Practica : {currentTitle}</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "grid", gap: 2, marginTop: 2 }}>
+        <div className="flex-column gap-3 mt-4 mb-2">
           <TextField
             id="titulo"
             label="Título"
             variant="outlined"
             size="small"
             required
+            fullWidth
             onChange={(e) => setTitle(e.target.value)}
             defaultValue={currentTitle}
+            sx={{
+              marginTop: 2,
+              "& .MuiInputBase-input": {
+                paddingTop: "14px",
+              },
+            }}
           />
           <TextField
             id="descripcion"
@@ -84,45 +91,41 @@ function EditPracticeDialog({
             variant="outlined"
             size="small"
             required
+            fullWidth
             multiline
-            rows = {5}
+            rows={5}
             onChange={(e) => setDescription(e.target.value)}
             defaultValue={currentDescription}
+            sx={{ marginTop: 2 }}
           />
-        </Box>
+        </div>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ p: 2, gap: 1 }}>
         <Button 
+          variant="contained"
+          color="error"
           onClick={onClose}
           sx={{
-            transition: "all 0.175s ease-out",
-            "&:hover": {
-              filter: "brightness(0.9)",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            },
-            "&:active": {
-              transform: "scale(0.97)",
-            },
+            flex: 1,
+            borderRadius: "10px",
+            paddingY: "10px",
+            textTransform: "none",
           }}
         >
           Cancelar
         </Button>
         <Button
           variant="contained"
-          sx={{
-            textTransform: "none",
-            transition: "all 0.175s ease-out",
-            "&:hover": {
-              filter: "brightness(0.9)",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            },
-            "&:active": {
-              transform: "scale(0.97)",
-            },
-          }}
+          color="primary"
           onClick={handleSaveChanges}
+          sx={{
+            flex: 1,
+            borderRadius: "10px",
+            paddingY: "10px",
+            textTransform: "none",
+          }}
         >
-          Guardar Cambios
+          Guardar
         </Button>
       </DialogActions>
     </Dialog>
