@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import { FormControl, InputLabel, Select, MenuItem,
-         Typography, Container, Box, Snackbar, Alert } from '@mui/material';
-import { FullScreenLoader } from '../../components/FullScreenLoader';
-import EditPromptAI from './components/EditPromptAI';
+import { Container } from '@mui/material';
+import PromptSettingsSection from './components/PromptSettingsSection';
 import FeatureFlagsSection from './components/FeatureFlagsSection';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
@@ -10,11 +8,6 @@ import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatu
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 
-const PROMPT_OPTIONS = [
-  { label: "Prompt Analizar TDD", value: "tddPrompt" },
-  { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" },
-  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" },
-];
 const ConfigurationPage = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -117,11 +110,6 @@ const ConfigurationPage = () => {
     });
   };
   const handleCheckboxChange = async (id: number, currentValue: boolean) => {
-    const confirmChange = window.confirm(
-      `¿Estás seguro de que quieres ${!currentValue ? "habilitar" : "deshabilitar"} esta funcionalidad?`
-    );
-    if (!confirmChange) return;
-
     try {
       const updatedFlag = await updateFlagUseCase.execute(id, !currentValue);
       setFlags((prevFlags) =>
@@ -136,63 +124,20 @@ const ConfigurationPage = () => {
   };
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
-          Configuración de Prompts
-        </div>
-      </Box>
-
-      {loading ? (
-        <FullScreenLoader isLoading={true} />
-      ) : error ? (
-        <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
-          <Typography color="error">{error}</Typography>
-        </Box>
-      ) : (
-        <>
-          <FormControl sx={{ mb: 2, width: '50%' }}>
-            <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
-            <Select
-              labelId="prompt-select-label"
-              value={selectedPrompt}
-              label="Selecciona el tipo de Prompt"
-              onChange={handlePromptChange}
-            >
-              {PROMPT_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <EditPromptAI
-            initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
-            isEditing={isEditing}
-            onEdit={handleEditPrompt}
-            onSave={handleSavePrompt}
-            onCancel={handleCancelEdit}
-          />
-
-          <Snackbar 
-            open={notification.open} 
-            autoHideDuration={6000} 
-            onClose={handleCloseNotification}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          >
-            <Alert 
-              onClose={handleCloseNotification} 
-              severity={notification.severity}
-              sx={{ width: '100%' }}
-            >
-              {notification.message}
-            </Alert>
-          </Snackbar>
-          
-          <FullScreenLoader isLoading={saving} variant="overlay" />
-        </>
-      )}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <PromptSettingsSection
+        loading={loading}
+        saving={saving}
+        error={error}
+        prompts={prompts}
+        selectedPrompt={selectedPrompt}
+        isEditing={isEditing}
+        notification={notification}
+        onPromptChange={handlePromptChange}
+        onEdit={handleEditPrompt}
+        onSave={handleSavePrompt}
+        onCancel={handleCancelEdit}
+        onCloseNotification={handleCloseNotification}
+      />
       <FeatureFlagsSection flags={flags} onToggle={handleCheckboxChange} />
      
     </Container>
