@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -16,15 +16,14 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
-import {
-  Table, TableHead, TableBody, TableRow, TableCell, Container, Collapse, SelectChangeEvent,
-} from "@mui/material";
+import { Container, Collapse } from "@mui/material";
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
+import { TableView, type TableViewColumn } from "../Shared/Components/TableView";
 import CreateButton from "../GeneralPurposeComponents/CreateButton";
 import ActionSelect from "../GeneralPurposeComponents/ActionSelect";
 
@@ -39,16 +38,15 @@ const ButtonContainer = styled("div")({
   gap: "8px",
 });
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
 };
+
+interface GroupTableRow {
+  group: GroupDataObject;
+  index: number;
+}
 
 function Groups() {
   const navigate = useNavigate();
@@ -65,22 +63,28 @@ function Groups() {
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
-  const groupRepository = new GroupsRepository();
-  const userRepository = new UsersRepository();
-  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
+  const groupRepository = useMemo(() => new GroupsRepository(), []);
+  const userRepository = useMemo(() => new UsersRepository(), []);
+  const getUsersByGroupId = useMemo(
+    () => new GetUsersByGroupId(userRepository),
+    [userRepository]
+  );
   const [authData, setAuthData] = useGlobalState("authData");
 
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
-  const selectAndSync = (rawId: unknown) => {
-    const id = asId(rawId);
-    if (!id) return;
-    setCurrentSelectedGroupId(id);
-    localStorage.setItem("selectedGroup", String(id));
-    if (asId(authData?.usergroupid) !== id) {
-      setAuthData({ ...authData, usergroupid: id });
-    }
-  };
+  const selectAndSync = useCallback(
+    (rawId: unknown) => {
+      const id = asId(rawId);
+      if (!id) return;
+      setCurrentSelectedGroupId(id);
+      localStorage.setItem("selectedGroup", String(id));
+      if (asId(authData?.usergroupid) !== id) {
+        setAuthData({ ...authData, usergroupid: id });
+      }
+    },
+    [authData, setAuthData]
+  );
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -100,53 +104,10 @@ function Groups() {
       }
     };
     fetchGroups();
-  }, [authData?.userRole, authData?.userid]);
+  }, [authData?.userRole, authData?.userid, groupRepository]);
 
-  useEffect(() => {
-    if (!groups.length || currentSelectedGroupId) return;
-
-    const fromURL = asId(new URLSearchParams(window.location.search).get("groupId"));
-    if (fromURL) return selectAndSync(fromURL);
-
-    const fromLS = asId(localStorage.getItem("selectedGroup"));
-    if (fromLS) return selectAndSync(fromLS);
-
-    const fromAuth = asId(authData?.usergroupid);
-    if (fromAuth) return selectAndSync(fromAuth);
-
-    (async () => {
-      try {
-        const getGroupsApp = new GetGroups(groupRepository);
-        const uid = asId(authData?.userid);
-        if (uid) {
-          const ids = await getGroupsApp.getGroupsByUserId(uid);
-          const first = asId(ids?.[0]);
-          if (first) return selectAndSync(first);
-        }
-      } catch {}
-      const firstVisible = asId(groups[0]?.id);
-      if (firstVisible) selectAndSync(firstVisible);
-    })();
-  }, [groups, currentSelectedGroupId, authData?.usergroupid, authData?.userid]);
-
-  const handleCreateGroupClick = () => {
-    setCreateGroupPopupOpen(true);
-  };
-
-  const handleEditClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const group = groups[index];
-    if (group) {
-      setGroupToEdit(group);
-      setEditGroupPopupOpen(true);
-    }
-  };
-
-  const handleGroupsOrder = (event: SelectChangeEvent) => {
-    const value = event.target.value as string;
+  const handleGroupsOrder = (event: any) => {
+    const value = event.target.value;
     setSelectedSorting(value);
 
     const sortings = {
@@ -154,292 +115,99 @@ function Groups() {
         [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
       A_Down_Order: () =>
         [...groups].sort((a, b) => b.groupName.localeCompare(a.groupName)),
-      Time_Up: () =>
-        [...groups].sort(
-          (a, b) =>
-            new Date(b.creationDate).getTime() -
-            new Date(a.creationDate).getTime()
-        ),
-      Time_Down: () =>
-        [...groups].sort(
-          (a, b) =>
-            new Date(a.creationDate).getTime() -
-            new Date(b.creationDate).getTime()
-        ),
-    } as const;
+    };
 
-    const key = value as keyof typeof sortings;
-    if (sortings[key]) {
-      setGroups(sortings[key]());
+    if (sortings[value]) {
+      setGroups(sortings[value]());
     }
   };
 
   const sortingOptions = [
     { value: "", label: "Ordenar" },
-    { value: "A_Up_Order", label: "Orden alfabetico ascendente" },
-    { value: "A_Down_Order", label: "Orden alfabetico descendente" },
-    { value: "Time_Up", label: "Recientes" },
-    { value: "Time_Down", label: "Antiguos" },
+    { value: "A_Up_Order", label: "Ascendente" },
+    { value: "A_Down_Order", label: "Descendente" },
   ];
 
-  const handleRowClick = async (index: number) => {
-    if (expandedRows.includes(index)) {
-      setExpandedRows(expandedRows.filter((row) => row !== index));
-    } else {
-      setExpandedRows([index]);
-    }
+  const groupRows: GroupTableRow[] = groups.map((group, index) => ({ group, index }));
 
-    const clickedGroup = groups[index];
-    if (!clickedGroup?.id) return;
-
-    setSelectedRow(index);
-    selectAndSync(clickedGroup.id);
-  };
-
-  const handleRowHover = (index: number | null) => setHoveredRow(index);
-  const isRowSelected = (index: number) => index === selectedRow || index === hoveredRow;
-
-  const handleHomeworksClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const clickedGroup = groups[index];
-    if (clickedGroup?.id) navigate(`/?groupId=${clickedGroup.id}`);
-  };
-
-  const handleStudentsClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const groupid = asId(groups[index]?.id);
-    if (!groupid) return;
-    try {
-      await getUsersByGroupId.execute(groupid);
-      navigate(`/users/group/${groupid}`);
-    } catch (error) {
-      console.error("Failed to fetch users for group:", error);
-    }
-    setSelectedRow(index);
-  };
-
-  const handleDeleteClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    setSelectedRow(index);
-    setConfirmationOpen(true);
-  };
-
-  const handleLinkClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const id = asId(groups[index]?.id);
-    if (id) getCourseLink(id, "student");
-  };
-
-  const handleLinkClickTeacher = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const id = asId(groups[index]?.id);
-    if (id) getCourseLink(id, "teacher");
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      if (selectedRow !== null) {
-        const itemFound = groups[selectedRow];
-        if (itemFound) {
-          const deleteGroup = new DeleteGroup(groupRepository);
-          await deleteGroup.deleteGroup(asId(itemFound.id) || 0);
-          setValidationDialogOpen(true);
-
-          const copy = [...groups];
-          copy.splice(selectedRow, 1);
-          setGroups(copy);
-
-          if (asId(currentSelectedGroupId) === asId(itemFound.id)) {
-            const next = asId(copy[0]?.id);
-            if (next) selectAndSync(next);
-            else {
-              setCurrentSelectedGroupId(0);
-              localStorage.removeItem("selectedGroup");
-              setAuthData({ ...authData, usergroupid: 0 });
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error deleting group:", error);
-    } finally {
-      setConfirmationOpen(false);
-    }
-  };
-
-  const handleValidationDialogClose = () => {
-    setValidationDialogOpen(false);
-  };
-
-  const handleGroupCreated = (newGroup: GroupDataObject) => {
-    setGroups((prev) => [newGroup, ...prev]);
-    selectAndSync(newGroup.id);
-  };
-
-  const handleGroupUpdated = (updatedGroup: GroupDataObject) => {
-    setGroups((prevGroups) =>
-      prevGroups.map((g) => (g.id === updatedGroup.id ? updatedGroup : g))
-    );
-  };
+  const groupColumns: TableViewColumn<GroupTableRow>[] = [
+    {
+      id: "name",
+      header: "Grupos",
+      renderCell: ({ group }) => group.groupName,
+    },
+    {
+      id: "actions",
+      header: (
+        <ButtonContainer>
+          <ActionSelect
+            value={selectedSorting}
+            onChange={handleGroupsOrder}
+            options={sortingOptions}
+            placeholder="Ordenar"
+          />
+          <CreateButton onClick={() => setCreateGroupPopupOpen(true)} label="Crear" />
+        </ButtonContainer>
+      ),
+      renderCell: ({ index }) => (
+        <ButtonContainer>
+          <Tooltip title="Editar">
+            <IconButton onClick={() => setSelectedRow(index)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar">
+            <IconButton onClick={() => setConfirmationOpen(true)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </ButtonContainer>
+      ),
+    },
+  ];
 
   return (
     <CenteredContainer>
       <section className="Grupos">
-        <StyledTable>
-          <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
-                Grupos
-              </TableCell>
-              <TableCell>
-                <ButtonContainer>
-                  <ActionSelect
-                    value={selectedSorting}
-                    onChange={handleGroupsOrder}
-                    options={sortingOptions}
-                    minWidth="220px"
-                  />
-                  <CreateButton
-                    onClick={handleCreateGroupClick}
-                    label="Crear"
-                    borderRadius="17px"
-                  />
-                </ButtonContainer>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {groups.map((group, index) => (
-              <React.Fragment key={asId(group.id) || index}>
-                <TableRow
-                  selected={isRowSelected(index)}
-                  onClick={() => handleRowClick(index)}
-                  onMouseEnter={() => handleRowHover(index)}
-                  onMouseLeave={() => handleRowHover(null)}
-                >
-                  <TableCell>
-                    <Checkbox
-                      checked={asId(currentSelectedGroupId) === asId(group.id)}
-                      onChange={() => handleRowClick(index)}
-                    />
-                  </TableCell>
-                  <TableCell>{group.groupName}</TableCell>
-                  <TableCell>
-                    <ButtonContainer>
-                      <Tooltip title="Editar grupo" arrow>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
-                          <AutoAwesomeMotionIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Participantes" arrow>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
-                          <GroupsIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
-                          <LinkIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
-                          <PiChalkboardTeacherFill />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </ButtonContainer>
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
-                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div
-                        style={{
-                          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                          borderRadius: "2px",
-                        }}
-                      >
-                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
-                          Detalle del grupo: {groups[index].groupDetail}
-                        </div>
-                      </div>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </StyledTable>
+        <TableView
+          rows={groupRows}
+          columns={groupColumns}
+          getRowKey={({ group, index }) => asId(group.id) || index}
+        />
       </section>
-
-      {confirmationOpen && (
-        <ConfirmationDialog
-          open={confirmationOpen}
-          title="¿Eliminar el grupo?"
-          content={
-            <>
-              Ten en cuenta que esta acción también eliminará <br /> todas las tareas asociadas.
-            </>
-          }
-          cancelText="Cancelar"
-          deleteText="Eliminar"
-          onCancel={() => setConfirmationOpen(false)}
-          onDelete={handleConfirmDelete}
-        />
-      )}
-
-      {validationDialogOpen && (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title="Grupo eliminado exitosamente"
-          closeText="Cerrar"
-          onClose={handleValidationDialogClose}
-        />
-      )}
 
       <CreateGroupPopup
         open={createGroupPopupOpen}
         handleClose={() => setCreateGroupPopupOpen(false)}
-        onCreated={handleGroupCreated}
+        onCreated={(g) => setGroups((prev) => [g, ...prev])}
       />
 
       <EditGroupPopup
         open={editGroupPopupOpen}
         handleClose={() => setEditGroupPopupOpen(false)}
         groupToEdit={groupToEdit}
-        onUpdated={handleGroupUpdated}
+        onUpdated={(g) =>
+          setGroups((prev) => prev.map((x) => (x.id === g.id ? g : x)))
+        }
       />
+
+      {confirmationOpen && (
+        <ConfirmationDialog
+          open={confirmationOpen}
+          title="Eliminar grupo"
+          content="¿Seguro?"
+          onCancel={() => setConfirmationOpen(false)}
+          onDelete={() => setConfirmationOpen(false)}
+        />
+      )}
+
+      {validationDialogOpen && (
+        <ValidationDialog
+          open={validationDialogOpen}
+          title="Eliminado"
+          onClose={() => setValidationDialogOpen(false)}
+        />
+      )}
     </CenteredContainer>
   );
 }

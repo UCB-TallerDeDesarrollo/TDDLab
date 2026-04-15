@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { NavigateFunction, createSearchParams } from "react-router-dom";
+import type { SubmissionDataObject } from "../../modules/Submissions/Domain/submissionInterfaces";
 
 export const createDialogHandlers = (setDialogState: Dispatch<SetStateAction<boolean>>) => {
   const openDialog = () => setDialogState(true);
@@ -43,5 +44,35 @@ export const handleRedirectStudent = (
     }
   } else {
     alert("No se encontró un link para esta tarea.");
+  }
+};
+
+export const handleRedirectAdmin = (
+  link: string,
+  fetchedSubmissions: SubmissionDataObject[],
+  submissionId: number,
+  url: string,
+  navigate: NavigateFunction
+) => {
+  if (link) {
+    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+    const match = regex.exec(link);
+
+    if (match) {
+      const [, user, repo] = match;
+      navigate({
+        pathname: url,
+        search: createSearchParams({
+          repoOwner: user,
+          repoName: repo,
+          fetchedSubmissions: JSON.stringify(fetchedSubmissions),
+          submissionId: submissionId.toString(),
+        }).toString(),
+      });
+    } else {
+      alert("Link Invalido, por favor ingrese un link valido.");
+    }
+  } else {
+    alert("No se encontro un link para esta tarea.");
   }
 };
