@@ -90,24 +90,24 @@ function EditPracticeDialog({
         <TextField
           id="titulo"
           label="Título"
-          variant="outlined"
-          size="small"
+          margin="dense"
           fullWidth
           required
           onChange={(e) => setTitle(e.target.value)}
           defaultValue={currentTitle}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
         />
         <TextField
           id="descripcion"
           label="Descripción"
-          variant="outlined"
-          size="small"
+          margin="dense"
           fullWidth
           required
           multiline
-          rows={5}
+          rows={3.7}
           onChange={(e) => setDescription(e.target.value)}
           defaultValue={currentDescription}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
         />
       </DialogContent>
 

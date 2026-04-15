@@ -57,6 +57,7 @@ const EditGroupPopup: React.FC<{
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
+              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
             <TextField
               multiline
@@ -66,6 +67,7 @@ const EditGroupPopup: React.FC<{
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
+              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
           </DialogContent>
 
