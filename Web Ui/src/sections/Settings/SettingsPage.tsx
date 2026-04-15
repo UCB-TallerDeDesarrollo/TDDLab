@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container } from '@mui/material';
+import { Alert, Container } from '@mui/material';
 import PromptSettingsSection from './components/PromptSettingsSection';
 import FeatureFlagsSection from './components/FeatureFlagsSection';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
@@ -12,7 +12,8 @@ const ConfigurationPage = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [promptError, setPromptError] = useState<string | null>(null);
+  const [flagError, setFlagError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -34,7 +35,7 @@ const ConfigurationPage = () => {
         setFlags(data);
       } catch (err) {
         console.error("Error al cargar los flags", err);
-        setError("Error al cargar los flags");
+        setFlagError("Error al cargar los flags");
       }
     };
     fetchFlags();
@@ -52,10 +53,10 @@ const ConfigurationPage = () => {
         refactoringPrompt: promptsData.refactoringPrompt,
         evaluateTDDPrompt: promptsData.evaluateTDDPrompt
       });
-      setError(null);
+      setPromptError(null);
     } catch (error) {
       console.error("Error al cargar los prompts:", error);
-      setError("No se pudieron cargar los prompts. Por favor, intenta de nuevo más tarde.");
+      setPromptError("No se pudieron cargar los prompts. Por favor, intenta de nuevo más tarde.");
     } finally {
       setLoading(false);
     }
@@ -119,7 +120,7 @@ const ConfigurationPage = () => {
       );
     } catch (err) {
       console.error("Error al actualizar el flag", err);
-      setError("Error al actualizar el flag");
+      setFlagError("Error al actualizar el flag");
     }
   };
   return (
@@ -127,7 +128,7 @@ const ConfigurationPage = () => {
       <PromptSettingsSection
         loading={loading}
         saving={saving}
-        error={error}
+        error={promptError}
         prompts={prompts}
         selectedPrompt={selectedPrompt}
         isEditing={isEditing}
@@ -138,6 +139,9 @@ const ConfigurationPage = () => {
         onCancel={handleCancelEdit}
         onCloseNotification={handleCloseNotification}
       />
+      {flagError && (
+        <Alert severity="error" sx={{ mt: 2, mb: 1 }}>{flagError}</Alert>
+      )}
       <FeatureFlagsSection flags={flags} onToggle={handleCheckboxChange} />
      
     </Container>
