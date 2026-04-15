@@ -1,4 +1,88 @@
 /* ==========================================================================
+   VARIABLES GLOBALES (Importadas del proyecto anterior)
+   ========================================================================== */
+:root {
+  --primary-dark: rgba(0, 35, 70, 1);
+  --white: #ffffff;
+  --font-size-nav: 20px;
+  /* Colores primarios */
+  --primary-color: #1976d2;
+  --primary-color-hover: #1565c0;
+
+  /* Colores de peligro / error */
+  --danger-color: #d32f2f;
+  --danger-color-hover: #b71c1c;
+  --danger-color-bg-hover: #fdf5f5;
+  --danger-color-text-dialog: #dc3545;
+
+  /* Colores de éxito */
+  --success-color: #2e7d32;
+  --success-color-hover-bg: rgba(46, 125, 50, 0.1);
+
+  /* Escala base de grises */
+  --gray-400: #c8c8c8;
+  --gray-500: #e0e0e0;
+  --gray-600: #555555;
+  --gray-700: #666666;
+  --gray-800: #5b5b5b;
+
+  /* Colores secundarios (outline / cancelar) */
+  --secondary-color: var(--gray-600);
+  --secondary-color-hover-bg: var(--gray-500);
+
+  /* Colores terciarios */
+  --tertiary-color-bg: var(--gray-500);
+  --tertiary-color-bg-hover: var(--gray-400);
+  --tertiary-color-text: var(--gray-600);
+
+  /* Escala de grises semántica */
+  --gray-light: #e7e7e7;
+  --gray-medium: var(--gray-500);
+  --gray-dark: var(--gray-700);
+
+  /* Texto */
+  --text-primary: #555;
+  --text-secondary: var(--gray-800);
+  --text-disabled: var(--gray-800);
+  --white: #ffffff;
+
+  /* Fondos */
+  --bg-disabled: var(--gray-500);
+  --bg-readonly: #f5f5f5;
+  --bg-settings-group: #f9f9f9;
+
+  /* Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.4);
+
+  /* Bordes */
+  --border-table: #e7e7e7;
+  --border-group-detail: #e7e7e7;
+}
+
+/* ==========================================================================
+   BASE & TIPOGRAFÍA GLOBALES
+   ========================================================================== */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--primary-color-hover);
+}
+
+/* ==========================================================================
    LAYOUT & CONTENEDORES GLOBALES
    ========================================================================== */
 .fullscreen-loading,
@@ -32,34 +116,92 @@
 }
 
 /* ==========================================================================
-   SISTEMA DE BOTONES (ESTÁNDAR & VARIANTES)
+   SISTEMA UNIFICADO DE BOTONES (El que te gusta)
    ========================================================================== */
 
 .btn-std {
   height: 36px !important;
   min-width: 110px !important;
-  border-radius: 8px !important;
-  text-transform: none !important;
-  font-size: 0.875rem !important;
-  padding: 0 16px !important;
-  box-shadow: none !important;
+  border-radius: 4px !important; /* Bordes más rectos como el anterior */
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
+  text-transform: none !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease-in-out !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important;
 }
+
+/* Variantes de Color */
 
 .btn-primary {
-  background-color: #1976d2 !important;
-  color: white !important;
-  border: none !important;
+  background-color: var(--primary-color) !important;
+  color: var(--white) !important;
 }
-
 .btn-primary:hover:not(:disabled) {
-  background-color: #1565c0 !important;
+  background-color: var(--primary-color-hover) !important;
 }
 
+.btn-secondary {
+  background-color: transparent !important;
+  color: var(--gray-700) !important;
+  border-color: var(--gray-400) !important;
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-readonly) !important;
+  border-color: var(--gray-600) !important;
+}
+
+.btn-success {
+  background-color: var(--success-color) !important;
+  color: var(--white) !important;
+}
+.btn-success:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+.btn-danger {
+  background-color: var(--danger-color) !important;
+  color: var(--white) !important;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--danger-color-hover) !important;
+}
+
+/* Variante Outline Danger (Específica para diálogos de confirmación) */
+.btn-std.btn-danger-outline {
+  color: var(--danger-color) !important;
+  border: 2px solid var(--danger-color) !important;
+  background-color: transparent !important;
+}
+.btn-std.btn-danger-outline:hover {
+  background-color: var(--danger-color-bg-hover) !important;
+  border-color: var(--danger-color-hover) !important;
+  color: var(--danger-color-hover) !important;
+}
+
+/* Estado Deshabilitado */
 .btn-std:disabled {
-  background-color: #e0e0e0 !important;
-  color: #5b5b5b !important;
+  background-color: var(--bg-disabled) !important;
+  color: var(--text-disabled) !important;
+  border-color: transparent !important;
   cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* Dropdowns / Selects armonizados */
+.select-compact,
+.sorting-container .MuiOutlinedInput-root {
+  height: 36px !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  background-color: var(--white) !important;
 }
 
 /* ==========================================================================
@@ -71,18 +213,20 @@
   margin: 20px auto !important;
   border-collapse: collapse !important;
 }
+
 .styled-table th, 
 .styled-table td {
-  border: 1px solid #E7E7E7 !important; /* Crea la cuadrícula */
-  padding: 12px !important;            /* Da espacio al texto para que no toque la línea */
-  text-align: left;                     /* Mantiene el orden visual */
+  border: 1px solid var(--border-table) !important;
+  padding: 12px !important;
+  text-align: left;
 }
+
 .table-cell-header {
   font-weight: 600 !important;
 }
 
 .table-row-bordered {
-  border-bottom: 2px solid #E7E7E7 !important;
+  border-bottom: 2px solid var(--border-table) !important;
 }
 
 .action-buttons-group {
@@ -92,12 +236,6 @@
   gap: 12px;
 }
 
-.practice-title-cell {
-  font-size: 16px !important;
-  padding: 16px !important;
-}
-
-/* Barra de herramientas sobre la tabla (filtros + botones) */
 .table-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -108,12 +246,6 @@
   margin-left: auto;
   margin-right: auto;
   flex-wrap: nowrap;
-}
-
-.select-compact,
-.sorting-container .MuiOutlinedInput-root {
-  height: 36px !important;
-  border-radius: 0px !important;
 }
 
 /* ==========================================================================
@@ -138,87 +270,29 @@
   justify-content: flex-end !important;
 }
 
-/* Título de diálogo con ícono de estado (success/error) */
-.dialog-title-success {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #2e7d32;
-  font-size: 1rem;
-  font-weight: 400;
-}
-
+.dialog-title-success,
 .dialog-title-error {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #d32f2f;
-  font-size: 1rem;
-  font-weight: 400;
+  gap: 8px;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  padding: 16px 24px 8px 24px !important;
 }
 
-/* Texto de error grande dentro de un diálogo (EditAssignmentForm) */
+.dialog-title-success { color: var(--success-color); }
+.dialog-title-error { color: var(--danger-color); }
+
 .dialog-error-text {
-  color: #dc3545;
+  color: var(--danger-color-text-dialog);
   font-weight: bold;
   font-size: 16px;
   text-align: center;
 }
 
-.assignment-details-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-}
-
-.detail-icon {
-  margin-right: 12px;
-  color: #666666;
-  font-size: 20px;
-}
-/* ==========================================================================
-   ADICIONES AL SISTEMA DE BOTONES
-   ========================================================================== */
-
-/* Botón Rojo Sólido (Usado en botones de Cancelar de formularios) */
-.btn-danger {
-  background-color: #d32f2f !important;
-  color: white !important;
-  border: none !important;
-}
-
-.btn-danger:hover:not(:disabled) {
-  background-color: #b71c1c !important;
-}
-
-/* Botón con Borde Rojo (Usado específicamente en ConfirmationDialog) */
-.btn-std.btn-danger-outline {
-  color: #d32f2f !important;
-  border: 2px solid #d32f2f !important;
-  background-color: transparent !important;
-  padding: 5px 20px !important;
-  transition: all 0.2s ease;
-}
-
-.btn-std.btn-danger-outline:hover {
-    background-color: #fdf5f5 !important; /* Color sólido equivalente */
-    border-color: #b71c1c !important;
-    color: #b71c1c !important;
-}
-
-/* ==========================================================================
-   ADICIONES PARA DIÁLOGOS
-   ========================================================================== */
-
-/* Texto descriptivo dentro de pop-ups (ej: "¿Estás seguro de eliminar...?") */
 .dialog-text-content {
   font-size: 1rem;
-  color: #555;
+  color: var(--text-primary);
   line-height: 1.5;
   padding-top: 8px;
 }
@@ -227,129 +301,40 @@
    MÓDULO DE CONFIGURACIÓN (SETTINGS)
    ========================================================================== */
 
-/* Títulos de sección en Settings */
 .settings-section-title {
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 8px;
 }
 
-.settings-section-title--spaced {
-  font-weight: 600;
-  font-size: 16px;
-  margin: 1.5rem 0 0.5rem 0;
-}
-
-/* Overlay de carga al guardar prompts */
 .saving-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--overlay-bg);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1500; /* Por encima de todo */
-}
-
-/* Items de checkboxes en settings */
-.settings-flag-item {
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  z-index: 1500;
 }
 
 .settings-error-text {
-  color: #d32f2f;
+  color: var(--danger-color);
   font-size: 0.875rem;
   margin-top: 4px;
 }
 
-/* Estilo para el input de Prompt cuando está bloqueado */
 .prompt-input-readonly {
-  background-color: #f5f5f5 !important;
+  background-color: var(--bg-readonly) !important;
   cursor: default;
 }
-/* ==========================================================================
-   BASE & TIPOGRAFÍA GLOBALES
-   ========================================================================== */
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-a {
-  color: #0366d6;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #63a0e5;
-}
 
 /* ==========================================================================
-   CONTENEDORES EXTRA (Complemento)
+   BADGES & ESTADOS
    ========================================================================== */
-/* Para pantallas que requieran ocupar el 100% del alto y ancho visible */
-.viewport-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  width: 100vw;
-}
 
-/* Tarjeta genérica base (Reemplaza a comment-card, feedback-container, etc.) */
-.card-std {
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-}
-
-/* ==========================================================================
-   FORMULARIOS & ALERTAS GENÉRICAS
-   ========================================================================== */
-.form-label {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.form-textarea {
-  width: 100%;
-  padding: 12px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  resize: vertical;
-}
-
-.alert-box-error {
-  background-color: #ff5252;
-  color: #000;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-  width: 100%;
-}
-
-/* ==========================================================================
-   BADGES & PUNTOS DE ESTADO (Reemplaza conclusionBox, circles, etc.)
-   ========================================================================== */
 .badge-std {
   display: inline-flex;
   justify-content: center;
@@ -360,7 +345,7 @@ a:hover {
   padding: 8px 16px;
 }
 
-.badge-success { background-color: #28a745; }
+.badge-success { background-color: var(--success-color); }
 .badge-dark { background-color: #000000; }
 
 .status-dot {
@@ -372,32 +357,31 @@ a:hover {
 }
 
 .status-info { background-color: #28a3bc; }
-.status-success { background-color: #28a745; }
-.status-danger { background-color: #d73a49; }
-.status-primary { background-color: #0366d6; }
+.status-success { background-color: var(--success-color); }
+.status-danger { background-color: var(--danger-color); }
 
 .text-status-enviado {
-  color: #28a745 !important; /* Verde */
+  color: var(--success-color) !important;
   font-weight: 600;
 }
 
 .text-status-no-enviado {
-  color: #d73a49 !important; /* Rojo */
+  color: var(--danger-color) !important;
   font-weight: 600;
 }
 
-/*Clase para iconos grises */
-.icon-gray {
-  color: #757575 !important;
-}
+/* ==========================================================================
+   DETALLES DE ASIGNACIÓN (CARDS)
+   ========================================================================== */
+
 .assignment-header-card {
   width: 100%;
   max-width: 350px;
   margin-top: 32px;
   padding: 18px 20px;
   border-radius: 8px;
-  border: 1px solid #e6e6e6;
-  background-color: #ffffff;
+  border: 1px solid var(--gray-light);
+  background-color: var(--white);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -407,25 +391,13 @@ a:hover {
   margin-bottom: 12px !important;
 }
 
-.assignment-details-list {
-  gap: 10px;   
-  margin-top: 8px;
-}
-
-.detail-item {
-  font-size: 14px;
-  gap: 10px;
-}
-.assignment-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
 .detail-icon {
-  color: #666666;
+  margin-right: 12px;
+  color: var(--gray-dark);
   font-size: 20px !important;
   flex-shrink: 0;
 }
+
 .assignment-subtitle {
   width: 100%;
   max-width: 1120px;
