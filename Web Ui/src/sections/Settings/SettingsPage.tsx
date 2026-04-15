@@ -3,11 +3,12 @@ import { FormControl, InputLabel, Select, MenuItem,
          Typography, Container, Box, Snackbar, Alert } from '@mui/material';
 import { FullScreenLoader } from '../../components/FullScreenLoader';
 import EditPromptAI from './components/EditPromptAI';
+import FeatureFlagsSection from './components/FeatureFlagsSection';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
 import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
-import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
+import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 
 const PROMPT_OPTIONS = [
   { label: "Prompt Analizar TDD", value: "tddPrompt" },
@@ -191,23 +192,8 @@ const ConfigurationPage = () => {
           <FullScreenLoader isLoading={saving} variant="overlay" />
         </>
       )}
-       
-      <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
-        Habilitación de Funcionalidades
-      </div> 
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {flags.map((flag) => (
-        <div key={flag.id} style={{ marginBottom: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={flag.is_enabled}
-              onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
-            />
-            {flag.feature_name}
-          </label>
-        </div>
-      ))}
+      <FeatureFlagsSection flags={flags} onToggle={handleCheckboxChange} />
      
     </Container>
     
