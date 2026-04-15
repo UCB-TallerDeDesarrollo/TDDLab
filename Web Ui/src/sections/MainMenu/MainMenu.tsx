@@ -32,20 +32,19 @@ export default function MainMenu({
             display: "flex",
             flexDirection: "row",
             width: "100%",
-            justifyContent: "space-between",
             minHeight: "72px",
             paddingLeft: "72px",
             paddingRight: "32px",
+            justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <MobileDrawer navArrayLinks={filteredLinks} />
             <NavLink to="/" style={{ textDecoration: "none", color: "inherit", display: "flex", alignItems: "center" }}>
               <TDDLabLogo />
             </NavLink>
           </div>
-          <div
-            style={{ display: "flex", flexDirection: "row", marginRight: "30px"}}>
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: "8px" }}>
             <NavButtons links={filteredLinks} activeButton={activeButton} />
             <LoginComponent></LoginComponent>
           </div>

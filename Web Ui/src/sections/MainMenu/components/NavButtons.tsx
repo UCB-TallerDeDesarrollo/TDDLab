@@ -9,7 +9,7 @@ interface NavButtonsProps {
 
 export default function NavButtons({ links, activeButton }: Readonly<NavButtonsProps>) {
   return (
-    <Box sx={{ display: { xs: "none", sm: "block" } }}>
+    <Box sx={{ display: { xs: "none", md: "block" } }}>
       {links.map((item) => (
         <Button
           key={item.title}

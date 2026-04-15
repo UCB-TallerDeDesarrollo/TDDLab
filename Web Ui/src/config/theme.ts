@@ -6,6 +6,15 @@ const theme = createTheme({
       main: "#002345",
     },
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
   typography: {
     fontFamily: "'Afacad', sans-serif",
     htmlFontSize: 16,
