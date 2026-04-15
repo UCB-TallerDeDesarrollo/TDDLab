@@ -10,6 +10,30 @@ import EditAssignmentForm from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltip } from "../../Shared/statusHelpers";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
+
+// Estilos 
+const styles = {
+  tableRow: {
+    borderBottom: "2px solid #E7E7E7",
+  },
+  titleCell: {
+    width: "20%",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  actionsCell: {
+    width: "30%",
+    maxWidth: "300px",
+  },
+  actionsContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    flexWrap: "nowrap",
+  },
+} as const;
+
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
 }
@@ -30,10 +54,9 @@ const Assignment: React.FC<AssignmentProps> = ({
   handleClickDelete,
   handleRowHover,
   role,
-  //group,
 }) => {
-
   const [groupName, setGroupName] = useState<string>("");
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   useEffect(() => {
     if (assignment.groupid) {
@@ -45,50 +68,29 @@ const Assignment: React.FC<AssignmentProps> = ({
     try {
       const groupsRepository = new GroupsRepository();
       const group = await groupsRepository.getGroupById(groupId);
-      if (group) {
-        setGroupName(group.groupName);
-      }
+      if (group) setGroupName(group.groupName);
     } catch (error) {
       console.error("Error fetching group name:", error);
     }
   };
 
-  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-
-  const handleEditClick = () => {
-    setIsEditFormOpen(true);
-  };
-
-  const handleCloseEditForm = () => {
-    setIsEditFormOpen(false);
-  };
+  const handleEditClick = () => setIsEditFormOpen(true);
+  const handleCloseEditForm = () => setIsEditFormOpen(false);
+  
   const statusIcon = getStatusIcon(assignment.state);
+  const userIsAdmin = isAdmin(role); // Refactor simple para legibilidad
 
   return (
-    <TableRow 
-    key={assignment.id}
-    sx={{ 
-      borderBottom: "2px solid #E7E7E7" 
-    }}>
-      <TableCell
-        style={{
-          width: "20%",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
+    <TableRow key={assignment.id} sx={styles.tableRow}>
+      {/* Celda de Título */}
+      <TableCell sx={styles.titleCell}>
         {assignment.title}
       </TableCell>
-      <TableCell style={{ width: "30%", maxWidth: "300px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              flexWrap: "nowrap",
-            }}
-          >
+
+      {/* Celda de Acciones */}
+      <TableCell sx={styles.actionsCell}>
+        <div style={styles.actionsContainer}>
+          
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"
@@ -99,17 +101,17 @@ const Assignment: React.FC<AssignmentProps> = ({
               <VisibilityIcon />
             </IconButton>
           </Tooltip>
-          {isAdmin(role) && isEditFormOpen ? (
-            <EditAssignmentForm
-              assignmentId={assignment.id}
-              currentGroupName={groupName}
-              currentTitle={assignment.title}
-              currentDescription={assignment.description}
-              //currentGroupId={}
-              onClose={handleCloseEditForm}
-            />
-          ) : (
-            isAdmin(role) && (
+
+          {userIsAdmin && (
+            isEditFormOpen ? (
+              <EditAssignmentForm
+                assignmentId={assignment.id}
+                currentGroupName={groupName}
+                currentTitle={assignment.title}
+                currentDescription={assignment.description}
+                onClose={handleCloseEditForm}
+              />
+            ) : (
               <Tooltip title="Editar tarea" arrow>
                 <IconButton aria-label="edit" onClick={handleEditClick}>
                   <EditIcon />
@@ -118,7 +120,7 @@ const Assignment: React.FC<AssignmentProps> = ({
             )
           )}
 
-          {isAdmin(role) && (
+          {userIsAdmin && (
             <Tooltip title="Eliminar tarea" arrow>
               <IconButton
                 aria-label="delete"
@@ -140,6 +142,7 @@ const Assignment: React.FC<AssignmentProps> = ({
               {statusIcon}
             </IconButton>
           </Tooltip>
+          
         </div>
       </TableCell>
     </TableRow>
