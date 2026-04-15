@@ -1,21 +1,30 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  CircularProgress, Table, TableHead, TableBody, TableRow, TableCell, Container, SelectChangeEvent,
+  CircularProgress,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Container,
+  SelectChangeEvent,
 } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import Assignment from "./Assignment";
+import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
+import GroupFilter from "./GroupFilter";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import CreateButton from "../../GeneralPurposeComponents/CreateButton";
-import ActionSelect from "../../GeneralPurposeComponents/ActionSelect";
 
 const StyledTable = styled(Table)({
   width: "100%",
@@ -72,34 +81,30 @@ function Assignments({
 
   const orderAssignments = (
     assignmentsArray: AssignmentDataObject[],
-    selectedSortingValue: string
+    selectedSorting: string
   ) => {
-    if (assignmentsArray.length === 0) {
+    if (assignmentsArray.length == 0) {
       return;
     }
-
-    if (selectedSortingValue === "A_Up_Order") {
+    if (selectedSorting === "A_Up_Order") {
       assignmentsArray.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (selectedSortingValue === "A_Down_Order") {
+    } else if (selectedSorting === "A_Down_Order") {
       assignmentsArray.sort((a, b) => b.title.localeCompare(a.title));
-    } else if (selectedSortingValue === "Time_Up") {
+    } else if (selectedSorting === "Time_Up") {
       assignmentsArray.sort((a, b) => b.id - a.id);
-    } else if (selectedSortingValue === "Time_Down") {
+    } else if (selectedSorting === "Time_Down") {
       assignmentsArray.sort((a, b) => a.id - b.id);
     }
-
     setAssignments(assignmentsArray);
   };
 
   async function getUserGroups() {
     setIsLoading(true);
     let allGroups: GroupDataObject[] = [];
-
     if (userRole === "student") {
       if (localStorage.getItem("userGroups") === null) {
         const studentGroups = userGroupid;
         localStorage.setItem("userGroups", JSON.stringify(studentGroups));
-
         if (Array.isArray(studentGroups)) {
           allGroups = await Promise.all(
             studentGroups.map((group) => getGroups.getGroupById(group))
@@ -108,9 +113,7 @@ function Assignments({
           allGroups = await Promise.all([getGroups.getGroupById(studentGroups)]);
         }
       } else if (localStorage.getItem("userGroups") === "[0]") {
-        const studentGroups = await getGroups.getGroupsByUserId(
-          authData.userid ?? -1
-        );
+        const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
         localStorage.setItem("userGroups", JSON.stringify(studentGroups));
         allGroups = await Promise.all(
           studentGroups.map((group) => getGroups.getGroupById(group))
@@ -124,9 +127,7 @@ function Assignments({
         );
       }
     } else if (userRole === "teacher") {
-      const teacherGroupIds = await getGroups.getGroupsByUserId(
-        authData.userid ?? -1
-      );
+      const teacherGroupIds = await getGroups.getGroupsByUserId(authData.userid ?? -1);
       allGroups = await Promise.all(
         teacherGroupIds.map((id) => getGroups.getGroupById(id))
       );
@@ -147,9 +148,7 @@ function Assignments({
       const allGroups = await getUserGroups();
       setGroupList(allGroups);
 
-      const groupIdFromURL = new URLSearchParams(globalThis.location.search).get(
-        "groupId"
-      );
+      const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
       const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
 
       const savedSelectedGroup = localStorage.getItem("selectedGroup");
@@ -158,9 +157,7 @@ function Assignments({
 
       let firstUserGroup: number | null = null;
       try {
-        const storedUserGroups = JSON.parse(
-          localStorage.getItem("userGroups") || "[]"
-        );
+        const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
         if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
           firstUserGroup = storedUserGroups[0];
         }
@@ -199,7 +196,6 @@ function Assignments({
         loadAssignmentsByGroupId(groupId);
       }
     };
-
     globalThis.addEventListener("assignment-updated", handler as EventListener);
     return () =>
       globalThis.removeEventListener("assignment-updated", handler as EventListener);
@@ -217,9 +213,7 @@ function Assignments({
           return;
         }
 
-        const data = await assignmentsRepository.getAssignmentsByGroupid(
-          preferredGroupId
-        );
+        const data = await assignmentsRepository.getAssignmentsByGroupid(preferredGroupId);
         setSelectedGroup(preferredGroupId == -1 ? 0 : preferredGroupId);
         setAssignments(data);
         orderAssignments([...data], selectedSorting);
@@ -231,10 +225,9 @@ function Assignments({
     fetchAssignmentsByGroup();
   }, [authData, selectedSorting]);
 
-  const handleOrderAssignments = (event: SelectChangeEvent) => {
-    const value = String(event.target.value);
-    setSelectedSorting(value);
-    orderAssignments([...assignments], value);
+  const handleOrderAssignments = (event: { target: { value: string } }) => {
+    setSelectedSorting(event.target.value);
+    orderAssignments([...assignments], event.target.value);
   };
 
   const loadAssignmentsByGroupId = async (groupId: number) => {
@@ -249,9 +242,7 @@ function Assignments({
     try {
       const updatedGroupId = updatedAuthData.usergroupid;
       if (updatedGroupId !== undefined) {
-        const assignments = await assignmentsRepository.getAssignmentsByGroupid(
-          updatedGroupId
-        );
+        const assignments = await assignmentsRepository.getAssignmentsByGroupid(updatedGroupId);
         setAssignments(assignments);
       } else {
         const assignments = await assignmentsRepository.getAssignments();
@@ -262,8 +253,8 @@ function Assignments({
     }
   };
 
-  const handleGroupChange = async (event: SelectChangeEvent) => {
-    const groupId = Number(event.target.value);
+  const handleGroupChange = async (event: SelectChangeEvent<number>) => {
+    const groupId = event.target.value as number;
     await loadAssignmentsByGroupId(groupId);
   };
 
@@ -283,10 +274,7 @@ function Assignments({
   };
 
   const handleConfirmDelete = async () => {
-    if (
-      selectedAssignmentIndex === null ||
-      !assignments[selectedAssignmentIndex]
-    ) {
+    if (selectedAssignmentIndex === null || !assignments[selectedAssignmentIndex]) {
       setConfirmationOpen(false);
       return;
     }
@@ -297,13 +285,8 @@ function Assignments({
       const assignmentToDelete = assignments[selectedAssignmentIndex];
       console.log("Eliminando assignment:", assignmentToDelete);
 
-      const resutlt = await deleteAssignmentUseCase.deleteAssignment(
-        assignmentToDelete.id
-      );
-      console.log(
-        "Resultado obtenido al intentar eliminar eliminar:",
-        resutlt
-      );
+      const resutlt = await deleteAssignmentUseCase.deleteAssignment(assignmentToDelete.id);
+      console.log("Resultado obtenido al intentar eliminar eliminar:", resutlt);
 
       setValidationDialogOpen(true);
     } catch (error: any) {
@@ -318,22 +301,6 @@ function Assignments({
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
-
-  const sortingOptions = [
-    { value: "", label: "Ordenar" },
-    { value: "A_Up_Order", label: "Orden alfabético ascendente" },
-    { value: "A_Down_Order", label: "Orden alfabético descendente" },
-    { value: "Time_Up", label: "Recientes" },
-    { value: "Time_Down", label: "Antiguos" },
-  ];
-
-  const groupOptions = [
-    { value: 0, label: "Selecciona un grupo" },
-    ...groupList.map((group) => ({
-      value: group.id,
-      label: group.groupName,
-    })),
-  ];
 
   return (
     <Container>
@@ -382,17 +349,19 @@ function Assignments({
                 flexWrap: "nowrap",
               }}
             >
-              <ActionSelect
-                value={selectedGroup}
-                onChange={handleGroupChange}
-                options={groupOptions}
-                minWidth="190px"
+              <GroupFilter
+                selectedGroup={selectedGroup}
+                groupList={groupList}
+                onChangeHandler={handleGroupChange}
+                defaultName={
+                  groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                  groupList[0]?.groupName ||
+                  "Selecciona un grupo"
+                }
               />
-              <ActionSelect
-                value={selectedSorting}
-                onChange={handleOrderAssignments}
-                options={sortingOptions}
-                minWidth="220px"
+              <SortingComponent
+                selectedSorting={selectedSorting}
+                onChangeHandler={handleOrderAssignments}
               />
               {userRole !== "student" && (
                 <CreateButton
