@@ -1,5 +1,4 @@
-import { Alert, Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, Typography } from "@mui/material";
-import { FullScreenLoader } from "../../../components/FullScreenLoader";
+import { Alert, Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, Typography, CircularProgress } from "@mui/material";
 import EditPromptAI from "./EditPromptAI";
 
 const PROMPT_OPTIONS = [
@@ -46,7 +45,9 @@ const PromptSettingsSection = ({
       </Typography>
 
       {loading ? (
-        <FullScreenLoader isLoading={true} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+          <CircularProgress />
+        </Box>
       ) : error ? (
         <Box sx={{ p: 2, bgcolor: "#ffebee", borderRadius: 1, mb: 4 }}>
           <Typography color="error">{error}</Typography>
@@ -88,7 +89,7 @@ const PromptSettingsSection = ({
             </Alert>
           </Snackbar>
 
-          <FullScreenLoader isLoading={saving} variant="overlay" />
+
         </>
       )}
     </>
