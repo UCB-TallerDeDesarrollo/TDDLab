@@ -5,7 +5,6 @@ import {
   ListItemIcon,
   ListItemButton,
   ListItemText,
-  Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { IconifyIcon } from "../../../sections/Shared/Components";
@@ -30,7 +29,9 @@ export default function NavLateralMenu({
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', ml: '14px', mt: 2, mb: 1 }}>
+            <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "32px", width: "auto" }} />
+          </Box>
 
           {navArrayLinks.map((item) => (
             <ListItem disablePadding key={item.title}>
