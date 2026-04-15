@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
@@ -19,7 +18,6 @@ import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
   Container,
-  Button,
   Collapse,
 } from "@mui/material";
 import { styled } from "@mui/system";
@@ -30,6 +28,7 @@ import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
 import { TableView, type TableViewColumn } from "../Shared/Components/TableView";
+import CreateButton from "../GeneralPurposeComponents/CreateButton";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -42,7 +41,6 @@ const ButtonContainer = styled("div")({
   gap: "8px",
 });
 
-// Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
@@ -56,7 +54,6 @@ interface GroupTableRow {
 function Groups() {
   const navigate = useNavigate();
 
-  // UI state
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -66,48 +63,51 @@ function Groups() {
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
-  // data
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
-  const groupRepository = new GroupsRepository();
-  const userRepository = new UsersRepository();
-  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
+  const groupRepository = useMemo(() => new GroupsRepository(), []);
+  const userRepository = useMemo(() => new UsersRepository(), []);
+  const getUsersByGroupId = useMemo(
+    () => new GetUsersByGroupId(userRepository),
+    [userRepository]
+  );
   const [authData, setAuthData] = useGlobalState("authData");
 
-  // id seleccionado (sincronizado con auth/localStorage)
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
-  // Sincroniza selección en toda la app
-  const selectAndSync = (rawId: unknown) => {
-    const id = asId(rawId);
-    if (!id) return;
-    setCurrentSelectedGroupId(id);
-    localStorage.setItem("selectedGroup", String(id));
-    if (asId(authData?.usergroupid) !== id) {
-      setAuthData({ ...authData, usergroupid: id });
-    }
-  };
+  const selectAndSync = useCallback(
+    (rawId: unknown) => {
+      const id = asId(rawId);
+      if (!id) return;
+      setCurrentSelectedGroupId(id);
+      localStorage.setItem("selectedGroup", String(id));
+      if (asId(authData?.usergroupid) !== id) {
+        setAuthData({ ...authData, usergroupid: id });
+      }
+    },
+    [authData, setAuthData]
+  );
 
-  // Cargar 
   useEffect(() => {
-  const fetchGroups = async () => {
-    const getGroupsApp = new GetGroups(groupRepository);
-    const role = authData?.userRole ?? "";
-    const uid  = authData?.userid ?? -1;
+    const fetchGroups = async () => {
+      const getGroupsApp = new GetGroups(groupRepository);
+      const role = authData?.userRole ?? "";
+      const uid = authData?.userid ?? -1;
 
-    if (role === "teacher") {
-      const ids = await getGroupsApp.getGroupsByUserId(uid);
-      const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
-        .filter(Boolean) as GroupDataObject[];
+      if (role === "teacher") {
+        const ids = await getGroupsApp.getGroupsByUserId(uid);
+        const allGroups = (
+          await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id)))
+        ).filter(Boolean) as GroupDataObject[];
         setGroups(allGroups);
-    } else {
-      const allGroups = await getGroupsApp.getGroups();
-      setGroups(allGroups);
-    }
+      } else {
+        const allGroups = await getGroupsApp.getGroups();
+        setGroups(allGroups);
+      }
     };
-      fetchGroups();
-  }, [authData?.userRole, authData?.userid]);
+    fetchGroups();
+  }, [authData?.userRole, authData?.userid, groupRepository]);
 
   useEffect(() => {
     if (!groups.length || currentSelectedGroupId) return;
@@ -130,17 +130,29 @@ function Groups() {
           const first = asId(ids?.[0]);
           if (first) return selectAndSync(first);
         }
-      } catch { /* ignore */ }
+      } catch {
+        // ignore fallback failures and use first visible group when available
+      }
       const firstVisible = asId(groups[0]?.id);
       if (firstVisible) selectAndSync(firstVisible);
     })();
-  }, [groups, currentSelectedGroupId, authData?.usergroupid, authData?.userid]);
+  }, [
+    groups,
+    currentSelectedGroupId,
+    authData?.usergroupid,
+    authData?.userid,
+    groupRepository,
+    selectAndSync,
+  ]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
   };
 
-  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+  const handleEditClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
     event.stopPropagation();
     const group = groups[index];
     if (group) {
@@ -289,13 +301,9 @@ function Groups() {
     );
   };
 
-  const groupRows = useMemo<GroupTableRow[]>(
-    () => groups.map((group, index) => ({ group, index })),
-    [groups]
-  );
+  const groupRows: GroupTableRow[] = groups.map((group, index) => ({ group, index }));
 
-  const groupColumns = useMemo<TableViewColumn<GroupTableRow>[]>(
-    () => [
+  const groupColumns: TableViewColumn<GroupTableRow>[] = [
       {
         id: "selection",
         header: "",
@@ -323,15 +331,11 @@ function Groups() {
               selectedSorting={selectedSorting}
               onChangeHandler={handleGroupsOrder}
             />
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
+            <CreateButton
               onClick={handleCreateGroupClick}
-            >
-              Crear
-            </Button>
+              label="Crear"
+              borderRadius="17px"
+            />
           </ButtonContainer>
         ),
         renderCell: ({ index }) => (
@@ -374,21 +378,7 @@ function Groups() {
           </ButtonContainer>
         ),
       },
-    ],
-    [
-      currentSelectedGroupId,
-      selectedSorting,
-      handleGroupsOrder,
-      handleCreateGroupClick,
-      handleRowClick,
-      handleEditClick,
-      handleHomeworksClick,
-      handleStudentsClick,
-      handleLinkClick,
-      handleLinkClickTeacher,
-      handleDeleteClick,
-    ]
-  );
+    ];
 
   return (
     <CenteredContainer>
