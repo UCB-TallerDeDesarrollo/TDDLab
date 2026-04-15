@@ -5,14 +5,20 @@
 .centered-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  margin: 20px auto;
+  margin: 32px auto;
   max-width: 1200px;
+  width: 100%;
+}
+
+.fullscreen-loading {
+  justify-content: center;
+  min-height: 300px;
 }
 
 .table-container-full {
   width: 100%;
+  max-width: 1120px;
 }
 
 .page-top-spacer {
@@ -383,4 +389,48 @@ a:hover {
 /*Clase para iconos grises */
 .icon-gray {
   color: #757575 !important;
+}
+.assignment-header-card {
+  width: 100%;
+  max-width: 350px;
+  margin-top: 32px;
+  padding: 18px 20px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  background-color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.assignment-title {
+  font-size: 22px !important;   
+  font-weight: 600 !important;
+  margin-bottom: 12px !important;
+}
+
+.assignment-details-list {
+  gap: 10px;   
+  margin-top: 8px;
+}
+
+.detail-item {
+  font-size: 14px;
+  gap: 10px;
+}
+.assignment-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.detail-icon {
+  color: #666666;
+  font-size: 20px !important;
+  flex-shrink: 0;
+}
+.assignment-subtitle {
+  width: 100%;
+  max-width: 1120px;
+  font-size: 1.8rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 16px !important;
+  text-align: left;
 }

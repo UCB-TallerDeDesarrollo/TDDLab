@@ -368,11 +368,16 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
   };
 
   return (
-    <div className="centered-container">
-      {assignment ? (
-        <Card variant="elevation" elevation={0} className="table-container-full">
+  <div className="centered-container">
+    {assignment ? (
+      <div className="assignment-wrapper">
+        <Card
+          variant="elevation"
+          elevation={0}
+          className="assignment-header-card"
+        >
           <CardContent>
-            <Typography variant="h4" sx={{ mb: 4, fontWeight: "bold" }}>
+            <Typography variant="h4" className="assignment-title">
               {assignment.title}
             </Typography>
 
@@ -411,7 +416,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                 <div className="detail-item">
                   <AccessTimeIcon className="detail-icon" />
                   <Typography variant="body1">
-                    <strong>Estado: </strong> {getDisplayStatus(submission?.status)}
+                    <strong>Estado: </strong>
+                    {getDisplayStatus(submission?.status)}
                   </Typography>
                 </div>
               )}
@@ -499,58 +505,47 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             />
           </CardContent>
         </Card>
-      ) : (
-        <div className="fullscreen-loading">
-          <CircularProgress size={60} thickness={5} />
-        </div>
-      )}
+      </div>
+    ) : (
+      <div className="fullscreen-loading">
+        <CircularProgress size={60} thickness={5} />
+      </div>
+    )}
 
-      {!isStudent(role) && (
-        <section className="table-container-full" style={{ marginTop: "40px" }}>
-          <Typography
-            variant="h5"
-            sx={{
-              mb: 3,
-              fontWeight: "bold",
-              textAlign: "left",
-              borderBottom: "1px solid #eee",
-              pb: 1,
-            }}
-          >
-            Lista de entregas
-          </Typography>
+    {!isStudent(role) && (
+      <section className="table-container-full" style={{ marginTop: "40px" }}>
+        <Typography variant="h5" className="assignment-subtitle">
+          Lista de entregas
+        </Typography>
 
-          {loadingSubmissions ? (
-            <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
-              <CircularProgress />
-            </div>
-          ) : (
-            <Table className="styled-table">
-              <TableHead>
-                <TableRow className="table-row-bordered">
-                  <TableCell className="table-cell-header">Correo</TableCell>
-                  <TableCell className="table-cell-header">Estado</TableCell>
-                  <TableCell className="table-cell-header" align="center">
-                    Enlace
-                  </TableCell>
-                  <TableCell className="table-cell-header">Fecha de Inicio</TableCell>
-                  <TableCell className="table-cell-header">
-                    Fecha de finalización
-                  </TableCell>
-                  <TableCell className="table-cell-header">Grafica</TableCell>
-                  <TableCell className="table-cell-header">Asistente AI</TableCell>
-                  <TableCell className="table-cell-header">
-                    Graficas Adicionales
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>{studentRows}</TableBody>
-            </Table>
-          )}
-        </section>
-      )}
-    </div>
-  );
-};
-
-export default AssignmentDetail;
+        {loadingSubmissions ? (
+          <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <Table className="styled-table">
+            <TableHead>
+              <TableRow className="table-row-bordered">
+                <TableCell className="table-cell-header">Correo</TableCell>
+                <TableCell className="table-cell-header">Estado</TableCell>
+                <TableCell className="table-cell-header" align="center">
+                  Enlace
+                </TableCell>
+                <TableCell className="table-cell-header">Fecha de Inicio</TableCell>
+                <TableCell className="table-cell-header">
+                  Fecha de finalización
+                </TableCell>
+                <TableCell className="table-cell-header">Grafica</TableCell>
+                <TableCell className="table-cell-header">Asistente AI</TableCell>
+                <TableCell className="table-cell-header">
+                  Graficas Adicionales
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{studentRows}</TableBody>
+          </Table>
+        )}
+      </section>
+    )}
+  </div>
+);
