@@ -11,7 +11,6 @@ type Prompts = { tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt
 
 interface PromptSettingsSectionProps {
   loading: boolean;
-  saving: boolean;
   error: string | null;
   prompts: Prompts;
   selectedPrompt: string;
@@ -26,7 +25,6 @@ interface PromptSettingsSectionProps {
 
 const PromptSettingsSection = ({
   loading,
-  saving,
   error,
   prompts,
   selectedPrompt,

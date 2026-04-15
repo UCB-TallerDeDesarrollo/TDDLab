@@ -127,7 +127,6 @@ const ConfigurationPage = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <PromptSettingsSection
         loading={loading}
-        saving={saving}
         error={promptError}
         prompts={prompts}
         selectedPrompt={selectedPrompt}

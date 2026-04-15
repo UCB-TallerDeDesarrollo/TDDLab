@@ -125,21 +125,21 @@ function EditAssignmentDialog({
       <DialogContent>
         <div className="flex-column gap-3 mt-4 mb-2">
           <TextField
-          id="title"
-          label={
-            <span style={{ display: 'flex', alignItems: 'center' }}>
-              <DescriptionIcon sx={{ mr: 1 }} />
-              Título de la tarea
-            </span>
-          }
-          variant="outlined"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          margin="normal"
-          InputProps={{
-            style: { borderRadius: "10px" },
-          }}
-        />
+            id="titulo"
+            label={
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <DescriptionIcon sx={{ mr: 1 }} />
+                Título de la tarea
+              </span>
+            }
+            variant="outlined"
+            defaultValue={currentTitle}
+            onChange={(e) => setTitle(e.target.value)}
+            margin="normal"
+            InputProps={{
+              style: { borderRadius: "10px" },
+            }}
+          />
           <TextField
             id="descripcion"
             label="Descripción"
@@ -208,7 +208,7 @@ function EditAssignmentDialog({
               textTransform: "none",
             }}
           >
-            Guardar
+            Guardar Cambios
           </Button>
       </DialogActions>
       <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>

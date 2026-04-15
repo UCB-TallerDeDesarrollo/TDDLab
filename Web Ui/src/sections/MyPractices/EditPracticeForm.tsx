@@ -125,7 +125,7 @@ function EditPracticeDialog({
             textTransform: "none",
           }}
         >
-          Guardar
+          Guardar Cambios
         </Button>
       </DialogActions>
     </Dialog>
