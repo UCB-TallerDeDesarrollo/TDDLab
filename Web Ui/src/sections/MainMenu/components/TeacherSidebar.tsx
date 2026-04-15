@@ -1,4 +1,4 @@
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useLocation, NavLink } from "react-router-dom";
 import { IconifyIcon } from "../../../sections/Shared/Components";
 
@@ -29,8 +29,8 @@ export default function TeacherSidebar({ navArrayLinks }: Readonly<TeacherSideba
       sx={{
         width: 260,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { 
-          width: 260, 
+        [`& .MuiDrawer-paper`]: {
+          width: 260,
           boxSizing: "border-box",
           backgroundColor: "#ffffff",
           borderRight: "none",
@@ -45,13 +45,11 @@ export default function TeacherSidebar({ navArrayLinks }: Readonly<TeacherSideba
           backgroundColor: "#0d1b2a",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
+          justifyContent: "flex-start",
+          paddingLeft: "30px",
         }}
       >
-         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "52px", width: "auto" }} />
-         </Box>
+        <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "52px", width: "auto" }} />
       </Box>
 
       {/* Menu items */}
@@ -92,10 +90,10 @@ export default function TeacherSidebar({ navArrayLinks }: Readonly<TeacherSideba
                         color: isSelected ? "#2B59C3" : "#0d1b2a",
                       }}
                     >
-                      <IconifyIcon 
-                        icon={displayIcon} 
-                        width={26} 
-                        height={26} 
+                      <IconifyIcon
+                        icon={displayIcon}
+                        width={26}
+                        height={26}
                       />
                     </ListItemIcon>
                     <ListItemText

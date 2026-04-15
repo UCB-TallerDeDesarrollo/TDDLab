@@ -5,7 +5,6 @@ import {
   AppBar,
   IconButton,
   Toolbar,
-  Typography,
 } from "@mui/material";
 
 import NavLateralMenu from "./components/LateralMenu";
@@ -41,11 +40,30 @@ export default function MainMenu({
   )?.title;
 
   if (userRole === "teacher") {
-    // Si es docente retornamos el Sidebar sin el contenedor con margen superior
     return (
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: "flex", marginTop: "90px" }}>
         <TeacherSidebar navArrayLinks={navArrayLinks} />
-        {/* Aquí la AppBar principal de logout no va, o se puede ubicar diferente. Según el requerimiento, la vista cambia al Sidebar */}
+        <AppBar
+          position="fixed"
+          sx={{
+            width: `calc(100% - 260px)`,
+            left: "260px",
+            background: "#0d1b2a",
+            boxShadow: "none",
+            height: 90,
+            justifyContent: "center",
+          }}
+        >
+          <Toolbar
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              paddingRight: "20px", // using 20px so it's not too far left
+            }}
+          >
+            <LoginComponent />
+          </Toolbar>
+        </AppBar>
       </div>
     );
   }

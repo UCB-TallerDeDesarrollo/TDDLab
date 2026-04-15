@@ -5,7 +5,6 @@ import {
   ListItemIcon,
   ListItemButton,
   ListItemText,
-  Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { IconifyIcon } from "../../../sections/Shared/Components";
