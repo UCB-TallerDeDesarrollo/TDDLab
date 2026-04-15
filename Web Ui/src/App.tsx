@@ -26,11 +26,18 @@ import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
+import HomePage from "./features/Home/HomePage";
 import {
   CircularProgress,
 } from "@mui/material";
 
 const navArrayLinks = [
+  {
+    title: "Home",
+    path: "/",
+    icon: <DescriptionIcon />,
+    access: ["admin", "student", "teacher"],
+  },
   {
     title: "Grupos",
     path: "/groups",
@@ -39,7 +46,7 @@ const navArrayLinks = [
   },
   {
     title: "Tareas",
-    path: "/",
+    path: "/tareas",
     icon: <DescriptionIcon />,
     access: ["admin", "student", "teacher"],
   },
@@ -110,6 +117,14 @@ useEffect(() => {
       <Routes>
         <Route
           path="/"
+          element={
+            <ProtectedRouteComponent>
+              <HomePage />
+            </ProtectedRouteComponent>
+          }
+        />
+        <Route
+          path="/tareas"
           element={
             <ProtectedRouteComponent>
               <GestionTareas

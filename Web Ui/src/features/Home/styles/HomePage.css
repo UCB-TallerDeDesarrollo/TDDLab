@@ -1,0 +1,154 @@
+.home-page {
+  min-height: calc(100vh - 100px);
+  background: #ffffff;
+  padding: 32px clamp(20px, 6vw, 100px) 64px;
+  box-sizing: border-box;
+}
+
+.home-hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.home-title {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+  color: #0f1217;
+  text-align: center;
+}
+
+.home-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(32px, 6vw, 80px);
+}
+
+.brand-mark-box {
+  width: clamp(220px, 26vw, 280px);
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.12);
+  display: grid;
+  place-items: center;
+}
+
+.wordmark {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  color: #0f1217;
+}
+
+.wordmark-tdd {
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(5rem, 12vw, 10rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -2px;
+}
+
+.wordmark-lab {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 300;
+  letter-spacing: 4px;
+  line-height: 1;
+}
+
+.brand-mark {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.diamond {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  transform: rotate(45deg);
+}
+
+.diamond-blue {
+  background: #3d57ab;
+}
+
+.diamond-green {
+  background: #72bf44;
+}
+
+.diamond-red {
+  background: #f0272a;
+}
+
+.top {
+  left: 50%;
+  top: 15px;
+  margin-left: -15px;
+}
+
+.right {
+  right: 15px;
+  top: 50%;
+  margin-top: -15px;
+}
+
+.bottom {
+  left: 50%;
+  bottom: 15px;
+  margin-left: -15px;
+}
+
+.left {
+  left: 15px;
+  top: 50%;
+  margin-top: -15px;
+}
+
+.top-left {
+  left: 50px;
+  top: 50px;
+}
+
+.top-right {
+  right: 50px;
+  top: 50px;
+}
+
+.bottom-left {
+  left: 50px;
+  bottom: 50px;
+}
+
+.bottom-right {
+  right: 50px;
+  bottom: 50px;
+}
+
+.center {
+  left: 50%;
+  top: 50%;
+  margin-left: -15px;
+  margin-top: -15px;
+}
+
+@media (max-width: 900px) {
+  .home-page {
+    min-height: calc(100vh - 88px);
+    padding: 28px 20px 40px;
+  }
+
+  .home-brand-row {
+    flex-direction: column;
+    align-items: center;
+  }
+}
