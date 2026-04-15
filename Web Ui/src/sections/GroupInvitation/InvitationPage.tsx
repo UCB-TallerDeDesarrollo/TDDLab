@@ -174,8 +174,8 @@ function InvitationPage() {
   };
 
   return (
-    <Box sx={{ position: "relative" }}>
-      <FullScreenLoader isLoading={isLoading} />
+    <div style={{ position: "relative" }}>
+      <FullScreenLoader isLoading={isLoading} variant="overlay" blur />
 
       {user ? (
         <Box className="invitation-card-container" sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "100vh", gap: 4 }}>

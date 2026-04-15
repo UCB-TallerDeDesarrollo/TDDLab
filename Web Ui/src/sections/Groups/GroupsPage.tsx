@@ -47,6 +47,29 @@ const StyledTable = styled(Table)({
   marginRight: "auto",
 });
 
+// Estilos reutilizables para IconButton
+const iconButtonSx = {
+  transition: "all 0.175s ease-out",
+  "&:hover": {
+    filter: "brightness(0.9)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+  },
+  "&:active": {
+    transform: "scale(0.97)",
+  },
+};
+
+// Contenedor de detalle con estilos limpios
+const DetailContainer = styled("div")({
+  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+  borderRadius: "2px",
+});
+
+const DetailContent = styled("div")({
+  padding: "50px",
+  marginLeft: "-30px",
+});
+
 // Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
@@ -352,16 +375,7 @@ function Groups() {
                         <IconButton 
                           aria-label="editar" 
                           onClick={(e) => handleEditClick(e, index)}
-                          sx={{
-                            transition: "all 0.175s ease-out",
-                            "&:hover": {
-                              filter: "brightness(0.9)",
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                            },
-                            "&:active": {
-                              transform: "scale(0.97)",
-                            },
-                          }}
+                          sx={iconButtonSx}
                         >
                           <IconifyIcon icon="mdi:pencil" color="primary" hoverColor="#1565c0" />
                         </IconButton>
@@ -371,16 +385,7 @@ function Groups() {
                         <IconButton 
                           aria-label="tareas" 
                           onClick={(e) => handleHomeworksClick(e, index)}
-                          sx={{
-                            transition: "all 0.175s ease-out",
-                            "&:hover": {
-                              filter: "brightness(0.9)",
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                            },
-                            "&:active": {
-                              transform: "scale(0.97)",
-                            },
-                          }}
+                          sx={iconButtonSx}
                         >
                           <IconifyIcon icon="mdi:motion" color="primary" hoverColor="#1565c0" />
                         </IconButton>
@@ -390,16 +395,7 @@ function Groups() {
                         <IconButton 
                           aria-label="estudiantes" 
                           onClick={(e) => handleStudentsClick(e, index)}
-                          sx={{
-                            transition: "all 0.175s ease-out",
-                            "&:hover": {
-                              filter: "brightness(0.9)",
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                            },
-                            "&:active": {
-                              transform: "scale(0.97)",
-                            },
-                          }}
+                          sx={iconButtonSx}
                         >
                           <IconifyIcon icon="mdi:account-multiple" color="primary" hoverColor="#1565c0" />
                         </IconButton>
@@ -409,16 +405,7 @@ function Groups() {
                         <IconButton 
                           aria-label="enlace" 
                           onClick={(e) => handleLinkClick(e, index)}
-                          sx={{
-                            transition: "all 0.175s ease-out",
-                            "&:hover": {
-                              filter: "brightness(0.9)",
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                            },
-                            "&:active": {
-                              transform: "scale(0.97)",
-                            },
-                          }}
+                          sx={iconButtonSx}
                         >
                           <IconifyIcon icon="mdi:link" color="primary" hoverColor="#1565c0" />
                         </IconButton>
@@ -427,16 +414,7 @@ function Groups() {
                       <Tooltip title="Copiar enlace de invitacion a docente" arrow>
                         <IconButton 
                           aria-label="enlace"
-                          sx={{
-                            transition: "all 0.175s ease-out",
-                            "&:hover": {
-                              filter: "brightness(0.9)",
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                            },
-                            "&:active": {
-                              transform: "scale(0.97)",
-                            },
-                          }}
+                          sx={iconButtonSx}
                           onClick={(e) => handleLinkClickTeacher(e, index)}
                         >
                           <PiChalkboardTeacherFill />
@@ -455,11 +433,11 @@ function Groups() {
                 <TableRow>
                   <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
                     <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
-                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
+                      <DetailContainer>
+                        <DetailContent>
                           Detalle del grupo: {groups[index].groupDetail}
-                        </div>
-                      </div>
+                        </DetailContent>
+                      </DetailContainer>
                     </Collapse>
                   </TableCell>
                 </TableRow>
