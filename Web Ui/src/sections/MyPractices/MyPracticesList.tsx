@@ -35,7 +35,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);
 
-  // 🔥 NUEVO: estado para filtro
   const [selectedFilter, setSelectedFilter] = useState<string>("");
 
   const navigate = useNavigate();
@@ -91,12 +90,10 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     setHoveredRow(index);
   };
 
-  // 🔥 NUEVO: handler de filtro
   const handleFilterChange = (event: SelectChangeEvent) => {
     setSelectedFilter(event.target.value);
   };
 
-  // 🔥 NUEVO: opciones de filtro
   const filterOptions = [
     { value: "", label: "Filtrar" },
     { value: "all", label: "Todas" },
@@ -107,8 +104,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <div style={{ width: "95%", padding: "0 16px", margin: "0 auto" }}>
       <section className="Practicas" style={{ width: "100%", margin: "0 auto" }}>
-        
-        {/* HEADER */}
         <div
           style={{
             display: "flex",
@@ -126,8 +121,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           </h2>
 
           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            
-            {/* 🔥 NUEVO: COMBOBOX */}
             <ActionSelect
               value={selectedFilter}
               onChange={handleFilterChange}
@@ -135,7 +128,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
               minWidth="120px"
             />
 
-            {/* BOTÓN CREAR */}
             <CreateButton
               onClick={showForm}
               label="Crear +"
@@ -144,7 +136,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           </div>
         </div>
 
-        {/* TABLA */}
         <StyledTable>
           <TableHead>
             <TableRow>
@@ -171,7 +162,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           </TableBody>
         </StyledTable>
 
-        {/* DIALOGOS */}
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}

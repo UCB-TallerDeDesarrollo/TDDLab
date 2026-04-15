@@ -17,22 +17,16 @@ import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  Collapse,
+  Table, TableHead, TableBody, TableRow, TableCell, Container, Collapse, SelectChangeEvent,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
-import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
 import CreateButton from "../GeneralPurposeComponents/CreateButton";
+import ActionSelect from "../GeneralPurposeComponents/ActionSelect";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -151,8 +145,10 @@ function Groups() {
     }
   };
 
-  const handleGroupsOrder = (event: { target: { value: string } }) => {
-    setSelectedSorting(event.target.value);
+  const handleGroupsOrder = (event: SelectChangeEvent) => {
+    const value = event.target.value as string;
+    setSelectedSorting(value);
+
     const sortings = {
       A_Up_Order: () =>
         [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
@@ -172,9 +168,19 @@ function Groups() {
         ),
     } as const;
 
-    const key = event.target.value as keyof typeof sortings;
-    setGroups(sortings[key]());
+    const key = value as keyof typeof sortings;
+    if (sortings[key]) {
+      setGroups(sortings[key]());
+    }
   };
+
+  const sortingOptions = [
+    { value: "", label: "Ordenar" },
+    { value: "A_Up_Order", label: "Orden alfabetico ascendente" },
+    { value: "A_Down_Order", label: "Orden alfabetico descendente" },
+    { value: "Time_Up", label: "Recientes" },
+    { value: "Time_Down", label: "Antiguos" },
+  ];
 
   const handleRowClick = async (index: number) => {
     if (expandedRows.includes(index)) {
@@ -302,9 +308,11 @@ function Groups() {
               </TableCell>
               <TableCell>
                 <ButtonContainer>
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleGroupsOrder}
+                  <ActionSelect
+                    value={selectedSorting}
+                    onChange={handleGroupsOrder}
+                    options={sortingOptions}
+                    minWidth="220px"
                   />
                   <CreateButton
                     onClick={handleCreateGroupClick}
