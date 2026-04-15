@@ -4,7 +4,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
-import { useGitHubLinkValidation } from "./GitValidationHook";
+import { useGitHubLinkValidation } from "../hooks/useGitHubLinkValidation";
 import { useState } from "react";
 
 interface GithubLinkDialogProps {
@@ -28,9 +28,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const [sending, setSending] = useState(false);
 
   const handleSend = async () => {
-    // ya estoy enviando o el link no es válido → salgo
     if (sending || !validLink) return;
-
     setSending(true);
     try {
       await onSend(link);
@@ -38,6 +36,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
       setSending(false);
     }
   };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleLinkChange(e.target.value);
   };
@@ -99,10 +98,10 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   };
 
   return (
-    <Dialog 
-      fullWidth={true} 
-      maxWidth="sm" 
-      open={open} 
+    <Dialog
+      fullWidth={true}
+      maxWidth="sm"
+      open={open}
       onClose={onClose}
       PaperProps={{
         sx: { borderRadius: "0px" }

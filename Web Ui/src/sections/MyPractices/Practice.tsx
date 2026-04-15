@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
+import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import { getStatusIcon, getStatusTooltipPractice } from "../Shared/statusHelpers";
 
 interface PracticeProps {
@@ -37,47 +37,57 @@ const Practice: React.FC<PracticeProps> = ({
   const statusIcon = getStatusIcon(practice.state);
 
   return (
-    <TableRow
-      key={practice.id}
+    <Box
       sx={{
-        borderBottom: "2px solid #E7E7E7",
+        display: "flex",
+        alignItems: { xs: "flex-start", sm: "center" },
+        justifyContent: "space-between",
+        gap: { xs: 2, sm: 3 },
+        pl: { xs: 1.6, sm: 2.25, md: 2.5 },
+        pr: { xs: 1.25, sm: 1.75, md: 2 },
+        py: { xs: 1.2, sm: 1.45, md: 1.7 },
+        border: "1px solid #d5dbe1",
+        borderRadius: 0,
+        backgroundColor: "#ffffff",
+        flexDirection: { xs: "column", sm: "row" },
       }}
     >
-      <TableCell
+      <Typography
         sx={{
-          fontSize: "16px",
-          padding: "16px",
-          verticalAlign: "middle",
-          maxWidth: "600px",
-          whiteSpace: "nowrap",
+          color: "#131313",
+          fontSize: { xs: "0.82rem", sm: "0.98rem", md: "1.02rem" },
+          fontWeight: 400,
+          lineHeight: 1.25,
+          flex: 1,
+          minWidth: 0,
           overflow: "hidden",
           textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
         }}
       >
         {practice.title}
-      </TableCell>
-      
-        <TableCell
+      </Typography>
+
+      <Box
       sx={{
-        padding: "16px",
-        verticalAlign: "middle",
-        width: "240px", // Fija el ancho
+        display: "flex",
+        justifyContent: { xs: "flex-end", sm: "flex-end" },
+        alignItems: "center",
+        gap: { xs: 0.5, sm: 0.85 },
+        width: { xs: "100%", sm: "auto" },
+        flexWrap: "wrap",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          gap: "20px",
-        }}
-      >
           <Tooltip title="Ver practica" arrow>
             <IconButton
               aria-label="see"
               onClick={() => handleClickDetail(index)}
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                color: "#050505",
+                p: 0.75,
+              }}
             >
               <VisibilityIcon />
             </IconButton>
@@ -91,7 +101,14 @@ const Practice: React.FC<PracticeProps> = ({
             />
           ) : (
             <Tooltip title="Editar practica" arrow>
-              <IconButton aria-label="edit" onClick={handleEditClick}>
+              <IconButton
+                aria-label="edit"
+                onClick={handleEditClick}
+                sx={{
+                  color: "#050505",
+                  p: 0.75,
+                }}
+              >
                 <EditIcon />
               </IconButton>
             </Tooltip>
@@ -102,6 +119,10 @@ const Practice: React.FC<PracticeProps> = ({
               onClick={() => handleClickDelete(index)}
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                color: "#050505",
+                p: 0.75,
+              }}
             >
               <DeleteIcon />
             </IconButton>
@@ -112,13 +133,16 @@ const Practice: React.FC<PracticeProps> = ({
               aria-label="status"
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                color: "#050505",
+                p: 0.75,
+              }}
             >
               {statusIcon}
             </IconButton>
           </Tooltip>
-        </div>
-      </TableCell>
-    </TableRow>
+      </Box>
+    </Box>
   );
 };
 

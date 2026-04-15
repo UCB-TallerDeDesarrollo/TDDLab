@@ -3,28 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
+  Box,
   Button,
+  Container,
+  Divider,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
+  Typography,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import AddIcon from "@mui/icons-material/Add";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
-import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
 
 interface PracticesProps {
   ShowForm: () => void;
@@ -32,7 +26,11 @@ interface PracticesProps {
   refreshToken: number;
 }
 
-function Practices({ ShowForm: showForm, refreshToken }: Readonly<PracticesProps>) {
+function Practices({
+  ShowForm: showForm,
+  userRole,
+  refreshToken,
+}: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -99,7 +97,7 @@ function Practices({ ShowForm: showForm, refreshToken }: Readonly<PracticesProps
     };
   }, [selectedSorting, authData]);
 
-  const handleOrderPractices = (event: { target: { value: string } }) => {
+  const handleOrderPractices = (event: SelectChangeEvent<string>) => {
     const sorting = event.target.value;
     setSelectedSorting(sorting);
     orderPractices(practices, sorting);
@@ -136,56 +134,168 @@ function Practices({ ShowForm: showForm, refreshToken }: Readonly<PracticesProps
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
+
   return (
-    <Container>
-      <section className="Practicas">
-        <StyledTable>
-           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {practices.map((practice, index) => (
-              <Practice
-                key={practice.id}
-                practice={practice}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-              />
-            ))}
-          </TableBody>
-        </StyledTable>
+    <Container
+      maxWidth={false}
+      disableGutters
+      sx={{
+        width: "100%",
+        px: { xs: 2, sm: 6, md: 6, lg: 2 },
+        pb: { xs: 4, md: 6 },
+      }}
+    >
+      <Box
+        component="section"
+        className="Practicas"
+        sx={{
+          width: "100%",
+          maxWidth: "1440px",
+          mx: "auto",
+          mt: { xs: 2, sm: 3, md: 4 },
+          fontFamily: '"Segoe UI", "Helvetica Neue", Arial, sans-serif',
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: { xs: "stretch", md: "center" },
+            justifyContent: "space-between",
+            gap: { xs: 1.5, sm: 2 },
+            pl: { xs: 2.5, sm: 4, md: 6 },
+            pr: { xs: 2.5, sm: 3, md: 3.5 },
+            py: { xs: 1.6, sm: 2, md: 2.4 },
+            border: "2px solid #bcc3ca",
+            borderRadius: "8px",
+            backgroundColor: "#ffffff",
+            flexWrap: { xs: "wrap", md: "nowrap" },
+          }}
+        >
+          <Typography
+            component="h1"
+            sx={{
+              m: 0,
+              color: "#062b49",
+              width: { xs: "100%", md: "auto" },
+              textAlign: { xs: "center", md: "left" },
+              fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.45rem" },
+              fontWeight: 700,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Prácticas
+          </Typography>
+
+          <Stack
+            direction="row"
+            spacing={1.5}
+            sx={{
+              width: { xs: "100%", md: "100%" },
+              justifyContent: { xs: "flex-end", md: "flex-end" },
+              flexWrap: "wrap",
+            }}
+          >
+            <Select
+              value={selectedSorting}
+              onChange={handleOrderPractices}
+              displayEmpty
+              inputProps={{ "aria-label": "Filtrar prácticas" }}
+              sx={{
+                minWidth: { xs: "100%", sm: 132 },
+                height: 40,
+                backgroundColor: "#efefef",
+                color: "#202020",
+                fontSize: "1rem",
+                fontWeight: 600,
+                borderRadius: "6px",
+                ".MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#9ba1a8",
+                },
+                ".MuiSelect-select": {
+                  px: 1.75,
+                  py: 1,
+                },
+              }}
+              renderValue={(value) => {
+                if (!value) {
+                  return "Filtrar";
+                }
+
+                const labels: Record<string, string> = {
+                  A_Up_Order: "A-Z",
+                  A_Down_Order: "Z-A",
+                  Time_Up: "Recientes",
+                  Time_Down: "Antiguos",
+                };
+
+                return labels[value] ?? "Filtrar";
+              }}
+            >
+              <MenuItem value="">Filtrar</MenuItem>
+              <MenuItem value="A_Up_Order">Orden alfabético ascendente</MenuItem>
+              <MenuItem value="A_Down_Order">Orden alfabético descendente</MenuItem>
+              <MenuItem value="Time_Up">Recientes</MenuItem>
+              <MenuItem value="Time_Down">Antiguos</MenuItem>
+            </Select>
+
+            {userRole !== "student" && (
+              <Button
+                variant="contained"
+                endIcon={<AddIcon />}
+                onClick={showForm}
+                sx={{
+                  height: 40,
+                  minWidth: { xs: "100%", sm: 116 },
+                  px: 2.25,
+                  borderRadius: "6px",
+                  backgroundColor: "#1976d2",
+                  boxShadow: "none",
+                  color: "#ffffff",
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  textTransform: "none",
+                  whiteSpace: "nowrap",
+                  '&:hover': {
+                    backgroundColor: "#1565c0",
+                    boxShadow: "none",
+                  },
+                }}
+              >
+                Crear
+              </Button>
+            )}
+          </Stack>
+        </Box>
+
+        <Divider
+          sx={{
+            mt: { xs: 3.5, md: 5 },
+            borderColor: "#d7d7d7",
+            borderBottomWidth: 3,
+          }}
+        />
+
+        <Stack
+          spacing={0}
+          sx={{
+            mt: { xs: 3, md: 5 },
+            overflow: "hidden",
+            borderRadius: "8px",
+          }}
+        >
+          {practices.map((practice, index) => (
+            <Practice
+              key={practice.id}
+              practice={practice}
+              index={index}
+              handleClickDetail={handleClickDetail}
+              handleClickDelete={handleClickDelete}
+              handleRowHover={handleRowHover}
+            />
+          ))}
+        </Stack>
+
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
@@ -205,7 +315,7 @@ function Practices({ ShowForm: showForm, refreshToken }: Readonly<PracticesProps
             onClose={() => setValidationDialogOpen(false)}
           />
         )}
-      </section>
+      </Box>
     </Container>
   );
 }

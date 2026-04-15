@@ -2,8 +2,8 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert, Button, CircularProgress, Snackbar, Typography } from "@mui/material";
 import { Link as LinkIcon } from "@mui/icons-material";
-import { GitLinkDialog } from "../Assignments/components/GitHubLinkDialog";
-import { CommentDialog } from "../Assignments/components/CommentDialog";
+import { GitLinkDialog } from "../Shared/Components/GitHubLinkDialog";
+import { CommentDialog } from "../Shared/Components/CommentDialog";
 import { PracticeOverviewCard } from "./components/detail/PracticeOverviewCard";
 import { usePracticeDetailData } from "./hooks/usePracticeDetailData";
 import "./PracticeDetail.css";
@@ -67,63 +67,76 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
         <PracticeOverviewCard title={practice.title} createdAt={createdAt} />
 
         <section className="practice-student-card">
-          <Typography component="h2" className="practice-section-title">
+          <Typography
+            component="h2"
+            className="practice-section-title"
+            sx={{
+              fontSize: { xs: "10px", md: "22px" },
+              fontWeight: 900,
+              lineHeight: 1.08,
+            }}
+          >
             Mi practica
           </Typography>
 
-          <p className="practice-student-row">
-            <strong>Estado:</strong> {statusLabel}
-          </p>
+          <div className="practice-student-content">
+            <div className="practice-student-details">
+              <p className="practice-student-row">
+                <strong>Enlace:</strong>{" "}
+                {submissionState === "loading" ? (
+                  "Cargando enlace..."
+                ) : submission?.repository_link ? (
+                  <a
+                    href={submission.repository_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="practice-link-anchor"
+                  >
+                    <span className="practice-link-cell">
+                      <LinkIcon fontSize="small" />
+                      {submission.repository_link}
+                    </span>
+                  </a>
+                ) : submissionState === "error" ? (
+                  "No disponible por error de carga"
+                ) : (
+                  "No se inicio la practica"
+                )}
+              </p>
 
-          <p className="practice-student-row">
-            <strong>Enlace:</strong>{" "}
-            {submissionState === "loading" ? (
-              "Cargando enlace..."
-            ) : submission?.repository_link ? (
-              <a
-                href={submission.repository_link}
-                target="_blank"
-                rel="noopener noreferrer"
+              <p className="practice-student-row">
+                <strong>Estado:</strong> {statusLabel}
+              </p>
+            </div>
+
+            <div className="practice-student-actions">
+              <Button
+                variant="contained"
+                className="practice-action-btn"
+                disabled={Boolean(submission)}
+                onClick={openLinkDialog}
               >
-                <span className="practice-link-cell">
-                  <LinkIcon fontSize="small" />
-                  {submission.repository_link}
-                </span>
-              </a>
-            ) : submissionState === "error" ? (
-              "No disponible por error de carga"
-            ) : (
-              "No se inicio la practica"
-            )}
-          </p>
+                Iniciar practica
+              </Button>
 
-          <div className="practice-student-actions">
-            <Button
-              variant="contained"
-              className="practice-action-btn"
-              disabled={Boolean(submission)}
-              onClick={openLinkDialog}
-            >
-              Iniciar practica
-            </Button>
+              <Button
+                variant="contained"
+                className="practice-action-btn"
+                disabled={isTaskInProgress}
+                onClick={openCommentDialog}
+              >
+                Finalizar practica
+              </Button>
 
-            <Button
-              variant="contained"
-              className="practice-action-btn"
-              disabled={!submission?.repository_link}
-              onClick={redirectToGraph}
-            >
-              Ver gráfica
-            </Button>
-
-            <Button
-              variant="contained"
-              className="practice-action-btn"
-              disabled={isTaskInProgress}
-              onClick={openCommentDialog}
-            >
-              Finalizar practica
-            </Button>
+              <Button
+                variant="contained"
+                className="practice-action-btn"
+                disabled={!submission?.repository_link}
+                onClick={redirectToGraph}
+              >
+                Ver gráfica
+              </Button>
+            </div>
           </div>
         </section>
       </div>

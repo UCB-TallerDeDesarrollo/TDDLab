@@ -21,7 +21,7 @@ export function PracticeOverviewCard({
       <div className="practice-task-meta-block">
         <div className="practice-task-meta-row">
           <CalendarMonthIcon fontSize="small" />
-          <span className="practice-task-meta-label">Creacion:</span>
+          <span className="practice-task-meta-label">Creación:</span>
           <span>{createdAt}</span>
         </div>
       </div>
