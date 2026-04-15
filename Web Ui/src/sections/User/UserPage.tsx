@@ -7,9 +7,10 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
-  Select, MenuItem, InputLabel, FormControl, CircularProgress,
+  Select, MenuItem, InputLabel, FormControl,
   SelectChangeEvent, Tooltip, TextField, InputAdornment
 } from "@mui/material";
+import { FullScreenLoader } from "../../components/FullScreenLoader";
 
 import { styled } from "@mui/system";
 import { IconifyIcon } from "../../sections/Shared/Components";
@@ -126,19 +127,7 @@ function UserPage() {
 
   // ------------------- RENDER -------------------
   if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
-        <CircularProgress />
-      </div>
-    );
+    return <FullScreenLoader isLoading={true} />;
   }
 
   if (error) return <div>Error: {(error as Error).message}</div>;

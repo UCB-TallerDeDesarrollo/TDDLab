@@ -13,6 +13,7 @@ import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
+import { typographyVariants } from "../../../styles/typography";
 
 
 interface CreateGroupPopupProps {
@@ -100,7 +101,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear grupo</DialogTitle>
+          <DialogTitle style={{ ...typographyVariants.h5 }}>Crear grupo</DialogTitle>
           <DialogContent>
             <TextField
               error={formInvalid() && !!save}
@@ -113,7 +114,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
               helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
@@ -127,7 +128,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
             />
           </DialogContent>
           <DialogActions>
@@ -136,6 +137,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               sx={{
                 color: "#555",
                 textTransform: "none",
+                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",
@@ -153,6 +155,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               color="primary" 
               sx={{
                 textTransform: "none",
+                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",

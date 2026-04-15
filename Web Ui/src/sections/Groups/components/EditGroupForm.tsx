@@ -11,6 +11,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { typographyVariants } from "../../../styles/typography";
 
 interface EditGroupPopupProps {
   open: boolean;
@@ -73,7 +74,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Editar grupo</DialogTitle>
+          <DialogTitle style={{ ...typographyVariants.h5 }}>Editar grupo</DialogTitle>
           <DialogContent>
             <TextField
               error={formInvalid() && !!save}
@@ -85,7 +86,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
               helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
@@ -98,7 +99,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
             />
           </DialogContent>
           <DialogActions>
@@ -107,6 +108,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               sx={{
                 color: "#555",
                 textTransform: "none",
+                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",
@@ -124,6 +126,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               color="primary" 
               sx={{
                 textTransform: "none",
+                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",

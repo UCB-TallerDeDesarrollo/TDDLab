@@ -23,3 +23,39 @@ body {
   height: 100vh;
   width: 100vw;
 }
+
+/* ===== Invitation Card Styles ===== */
+.invitation-card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  gap: 2rem;
+}
+
+.invitation-user-card {
+  width: 100%;
+  max-width: 400px;
+  transition: width 0.3s ease;
+}
+
+.invitation-user-card.expanded {
+  max-width: 600px;
+}
+
+.invitation-content-card {
+  width: 100%;
+  max-width: 500px;
+  transition: width 0.5s ease;
+}
+
+.invitation-content-card.expanded {
+  max-width: 400px;
+}
+
+.invitation-message-text {
+  text-align: center;
+  margin: 1rem 0;
+  color: #333;
+}
