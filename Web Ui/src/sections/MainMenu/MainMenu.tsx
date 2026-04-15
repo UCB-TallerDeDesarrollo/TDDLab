@@ -15,6 +15,7 @@ import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
 import { NavLink as NavLinkType } from "../../types/navigation.types";
+import { useFilteredNavLinks } from "../../hooks/useFilteredNavLinks";
 
 
 interface NavbarProps {
@@ -29,7 +30,9 @@ export default function MainMenu({
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
-  const activeButton = navArrayLinks.find(
+  const filteredLinks = useFilteredNavLinks(navArrayLinks, userRole);
+
+  const activeButton = filteredLinks.find(
     (navLink) => navLink.path === location.pathname
   )?.title;
 
@@ -74,22 +77,25 @@ export default function MainMenu({
               {navArrayLinks.map(
                 (item) =>
                   item.access.includes(userRole) && (
-                    <Button
-                      key={item.title}
-                      component={NavLink}
-                      to={item.path}
-                      sx={{
-                        borderBottom:
-                          activeButton === item.title
-                            ? "2px solid #fff"
-                            : "none",
-                        color: activeButton === item.title ? "#fff" : "#A9A9A9",
-                      }}
-                    >
+                    <Button>
                       {item.title}
                     </Button>
                   )
               )}
+
+              {filteredLinks.map((item) => (
+                <Button
+                  key={item.title}
+                  component={NavLink}
+                  to={item.path}
+                  sx={{
+                    borderBottom: activeButton === item.title ? "2px solid #fff" : "none",
+                    color: activeButton === item.title ? "#fff" : "#A9A9A9",
+                  }}
+                >
+                  {item.title}
+                </Button>
+              ))}
             </Box>
             <LoginComponent></LoginComponent>
           </div>
@@ -103,7 +109,7 @@ export default function MainMenu({
         sx={{ display: { xs: "flex", sm: "none" } }}
       >
         <NavLateralMenu
-          navArrayLinks={navArrayLinks}
+          navArrayLinks={filteredLinks}
           NavLink={NavLink}
           setOpen={setOpen}
         />
