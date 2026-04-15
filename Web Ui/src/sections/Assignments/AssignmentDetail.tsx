@@ -515,7 +515,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     {!isStudent(role) && (
       <section className="table-container-full" style={{ marginTop: "40px" }}>
         <Typography variant="h5" className="assignment-subtitle">
-          Lista de entregas
+          Lista de Entregas
         </Typography>
 
         {loadingSubmissions ? (
@@ -549,3 +549,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     )}
   </div>
 );
+};
+
+export default AssignmentDetail;

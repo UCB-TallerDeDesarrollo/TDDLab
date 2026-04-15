@@ -141,16 +141,6 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the list of submissions for teacher role", async () => {
-    jest.mock('react-router-dom', () => ({
-      ...jest.requireActual('react-router-dom'),
-      useSearchParams: () => [
-        new URLSearchParams({
-          repoOwner: 'danTerra45',
-          repoName: 'parcel-jest-cars'
-        })
-      ]
-    }));
-  
     render(
       <BrowserRouter>
         <AssignmentDetail role="teacher" userid={123} />
@@ -159,26 +149,29 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
+        expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
         expect(screen.getByText("Enviado")).toBeInTheDocument();
-        expect(screen.getByText("En progreso")).toBeInTheDocument();
-        
-        expect(screen.getByText("https://github.com/student/repo1")).toBeInTheDocument();
-        expect(screen.getByText("https://github.com/student/repo2")).toBeInTheDocument();
+        expect(screen.getByText("No enviado")).toBeInTheDocument();
+
+        expect(screen.getByText("Correo")).toBeInTheDocument();
+        expect(screen.getByText("Estado")).toBeInTheDocument();
+        expect(screen.getByText("Enlace")).toBeInTheDocument();
+        expect(screen.getByText("Grafica")).toBeInTheDocument();
+        expect(screen.getByText("Asistente AI")).toBeInTheDocument();
+        expect(screen.getByText("Graficas Adicionales")).toBeInTheDocument();
       },
       { timeout: 3000 }
     );
   });
 
-  it("shows loading indicator while fetching assignment details", async () => {
-    const { getByTestId } = render(
+  it("shows loading indicator while fetching assignment details", () => {
+    render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123} />
       </BrowserRouter>
     );
 
-    const loadingIndicator = getByTestId("loading-indicator");
-    expect(loadingIndicator).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
   it("opens and closes the GitLinkDialog", async () => {
