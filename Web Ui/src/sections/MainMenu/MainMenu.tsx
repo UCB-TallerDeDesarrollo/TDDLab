@@ -223,6 +223,11 @@ export default function MainMenu({
                       lineHeight: "36px",
                       letterSpacing: 0.2,
                       textTransform: "uppercase",
+                      transition: "background-color 0.2s ease, transform 0.1s",
+                      "&:hover, &.active": {
+                        backgroundColor: "#003b73",
+                        transform: "scale(1.02)",
+                      },
                       "&::after":
                         activePath === item.path
                           ? {
