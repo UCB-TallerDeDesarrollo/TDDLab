@@ -26,9 +26,23 @@ const SortingComponent: React.FC<SortingProps> = ({
               fontSize: "14px",
               borderRadius: "5px",
               backgroundColor: "#D9D9D9",
+              transition: "background-color 0.2s ease, color 0.2s ease, transform 0.1s",
+              "&:hover, &.Mui-focused": {
+                backgroundColor: "#5C5C5C",
+                ".MuiSelect-select": {
+                  color: "#FFFFFF",
+                },
+                ".MuiSelect-icon": {
+                  color: "#FFFFFF",
+                },
+              },
+              "&:active": {
+                transform: "scale(0.98)",
+              },
               ".MuiSelect-select": {
                 fontWeight: 700,
                 color: "#000000",
+                transition: "color 0.2s ease",
                 paddingLeft: "14px",
                 paddingRight: "24px !important",
                 paddingTop: "8px",
@@ -40,6 +54,7 @@ const SortingComponent: React.FC<SortingProps> = ({
               ".MuiSelect-icon": {
                 color: "#000000",
                 right: 8,
+                transition: "color 0.2s ease",
               },
             }
           : {

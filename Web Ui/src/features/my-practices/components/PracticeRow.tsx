@@ -29,6 +29,10 @@ const RowContainer = styled(Box)(({ theme }) => ({
   border: "0.5px solid #898989",
   borderRadius: 5,
   backgroundColor: "#FFFFFF",
+  transition: "background-color 0.2s ease",
+  "&:hover": {
+    backgroundColor: "#F0F4F8",
+  },
   padding: theme.spacing(1.625, 2.5),
   display: "flex",
   alignItems: "center",
