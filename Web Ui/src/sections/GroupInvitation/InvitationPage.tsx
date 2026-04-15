@@ -9,7 +9,8 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { CircularProgress, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
+import { FullScreenLoader } from "../../components/FullScreenLoader";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
 import { handleSignInWithGoogle } from "../../modules/User-Authentication/application/signInWithGoogle";
 import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
@@ -109,25 +110,6 @@ function InvitationPage() {
     setShowPasswordPopup(true);
   };
 
-  const LoadingOverlay = () => (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 99999,
-        backdropFilter: "blur(5px)", //blur
-      }}
-    >
-      <CircularProgress size={60} />
-    </div>
-  );
 
   const handleAcceptInvitation = async (type: string) => {
     setIsLoading(true);
@@ -185,7 +167,7 @@ function InvitationPage() {
   };
   return (
     <div style={{ position: "relative" }}>
-      {isLoading && <LoadingOverlay />}
+      <FullScreenLoader isLoading={isLoading} variant="overlay" blur />
 
       {user ? (
         <div>

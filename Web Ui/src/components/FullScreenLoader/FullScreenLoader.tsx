@@ -4,19 +4,28 @@ import React from "react";
 
 interface FullScreenLoaderProps {
   isLoading?: boolean;
+  variant?: 'fullscreen' | 'overlay';
+  blur?: boolean;
 }
 
-/**
- * Componente genérico para mostrar una pantalla de carga a pantalla completa.
- * Reemplaza los <div> con estilos inline para centrado de pantalla.
- * 
- * @param {FullScreenLoaderProps} props - Propiedades del componente
- * @param {boolean} props.isLoading - Determina si el loader debe ser visible
- * @returns {JSX.Element | null} Elemento de loader o null si no está cargando
- */
-const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({ isLoading = true }) => {
+const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({
+  isLoading = true,
+  variant = 'fullscreen',
+  blur = false,
+}) => {
   if (!isLoading) {
     return null;
+  }
+
+  if (variant === 'overlay') {
+    return (
+      <div
+        className={`saving-overlay${blur ? ' saving-overlay--blur' : ''}`}
+        aria-label="Guardando..."
+      >
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (

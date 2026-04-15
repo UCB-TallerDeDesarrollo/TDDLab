@@ -41,20 +41,7 @@ const EditPromptAI = ({
             maxRows={16}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
-            <Button 
-              variant="contained" 
-              onClick={onEdit}
-              sx={{
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
-              }}
-            >
+            <Button variant="contained" onClick={onEdit}>
               Editar Prompt
             </Button>
           </Box>
@@ -72,55 +59,13 @@ const EditPromptAI = ({
             autoFocus
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={() => onSave(value)}
-              sx={{
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
-              }}
-            >
+            <Button variant="contained" color="primary" onClick={() => onSave(value)}>
               Guardar
             </Button>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={onCancel}
-              sx={{
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
-              }}
-            >
+            <Button variant="contained" color="primary" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={handleClear}
-              sx={{
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
-              }}
-            >
+            <Button variant="contained" color="primary" onClick={handleClear}>
               Limpiar
             </Button>
           </Box>

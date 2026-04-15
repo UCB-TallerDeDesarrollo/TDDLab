@@ -42,6 +42,32 @@ const tddTheme = createTheme({
 				},
 			},
 		},
+		MuiButton: {
+			styleOverrides: {
+				root: {
+					transition: "all 0.175s ease-out",
+					"&:hover": {
+						filter: "brightness(0.9)",
+						boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+					},
+					"&:active": {
+						transform: "scale(0.97)",
+					},
+				},
+			},
+		},
+		MuiSwitch: {
+			styleOverrides: {
+				switchBase: {
+					"&.Mui-checked": {
+						color: "#3B54A3",
+						"& + .MuiSwitch-track": {
+							backgroundColor: "#3B54A3",
+						},
+					},
+				},
+			},
+		},
 	},
 });
 
