@@ -6,7 +6,9 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
+import EditIcon from "@mui/icons-material/Edit";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import Checkbox from "@mui/material/Checkbox";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
@@ -42,7 +44,7 @@ function Groups() {
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
-  const [groupToEdit] = useState<GroupDataObject | null>(null);
+  const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
   const [filterAnchor, setFilterAnchor] = useState<null | HTMLElement>(null);
 
   const userRepository = useMemo(() => new UsersRepository(), []);
@@ -54,6 +56,21 @@ function Groups() {
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
+  };
+
+  const handleCheckboxChange = (index: number) => {
+    const clickedGroup = groups[index];
+    if (!clickedGroup?.id) return;
+    selectAndSync(clickedGroup.id);
+  };
+
+  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    event.stopPropagation();
+    const group = groups[index];
+    if (group) {
+      setGroupToEdit(group);
+      setEditGroupPopupOpen(true);
+    }
   };
 
   const handleRowClick = async (index: number) => {
@@ -191,14 +208,28 @@ function Groups() {
           {groups.map((group, index) => (
             <React.Fragment key={asId(group.id) || index}>
               <div
-                className={`groups-card ${isRowSelected(index) ? "groups-card--selected" : ""}`}
-                onClick={() => handleRowClick(index)}
+                className="groups-card-row"
                 onMouseEnter={() => handleRowHover(index)}
                 onMouseLeave={() => handleRowHover(null)}
               >
-                <span className="groups-card-name">{group.groupName}</span>
+                <Checkbox
+                  checked={asId(currentSelectedGroupId) === asId(group.id)}
+                  onChange={() => handleCheckboxChange(index)}
+                  size="small"
+                  className="groups-card-checkbox"
+                />
+                <div
+                  className={`groups-card ${isRowSelected(index) ? "groups-card--selected" : ""}`}
+                  onClick={() => handleRowClick(index)}
+                >
+                  <span className="groups-card-name">{group.groupName}</span>
 
-                <div className="groups-card-actions">
+                  <div className="groups-card-actions">
+                    <Tooltip title="Editar grupo" arrow>
+                      <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
                   <Tooltip title="Tareas" arrow>
                     <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
                       <AutoAwesomeMotionIcon />
@@ -222,6 +253,7 @@ function Groups() {
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
+                  </div>
                 </div>
               </div>
 
