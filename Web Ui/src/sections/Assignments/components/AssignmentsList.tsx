@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  CircularProgress,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  SelectChangeEvent,
+  CircularProgress, Table, TableHead, TableBody, TableRow,
+  TableCell, Container, SelectChangeEvent,
 } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
@@ -25,6 +18,43 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import CreateButton from "../../GeneralPurposeComponents/CreateButton";
+
+const styles = {
+  loadingWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    width: "100vw",
+  },
+  headerContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: "16px",
+    marginLeft: "15px",
+  },
+  title: {
+    fontWeight: 560,
+    color: "#333",
+    fontSize: "1.4rem",
+  },
+  actionsWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    marginRight: "45px",
+    flexWrap: "nowrap",
+  },
+  tableHeaderRow: {
+    borderBottom: "2px solid #000000",
+  },
+  headerCell: {
+    padding: "10px 0",
+    width: "100%",
+  },
+} as const;
 
 const StyledTable = styled(Table)({
   width: "100%",
@@ -305,56 +335,24 @@ function Assignments({
   return (
     <Container>
       {isLoading ? (
-        <LoadingContainer>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-              width: "100vw",
-            }}
-          >
-            <CircularProgress />
-          </div>
+        <LoadingContainer sx={styles.loadingWrapper}>
+          <CircularProgress />
         </LoadingContainer>
       ) : (
-        <section className="Tareas">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              marginBottom: "16px",
-              marginLeft: "15px",
-            }}
-          >
-            <span
-              style={{
-                fontWeight: 560,
-                color: "#333",
-                fontSize: "1.4rem",
-              }}
-            >
+        <div className="Tareas">
+          {/* Cabecera de la sección */}
+          <div style={styles.headerContainer}>
+            <span  style={styles.title}>
               Tareas
             </span>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                marginRight: "45px",
-                flexWrap: "nowrap",
-              }}
-            >
+            <div style={styles.actionsWrapper}>
               <GroupFilter
                 selectedGroup={selectedGroup}
                 groupList={groupList}
                 onChangeHandler={handleGroupChange}
                 defaultName={
-                  groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                  groupList.find((g) => g.id === selectedGroup)?.groupName ||
                   groupList[0]?.groupName ||
                   "Selecciona un grupo"
                 }
@@ -373,14 +371,11 @@ function Assignments({
             </div>
           </div>
 
+          {/* Tabla de Tareas */}
           <StyledTable>
             <TableHead>
-              <TableRow
-                sx={{
-                  borderBottom: "2px solid #000000",
-                }}
-              >
-                <CustomTableCell1 sx={{ padding: "10px 0" }}></CustomTableCell1>
+              <TableRow sx={styles.tableHeaderRow}>
+                <CustomTableCell1  sx={styles.headerCell} />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -398,38 +393,33 @@ function Assignments({
             </TableBody>
           </StyledTable>
 
-          {confirmationOpen && (
-            <ConfirmationDialog
-              open={confirmationOpen}
-              title="¿Eliminar la tarea?"
-              content={
-                <>
-                  Ten en cuenta que esta acción también eliminará <br /> todas las
-                  entregas asociadas.
-                </>
-              }
-              cancelText="Cancelar"
-              deleteText="Eliminar"
-              onCancel={() => setConfirmationOpen(false)}
-              onDelete={handleConfirmDelete}
-            />
-          )}
-          {validationDialogOpen && (
-            <ValidationDialog
-              open={validationDialogOpen}
-              title="Tarea eliminada exitosamente"
-              closeText="Cerrar"
-              onClose={() => {
-                setValidationDialogOpen(false);
-                if (selectedGroup) {
-                  loadAssignmentsByGroupId(selectedGroup);
-                } else if (authData?.usergroupid) {
-                  loadAssignmentsByGroupId(authData.usergroupid);
-                }
-              }}
-            />
-          )}
-        </section>
+          {/* Diálogos de Feedback */}
+          <ConfirmationDialog
+            open={confirmationOpen}
+            title="¿Eliminar la tarea?"
+            content={
+              <>
+                Ten en cuenta que esta acción también eliminará <br /> 
+                todas las entregas asociadas.
+              </>
+            }
+            cancelText="Cancelar"
+            deleteText="Eliminar"
+            onCancel={() => setConfirmationOpen(false)}
+            onDelete={handleConfirmDelete}
+          />
+
+          <ValidationDialog
+            open={validationDialogOpen}
+            title="Tarea eliminada exitosamente"
+            closeText="Cerrar"
+            onClose={() => {
+              setValidationDialogOpen(false);
+              const targetGroup = selectedGroup || authData?.usergroupid;
+              if (targetGroup) loadAssignmentsByGroupId(targetGroup);
+            }}
+          />
+        </div>
       )}
     </Container>
   );
