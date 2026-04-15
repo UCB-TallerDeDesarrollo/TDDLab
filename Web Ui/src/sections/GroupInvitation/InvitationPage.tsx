@@ -174,7 +174,7 @@ function InvitationPage() {
   };
 
   return (
-    <box style={{ position: "relative" }}>
+    <Box style={{ position: "relative" }}>
       <FullScreenLoader isLoading={isLoading} variant="overlay" blur />
 
       {user ? (
