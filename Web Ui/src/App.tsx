@@ -29,7 +29,7 @@ const UsersByGroupPage = lazy(() => import("./features/users/pages/UserBygroupPa
 const MyPracticesPage = lazy(() => import("./sections/MyPractices/MyPracticesPage"));
 const PracticeDetail = lazy(() => import("./sections/MyPractices/PracticeDetail"));
 const AIAssistantPage = lazy(() => import("./sections/AIAssistant/AIAssistantPage"));
-const SettingsPage = lazy(() => import("./sections/Settings/SettingsPage"));
+const SettingsPage = lazy(() => import("./features/settings/pages/SettingsPage"));
 
 const navArrayLinks = [
   {
