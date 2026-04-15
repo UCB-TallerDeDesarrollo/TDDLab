@@ -1,29 +1,111 @@
-.groups-table-header-row {
-  border-bottom: 2px solid #E7E7E7;
+/* ── Header ─────────────────────────────────────────── */
+.groups-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.groups-create-btn {
-  border-radius: 17px !important;
-  text-transform: none !important;
-  font-size: 0.95rem !important;
-}
-
-.groups-detail-cell {
-  width: 100%;
-  padding: 0 !important;
+.groups-header-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #222;
   margin: 0;
 }
 
-.groups-detail-wrapper {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
+.groups-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.groups-detail-content {
-  padding: 50px;
-  margin-left: -30px;
+.groups-filter-btn {
+  border-radius: 20px !important;
+  text-transform: none !important;
+  font-size: 0.9rem !important;
+  color: #333 !important;
+  border-color: #bbb !important;
+  padding: 6px 18px !important;
 }
 
+.groups-create-btn {
+  border-radius: 20px !important;
+  text-transform: none !important;
+  font-size: 0.9rem !important;
+  padding: 6px 20px !important;
+}
+
+/* ── Divider ────────────────────────────────────────── */
+.groups-divider {
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  margin: 0 24px;
+}
+
+/* ── Card list ──────────────────────────────────────── */
+.groups-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.groups-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  background-color: #fff;
+}
+
+.groups-card:hover {
+  background-color: #f0f4ff;
+}
+
+.groups-card--selected {
+  background-color: #e8edfb;
+  border-color: #b0bde8;
+}
+
+.groups-card-name {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.groups-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Detail collapse ───────────────────────────────── */
+.groups-card-detail {
+  margin: -12px 24px 0;
+  padding: 16px 24px;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background-color: #fafafa;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ── Edit dialog ───────────────────────────────────── */
 .groups-edit-title {
   font-size: 0.8rem;
 }
@@ -39,4 +121,68 @@
 
 .groups-edit-save-btn {
   text-transform: none !important;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .groups-header {
+    padding: 12px 16px;
+  }
+
+  .groups-header-title {
+    font-size: 1.2rem;
+  }
+
+  .groups-divider {
+    margin: 0 16px;
+  }
+
+  .groups-card-list {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .groups-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .groups-card-name {
+    width: 100%;
+  }
+
+  .groups-card-actions {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .groups-card-detail {
+    margin: -8px 16px 0;
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .groups-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .groups-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .groups-filter-btn,
+  .groups-create-btn {
+    font-size: 0.82rem !important;
+    padding: 5px 14px !important;
+  }
+
+  .groups-card-actions {
+    gap: 0;
+  }
 }

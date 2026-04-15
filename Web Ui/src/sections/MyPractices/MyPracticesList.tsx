@@ -3,28 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   Container,
   Button,
+  Menu,
+  MenuItem,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import AddIcon from "@mui/icons-material/Add";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
-import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
+import "../Groups/GroupsPage.css";
 
 interface PracticesProps {
   ShowForm: () => void;
@@ -43,6 +34,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);
+  const [filterAnchor, setFilterAnchor] = useState<null | HTMLElement>(null);
 
   const practicesRepository = new PracticesRepository();
   const deletePractice = new DeletePractice(practicesRepository);
@@ -127,53 +119,64 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <Container>
       <section className="Practicas">
-        <StyledTable>
-           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {practices.map((practice, index) => (
-              <Practice
-                key={practice.id}
-                practice={practice}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-              />
-            ))}
-          </TableBody>
-        </StyledTable>
+        {/* ── Header ─────────────────────────────── */}
+        <div className="groups-header">
+          <h2 className="groups-header-title">Practicas</h2>
+          <div className="groups-header-actions">
+            <Button
+              variant="outlined"
+              className="groups-filter-btn"
+              endIcon={<FilterListIcon />}
+              onClick={(e) => setFilterAnchor(e.currentTarget)}
+            >
+              Filtrar
+            </Button>
+            <Menu
+              anchorEl={filterAnchor}
+              open={Boolean(filterAnchor)}
+              onClose={() => setFilterAnchor(null)}
+            >
+              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Up_Order" } }); setFilterAnchor(null); }}>
+                Orden alfabetico ascendente
+              </MenuItem>
+              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Down_Order" } }); setFilterAnchor(null); }}>
+                Orden alfabetico descendente
+              </MenuItem>
+              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Up" } }); setFilterAnchor(null); }}>
+                Recientes
+              </MenuItem>
+              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Down" } }); setFilterAnchor(null); }}>
+                Antiguos
+              </MenuItem>
+            </Menu>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              className="groups-create-btn"
+              onClick={showForm}
+            >
+              Crear
+            </Button>
+          </div>
+        </div>
+
+        <hr className="groups-divider" />
+
+        {/* ── Card list ──────────────────────────── */}
+        <div className="groups-card-list">
+          {practices.map((practice, index) => (
+            <Practice
+              key={practice.id}
+              practice={practice}
+              index={index}
+              handleClickDetail={handleClickDetail}
+              handleClickDelete={handleClickDelete}
+              handleRowHover={handleRowHover}
+            />
+          ))}
+        </div>
+
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
