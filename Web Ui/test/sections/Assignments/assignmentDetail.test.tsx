@@ -149,7 +149,7 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
+        expect(screen.getByText("Lista de Entregas")).toBeInTheDocument();
         expect(screen.getByText("Enviado")).toBeInTheDocument();
         expect(screen.getByText("No enviado")).toBeInTheDocument();
 

@@ -50,6 +50,16 @@ function UserPage() {
     () => new SearchUsersByEmail(userRepository),
     [userRepository]
   );
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "teacher":
+        return "Docente";
+      case "student":
+        return "Estudiante";
+      default:
+        return role;
+    }
+  };
 
   useEffect(() => {
     const fetchUsersAndGroups = async () => {
@@ -125,6 +135,7 @@ function UserPage() {
   if (error) {
     return <div>Error: {(error as Error).message}</div>;
   }
+  
 
   return (
     <Container className="centered-container">
@@ -187,8 +198,8 @@ function UserPage() {
             filteredUsers.map((user) => (
               <TableRow key={user.id} className="table-row-bordered">
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                <TableCell>{user.role}</TableCell>
+                <TableCell>{groupMap[user.groupid] || "Sin grupo"}</TableCell>
+                <TableCell>{getRoleLabel(user.role)}</TableCell>
                 <TableCell>
                   <Tooltip title="Eliminar" arrow>
                     <RemoveCircleIcon
