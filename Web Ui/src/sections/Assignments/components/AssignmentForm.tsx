@@ -48,7 +48,6 @@ const ValidationDialog = ({
           alignItems: 'center', 
           gap: 1.5,
           color: isError ? '#d32f2f' : '#2e7d32',
-          ...typographyVariants.paragraphBig,
           py: 2,
         }}
       >
@@ -65,15 +64,6 @@ const ValidationDialog = ({
           sx={{
             color: isError ? '#d32f2f' : '#2e7d32',
             textTransform: 'none',
-            ...typographyVariants.paragraphMedium,
-            transition: "all 0.175s ease-out",
-            "&:hover": {
-              filter: "brightness(0.9)",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            },
-            "&:active": {
-              transform: "scale(0.97)",
-            },
           }}
         >
           {closeText}
@@ -106,7 +96,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     comment: "",
     groupid: groupid,
   });
-  const isCreateButtonClicked = useRef(false);
 
   const handleSaveClick = async () => {
     setSave(true);
@@ -114,7 +103,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       return;
     }
 
-    isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
     
@@ -143,7 +131,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       setValidationDialogOpen(true);
     } catch (error) {
       if (error instanceof Error) {
-        // Verifica si el mensaje del backend menciona el límite de caracteres
         if (error.message.includes("Limite de caracteres excedido")) {
           setValidationMessage("Error: El título no puede tener más de 50 caracteres.");
         } else {
@@ -255,7 +242,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ ...typographyVariants.h5 }}>Crear tarea</DialogTitle>
+          <DialogTitle>Crear tarea</DialogTitle>
           <DialogContent>
             <section className="mb-4">
               <FormControl fullWidth variant="outlined" margin="normal">
@@ -280,18 +267,23 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
             </section>
             
             <TextField
-              error={save && !assignmentData.title.trim()}
-              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
-              autoFocus
-              margin="dense"
-              id="assignment-title"
-              name="assignmentTitle"
-              label="Nombre de la Tarea*"
-              type="text"
+              id="title"
+              label={
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  <DescriptionIcon sx={{ mr: 1 }} />
+                  Título de la tarea
+                </span>
+              }
+              variant="outlined"
               fullWidth
               value={assignmentData.title}
               onChange={(e) => handleInputChange(e, "title")}
-              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
+              margin="normal"
+              InputProps={{
+                style: { borderRadius: "10px" },
+              }}
+              error={save && !assignmentData.title.trim()}
+              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
             />
             
             <TextField
@@ -305,7 +297,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               fullWidth
               value={assignmentData.description}
               onChange={(e) => handleInputChange(e, "description")}
-              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
             />
             
             <section className="mt-4">
@@ -317,35 +308,27 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           
           <DialogActions>
             <Button
+              variant="contained"
+              color="error"
               onClick={handleCancel}
               sx={{
-                color: "#555",
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
                 textTransform: "none",
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
               }}
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSaveClick}
+              variant="contained"
               color="primary"
+              onClick={handleSaveClick}
               sx={{
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
                 textTransform: "none",
-                transition: "all 0.175s ease-out",
-                "&:hover:not(:disabled)": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                },
-                "&:active:not(:disabled)": {
-                  transform: "scale(0.97)",
-                },
               }}
               disabled={formInvalid()}
             >
