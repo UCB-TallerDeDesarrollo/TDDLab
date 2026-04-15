@@ -1,9 +1,4 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-
+import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useLocation, NavLink } from "react-router-dom";
 import WindowIcon from "@mui/icons-material/Window";
 import LoginComponent from "./components/loginComponent";
@@ -23,7 +18,6 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
-
   const filteredLinks = useFilteredNavLinks(navArrayLinks, userRole);
 
   const activeButton = filteredLinks.find(
@@ -44,22 +38,12 @@ export default function MainMenu({
           <div style={{ display: "flex", flexDirection: "row" }}>
             <MobileDrawer navArrayLinks={filteredLinks} />
             <WindowIcon sx={{ marginRight: "6px", marginTop: "4px" }} />
-            <NavLink
-              to="/"
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                TDDLab
-              </Typography>
+            <NavLink to="/" style={{ textDecoration: "none", color: "inherit" }}>
+              <Typography variant="h6" sx={{ flexGrow: 1 }}>TDDLab</Typography>
             </NavLink>
           </div>
           <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginRight: "30px",
-            }}
-          >
+            style={{ display: "flex", flexDirection: "row", marginRight: "30px"}}>
             <NavButtons links={filteredLinks} activeButton={activeButton} />
             <LoginComponent></LoginComponent>
           </div>
