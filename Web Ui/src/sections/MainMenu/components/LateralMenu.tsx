@@ -31,8 +31,7 @@ export default function NavLateralMenu({
       <nav>
         <List>
           <Box sx={{ display: 'flex', alignItems: 'center', ml: '14px', mt: 2, mb: 1 }}>
-            <img src="/logo.svg" alt="TDDLab Logo" style={{ width: 24, height: 24, marginRight: "8px" }} />
-            <Typography variant="h6">TDDLab</Typography>
+            <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "32px", width: "auto" }} />
           </Box>
 
           {navArrayLinks.map((item) => (

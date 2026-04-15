@@ -49,16 +49,8 @@ export default function TeacherSidebar({ navArrayLinks }: Readonly<TeacherSideba
           flexDirection: "column",
         }}
       >
-         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <img src="/logo.svg" alt="TDDLab Logo" style={{ width: 44, height: 44 }} />
-            <Box sx={{ display: 'flex', flexDirection: 'column', color: 'white', lineHeight: 1 }}>
-                <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '1px', m: 0 }}>
-                  TDD
-                </Typography>
-                <Typography variant="caption" sx={{ fontWeight: 400, letterSpacing: '4px', m: 0, ml: '2px' }}>
-                  LAB
-                </Typography>
-            </Box>
+         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "52px", width: "auto" }} />
          </Box>
       </Box>
 

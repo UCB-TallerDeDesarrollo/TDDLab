@@ -61,7 +61,7 @@ export default function MainMenu({
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
             <IconButton
               color="inherit"
               size="large"
@@ -70,14 +70,11 @@ export default function MainMenu({
             >
               <IconifyIcon icon="mdi:menu" color="white" hoverColor="#e0e0e0" />
             </IconButton>
-            <img src="/logo.svg" alt="TDDLab Logo" style={{ width: 28, height: 28, marginRight: "10px", marginTop: "2px" }} />
             <NavLink
               to="/"
-              style={{ textDecoration: "none", color: "inherit" }}
+              style={{ textDecoration: "none", color: "inherit", display: "flex", alignItems: "center" }}
             >
-              <Typography variant="h5" sx={{ ...typographyVariants.h5, flexGrow: 1 }}>
-                TDDLab
-              </Typography>
+              <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "44px", width: "auto" }} />
             </NavLink>
           </div>
           <div
