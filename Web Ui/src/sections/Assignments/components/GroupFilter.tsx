@@ -21,6 +21,7 @@ const GroupFilter: React.FC<GroupFilterProps> = ({
       onChange={onChangeHandler}
       displayEmpty
       className="select-compact"
+      variant="outlined"
     >
       <MenuItem value={0} disabled>
         {defaultName}

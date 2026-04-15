@@ -36,12 +36,7 @@ const AIResultSection = ({
       </Typography>
     </div>
     <Button
-      variant="contained"
-      color="primary"
-      style={{
-        textTransform: 'none',
-        fontSize: '15px',
-      }}
+      className="btn-std btn-primary"
       onClick={onAction}
       disabled={loading}
     >

@@ -1,52 +1,111 @@
 .main-navbar { 
-  background-color: #052845 !important; 
-  height: 64px; 
+  background-color: var(--primary-dark) !important; 
+  height: var(--nav-height); 
 }
 
-/* Usamos la lógica de flex-between */
 .navbar-toolbar { 
   display: flex !important; 
   justify-content: space-between !important;
   align-items: center !important;
   height: 100%; 
-  padding: 0 24px !important; 
-}
-
-.navbar-brand-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  padding: 0 40px !important; 
 }
 
 .navbar-brand-link {
   text-decoration: none;
-  color: inherit;
   display: flex;
   align-items: center;
+  padding: 5px 0; 
 }
 
-.navbar-brand-icon { margin-right: 8px; }
+.navbar-brand-group {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px;
+}
 
 .navbar-actions-group {
   display: flex;
   align-items: center;
   height: 100%;
-  gap: 24px;
+  gap: 15px;
 }
 
-/* Estilo de los links del header (Centrado Vertical) */
 .nav-link-btn {
-  height: 64px !important; /* Altura igual al navbar */
-  color: #A9A9A9 !important;
+  position: relative; 
+  height: 70px !important; 
+  color: #ffffff !important;
+  opacity: 0.7;
   border-radius: 0px !important;
   text-transform: none !important;
-  padding: 0 20px !important;
-  border-bottom: 4px solid transparent !important;
-  display: inline-flex !important;
-  align-items: center !important;
+  font-size: 1rem !important; 
+  padding: 0 15px !important; 
+  white-space: nowrap !important; 
+  border-bottom: none !important; 
+  transition: all 0.2s ease !important;
+}
+
+.nav-link-btn:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 .nav-link-active { 
-  color: #ffffff !important; 
-  border-bottom: 4px solid #ffffff !important; 
+  opacity: 1 !important;
+  font-weight: 700 !important; 
+}
+
+.nav-link-active::after {
+  content: "";
+  position: absolute;
+  bottom: 12px; 
+  left: 20px;   
+  right: 20px;  
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px; 
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+}
+
+.mobile-menu-btn {
+  margin-right: 8px !important;
+}
+
+@media (min-width: 600px) {
+  .mobile-menu-btn { display: none !important; }
+}
+
+.desktop-nav-links {
+  display: flex;
+  height: 100%;
+}
+
+@media (max-width: 600px) {
+  .navbar-brand-group {
+    width: 100%;
+    justify-content: space-between; 
+    flex-direction: row; 
+  }
+
+  .navbar-actions-group {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    order: 1; 
+  }
+
+  .navbar-brand-link {
+    order: 2; 
+  }
+}
+
+.main-drawer .MuiDrawer-paper {
+  background-color: var(--primary-dark) !important;
+  width: 280px;
 }

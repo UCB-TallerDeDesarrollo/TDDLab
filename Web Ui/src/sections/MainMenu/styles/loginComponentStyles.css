@@ -1,11 +1,54 @@
-.profile-picture {
-  width: 40px;
-  height: 40px;
-}
-
-/* Grupo de Perfil (Soluciona espaciado) */
 .user-profile-group {
   display: flex;
   align-items: center;
-  gap: 20px; /* Separación entre botón y foto */
+  margin-left: 10px;
+}
+
+.user-avatar {
+  width: 45px !important;
+  height: 45px !important;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-menu-paper {
+  margin-top: 12px !important;
+  overflow: visible !important;
+  filter: drop-shadow(0px 2px 8px rgba(0,0,0,0.32));
+}
+
+.user-menu-paper::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 14px;
+  width: 10;
+  height: 10;
+  background-color: white;
+  transform: translateY(-50%) rotate(45deg);
+  z-index: 0;
+}
+
+.user-menu-email {
+  font-size: 0.8rem !important;
+}
+
+.logout-menu-item {
+  color: #d32f2f !important;
+}
+
+.logout-icon-red {
+  color: #d32f2f !important;
+  font-size: 1.25rem !important;
+}
+
+@media (max-width: 600px) {
+  .user-avatar {
+    display: none !important;
+  }
+  
+  .user-profile-group {
+    display: none !important;
+  }
 }

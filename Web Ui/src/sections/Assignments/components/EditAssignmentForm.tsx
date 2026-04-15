@@ -125,15 +125,18 @@ function EditAssignmentDialog({
       </DialogTitle>
 
       <DialogContent className="dialog-content-box">
-        <FormControl fullWidth variant="outlined" margin="dense">
-          <InputLabel htmlFor="group-select" style={{ fontSize: "0.95rem" }}>
+        {/* Conflicto Resuelto: Combinación de diseño compacto y accesibilidad */}
+        <FormControl fullWidth variant="outlined" size="small" sx={{ mt: 1 }} margin="dense">
+          <InputLabel id="group-select-label" style={{ fontSize: "0.95rem" }}>
             Grupo
           </InputLabel>
           <Select
+            labelId="group-select-label"
             id="group-select"
             value={selectedGroup}
             onChange={handleGroupChange}
             label="Grupo"
+            className="select-compact"
           >
             <MenuItem value={0}>{currentGroupName}</MenuItem>
             {groups.map((group) => (
@@ -170,7 +173,7 @@ function EditAssignmentDialog({
       </DialogContent>
 
       <DialogActions className="dialog-footer">
-        <Button onClick={onClose} className="btn-std btn-danger-outline">
+        <Button onClick={onClose} className="btn-std btn-secondary">
           Cancelar
         </Button>
         <Button onClick={handleSaveChanges} className="btn-std btn-primary">

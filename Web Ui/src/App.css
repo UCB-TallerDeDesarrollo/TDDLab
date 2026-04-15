@@ -5,14 +5,20 @@
 .centered-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  margin: 20px auto;
+  margin: 32px auto;
   max-width: 1200px;
+  width: 100%;
+}
+
+.fullscreen-loading {
+  justify-content: center;
+  min-height: 300px;
 }
 
 .table-container-full {
   width: 100%;
+  max-width: 1120px;
 }
 
 .page-top-spacer {
@@ -32,7 +38,7 @@
 .btn-std {
   height: 36px !important;
   min-width: 110px !important;
-  border-radius: 0px !important;
+  border-radius: 8px !important;
   text-transform: none !important;
   font-size: 0.875rem !important;
   padding: 0 16px !important;
@@ -63,8 +69,14 @@
 .styled-table {
   width: 82% !important;
   margin: 20px auto !important;
+  border-collapse: collapse !important;
 }
-
+.styled-table th, 
+.styled-table td {
+  border: 1px solid #E7E7E7 !important; /* Crea la cuadrícula */
+  padding: 12px !important;            /* Da espacio al texto para que no toque la línea */
+  text-align: left;                     /* Mantiene el orden visual */
+}
 .table-cell-header {
   font-weight: 600 !important;
 }
@@ -126,26 +138,23 @@
   justify-content: flex-end !important;
 }
 
+/* Título de diálogo con ícono de estado (success/error) */
+.dialog-title-success {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #2e7d32;
+  font-size: 1rem;
+  font-weight: 400;
+}
 
-.dialog-title-success,
 .dialog-title-error {
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-
-  padding: 16px 24px 8px 24px !important;
-}
-
-/* Colores específicos */
-.dialog-title-success {
-  color: #2e7d32;
-}
-
-.dialog-title-error {
+  gap: 6px;
   color: #d32f2f;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 /* Texto de error grande dentro de un diálogo (EditAssignmentForm) */
@@ -264,8 +273,164 @@
   background-color: #f5f5f5 !important;
   cursor: default;
 }
-.group-detail-box {
-  padding: 20px 50px;
-  background: #f9f9f9;
-  border-bottom: 1px solid #e7e7e7;
+/* ==========================================================================
+   BASE & TIPOGRAFÍA GLOBALES
+   ========================================================================== */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #63a0e5;
+}
+
+/* ==========================================================================
+   CONTENEDORES EXTRA (Complemento)
+   ========================================================================== */
+/* Para pantallas que requieran ocupar el 100% del alto y ancho visible */
+.viewport-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+/* Tarjeta genérica base (Reemplaza a comment-card, feedback-container, etc.) */
+.card-std {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+/* ==========================================================================
+   FORMULARIOS & ALERTAS GENÉRICAS
+   ========================================================================== */
+.form-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.alert-box-error {
+  background-color: #ff5252;
+  color: #000;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  width: 100%;
+}
+
+/* ==========================================================================
+   BADGES & PUNTOS DE ESTADO (Reemplaza conclusionBox, circles, etc.)
+   ========================================================================== */
+.badge-std {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 8px 16px;
+}
+
+.badge-success { background-color: #28a745; }
+.badge-dark { background-color: #000000; }
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.status-info { background-color: #28a3bc; }
+.status-success { background-color: #28a745; }
+.status-danger { background-color: #d73a49; }
+.status-primary { background-color: #0366d6; }
+
+.text-status-enviado {
+  color: #28a745 !important; /* Verde */
+  font-weight: 600;
+}
+
+.text-status-no-enviado {
+  color: #d73a49 !important; /* Rojo */
+  font-weight: 600;
+}
+
+/*Clase para iconos grises */
+.icon-gray {
+  color: #757575 !important;
+}
+.assignment-header-card {
+  width: 100%;
+  max-width: 350px;
+  margin-top: 32px;
+  padding: 18px 20px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  background-color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.assignment-title {
+  font-size: 22px !important;   
+  font-weight: 600 !important;
+  margin-bottom: 12px !important;
+}
+
+.assignment-details-list {
+  gap: 10px;   
+  margin-top: 8px;
+}
+
+.detail-item {
+  font-size: 14px;
+  gap: 10px;
+}
+.assignment-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.detail-icon {
+  color: #666666;
+  font-size: 20px !important;
+  flex-shrink: 0;
+}
+.assignment-subtitle {
+  width: 100%;
+  max-width: 1120px;
+  font-size: 1.8rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 16px !important;
+  text-align: left;
 }

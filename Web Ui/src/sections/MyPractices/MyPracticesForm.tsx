@@ -107,7 +107,7 @@ function MyPracticesForm({
           </DialogContent>
 
           <DialogActions className="dialog-footer">
-            <Button onClick={handleCancel} className="btn-std btn-danger-outline">
+            <Button onClick={handleCancel} className="btn-std btn-secondary">
               Cancelar
             </Button>
             <Button onClick={handleSaveClick} className="btn-std btn-primary">

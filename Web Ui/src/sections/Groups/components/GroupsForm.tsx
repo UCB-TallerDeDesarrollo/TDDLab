@@ -133,7 +133,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
           <DialogActions className="dialog-footer">
             {/* Outline rojo — igual que ConfirmationDialog */}
-            <Button onClick={handleCancel} className="btn-std btn-danger-outline">
+            <Button onClick={handleCancel} className="btn-std btn-secondary">
               Cancelar
             </Button>
             <Button onClick={handleCreate} className="btn-std btn-primary">

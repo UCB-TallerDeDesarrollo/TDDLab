@@ -129,12 +129,10 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
               </TableCell>
               <TableCell>
                 <div className="filter-container">
-                  <div className="sorting-container">
-                    <SortingComponent
-                      selectedSorting={selectedSorting}
-                      onChangeHandler={handleOrderPractices}
-                    />
-                  </div>
+                  <SortingComponent
+                    selectedSorting={selectedSorting}
+                    onChangeHandler={handleOrderPractices}
+                  />
                   <Button
                     className="btn-std btn-primary"
                     startIcon={<AddIcon />}

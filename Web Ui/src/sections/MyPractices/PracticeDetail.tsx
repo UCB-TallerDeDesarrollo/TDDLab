@@ -267,7 +267,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
 
             <div className="detail-actions-container">
               <Button
-                variant="contained"
                 disabled={submissionStatus[userid.toString()] || false}
                 onClick={handleOpenLinkDialog}
                 className="btn-std btn-primary"
@@ -276,7 +275,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               </Button>
 
               <Button
-                variant="contained"
                 className="btn-std btn-primary"
                 onClick={() => {
                   localStorage.setItem("selectedMetric", "Dashboard");
@@ -294,7 +292,6 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               </Button>
 
               <Button
-                variant="contained"
                 disabled={isTaskInProgress}
                 onClick={handleOpenCommentDialog}
                 className="btn-std btn-primary"
