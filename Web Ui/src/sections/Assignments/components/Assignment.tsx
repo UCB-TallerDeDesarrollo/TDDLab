@@ -1,7 +1,5 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import React, { useState, useEffect } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -9,35 +7,104 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditAssignmentForm from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltip } from "../../Shared/statusHelpers";
-import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
+import { styled } from "@mui/system";
 
-// Estilos 
-const styles = {
-  tableRow: {
-    borderBottom: "2px solid #E7E7E7",
-  },
-  titleCell: {
-    width: "20%",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  actionsCell: {
-    width: "30%",
-    maxWidth: "300px",
-  },
-  actionsContainer: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    flexWrap: "nowrap",
-  },
-} as const;
+export const ButtonContainer = styled("div")({
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: "8px",
+});
 
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
 }
 
+export interface AssignmentActionsProps {
+  assignment: AssignmentDataObject;
+  index: number;
+  handleClickDetail: (index: number) => void;
+  handleClickDelete: (index: number) => void;
+  handleRowHover: (index: number | null) => void;
+  role: string;
+  groupName: string;
+  isEditFormOpen: boolean;
+  onEditClick: () => void;
+  onCloseEditForm: () => void;
+}
+
+export const AssignmentActions: React.FC<AssignmentActionsProps> = ({
+  assignment,
+  index,
+  handleClickDetail,
+  handleClickDelete,
+  handleRowHover,
+  role,
+  groupName,
+  isEditFormOpen,
+  onEditClick,
+  onCloseEditForm,
+}) => {
+  const statusIcon = getStatusIcon(assignment.state);
+  const userIsAdmin = isAdmin(role);
+
+  return (
+    <ButtonContainer>
+      <Tooltip title="Ver tarea" arrow>
+        <IconButton
+          aria-label="see"
+          onClick={(e) => { e.stopPropagation(); handleClickDetail(index); }}
+          onMouseEnter={() => handleRowHover(index)}
+          onMouseLeave={() => handleRowHover(null)}
+        >
+          <VisibilityIcon />
+        </IconButton>
+      </Tooltip>
+
+      {userIsAdmin && (
+        isEditFormOpen ? (
+          <EditAssignmentForm
+            assignmentId={assignment.id}
+            currentGroupName={groupName}
+            currentTitle={assignment.title}
+            currentDescription={assignment.description}
+            onClose={onCloseEditForm}
+          />
+        ) : (
+          <Tooltip title="Editar tarea" arrow>
+            <IconButton
+              aria-label="edit"
+              onClick={(e) => { e.stopPropagation(); onEditClick(); }}
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+        )
+      )}
+
+      {userIsAdmin && (
+        <Tooltip title="Eliminar tarea" arrow>
+          <IconButton
+            aria-label="delete"
+            onClick={(e) => { e.stopPropagation(); handleClickDelete(index); }}
+            onMouseEnter={() => handleRowHover(index)}
+            onMouseLeave={() => handleRowHover(null)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      <Tooltip title={getStatusTooltip(assignment.state)} arrow>
+        <IconButton aria-label="status">
+          {statusIcon}
+        </IconButton>
+      </Tooltip>
+    </ButtonContainer>
+  );
+};
+
+// Componente legacy — mantiene compatibilidad si algo aún lo importa
 interface AssignmentProps {
   assignment: AssignmentDataObject;
   index: number;
@@ -47,22 +114,13 @@ interface AssignmentProps {
   role: string;
 }
 
-const Assignment: React.FC<AssignmentProps> = ({
-  assignment,
-  index,
-  handleClickDetail,
-  handleClickDelete,
-  handleRowHover,
-  role,
-}) => {
+const Assignment: React.FC<AssignmentProps> = (props) => {
   const [groupName, setGroupName] = useState<string>("");
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   useEffect(() => {
-    if (assignment.groupid) {
-      fetchGroupName(assignment.groupid);
-    }
-  }, [assignment.groupid]);
+    if (props.assignment.groupid) fetchGroupName(props.assignment.groupid);
+  }, [props.assignment.groupid]);
 
   const fetchGroupName = async (groupId: number) => {
     try {
@@ -74,78 +132,14 @@ const Assignment: React.FC<AssignmentProps> = ({
     }
   };
 
-  const handleEditClick = () => setIsEditFormOpen(true);
-  const handleCloseEditForm = () => setIsEditFormOpen(false);
-  
-  const statusIcon = getStatusIcon(assignment.state);
-  const userIsAdmin = isAdmin(role); // Refactor simple para legibilidad
-
   return (
-    <TableRow key={assignment.id} sx={styles.tableRow}>
-      {/* Celda de Título */}
-      <TableCell sx={styles.titleCell}>
-        {assignment.title}
-      </TableCell>
-
-      {/* Celda de Acciones */}
-      <TableCell sx={styles.actionsCell}>
-        <div style={styles.actionsContainer}>
-          
-          <Tooltip title="Ver tarea" arrow>
-            <IconButton
-              aria-label="see"
-              onClick={() => handleClickDetail(index)}
-              onMouseEnter={() => handleRowHover(index)}
-              onMouseLeave={() => handleRowHover(null)}
-            >
-              <VisibilityIcon />
-            </IconButton>
-          </Tooltip>
-
-          {userIsAdmin && (
-            isEditFormOpen ? (
-              <EditAssignmentForm
-                assignmentId={assignment.id}
-                currentGroupName={groupName}
-                currentTitle={assignment.title}
-                currentDescription={assignment.description}
-                onClose={handleCloseEditForm}
-              />
-            ) : (
-              <Tooltip title="Editar tarea" arrow>
-                <IconButton aria-label="edit" onClick={handleEditClick}>
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-            )
-          )}
-
-          {userIsAdmin && (
-            <Tooltip title="Eliminar tarea" arrow>
-              <IconButton
-                aria-label="delete"
-                onClick={() => handleClickDelete(index)}
-                onMouseEnter={() => handleRowHover(index)}
-                onMouseLeave={() => handleRowHover(null)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-
-          <Tooltip title={getStatusTooltip(assignment.state)} arrow>
-            <IconButton
-              aria-label="status"
-              onMouseEnter={() => handleRowHover(index)}
-              onMouseLeave={() => handleRowHover(null)}
-            >
-              {statusIcon}
-            </IconButton>
-          </Tooltip>
-          
-        </div>
-      </TableCell>
-    </TableRow>
+    <AssignmentActions
+      {...props}
+      groupName={groupName}
+      isEditFormOpen={isEditFormOpen}
+      onEditClick={() => setIsEditFormOpen(true)}
+      onCloseEditForm={() => setIsEditFormOpen(false)}
+    />
   );
 };
 
