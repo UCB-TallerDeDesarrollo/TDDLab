@@ -1,9 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress,
-  TableHead,
-  TableBody,
-  TableRow,
   Container,
   Button } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
@@ -17,7 +14,7 @@ import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
 import GroupFilter from "./GroupFilter";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import './AssignmentsList.css';
-import { CustomTableCell1, StyledTable, LoadingContainer } from "./AssigmentsStyledComponents";
+import { LoadingContainer } from "./AssigmentsStyledComponents";
 import useAssignments from "../hooks/useAssigments";
 
 
@@ -161,19 +158,8 @@ function Assignments({
         </div>
 
 
-        {/* 🔹 Tabla solo con encabezado de columnas */}
-        <StyledTable>
-          <TableHead>
-            <TableRow
-              className="assignments-list-header-row"
-            >
-              <CustomTableCell1
-              >
-                Tareas
-              </CustomTableCell1>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+        {/* 🔹 Container para las asignaciones */}
+        <div className="assignments-list-body">
             {filteredAssignments.map((assignment, index) => (
               <Assignment
                 key={assignment.id}
@@ -185,8 +171,7 @@ function Assignments({
                 role={userRole}
               />
             ))}
-          </TableBody>
-        </StyledTable>
+        </div>
 
         {/* Diálogos */}
         {confirmationOpen && (

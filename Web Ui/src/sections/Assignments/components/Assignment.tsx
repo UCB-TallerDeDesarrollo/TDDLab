@@ -1,7 +1,5 @@
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import React, { useState, useEffect } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -66,22 +64,25 @@ const Assignment: React.FC<AssignmentProps> = ({
   const statusIcon = getStatusIcon(assignment.state);
 
   return (
-    <TableRow 
-    key={assignment.id}
-    className="assignment-row">
-      <TableCell className="assignment-title-cell">
+    <div
+      key={assignment.id}
+      className="assignment-row"
+      onMouseEnter={() => handleRowHover(index)}
+      onMouseLeave={() => handleRowHover(null)}
+    >
+      <div className="assignment-title-cell">
         {assignment.title}
-      </TableCell>
-      <TableCell className="assignment-actions-cell">
+      </div>
+      <div className="assignment-actions-cell">
           <div className="assignment-actions-row">
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"
               onClick={() => handleClickDetail(index)}
-              onMouseEnter={() => handleRowHover(index)}
-              onMouseLeave={() => handleRowHover(null)}
+              size="small"
+              className="action-icon-btn"
             >
-              <VisibilityIcon />
+              <VisibilityIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           {isAdmin(role) && isEditFormOpen ? (
@@ -96,8 +97,8 @@ const Assignment: React.FC<AssignmentProps> = ({
           ) : (
             isAdmin(role) && (
               <Tooltip title="Editar tarea" arrow>
-                <IconButton aria-label="edit" onClick={handleEditClick}>
-                  <EditIcon />
+                <IconButton aria-label="edit" onClick={handleEditClick} size="small" className="action-icon-btn">
+                  <EditIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
             )
@@ -108,10 +109,10 @@ const Assignment: React.FC<AssignmentProps> = ({
               <IconButton
                 aria-label="delete"
                 onClick={() => handleClickDelete(index)}
-                onMouseEnter={() => handleRowHover(index)}
-                onMouseLeave={() => handleRowHover(null)}
+                size="small"
+                className="action-icon-btn"
               >
-                <DeleteIcon />
+                <DeleteIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           )}
@@ -119,15 +120,15 @@ const Assignment: React.FC<AssignmentProps> = ({
           <Tooltip title={getStatusTooltip(assignment.state)} arrow>
             <IconButton
               aria-label="status"
-              onMouseEnter={() => handleRowHover(index)}
-              onMouseLeave={() => handleRowHover(null)}
+              size="small"
+              className="action-icon-btn"
             >
               {statusIcon}
             </IconButton>
           </Tooltip>
         </div>
-      </TableCell>
-    </TableRow>
+      </div>
+    </div>
   );
 };
 

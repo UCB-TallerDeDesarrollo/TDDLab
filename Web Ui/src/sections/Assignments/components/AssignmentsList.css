@@ -4,10 +4,11 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 1rem;
-  width: 82%;
+  width: 100%;
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .assignments-list-create-btn {
@@ -22,8 +23,33 @@
   white-space: nowrap !important;
 }
 
-.assignments-list-header-row {
-  border-bottom: 2px solid #E7E7E7;
+.assignments-list-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .assignments-list-toolbar,
+  .assignments-list-body {
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .assignments-list-toolbar,
+  .assignments-list-body {
+    width: 100%;
+    padding: 0 10px;
+  }
+  
+  .assignments-list-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .assignments-list-loading {

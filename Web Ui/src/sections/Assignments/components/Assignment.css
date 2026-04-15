@@ -1,17 +1,32 @@
 .assignment-row {
-  border-bottom: 2px solid #E7E7E7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #d3d9df;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background-color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+
+.assignment-row:hover {
+  background-color: #f0f6fa;
 }
 
 .assignment-title-cell {
-  width: 20%;
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 1rem;
+  color: #333;
 }
 
 .assignment-actions-cell {
-  width: 30%;
-  max-width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .assignment-actions-row {
@@ -19,4 +34,31 @@
   align-items: center;
   gap: 8px;
   flex-wrap: nowrap;
+}
+
+.action-icon-btn {
+  color: #757575 !important;
+}
+
+.action-icon-btn svg {
+  font-size: 1.25rem;
+}
+
+@media (max-width: 480px) {
+  .assignment-row {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .assignment-title-cell {
+    font-size: 0.9rem;
+  }
+
+  .assignment-actions-row {
+    gap: 4px;
+  }
+
+  .action-icon-btn svg {
+    font-size: 1.1rem;
+  }
 }
