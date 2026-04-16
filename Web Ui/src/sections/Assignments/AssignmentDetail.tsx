@@ -20,9 +20,6 @@ import {
   TableRow,
   CircularProgress,
 } from "@mui/material";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { Link as LinkIcon } from "@mui/icons-material";
 
@@ -40,7 +37,9 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
 import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
 
-import { handleRedirectStudent } from "../Shared/handlers.ts";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
+import IconButton from "@mui/material/IconButton";
 
 interface AssignmentDetailProps {
   role: string;
@@ -245,9 +244,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                 <Button className="btn-std btn-primary" disabled={!sub.repository_link} onClick={() => handleRedirectAdmin(sub.repository_link, submissions, sub.id, "/graph")}>
                   Gráfica
                 </Button>
-                <Button className="btn-std btn-primary" disabled={!sub.repository_link} onClick={() => navigate("/asistente-ia", { state: { repositoryLink: sub.repository_link } })}>
-                  IA
-                </Button>
+                {showIAButton && (
+                  <Button 
+                    className="btn-std btn-primary" 
+                    disabled={!sub.repository_link} 
+                    onClick={() => navigate("/asistente-ia", { state: { repositoryLink: sub.repository_link } })}
+                  >
+                    IA
+                  </Button>
+                )}
                 <Button className="btn-std btn-primary" disabled={!sub.repository_link || disableAdditionalGraphs} onClick={() => handleRedirectAdmin(sub.repository_link, submissions, sub.id, "/aditionalgraph")}>
                   Mas
                 </Button>
@@ -272,22 +277,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
               <div className="assignment-details-list">
                 <div className="detail-info-row">
-                  <ArchiveOutlinedIcon className="detail-icon" />
+                  <AppIcon icon={APP_ICONS.GROUPS} className="detail-icon" />
                   <span><strong>Grupo:</strong> {groupDetails?.groupName}</span>
                 </div>
 
                 <div className="detail-info-row">
-                  <NotesOutlinedIcon className="detail-icon" />
+                  <AppIcon icon={APP_ICONS.MENU} className="detail-icon" />
                   <span><strong>Instrucciones:</strong> {assignment.description}</span>
                 </div>
 
                 <div className="detail-info-row">
-                  <CalendarMonthIcon className="detail-icon" />
+                  <AppIcon icon={APP_ICONS.HOME} className="detail-icon" />
                   <span><strong>Inicio:</strong> {formatDate(assignment.start_date.toString())}</span>
                 </div>
 
                 <div className="detail-info-row">
-                  <CalendarMonthIcon className="detail-icon" />
+                  <AppIcon icon={APP_ICONS.HOME} className="detail-icon" />
                   <span><strong>Fecha límite:</strong> {formatDate(assignment.end_date.toString())}</span>
                 </div>
               </div>

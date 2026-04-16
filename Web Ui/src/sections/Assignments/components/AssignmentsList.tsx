@@ -35,7 +35,6 @@ interface AssignmentsProps {
 function Assignments({
   ShowForm: showForm,
   userRole,
-  userGroupid,
   onGroupChange,
 }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
