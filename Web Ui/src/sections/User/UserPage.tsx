@@ -10,7 +10,7 @@ import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
   Select, MenuItem, InputLabel, FormControl,
   SelectChangeEvent, Tooltip, TextField, InputAdornment, Chip, Typography, Divider,
-  IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Box,
+  IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button,
 } from "@mui/material";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
 
@@ -42,6 +42,11 @@ const FilterContainer = styled("div")({
   display: "flex",
   alignItems: "center",
   gap: "20px",
+  width: "82%",
+  marginLeft: "auto",
+  marginRight: "auto",
+  marginTop: "12px",
+  flexWrap: "wrap",
 });
 
 // -------------------------------------------------
@@ -196,44 +201,11 @@ function UserPage() {
   return (
     <div>
       <CenteredContainer sx={{ maxWidth: '100% !important', pb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '82%', margin: '0 auto', mt: 4 }}>
+        <div className="section-header" style={{ marginTop: "32px" }}>
           <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
             Usuarios
           </Typography>
-          <FilterContainer>
-            <TextField
-              label="Buscar por email"
-              variant="outlined"
-              placeholder="Ej: nombre@ucb.edu.bo"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              sx={{ width: 360 }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconifyIcon icon="mdi:magnify" width={20} height={20} color="gray" hoverColor="#333" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-              <InputLabel id="group-filter-label">Grupo</InputLabel>
-              <Select
-                labelId="group-filter-label"
-                value={selectedGroup}
-                onChange={handleGroupChange}
-                label="Grupo"
-              >
-                <MenuItem value="all">Todos los grupos</MenuItem>
-                {groups.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.groupName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
+          <div className="section-actions">
             <Button
               variant="contained"
               color="primary"
@@ -242,8 +214,43 @@ function UserPage() {
             >
               Añadir Usuario
             </Button>
-          </FilterContainer>
-        </Box>
+          </div>
+        </div>
+
+        <FilterContainer>
+          <TextField
+            label="Buscar por email"
+            variant="outlined"
+            placeholder="Ej: nombre@ucb.edu.bo"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ width: 360 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IconifyIcon icon="mdi:magnify" width={20} height={20} color="gray" hoverColor="#333" />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+            <InputLabel id="group-filter-label">Grupo</InputLabel>
+            <Select
+              labelId="group-filter-label"
+              value={selectedGroup}
+              onChange={handleGroupChange}
+              label="Grupo"
+            >
+              <MenuItem value="all">Todos los grupos</MenuItem>
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.groupName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </FilterContainer>
 
         <Divider sx={{ width: '82%', margin: '0 auto', mt: 2, mb: 4, borderColor: '#D9D9D9' }} />
 
