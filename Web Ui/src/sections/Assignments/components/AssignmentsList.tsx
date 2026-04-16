@@ -78,6 +78,7 @@ function Assignments({
 
   // Re-sort when authData or sorting changes
   useEffect(() => {
+    if (selectedSorting === "" && assignments.length > 0) return;
     const preferredGroupId = Number(localStorage.getItem("selectedGroup")) || authData?.usergroupid;
     if (!preferredGroupId) return;
     assignmentsRepository.getAssignmentsByGroupid(preferredGroupId).then((data) => {
@@ -134,7 +135,7 @@ function Assignments({
       <section className="Tareas">
         <GenericListContainer>
           <GenericListHeader
-            title=""
+            title="Tareas"
             actions={
               <>
                 <GroupFilter
