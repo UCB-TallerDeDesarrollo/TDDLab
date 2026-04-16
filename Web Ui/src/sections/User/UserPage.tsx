@@ -8,7 +8,7 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
   Select, MenuItem, InputLabel, FormControl,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment
+  SelectChangeEvent, Tooltip, TextField, InputAdornment, Chip
 } from "@mui/material";
 import { CircularProgress, Box } from "@mui/material";
 
@@ -175,33 +175,47 @@ function UserPage() {
         </FilterContainer>
 
         <section className="Usuarios">
-          <StyledTable>
+          <StyledTable sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
             <TableHead>
-              <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                <TableCell sx={{ fontWeight: 560 }}>Correo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Grupo</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Rol</TableCell>
-                <TableCell sx={{ fontWeight: 560 }}>Eliminar</TableCell>
+              <TableRow sx={{ backgroundColor: "#EAF2FC" }}>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderTopLeftRadius: "12px", borderBottom: 'none', py: 2 }}>Usuario</TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderBottom: 'none', py: 2 }}>Grupo</TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderBottom: 'none', py: 2 }}>Rol</TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderTopRightRadius: "12px", borderBottom: 'none', py: 2 }}>Opciones</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} sx={{ textAlign: "center", py: 3 }}>
+                  <TableCell colSpan={4} align="center" sx={{ py: 3, borderBottom: "1px solid #E7E7E7" }}>
                     No se encontraron resultados
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredUsers.map((user) => (
-                  <TableRow key={user.id} sx={{ borderBottom: "2px solid #E7E7E7" }}>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
+                  <TableRow key={user.id}>
+                    <TableCell align="center" sx={{ borderBottom: "1px solid #E7E7E7", py: 2.5 }}>{user.email}</TableCell>
+                    <TableCell align="center" sx={{ borderBottom: "1px solid #E7E7E7", py: 2.5 }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
+                    <TableCell align="center" sx={{ borderBottom: "1px solid #E7E7E7", py: 2.5 }}>
+                      <Chip
+                        label={user.role}
+                        size="medium"
+                        sx={{
+                          backgroundColor: user.role.toLowerCase() === 'docente' ? '#D6E4FF' : '#B9F6CA',
+                          color: user.role.toLowerCase() === 'docente' ? '#1D39C4' : '#2E7D32',
+                          fontWeight: 'bold',
+                          borderRadius: '6px'
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="center" sx={{ borderBottom: "1px solid #E7E7E7", py: 2.5 }}>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <button onClick={() => handleRemoveUserFromGroup(user.id)} style={{ cursor: 'pointer' }}>
-                          <IconifyIcon icon="mdi:minus-circle" color="#d81b1b" width={24} height={24} hoverColor="#b71c1c" />
+                        <button 
+                          onClick={() => handleRemoveUserFromGroup(user.id)} 
+                          style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                        >
+                          <IconifyIcon icon="mdi:trash-can" color="#9E9E9E" width={24} height={24} hoverColor="#616161" />
                         </button>
                       </Tooltip>
                     </TableCell>
