@@ -101,7 +101,7 @@ const DesktopActionArea = styled(Box)(({ theme }) => ({
 
 function resolveActivePath(pathname: string): string {
   if (pathname.startsWith("/assignment/")) {
-    return "/";
+    return "/tareas";
   }
   if (pathname.startsWith("/mis-practicas/")) {
     return "/mis-practicas";
@@ -115,6 +115,7 @@ function resolveActivePath(pathname: string): string {
 
 function getDisplayTitle(title: string): string {
   const map: Record<string, string> = {
+    Home: "HOME",
     Grupos: "GRUPOS",
     Tareas: "TAREAS",
     "Mis Practicas": "MIS PRÁCTICAS",
@@ -232,7 +233,9 @@ export default function MainMenu({
                               transform: "translateX(-50%)",
                               bottom: 6,
                               width:
-                                item.title === "Mis Practicas"
+                                item.title === "Home"
+                                  ? 57
+                                  : item.title === "Mis Practicas"
                                   ? 145
                                   : item.title === "Usuarios"
                                     ? 100
