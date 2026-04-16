@@ -14,6 +14,7 @@ import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
+import { typographyVariants } from "../../../styles/typography";
 
 
 interface CreateGroupPopupProps {
@@ -101,7 +102,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle>Crear grupo</DialogTitle>
+          <DialogTitle style={{ ...typographyVariants.h5, paddingBottom: 8 }}>Crear grupo</DialogTitle>
           <DialogContent>
             <Box className="flex-column gap-2 mt-2 mb-2">
             <TextField
@@ -135,7 +136,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
             />
             </Box>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
             <Button 
               onClick={handleCancel} 
               variant="contained"

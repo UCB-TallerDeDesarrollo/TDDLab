@@ -10,8 +10,6 @@ import GetGroups from "../../modules/Groups/application/GetGroups";
 import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
-import Checkbox from "@mui/material/Checkbox";
-import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
   Container,
   Button,
@@ -28,6 +26,7 @@ import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
+import { typographyVariants } from "../../styles/typography";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -230,15 +229,6 @@ function Groups() {
     selectAndSync(clickedGroup.id);
   };
 
-  const handleHomeworksClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const clickedGroup = groups[index];
-    if (clickedGroup?.id) navigate(`/?groupId=${clickedGroup.id}`);
-  };
-
   const handleStudentsClick = async (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number
@@ -325,7 +315,7 @@ function Groups() {
     <CenteredContainer>
       <section className="Grupos">
         <PageHeader>
-          <Typography sx={{ fontSize: "36px", fontWeight: 700, color: "#171717" }}>
+          <Typography sx={{ ...typographyVariants.h3, color: "#171717" }}>
             Grupos
           </Typography>
           <HeaderActions>
@@ -340,7 +330,7 @@ function Groups() {
               sx={{
                 borderRadius: "8px",
                 textTransform: "none",
-                fontSize: "0.95rem",
+                ...typographyVariants.paragraphMedium,
                 minWidth: "112px",
                 transition: "all 0.175s ease-out",
                 "&:hover": {
@@ -372,7 +362,7 @@ function Groups() {
                     : "#ffffff",
               }}
             >
-              <Typography sx={{ fontSize: "34px", fontWeight: 500, color: "#202124" }}>
+              <Typography sx={{ ...typographyVariants.paragraphBig, color: "#202124" }}>
                 {group.groupName}
               </Typography>
 
@@ -407,33 +397,9 @@ function Groups() {
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Tareas" arrow>
-                  <IconButton
-                    aria-label="tareas"
-                    onClick={(e) => handleHomeworksClick(e, index)}
-                    sx={iconButtonSx}
-                  >
-                    <IconifyIcon icon="mdi:motion" color="#7d7d7d" hoverColor="#616161" />
-                  </IconButton>
-                </Tooltip>
-
                 <Tooltip title="Eliminar grupo" arrow>
                   <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
                     <IconifyIcon icon="mdi:trash-can" color="#7d7d7d" hoverColor="#616161" />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                  <IconButton
-                    aria-label="enlace-docente"
-                    sx={iconButtonSx}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const id = asId(groups[index]?.id);
-                      if (id) getCourseLink(id, "teacher");
-                    }}
-                  >
-                    <PiChalkboardTeacherFill color="#7d7d7d" />
                   </IconButton>
                 </Tooltip>
               </ButtonContainer>
