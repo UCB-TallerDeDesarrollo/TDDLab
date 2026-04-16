@@ -97,6 +97,14 @@ export const GenericCard: React.FC<GenericCardProps> = ({
             isSelected ? "generic-card--selected" : ""
           }`}
           onClick={onClick}
+          role={isClickable ? "button" : undefined}
+          tabIndex={isClickable ? 0 : undefined}
+          onKeyDown={isClickable ? (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClick?.();
+            }
+          } : undefined}
         >
           <span className="generic-card-name">{title}</span>
           {actions && <div className="generic-card-actions">{actions}</div>}
