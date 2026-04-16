@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, FormControlLabel, Stack } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, Stack } from '@mui/material';
 import { FeatureFlag } from '../types/settings.types';
 import AnimatedCheckbox from '../../../shared/components/AnimatedCheckbox';
 
