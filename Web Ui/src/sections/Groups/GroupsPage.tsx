@@ -35,6 +35,7 @@ import {
   GenericCard 
 } from "../Shared/Components/GenericList";
 
+
 function Groups() {
   const navigate = useNavigate();
 

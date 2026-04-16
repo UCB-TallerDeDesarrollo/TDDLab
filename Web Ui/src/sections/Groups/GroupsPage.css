@@ -64,6 +64,20 @@
   flex-shrink: 0;
 }
 
+.Grupos .generic-card-checkbox .MuiSvgIcon-root {
+  font-size: 1.4rem;
+  color: #5a6abf;
+}
+
+.Grupos .generic-card-checkbox.Mui-checked .MuiSvgIcon-root {
+  color: #3f51b5;
+}
+
+.Grupos .generic-card-checkbox:hover {
+  background-color: rgba(63, 81, 181, 0.08);
+  border-radius: 50%;
+}
+
 /* ── Card ───────────────────────────────────────────── */
 .groups-card {
   display: flex;
