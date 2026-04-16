@@ -19,4 +19,16 @@ const LoadingContainer = styled("div")({
   height: "100vh",
 });
 
-export { StyledTable, CustomTableCell1, LoadingContainer };
+const AssignmentsContainer = styled("div")({
+  justifyContent: "center",
+  alignItems: "center",
+});
+
+const FormsContainer = styled("div")({
+  flex: "1",
+  marginLeft: "8px",
+  marginRight: "2px",
+  marginTop: "68px",
+});
+
+export { StyledTable, CustomTableCell1, LoadingContainer, AssignmentsContainer, FormsContainer };

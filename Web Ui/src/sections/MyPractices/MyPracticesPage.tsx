@@ -1,18 +1,8 @@
 import Practices from "./MyPracticesList";
-import { styled } from "@mui/system";
 import { useState } from "react";
 import MyPracticesForm from "./MyPracticesForm";
-const PrcticesContainer = styled("div")({
-  justifyContent: "center",
-  alignItems: "center",
-});
+import { PrcticesContainer, FormsContainer } from "./StyledComponents";
 
-const FormsContainer = styled("div")({
-  flex: "1",
-  marginLeft: "8px",
-  marginRight: "2px",
-  marginTop: "68px",
-});
 
 interface PracticeManagerProps {
   userRole: string;

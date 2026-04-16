@@ -1,19 +1,8 @@
 import Form from "./components/AssignmentForm";
 import Assignments from "./components/AssignmentsList";
-import { styled } from "@mui/system";
 import { useState } from "react";
+import { AssignmentsContainer, FormsContainer } from "./components/AssigmentsStyledComponents";
 
-const AssignmentsContainer = styled("div")({
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const FormsContainer = styled("div")({
-  flex: "1",
-  marginLeft: "8px",
-  marginRight: "2px",
-  marginTop: "68px",
-});
 
 interface AssignmentManagerProps {
   userRole: string;

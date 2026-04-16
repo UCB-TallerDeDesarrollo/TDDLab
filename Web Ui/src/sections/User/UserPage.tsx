@@ -23,34 +23,8 @@ import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersB
 import "./UserPage.variables.css";
 import "./UserPage.css";
 
-// -------------------  ESTILOS  -------------------
-const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "20px",
-  paddingBottom: "20px",
-});
+import { CenteredContainer, StyledTable, FilterContainer } from "./StyledUserComponents";
 
-const StyledTable = styled(Table)({
-  width: "90%",
-  marginLeft: "auto",
-  marginRight: "auto",
-  marginTop: "4px",
-  borderCollapse: "collapse",
-  tableLayout: "fixed",
-  backgroundColor: "var(--users-table-bg)",
-});
-
-const FilterContainer = styled("div")({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "20px",
-  marginBottom: "20px",
-  gap: "20px",
-});
-
-// -------------------------------------------------
 
 function UserPage() {
   const [, setUsers] = useState<UserDataObject[]>([]);
