@@ -13,7 +13,7 @@ const iconMap: Record<string, string> = {
 
 const labelMap: Record<string, string> = {
   "Configuraciones": "Ajustes",
-  "Mis Practicas": "Mi prácticas",
+  "Mis Practicas": "Mis Prácticas",
 };
 
 interface TeacherSidebarProps {
