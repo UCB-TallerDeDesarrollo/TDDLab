@@ -139,8 +139,8 @@ export default function PracticeRow({
           />
 
           <AnimatedIcon
-            title={getStatusTooltipPractice(practice.state)}
-            actionType="default"
+            title={practice.state === 'pending' ? "Sugerencias" : getStatusTooltipPractice(practice.state)}
+            actionType={practice.state === 'pending' ? "suggestion" : "default"}
             aria-label="status"
             icon={statusIcon}
           />

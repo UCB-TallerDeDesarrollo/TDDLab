@@ -111,7 +111,7 @@ export default function MyPracticesList({
             <SortingComponent
               selectedSorting={selectedSorting}
               onChangeHandler={handleOrderPractices}
-              prototypeStyle
+              prototypeStyle={true}
             />
             {canCreatePractices ? (
               <ActionButton

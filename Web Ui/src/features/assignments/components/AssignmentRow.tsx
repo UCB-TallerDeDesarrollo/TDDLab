@@ -112,8 +112,8 @@ function AssignmentRow({
         ) : null}
 
         <AnimatedIcon
-          title={getStatusTooltip(item.state)}
-          actionType="default"
+          title={item.state === 'pending' ? "Sugerencias" : getStatusTooltip(item.state)}
+          actionType={item.state === 'pending' ? "suggestion" : "default"}
           aria-label="status"
           icon={statusIcon}
         />
