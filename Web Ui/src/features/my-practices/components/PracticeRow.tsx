@@ -3,8 +3,6 @@ import Box from "@mui/material/Box";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
@@ -14,6 +12,7 @@ import {
 } from "../../../shared/helpers/statusHelpers";
 import EditPracticeForm from "./EditPracticeForm";
 import { PracticeListItemViewModel } from "../types/myPracticesScreen";
+import AnimatedIcon from "../../../shared/components/AnimatedIcon";
 
 interface PracticeRowProps {
   practice: PracticeListItemViewModel;
@@ -29,6 +28,10 @@ const RowContainer = styled(Box)(({ theme }) => ({
   border: "0.5px solid #898989",
   borderRadius: 5,
   backgroundColor: "#FFFFFF",
+  transition: "background-color 0.2s ease",
+  "&:hover": {
+    backgroundColor: "#F0F4F8",
+  },
   padding: theme.spacing(1.625, 2.5),
   display: "flex",
   alignItems: "center",
@@ -61,17 +64,6 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
   flexWrap: "wrap",
 }));
-
-const ActionIcon = styled(IconButton)({
-  width: 40,
-  height: 40,
-  borderRadius: "50%",
-  color: "#002346",
-  backgroundColor: "transparent",
-  "&:hover": {
-    backgroundColor: "rgba(0, 35, 70, 0.08)",
-  },
-});
 
 export default function PracticeRow({
   practice,
@@ -107,14 +99,13 @@ export default function PracticeRow({
     <RowContainer key={practice.id}>
       <RowTitle>{practice.title}</RowTitle>
       <ActionsContainer>
-          <Tooltip title="Ver practica" arrow>
-            <ActionIcon
-              aria-label="see"
-              onClick={() => onOpenDetail(practice.id)}
-            >
-              <VisibilityIcon />
-            </ActionIcon>
-          </Tooltip>
+          <AnimatedIcon
+            title="Ver practica"
+            actionType="view"
+            aria-label="see"
+            onClick={() => onOpenDetail(practice.id)}
+            icon={<VisibilityIcon />}
+          />
           {isEditFormOpen && canManagePractices ? (
             <EditPracticeForm
               currentPractice={currentPractice}
@@ -122,48 +113,37 @@ export default function PracticeRow({
               onPracticeUpdated={onPracticeUpdated}
             />
           ) : null}
-          <Tooltip
+          <AnimatedIcon
             title={
               canManagePractices
                 ? "Editar practica"
                 : "Sin permisos para editar"
             }
-            arrow
-          >
-            <span>
-              <ActionIcon
-                aria-label="edit"
-                onClick={handleEditClick}
-                disabled={!canManagePractices}
-              >
-                <EditIcon />
-              </ActionIcon>
-            </span>
-          </Tooltip>
-          <Tooltip
+            actionType="edit"
+            aria-label="edit"
+            onClick={handleEditClick}
+            disabled={!canManagePractices}
+            icon={<EditIcon />}
+          />
+          <AnimatedIcon
             title={
               canManagePractices
                 ? "Eliminar practica"
                 : "Sin permisos para eliminar"
             }
-            arrow
-          >
-            <span>
-              <ActionIcon
-                aria-label="delete"
-                onClick={() => onDeletePractice(practice.id)}
-                disabled={!canManagePractices}
-              >
-                <DeleteIcon />
-              </ActionIcon>
-            </span>
-          </Tooltip>
+            actionType="delete"
+            aria-label="delete"
+            onClick={() => onDeletePractice(practice.id)}
+            disabled={!canManagePractices}
+            icon={<DeleteIcon />}
+          />
 
-          <Tooltip title={getStatusTooltipPractice(practice.state)} arrow>
-            <ActionIcon aria-label="status">
-              {statusIcon}
-            </ActionIcon>
-          </Tooltip>
+          <AnimatedIcon
+            title={practice.state === 'pending' ? "Sugerencias" : getStatusTooltipPractice(practice.state)}
+            actionType={practice.state === 'pending' ? "suggestion" : "default"}
+            aria-label="status"
+            icon={statusIcon}
+          />
       </ActionsContainer>
     </RowContainer>
   );

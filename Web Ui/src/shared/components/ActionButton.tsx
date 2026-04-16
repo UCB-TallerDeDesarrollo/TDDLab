@@ -1,5 +1,5 @@
 import Button, { ButtonProps } from "@mui/material/Button";
-import { alpha, styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 
 interface ActionButtonProps extends ButtonProps {
   variantStyle?: "primary" | "secondary";
@@ -8,7 +8,7 @@ interface ActionButtonProps extends ButtonProps {
 const StyledActionButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== "variantStyle",
 })<ActionButtonProps>(({ theme, variantStyle = "secondary" }) => ({
-  minWidth: 88,
+  minWidth: 89,
   height: 34,
   borderRadius: 5,
   paddingInline: theme.spacing(1.25),
@@ -20,9 +20,10 @@ const StyledActionButton = styled(Button, {
   border: `0.5px solid ${
     variantStyle === "primary" ? theme.palette.primary.main : "#2F2F2F"
   }`,
-  color: variantStyle === "primary" ? theme.palette.common.white : "#111111",
+  color: variantStyle === "primary" ? theme.palette.common.white : "#000000",
   backgroundColor:
     variantStyle === "primary" ? theme.palette.primary.main : "#D9D9D9",
+  transition: "background-color 0.2s ease, color 0.2s ease, transform 0.1s",
   "& .MuiButton-startIcon": {
     marginRight: 6,
     marginLeft: 0,
@@ -30,12 +31,17 @@ const StyledActionButton = styled(Button, {
       fontSize: 17,
     },
   },
-  "&:hover": {
+  "&:hover, &:active": {
     boxShadow: "none",
     backgroundColor:
-      variantStyle === "primary"
-        ? theme.palette.primary.dark
-        : alpha("#D9D9D9", 0.88),
+      variantStyle === "primary" ? "#002346" : "#5C5C5C",
+    color: "#FFFFFF",
+    "& .MuiButton-startIcon": {
+      color: "#FFFFFF",
+    },
+  },
+  "&:active": {
+    transform: "scale(0.98)",
   },
 }));
 

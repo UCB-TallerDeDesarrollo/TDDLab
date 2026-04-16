@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import AnimatedIcon from "../../shared/components/AnimatedIcon";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
@@ -341,41 +340,53 @@ function Groups() {
                   <TableCell>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
-                      <Tooltip title="Editar grupo" arrow>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Editar"
+                        actionType="edit"
+                        aria-label="editar"
+                        onClick={(e) => handleEditClick(e, index)}
+                        icon={<EditIcon />}
+                      />
 
-                      <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
-                          <AutoAwesomeMotionIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Duplicar"
+                        actionType="duplicate"
+                        aria-label="tareas"
+                        onClick={(e) => handleHomeworksClick(e, index)}
+                        icon={<AutoAwesomeMotionIcon />}
+                      />
 
-                      <Tooltip title="Participantes" arrow>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
-                          <GroupsIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Grupos"
+                        actionType="groups"
+                        aria-label="estudiantes"
+                        onClick={(e) => handleStudentsClick(e, index)}
+                        icon={<GroupsIcon />}
+                      />
 
-                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
-                          <LinkIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Enlace"
+                        actionType="link"
+                        aria-label="enlace"
+                        onClick={(e) => handleLinkClick(e, index)}
+                        icon={<LinkIcon />}
+                      />
 
-                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
-                          <PiChalkboardTeacherFill />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Vista"
+                        actionType="view"
+                        aria-label="vista"
+                        onClick={(e) => handleLinkClickTeacher(e, index)}
+                        icon={<PiChalkboardTeacherFill />}
+                      />
 
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Eliminar"
+                        actionType="delete"
+                        aria-label="eliminar"
+                        onClick={(e) => handleDeleteClick(e, index)}
+                        icon={<DeleteIcon />}
+                      />
                     </ButtonContainer>
                   </TableCell>
                 </TableRow>

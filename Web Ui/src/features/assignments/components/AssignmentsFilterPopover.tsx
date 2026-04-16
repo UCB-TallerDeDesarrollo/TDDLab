@@ -68,6 +68,16 @@ function AssignmentsFilterPopover({
             value={selectedGroup}
             label="Grupo"
             onChange={onGroupChange}
+            MenuProps={{
+              PaperProps: { sx: { bgcolor: '#F0F0F0', borderRadius: 1, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', mt: 0.5 } },
+              sx: {
+                '& .MuiMenuItem-root': { backgroundColor: 'transparent' },
+                '& .MuiMenuItem-root:hover': { backgroundColor: '#E6F0FA' },
+                '& .MuiMenuItem-root.Mui-selected': { backgroundColor: 'transparent' },
+                '& .MuiMenuItem-root.Mui-selected:hover': { backgroundColor: '#E6F0FA' },
+                '& .MuiMenuItem-root.Mui-focusVisible': { backgroundColor: 'transparent' }
+              }
+            }}
           >
             {groupList.length > 0 ? (
               groupList.map((group) => (
@@ -89,6 +99,16 @@ function AssignmentsFilterPopover({
             value={selectedSorting}
             label="Ordenar"
             onChange={onSortingChange}
+            MenuProps={{
+              PaperProps: { sx: { bgcolor: '#F0F0F0', borderRadius: 1, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', mt: 0.5 } },
+              sx: {
+                '& .MuiMenuItem-root': { backgroundColor: 'transparent' },
+                '& .MuiMenuItem-root:hover': { backgroundColor: '#E6F0FA' },
+                '& .MuiMenuItem-root.Mui-selected': { backgroundColor: 'transparent' },
+                '& .MuiMenuItem-root.Mui-selected:hover': { backgroundColor: '#E6F0FA' },
+                '& .MuiMenuItem-root.Mui-focusVisible': { backgroundColor: 'transparent' }
+              }
+            }}
           >
             <MenuItem value="A_Up_Order">Orden alfabetico ascendente</MenuItem>
             <MenuItem value="A_Down_Order">Orden alfabetico descendente</MenuItem>

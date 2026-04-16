@@ -204,32 +204,6 @@
   font-size: 22px;
 }
 
-.assignment-action-btn {
-  width: 88px;
-  height: 34px;
-  min-width: 88px;
-  padding: 10px;
-  border-radius: 5px;
-  text-transform: none;
-  font-family: "Inter", sans-serif;
-  font-size: 14px;
-  line-height: 17px;
-  font-weight: 500;
-  color: #ffffff;
-  background-color: var(--assignment-btn);
-  box-shadow: none;
-}
-
-.assignment-action-btn:hover {
-  background-color: #0f63bb;
-  box-shadow: none;
-}
-
-.assignment-action-btn.Mui-disabled {
-  background-color: var(--assignment-btn-disabled);
-  color: #ffffff;
-}
-
 .assignment-deliveries-state {
   min-height: 140px;
   display: flex;
