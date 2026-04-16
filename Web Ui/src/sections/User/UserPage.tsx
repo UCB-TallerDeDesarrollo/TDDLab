@@ -7,9 +7,10 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
-  Select, MenuItem, InputLabel, FormControl, CircularProgress,
+  Select, MenuItem, InputLabel, FormControl,
   SelectChangeEvent, Tooltip, TextField, InputAdornment
 } from "@mui/material";
+import { CircularProgress, Box } from "@mui/material";
 
 import { styled } from "@mui/system";
 import { IconifyIcon } from "../../sections/Shared/Components";
@@ -24,7 +25,6 @@ import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersB
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
-  marginTop: "20px",
 });
 
 const StyledTable = styled(Table)({
@@ -128,17 +128,9 @@ function UserPage() {
   // ------------------- RENDER -------------------
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
         <CircularProgress />
-      </div>
+      </Box>
     );
   }
 

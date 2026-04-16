@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Box } from "@mui/material";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter"; //Revisar el cambio por puerto
@@ -85,21 +86,32 @@ useEffect(() => {
   }
   return (
     <Router>
-      {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
-      )}
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRouteComponent>
-              <GestionTareas
-                userRole={authData.userRole ?? ""}
-                userGroupid={authData.usergroupid ?? -1}
-              />
-            </ProtectedRouteComponent>
-          }
-        />
+      <Box sx={{ display: "flex" }}>
+        {authData.userEmail != "" && authData.userRole !== undefined && (
+          <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+        )}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            width: authData.userRole === "teacher" ? "calc(100% - 280px)" : "100%",
+            marginLeft: authData.userRole === "teacher" ? "280px" : 0,
+            paddingTop: authData.userRole === "teacher" ? "120px" : "100px",
+            overflowX: "hidden"
+          }}
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRouteComponent>
+                  <GestionTareas
+                    userRole={authData.userRole ?? ""}
+                    userGroupid={authData.usergroupid ?? -1}
+                  />
+                </ProtectedRouteComponent>
+              }
+            />
         <Route
           path="/assignment/:id"
           element={
@@ -197,6 +209,8 @@ useEffect(() => {
        /> 
 
       </Routes>
+        </Box>
+      </Box>
     </Router>
   );
 }

@@ -5,7 +5,6 @@ import {
   AppBar,
   IconButton,
   Toolbar,
-  Typography,
 } from "@mui/material";
 
 import NavLateralMenu from "./components/LateralMenu";
@@ -27,6 +26,8 @@ interface NavbarProps {
   userRole: string;
 }
 
+import TeacherSidebar from "./components/TeacherSidebar";
+
 export default function MainMenu({
   navArrayLinks,
   userRole,
@@ -38,8 +39,37 @@ export default function MainMenu({
     (navLink) => navLink.path === location.pathname
   )?.title;
 
+  if (userRole === "teacher") {
+    return (
+      <div style={{ position: "absolute" }}>
+        <TeacherSidebar navArrayLinks={navArrayLinks} />
+        <AppBar
+          position="fixed"
+          sx={{
+            width: `calc(100% - 280px)`,
+            left: "280px",
+            background: "#0d1b2a",
+            boxShadow: "none",
+            height: 90,
+            justifyContent: "center",
+          }}
+        >
+          <Toolbar
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              paddingRight: "20px", // using 20px so it's not too far left
+            }}
+          >
+            <LoginComponent />
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ marginTop: "100px" }}>
+    <div>
       <AppBar position="fixed" sx={{ background: "#052845" }}>
         <Toolbar
           style={{
@@ -49,7 +79,7 @@ export default function MainMenu({
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
             <IconButton
               color="inherit"
               size="large"
@@ -58,14 +88,11 @@ export default function MainMenu({
             >
               <IconifyIcon icon="mdi:menu" color="white" hoverColor="#e0e0e0" />
             </IconButton>
-            <IconifyIcon icon="mdi:window" color="white" hoverColor="#e0e0e0" sx={{ marginRight: "6px", marginTop: "4px" }} />
             <NavLink
               to="/"
-              style={{ textDecoration: "none", color: "inherit" }}
+              style={{ textDecoration: "none", color: "inherit", display: "flex", alignItems: "center" }}
             >
-              <Typography variant="h5" sx={{ ...typographyVariants.h5, flexGrow: 1 }}>
-                TDDLab
-              </Typography>
+              <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "44px", width: "auto" }} />
             </NavLink>
           </div>
           <div

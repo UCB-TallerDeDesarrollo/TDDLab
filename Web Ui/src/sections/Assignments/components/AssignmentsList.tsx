@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CircularProgress, Table,
+import { Table,
   TableHead,
   TableBody,
   TableRow,
   TableCell,
   Container,
   Button,
-  SelectChangeEvent } from "@mui/material";
+  SelectChangeEvent,
+  CircularProgress,
+  Box } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 import { styled } from "@mui/system";
@@ -37,12 +39,6 @@ const CustomTableCell1 = styled(TableCell)({
 
 
 
-const LoadingContainer = styled("div")({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "100vh",
-});
 
 interface AssignmentsProps {
   ShowForm: () => void;
@@ -302,19 +298,9 @@ useEffect(() => {
  return (
   <Container>
     {isLoading ? (
-      <LoadingContainer>
-         <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <CircularProgress />
-    </div>
-      </LoadingContainer>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+        <CircularProgress />
+      </Box>
     ) : (
       <section className="Tareas">
         {/* 🔹 Botones separados de la tabla */}
