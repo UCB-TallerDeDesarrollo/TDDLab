@@ -37,7 +37,7 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { FinishSubmission } from "../../modules/Submissions/Aplication/finishSubmission";
 import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
 
-import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; 
 import { APP_ICONS } from "../../utils/IconLibrary";
 
 interface AssignmentDetailProps {
@@ -62,7 +62,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
   const assignmentid = Number(id);
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
   
-  // Mantenemos los estados de carga
   const [loadingSubmissions, setLoadingSubmissions] = useState(true); 
   const [submissions, setSubmissions] = useState<SubmissionDataObject[]>([]);
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
@@ -147,7 +146,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
   useEffect(() => {
     renderStudentRows();
-  }, [submissions, disableAdditionalGraphs]);
+  }, [submissions, disableAdditionalGraphs, showIAButton]);
 
   const handleOpenLinkDialog = () => setLinkDialogOpen(true);
   const handleCloseLinkDialog = () => {
@@ -223,12 +222,14 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
       submissions.map(async (sub) => {
         const studentEmail = await getStudentEmailById(sub.userid);
         const isDelivered = sub.status === "delivered";
+        // IMPORTANTE: El test espera "No enviado" en lugar de "En progreso"
+        const statusText = isDelivered ? "Enviado" : "No enviado"; 
         const statusClass = isDelivered ? "text-status-enviado" : "text-status-no-enviado";
 
         return (
           <TableRow key={generateUniqueId()} className="table-row-bordered">
             <TableCell>{studentEmail}</TableCell>
-            <TableCell className={statusClass}>{isDelivered ? "Enviado" : "En progreso"}</TableCell>
+            <TableCell className={statusClass}>{statusText}</TableCell>
             <TableCell align="center">
               {sub.repository_link ? (
                 <a href={sub.repository_link} target="_blank" rel="noopener noreferrer">
@@ -294,10 +295,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                   <AppIcon icon={APP_ICONS.HOME} className="detail-icon" />
                   <span><strong>Fecha límite:</strong> {formatDate(assignment.end_date.toString())}</span>
                 </div>
+
+                {/* SECCIÓN ESTADO Y ENLACE: Requerida por el test del rol estudiante */}
+                {isStudent(role) && (
+                  <div style={{ marginTop: '15px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                    <div className="detail-info-row">
+                      <span><strong>Estado:</strong> {submission?.status === "delivered" ? "Enviado" : "No enviado"}</span>
+                    </div>
+                    <div className="detail-info-row">
+                      <span><strong>Enlace:</strong> {submission?.repository_link || "No vinculado"}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {isStudent(role) && (
-                <div className="detail-actions-container">
+                <div className="detail-actions-container" style={{ marginTop: '20px' }}>
                   <Button disabled={!!submission} onClick={handleOpenLinkDialog} className="btn-std btn-primary">Iniciar tarea</Button>
                   <Button disabled={!submission?.repository_link} onClick={() => {}} className="btn-std btn-primary">Ver gráfica</Button>
                   <Button disabled={submission?.status !== "in progress"} onClick={handleOpenCommentDialog} className="btn-std btn-primary">Finalizar tarea</Button>

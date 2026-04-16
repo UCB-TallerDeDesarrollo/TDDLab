@@ -59,7 +59,7 @@ function Assignments({
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
   
-  const [authData, setAuthData] = useGlobalState("authData");
+  const [authData] = useGlobalState("authData");
 
   // Memorizamos la función de ordenamiento para evitar re-renders infinitos
   const orderAssignments = useCallback((assignmentsArray: AssignmentDataObject[], sortingMode: string) => {
