@@ -7,9 +7,8 @@ import { Table,
   TableCell,
   Container,
   Button,
-  SelectChangeEvent,
-  CircularProgress,
-  Box } from "@mui/material";
+  SelectChangeEvent } from "@mui/material";
+import { FullScreenLoader } from "../../../components/FullScreenLoader";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 import { styled } from "@mui/system";
@@ -298,9 +297,7 @@ useEffect(() => {
  return (
   <Container>
     {isLoading ? (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <CircularProgress />
-      </Box>
+      <FullScreenLoader variant="page" />
     ) : (
       <section className="Tareas">
         {/* 🔹 Botones separados de la tabla */}
