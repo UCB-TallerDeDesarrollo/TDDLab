@@ -7,6 +7,8 @@ import {
   Button,
   Box,
   Grid,
+  Typography,
+  Divider,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
@@ -30,8 +32,9 @@ interface PracticesProps {
   userRole: string;
 }
 
-function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
+function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
+  const isTeacher = userRole?.toLowerCase() === 'docente' || userRole?.toLowerCase() === 'teacher';
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -127,22 +130,24 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <PracticesContainer>
       <section className="Practicas">
+        <Box sx={{ width: isTeacher ? '82%' : '100%', margin: '0 auto', mt: 4 }}>
         {/* Encabezado */}
-        <Box sx={{ marginBottom: "24px" }}>
-          <div style={{ ...typographyVariants.h5, marginBottom: "20px" }}>
-            Prácticas
-          </div>
+        <Box sx={{ pb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', mb: 1 }}>
+            <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
+              Prácticas
+            </Typography>
 
-          {/* Controles */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "12px",
-            }}
-          >
+            {/* Controles */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "12px",
+              }}
+            >
             <SortingComponent
               selectedSorting={selectedSorting}
               onChangeHandler={handleOrderPractices}
@@ -175,7 +180,9 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             >
               Crear
             </Button>
+            </Box>
           </Box>
+          <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
         </Box>
 
         {/* Listado apilado de tarjetas */}
@@ -211,6 +218,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             onClose={() => window.location.reload()}
           />
         )}
+        </Box>
       </section>
     </PracticesContainer>
   );
