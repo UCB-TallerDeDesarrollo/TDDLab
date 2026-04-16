@@ -35,7 +35,7 @@ const SettingsPage = lazy(() => import("./features/settings/pages/SettingsPage")
 
 const navArrayLinks = [
   {
-    title: "Home",
+    title: "Inicio",
     path: "/",
     icon: <HomeOutlinedIcon />,
     access: ["admin", "student", "teacher"],

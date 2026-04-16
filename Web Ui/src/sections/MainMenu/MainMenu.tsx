@@ -115,7 +115,7 @@ function resolveActivePath(pathname: string): string {
 
 function getDisplayTitle(title: string): string {
   const map: Record<string, string> = {
-    Home: "HOME",
+    Inicio: "INICIO",
     Grupos: "GRUPOS",
     Tareas: "TAREAS",
     "Mis Practicas": "MIS PRÁCTICAS",
@@ -233,8 +233,8 @@ export default function MainMenu({
                               transform: "translateX(-50%)",
                               bottom: 6,
                               width:
-                                item.title === "Home"
-                                  ? 57
+                                item.title === "Inicio"
+                                  ? 72
                                   : item.title === "Mis Practicas"
                                   ? 145
                                   : item.title === "Usuarios"

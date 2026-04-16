@@ -6,10 +6,10 @@ import TddWordmark from "./TddWordmark";
 
 const HeroSection = styled(Box)(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "367px minmax(320px, 1fr)",
+  gridTemplateColumns: "379px 368px",
   alignItems: "center",
   columnGap: theme.spacing(12),
-  maxWidth: 880,
+  maxWidth: 843,
   marginLeft: theme.spacing(15.75),
   marginTop: theme.spacing(8),
   [theme.breakpoints.down("lg")]: {
@@ -25,26 +25,10 @@ const HeroSection = styled(Box)(({ theme }) => ({
   },
 }));
 
-const IsotypeCard = styled(Box)(({ theme }) => ({
-  width: 367,
-  height: 367,
-  borderRadius: 10,
-  display: "grid",
-  placeItems: "center",
-  backgroundColor: "rgba(0, 0, 0, 0.004)",
-  boxShadow: "-2px 4px 4px rgba(0, 0, 0, 0.25), 4px 2px 2px rgba(0, 0, 0, 0.12)",
-  [theme.breakpoints.down("sm")]: {
-    width: 280,
-    height: 280,
-  },
-}));
-
 function HomeHero() {
   return (
     <HeroSection>
-      <IsotypeCard>
-        <TddIsotype />
-      </IsotypeCard>
+      <TddIsotype />
       <TddWordmark />
     </HeroSection>
   );
