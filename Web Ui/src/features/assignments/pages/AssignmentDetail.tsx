@@ -100,27 +100,30 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             <div className="assignment-student-actions">
               <Button
                 variant="contained"
-                className="assignment-action-btn"
-                disabled={Boolean(studentSubmission)}
-                onClick={openLinkDialog}
+                className={`assignment-action-btn ${Boolean(studentSubmission) ? 'is-secondary' : ''}`}
+                onClick={() => {
+                  if (!Boolean(studentSubmission)) openLinkDialog();
+                }}
               >
                 Iniciar tarea
               </Button>
 
               <Button
                 variant="contained"
-                className="assignment-action-btn"
-                disabled={!studentSubmission?.repository_link}
-                onClick={redirectStudentToGraph}
+                className={`assignment-action-btn ${!studentSubmission?.repository_link ? 'is-secondary' : ''}`}
+                onClick={() => {
+                  if (studentSubmission?.repository_link) redirectStudentToGraph();
+                }}
               >
                 Ver gráfica
               </Button>
 
               <Button
                 variant="contained"
-                className="assignment-action-btn"
-                disabled={isTaskInProgress}
-                onClick={openCommentDialog}
+                className={`assignment-action-btn ${isTaskInProgress ? 'is-secondary' : ''}`}
+                onClick={() => {
+                  if (!isTaskInProgress) openCommentDialog();
+                }}
               >
                 Finalizar tarea
               </Button>
@@ -128,9 +131,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
               {showIAButton && (
                 <Button
                   variant="contained"
-                  className="assignment-action-btn"
-                  disabled={!studentSubmission?.repository_link}
-                  onClick={redirectStudentToAssistant}
+                  className={`assignment-action-btn ${!studentSubmission?.repository_link ? 'is-secondary' : ''}`}
+                  onClick={() => {
+                    if (studentSubmission?.repository_link) redirectStudentToAssistant();
+                  }}
                 >
                   Asistente IA
                 </Button>

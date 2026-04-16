@@ -215,14 +215,30 @@
   font-size: 14px;
   line-height: 17px;
   font-weight: 500;
-  color: #ffffff;
-  background-color: var(--assignment-btn);
-  box-shadow: none;
+  color: #ffffff !important;
+  background-color: var(--assignment-btn) !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, transform 0.1s ease !important;
 }
 
 .assignment-action-btn:hover {
-  background-color: #0f63bb;
-  box-shadow: none;
+  background-color: var(--assignment-navy) !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+}
+
+.assignment-action-btn:active {
+  transform: scale(0.98);
+}
+
+.assignment-action-btn.is-secondary {
+  background-color: #898989 !important;
+  color: #ffffff !important;
+}
+
+.assignment-action-btn.is-secondary:hover {
+  background-color: #333333 !important;
+  color: #ffffff !important;
 }
 
 .assignment-action-btn.Mui-disabled {

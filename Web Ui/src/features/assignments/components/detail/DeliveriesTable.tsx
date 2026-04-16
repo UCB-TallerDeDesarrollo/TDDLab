@@ -111,9 +111,10 @@ export function DeliveriesTable({
                 <TableCell>
                   <Button
                     variant="contained"
-                    className="assignment-action-btn"
-                    disabled={!hasRepository}
-                    onClick={() => onOpenGraph(row)}
+                    className={`assignment-action-btn ${!hasRepository ? 'is-secondary' : ''}`}
+                    onClick={() => {
+                      if (hasRepository) onOpenGraph(row);
+                    }}
                   >
                     Ver gráfica
                   </Button>
@@ -121,9 +122,10 @@ export function DeliveriesTable({
                 <TableCell>
                   <Button
                     variant="contained"
-                    className="assignment-action-btn"
-                    disabled={!hasRepository}
-                    onClick={() => onOpenAssistant(row)}
+                    className={`assignment-action-btn ${!hasRepository ? 'is-secondary' : ''}`}
+                    onClick={() => {
+                      if (hasRepository) onOpenAssistant(row);
+                    }}
                   >
                     Asistente
                   </Button>
@@ -131,9 +133,10 @@ export function DeliveriesTable({
                 <TableCell>
                   <Button
                     variant="contained"
-                    className="assignment-action-btn"
-                    disabled={!hasRepository || !showAdditionalGraphs}
-                    onClick={() => onOpenAdditionalGraphs(row)}
+                    className={`assignment-action-btn ${!hasRepository || !showAdditionalGraphs ? 'is-secondary' : ''}`}
+                    onClick={() => {
+                      if (hasRepository && showAdditionalGraphs) onOpenAdditionalGraphs(row);
+                    }}
                   >
                     Ver
                   </Button>
