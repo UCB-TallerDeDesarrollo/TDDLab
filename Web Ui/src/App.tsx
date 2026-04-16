@@ -109,6 +109,7 @@ useEffect(() => {
                   <GestionTareas
                     userRole={authData.userRole ?? ""}
                     userGroupid={authData.usergroupid ?? -1}
+                    userid={authData.userid ?? -1}
                   />
                 </ProtectedRouteComponent>
               }

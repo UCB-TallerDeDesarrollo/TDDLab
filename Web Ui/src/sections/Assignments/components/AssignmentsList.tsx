@@ -25,6 +25,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { typographyVariants } from "../../../styles/typography";
+import AssignmentDetailModal from "./AssignmentDetailModal";
 
 const StyledTable = styled(Table)({
   width: "82%",
@@ -49,6 +50,7 @@ interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
   userGroupid: number | number[] ;
+  userid: number;
   onGroupChange: (groupId: number) => void;
 }
 
@@ -56,6 +58,7 @@ function Assignments({
                        ShowForm: showForm,
                        userRole,
                        userGroupid,
+                       userid,
                        onGroupChange,
                      }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -67,6 +70,8 @@ function Assignments({
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -260,7 +265,9 @@ useEffect(() => {
       : assignments;
 
   const handleClickDetail = (index: number) => {
-    navigate(`/assignment/${filteredAssignments[index].id}`);
+    const assignmentId = filteredAssignments[index].id;
+    setSelectedAssignmentId(assignmentId);
+    setDetailModalOpen(true);
   };
 
   const handleClickDelete = (index: number) => {
@@ -425,6 +432,19 @@ useEffect(() => {
               } else if (authData?.usergroupid) {
                 loadAssignmentsByGroupId(authData.usergroupid);
               }
+            }}
+          />
+        )}
+
+        {selectedAssignmentId !== null && (
+          <AssignmentDetailModal
+            open={detailModalOpen}
+            assignmentId={selectedAssignmentId}
+            role={userRole}
+            userid={userid}
+            onClose={() => {
+              setDetailModalOpen(false);
+              setSelectedAssignmentId(null);
             }}
           />
         )}
