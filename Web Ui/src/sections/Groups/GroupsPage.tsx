@@ -341,38 +341,38 @@ function Groups() {
                   <TableCell>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
-                      <Tooltip title="Editar grupo" arrow>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
+                      <Tooltip title="Editar" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
+                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#CE9A00', filter: 'drop-shadow(0px 0px 8px #CE9A00)' } }}>
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
+                      <Tooltip title="Duplicar" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
+                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#CE9A00', filter: 'drop-shadow(0px 0px 8px #CE9A00)' } }}>
                           <AutoAwesomeMotionIcon />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Participantes" arrow>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
+                      <Tooltip title="Grupos" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
+                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#006B61', filter: 'drop-shadow(0px 0px 8px #006B61)' } }}>
                           <GroupsIcon />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
+                      <Tooltip title="Enlace" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
+                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#355AA1', filter: 'drop-shadow(0px 0px 8px #355AA1)' } }}>
                           <LinkIcon />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
+                      <Tooltip title="Vista" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
+                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#355AA1', filter: 'drop-shadow(0px 0px 8px #355AA1)' } }}>
                           <PiChalkboardTeacherFill />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
+                      <Tooltip title="Eliminar" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
+                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#890909', filter: 'drop-shadow(0px 0px 8px #890909)' } }}>
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>
