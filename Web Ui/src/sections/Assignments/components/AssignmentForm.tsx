@@ -1,15 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import Button from "@mui/material/Button";
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Dialog, DialogActions, DialogContent, DialogTitle,
+  TextField, FormControl, InputLabel, Select, MenuItem,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -19,9 +12,41 @@ import AssignmentsRepository from "../../../modules/Assignments/repository/Assig
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
-import { SelectChangeEvent } from '@mui/material/Select';
+import { SelectChangeEvent } from "@mui/material/Select";
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+
+const styles = {
+  validationDialog: {
+    title: {
+      base: {
+        display: "flex",
+        alignItems: "center",
+        gap: 1.5,
+        fontSize: "1rem",
+        fontWeight: 400,
+        py: 2,
+        fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
+      },
+      error: { color: "#d32f2f" },
+      success: { color: "#2e7d32" },
+    },
+    icon: {
+      error: { color: "#d32f2f", fontSize: 22 },
+      success: { color: "#2e7d32", fontSize: 22 },
+    },
+    actions: { pb: 2, pr: 2 },
+    closeButton: {
+      error: { color: "#d32f2f", textTransform: "none" as const, fontSize: "0.875rem" },
+      success: { color: "#2e7d32", textTransform: "none" as const, fontSize: "0.875rem" },
+    },
+  },
+  form: {
+    dialogTitle: { fontSize: "0.8rem" },
+    cancelButton: { color: "#555", textTransform: "none" as const },
+    createButton: { textTransform: "none" as const },
+  },
+};
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
@@ -37,37 +62,33 @@ const ValidationDialog = ({
   closeText,
   onClose,
 }: ValidationDialogProps) => {
-  const isError = title.toLowerCase().includes('error');
+  const isError = title.toLowerCase().includes("error");
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle 
-        sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 1.5,
-          color: isError ? '#d32f2f' : '#2e7d32',
-          fontSize: '1rem',
-          fontWeight: 400,
-          py: 2,
-          fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
+      <DialogTitle
+        sx={{
+          ...styles.validationDialog.title.base,
+          ...(isError
+            ? styles.validationDialog.title.error
+            : styles.validationDialog.title.success),
         }}
       >
         {isError ? (
-          <Warning sx={{ color: '#d32f2f', fontSize: 22 }} />
+          <Warning sx={styles.validationDialog.icon.error} />
         ) : (
-          <CheckCircle sx={{ color: '#2e7d32', fontSize: 22 }} />
+          <CheckCircle sx={styles.validationDialog.icon.success} />
         )}
         {title}
       </DialogTitle>
-      <DialogActions sx={{ pb: 2, pr: 2 }}>
-        <Button 
+      <DialogActions sx={styles.validationDialog.actions}>
+        <Button
           onClick={onClose}
-          style={{ 
-            color: isError ? '#d32f2f' : '#2e7d32',
-            textTransform: 'none',
-            fontSize: '0.875rem'
-          }}
+          style={
+            isError
+              ? styles.validationDialog.closeButton.error
+              : styles.validationDialog.closeButton.success
+          }
         >
           {closeText}
         </Button>
@@ -110,7 +131,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
-    
+
     if (assignmentData.start_date > assignmentData.end_date) {
       setValidationMessage("Error: La fecha de inicio no puede ser posterior a la fecha de fin");
       setValidationDialogOpen(true);
@@ -121,22 +142,22 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     try {
       const assignments = await assignmentsRepository.getAssignmentsByGroupid(assignmentData.groupid);
       const duplicateAssignment = assignments.find(
-        (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
+        (assignment) =>
+          assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
       );
-    
+
       if (duplicateAssignment) {
         setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
         setValidationDialogOpen(true);
         setSave(false);
         return;
       }
-    
+
       await createAssignments.createAssignment(assignmentData);
       setValidationMessage("Tarea creada exitosamente");
       setValidationDialogOpen(true);
     } catch (error) {
       if (error instanceof Error) {
-        // Verifica si el mensaje del backend menciona el límite de caracteres
         if (error.message.includes("Limite de caracteres excedido")) {
           setValidationMessage("Error: El título no puede tener más de 50 caracteres.");
         } else {
@@ -149,7 +170,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     } finally {
       setSave(false);
     }
-    
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -162,7 +182,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: string,
+    field: string
   ) => {
     const { value } = event.target;
     setAssignmentData((prevData) => ({
@@ -188,26 +208,26 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   };
 
   useEffect(() => {
-  const effectiveGroupId =
-    groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
+    const effectiveGroupId =
+      groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
 
-  setSave(false);
-  setAssignmentData({
-    id: 0,
-    title: "",
-    description: "",
-    start_date: new Date(),
-    end_date: new Date(),
-    state: "pending",
-    link: "",
-    comment: "",
-    groupid: effectiveGroupId,
-  });
-}, [open, groupid]);
+    setSave(false);
+    setAssignmentData({
+      id: 0,
+      title: "",
+      description: "",
+      start_date: new Date(),
+      end_date: new Date(),
+      state: "pending",
+      link: "",
+      comment: "",
+      groupid: effectiveGroupId,
+    });
+  }, [open, groupid]);
 
   const groupRepository = new GroupsRepository();
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
-  
+
   useEffect(() => {
     const fetchGroups = async () => {
       const getGroups = new GetGroups(groupRepository);
@@ -215,7 +235,9 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
 
       if (auth?.userRole === "teacher") {
         const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
-        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
+        list = (
+          await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))
+        ).filter(Boolean) as GroupDataObject[];
       } else if (auth?.userRole === "admin") {
         list = await getGroups.getGroups();
       } else if (auth?.userRole === "student") {
@@ -227,15 +249,17 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
         if (!ids.length) {
           ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
         }
-        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
+        list = (
+          await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))
+        ).filter(Boolean) as GroupDataObject[];
       } else {
         list = [];
       }
 
       setGroups(list);
 
-      setAssignmentData(prev => {
-        const keepCurrent = list.some(g => g.id === prev.groupid);
+      setAssignmentData((prev) => {
+        const keepCurrent = list.some((g) => g.id === prev.groupid);
         const fallbackId = list[0]?.id ?? 0;
         return { ...prev, groupid: keepCurrent ? prev.groupid : fallbackId };
       });
@@ -248,13 +272,11 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8rem" }}>Crear tarea</DialogTitle>
+          <DialogTitle style={styles.form.dialogTitle}>Crear tarea</DialogTitle>
           <DialogContent>
             <section className="mb-4">
               <FormControl fullWidth variant="outlined" margin="normal">
-                <InputLabel htmlFor="group-select">
-                  Grupo
-                </InputLabel>
+                <InputLabel htmlFor="group-select">Grupo</InputLabel>
                 <Select
                   id="group-select"
                   value={assignmentData.groupid}
@@ -271,10 +293,14 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
                 </Select>
               </FormControl>
             </section>
-            
+
             <TextField
               error={save && !assignmentData.title.trim()}
-              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
+              helperText={
+                save && !assignmentData.title.trim()
+                  ? "El título es requerido"
+                  : ""
+              }
               autoFocus
               margin="dense"
               id="assignment-title"
@@ -286,7 +312,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               onChange={(e) => handleInputChange(e, "title")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
-            
+
             <TextField
               multiline
               rows={3.7}
@@ -300,25 +326,22 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               onChange={(e) => handleInputChange(e, "description")}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
-            
+
             <section className="mt-4">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
               </LocalizationProvider>
             </section>
           </DialogContent>
-          
+
           <DialogActions>
-            <Button
-              onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
-            >
+            <Button onClick={handleCancel} style={styles.form.cancelButton}>
               Cancelar
             </Button>
             <Button
               onClick={handleSaveClick}
               color="primary"
-              style={{ textTransform: "none" }}
+              style={styles.form.createButton}
               disabled={formInvalid()}
             >
               Crear
@@ -326,7 +349,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           </DialogActions>
         </>
       )}
-      
+
       {validationDialogOpen && (
         <ValidationDialog
           open={validationDialogOpen}

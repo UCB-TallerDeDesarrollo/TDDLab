@@ -3,20 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Button,
+  Table, TableHead, TableBody, TableRow, TableCell, SelectChangeEvent,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import AddIcon from "@mui/icons-material/Add";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
+import CreateButton from "../GeneralPurposeComponents/CreateButton";
+import ActionSelect from "../GeneralPurposeComponents/ActionSelect";
 
 const StyledTable = styled(Table)({
   width: "100%",
@@ -31,20 +27,20 @@ interface PracticesProps {
 
 function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
+
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<
-    number | null
-  >(null);
-  const navigate = useNavigate();
+  const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<number | null>(null);
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);
 
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
+
+  const navigate = useNavigate();
+
   const practicesRepository = new PracticesRepository();
   const deletePractice = new DeletePractice(practicesRepository);
-
-  // Obtener prácticas
 
   const fetchData = async () => {
     try {
@@ -73,10 +69,10 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleConfirmDelete = async () => {
     try {
       if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
-        
         await deletePractice.DeletePractice(
           practices[selectedPracticeIndex].id
         );
+
         const updatedPractices = [...practices];
         updatedPractices.splice(selectedPracticeIndex, 1);
         setPractices(updatedPractices);
@@ -85,6 +81,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     } catch (error) {
       console.error(error);
     }
+
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
   };
@@ -92,6 +89,18 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
+
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    setSelectedFilter(event.target.value);
+  };
+
+  const filterOptions = [
+    { value: "", label: "Filtrar" },
+    { value: "all", label: "Todas" },
+    { value: "pending", label: "Pendientes" },
+    { value: "completed", label: "Completadas" },
+  ];
+
   return (
     <div style={{ width: "95%", padding: "0 16px", margin: "0 auto" }}>
       <section className="Practicas" style={{ width: "100%", margin: "0 auto" }}>
@@ -107,41 +116,37 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             width: "100%",
           }}
         >
-          <h2 style={{ margin: 0, fontWeight: 700, fontSize: "24px" }}>Practicas</h2>
+          <h2 style={{ margin: 0, fontWeight: 700, fontSize: "24px" }}>
+            Practicas
+          </h2>
+
           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              style={{
-                textTransform: "none",
-                minWidth: "88px",
-                borderColor: "#D1D5DB",
-                color: "#1F2937",
-                backgroundColor: "white",
-                boxShadow: "none",
-              }}
-            >
-              Filtrar
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
+            <ActionSelect
+              value={selectedFilter}
+              onChange={handleFilterChange}
+              options={filterOptions}
+              minWidth="120px"
+            />
+
+            <CreateButton
               onClick={showForm}
-              style={{ textTransform: "none", minWidth: "100px" }}
-            >
-              Crear +
-            </Button>
+              label="Crear +"
+              minWidth="100px"
+            />
           </div>
         </div>
+
         <StyledTable>
           <TableHead>
             <TableRow>
               <TableCell colSpan={2} sx={{ borderBottom: "1px solid #D1D5DB" }}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Listado</div>
+                <div style={{ fontWeight: 600, fontSize: "16px" }}>
+                  Listado
+                </div>
               </TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {practices.map((practice, index) => (
               <Practice
@@ -156,6 +161,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             ))}
           </TableBody>
         </StyledTable>
+
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
@@ -167,6 +173,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             onDelete={handleConfirmDelete}
           />
         )}
+
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}

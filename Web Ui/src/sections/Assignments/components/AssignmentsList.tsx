@@ -1,40 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CircularProgress, Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  Button,
-  SelectChangeEvent } from "@mui/material";
+import { CircularProgress, Container, SelectChangeEvent } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-import AddIcon from "@mui/icons-material/Add";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
-import Assignment from "./Assignment";
+import { AssignmentActions, ButtonContainer } from "./Assignment"; // ← imports corregidos
 import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
 import GroupFilter from "./GroupFilter";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-
-const StyledTable = styled(Table)({
-  width: "100%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
-const CustomTableCell1 = styled(TableCell)({
-  width: "100%",
-});
-
-
+import CreateButton from "../../GeneralPurposeComponents/CreateButton";
+import { TableView, TableViewColumn } from "../../Shared/Components/TableView";
 
 const LoadingContainer = styled("div")({
   display: "flex",
@@ -46,42 +27,40 @@ const LoadingContainer = styled("div")({
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number | number[] ;
+  userGroupid: number | number[];
   onGroupChange: (groupId: number) => void;
 }
 
 function Assignments({
-                       ShowForm: showForm,
-                       userRole,
-                       userGroupid,
-                       onGroupChange,
-                     }: Readonly<AssignmentsProps>) {
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  ShowForm: showForm,
+  userRole,
+  userGroupid,
+  onGroupChange,
+}: Readonly<AssignmentsProps>) {
+    const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
-  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-      number | null
-  >(null);
+  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
-  const assignmentsRepository = new AssignmentsRepository();
-
-  const deleteAssignmentUseCase = new DeleteAssignment(assignmentsRepository);
-
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
-  const groupRepository = new GroupsRepository();
-  const getGroups = new GetGroups(groupRepository);
+  const [editStates, setEditStates] = useState<Record<number, { groupName: string; isOpen: boolean }>>({});
+
+  const navigate = useNavigate();
+  const location = useLocation();
   const [authData, setAuthData] = useGlobalState("authData");
 
+  const assignmentsRepository = new AssignmentsRepository();
+  const deleteAssignmentUseCase = new DeleteAssignment(assignmentsRepository);
+  const groupRepository = new GroupsRepository();
+  const getGroups = new GetGroups(groupRepository);
+
   const orderAssignments = (
-      assignmentsArray: AssignmentDataObject[],
-      selectedSorting: string
+    assignmentsArray: AssignmentDataObject[],
+    selectedSorting: string
   ) => {
     if (assignmentsArray.length == 0) {
       return;
@@ -102,32 +81,40 @@ function Assignments({
     setIsLoading(true);
     let allGroups: GroupDataObject[] = [];
     if (userRole === "student") {
-      if (localStorage.getItem('userGroups') === null) {
-        const studentGroups = userGroupid
-        localStorage.setItem('userGroups', JSON.stringify(studentGroups));
+      if (localStorage.getItem("userGroups") === null) {
+        const studentGroups = userGroupid;
+        localStorage.setItem("userGroups", JSON.stringify(studentGroups));
         if (Array.isArray(studentGroups)) {
-          allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
-        }
-        else{
+          allGroups = await Promise.all(
+            studentGroups.map((group) => getGroups.getGroupById(group))
+          );
+        } else {
           allGroups = await Promise.all([getGroups.getGroupById(studentGroups)]);
         }
-      } else if(localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
+      } else if (localStorage.getItem("userGroups") === "[0]") {
         const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
-        localStorage.setItem('userGroups', JSON.stringify(studentGroups));
-        allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
-      }
-      else {
-        const studentGroups: number[] = JSON.parse(localStorage.getItem('userGroups') ?? '[]');
-        allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
+        localStorage.setItem("userGroups", JSON.stringify(studentGroups));
+        allGroups = await Promise.all(
+          studentGroups.map((group) => getGroups.getGroupById(group))
+        );
+      } else {
+        const studentGroups: number[] = JSON.parse(
+          localStorage.getItem("userGroups") ?? "[]"
+        );
+        allGroups = await Promise.all(
+          studentGroups.map((group) => getGroups.getGroupById(group))
+        );
       }
     } else if (userRole === "teacher") {
       const teacherGroupIds = await getGroups.getGroupsByUserId(authData.userid ?? -1);
-      allGroups = await Promise.all(teacherGroupIds.map((id) => getGroups.getGroupById(id)));
+      allGroups = await Promise.all(
+        teacherGroupIds.map((id) => getGroups.getGroupById(id))
+      );
     } else if (userRole === "admin") {
       allGroups = await getGroups.getGroups();
     }
 
-    if(selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
+    if (selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
       await loadAssignmentsByGroupId(allGroups[0].id);
     }
 
@@ -136,51 +123,50 @@ function Assignments({
   }
 
   const fetchData = async () => {
-  try {
-    const allGroups = await getUserGroups();
-    setGroupList(allGroups);
-
-    const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
-    const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
-
-    const savedSelectedGroup = localStorage.getItem("selectedGroup");
-    const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
-    const groupIdAuth = authData?.usergroupid ?? null;
-
-    let firstUserGroup: number | null = null;
     try {
-      const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
-      if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
-        firstUserGroup = storedUserGroups[0];
+      const allGroups = await getUserGroups();
+      setGroupList(allGroups);
+
+      const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
+      const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
+
+      const savedSelectedGroup = localStorage.getItem("selectedGroup");
+      const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
+      const groupIdAuth = authData?.usergroupid ?? null;
+
+      let firstUserGroup: number | null = null;
+      try {
+        const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
+        if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
+          firstUserGroup = storedUserGroups[0];
+        }
+      } catch {}
+
+      const finalGroupId =
+        groupIdUrl ||
+        groupIdLocal ||
+        groupIdAuth ||
+        firstUserGroup ||
+        allGroups?.[0]?.id ||
+        null;
+
+      if (finalGroupId) {
+        await loadAssignmentsByGroupId(finalGroupId);
+      } else {
+        setSelectedGroup(0);
+        setAssignments([]);
       }
-    } catch {}
-
-    const finalGroupId =
-      groupIdUrl ||
-      groupIdLocal ||
-      groupIdAuth ||
-      firstUserGroup ||
-      allGroups?.[0]?.id ||
-      null;
-
-    if (finalGroupId) {
-      await loadAssignmentsByGroupId(finalGroupId);
-    } else {
-      setSelectedGroup(0);
-      setAssignments([]);
+    } catch (error) {
+      console.error("Error en fetchData:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error en fetchData:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-useEffect(() => {
-  fetchData();
-}, [location]);
+  useEffect(() => {
+    fetchData();
+  }, [location]);
 
-  // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {
     const handler = () => {
       const savedSelectedGroup = localStorage.getItem("selectedGroup");
@@ -189,14 +175,14 @@ useEffect(() => {
         loadAssignmentsByGroupId(groupId);
       }
     };
-    globalThis.addEventListener('assignment-updated', handler as EventListener);
-    return () => globalThis.removeEventListener('assignment-updated', handler as EventListener);
+    globalThis.addEventListener("assignment-updated", handler as EventListener);
+    return () =>
+      globalThis.removeEventListener("assignment-updated", handler as EventListener);
   }, [selectedGroup]);
 
   useEffect(() => {
     const fetchAssignmentsByGroup = async () => {
       try {
-        // Preferir grupo seleccionado guardado
         const savedSelectedGroup = localStorage.getItem("selectedGroup");
         const preferredGroupId = savedSelectedGroup
           ? parseInt(savedSelectedGroup, 10)
@@ -207,7 +193,7 @@ useEffect(() => {
         }
 
         const data = await assignmentsRepository.getAssignmentsByGroupid(preferredGroupId);
-        setSelectedGroup(preferredGroupId==-1 ? 0 : preferredGroupId);
+        setSelectedGroup(preferredGroupId == -1 ? 0 : preferredGroupId);
         setAssignments(data);
         orderAssignments([...data], selectedSorting);
       } catch (error) {
@@ -224,13 +210,11 @@ useEffect(() => {
   };
 
   const loadAssignmentsByGroupId = async (groupId: number) => {
-    setSelectedGroup(groupId==-1 ? 0 : groupId);
+    setSelectedGroup(groupId == -1 ? 0 : groupId);
     onGroupChange(groupId);
 
-    // Guardar en localStorage
     localStorage.setItem("selectedGroup", groupId.toString());
 
-    // Actualizar y guardar en authData
     const updatedAuthData = { ...authData, usergroupid: groupId };
     setAuthData(updatedAuthData);
 
@@ -254,8 +238,8 @@ useEffect(() => {
   };
 
   const filteredAssignments = selectedGroup
-      ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-      : assignments;
+    ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
+    : assignments;
 
   const handleClickDetail = (index: number) => {
     navigate(`/assignment/${filteredAssignments[index].id}`);
@@ -278,15 +262,14 @@ useEffect(() => {
 
     try {
       const assignmentToDelete = assignments[selectedAssignmentIndex];
-      console.log('Eliminando assignment:', assignmentToDelete);
+      console.log("Eliminando assignment:", assignmentToDelete);
 
       const resutlt = await deleteAssignmentUseCase.deleteAssignment(assignmentToDelete.id);
-      console.log('Resultado obtenido al intentar eliminar eliminar:', resutlt);
+      console.log("Resultado obtenido al intentar eliminar eliminar:", resutlt);
 
       setValidationDialogOpen(true);
-
     } catch (error: any) {
-      console.error('Error eliminando assignment:', error);
+      console.error("Error eliminando assignment:", error);
     } finally {
       setConfirmationOpen(false);
       setDeleteLoading(false);
@@ -298,124 +281,106 @@ useEffect(() => {
     setHoveredRow(index);
   };
 
- return (
-  <Container>
-    {isLoading ? (
-      <LoadingContainer>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            width: "100vw",
-          }}
-        >
+  // Tipo auxiliar
+  interface AssignmentTableRow {
+    assignment: AssignmentDataObject;
+    index: number;
+    groupName: string;
+    isEditFormOpen: boolean;
+    onEditClick: () => void;
+    onCloseEditForm: () => void;
+  }
+
+  const assignmentRows: AssignmentTableRow[] = filteredAssignments.map((assignment, index) => ({
+    assignment,
+    index,
+    groupName: editStates[assignment.id]?.groupName ?? "",
+    isEditFormOpen: editStates[assignment.id]?.isOpen ?? false,
+    onEditClick: () =>
+      setEditStates((prev) => ({
+        ...prev,
+        [assignment.id]: { ...prev[assignment.id], isOpen: true },
+      })),
+    onCloseEditForm: () =>
+      setEditStates((prev) => ({
+        ...prev,
+        [assignment.id]: { ...prev[assignment.id], isOpen: false },
+      })),
+  }));
+
+  const assignmentColumns: TableViewColumn<AssignmentTableRow>[] = [
+    {
+      id: "title",
+      header: "Tareas",
+      headerSx: { fontWeight: 560, color: "#333", fontSize: "1rem" },
+      renderCell: ({ assignment }) => assignment.title,
+    },
+    {
+      id: "actions",
+      header: (
+        <ButtonContainer>
+          <GroupFilter
+            selectedGroup={selectedGroup}
+            groupList={groupList}
+            onChangeHandler={handleGroupChange}
+            defaultName={
+              groupList.find((g) => g.id === selectedGroup)?.groupName ||
+              groupList[0]?.groupName ||
+              "Selecciona un grupo"
+            }
+          />
+          <SortingComponent
+            selectedSorting={selectedSorting}
+            onChangeHandler={handleOrderAssignments}
+          />
+          {userRole !== "student" && (
+            <CreateButton onClick={showForm} label="Crear" minWidth="90px" />
+          )}
+        </ButtonContainer>
+      ),
+      renderCell: ({ assignment, index, groupName, isEditFormOpen, onEditClick, onCloseEditForm }) => (
+        <AssignmentActions
+          assignment={assignment}
+          index={index}
+          handleClickDetail={handleClickDetail}
+          handleClickDelete={handleClickDelete}
+          handleRowHover={handleRowHover}
+          role={userRole}
+          groupName={groupName}
+          isEditFormOpen={isEditFormOpen}
+          onEditClick={onEditClick}
+          onCloseEditForm={onCloseEditForm}
+        />
+      ),
+    },
+  ];
+
+  return (
+    <Container>
+      {isLoading ? (
+        <LoadingContainer>
           <CircularProgress />
-        </div>
-      </LoadingContainer>
-    ) : (
-      <section className="Tareas">
-        
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between", 
-            alignItems: "center",            
-            width: "100%",                   
-            marginBottom: "16px",  
-            marginLeft: "15px",
-          }}
-        >
-          <span
-            style={{
-              fontWeight: 560,
-              color: "#333",
-              fontSize: "1.4rem",
-            }}
-          >
-            Tareas
-          </span>
+        </LoadingContainer>
+      ) : (
+        <div className="Tareas">
+          <TableView
+            rows={assignmentRows}
+            columns={assignmentColumns}
+            getRowKey={({ assignment }) => assignment.id}
+            tableSx={{ width: "82%", marginLeft: "auto", marginRight: "auto" }}
+            headRowSx={{ borderBottom: "2px solid #E7E7E7" }}
+            onRowClick={({ index }) => handleClickDetail(index)}
+            onRowMouseEnter={({ index }) => handleRowHover(index)}
+            onRowMouseLeave={() => handleRowHover(null)}
+          />
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              marginRight: "45px",
-              flexWrap: "nowrap",
-            }}
-          >
-            <GroupFilter
-              selectedGroup={selectedGroup}
-              groupList={groupList}
-              onChangeHandler={handleGroupChange}
-              defaultName={
-                groupList.find((group) => group.id == selectedGroup)?.groupName ||
-                groupList[0]?.groupName ||
-                "Selecciona un grupo"
-              }
-            />
-            <SortingComponent
-              selectedSorting={selectedSorting}
-              onChangeHandler={handleOrderAssignments}
-            />
-            {userRole !== "student" && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                sx={{
-                  borderRadius: "10px",
-                  textTransform: "none",
-                  fontSize: "0.95rem",
-                  paddingX: "4px",
-                  paddingY: "5px",
-                  minWidth: "90px",
-                  whiteSpace: "nowrap",
-                }}
-                onClick={showForm}
-              >
-                Crear
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <StyledTable>
-          <TableHead>
-            <TableRow
-              sx={{
-                borderBottom: "2px solid #000000", 
-              }}
-            >
-            <CustomTableCell1 sx={{ padding: "10px 0" }}></CustomTableCell1>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredAssignments.map((assignment, index) => (
-              <Assignment
-                key={assignment.id}
-                assignment={assignment}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-                role={userRole}
-              />
-            ))}
-          </TableBody>
-        </StyledTable>
-
-        {/* Diálogos */}
-        {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
             title="¿Eliminar la tarea?"
             content={
               <>
-                Ten en cuenta que esta acción también eliminará <br /> todas las
-                entregas asociadas.
+                Ten en cuenta que esta acción también eliminará <br />
+                todas las entregas asociadas.
               </>
             }
             cancelText="Cancelar"
@@ -423,28 +388,21 @@ useEffect(() => {
             onCancel={() => setConfirmationOpen(false)}
             onDelete={handleConfirmDelete}
           />
-        )}
-        {validationDialogOpen && (
+
           <ValidationDialog
             open={validationDialogOpen}
             title="Tarea eliminada exitosamente"
             closeText="Cerrar"
             onClose={() => {
               setValidationDialogOpen(false);
-              // Refrescar datos del grupo actual sin recargar página
-              if (selectedGroup) {
-                loadAssignmentsByGroupId(selectedGroup);
-              } else if (authData?.usergroupid) {
-                loadAssignmentsByGroupId(authData.usergroupid);
-              }
+              const targetGroup = selectedGroup || authData?.usergroupid;
+              if (targetGroup) loadAssignmentsByGroupId(targetGroup);
             }}
           />
-        )}
-      </section>
-    )}
-  </Container>
-);
-
+        </div>
+      )}
+    </Container>
+  );
 }
 
 export default Assignments;
