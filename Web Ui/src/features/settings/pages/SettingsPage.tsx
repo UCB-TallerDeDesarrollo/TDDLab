@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, Alert } from '@mui/material';
+import { Box, Alert } from '@mui/material';
 import { useSettings } from '../hooks/useSettings';
 import { PromptConfiguration, PromptItem } from '../components/PromptConfiguration';
 import { FeatureFlags } from '../components/FeatureFlags';
 import FeatureScreenLayout from '../../../shared/components/FeatureScreenLayout';
 import FeaturePageHeader from '../../../shared/components/FeaturePageHeader';
-import FeatureSectionDivider from '../../../shared/components/FeatureSectionDivider';
 import FeatureListSection from '../../../shared/components/FeatureListSection';
 import ContentState from '../../../shared/components/ContentState';
 
@@ -15,7 +14,6 @@ const SettingsPage: React.FC = () => {
     flags,
     loading,
     savingPrompt,
-    savingFlag,
     error,
     loadSettings,
     savePrompt,
