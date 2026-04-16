@@ -21,7 +21,8 @@ import {
   InputAdornment,
 } from "@mui/material";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import SearchIcon from "@mui/icons-material/Search";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
@@ -138,7 +139,7 @@ function UserPage() {
   
 
   return (
-    <Container className="centered-container">
+    <Container className="centered-container" style={{paddingTop:'30px'}}>
       <div className="filter-container" style={{ marginBottom: '24px', gap: '16px' }}>
         <TextField
           label="Buscar por email"
@@ -153,7 +154,7 @@ function UserPage() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
+                <AppIcon icon={APP_ICONS.SEARCH} size={18} className="icon-gray" />
               </InputAdornment>
             ),
           }}

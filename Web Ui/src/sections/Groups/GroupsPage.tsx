@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import GroupsIcon from "@mui/icons-material/Groups";
-import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import LinkIcon from "@mui/icons-material/Link";
-import EditIcon from "@mui/icons-material/Edit";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import Checkbox from "@mui/material/Checkbox";
 import {
@@ -335,7 +331,7 @@ function Groups() {
                   />
                   <Button
                     className="btn-std btn-primary"
-                    startIcon={<AddIcon />}
+                    startIcon={<AppIcon icon={APP_ICONS.PLUS} size={20} />}
                     onClick={handleCreateGroupClick}
                   >
                     Crear
@@ -374,7 +370,7 @@ function Groups() {
                           aria-label="editar"
                           onClick={(e) => handleEditClick(e, index)}
                         >
-                          <EditIcon />
+                          <AppIcon icon={APP_ICONS.EDIT} className="icon-gray" />
                         </IconButton>
                       </Tooltip>
 
@@ -383,7 +379,7 @@ function Groups() {
                           aria-label="tareas"
                           onClick={(e) => handleHomeworksClick(e, index)}
                         >
-                          <AutoAwesomeMotionIcon />
+                          <AppIcon icon={APP_ICONS.TASKS} className="icon-gray" />
                         </IconButton>
                       </Tooltip>
 
@@ -392,7 +388,7 @@ function Groups() {
                           aria-label="estudiantes"
                           onClick={(e) => handleStudentsClick(e, index)}
                         >
-                          <GroupsIcon />
+                          <AppIcon icon={APP_ICONS.GROUPS} className="icon-gray" />
                         </IconButton>
                       </Tooltip>
 
@@ -404,7 +400,7 @@ function Groups() {
                           aria-label="enlace-estudiante"
                           onClick={(e) => handleLinkClick(e, index)}
                         >
-                          <LinkIcon />
+                          <AppIcon icon={APP_ICONS.LINK} className="icon-gray" />
                         </IconButton>
                       </Tooltip>
 
@@ -425,7 +421,7 @@ function Groups() {
                           aria-label="eliminar"
                           onClick={(e) => handleDeleteClick(e, index)}
                         >
-                          <DeleteIcon />
+                          <AppIcon icon={APP_ICONS.DELETE} className="icon-gray" />
                         </IconButton>
                       </Tooltip>
                     </div>
