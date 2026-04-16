@@ -1,10 +1,10 @@
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Box } from "@mui/material";
 import "./FullScreenLoader.css";
 import React from "react";
 
 interface FullScreenLoaderProps {
   isLoading?: boolean;
-  variant?: 'fullscreen' | 'overlay';
+  variant?: 'fullscreen' | 'overlay' | 'page';
   blur?: boolean;
 }
 
@@ -15,6 +15,14 @@ const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({
 }) => {
   if (!isLoading) {
     return null;
+  }
+
+  if (variant === 'page') {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (variant === 'overlay') {

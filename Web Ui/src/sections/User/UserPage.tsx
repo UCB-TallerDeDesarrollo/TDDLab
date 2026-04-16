@@ -10,7 +10,7 @@ import {
   Select, MenuItem, InputLabel, FormControl,
   SelectChangeEvent, Tooltip, TextField, InputAdornment, Chip, Typography, Divider
 } from "@mui/material";
-import { CircularProgress, Box } from "@mui/material";
+import { FullScreenLoader } from "../../components/FullScreenLoader";
 
 import { styled } from "@mui/system";
 import { IconifyIcon } from "../../sections/Shared/Components";
@@ -123,13 +123,7 @@ function UserPage() {
   };
 
   // ------------------- RENDER -------------------
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  if (loading) return <FullScreenLoader variant="page" />;
 
   if (error) return <div>Error: {(error as Error).message}</div>;
 

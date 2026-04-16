@@ -19,6 +19,7 @@ import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import PracticeCard from "./PracticeCard";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import { typographyVariants } from "../../styles/typography";
+import { FullScreenLoader } from "../../components/FullScreenLoader";
 
 const PracticesContainer = styled(Box)({
   width: "100%",
@@ -44,6 +45,7 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const navigate = useNavigate();
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);
 
   const practicesRepository = new PracticesRepository();
@@ -82,6 +84,8 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
       orderPractices(data, selectedSorting);
     } catch (error) {
       console.error("Error fetching practices:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -126,6 +130,8 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
+
+  if (isLoading) return <FullScreenLoader variant="page" />;
 
   return (
     <PracticesContainer>
