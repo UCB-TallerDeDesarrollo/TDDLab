@@ -1,23 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  CircularProgress,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  SelectChangeEvent,
-} from "@mui/material";
+import { CircularProgress, Container, SelectChangeEvent } from "@mui/material";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
-
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
-import Assignment from "./Assignment";
+import { AssignmentActions, ButtonContainer } from "./Assignment"; // ← imports corregidos
 import SortingComponent from "../../GeneralPurposeComponents/SortingComponent";
 import GroupFilter from "./GroupFilter";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
@@ -25,16 +15,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import CreateButton from "../../GeneralPurposeComponents/CreateButton";
-
-const StyledTable = styled(Table)({
-  width: "100%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
-const CustomTableCell1 = styled(TableCell)({
-  width: "100%",
-});
+import { TableView, TableViewColumn } from "../../Shared/Components/TableView";
 
 const LoadingContainer = styled("div")({
   display: "flex",
@@ -56,28 +37,26 @@ function Assignments({
   userGroupid,
   onGroupChange,
 }: Readonly<AssignmentsProps>) {
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
+    const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
-  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-    number | null
-  >(null);
+  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
-  const assignmentsRepository = new AssignmentsRepository();
-
-  const deleteAssignmentUseCase = new DeleteAssignment(assignmentsRepository);
-
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
+  const [editStates, setEditStates] = useState<Record<number, { groupName: string; isOpen: boolean }>>({});
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [authData, setAuthData] = useGlobalState("authData");
+
+  const assignmentsRepository = new AssignmentsRepository();
+  const deleteAssignmentUseCase = new DeleteAssignment(assignmentsRepository);
   const groupRepository = new GroupsRepository();
   const getGroups = new GetGroups(groupRepository);
-  const [authData, setAuthData] = useGlobalState("authData");
 
   const orderAssignments = (
     assignmentsArray: AssignmentDataObject[],
@@ -302,134 +281,125 @@ function Assignments({
     setHoveredRow(index);
   };
 
+  // Tipo auxiliar
+  interface AssignmentTableRow {
+    assignment: AssignmentDataObject;
+    index: number;
+    groupName: string;
+    isEditFormOpen: boolean;
+    onEditClick: () => void;
+    onCloseEditForm: () => void;
+  }
+
+  const assignmentRows: AssignmentTableRow[] = filteredAssignments.map((assignment, index) => ({
+    assignment,
+    index,
+    groupName: editStates[assignment.id]?.groupName ?? "",
+    isEditFormOpen: editStates[assignment.id]?.isOpen ?? false,
+    onEditClick: () =>
+      setEditStates((prev) => ({
+        ...prev,
+        [assignment.id]: { ...prev[assignment.id], isOpen: true },
+      })),
+    onCloseEditForm: () =>
+      setEditStates((prev) => ({
+        ...prev,
+        [assignment.id]: { ...prev[assignment.id], isOpen: false },
+      })),
+  }));
+
+  const assignmentColumns: TableViewColumn<AssignmentTableRow>[] = [
+    {
+      id: "title",
+      header: "Tareas",
+      headerSx: { fontWeight: 560, color: "#333", fontSize: "1rem" },
+      renderCell: ({ assignment }) => assignment.title,
+    },
+    {
+      id: "actions",
+      header: (
+        <ButtonContainer>
+          <GroupFilter
+            selectedGroup={selectedGroup}
+            groupList={groupList}
+            onChangeHandler={handleGroupChange}
+            defaultName={
+              groupList.find((g) => g.id === selectedGroup)?.groupName ||
+              groupList[0]?.groupName ||
+              "Selecciona un grupo"
+            }
+          />
+          <SortingComponent
+            selectedSorting={selectedSorting}
+            onChangeHandler={handleOrderAssignments}
+          />
+          {userRole !== "student" && (
+            <CreateButton onClick={showForm} label="Crear" minWidth="90px" />
+          )}
+        </ButtonContainer>
+      ),
+      renderCell: ({ assignment, index, groupName, isEditFormOpen, onEditClick, onCloseEditForm }) => (
+        <AssignmentActions
+          assignment={assignment}
+          index={index}
+          handleClickDetail={handleClickDetail}
+          handleClickDelete={handleClickDelete}
+          handleRowHover={handleRowHover}
+          role={userRole}
+          groupName={groupName}
+          isEditFormOpen={isEditFormOpen}
+          onEditClick={onEditClick}
+          onCloseEditForm={onCloseEditForm}
+        />
+      ),
+    },
+  ];
+
   return (
     <Container>
       {isLoading ? (
         <LoadingContainer>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-              width: "100vw",
-            }}
-          >
-            <CircularProgress />
-          </div>
+          <CircularProgress />
         </LoadingContainer>
       ) : (
-        <section className="Tareas">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              marginBottom: "16px",
-              marginLeft: "15px",
+        <div className="Tareas">
+          <TableView
+            rows={assignmentRows}
+            columns={assignmentColumns}
+            getRowKey={({ assignment }) => assignment.id}
+            tableSx={{ width: "82%", marginLeft: "auto", marginRight: "auto" }}
+            headRowSx={{ borderBottom: "2px solid #E7E7E7" }}
+            onRowClick={({ index }) => handleClickDetail(index)}
+            onRowMouseEnter={({ index }) => handleRowHover(index)}
+            onRowMouseLeave={() => handleRowHover(null)}
+          />
+
+          <ConfirmationDialog
+            open={confirmationOpen}
+            title="¿Eliminar la tarea?"
+            content={
+              <>
+                Ten en cuenta que esta acción también eliminará <br />
+                todas las entregas asociadas.
+              </>
+            }
+            cancelText="Cancelar"
+            deleteText="Eliminar"
+            onCancel={() => setConfirmationOpen(false)}
+            onDelete={handleConfirmDelete}
+          />
+
+          <ValidationDialog
+            open={validationDialogOpen}
+            title="Tarea eliminada exitosamente"
+            closeText="Cerrar"
+            onClose={() => {
+              setValidationDialogOpen(false);
+              const targetGroup = selectedGroup || authData?.usergroupid;
+              if (targetGroup) loadAssignmentsByGroupId(targetGroup);
             }}
-          >
-            <span
-              style={{
-                fontWeight: 560,
-                color: "#333",
-                fontSize: "1.4rem",
-              }}
-            >
-              Tareas
-            </span>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                marginRight: "45px",
-                flexWrap: "nowrap",
-              }}
-            >
-              <GroupFilter
-                selectedGroup={selectedGroup}
-                groupList={groupList}
-                onChangeHandler={handleGroupChange}
-                defaultName={
-                  groupList.find((group) => group.id == selectedGroup)?.groupName ||
-                  groupList[0]?.groupName ||
-                  "Selecciona un grupo"
-                }
-              />
-              <SortingComponent
-                selectedSorting={selectedSorting}
-                onChangeHandler={handleOrderAssignments}
-              />
-              {userRole !== "student" && (
-                <CreateButton
-                  onClick={showForm}
-                  label="Crear"
-                  minWidth="90px"
-                />
-              )}
-            </div>
-          </div>
-
-          <StyledTable>
-            <TableHead>
-              <TableRow
-                sx={{
-                  borderBottom: "2px solid #000000",
-                }}
-              >
-                <CustomTableCell1 sx={{ padding: "10px 0" }}></CustomTableCell1>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredAssignments.map((assignment, index) => (
-                <Assignment
-                  key={assignment.id}
-                  assignment={assignment}
-                  index={index}
-                  handleClickDetail={handleClickDetail}
-                  handleClickDelete={handleClickDelete}
-                  handleRowHover={handleRowHover}
-                  role={userRole}
-                />
-              ))}
-            </TableBody>
-          </StyledTable>
-
-          {confirmationOpen && (
-            <ConfirmationDialog
-              open={confirmationOpen}
-              title="¿Eliminar la tarea?"
-              content={
-                <>
-                  Ten en cuenta que esta acción también eliminará <br /> todas las
-                  entregas asociadas.
-                </>
-              }
-              cancelText="Cancelar"
-              deleteText="Eliminar"
-              onCancel={() => setConfirmationOpen(false)}
-              onDelete={handleConfirmDelete}
-            />
-          )}
-          {validationDialogOpen && (
-            <ValidationDialog
-              open={validationDialogOpen}
-              title="Tarea eliminada exitosamente"
-              closeText="Cerrar"
-              onClose={() => {
-                setValidationDialogOpen(false);
-                if (selectedGroup) {
-                  loadAssignmentsByGroupId(selectedGroup);
-                } else if (authData?.usergroupid) {
-                  loadAssignmentsByGroupId(authData.usergroupid);
-                }
-              }}
-            />
-          )}
-        </section>
+          />
+        </div>
       )}
     </Container>
   );
