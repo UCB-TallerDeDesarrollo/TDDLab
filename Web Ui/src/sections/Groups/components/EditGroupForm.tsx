@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Box,
 } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
@@ -71,11 +72,12 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ ...typographyVariants.h5 }}>Editar grupo</DialogTitle>
+          <DialogTitle style={{ ...typographyVariants.h5, paddingBottom: 8 }}>Editar grupo</DialogTitle>
           <DialogContent>
+            <Box className="flex-column gap-2 mt-2 mb-2">
             <TextField
               error={formInvalid() && !!save}
               autoFocus
@@ -86,29 +88,35 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
+              variant="outlined"
+              InputProps={{ style: { borderRadius: "10px" } }}
               helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
               multiline
-              rows={3.7}
+              rows={4}
               margin="dense"
               id="edit-group-description"
-              label="Descripcion"
+              label="Descripción"
               type="text"
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
-              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
+              variant="outlined"
+              InputProps={{ style: { borderRadius: "10px" } }}
             />
+            </Box>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
             <Button 
               onClick={handleClose} 
+              variant="contained"
+              color="error"
               sx={{
-                color: "#555",
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
                 textTransform: "none",
-                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",
@@ -123,10 +131,14 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
             </Button>
             <Button 
               onClick={handleUpdate} 
+              variant="contained"
               color="primary" 
+              disabled={formInvalid()}
               sx={{
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
                 textTransform: "none",
-                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",
