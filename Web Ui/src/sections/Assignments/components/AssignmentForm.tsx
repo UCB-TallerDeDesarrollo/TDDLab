@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import {
   Dialog,
@@ -22,7 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-import { typographyVariants } from "../../../styles/typography";
+import DescriptionIcon from '@mui/icons-material/Description';
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
