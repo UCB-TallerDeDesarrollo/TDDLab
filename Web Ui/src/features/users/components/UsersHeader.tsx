@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   Box,
   FormControl,
@@ -58,7 +58,7 @@ function UsersHeader({
         title="Usuarios"
         actions={
           <ActionButton
-            startIcon={<FilterListRoundedIcon />}
+            endIcon={<KeyboardArrowDownIcon />}
             variantStyle="secondary"
             onClick={(event) => setFiltersAnchorEl(event.currentTarget)}
           >
@@ -102,12 +102,15 @@ function UsersHeader({
               onChange={(event) =>
                 onGroupChange(event.target.value as number | "all")
               }
-              MenuProps={{
+                            MenuProps={{
+                PaperProps: { sx: { bgcolor: '#F0F0F0', borderRadius: 1, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', mt: 0.5 } },
                 sx: {
-                  '& .MuiMenuItem-root:hover': {
-                    backgroundColor: '#E6F0FA',
-                  },
-                },
+                  '& .MuiMenuItem-root': { backgroundColor: 'transparent' },
+                  '& .MuiMenuItem-root:hover': { backgroundColor: '#E6F0FA' },
+                  '& .MuiMenuItem-root.Mui-selected': { backgroundColor: 'transparent' },
+                  '& .MuiMenuItem-root.Mui-selected:hover': { backgroundColor: '#E6F0FA' },
+                  '& .MuiMenuItem-root.Mui-focusVisible': { backgroundColor: 'transparent' }
+                }
               }}
             >
               <MenuItem value="all">Todos los grupos</MenuItem>
