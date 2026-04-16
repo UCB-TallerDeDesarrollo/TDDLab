@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import AnimatedIcon from "../../shared/components/AnimatedIcon";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import AddIcon from "@mui/icons-material/Add";
@@ -341,41 +340,53 @@ function Groups() {
                   <TableCell>{group.groupName}</TableCell>
                   <TableCell>
                     <ButtonContainer>
-                      <Tooltip title="Editar" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#CE9A00', filter: 'drop-shadow(0px 0px 8px #CE9A00)' } }}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Editar"
+                        actionType="edit"
+                        aria-label="editar"
+                        onClick={(e) => handleEditClick(e, index)}
+                        icon={<EditIcon />}
+                      />
 
-                      <Tooltip title="Duplicar" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#CE9A00', filter: 'drop-shadow(0px 0px 8px #CE9A00)' } }}>
-                          <AutoAwesomeMotionIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Duplicar"
+                        actionType="duplicate"
+                        aria-label="tareas"
+                        onClick={(e) => handleHomeworksClick(e, index)}
+                        icon={<AutoAwesomeMotionIcon />}
+                      />
 
-                      <Tooltip title="Grupos" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#006B61', filter: 'drop-shadow(0px 0px 8px #006B61)' } }}>
-                          <GroupsIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Grupos"
+                        actionType="groups"
+                        aria-label="estudiantes"
+                        onClick={(e) => handleStudentsClick(e, index)}
+                        icon={<GroupsIcon />}
+                      />
 
-                      <Tooltip title="Enlace" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#355AA1', filter: 'drop-shadow(0px 0px 8px #355AA1)' } }}>
-                          <LinkIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Enlace"
+                        actionType="link"
+                        aria-label="enlace"
+                        onClick={(e) => handleLinkClick(e, index)}
+                        icon={<LinkIcon />}
+                      />
 
-                      <Tooltip title="Vista" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#355AA1', filter: 'drop-shadow(0px 0px 8px #355AA1)' } }}>
-                          <PiChalkboardTeacherFill />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Vista"
+                        actionType="view"
+                        aria-label="vista"
+                        onClick={(e) => handleLinkClickTeacher(e, index)}
+                        icon={<PiChalkboardTeacherFill />}
+                      />
 
-                      <Tooltip title="Eliminar" arrow componentsProps={{ tooltip: { sx: { bgcolor: '#002346', color: 'white' } } }}>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)} sx={{ transition: 'all 0.2s', '&:hover': { color: '#890909', filter: 'drop-shadow(0px 0px 8px #890909)' } }}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <AnimatedIcon
+                        title="Eliminar"
+                        actionType="delete"
+                        aria-label="eliminar"
+                        onClick={(e) => handleDeleteClick(e, index)}
+                        icon={<DeleteIcon />}
+                      />
                     </ButtonContainer>
                   </TableCell>
                 </TableRow>
