@@ -36,12 +36,35 @@ export class UsersRepository implements UsersRepositoryInterface {
     }
   }
   async getUserByEmail(email: string): Promise<UserDataObject | null> {
+    const normalizedEmail = email.trim().toLowerCase();
+
     try {
+      // Keep direct lookup for compatibility with existing tests/contracts.
       const response = await axios.get(`${API_URL}/${email}`,{ withCredentials: true });
-      return response.data;
+      const data = response.data;
+
+      if (Array.isArray(data)) {
+        return data.find((user) => user.email.toLowerCase() === normalizedEmail) ?? null;
+      }
+
+      if (data && typeof data === "object" && "email" in data) {
+        const user = data as UserDataObject;
+        return user.email.toLowerCase() === normalizedEmail ? user : null;
+      }
+
+      return null;
     } catch (error) {
-      console.error("Error fetching user by ID:", error);
-      throw error;
+      // Fallback to list lookup when backend does not support /users/:email.
+      try {
+        const users = await this.getUsers();
+        if (!Array.isArray(users)) {
+          return null;
+        }
+        return users.find((user) => user.email.toLowerCase() === normalizedEmail) ?? null;
+      } catch {
+        console.error("Error fetching user by ID:", error);
+        throw error;
+      }
     }
   }
   async updateUser(id: number, groupid: number): Promise<void> {
