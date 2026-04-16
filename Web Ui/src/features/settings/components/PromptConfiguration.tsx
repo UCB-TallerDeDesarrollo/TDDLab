@@ -85,10 +85,30 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
             disabled={isEditing || saving}
             label="Selecciona el tipo de prompt"
             MenuProps={{
+              PaperProps: {
+                sx: {
+                  bgcolor: '#F0F0F0',
+                  borderRadius: 1,
+                  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                  mt: 0.5
+                }
+              },
               sx: {
+                '& .MuiMenuItem-root': {
+                  backgroundColor: 'transparent',
+                },
                 '& .MuiMenuItem-root:hover': {
                   backgroundColor: '#E6F0FA',
                 },
+                '& .MuiMenuItem-root.Mui-selected': {
+                  backgroundColor: 'transparent',
+                },
+                '& .MuiMenuItem-root.Mui-selected:hover': {
+                  backgroundColor: '#E6F0FA',
+                },
+                '& .MuiMenuItem-root.Mui-focusVisible': {
+                  backgroundColor: 'transparent',
+                }
               },
             }}
             sx={{
