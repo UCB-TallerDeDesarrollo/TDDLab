@@ -8,7 +8,7 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 import {
   Table, TableHead, TableBody, TableRow, TableCell, Container,
   Select, MenuItem, InputLabel, FormControl,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment, Chip
+  SelectChangeEvent, Tooltip, TextField, InputAdornment, Chip, Typography, Divider
 } from "@mui/material";
 import { CircularProgress, Box } from "@mui/material";
 
@@ -36,10 +36,7 @@ const StyledTable = styled(Table)({
 
 const FilterContainer = styled("div")({
   display: "flex",
-  justifyContent: "center",
   alignItems: "center",
-  marginTop: "20px",
-  marginBottom: "20px",
   gap: "20px",
 });
 
@@ -138,41 +135,48 @@ function UserPage() {
 
   return (
     <div>
-      <CenteredContainer>
-        <FilterContainer>
-          <TextField
-            label="Buscar por email"
-            variant="outlined"
-            placeholder="Ej: nombre@ucb.edu.bo"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 360 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IconifyIcon icon="mdi:magnify" width={20} height={20} color="gray" hoverColor="#333" />
-                </InputAdornment>
-              ),
-            }}
-          />
+      <CenteredContainer sx={{ maxWidth: '100% !important', pb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '82%', margin: '0 auto', mt: 4 }}>
+          <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
+            Usuarios
+          </Typography>
+          <FilterContainer>
+            <TextField
+              label="Buscar por email"
+              variant="outlined"
+              placeholder="Ej: nombre@ucb.edu.bo"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ width: 360 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconifyIcon icon="mdi:magnify" width={20} height={20} color="gray" hoverColor="#333" />
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-            <InputLabel id="group-filter-label">Grupo</InputLabel>
-            <Select
-              labelId="group-filter-label"
-              value={selectedGroup}
-              onChange={handleGroupChange}
-              label="Grupo"
-            >
-              <MenuItem value="all">Todos los grupos</MenuItem>
-              {groups.map((group) => (
-                <MenuItem key={group.id} value={group.id}>
-                  {group.groupName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </FilterContainer>
+            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+              <InputLabel id="group-filter-label">Grupo</InputLabel>
+              <Select
+                labelId="group-filter-label"
+                value={selectedGroup}
+                onChange={handleGroupChange}
+                label="Grupo"
+              >
+                <MenuItem value="all">Todos los grupos</MenuItem>
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.groupName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </FilterContainer>
+        </Box>
+
+        <Divider sx={{ width: '82%', margin: '0 auto', mt: 2, mb: 4, borderColor: '#D9D9D9' }} />
 
         <section className="Usuarios">
           <StyledTable sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
@@ -212,8 +216,8 @@ function UserPage() {
                     </TableCell>
                     <TableCell align="center" sx={{ borderBottom: "1px solid #E7E7E7", py: 2.5 }}>
                       <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <button 
-                          onClick={() => handleRemoveUserFromGroup(user.id)} 
+                        <button
+                          onClick={() => handleRemoveUserFromGroup(user.id)}
                           style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
                         >
                           <IconifyIcon icon="mdi:trash-can" color="#9E9E9E" width={24} height={24} hoverColor="#616161" />
