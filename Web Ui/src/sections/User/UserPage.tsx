@@ -199,13 +199,14 @@ function UserPage() {
                     <TableCell align="center" sx={{ borderBottom: "1px solid #E7E7E7", py: 2.5 }}>{groupMap[user.groupid] || "Unknown"}</TableCell>
                     <TableCell align="center" sx={{ borderBottom: "1px solid #E7E7E7", py: 2.5 }}>
                       <Chip
-                        label={user.role}
+                        label={user.role.toLowerCase() === 'teacher' || user.role.toLowerCase() === 'docente' ? 'Docente' : 'Estudiante'}
                         size="medium"
                         sx={{
-                          backgroundColor: user.role.toLowerCase() === 'docente' ? '#D6E4FF' : '#B9F6CA',
-                          color: user.role.toLowerCase() === 'docente' ? '#1D39C4' : '#2E7D32',
-                          fontWeight: 'bold',
-                          borderRadius: '6px'
+                          backgroundColor: (user.role.toLowerCase() === 'docente' || user.role.toLowerCase() === 'teacher') ? '#A8CCFF' : '#AEF9A8',
+                          color: (user.role.toLowerCase() === 'docente' || user.role.toLowerCase() === 'teacher') ? '#2B5A9D' : '#308B29',
+                          borderRadius: '6px',
+                          fontSize: '0.9rem',
+                          fontWeight: 400
                         }}
                       />
                     </TableCell>
