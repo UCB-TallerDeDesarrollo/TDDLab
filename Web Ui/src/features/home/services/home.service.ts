@@ -1,27 +1,4 @@
-import { HomeFeatureLink, HomeViewModel } from "../types/home.types";
-
-const featureLinks: HomeFeatureLink[] = [
-  {
-    title: "Grupos",
-    path: "/groups",
-    access: ["admin", "teacher"],
-  },
-  {
-    title: "Tareas",
-    path: "/tareas",
-    access: ["admin", "student", "teacher"],
-  },
-  {
-    title: "Mis prácticas",
-    path: "/mis-practicas",
-    access: ["admin", "teacher", "student"],
-  },
-  {
-    title: "Usuarios",
-    path: "/user",
-    access: ["admin", "teacher"],
-  },
-];
+import { HomeViewModel } from "../types/home.types";
 
 function normalizeDisplayName(email?: string): string {
   if (!email) {
@@ -41,22 +18,10 @@ function normalizeDisplayName(email?: string): string {
     .toLowerCase()}`;
 }
 
-function getAvailableLinks(role?: string): HomeFeatureLink[] {
-  if (!role) {
-    return [];
-  }
-
-  return featureLinks.filter((link) => link.access.includes(role));
-}
-
-export function buildHomeViewModel(
-  email?: string,
-  role?: string,
-): HomeViewModel {
+export function buildHomeViewModel(email?: string): HomeViewModel {
   const displayName = normalizeDisplayName(email);
 
   return {
     greeting: `Hola ${displayName}, bienvenido al TDD Lab!!!`,
-    availableLinks: getAvailableLinks(role),
   };
 }

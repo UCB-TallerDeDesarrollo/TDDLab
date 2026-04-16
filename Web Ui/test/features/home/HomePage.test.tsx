@@ -28,28 +28,9 @@ describe("HomePage", () => {
         name: "Hola Israel, bienvenido al TDD Lab!!!",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "Isotipo TDD Lab" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Isotipo TDD Lab" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "TDD Lab" })).toBeInTheDocument();
-  });
-
-  it("shows the main feature accesses available for teachers", () => {
-    render(
-      <MemoryRouter>
-        <HomePage />
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByRole("link", { name: /grupos/i })).toHaveAttribute(
-      "href",
-      "/groups",
-    );
-    expect(screen.getByRole("link", { name: /tareas/i })).toHaveAttribute(
-      "href",
-      "/tareas",
-    );
-    expect(screen.getByRole("link", { name: /mis prácticas/i })).toHaveAttribute(
-      "href",
-      "/mis-practicas",
-    );
   });
 });

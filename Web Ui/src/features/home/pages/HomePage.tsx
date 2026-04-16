@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 
 import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
-import HomeFeatureAccess from "../components/HomeFeatureAccess";
 import HomeHero from "../components/HomeHero";
 import HomeWelcome from "../components/HomeWelcome";
 import { useHomePage } from "../hooks/useHomePage";
@@ -16,14 +15,13 @@ const HomeContent = styled(Box)(({ theme }) => ({
 }));
 
 function HomePage() {
-  const { greeting, availableLinks } = useHomePage();
+  const { greeting } = useHomePage();
 
   return (
     <FeatureScreenLayout className="HomePage" testId="home-page">
       <HomeContent>
         <HomeWelcome greeting={greeting} />
         <HomeHero />
-        <HomeFeatureAccess links={availableLinks} />
       </HomeContent>
     </FeatureScreenLayout>
   );

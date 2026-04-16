@@ -5,5 +5,5 @@ import { HomeViewModel } from "../types/home.types";
 export function useHomePage(): HomeViewModel {
   const [authData] = useGlobalState("authData");
 
-  return buildHomeViewModel(authData.userEmail, authData.userRole);
+  return buildHomeViewModel(authData.userEmail);
 }
