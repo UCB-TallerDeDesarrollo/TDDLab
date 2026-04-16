@@ -78,25 +78,26 @@ function UserPage() {
   );
 
   // ------------------- FETCH USERS + GROUPS -------------------
+  const loadUsersAndGroups = async () => {
+    setLoading(true);
+    try {
+      const [userData, groupData] = await Promise.all([
+        getUsers.getUsers(),
+        getGroups.getGroups(),
+      ]);
+
+      setUsers(userData);
+      setGroups(groupData);
+    } catch (fetchError) {
+      console.error("Error fetching users or groups:", fetchError);
+      setError(fetchError);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsersAndGroups = async () => {
-      try {
-        const [userData, groupData] = await Promise.all([
-          getUsers.getUsers(),
-          getGroups.getGroups(),
-        ]);
-
-        setUsers(userData);
-        setGroups(groupData);
-      } catch (error) {
-        console.error("Error fetching users or groups:", error);
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsersAndGroups();
+    loadUsersAndGroups();
   }, [getUsers, getGroups]);
 
   // ------------------- FILTRO DE USUARIOS -------------------
@@ -140,8 +141,7 @@ function UserPage() {
       await removeUserInstance.removeUserFromGroup(selectedUserForRemoval.id);
       setValidationMessage("Usuario eliminado del grupo exitosamente.");
       setValidationDialogOpen(true);
-      const updatedUsers = filteredUsers.filter((user) => user.id !== selectedUserForRemoval.id);
-      setFilteredUsers(updatedUsers);
+      await loadUsersAndGroups();
     } catch (removeError) {
       console.error(removeError);
       setValidationMessage("Hubo un error al eliminar al usuario del grupo.");
@@ -180,12 +180,7 @@ function UserPage() {
       setValidationMessage("Usuario asignado al grupo exitosamente.");
       setValidationDialogOpen(true);
       setAddUserDialogOpen(false);
-
-      const refreshedUsers = await searchUsersByEmail.execute({
-        query: searchQuery,
-        groupId: selectedGroup,
-      });
-      setFilteredUsers(refreshedUsers);
+      await loadUsersAndGroups();
     } catch (assignError) {
       console.error(assignError);
       setValidationMessage("Hubo un error al asignar al usuario al grupo.");
