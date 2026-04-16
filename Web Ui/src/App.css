@@ -289,7 +289,20 @@ h2.section-title {
 /* Inputs de MUI */
 .MuiInputLabel-root { font-size: 14px !important; }
 .MuiInputLabel-shrink { transform: translate(14px, -9px) scale(0.75) !important; }
-.select-compact, .MuiOutlinedInput-root { height: 36px !important; font-size: 14px !important; }
+.select-compact { 
+  height: 36px !important; 
+  font-size: 14px !important; 
+}
+
+/* Solo aplicamos altura fija si NO es multilínea y tiene la clase compacta */
+.select-compact .MuiOutlinedInput-root:not(.MuiInputBase-multiline) { 
+  height: 36px !important; 
+}
+
+/* Regla de seguridad: Cualquier campo multilínea debe tener altura automática */
+.MuiInputBase-multiline {
+  height: auto !important;
+}
 
 .filter-container {
   display: flex !important;

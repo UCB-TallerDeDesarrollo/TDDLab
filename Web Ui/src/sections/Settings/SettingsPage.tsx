@@ -117,9 +117,9 @@ const ConfigurationPage = () => {
     <div className="centered-container">
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <div className="settings-section-title">
+          <h2 className="page-header">
             Configuración de Prompts
-          </div>
+          </h2>
         </Box>
 
         {loading ? (
