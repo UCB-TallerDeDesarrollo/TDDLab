@@ -68,19 +68,34 @@ const Assignment: React.FC<AssignmentProps> = ({
     <TableRow 
     key={assignment.id}
     sx={{ 
-      borderBottom: "2px solid #E7E7E7" 
+      borderBottom: "none",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+      transition: "all 0.3s ease-out",
+      overflow: "hidden",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      "&:hover": {
+        boxShadow: "0 12px 24px rgba(0, 0, 0, 0.15)",
+        transform: "translateY(-4px)",
+      },
+      "& > td": {
+        borderBottom: "none",
+      },
     }}>
       <TableCell
         style={{
-          width: "20%",
+          flex: 1,
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          borderRadius: "12px 0 0 12px",
         }}
       >
         {assignment.title}
       </TableCell>
-      <TableCell style={{ width: "30%", maxWidth: "300px" }}>
+      <TableCell style={{ width: "auto", borderRadius: "0 12px 12px 0" }}>
           <div
             style={{
               display: "flex",
