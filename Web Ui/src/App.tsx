@@ -6,7 +6,6 @@ import TDDChartPage from "./sections/TDDCycles-Visualization/TDDChartPage";
 import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
-import MainMenu from "./sections/MainMenu/MainMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
@@ -14,10 +13,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "./modules/User-Authentication/domain/authStates";
+import { setGlobalState, useGlobalState} from "./modules/User-Authentication/domain/authStates";
 import { getSessionCookie } from "./modules/User-Authentication/application/getSessionCookie";
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
@@ -26,12 +22,14 @@ import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
-import {
-  Box,
-  CircularProgress,
-} from "@mui/material";
+import { Box,CircularProgress,IconButton } from "@mui/material";
 import MainMenu_v2 from "./sections/MainMenu/MainMenu_v2";
 import HeaderNav from "./sections/MainMenu/components/HeaderNav";
+
+import { useState } from "react";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const navArrayLinks = [
   {
@@ -68,59 +66,89 @@ const navArrayLinks = [
 
 function App() {
   const authData = useGlobalState("authData")[0];
-useEffect(() => {
-  getSessionCookie().then((storedSession) => {
-    const savedImage = localStorage.getItem("userProfilePic") || "";
-    if (storedSession) {
-      setGlobalState("authData", {
-        userid: storedSession.id,
-        userProfilePic: savedImage,
-        userEmail: storedSession.email,
-        usergroupid: storedSession.groupid,
-        userRole: storedSession.role,
-      });
-    } else {
-      setGlobalState("authData", {
-        userid: -1,
-        userProfilePic: savedImage,
-        userEmail: "",
-        usergroupid: -1,
-        userRole: "",
-      });
-    }
-  });
-}, []);
-  if (authData.userid === undefined) {
-     return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <CircularProgress />
-    </div>
-  );
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const theme = useTheme();
+  const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  useEffect(() => {
+    getSessionCookie().then((storedSession) => {
+      const savedImage = localStorage.getItem("userProfilePic") || "";
+      if (storedSession) {
+        setGlobalState("authData", {
+          userid: storedSession.id,
+          userProfilePic: savedImage,
+          userEmail: storedSession.email,
+          usergroupid: storedSession.groupid,
+          userRole: storedSession.role,
+        });
+      } else {
+        setGlobalState("authData", {
+          userid: -1,
+          userProfilePic: savedImage,
+          userEmail: "",
+          usergroupid: -1,
+          userRole: "",
+        });
+      }
+    });
+  }, []);
+    if (authData.userid === undefined) {
+      return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
   }
   return (
     <Router>
       {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu_v2 navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+        <MainMenu_v2 
+          navArrayLinks={navArrayLinks} 
+          userRole={authData.userRole} 
+          mobileOpen={mobileOpen} 
+          onClose={handleDrawerToggle} 
+          isTabletOrMobile={isTabletOrMobile}/>
       )}
-      <Box sx={{ ml: authData.userEmail !== "" && authData.userRole !== undefined ? "220px" : 0 }}>
+      <Box sx={{ ml: authData.userEmail !== "" && 
+        authData.userRole !== undefined  &&
+        isTabletOrMobile ? 0 : "220px",
+        minWidth: 0,
+        boxSizing: "border-box",}}>
         {authData.userEmail !== "" && authData.userRole !== undefined && (
-          <Box sx={{ p: 2 }}>
-            <HeaderNav
-              userName={authData.userEmail ?? ""}
-              avatarUrl={authData.userProfilePic ?? ""}
-            />
+          <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1.5, width: "100%", boxSizing: "border-box",}}>
+            {isTabletOrMobile && (
+              <IconButton
+                onClick={handleDrawerToggle}
+                sx={{
+                  flexShrink: 0,
+                  alignSelf: "center",
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <HeaderNav
+                userName={authData.userEmail ?? ""}
+                avatarUrl={authData.userProfilePic ?? ""}
+              />
+            </Box>
           </Box>
         )}
         <Routes>
-        
         <Route
           path="/"
           element={

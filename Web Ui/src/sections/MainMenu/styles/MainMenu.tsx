@@ -7,9 +7,22 @@ const MainMenuSX = {
       color: activeButton ? "#fff" : "#A9A9A9",
     }),
 
+    mobileDrawer: {
+      "& .MuiDrawer-paper": {
+        width: "220px",
+        minHeight: "100dvh",
+        height: "100dvh",
+        boxSizing: "border-box",
+        backgroundColor: "#fff",
+        overfloxY: "auto",
+        borderRight: "none",
+      }
+    },
+
     sidebar: {
-      width: 220,
-      height: "100vh",
+      width: "220px",
+      minHeight: "100dvh",
+      height: "100dvh",
       backgroundColor: "#fff",
       display: "flex",
       flexDirection: "column",
@@ -18,6 +31,16 @@ const MainMenuSX = {
       left: 0,
       top: 0,
       zIndex: 1200,
+      overflowY: "auto",
+    },
+    sidebarContent: {
+      width: "100%",
+      minHeight: "100%",
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: "#fff",
+      boxSizing: "border-box",
+      flexGrow: 1,
     },
     logoLink: {
       display: "flex",
@@ -66,6 +89,7 @@ const MainMenuSX = {
     loginContainer: {
       px: 2,
       py: 2,
+      mt: "auto",
     },
 }
 

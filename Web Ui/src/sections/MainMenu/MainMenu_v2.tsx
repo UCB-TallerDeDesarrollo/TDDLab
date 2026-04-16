@@ -1,12 +1,14 @@
 import {
   Box,
+  Drawer,
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
+  ListItemIcon, 
   ListItemText,
   Typography,
 } from "@mui/material";
+
 
 import logo from '../../../public/tddlab.ico';
 import { ReactElement } from "react";
@@ -24,16 +26,22 @@ type NavLinkItem = {
 interface NavbarProps {
   navArrayLinks: NavLinkItem[];
   userRole: string;
+  mobileOpen?: boolean;
+  onClose?: () => void;
+  isTabletOrMobile?: boolean;
 }
 
 export default function MainMenu_v2({
   navArrayLinks,
   userRole,
+  mobileOpen = false,
+  onClose,
+  isTabletOrMobile = false
 }: Readonly<NavbarProps>) {
   const location = useLocation();
 
-  return (
-    <Box sx={MainMenuSX.sidebar}>
+  const menuContent = (
+    <Box sx={MainMenuSX.sidebarContent}>
       <Box component={NavLink} to="/" sx={MainMenuSX.logoLink}>
         <img src={logo} alt="TDDLab Logo" style={{ width: 48, height: 48 }} />
         <Box sx={MainMenuSX.logoTextContainer}>
@@ -79,5 +87,25 @@ export default function MainMenu_v2({
         <LoginComponent />
       </Box>
     </Box>
-  );
+  )
+
+  if(isTabletOrMobile) {
+    return (
+      <Drawer
+        anchor = "left"
+        open={mobileOpen}
+        onClose={onClose}
+        ModalProps={{ keepMounted:true}}
+        sx={MainMenuSX.mobileDrawer}
+      >
+        {menuContent}
+      </Drawer>
+    );
+  }
+
+  return (
+    <Box sx = {MainMenuSX.sidebar}>
+      {menuContent}
+    </Box>
+  )
 }
