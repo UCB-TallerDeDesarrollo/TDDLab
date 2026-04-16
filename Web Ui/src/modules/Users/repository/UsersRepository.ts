@@ -37,8 +37,9 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
   async getUserByEmail(email: string): Promise<UserDataObject | null> {
     try {
-      const response = await axios.get(`${API_URL}/${email}`,{ withCredentials: true });
-      return response.data;
+      const users = await this.getUsers();
+      const normalizedEmail = email.trim().toLowerCase();
+      return users.find((user) => user.email.toLowerCase() === normalizedEmail) ?? null;
     } catch (error) {
       console.error("Error fetching user by ID:", error);
       throw error;
