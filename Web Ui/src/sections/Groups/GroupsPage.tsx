@@ -29,6 +29,7 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
+import { FullScreenLoader } from "../../components/FullScreenLoader";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -90,6 +91,7 @@ function Groups() {
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
   // data
+  const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
@@ -112,21 +114,25 @@ function Groups() {
     }
   };
 
-  // Cargar 
+  // Cargar
   useEffect(() => {
   const fetchGroups = async () => {
     const getGroupsApp = new GetGroups(groupRepository);
     const role = authData?.userRole ?? "";
     const uid  = authData?.userid ?? -1;
 
-    if (role === "teacher") {
-      const ids = await getGroupsApp.getGroupsByUserId(uid);
-      const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
-        .filter(Boolean) as GroupDataObject[];
+    try {
+      if (role === "teacher") {
+        const ids = await getGroupsApp.getGroupsByUserId(uid);
+        const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
+          .filter(Boolean) as GroupDataObject[];
+          setGroups(allGroups);
+      } else {
+        const allGroups = await getGroupsApp.getGroups();
         setGroups(allGroups);
-    } else {
-      const allGroups = await getGroupsApp.getGroups();
-      setGroups(allGroups);
+      }
+    } finally {
+      setIsLoading(false);
     }
     };
       fetchGroups();
@@ -311,6 +317,8 @@ function Groups() {
       prevGroups.map((g) => (g.id === updatedGroup.id ? updatedGroup : g))
     );
   };
+
+  if (isLoading) return <FullScreenLoader variant="page" />;
 
   return (
     <CenteredContainer>
