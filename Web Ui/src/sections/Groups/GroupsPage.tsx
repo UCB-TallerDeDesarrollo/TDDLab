@@ -13,14 +13,12 @@ import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   Container,
   Button,
-  Collapse,
+  Box,
+  Typography,
+  Divider,
+  Paper,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
@@ -42,10 +40,44 @@ const ButtonContainer = styled("div")({
   gap: "8px",
 });
 
-const StyledTable = styled(Table)({
+const PageHeader = styled("div")({
   width: "82%",
   marginLeft: "auto",
   marginRight: "auto",
+  marginTop: "32px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "12px",
+  flexWrap: "wrap",
+});
+
+const HeaderActions = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: "12px",
+});
+
+const GroupsList = styled("div")({
+  width: "82%",
+  marginLeft: "auto",
+  marginRight: "auto",
+  marginTop: "26px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "18px",
+});
+
+const GroupCard = styled(Paper)({
+  borderRadius: "10px",
+  border: "1px solid #e7e7e7",
+  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.16)",
+  padding: "16px 18px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  cursor: "pointer",
 });
 
 // Estilos reutilizables para IconButton
@@ -60,17 +92,6 @@ const iconButtonSx = {
   },
 };
 
-// Contenedor de detalle con estilos limpios
-const DetailContainer = styled("div")({
-  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-  borderRadius: "2px",
-});
-
-const DetailContent = styled("div")({
-  padding: "50px",
-  marginLeft: "-30px",
-});
-
 // Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
@@ -82,8 +103,6 @@ function Groups() {
 
   // UI state
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
-  const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [createGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
@@ -204,21 +223,12 @@ function Groups() {
   };
 
   const handleRowClick = async (index: number) => {
-    if (expandedRows.includes(index)) {
-      setExpandedRows(expandedRows.filter((row) => row !== index));
-    } else {
-      setExpandedRows([index]);
-    }
-
     const clickedGroup = groups[index];
     if (!clickedGroup?.id) return;
 
     setSelectedRow(index);
     selectAndSync(clickedGroup.id);
   };
-
-  const handleRowHover = (index: number | null) => setHoveredRow(index);
-  const isRowSelected = (index: number) => index === selectedRow || index === hoveredRow;
 
   const handleHomeworksClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -245,16 +255,7 @@ function Groups() {
     setSelectedRow(index);
   };
 
-  const handleDeleteClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    setSelectedRow(index);
-    setConfirmationOpen(true);
-  };
-
-  const handleLinkClick = (
+  const handleStudentLinkClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number
   ) => {
@@ -263,13 +264,13 @@ function Groups() {
     if (id) getCourseLink(id, "student");
   };
 
-  const handleLinkClickTeacher = (
+  const handleDeleteClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number
   ) => {
     event.stopPropagation();
-    const id = asId(groups[index]?.id);
-    if (id) getCourseLink(id, "teacher");
+    setSelectedRow(index);
+    setConfirmationOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -323,136 +324,122 @@ function Groups() {
   return (
     <CenteredContainer>
       <section className="Grupos">
-        <StyledTable>
-          <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
-                Grupos
-              </TableCell>
-              <TableCell>
-                <ButtonContainer>
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleGroupsOrder}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<IconifyIcon icon="mdi:plus" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
-                    sx={{ 
-                      borderRadius: "17px", 
-                      textTransform: "none", 
-                      fontSize: "0.95rem",
-                      transition: "all 0.175s ease-out",
-                      "&:hover": {
-                        filter: "brightness(0.9)",
-                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                      },
-                      "&:active": {
-                        transform: "scale(0.97)",
-                      },
-                    }}
-                    onClick={handleCreateGroupClick}
+        <PageHeader>
+          <Typography sx={{ fontSize: "36px", fontWeight: 700, color: "#171717" }}>
+            Grupos
+          </Typography>
+          <HeaderActions>
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleGroupsOrder}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<IconifyIcon icon="mdi:plus" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
+              sx={{
+                borderRadius: "8px",
+                textTransform: "none",
+                fontSize: "0.95rem",
+                minWidth: "112px",
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
+              onClick={handleCreateGroupClick}
+            >
+              Crear
+            </Button>
+          </HeaderActions>
+        </PageHeader>
+
+        <Divider sx={{ width: "82%", margin: "0 auto", mt: 1.5, borderColor: "#BDBDBD" }} />
+
+        <GroupsList>
+          {groups.map((group, index) => (
+            <GroupCard
+              key={asId(group.id) || index}
+              onClick={() => handleRowClick(index)}
+              sx={{
+                backgroundColor:
+                  selectedRow === index || asId(currentSelectedGroupId) === asId(group.id)
+                    ? "#dfe8f2"
+                    : "#ffffff",
+              }}
+            >
+              <Typography sx={{ fontSize: "34px", fontWeight: 500, color: "#202124" }}>
+                {group.groupName}
+              </Typography>
+
+              <ButtonContainer>
+                <Tooltip title="Editar grupo" arrow>
+                  <IconButton
+                    aria-label="editar"
+                    onClick={(e) => handleEditClick(e, index)}
+                    sx={iconButtonSx}
                   >
-                    Crear
-                  </Button>
-                </ButtonContainer>
-              </TableCell>
-            </TableRow>
-          </TableHead>
+                    <IconifyIcon icon="mdi:file-document-multiple-outline" color="#7d7d7d" hoverColor="#616161" />
+                  </IconButton>
+                </Tooltip>
 
-          <TableBody>
-            {groups.map((group, index) => (
-              <React.Fragment key={asId(group.id) || index}>
-                <TableRow
-                  selected={isRowSelected(index)}
-                  onClick={() => handleRowClick(index)}
-                  onMouseEnter={() => handleRowHover(index)}
-                  onMouseLeave={() => handleRowHover(null)}
-                >
-                  <TableCell>
-                    <Checkbox
-                      checked={asId(currentSelectedGroupId) === asId(group.id)}
-                      onChange={() => handleRowClick(index)}
-                    />
-                  </TableCell>
-                  <TableCell>{group.groupName}</TableCell>
-                  <TableCell>
-                    <ButtonContainer>
-                      <Tooltip title="Editar grupo" arrow>
-                        <IconButton 
-                          aria-label="editar" 
-                          onClick={(e) => handleEditClick(e, index)}
-                          sx={iconButtonSx}
-                        >
-                          <IconifyIcon icon="mdi:pencil" color="primary" hoverColor="#1565c0" />
-                        </IconButton>
-                      </Tooltip>
+                <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
+                  <IconButton
+                    aria-label="enlace"
+                    onClick={(e) => handleStudentLinkClick(e, index)}
+                    sx={iconButtonSx}
+                  >
+                    <IconifyIcon icon="mdi:link-variant" color="#7d7d7d" hoverColor="#616161" />
+                  </IconButton>
+                </Tooltip>
 
-                      <Tooltip title="Tareas" arrow>
-                        <IconButton 
-                          aria-label="tareas" 
-                          onClick={(e) => handleHomeworksClick(e, index)}
-                          sx={iconButtonSx}
-                        >
-                          <IconifyIcon icon="mdi:motion" color="primary" hoverColor="#1565c0" />
-                        </IconButton>
-                      </Tooltip>
+                <Tooltip title="Participantes" arrow>
+                  <IconButton
+                    aria-label="estudiantes"
+                    onClick={(e) => handleStudentsClick(e, index)}
+                    sx={iconButtonSx}
+                  >
+                    <IconifyIcon icon="mdi:account-group" color="#7d7d7d" hoverColor="#616161" />
+                  </IconButton>
+                </Tooltip>
 
-                      <Tooltip title="Participantes" arrow>
-                        <IconButton 
-                          aria-label="estudiantes" 
-                          onClick={(e) => handleStudentsClick(e, index)}
-                          sx={iconButtonSx}
-                        >
-                          <IconifyIcon icon="mdi:account-multiple" color="primary" hoverColor="#1565c0" />
-                        </IconButton>
-                      </Tooltip>
+                <Tooltip title="Tareas" arrow>
+                  <IconButton
+                    aria-label="tareas"
+                    onClick={(e) => handleHomeworksClick(e, index)}
+                    sx={iconButtonSx}
+                  >
+                    <IconifyIcon icon="mdi:motion" color="#7d7d7d" hoverColor="#616161" />
+                  </IconButton>
+                </Tooltip>
 
-                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton 
-                          aria-label="enlace" 
-                          onClick={(e) => handleLinkClick(e, index)}
-                          sx={iconButtonSx}
-                        >
-                          <IconifyIcon icon="mdi:link" color="primary" hoverColor="#1565c0" />
-                        </IconButton>
-                      </Tooltip>
+                <Tooltip title="Eliminar grupo" arrow>
+                  <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
+                    <IconifyIcon icon="mdi:trash-can" color="#7d7d7d" hoverColor="#616161" />
+                  </IconButton>
+                </Tooltip>
 
-                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton 
-                          aria-label="enlace"
-                          sx={iconButtonSx}
-                          onClick={(e) => handleLinkClickTeacher(e, index)}
-                        >
-                          <PiChalkboardTeacherFill />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                          <IconifyIcon icon="mdi:trash-can" color="error" hoverColor="#d32f2f" />
-                        </IconButton>
-                      </Tooltip>
-                    </ButtonContainer>
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
-                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <DetailContainer>
-                        <DetailContent>
-                          Detalle del grupo: {groups[index].groupDetail}
-                        </DetailContent>
-                      </DetailContainer>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </StyledTable>
+                <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+                  <IconButton
+                    aria-label="enlace-docente"
+                    sx={iconButtonSx}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const id = asId(groups[index]?.id);
+                      if (id) getCourseLink(id, "teacher");
+                    }}
+                  >
+                    <PiChalkboardTeacherFill color="#7d7d7d" />
+                  </IconButton>
+                </Tooltip>
+              </ButtonContainer>
+            </GroupCard>
+          ))}
+        </GroupsList>
       </section>
 
       {confirmationOpen && (
