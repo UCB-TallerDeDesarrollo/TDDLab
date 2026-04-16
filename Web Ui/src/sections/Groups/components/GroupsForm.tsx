@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Box,
 } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
@@ -13,7 +14,6 @@ import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
-import { typographyVariants } from "../../../styles/typography";
 
 
 interface CreateGroupPopupProps {
@@ -98,11 +98,12 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   }, [open]);
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ ...typographyVariants.h5 }}>Crear grupo</DialogTitle>
+          <DialogTitle>Crear grupo</DialogTitle>
           <DialogContent>
+            <Box className="flex-column gap-2 mt-2 mb-2">
             <TextField
               error={formInvalid() && !!save}
               autoFocus
@@ -114,30 +115,36 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
+              variant="outlined"
+              InputProps={{ style: { borderRadius: "10px" } }}
               helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
               multiline
-              rows={3.7}
+              rows={4}
               margin="dense"
               id="group-description"
               name="groupDescription"
-              label="Descripcion"
+              label="Descripción"
               type="text"
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
-              InputLabelProps={{ style: { ...typographyVariants.paragraphMedium } }}
+              variant="outlined"
+              InputProps={{ style: { borderRadius: "10px" } }}
             />
+            </Box>
           </DialogContent>
           <DialogActions>
             <Button 
               onClick={handleCancel} 
+              variant="contained"
+              color="error"
               sx={{
-                color: "#555",
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
                 textTransform: "none",
-                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",
@@ -152,10 +159,14 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
             </Button>
             <Button 
               onClick={handleCreate} 
+              variant="contained"
               color="primary" 
+              disabled={formInvalid()}
               sx={{
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
                 textTransform: "none",
-                ...typographyVariants.paragraphMedium,
                 transition: "all 0.175s ease-out",
                 "&:hover": {
                   filter: "brightness(0.9)",
