@@ -23,6 +23,7 @@ import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
+import TDDBar from "./Graficas-Adicionales/TDDBarCycle";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
@@ -53,7 +54,7 @@ function TDDLineCharts({
   optionSelected,
   port,
   role,
-  commitsCycles: _
+  commitsCycles
 }: LineChartProps) {
   
   let dataChart: any = {};
@@ -357,7 +358,9 @@ function TDDLineCharts({
 
 
       case "Pie":
-        return <TDDPie commits={filteredCommitsObject || []} />;     
+        return <TDDPie commits={filteredCommitsObject || []} />;
+      case "Complejidad":
+        return <TDDBar CommitsCycles={commitsCycles || []} />;
     }
     return (
       <Line
