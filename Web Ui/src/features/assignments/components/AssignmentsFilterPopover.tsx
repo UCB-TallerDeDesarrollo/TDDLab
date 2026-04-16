@@ -68,6 +68,13 @@ function AssignmentsFilterPopover({
             value={selectedGroup}
             label="Grupo"
             onChange={onGroupChange}
+            MenuProps={{
+              sx: {
+                '& .MuiMenuItem-root:hover': {
+                  backgroundColor: '#E6F0FA',
+                },
+              },
+            }}
           >
             {groupList.length > 0 ? (
               groupList.map((group) => (
@@ -89,6 +96,13 @@ function AssignmentsFilterPopover({
             value={selectedSorting}
             label="Ordenar"
             onChange={onSortingChange}
+            MenuProps={{
+              sx: {
+                '& .MuiMenuItem-root:hover': {
+                  backgroundColor: '#E6F0FA',
+                },
+              },
+            }}
           >
             <MenuItem value="A_Up_Order">Orden alfabetico ascendente</MenuItem>
             <MenuItem value="A_Down_Order">Orden alfabetico descendente</MenuItem>

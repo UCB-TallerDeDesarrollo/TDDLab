@@ -102,6 +102,13 @@ function UsersHeader({
               onChange={(event) =>
                 onGroupChange(event.target.value as number | "all")
               }
+              MenuProps={{
+                sx: {
+                  '& .MuiMenuItem-root:hover': {
+                    backgroundColor: '#E6F0FA',
+                  },
+                },
+              }}
             >
               <MenuItem value="all">Todos los grupos</MenuItem>
               {groups.map((group) => (

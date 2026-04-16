@@ -102,26 +102,23 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
           <div className="practice-student-actions">
             <StatefulButton
               variantStyle={!Boolean(submission) ? 'primary' : 'secondary'}
-              disabled={Boolean(submission)}
-              onClick={openLinkDialog}
+              onClick={!Boolean(submission) ? openLinkDialog : undefined}
             >
-              Iniciar practica
+              Iniciar práctica
             </StatefulButton>
 
             <StatefulButton
               variantStyle={submission?.repository_link ? 'primary' : 'secondary'}
-              disabled={!submission?.repository_link}
-              onClick={redirectToGraph}
+              onClick={submission?.repository_link ? redirectToGraph : undefined}
             >
               Ver gráfica
             </StatefulButton>
 
             <StatefulButton
               variantStyle={!isTaskInProgress ? 'primary' : 'secondary'}
-              disabled={isTaskInProgress}
-              onClick={openCommentDialog}
+              onClick={!isTaskInProgress ? openCommentDialog : undefined}
             >
-              Finalizar practica
+              Finalizar práctica
             </StatefulButton>
           </div>
         </section>

@@ -84,6 +84,13 @@ export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
             onChange={handleSelectChange}
             disabled={isEditing || saving}
             label="Selecciona el tipo de prompt"
+            MenuProps={{
+              sx: {
+                '& .MuiMenuItem-root:hover': {
+                  backgroundColor: '#E6F0FA',
+                },
+              },
+            }}
             sx={{
               '& .MuiSelect-select': {
                 pl: { xs: '16px', md: '32px' },
