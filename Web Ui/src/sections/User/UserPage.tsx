@@ -52,7 +52,7 @@ const FilterContainer = styled("div")({
 // -------------------------------------------------
 
 function UserPage() {
-  const [users, setUsers] = useState<UserDataObject[]>([]);
+  const [, setUsers] = useState<UserDataObject[]>([]);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
