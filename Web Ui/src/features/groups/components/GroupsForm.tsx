@@ -10,7 +10,7 @@ import {
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
-import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
 

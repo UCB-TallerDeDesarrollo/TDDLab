@@ -10,7 +10,7 @@ import {
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
-import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
 
 interface EditGroupPopupProps {
   open: boolean;

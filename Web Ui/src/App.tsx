@@ -22,7 +22,7 @@ const GestionTareas = lazy(() => import("./sections/Assignments/AssignmentsPage"
 const AssignmentDetail = lazy(() => import("./sections/Assignments/AssignmentDetail"));
 const TDDChartPage = lazy(() => import("./sections/TDDCycles-Visualization/TDDChartPage"));
 const Login = lazy(() => import("./sections/Login/LoginPage"));
-const Groups = lazy(() => import("./sections/Groups/GroupsPage"));
+const Groups = lazy(() => import("./features/groups/pages/GroupsPage"));
 const User = lazy(() => import("./features/users/pages/UserPage"));
 const InvitationPage = lazy(() => import("./sections/GroupInvitation/InvitationPage"));
 const UsersByGroupPage = lazy(() => import("./features/users/pages/UserBygroupPage"));
