@@ -13,6 +13,8 @@ import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import LoginComponent from "./components/loginComponent";
 import { typographyVariants } from "../../styles/typography";
+import TeacherSidebar from "./components/TeacherSidebar";
+import StudentSidebar from "./components/StudentSidebar";
 
 type NavLink = {
   title: string;
@@ -26,8 +28,6 @@ interface NavbarProps {
   userRole: string;
 }
 
-import TeacherSidebar from "./components/TeacherSidebar";
-
 export default function MainMenu({
   navArrayLinks,
   userRole,
@@ -39,10 +39,12 @@ export default function MainMenu({
     (navLink) => navLink.path === location.pathname
   )?.title;
 
-  if (userRole === "teacher") {
+  if (userRole === "teacher" || userRole === "student") {
+    const SidebarComponent = userRole === "teacher" ? TeacherSidebar : StudentSidebar;
+
     return (
       <div style={{ position: "absolute" }}>
-        <TeacherSidebar navArrayLinks={navArrayLinks} />
+        <SidebarComponent navArrayLinks={navArrayLinks} />
         <AppBar
           position="fixed"
           sx={{
