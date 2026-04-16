@@ -20,8 +20,6 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import SearchIcon from "@mui/icons-material/Search";
 import GetGroups from "../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
@@ -29,6 +27,9 @@ import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersB
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import "../../App.css";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
+import IconButton from "@mui/material/IconButton";
 
 function UserPage() {
   const [, setUsers] = useState<UserDataObject[]>([]);
@@ -136,7 +137,7 @@ function UserPage() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
+                  <AppIcon icon={APP_ICONS.SEARCH} size={18} className="icon-gray" />
                 </InputAdornment>
               ),
             }}
@@ -182,16 +183,9 @@ function UserPage() {
                 <TableCell>{getRoleLabel(user.role)}</TableCell>
                 <TableCell align="center">
                   <Tooltip title="Eliminar" arrow>
-                    <RemoveCircleIcon
-                      onClick={() => handleOpenRemoveDialog(user.id)}
-                      // IMPORTANTE: Ahora el color funcionará porque quitamos el !important del body *
-                      sx={{ 
-                        color: "#d81b1b", 
-                        cursor: "pointer",
-                        transition: "transform 0.2s",
-                        '&:hover': { transform: 'scale(1.1)' }
-                      }}
-                    />
+                    <IconButton onClick={() => handleOpenRemoveDialog(user.id)}>
+                      <AppIcon icon={APP_ICONS.DELETE} size={20} className="icon-danger" />
+                    </IconButton>
                   </Tooltip>
                 </TableCell>
               </TableRow>

@@ -2,14 +2,13 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 import React, { useState, useEffect } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditAssignmentForm from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltip } from "../../Shared/statusHelpers";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
+import { AppIcon } from "../../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../../utils/IconLibrary";
+import IconButton from "@mui/material/IconButton";
 
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
@@ -68,7 +67,7 @@ const Assignment: React.FC<AssignmentProps> = ({
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
             >
-              <VisibilityIcon />
+              <AppIcon icon={APP_ICONS.VIEW} size={20} className="icon-gray" />
             </IconButton>
           </Tooltip>
 
@@ -84,7 +83,7 @@ const Assignment: React.FC<AssignmentProps> = ({
             isAdmin(role) && (
               <Tooltip title="Editar tarea" arrow>
                 <IconButton aria-label="edit" onClick={handleEditClick}>
-                  <EditIcon />
+                  <AppIcon icon={APP_ICONS.EDIT} size={20} className="icon-gray" />
                 </IconButton>
               </Tooltip>
             )
@@ -98,7 +97,7 @@ const Assignment: React.FC<AssignmentProps> = ({
                 onMouseEnter={() => handleRowHover(index)}
                 onMouseLeave={() => handleRowHover(null)}
               >
-                <DeleteIcon />
+                <AppIcon icon={APP_ICONS.DELETE} size={20} className="icon-gray" />
               </IconButton>
             </Tooltip>
           )}

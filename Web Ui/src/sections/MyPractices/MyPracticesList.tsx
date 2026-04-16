@@ -4,20 +4,18 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
   Table,
-  TableHead,
   TableBody,
-  TableRow,
-  TableCell,
   Button,
 } from "@mui/material";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import AddIcon from "@mui/icons-material/Add";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import "../../App.css";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
 
 interface PracticesProps 
 {
@@ -129,7 +127,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
           <Button
             className="btn-std btn-primary"
-            startIcon={<AddIcon />}
+            startIcon={<AppIcon icon={APP_ICONS.PLUS} size={20} />}
             onClick={showForm}
           >
             Crear

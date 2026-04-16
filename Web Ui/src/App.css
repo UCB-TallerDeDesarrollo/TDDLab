@@ -63,7 +63,69 @@
   --border-group-detail: #e7e7e7;
   --border-width-outline: 2px;
 }
+/* --- CONTENEDOR DE AJUSTES (Alineado al 82% como la tabla) --- */
+.settings-content-wrapper {
+  width: 82% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important; /* Estira los elementos al ancho total */
+  margin-bottom: 50px !important;
+}
 
+/* --- EL CUADRO BLANCO DEL EDITOR --- */
+.prompt-editor-container {
+  width: 100% !important;
+  background: #fff !important;
+  border: 1px solid var(--border-table) !important;
+  border-radius: 4px !important;
+  padding: 20px !important;
+  box-sizing: border-box !important; /* Evita que el padding lo ensanche */
+}
+
+/* --- FORZAR TEXTO DENTRO DEL TEXTFIELD --- */
+.prompt-textfield-custom {
+  width: 100% !important;
+}
+
+.prompt-textfield-custom .MuiInputBase-root {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  background-color: #fcfcfc !important;
+}
+
+/* IMPORTANTE: Esto evita que el texto largo se salga del cuadro */
+.prompt-textfield-custom textarea {
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: break-word !important;
+}
+
+.prompt-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  margin-top: 15px !important;
+}
+
+/* --- LISTA DE FUNCIONALIDADES --- */
+.flags-list {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+.settings-flag-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 10px 0 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.settings-flag-item label {
+  font-size: 14px !important;
+  cursor: pointer !important;
+  color: var(--text-primary) !important;
+}
 body {
   font-family: var(--font-family) !important;
   margin: 0;
@@ -236,4 +298,100 @@ h2.section-title {
   gap: 20px !important; /* Aumentado de 12px a 20px para separar los botones entre sí */
   margin: 0 !important;
   padding: 0 !important;
+}
+
+.app-icon {
+  display: inline-flex;
+  align-self: center;
+  flex-shrink: 0;
+}
+.icon-danger { color: var(--danger-color) !important; }
+.icon-gray { color: #666 !important; }
+
+/* --- NUEVAS CLASES PARA FIX DE DESBORDE DE TEXTO --- */
+
+/* Contenedor principal del editor para asegurar que sea un bloque sólido */
+.prompt-editor-fixed-container {
+  position: relative !important;
+  width: 100% !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--border-table) !important;
+  border-radius: 8px !important;
+  padding: 24px !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  z-index: 1 !important;
+  margin-top: 20px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+/* Forzar que el TextField de MUI y su textarea se comporten correctamente */
+.prompt-textarea-constrained {
+  width: 100% !important;
+}
+
+.prompt-textarea-constrained .MuiInputBase-root {
+  background-color: #fcfcfc !important;
+  padding: 12px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+}
+
+/* Estilos específicos para el elemento textarea real */
+.prompt-textarea-constrained textarea {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--text-primary) !important;
+  white-space: pre-wrap !important; /* Mantiene saltos de línea */
+  word-break: break-word !important; /* Rompe palabras largas */
+  overflow-wrap: break-word !important;
+  position: relative !important; /* Evita que flote fuera del flujo */
+}
+
+/* Clase para cuando está en modo lectura */
+.prompt-readonly-bg {
+  background-color: #f5f5f5 !important;
+}
+
+/* --- NUEVAS CLASES PARA EL FIX DE CONTENCIÓN --- */
+
+/* Contenedor principal que agrupa todo y asegura fondo sólido */
+.prompt-box-wrapper {
+  background-color: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  padding: 25px !important;
+  margin: 20px 0 40px 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important; /* Evita comportamientos extraños de flex */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+
+/* El área de texto cuando solo se está leyendo */
+.prompt-view-area {
+  width: 100% !important;
+  max-height: 450px !important; /* Altura máxima con scroll interno */
+  overflow-y: auto !important;
+  background-color: #fcfcfc !important;
+  border: 1px solid #f0f0f0 !important;
+  border-radius: 4px !important;
+  padding: 15px !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: #444 !important;
+  white-space: pre-wrap !important; /* Respeta saltos de línea */
+  word-break: break-word !important; /* Evita que palabras largas rompan el cuadro */
+  box-sizing: border-box !important;
+}
+
+/* Clase para limpiar el estilo del TextField cuando se edita */
+.prompt-field-edit-fix .MuiInputBase-root {
+  background-color: #fff !important;
+  padding: 0 !important;
+}
+
+.prompt-field-edit-fix textarea {
+  padding: 15px !important;
+  font-size: 14px !important;
 }

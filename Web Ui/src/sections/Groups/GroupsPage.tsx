@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import GroupsIcon from "@mui/icons-material/Groups";
-import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import LinkIcon from "@mui/icons-material/Link";
-import EditIcon from "@mui/icons-material/Edit";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import Checkbox from "@mui/material/Checkbox";
 import {
@@ -37,6 +31,8 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 
 import "../../App.css";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
 
 const asId = (v: unknown): number => {
   const n = Number(v);
@@ -320,108 +316,124 @@ function Groups() {
     index === selectedRow || index === hoveredRow;
 
   return (
-  <div className="centered-container">
-    <div className="page-header">
-      <h2 className="section-title">Grupos</h2>
-      <div className="filter-container">
-        <SortingComponent
-          selectedSorting={selectedSorting}
-          onChangeHandler={handleGroupsOrder}
-        />
-        <Button
-          className="btn-std btn-primary"
-          startIcon={<AddIcon />}
-          onClick={handleCreateGroupClick}
-        >
-          Crear
-        </Button>
+    <div className="centered-container">
+      <div className="page-header">
+        <h2 className="section-title">Grupos</h2>
+        <div className="filter-container">
+          <SortingComponent
+            selectedSorting={selectedSorting}
+            onChangeHandler={handleGroupsOrder}
+          />
+          <Button
+            className="btn-std btn-primary"
+            startIcon={<AppIcon icon={APP_ICONS.PLUS} size={20} />}
+            onClick={handleCreateGroupClick}
+          >
+            Crear
+          </Button>
+        </div>
       </div>
-    </div>
 
-    <section className="table-container-full">
-      <Table className="styled-table">
-        <TableBody>
-          {groups.map((group, index) => (
-            <React.Fragment key={asId(group.id) || index}>
-              <TableRow
-                className="table-row-bordered"
-                selected={isRowSelected(index)}
-                onClick={() => handleRowClick(index)}
-                onMouseEnter={() => setHoveredRow(index)}
-                onMouseLeave={() => setHoveredRow(null)}
-              >
-                <TableCell padding="checkbox" width="50px">
-                  <Checkbox
-                    checked={asId(currentSelectedGroupId) === asId(group.id)}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => handleRowClick(index)}
-                  />
-                </TableCell>
+      <section className="table-container-full">
+        <Table className="styled-table">
+          <TableBody>
+            {groups.map((group, index) => (
+              <React.Fragment key={asId(group.id) || index}>
+                <TableRow
+                  className="table-row-bordered"
+                  selected={isRowSelected(index)}
+                  onClick={() => handleRowClick(index)}
+                  onMouseEnter={() => setHoveredRow(index)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                >
+                  <TableCell padding="checkbox" width="50px">
+                    <Checkbox
+                      checked={asId(currentSelectedGroupId) === asId(group.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => handleRowClick(index)}
+                    />
+                  </TableCell>
 
-                <TableCell className="practice-title-cell">
-                  {group.groupName}
-                </TableCell>
+                  <TableCell className="practice-title-cell">
+                    {group.groupName}
+                  </TableCell>
 
-                <TableCell align="right">
-                  <div className="action-buttons-group">
-                    <Tooltip title="Editar grupo" arrow>
-                      <IconButton onClick={(e) => handleEditClick(e, index)}><EditIcon /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="Tareas" arrow>
-                      <IconButton onClick={(e) => handleHomeworksClick(e, index)}><AutoAwesomeMotionIcon /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="Participantes" arrow>
-                      <IconButton onClick={(e) => handleStudentsClick(e, index)}><GroupsIcon /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="Enlace estudiante" arrow>
-                      <IconButton onClick={(e) => handleLinkClick(e, index)}><LinkIcon /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="Enlace docente" arrow>
-                      <IconButton onClick={(e) => handleLinkClickTeacher(e, index)}><PiChalkboardTeacherFill /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="Eliminar" arrow>
-                      <IconButton onClick={(e) => handleDeleteClick(e, index)}><DeleteIcon /></IconButton>
-                    </Tooltip>
-                  </div>
-                </TableCell>
-              </TableRow>
+                  <TableCell align="right">
+                    <div className="action-buttons-group">
+                      <Tooltip title="Editar grupo" arrow>
+                        <IconButton onClick={(e) => handleEditClick(e, index)}>
+                          <AppIcon icon={APP_ICONS.EDIT} className="icon-gray" />
+                        </IconButton>
+                      </Tooltip>
 
-              <TableRow>
-                <TableCell colSpan={3} style={{ padding: 0 }}>
-                  <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                    <div className="group-detail-box" style={{ padding: '15px', background: '#f9f9f9', borderBottom: '1px solid #e7e7e7' }}>
-                      <strong>Detalle:</strong> {group.groupDetail || "Sin descripción."}
+                      <Tooltip title="Tareas" arrow>
+                        <IconButton onClick={(e) => handleHomeworksClick(e, index)}>
+                          <AppIcon icon={APP_ICONS.TASKS} className="icon-gray" />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Participantes" arrow>
+                        <IconButton onClick={(e) => handleStudentsClick(e, index)}>
+                          <AppIcon icon={APP_ICONS.GROUPS} className="icon-gray" />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Copiar enlace estudiante" arrow>
+                        <IconButton onClick={(e) => handleLinkClick(e, index)}>
+                          <AppIcon icon={APP_ICONS.LINK} className="icon-gray" />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Copiar enlace docente" arrow>
+                        <IconButton onClick={(e) => handleLinkClickTeacher(e, index)}>
+                          <AppIcon icon={APP_ICONS.TEACHER} className="icon-gray" />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Eliminar grupo" arrow>
+                        <IconButton onClick={(e) => handleDeleteClick(e, index)}>
+                          <AppIcon icon={APP_ICONS.DELETE} className="icon-gray" />
+                        </IconButton>
+                      </Tooltip>
                     </div>
-                  </Collapse>
-                </TableCell>
-              </TableRow>
-            </React.Fragment>
-          ))}
-        </TableBody>
-      </Table>
-    </section>
+                  </TableCell>
+                </TableRow>
 
-    {/* ... Diálogos de confirmación y formularios se mantienen igual abajo ... */}
-    <ConfirmationDialog
-      open={confirmationOpen}
-      title="¿Eliminar el grupo?"
-      content="Ten en cuenta que esta acción también eliminará todas las tareas asociadas."
-      cancelText="Cancelar"
-      deleteText="Eliminar"
-      onCancel={() => setConfirmationOpen(false)}
-      onDelete={handleConfirmDelete}
-    />
-    <ValidationDialog
-      open={validationDialogOpen}
-      title="Grupo eliminado exitosamente"
-      closeText="Cerrar"
-      onClose={handleValidationDialogClose}
-    />
-    <CreateGroupPopup open={createGroupPopupOpen} handleClose={() => setCreateGroupPopupOpen(false)} onCreated={handleGroupCreated} />
-    <EditGroupPopup open={editGroupPopupOpen} handleClose={() => setEditGroupPopupOpen(false)} groupToEdit={groupToEdit} onUpdated={handleGroupUpdated} />
-  </div>
-);
+                <TableRow>
+                  <TableCell colSpan={3} style={{ padding: 0 }}>
+                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
+                      <div className="group-detail-box" style={{ padding: '15px', background: '#f9f9f9', borderBottom: '1px solid #e7e7e7', fontSize: '14px' }}>
+                        <strong>Detalle:</strong> {group.groupDetail || "Sin descripción disponible."}
+                      </div>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            ))}
+          </TableBody>
+        </Table>
+      </section>
 
+      {/* ... Diálogos se mantienen igual ... */}
+      <ConfirmationDialog
+        open={confirmationOpen}
+        title="¿Eliminar el grupo?"
+        content="Ten en cuenta que esta acción también eliminará todas las tareas asociadas."
+        cancelText="Cancelar"
+        deleteText="Eliminar"
+        onCancel={() => setConfirmationOpen(false)}
+        onDelete={handleConfirmDelete}
+      />
+      <ValidationDialog
+        open={validationDialogOpen}
+        title="Grupo eliminado exitosamente"
+        closeText="Cerrar"
+        onClose={() => setValidationDialogOpen(false)}
+      />
+      <CreateGroupPopup open={createGroupPopupOpen} handleClose={() => setCreateGroupPopupOpen(false)} onCreated={handleGroupCreated} />
+      <EditGroupPopup open={editGroupPopupOpen} handleClose={() => setEditGroupPopupOpen(false)} groupToEdit={groupToEdit} onUpdated={handleGroupUpdated} />
+    </div>
+  );
 }
 
 export default Groups;
