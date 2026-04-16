@@ -14,6 +14,11 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { 
+  GenericListContainer, 
+  GenericListHeader, 
+  GenericListBody 
+} from "../Shared/Components/GenericList";
 import Practice from "./Practice";
 import "../Groups/GroupsPage.css";
 
@@ -64,6 +69,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   // Obtener prácticas
 
   const fetchData = async () => {
+    if (!authData?.userid) return;
     try {
       const data = await practicesRepository.getPracticeByUserId(
         authData.userid
@@ -76,6 +82,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   };
 
   useEffect(() => {
+    if (!authData?.userid) return;
     fetchData();
   }, [selectedSorting, authData]);
 
@@ -119,63 +126,63 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <Container>
       <section className="Practicas">
-        {/* ── Header ─────────────────────────────── */}
-        <div className="groups-header">
-          <h2 className="groups-header-title">Practicas</h2>
-          <div className="groups-header-actions">
-            <Button
-              variant="outlined"
-              className="groups-filter-btn"
-              endIcon={<FilterListIcon />}
-              onClick={(e) => setFilterAnchor(e.currentTarget)}
-            >
-              Filtrar
-            </Button>
-            <Menu
-              anchorEl={filterAnchor}
-              open={Boolean(filterAnchor)}
-              onClose={() => setFilterAnchor(null)}
-            >
-              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Up_Order" } }); setFilterAnchor(null); }}>
-                Orden alfabetico ascendente
-              </MenuItem>
-              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Down_Order" } }); setFilterAnchor(null); }}>
-                Orden alfabetico descendente
-              </MenuItem>
-              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Up" } }); setFilterAnchor(null); }}>
-                Recientes
-              </MenuItem>
-              <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Down" } }); setFilterAnchor(null); }}>
-                Antiguos
-              </MenuItem>
-            </Menu>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              className="groups-create-btn"
-              onClick={showForm}
-            >
-              Crear
-            </Button>
-          </div>
-        </div>
+        <GenericListContainer>
+          <GenericListHeader
+            title="Practicas"
+            actions={
+              <>
+                <Button
+                  variant="outlined"
+                  className="groups-filter-btn"
+                  endIcon={<FilterListIcon />}
+                  onClick={(e) => setFilterAnchor(e.currentTarget)}
+                >
+                  Filtrar
+                </Button>
+                <Menu
+                  anchorEl={filterAnchor}
+                  open={Boolean(filterAnchor)}
+                  onClose={() => setFilterAnchor(null)}
+                >
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Up_Order" } }); setFilterAnchor(null); }}>
+                    Orden alfabetico ascendente
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Down_Order" } }); setFilterAnchor(null); }}>
+                    Orden alfabetico descendente
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Up" } }); setFilterAnchor(null); }}>
+                    Recientes
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Down" } }); setFilterAnchor(null); }}>
+                    Antiguos
+                  </MenuItem>
+                </Menu>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  className="groups-create-btn"
+                  onClick={showForm}
+                >
+                  Crear
+                </Button>
+              </>
+            }
+          />
 
-        <hr className="groups-divider" />
-
-        {/* ── Card list ──────────────────────────── */}
-        <div className="groups-card-list">
-          {practices.map((practice, index) => (
-            <Practice
-              key={practice.id}
-              practice={practice}
-              index={index}
-              handleClickDetail={handleClickDetail}
-              handleClickDelete={handleClickDelete}
-              handleRowHover={handleRowHover}
-            />
-          ))}
-        </div>
+          <GenericListBody>
+            {practices.map((practice, index) => (
+              <Practice
+                key={practice.id}
+                practice={practice}
+                index={index}
+                handleClickDetail={handleClickDetail}
+                handleClickDelete={handleClickDelete}
+                handleRowHover={handleRowHover}
+              />
+            ))}
+          </GenericListBody>
+        </GenericListContainer>
 
         {confirmationOpen && (
           <ConfirmationDialog

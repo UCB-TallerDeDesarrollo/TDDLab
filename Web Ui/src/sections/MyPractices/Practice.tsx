@@ -7,6 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltipPractice } from "../Shared/statusHelpers";
+import { GenericCard } from "../Shared/Components/GenericList";
 
 interface PracticeProps {
   practice: PracticeDataObject;
@@ -35,54 +36,53 @@ const Practice: React.FC<PracticeProps> = ({
   const statusIcon = getStatusIcon(practice.state);
 
   return (
-    <div
-      className="groups-card"
-      onMouseEnter={() => handleRowHover(index)}
-      onMouseLeave={() => handleRowHover(null)}
-    >
-      <span className="groups-card-name">{practice.title}</span>
-
-      <div className="groups-card-actions">
-        <Tooltip title="Ver practica" arrow>
-          <IconButton
-            aria-label="see"
-            onClick={() => handleClickDetail(index)}
-          >
-            <VisibilityIcon />
-          </IconButton>
-        </Tooltip>
-
-        {isEditFormOpen ? (
-          <EditPracticeForm
-            practiceId={practice.id}
-            currentTitle={practice.title}
-            currentDescription={practice.description}
-            onClose={handleCloseEditForm}
-          />
-        ) : (
-          <Tooltip title="Editar practica" arrow>
-            <IconButton aria-label="edit" onClick={handleEditClick}>
-              <EditIcon />
+    <GenericCard
+      title={practice.title}
+      onHover={(hovered) => handleRowHover(hovered ? index : null)}
+      onClick={() => handleClickDetail(index)}
+      actions={
+        <>
+          <Tooltip title="Ver practica" arrow>
+            <IconButton
+              aria-label="see"
+              onClick={(e) => { e.stopPropagation(); handleClickDetail(index); }}
+            >
+              <VisibilityIcon />
             </IconButton>
           </Tooltip>
-        )}
 
-        <Tooltip title="Eliminar practica" arrow>
-          <IconButton
-            aria-label="delete"
-            onClick={() => handleClickDelete(index)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+          {isEditFormOpen ? (
+            <EditPracticeForm
+              practiceId={practice.id}
+              currentTitle={practice.title}
+              currentDescription={practice.description}
+              onClose={handleCloseEditForm}
+            />
+          ) : (
+            <Tooltip title="Editar practica" arrow>
+              <IconButton aria-label="edit" onClick={(e) => { e.stopPropagation(); handleEditClick(); }}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
 
-        <Tooltip title={getStatusTooltipPractice(practice.state)} arrow>
-          <IconButton aria-label="status">
-            {statusIcon}
-          </IconButton>
-        </Tooltip>
-      </div>
-    </div>
+          <Tooltip title="Eliminar practica" arrow>
+            <IconButton
+              aria-label="delete"
+              onClick={(e) => { e.stopPropagation(); handleClickDelete(index); }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title={getStatusTooltipPractice(practice.state)} arrow>        
+            <IconButton aria-label="status">
+              {statusIcon}
+            </IconButton>
+          </Tooltip>
+        </>
+      }
+    />
   );
 };
 

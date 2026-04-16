@@ -1,0 +1,172 @@
+/* ── Container ─────────────────────────────────────────── */
+.generic-list-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.generic-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.generic-list-header-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+
+.generic-list-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+/* ── Divider ────────────────────────────────────────── */
+.generic-list-divider {
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  margin: 0 24px;
+}
+
+/* ── Card list ──────────────────────────────────────── */
+.generic-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+/* ── Card row (checkbox + card) ─────────────────────── */
+.generic-card-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.generic-card-checkbox {
+  flex-shrink: 0;
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.generic-card {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  justify-content: space-between;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 24px;
+  background-color: #f6f8fb;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.generic-card--clickable {
+  cursor: pointer;
+}
+
+.generic-card:hover {
+  background-color: #e8edfb;
+}
+
+.generic-card--selected {
+  background-color: #e8edfb;
+  border-color: #b0bde8;
+}
+
+.generic-card-name {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.generic-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Detail collapse ───────────────────────────────── */
+.generic-card-detail {
+  margin: -12px 24px 0;
+  padding: 16px 24px;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background-color: #fafafa;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .generic-list-header {
+    padding: 12px 16px;
+  }
+
+  .generic-list-header-title {
+    font-size: 1.2rem;
+  }
+
+  .generic-list-divider {
+    margin: 0 16px;
+  }
+
+  .generic-list-body {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .generic-card-row {
+    align-items: flex-start;
+  }
+
+  .generic-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .generic-card-name {
+    width: 100%;
+  }
+
+  .generic-card-actions {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .generic-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .generic-list-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .generic-card-actions {
+    gap: 0;
+  }
+}

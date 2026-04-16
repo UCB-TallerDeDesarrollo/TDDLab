@@ -2,12 +2,12 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 import React, { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditAssignmentForm from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltip } from "../../Shared/statusHelpers";
-import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
+import { GenericCard } from "../../Shared/Components/GenericList";
 import './Assignment.css';
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
@@ -64,40 +64,24 @@ const Assignment: React.FC<AssignmentProps> = ({
   const statusIcon = getStatusIcon(assignment.state);
 
   return (
-    <div
-      key={assignment.id}
-      className="assignment-row"
-      onMouseEnter={() => handleRowHover(index)}
-      onMouseLeave={() => handleRowHover(null)}
-    >
-      <div className="assignment-title-cell">
-        {assignment.title}
-      </div>
-      <div className="assignment-actions-cell">
-          <div className="assignment-actions-row">
-          <Tooltip title="Ver tarea" arrow>
-            <IconButton
-              aria-label="see"
-              onClick={() => handleClickDetail(index)}
-              size="small"
-              className="action-icon-btn"
-            >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+    <GenericCard
+      title={assignment.title}
+      onHover={(hovered) => handleRowHover(hovered ? index : null)}
+      onClick={() => handleClickDetail(index)}
+      actions={
+        <>
           {isAdmin(role) && isEditFormOpen ? (
             <EditAssignmentForm
               assignmentId={assignment.id}
               currentGroupName={groupName}
               currentTitle={assignment.title}
               currentDescription={assignment.description}
-              //currentGroupId={}
               onClose={handleCloseEditForm}
             />
           ) : (
             isAdmin(role) && (
               <Tooltip title="Editar tarea" arrow>
-                <IconButton aria-label="edit" onClick={handleEditClick} size="small" className="action-icon-btn">
+                <IconButton aria-label="edit" onClick={(e) => { e.stopPropagation(); handleEditClick(); }} size="small" className="action-icon-btn">
                   <EditIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -108,7 +92,7 @@ const Assignment: React.FC<AssignmentProps> = ({
             <Tooltip title="Eliminar tarea" arrow>
               <IconButton
                 aria-label="delete"
-                onClick={() => handleClickDelete(index)}
+                onClick={(e) => { e.stopPropagation(); handleClickDelete(index); }}
                 size="small"
                 className="action-icon-btn"
               >
@@ -126,9 +110,9 @@ const Assignment: React.FC<AssignmentProps> = ({
               {statusIcon}
             </IconButton>
           </Tooltip>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 };
 

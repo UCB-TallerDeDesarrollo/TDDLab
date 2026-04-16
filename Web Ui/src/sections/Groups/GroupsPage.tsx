@@ -8,7 +8,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import Checkbox from "@mui/material/Checkbox";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import CreateGroupPopup from "../Groups/components/GroupsForm";
@@ -17,7 +16,6 @@ import DeleteGroup from "../../modules/Groups/application/DeleteGroup";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
-  Collapse,
   Menu,
   MenuItem,
 } from "@mui/material";
@@ -30,15 +28,17 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import EditGroupPopup from "./components/EditGroupForm";
 import { useGroups, asId } from "./hooks/useGroups";
 import { useGroupSelection } from "./hooks/useGroupSelection";
-import './GroupsPage.css';
-
-
+import { 
+  GenericListContainer, 
+  GenericListHeader, 
+  GenericListBody, 
+  GenericCard 
+} from "../Shared/Components/GenericList";
 
 function Groups() {
   const navigate = useNavigate();
 
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -84,9 +84,6 @@ function Groups() {
     setSelectedRow(index);
     selectAndSync(clickedGroup.id);
   };
-
-  const handleRowHover = (index: number | null) => setHoveredRow(index);
-  const isRowSelected = (index: number) => index === selectedRow || index === hoveredRow;
 
   const handleHomeworksClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     event.stopPropagation();
@@ -159,112 +156,93 @@ function Groups() {
   return (
     <CenteredContainer>
       <section className="Grupos">
-        {/* ── Header ─────────────────────────────── */}
-        <div className="groups-header">
-          <h2 className="groups-header-title">Grupos</h2>
-          <div className="groups-header-actions">
-            <Button
-              variant="outlined"
-              className="groups-filter-btn"
-              endIcon={<FilterListIcon />}
-              onClick={(e) => setFilterAnchor(e.currentTarget)}
-            >
-              Filtrar
-            </Button>
-            <Menu
-              anchorEl={filterAnchor}
-              open={Boolean(filterAnchor)}
-              onClose={() => setFilterAnchor(null)}
-            >
-              <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "A_Up_Order" } }); setFilterAnchor(null); }}>
-                Orden alfabetico ascendente
-              </MenuItem>
-              <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "A_Down_Order" } }); setFilterAnchor(null); }}>
-                Orden alfabetico descendente
-              </MenuItem>
-              <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "Time_Up" } }); setFilterAnchor(null); }}>
-                Recientes
-              </MenuItem>
-              <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "Time_Down" } }); setFilterAnchor(null); }}>
-                Antiguos
-              </MenuItem>
-            </Menu>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              className="groups-create-btn"
-              onClick={handleCreateGroupClick}
-            >
-              Crear
-            </Button>
-          </div>
-        </div>
-
-        <hr className="groups-divider" />
-
-        {/* ── Card list ──────────────────────────── */}
-        <div className="groups-card-list">
-          {groups.map((group, index) => (
-            <React.Fragment key={asId(group.id) || index}>
-              <div
-                className="groups-card-row"
-                onMouseEnter={() => handleRowHover(index)}
-                onMouseLeave={() => handleRowHover(null)}
-              >
-                <Checkbox
-                  checked={asId(currentSelectedGroupId) === asId(group.id)}
-                  onChange={() => handleCheckboxChange(index)}
-                  size="small"
-                  className="groups-card-checkbox"
-                />
-                <div
-                  className={`groups-card ${isRowSelected(index) ? "groups-card--selected" : ""}`}
-                  onClick={() => handleRowClick(index)}
+        <GenericListContainer>
+          <GenericListHeader
+            title="Grupos"
+            actions={
+              <>
+                <Button
+                  variant="outlined"
+                  className="groups-filter-btn"
+                  endIcon={<FilterListIcon />}
+                  onClick={(e) => setFilterAnchor(e.currentTarget)}
                 >
-                  <span className="groups-card-name">{group.groupName}</span>
-
-                  <div className="groups-card-actions">
+                  Filtrar
+                </Button>
+                <Menu
+                  anchorEl={filterAnchor}
+                  open={Boolean(filterAnchor)}
+                  onClose={() => setFilterAnchor(null)}
+                >
+                  <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "A_Up_Order" } }); setFilterAnchor(null); }}>
+                    Orden alfabetico ascendente
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "A_Down_Order" } }); setFilterAnchor(null); }}>
+                    Orden alfabetico descendente
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "Time_Up" } }); setFilterAnchor(null); }}>
+                    Recientes
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleGroupsOrder({ target: { value: "Time_Down" } }); setFilterAnchor(null); }}>
+                    Antiguos
+                  </MenuItem>
+                </Menu>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  className="groups-create-btn"
+                  onClick={handleCreateGroupClick}
+                >
+                  Crear
+                </Button>
+              </>
+            }
+          />
+          <GenericListBody>
+            {groups.map((group, index) => (
+              <GenericCard
+                key={asId(group.id) || index}
+                showCheckbox={true}
+                isSelected={asId(currentSelectedGroupId) === asId(group.id)}
+                onSelectionChange={() => handleCheckboxChange(index)}
+                title={group.groupName}
+                onClick={() => handleRowClick(index)}
+                isExpanded={expandedRows.includes(index)}
+                details={<>Detalle del grupo: {group.groupDetail}</>}
+                actions={
+                  <>
                     <Tooltip title="Editar grupo" arrow>
                       <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
                         <EditIcon />
                       </IconButton>
                     </Tooltip>
-                  <Tooltip title="Tareas" arrow>
-                    <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
-                      <AutoAwesomeMotionIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Copiar enlace de invitacion" arrow>
-                    <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
-                      <LinkIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Participantes" arrow>
-                    <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
-                      <GroupsIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Eliminar grupo" arrow>
-                    <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                  </div>
-                </div>
-              </div>
-
-              <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                <div className="groups-card-detail">
-                  Detalle del grupo: {group.groupDetail}
-                </div>
-              </Collapse>
-            </React.Fragment>
-          ))}
-        </div>
+                    <Tooltip title="Tareas" arrow>
+                      <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
+                        <AutoAwesomeMotionIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Copiar enlace de invitacion" arrow>
+                      <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
+                        <LinkIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Participantes" arrow>
+                      <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
+                        <GroupsIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Eliminar grupo" arrow>
+                      <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                }
+              />
+            ))}
+          </GenericListBody>
+        </GenericListContainer>
       </section>
 
       {confirmationOpen && (

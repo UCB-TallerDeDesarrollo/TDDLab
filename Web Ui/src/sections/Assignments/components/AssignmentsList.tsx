@@ -16,6 +16,11 @@ import { useGlobalState } from "../../../modules/User-Authentication/domain/auth
 import './AssignmentsList.css';
 import { LoadingContainer } from "./AssigmentsStyledComponents";
 import useAssignments from "../hooks/useAssigments";
+import { 
+  GenericListContainer, 
+  GenericListHeader, 
+  GenericListBody 
+} from "../../Shared/Components/GenericList";
 
 
 
@@ -127,39 +132,40 @@ function Assignments({
       </LoadingContainer>
     ) : (
       <section className="Tareas">
-        {/* 🔹 Botones separados de la tabla */}
-        {/* 🔹 Botones arriba de la tabla en una sola línea */}
-        <div className="assignments-list-toolbar">
-          <GroupFilter
-            selectedGroup={selectedGroup}
-            groupList={groupList}
-            onChangeHandler={handleGroupChange}
-            defaultName={
-              groupList.find((group) => group.id == selectedGroup)?.groupName ||
-              groupList[0]?.groupName ||
-              "Selecciona un grupo"
+        <GenericListContainer>
+          <GenericListHeader
+            title=""
+            actions={
+              <>
+                <GroupFilter
+                  selectedGroup={selectedGroup}
+                  groupList={groupList}
+                  onChangeHandler={handleGroupChange}
+                  defaultName={
+                    groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                    groupList[0]?.groupName ||
+                    "Selecciona un grupo"
+                  }
+                />
+                <SortingComponent
+                  selectedSorting={selectedSorting}
+                  onChangeHandler={handleOrderAssignments}
+                />
+                {userRole !== "student" && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    className="assignments-list-create-btn"
+                    onClick={showForm}
+                  >
+                    Crear
+                  </Button>
+                )}
+              </>
             }
           />
-          <SortingComponent
-            selectedSorting={selectedSorting}
-            onChangeHandler={handleOrderAssignments}
-          />
-          {userRole !== "student" && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              className="assignments-list-create-btn"
-              onClick={showForm}
-            >
-              Crear
-            </Button>
-          )}
-        </div>
-
-
-        {/* 🔹 Container para las asignaciones */}
-        <div className="assignments-list-body">
+          <GenericListBody>
             {filteredAssignments.map((assignment, index) => (
               <Assignment
                 key={assignment.id}
@@ -171,7 +177,8 @@ function Assignments({
                 role={userRole}
               />
             ))}
-        </div>
+          </GenericListBody>
+        </GenericListContainer>
 
         {/* Diálogos */}
         {confirmationOpen && (
