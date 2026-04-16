@@ -1,9 +1,9 @@
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { useHomeAuthData } from "../services/homeAuth.service";
 import { buildHomeViewModel } from "../services/home.service";
 import { HomeViewModel } from "../types/home.types";
 
 export function useHomePage(): HomeViewModel {
-  const [authData] = useGlobalState("authData");
+  const authData = useHomeAuthData();
 
-  return buildHomeViewModel(authData.userEmail);
+  return buildHomeViewModel(authData);
 }

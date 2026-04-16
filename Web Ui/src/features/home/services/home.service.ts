@@ -1,4 +1,4 @@
-import { HomeViewModel } from "../types/home.types";
+import { HomeAuthData, HomeViewModel } from "../types/home.types";
 
 function normalizeDisplayName(email?: string): string {
   if (!email) {
@@ -18,10 +18,37 @@ function normalizeDisplayName(email?: string): string {
     .toLowerCase()}`;
 }
 
-export function buildHomeViewModel(email?: string): HomeViewModel {
-  const displayName = normalizeDisplayName(email);
+export function buildHomeViewModel(authData: HomeAuthData): HomeViewModel {
+  if (authData.userId === undefined) {
+    return {
+      viewState: "loading",
+      stateTitle: "Cargando inicio",
+      stateDescription: "Estamos preparando tu página de entrada al TDD Lab.",
+    };
+  }
+
+  if (authData.email === undefined) {
+    return {
+      viewState: "error",
+      stateTitle: "No se pudo cargar la página de inicio",
+      stateDescription:
+        "No fue posible obtener los datos de la sesión autenticada.",
+    };
+  }
+
+  if (authData.email.trim() === "") {
+    return {
+      viewState: "empty",
+      stateTitle: "No hay datos de usuario",
+      stateDescription:
+        "Inicia sesión nuevamente para ver la página de inicio.",
+    };
+  }
+
+  const displayName = normalizeDisplayName(authData.email);
 
   return {
+    viewState: "success",
     greeting: `Hola ${displayName}, bienvenido al TDD Lab!!!`,
   };
 }
