@@ -37,6 +37,12 @@ const CustomTableCell1 = styled(TableCell)({
   width: "80%",
 });
 
+const StyledTableBody = styled(TableBody)({
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
+});
+
 
 
 
@@ -367,7 +373,7 @@ useEffect(() => {
           <TableHead>
             <TableRow
               sx={{
-                borderBottom: "2px solid #E7E7E7",
+                borderBottom: "none",
               }}
             >
               <CustomTableCell1
@@ -377,7 +383,7 @@ useEffect(() => {
               </CustomTableCell1>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <StyledTableBody>
             {filteredAssignments.map((assignment, index) => (
               <Assignment
                 key={assignment.id}
@@ -389,7 +395,7 @@ useEffect(() => {
                 role={userRole}
               />
             ))}
-          </TableBody>
+          </StyledTableBody>
         </StyledTable>
 
         {/* Diálogos */}
