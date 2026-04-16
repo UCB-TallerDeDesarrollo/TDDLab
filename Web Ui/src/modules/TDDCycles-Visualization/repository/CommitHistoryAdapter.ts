@@ -1,4 +1,3 @@
-import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
 //import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
@@ -8,12 +7,9 @@ import { VITE_API } from "../../../../config.ts";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
-  octokit: Octokit;
   backAPI: string;
 
   constructor() {
-    this.octokit = new Octokit();
-    //auth: 'coloca tu token github para mas requests'
     this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
   }
   
@@ -25,7 +21,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
 
   async obtainUserName(owner: string): Promise<string> {
     try {
-      const response = await this.octokit.request(`GET /users/${owner}`);
+      const response = await axios.get(`https://api.github.com/users/${owner}`);
 
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);

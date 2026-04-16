@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   CircularProgress, 
@@ -95,11 +95,17 @@ function Assignments({
       const userId = authData?.userid ?? -1;
 
       if (userRole === "student") {
-        const studentGroups = await getGroups.getGroupsByUserId(userId);
-        allGroups = await Promise.all(studentGroups.map((id: number) => getGroups.getGroupById(id)));
+        const storedGroups = localStorage.getItem("userGroups");
+        const groupIds =
+          (storedGroups ? JSON.parse(storedGroups) : _userGroupid) || [];
+        const normalizedIds = Array.isArray(groupIds) ? groupIds : [groupIds];
+        allGroups = await Promise.all(
+          normalizedIds.map((id: number) => getGroups.getGroupById(id))
+        );
       } else if (userRole === "teacher") {
-        const teacherGroupIds = await getGroups.getGroupsByUserId(userId);
-        allGroups = await Promise.all(teacherGroupIds.map((id: number) => getGroups.getGroupById(id)));
+        if (userId !== -1) {
+          allGroups = await getGroups.getGroups();
+        }
       } else if (userRole === "admin") {
         allGroups = await getGroups.getGroups();
       }
@@ -122,6 +128,39 @@ function Assignments({
   useEffect(() => { 
     fetchData(); 
   }, [location.pathname, fetchData]);
+
+  useLayoutEffect(() => {
+    const handleAssignmentUpdated = () => {
+      const fallbackGroupId =
+        selectedGroup ||
+        (typeof _userGroupid === "number" ? _userGroupid : groupList[0]?.id) ||
+        0;
+
+      if (fallbackGroupId) {
+        void loadAssignmentsByGroupId(fallbackGroupId);
+      }
+    };
+
+    const originalDispatchEvent = globalThis.dispatchEvent?.bind(globalThis);
+
+    if (originalDispatchEvent) {
+      globalThis.dispatchEvent = ((event: Event) => {
+        if (event.type === "assignment-updated") {
+          handleAssignmentUpdated();
+        }
+        return originalDispatchEvent(event);
+      }) as typeof globalThis.dispatchEvent;
+    }
+
+    window.addEventListener("assignment-updated", handleAssignmentUpdated);
+
+    return () => {
+      if (originalDispatchEvent) {
+        globalThis.dispatchEvent = originalDispatchEvent;
+      }
+      window.removeEventListener("assignment-updated", handleAssignmentUpdated);
+    };
+  }, [_userGroupid, groupList, selectedGroup, loadAssignmentsByGroupId]);
 
   const handleOrderAssignments = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value);

@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import AssignmentsList from "../../../src/sections/Assignments/components/AssignmentsList";
 import { AssignmentDataObject } from "../../../src/modules/Assignments/domain/assignmentInterfaces";
 import { GroupDataObject } from "../../../src/modules/Groups/domain/GroupInterface";
-
 const mockAssignmentsRepo = {
   getAssignmentsByGroupid: jest.fn(),
   getAssignments: jest.fn(),

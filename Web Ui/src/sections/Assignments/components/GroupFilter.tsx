@@ -22,6 +22,7 @@ const GroupFilter: React.FC<GroupFilterProps> = ({
       displayEmpty
       className="select-compact"
       variant="outlined"
+      inputProps={{ "aria-label": "Grupo" }}
     >
       <MenuItem value={0} disabled>
         {defaultName}

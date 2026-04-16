@@ -12,6 +12,7 @@ const SortingComponent: React.FC<SortingProps> = ({ selectedSorting, onChangeHan
       onChange={onChangeHandler}
       className="select-compact"
       sx={{ minWidth: 150 }}
+      inputProps={{ "aria-label": "Ordenar" }}
     >
       <MenuItem value="default">Ordenar por...</MenuItem>
       <MenuItem value="A_Up_Order">Nombre (A-Z)</MenuItem>

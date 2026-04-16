@@ -1,11 +1,42 @@
-import { BufferMemory } from "langchain/memory";
 import { AIAssistantRepository } from "./AIAssistantRepositoy";
 import { AIAssistantAnswerObject, AIAssistantInstructionObject } from "../domain/AIAssistant";
 import { CommitDataObject } from "../domain/commitHistory";
 import { AIAssistantDataBaseRepository } from "./AiAssistantDataBaseRepository";
 
+type MemoryMessage = {
+    content: string;
+    _getType: () => 'human' | 'ai';
+};
+
+class SimpleBufferMemory {
+    private readonly history: MemoryMessage[] = [];
+
+    async loadMemoryVariables(): Promise<{ history: MemoryMessage[] }> {
+        return { history: [...this.history] };
+    }
+
+    async saveContext(
+        input: { input?: string },
+        output: { output?: string }
+    ): Promise<void> {
+        if (input.input) {
+            this.history.push({
+                content: input.input,
+                _getType: () => 'human'
+            });
+        }
+
+        if (output.output) {
+            this.history.push({
+                content: output.output,
+                _getType: () => 'ai'
+            });
+        }
+    }
+}
+
 export class ChatbotAssistantRepository {
-    private readonly bufferMemory = new BufferMemory({ returnMessages: true });
+    private readonly bufferMemory = new SimpleBufferMemory();
     private readonly aiAssistantRepository = new AIAssistantRepository;
     private readonly aiAssistantDB = new AIAssistantDataBaseRepository;
 
@@ -22,7 +53,7 @@ export class ChatbotAssistantRepository {
     }
 
     private async buildConversationContext(userInput: string): Promise<{ prompt: string }> {
-        const memoryVars = await this.bufferMemory.loadMemoryVariables({});
+        const memoryVars = await this.bufferMemory.loadMemoryVariables();
         let historyText = "";
 
         if (memoryVars.history && Array.isArray(memoryVars.history)) {

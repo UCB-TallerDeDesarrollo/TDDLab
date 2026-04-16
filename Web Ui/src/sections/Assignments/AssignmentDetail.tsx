@@ -242,7 +242,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             <TableCell align="right">
               <div className="filter-container">
                 <Button className="btn-std btn-primary" disabled={!sub.repository_link} onClick={() => handleRedirectAdmin(sub.repository_link, submissions, sub.id, "/graph")}>
-                  Gráfica
+                  Ver Grafica
                 </Button>
                 {showIAButton && (
                   <Button 
@@ -250,11 +250,11 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                     disabled={!sub.repository_link} 
                     onClick={() => navigate("/asistente-ia", { state: { repositoryLink: sub.repository_link } })}
                   >
-                    IA
+                    Abrir Asistente AI
                   </Button>
                 )}
                 <Button className="btn-std btn-primary" disabled={!sub.repository_link || disableAdditionalGraphs} onClick={() => handleRedirectAdmin(sub.repository_link, submissions, sub.id, "/aditionalgraph")}>
-                  Mas
+                  Ver Graficas Adicionales
                 </Button>
               </div>
             </TableCell>
@@ -337,12 +337,14 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             <Table className="styled-table">
               <TableHead>
                 <TableRow className="table-cell-header">
-                  <TableCell className="table-cell-header">Estudiante</TableCell>
+                  <TableCell className="table-cell-header">Correo</TableCell>
                   <TableCell className="table-cell-header">Estado</TableCell>
-                  <TableCell className="table-cell-header">Link</TableCell>
+                  <TableCell className="table-cell-header">Enlace</TableCell>
                   <TableCell className="table-cell-header">Inicio</TableCell>
                   <TableCell className="table-cell-header">Fin</TableCell>
-                  <TableCell className="table-cell-header">Acciones</TableCell>
+                  <TableCell className="table-cell-header">Grafica</TableCell>
+                  <TableCell className="table-cell-header">Asistente AI</TableCell>
+                  <TableCell className="table-cell-header">Graficas Adicionales</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

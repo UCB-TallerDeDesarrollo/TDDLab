@@ -98,6 +98,11 @@ function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportVi
   };
 
   const obtainComments = async () => {
+    if (submissionIdcomments <= 0) {
+      setComments([]);
+      return;
+    }
+
     try {
       const commentsData: CommentDataObject[] = await commentsRepo.getCommentsBySubmissionId(submissionIdcomments);
       const emailMap: { [key: number]: string } = {};

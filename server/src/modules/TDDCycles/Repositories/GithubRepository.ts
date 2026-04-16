@@ -1,4 +1,3 @@
-import { Octokit } from "octokit";
 import { IGithubRepository } from "../Domain/IGithubRepository";
 import {
   CommitDataObject,
@@ -12,12 +11,26 @@ import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 
 dotenv.config();
+
+type OctokitClient = {
+  request: (route: string, parameters?: Record<string, unknown>) => Promise<any>;
+};
+
 export class GithubRepository implements IGithubRepository {
-  octokit: Octokit;
+  octokit: OctokitClient | null;
   githubRepository: any;
   constructor() {
-    const { REACT_APP_AUTH_TOKEN } = process.env;
-    this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
+    this.octokit = null;
+  }
+
+  private getOctokit(): OctokitClient {
+    if (!this.octokit) {
+      const { REACT_APP_AUTH_TOKEN } = process.env;
+      const { Octokit } = require("octokit");
+      this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
+    }
+
+    return this.octokit as OctokitClient;
   }
   async getCommits(
     owner: string,
@@ -25,7 +38,7 @@ export class GithubRepository implements IGithubRepository {
   ): Promise<CommitDataObject[]> {
     try {
       const response: any = await Promise.race([
-        this.octokit.request(`GET /repos/${owner}/${repoName}/commits`, {
+        this.getOctokit().request(`GET /repos/${owner}/${repoName}/commits`, {
           per_page: 100,
         }),
         this.timeout(10000),
@@ -133,8 +146,8 @@ export class GithubRepository implements IGithubRepository {
   ): Promise<CommitInformationDataObject> {
     try {
       const [response, coverageResponse] = await Promise.all([
-        this.octokit.request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
-        this.octokit.request(
+        this.getOctokit().request(`GET /repos/${owner}/${repoName}/commits/${sha}`),
+        this.getOctokit().request(
           `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
         ),
       ]);
@@ -168,7 +181,7 @@ export class GithubRepository implements IGithubRepository {
 
   async fetchCoverageDataForCommit(owner: string, repoName: string, sha: string) {
     try {
-      const coverageResponse = await this.octokit.request(
+      const coverageResponse = await this.getOctokit().request(
         `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
       );
       let coveragePercentage = null;
@@ -245,7 +258,7 @@ export class GithubRepository implements IGithubRepository {
   async obtainRunsOfGithubActions(owner: string, repoName: string) {
     try {
       const response: any = await Promise.race([
-        this.octokit.request(`GET /repos/${owner}/${repoName}/actions/runs`),
+        this.getOctokit().request(`GET /repos/${owner}/${repoName}/actions/runs`),
         this.timeout(10000),
       ]);
       return response;
@@ -263,7 +276,7 @@ export class GithubRepository implements IGithubRepository {
     try {
       const {
         data: { total_count, jobs },
-      } = await this.octokit.request(
+      } = await this.getOctokit().request(
         `GET /repos/${owner}/${repoName}/actions/runs/${jobId}/attempts/${attempt}/jobs`
       );
       const jobData = {
