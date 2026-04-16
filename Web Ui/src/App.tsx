@@ -6,6 +6,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings"; 
 import { NoteAdd } from "@mui/icons-material";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import { lazy, Suspense, useEffect } from "react";
 import {
   setGlobalState,
@@ -23,6 +24,7 @@ const AssignmentDetail = lazy(() => import("./sections/Assignments/AssignmentDet
 const TDDChartPage = lazy(() => import("./sections/TDDCycles-Visualization/TDDChartPage"));
 const Login = lazy(() => import("./sections/Login/LoginPage"));
 const Groups = lazy(() => import("./sections/Groups/GroupsPage"));
+const HomePage = lazy(() => import("./features/home/pages/HomePage"));
 const User = lazy(() => import("./features/users/pages/UserPage"));
 const InvitationPage = lazy(() => import("./sections/GroupInvitation/InvitationPage"));
 const UsersByGroupPage = lazy(() => import("./features/users/pages/UserBygroupPage"));
@@ -33,6 +35,12 @@ const SettingsPage = lazy(() => import("./features/settings/pages/SettingsPage")
 
 const navArrayLinks = [
   {
+    title: "Inicio",
+    path: "/",
+    icon: <HomeOutlinedIcon />,
+    access: ["admin", "student", "teacher"],
+  },
+  {
     title: "Grupos",
     path: "/groups",
     icon: <GroupsIcon />,
@@ -40,7 +48,7 @@ const navArrayLinks = [
   },
   {
     title: "Tareas",
-    path: "/",
+    path: "/tareas",
     icon: <DescriptionIcon />,
     access: ["admin", "student", "teacher"],
   },
@@ -126,6 +134,14 @@ useEffect(() => {
         <Routes>
           <Route
             path="/"
+            element={
+              <ProtectedRouteComponent>
+                <HomePage />
+              </ProtectedRouteComponent>
+            }
+          />
+          <Route
+            path="/tareas"
             element={
               <ProtectedRouteComponent>
                 <GestionTareas
