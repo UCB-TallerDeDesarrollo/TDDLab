@@ -59,6 +59,7 @@ const navArrayLinks = [
 
 function App() {
   const authData = useGlobalState("authData")[0];
+  const hasSidebarLayout = authData.userRole === "teacher" || authData.userRole === "student";
 useEffect(() => {
   getSessionCookie().then((storedSession) => {
     const savedImage = localStorage.getItem("userProfilePic") || "";
@@ -94,9 +95,9 @@ useEffect(() => {
           component="main"
           sx={{
             flexGrow: 1,
-            width: authData.userRole === "teacher" ? "calc(100% - 280px)" : "100%",
-            marginLeft: authData.userRole === "teacher" ? "280px" : 0,
-            paddingTop: authData.userRole === "teacher" ? "120px" : "100px",
+            width: hasSidebarLayout ? "calc(100% - 280px)" : "100%",
+            marginLeft: hasSidebarLayout ? "280px" : 0,
+            paddingTop: hasSidebarLayout ? "120px" : "100px",
             overflowX: "hidden"
           }}
         >
