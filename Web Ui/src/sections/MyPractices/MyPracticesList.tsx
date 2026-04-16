@@ -178,10 +178,10 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           </Box>
         </Box>
 
-        {/* Grid de tarjetas */}
-        <Grid container spacing={3}>
+        {/* Listado apilado de tarjetas */}
+        <Grid container spacing={2}>
           {practices.map((practice, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={practice.id}>
+            <Grid item xs={12} key={practice.id}>
               <PracticeCard
                 practice={practice}
                 index={index}

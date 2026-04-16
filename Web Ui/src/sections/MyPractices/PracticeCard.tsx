@@ -36,19 +36,21 @@ const PracticeCard: React.FC<PracticeCardProps> = ({
       <Card
         sx={practiceCardStyles.container}
       >
-        <CardContent sx={practiceCardStyles.cardContent}>
-          {/* Título y contenido */}
-          <Box sx={practiceCardStyles.titleDescriptionBox}>
-            <Box component="div" sx={practiceCardStyles.title}>
-              {practice.title}
+        <CardContent sx={practiceCardStyles.cardContentStacked}>
+          {/* Contenedor: Título/Descripción + Acciones horizontales */}
+          <Box sx={practiceCardStyles.mainContent}>
+            {/* Sección de contenido (izquierda) */}
+            <Box sx={practiceCardStyles.titleDescriptionBox}>
+              <Box component="div" sx={practiceCardStyles.title}>
+                {practice.title}
+              </Box>
+              <Box component="div" sx={practiceCardStyles.descriptionStacked}>
+                {practice.description}
+              </Box>
             </Box>
-            <Box component="div" sx={practiceCardStyles.description}>
-              {practice.description}
-            </Box>
-          </Box>
 
-          {/* Acciones al pie de la tarjeta */}
-          <Box sx={practiceCardStyles.actionsContainer}>
+            {/* Sección de acciones (derecha) */}
+            <Box sx={practiceCardStyles.actionsContainerStacked}>
             <Tooltip title="Ver practica" arrow>
               <IconButton
                 size="small"
@@ -114,6 +116,7 @@ const PracticeCard: React.FC<PracticeCardProps> = ({
                 {statusIcon}
               </IconButton>
             </Tooltip>
+            </Box>
           </Box>
         </CardContent>
       </Card>

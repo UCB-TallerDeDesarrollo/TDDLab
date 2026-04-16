@@ -4,7 +4,7 @@ import { SxProps, Theme } from "@mui/material/styles";
 export const practiceCardStyles = {
   // Estilos del contenedor principal
   container: {
-    height: "100%",
+    height: "auto",
     display: "flex",
     flexDirection: "column",
     cursor: "pointer",
@@ -31,14 +31,34 @@ export const practiceCardStyles = {
       borderColor: "#D0D0D0",
       backgroundColor: "#F5F7FA",
       boxShadow: "0 12px 28px rgba(0, 0, 0, 0.12)",
-      transform: "translateY(-8px)",
+      transform: "translateY(-6px)",
       "&::before": {
         transform: "scaleX(1)",
       },
     },
   } as SxProps<Theme>,
 
-  // Estilos del contenido
+  // Estilos del contenido para layout de fila (ancho completo apilado)
+  cardContentStacked: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "16px 20px",
+    gap: "16px",
+  } as SxProps<Theme>,
+
+  // Contenedor principal que agrupa contenido + acciones
+  mainContent: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    gap: "24px",
+  } as SxProps<Theme>,
+
+  // Estilos del contenido anterior (para compatibilidad)
   cardContent: {
     flex: 1,
     display: "flex",
@@ -51,13 +71,13 @@ export const practiceCardStyles = {
   // Contenedor del título y descripción
   titleDescriptionBox: {
     flex: 1,
-    minHeight: "80px",
+    minHeight: "auto",
   } as SxProps<Theme>,
 
   // Estilos de título
   title: {
     color: "#212121",
-    marginBottom: "8px",
+    marginBottom: "6px",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -67,7 +87,18 @@ export const practiceCardStyles = {
     letterSpacing: "0.5px",
   },
 
-  // Estilos de descripción
+  // Descripción para layout apilado (una línea)
+  descriptionStacked: {
+    color: "#676767",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    fontSize: "15px",
+    fontFamily: '"Afacad", "Segoe UI", sans-serif',
+    lineHeight: "1.4",
+  },
+
+  // Estilos de descripción (para compatibilidad)
   description: {
     color: "#676767",
     overflow: "hidden",
@@ -80,7 +111,17 @@ export const practiceCardStyles = {
     lineHeight: "1.5",
   },
 
-  // Contenedor de acciones
+  // Contenedor de acciones para layout apilado (horizontal, derecha)
+  actionsContainerStacked: {
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: "6px",
+    flexShrink: 0,
+    minHeight: "36px",
+  } as SxProps<Theme>,
+
+  // Contenedor de acciones anterior (para compatibilidad)
   actionsContainer: {
     display: "flex",
     justifyContent: "flex-end",
