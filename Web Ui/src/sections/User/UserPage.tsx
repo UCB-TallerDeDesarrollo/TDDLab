@@ -50,14 +50,12 @@ function UserPage() {
     () => new SearchUsersByEmail(userRepository),
     [userRepository]
   );
+
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case "teacher":
-        return "Docente";
-      case "student":
-        return "Estudiante";
-      default:
-        return role;
+      case "teacher": return "Docente";
+      case "student": return "Estudiante";
+      default: return role;
     }
   };
 
@@ -109,11 +107,7 @@ function UserPage() {
       if (selectedUserId !== null) {
         const removeUserInstance = new RemoveUserFromGroup(userRepository);
         await removeUserInstance.removeUserFromGroup(selectedUserId);
-
-        setFilteredUsers((prev) =>
-          prev.filter((user) => user.id !== selectedUserId)
-        );
-
+        setFilteredUsers((prev) => prev.filter((user) => user.id !== selectedUserId));
         setValidationDialogOpen(true);
       }
     } catch (error) {
@@ -124,87 +118,79 @@ function UserPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="loading-spinner">
-        <CircularProgress />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div>Error: {(error as Error).message}</div>;
-  }
-  
+  if (loading) return <div className="fullscreen-loading"><CircularProgress /></div>;
+  if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
     <Container className="centered-container">
-      <div className="filter-container" style={{ marginBottom: '24px', gap: '16px' }}>
-        <TextField
-          label="Buscar por email"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          variant="outlined"
-          size="small"
-          sx={{ 
-            width: 360,
-            '& .MuiOutlinedInput-root': { height: 36, borderRadius: '4px' } 
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
-          }}
-        />
+      <div className="page-header">
+        <h2 className="section-title"></h2>
+          <div className="filter-container">
+          <TextField
+            label="Buscar por email"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            variant="outlined"
+            size="small" // Asegura el tamaño pequeño
+            sx={{ width: 360 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
 
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="group-select-label">Filtrar por Grupo</InputLabel>
-          <Select 
-            labelId="group-select-label"
-            value={selectedGroup} 
-            onChange={handleGroupChange} 
-            label="Filtrar por Grupo"
-            className="select-compact" // Altura de 36px y fuente Inter
-          >
-            <MenuItem value="all">Todos los grupos</MenuItem>
-            {groups.map((g) => (
-              <MenuItem key={g.id} value={g.id}>
-                {g.groupName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          <FormControl size="small" sx={{ minWidth: 200 }}> {/* Añadido size="small" */}
+            <InputLabel id="group-select-label">Filtrar por Grupo</InputLabel>
+            <Select 
+              labelId="group-select-label"
+              value={selectedGroup} 
+              onChange={handleGroupChange} 
+              label="Filtrar por Grupo"
+              className="select-compact"
+            >
+              <MenuItem value="all">Todos los grupos</MenuItem>
+              {groups.map((g) => (
+                <MenuItem key={g.id} value={g.id}>
+                  {g.groupName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
       </div>
 
       <Table className="styled-table">
         <TableHead>
-          <TableRow className="table-row-bordered">
+          <TableRow>
             <TableCell className="table-cell-header">Correo</TableCell>
             <TableCell className="table-cell-header">Grupo</TableCell>
             <TableCell className="table-cell-header">Rol</TableCell>
-            <TableCell className="table-cell-header">Eliminar</TableCell>
+            <TableCell className="table-cell-header" align="center">Eliminar</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {filteredUsers.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={4} align="center">
-                No hay resultados
-              </TableCell>
-            </TableRow>
+            <TableRow><TableCell colSpan={4} align="center">No hay resultados</TableCell></TableRow>
           ) : (
             filteredUsers.map((user) => (
-              <TableRow key={user.id} className="table-row-bordered">
+              <TableRow key={user.id}>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{groupMap[user.groupid] || "Sin grupo"}</TableCell>
                 <TableCell>{getRoleLabel(user.role)}</TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <Tooltip title="Eliminar" arrow>
                     <RemoveCircleIcon
                       onClick={() => handleOpenRemoveDialog(user.id)}
-                      sx={{ color: "#d81b1b", cursor: "pointer" }}
+                      // IMPORTANTE: Ahora el color funcionará porque quitamos el !important del body *
+                      sx={{ 
+                        color: "#d81b1b", 
+                        cursor: "pointer",
+                        transition: "transform 0.2s",
+                        '&:hover': { transform: 'scale(1.1)' }
+                      }}
                     />
                   </Tooltip>
                 </TableCell>
@@ -220,10 +206,7 @@ function UserPage() {
         content="El estudiante será removido del grupo actual."
         cancelText="Cancelar"
         deleteText="Eliminar"
-        onCancel={() => {
-          setConfirmationOpen(false);
-          setSelectedUserId(null);
-        }}
+        onCancel={() => { setConfirmationOpen(false); setSelectedUserId(null); }}
         onDelete={handleConfirmRemoveUser}
       />
 

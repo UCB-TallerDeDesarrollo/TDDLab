@@ -6,12 +6,8 @@ interface AssignmentManagerProps {
   userRole: string;
   userGroupid: number;
 }
-function AssignmentManager({
-  userRole,
-  userGroupid, 
-}: Readonly<AssignmentManagerProps>) {
-  const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
-    useState(false);
+function AssignmentManager({ userRole, userGroupid }: Readonly<AssignmentManagerProps>) {
+  const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
   const handleCreateAssignmentClick = () => {
@@ -19,26 +15,21 @@ function AssignmentManager({
   };
 
   return (
-    <div className="centered-container" data-testid="assignments-container">
-      <div className="table-container-full">
+    <div>
+      <section className="table-container-full">
         <Assignments
           ShowForm={handleCreateAssignmentClick}
           userRole={userRole}
           userGroupid={userGroupid}
           onGroupChange={setSelectedGroupId}
         />
-      </div>
+      </section>
 
       {createAssignmentPopupOpen && (
         <Form
-          /* Pasamos el data-testid al formulario */
-          data-testid="form-container"
           open={createAssignmentPopupOpen}
           handleClose={() => setCreateAssignmentPopupOpen(false)}
-          groupid={
-            selectedGroupId ??
-            (Number(localStorage.getItem("selectedGroup") ?? NaN) || userGroupid)
-          }
+          groupid={selectedGroupId ?? (Number(localStorage.getItem("selectedGroup")) || userGroupid)}
         />
       )}
     </div>

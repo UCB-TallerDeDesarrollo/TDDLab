@@ -1,11 +1,15 @@
-/* ==========================================================================
-   VARIABLES GLOBALES (Importadas del proyecto anterior)
-   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
-  --primary-dark: rgba(0, 35, 70, 1);
+  --font-family: 'Inter', sans-serif;
+  --primary-color: #1976d2;
+  --primary-color-hover: #1565c0;
+  --danger-color: #d32f2f;
+  --success-color: #2e7d32; /* Verde para popups */
+  --border-table: #e7e7e7;
+  --text-primary: #555;
   --white: #ffffff;
-  --font-size-nav: 20px;
-  /* Colores primarios */
+
   --primary-color: #1976d2;
   --primary-color-hover: #1565c0;
 
@@ -30,7 +34,7 @@
   --secondary-color: var(--gray-600);
   --secondary-color-hover-bg: var(--gray-500);
 
-  /* Colores terciarios */
+  /* Colores terciarios (ver gráfica) */
   --tertiary-color-bg: var(--gray-500);
   --tertiary-color-bg-hover: var(--gray-400);
   --tertiary-color-text: var(--gray-600);
@@ -57,72 +61,105 @@
   /* Bordes */
   --border-table: #e7e7e7;
   --border-group-detail: #e7e7e7;
+  --border-width-outline: 2px;
 }
 
-/* ==========================================================================
-   BASE & TIPOGRAFÍA GLOBALES
-   ========================================================================== */
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  color: var(--text-primary);
+  font-family: var(--font-family) !important;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--primary-color-hover);
-}
+body * { font-family: var(--font-family) !important; }
 
 /* ==========================================================================
-   LAYOUT & CONTENEDORES GLOBALES
+   LAYOUT Y TABLAS (Forzado a 82%)
    ========================================================================== */
-.fullscreen-loading,
 .centered-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 32px auto;
-  max-width: 1200px;
-  width: 100%;
-}
-
-.fullscreen-loading {
-  justify-content: center;
-  min-height: 300px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 85% !important;
+  margin: 100px auto !important;
 }
 
 .table-container-full {
-  width: 100%;
-  max-width: 1120px;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
-.page-top-spacer {
-  margin-top: 80px;
+.styled-table {
+  width: 82% !important; /* FORZADO */
+  min-width: 82% !important;
+  margin: 0 auto !important;
+  border-collapse: collapse !important;
+  border: 1px solid var(--border-table) !important;
+  table-layout: auto !important;
 }
 
-.filter-container {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+.styled-table td, .styled-table th {
+  border: 1px solid var(--border-table) !important;
+  padding: 12px !important;
+  font-size: 14px !important;
+  color: var(--text-primary) !important;
+}
+
+.page-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  width: 82% !important; 
+  margin-bottom: 15px !important;
+}
+
+h2.section-title {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
 }
 
 /* ==========================================================================
-   SISTEMA UNIFICADO DE BOTONES (El que te gusta)
+   POPUPS / DIÁLOGOS (Restauración de Colores)
    ========================================================================== */
+.dialog-title-success {
+  color: var(--success-color) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-weight: 600 !important;
+}
 
+.dialog-title-error {
+  color: var(--danger-color) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-weight: 600 !important;
+}
+
+.dialog-text-content {
+  font-size: 14px !important;
+  color: var(--text-primary) !important;
+}
+
+/* Detalle Tarea (Chiquito como pediste) */
+.assignment-header-card {
+  width: 100% !important;
+  max-width: 450px !important;
+  margin: 0 auto 40px auto !important;
+  padding: 24px !important;
+  border: 1px solid var(--border-table) !important;
+  background-color: var(--white) !important;
+}
+
+/* 1. Clase Base: Estructura y Tipografía (Inter 14 Medium) */
 .btn-std {
   height: 36px !important;
   min-width: 110px !important;
-  border-radius: 4px !important; /* Bordes más rectos como el anterior */
+  border-radius: 4px !important;
   font-family: 'Inter', sans-serif !important;
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -135,11 +172,12 @@ a:hover {
   box-shadow: none !important;
   transition: all 0.2s ease-in-out !important;
   cursor: pointer !important;
-  border: 1px solid transparent !important;
+  border: 1px solid transparent !important; /* Base para variantes con borde */
 }
 
-/* Variantes de Color */
+/* 2. Variantes de Color */
 
+/* Primario: Azul Sólido (Crear, Guardar) */
 .btn-primary {
   background-color: var(--primary-color) !important;
   color: var(--white) !important;
@@ -148,16 +186,18 @@ a:hover {
   background-color: var(--primary-color-hover) !important;
 }
 
+/* Secundario: Borde Plomo (Cancelar) */
 .btn-secondary {
   background-color: transparent !important;
   color: var(--gray-700) !important;
-  border-color: var(--gray-400) !important;
+  border-color: var(--gray-400) !important; /* Color plomo del borde */
 }
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--bg-readonly) !important;
   border-color: var(--gray-600) !important;
 }
 
+/* Success: Verde Sólido (Confirmar, Finalizar) */
 .btn-success {
   background-color: var(--success-color) !important;
   color: var(--white) !important;
@@ -166,6 +206,7 @@ a:hover {
   filter: brightness(0.9);
 }
 
+/* Failure/Danger: Rojo Sólido (Eliminar) */
 .btn-danger {
   background-color: var(--danger-color) !important;
   color: var(--white) !important;
@@ -174,235 +215,25 @@ a:hover {
   background-color: var(--danger-color-hover) !important;
 }
 
-/* Variante Outline Danger (Específica para diálogos de confirmación) */
-.btn-std.btn-danger-outline {
-  color: var(--danger-color) !important;
-  border: 2px solid var(--danger-color) !important;
-  background-color: transparent !important;
-}
-.btn-std.btn-danger-outline:hover {
-  background-color: var(--danger-color-bg-hover) !important;
-  border-color: var(--danger-color-hover) !important;
-  color: var(--danger-color-hover) !important;
-}
-
-/* Estado Deshabilitado */
+/* 3. Estado Deshabilitado (Fondo plomo sólido) */
 .btn-std:disabled {
-  background-color: var(--bg-disabled) !important;
-  color: var(--text-disabled) !important;
+  background-color: var(--bg-disabled) !important; /* Fondo plomo */
+  color: var(--text-disabled) !important; /* Texto gris suave */
   border-color: transparent !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
 }
 
-/* Dropdowns / Selects armonizados */
-.select-compact,
-.sorting-container .MuiOutlinedInput-root {
-  height: 36px !important;
-  border-radius: 4px !important;
-  font-size: 14px !important;
-  background-color: var(--white) !important;
-}
+/* Inputs de MUI */
+.MuiInputLabel-root { font-size: 14px !important; }
+.MuiInputLabel-shrink { transform: translate(14px, -9px) scale(0.75) !important; }
+.select-compact, .MuiOutlinedInput-root { height: 36px !important; font-size: 14px !important; }
 
-/* ==========================================================================
-   TABLAS & LISTADOS
-   ========================================================================== */
-
-.styled-table {
-  width: 82% !important;
-  margin: 20px auto !important;
-  border-collapse: collapse !important;
-}
-
-.styled-table th, 
-.styled-table td {
-  border: 1px solid var(--border-table) !important;
-  padding: 12px !important;
-  text-align: left;
-}
-
-.table-cell-header {
-  font-weight: 600 !important;
-}
-
-.table-row-bordered {
-  border-bottom: 2px solid var(--border-table) !important;
-}
-
-.action-buttons-group {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-}
-
-.table-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 1rem;
-  width: 82%;
-  margin-left: auto;
-  margin-right: auto;
-  flex-wrap: nowrap;
-}
-
-/* ==========================================================================
-   DIÁLOGOS & FORMULARIOS (POP-UPS)
-   ========================================================================== */
-
-.dialog-title-std {
-  font-size: 1.2rem !important;
-  padding-bottom: 8px !important;
-}
-
-.dialog-content-box {
-  display: grid;
-  gap: 16px;
-  padding-top: 16px !important;
-}
-
-.dialog-footer {
+.filter-container {
   display: flex !important;
-  gap: 12px !important;
-  padding: 16px 24px !important;
   justify-content: flex-end !important;
-}
-
-.dialog-title-success,
-.dialog-title-error {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  padding: 16px 24px 8px 24px !important;
-}
-
-.dialog-title-success { color: var(--success-color); }
-.dialog-title-error { color: var(--danger-color); }
-
-.dialog-error-text {
-  color: var(--danger-color-text-dialog);
-  font-weight: bold;
-  font-size: 16px;
-  text-align: center;
-}
-
-.dialog-text-content {
-  font-size: 1rem;
-  color: var(--text-primary);
-  line-height: 1.5;
-  padding-top: 8px;
-}
-
-/* ==========================================================================
-   MÓDULO DE CONFIGURACIÓN (SETTINGS)
-   ========================================================================== */
-
-.settings-section-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.saving-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--overlay-bg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1500;
-}
-
-.settings-error-text {
-  color: var(--danger-color);
-  font-size: 0.875rem;
-  margin-top: 4px;
-}
-
-.prompt-input-readonly {
-  background-color: var(--bg-readonly) !important;
-  cursor: default;
-}
-
-/* ==========================================================================
-   BADGES & ESTADOS
-   ========================================================================== */
-
-.badge-std {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  font-weight: 600;
-  border-radius: 4px;
-  padding: 8px 16px;
-}
-
-.badge-success { background-color: var(--success-color); }
-.badge-dark { background-color: #000000; }
-
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 8px;
-}
-
-.status-info { background-color: #28a3bc; }
-.status-success { background-color: var(--success-color); }
-.status-danger { background-color: var(--danger-color); }
-
-.text-status-enviado {
-  color: var(--success-color) !important;
-  font-weight: 600;
-}
-
-.text-status-no-enviado {
-  color: var(--danger-color) !important;
-  font-weight: 600;
-}
-
-/* ==========================================================================
-   DETALLES DE ASIGNACIÓN (CARDS)
-   ========================================================================== */
-
-.assignment-header-card {
-  width: 100%;
-  max-width: 350px;
-  margin-top: 32px;
-  padding: 18px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--gray-light);
-  background-color: var(--white);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-}
-
-.assignment-title {
-  font-size: 22px !important;   
-  font-weight: 600 !important;
-  margin-bottom: 12px !important;
-}
-
-.detail-icon {
-  margin-right: 12px;
-  color: var(--gray-dark);
-  font-size: 20px !important;
-  flex-shrink: 0;
-}
-
-.assignment-subtitle {
-  width: 100%;
-  max-width: 1120px;
-  font-size: 1.8rem !important;
-  font-weight: 700 !important;
-  margin-bottom: 16px !important;
-  text-align: left;
+  align-items: center !important;
+  gap: 20px !important; /* Aumentado de 12px a 20px para separar los botones entre sí */
+  margin: 0 !important;
+  padding: 0 !important;
 }

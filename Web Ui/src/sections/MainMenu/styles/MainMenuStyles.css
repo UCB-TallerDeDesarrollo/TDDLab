@@ -1,5 +1,5 @@
 .main-navbar { 
-  background-color: var(--primary-dark) !important; 
+  background-color: rgba(0, 35, 70, 1) !important; 
   height: var(--nav-height); 
 }
 
@@ -47,8 +47,8 @@
 }
 
 .nav-link-btn:hover {
-  opacity: 1;
   background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
 }
 
 .nav-link-active { 
@@ -106,6 +106,6 @@
 }
 
 .main-drawer .MuiDrawer-paper {
-  background-color: var(--primary-dark) !important;
+  background-color: rgba(0, 35, 70, 1) !important;
   width: 280px;
 }

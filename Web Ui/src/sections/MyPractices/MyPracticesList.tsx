@@ -120,30 +120,25 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   };
   return (
     <div className="centered-container">
+      <div className="page-header">
+        <h2 className="section-title">Practicas</h2>
+        <div className="filter-container">
+          <SortingComponent
+            selectedSorting={selectedSorting}
+            onChangeHandler={handleOrderPractices}
+          />
+          <Button
+            className="btn-std btn-primary"
+            startIcon={<AddIcon />}
+            onClick={showForm}
+          >
+            Crear
+          </Button>
+        </div>
+      </div>
+
       <section className="table-container-full">
-        <Table className="styled-table"> {}
-          <TableHead>
-            <TableRow>
-              <TableCell className="table-cell-header">
-                Practicas
-              </TableCell>
-              <TableCell>
-                <div className="filter-container">
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    className="btn-std btn-primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
+        <Table className="styled-table">
           <TableBody>
             {practices.map((practice, index) => (
               <Practice
@@ -157,6 +152,8 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             ))}
           </TableBody>
         </Table>
+      </section>
+
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
@@ -176,7 +173,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             onClose={() => window.location.reload()}
           />
         )}
-      </section>
     </div>
   );
 }

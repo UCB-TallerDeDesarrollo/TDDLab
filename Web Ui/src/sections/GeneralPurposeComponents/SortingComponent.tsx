@@ -5,26 +5,19 @@ interface SortingProps {
   onChangeHandler: (event: { target: { value: string } }) => void;
 }
 
-const SortingComponent: React.FC<SortingProps> = ({
-  selectedSorting,
-  onChangeHandler,
-}) => {
+const SortingComponent: React.FC<SortingProps> = ({ selectedSorting, onChangeHandler }) => {
   return (
     <Select
-      value={selectedSorting}
+      value={selectedSorting || "default"} // Valor por defecto
       onChange={onChangeHandler}
-      inputProps={{ "aria-label": "Ordenar" }}
-      displayEmpty
       className="select-compact"
-      variant="outlined"
+      sx={{ minWidth: 150 }}
     >
-      <MenuItem value="" disabled>
-        Ordenar
-      </MenuItem>
-      <MenuItem value="A_Up_Order">Orden alfabetico ascendente</MenuItem>
-      <MenuItem value="A_Down_Order">Orden alfabetico descendente</MenuItem>
-      <MenuItem value="Time_Up">Recientes</MenuItem>
-      <MenuItem value="Time_Down">Antiguos</MenuItem>
+      <MenuItem value="default">Ordenar por...</MenuItem>
+      <MenuItem value="A_Up_Order">Nombre (A-Z)</MenuItem>
+      <MenuItem value="A_Down_Order">Nombre (Z-A)</MenuItem>
+      <MenuItem value="Time_Up">Más recientes</MenuItem>
+      <MenuItem value="Time_Down">Más antiguos</MenuItem>
     </Select>
   );
 };
