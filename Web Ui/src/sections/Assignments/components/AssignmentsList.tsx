@@ -369,7 +369,6 @@ function Assignments({
             getRowKey={({ assignment }) => assignment.id}
             tableSx={{ width: "82%", marginLeft: "auto", marginRight: "auto" }}
             headRowSx={{ borderBottom: "2px solid #E7E7E7" }}
-            onRowClick={({ index }) => handleClickDetail(index)}
             onRowMouseEnter={({ index }) => handleRowHover(index)}
             onRowMouseLeave={() => handleRowHover(null)}
           />
@@ -404,5 +403,4 @@ function Assignments({
     </Container>
   );
 }
-
 export default Assignments;

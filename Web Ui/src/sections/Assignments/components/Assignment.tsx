@@ -48,12 +48,14 @@ export const AssignmentActions: React.FC<AssignmentActionsProps> = ({
   const statusIcon = getStatusIcon(assignment.state);
   const userIsAdmin = isAdmin(role);
 
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
+
   return (
     <ButtonContainer>
       <Tooltip title="Ver tarea" arrow>
         <IconButton
           aria-label="see"
-          onClick={(e) => { e.stopPropagation(); handleClickDetail(index); }}
+          onClick={(e) => { stop(e); handleClickDetail(index); }}
           onMouseEnter={() => handleRowHover(index)}
           onMouseLeave={() => handleRowHover(null)}
         >
@@ -74,7 +76,7 @@ export const AssignmentActions: React.FC<AssignmentActionsProps> = ({
           <Tooltip title="Editar tarea" arrow>
             <IconButton
               aria-label="edit"
-              onClick={(e) => { e.stopPropagation(); onEditClick(); }}
+              onClick={(e) => { stop(e); onEditClick(); }}
             >
               <EditIcon />
             </IconButton>
@@ -86,7 +88,7 @@ export const AssignmentActions: React.FC<AssignmentActionsProps> = ({
         <Tooltip title="Eliminar tarea" arrow>
           <IconButton
             aria-label="delete"
-            onClick={(e) => { e.stopPropagation(); handleClickDelete(index); }}
+            onClick={(e) => { stop(e); handleClickDelete(index); }}
             onMouseEnter={() => handleRowHover(index)}
             onMouseLeave={() => handleRowHover(null)}
           >
@@ -96,7 +98,7 @@ export const AssignmentActions: React.FC<AssignmentActionsProps> = ({
       )}
 
       <Tooltip title={getStatusTooltip(assignment.state)} arrow>
-        <IconButton aria-label="status">
+        <IconButton aria-label="status" onClick={stop}>
           {statusIcon}
         </IconButton>
       </Tooltip>
@@ -104,7 +106,6 @@ export const AssignmentActions: React.FC<AssignmentActionsProps> = ({
   );
 };
 
-// Componente legacy — mantiene compatibilidad si algo aún lo importa
 interface AssignmentProps {
   assignment: AssignmentDataObject;
   index: number;
@@ -119,7 +120,9 @@ const Assignment: React.FC<AssignmentProps> = (props) => {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   useEffect(() => {
-    if (props.assignment.groupid) fetchGroupName(props.assignment.groupid);
+    if (props.assignment.groupid) {
+      fetchGroupName(props.assignment.groupid);
+    }
   }, [props.assignment.groupid]);
 
   const fetchGroupName = async (groupId: number) => {
