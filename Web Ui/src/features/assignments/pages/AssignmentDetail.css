@@ -204,48 +204,6 @@
   font-size: 22px;
 }
 
-.assignment-action-btn {
-  width: 88px;
-  height: 34px;
-  min-width: 88px;
-  padding: 10px;
-  border-radius: 5px;
-  text-transform: none;
-  font-family: "Inter", sans-serif;
-  font-size: 14px;
-  line-height: 17px;
-  font-weight: 500;
-  color: #ffffff !important;
-  background-color: var(--assignment-btn) !important;
-  box-shadow: none !important;
-  transition: background-color 0.2s ease, transform 0.1s ease !important;
-}
-
-.assignment-action-btn:hover {
-  background-color: var(--assignment-navy) !important;
-  box-shadow: none !important;
-  color: #ffffff !important;
-}
-
-.assignment-action-btn:active {
-  transform: scale(0.98);
-}
-
-.assignment-action-btn.is-secondary {
-  background-color: #898989 !important;
-  color: #ffffff !important;
-}
-
-.assignment-action-btn.is-secondary:hover {
-  background-color: #333333 !important;
-  color: #ffffff !important;
-}
-
-.assignment-action-btn.Mui-disabled {
-  background-color: var(--assignment-btn-disabled);
-  color: #ffffff;
-}
-
 .assignment-deliveries-state {
   min-height: 140px;
   display: flex;

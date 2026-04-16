@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { Link as LinkIcon } from "@mui/icons-material";
+import StatefulButton from "../../../shared/components/StatefulButton";
 import { CommentDialog } from "../../../shared/components/CommentDialog";
 import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 import { GitLinkDialog } from "../../../shared/components/GitHubLinkDialog";
@@ -99,32 +100,29 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
           </p>
 
           <div className="practice-student-actions">
-            <Button
-              variant="contained"
-              className="practice-action-btn"
+            <StatefulButton
+              variantStyle={!Boolean(submission) ? 'primary' : 'secondary'}
               disabled={Boolean(submission)}
               onClick={openLinkDialog}
             >
               Iniciar practica
-            </Button>
+            </StatefulButton>
 
-            <Button
-              variant="contained"
-              className="practice-action-btn"
+            <StatefulButton
+              variantStyle={submission?.repository_link ? 'primary' : 'secondary'}
               disabled={!submission?.repository_link}
               onClick={redirectToGraph}
             >
               Ver gráfica
-            </Button>
+            </StatefulButton>
 
-            <Button
-              variant="contained"
-              className="practice-action-btn"
+            <StatefulButton
+              variantStyle={!isTaskInProgress ? 'primary' : 'secondary'}
               disabled={isTaskInProgress}
               onClick={openCommentDialog}
             >
               Finalizar practica
-            </Button>
+            </StatefulButton>
           </div>
         </section>
       </div>

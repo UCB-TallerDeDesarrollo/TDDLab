@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   Table,
   TableBody,
@@ -9,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import LinkIcon from "@mui/icons-material/Link";
+import StatefulButton from "../../../../shared/components/StatefulButton";
 import { SubmissionRowView, ViewState } from "../../types/assignmentDetail";
 
 interface DeliveriesTableProps {
@@ -109,37 +109,34 @@ export function DeliveriesTable({
                 <TableCell>{row.startDate}</TableCell>
                 <TableCell>{row.endDate}</TableCell>
                 <TableCell>
-                  <Button
-                    variant="contained"
-                    className={`assignment-action-btn ${!hasRepository ? 'is-secondary' : ''}`}
+                  <StatefulButton
+                    variantStyle={hasRepository ? 'primary' : 'secondary'}
                     onClick={() => {
                       if (hasRepository) onOpenGraph(row);
                     }}
                   >
                     Ver gráfica
-                  </Button>
+                  </StatefulButton>
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="contained"
-                    className={`assignment-action-btn ${!hasRepository ? 'is-secondary' : ''}`}
+                  <StatefulButton
+                    variantStyle={hasRepository ? 'primary' : 'secondary'}
                     onClick={() => {
                       if (hasRepository) onOpenAssistant(row);
                     }}
                   >
                     Asistente
-                  </Button>
+                  </StatefulButton>
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="contained"
-                    className={`assignment-action-btn ${!hasRepository || !showAdditionalGraphs ? 'is-secondary' : ''}`}
+                  <StatefulButton
+                    variantStyle={hasRepository && showAdditionalGraphs ? 'primary' : 'secondary'}
                     onClick={() => {
                       if (hasRepository && showAdditionalGraphs) onOpenAdditionalGraphs(row);
                     }}
                   >
                     Ver
-                  </Button>
+                  </StatefulButton>
                 </TableCell>
               </TableRow>
             );

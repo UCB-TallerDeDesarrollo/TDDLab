@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
+import StatefulButton from "../../../shared/components/StatefulButton";
 import { CommentDialog } from "../../../shared/components/CommentDialog";
 import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 import { GitLinkDialog } from "../../../shared/components/GitHubLinkDialog";
@@ -98,46 +99,42 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             />
 
             <div className="assignment-student-actions">
-              <Button
-                variant="contained"
-                className={`assignment-action-btn ${Boolean(studentSubmission) ? 'is-secondary' : ''}`}
+              <StatefulButton
+                variantStyle={!Boolean(studentSubmission) ? 'primary' : 'secondary'}
                 onClick={() => {
                   if (!Boolean(studentSubmission)) openLinkDialog();
                 }}
               >
                 Iniciar tarea
-              </Button>
+              </StatefulButton>
 
-              <Button
-                variant="contained"
-                className={`assignment-action-btn ${!studentSubmission?.repository_link ? 'is-secondary' : ''}`}
+              <StatefulButton
+                variantStyle={studentSubmission?.repository_link ? 'primary' : 'secondary'}
                 onClick={() => {
                   if (studentSubmission?.repository_link) redirectStudentToGraph();
                 }}
               >
                 Ver gráfica
-              </Button>
+              </StatefulButton>
 
-              <Button
-                variant="contained"
-                className={`assignment-action-btn ${isTaskInProgress ? 'is-secondary' : ''}`}
+              <StatefulButton
+                variantStyle={!isTaskInProgress ? 'primary' : 'secondary'}
                 onClick={() => {
                   if (!isTaskInProgress) openCommentDialog();
                 }}
               >
                 Finalizar tarea
-              </Button>
+              </StatefulButton>
 
               {showIAButton && (
-                <Button
-                  variant="contained"
-                  className={`assignment-action-btn ${!studentSubmission?.repository_link ? 'is-secondary' : ''}`}
+                <StatefulButton
+                  variantStyle={studentSubmission?.repository_link ? 'primary' : 'secondary'}
                   onClick={() => {
                     if (studentSubmission?.repository_link) redirectStudentToAssistant();
                   }}
                 >
                   Asistente IA
-                </Button>
+                </StatefulButton>
               )}
             </div>
           </section>
