@@ -35,7 +35,7 @@ const StyledStatefulButton = styled(Button, {
     },
     "&:hover": {
       boxShadow: "none",
-      backgroundColor: isPrimary ? "#002346" : "#333333",
+      backgroundColor: isPrimary ? "#002346" : "#353535",
       color: "#FFFFFF",
     },
     "&:active": {
