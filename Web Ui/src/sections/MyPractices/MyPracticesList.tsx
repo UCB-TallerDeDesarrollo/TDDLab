@@ -3,13 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   Container,
   Button,
+  Box,
+  Grid,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
@@ -17,14 +14,15 @@ import { IconifyIcon } from "../Shared/Components";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
-import Practice from "./Practice";
+import PracticeCard from "./PracticeCard";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import { typographyVariants } from "../../styles/typography";
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
+const PracticesContainer = styled(Box)({
+  width: "100%",
+  maxWidth: "1400px",
+  margin: "0 auto",
+  padding: "24px",
 });
 
 interface PracticesProps {
@@ -125,68 +123,75 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
+
   return (
-    <Container>
+    <PracticesContainer>
       <section className="Practicas">
-        <StyledTable>
-           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ ...typographyVariants.h5 }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<IconifyIcon icon="mdi:plus" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
-                    sx={{ 
-                      textTransform: "none", 
-                      ...typographyVariants.paragraphMedium,
-                      transition: "all 0.175s ease-out",
-                      "&:hover": {
-                        filter: "brightness(0.9)",
-                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                      },
-                      "&:active": {
-                        transform: "scale(0.97)",
-                      },
-                    }}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {practices.map((practice, index) => (
-              <Practice
-                key={practice.id}
+        {/* Encabezado */}
+        <Box sx={{ marginBottom: "24px" }}>
+          <div style={{ ...typographyVariants.h5, marginBottom: "20px" }}>
+            Prácticas
+          </div>
+
+          {/* Controles */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "12px",
+            }}
+          >
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleOrderPractices}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={
+                <IconifyIcon
+                  icon="mdi:plus"
+                  width={20}
+                  height={20}
+                  color="white"
+                  hoverColor="#e0e0e0"
+                />
+              }
+              sx={{
+                textTransform: "none",
+                ...typographyVariants.paragraphMedium,
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
+              onClick={showForm}
+            >
+              Crear
+            </Button>
+          </Box>
+        </Box>
+
+        {/* Grid de tarjetas */}
+        <Grid container spacing={3}>
+          {practices.map((practice, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={practice.id}>
+              <PracticeCard
                 practice={practice}
                 index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
+                onClickDetail={handleClickDetail}
+                onClickDelete={handleClickDelete}
               />
-            ))}
-          </TableBody>
-        </StyledTable>
+            </Grid>
+          ))}
+        </Grid>
+
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
@@ -207,7 +212,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
         )}
       </section>
-    </Container>
+    </PracticesContainer>
   );
 }
 
