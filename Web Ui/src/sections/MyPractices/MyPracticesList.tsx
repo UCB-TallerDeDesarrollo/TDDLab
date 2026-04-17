@@ -11,7 +11,8 @@ import {
   Button,
 } from "@mui/material";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import AddIcon from "@mui/icons-material/Add";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
@@ -135,7 +136,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                   />
                   <Button
                     className="btn-std btn-primary"
-                    startIcon={<AddIcon />}
+                    startIcon={<AppIcon icon={APP_ICONS.PLUS} size={20} />}
                     onClick={showForm}
                   >
                     Crear

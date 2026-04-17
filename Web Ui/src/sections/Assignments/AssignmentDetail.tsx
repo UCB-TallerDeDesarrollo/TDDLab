@@ -328,7 +328,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                   )
                 }
               >
-                Ver gráfica
+                Ver
               </Button>
             </TableCell>
             <TableCell>

@@ -11,7 +11,6 @@ import AssignmentsRepository from "../../../modules/Assignments/repository/Assig
 
 import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
-import AddIcon from "@mui/icons-material/Add";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
 import { ConfirmationDialog } from "../../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
@@ -23,6 +22,8 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 
+import { AppIcon } from "../../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../../utils/IconLibrary";
 const LoadingContainer = styled("div")({
   display: "flex",
   justifyContent: "center",
@@ -262,7 +263,7 @@ function Assignments({
                     {userRole !== "student" && (
                       <Button
                         className="btn-std btn-primary"
-                        startIcon={<AddIcon />}
+                        startIcon={<AppIcon icon={APP_ICONS.PLUS} size={20} />}
                         onClick={showForm}
                       >
                         Crear
