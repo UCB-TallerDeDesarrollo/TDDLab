@@ -22,8 +22,8 @@ import { getSessionCookie } from "./modules/User-Authentication/application/getS
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import UsersByGroupPage from "./sections/User/UserBygroupPage";
-import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
-import PracticeDetail from "./sections/MyPractices/PracticeDetail";
+import MyPracticesPage from "./features/my-practices/pages/MyPracticesPage";
+import PracticeDetailPage from "./features/my-practices/pages/PracticeDetailPage";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import {
@@ -183,7 +183,7 @@ useEffect(() => {
           path="/mis-practicas/:id"
           element={
             <ProtectedRouteComponent>
-              <PracticeDetail userid={authData.userid ?? 0} title={""} />
+              <PracticeDetailPage userid={authData.userid ?? 0} title={""} />
             </ProtectedRouteComponent>
           }
         />

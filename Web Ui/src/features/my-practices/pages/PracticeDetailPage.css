@@ -1,0 +1,225 @@
+:root {
+  --practice-navy: #002b5b;
+  --practice-light-blue: #a8bed7;
+  --practice-page-bg: #eef1f4;
+  --practice-card-bg: #ffffff;
+  --practice-border: #d0d6de;
+  --practice-action: #1f74d6;
+  --practice-action-disabled: #8f8f8f;
+}
+
+.practice-detail-page {
+  min-height: calc(100vh - 120px);
+  background: #ffffff;
+  padding: 32px 24px 48px;
+  padding-top: 0% !important;
+}
+
+.practice-content-shell {
+  width: min(1460px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 54px;
+}
+
+.practice-center-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.practice-task-card {
+  background: var(--practice-light-blue);
+  border-radius: 6px;
+  padding: 12px 64px;
+  min-height: 272px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) auto;
+  align-items: center;
+  column-gap: 32px;
+}
+
+.practice-task-title-block {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 188px;
+  padding-right: 24px;
+}
+
+.practice-task-title {
+  font-size: 3rem !important;
+  line-height: 1.02;
+  font-weight: 900;
+  color: #0b0d0f;
+  padding-left: 16%;
+}
+
+.practice-task-meta-icon {
+  font-size: 1.6rem;
+  color: var(--practice-navy);
+}
+
+.practice-task-meta-block {
+  display: flex;
+  justify-content: flex-end;
+  color: var(--practice-navy);
+  padding-right: 100%;
+}
+
+.practice-task-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.practice-task-meta-label {
+  font-weight: 700;
+}
+
+.practice-student-card {
+  background: var(--practice-card-bg);
+  border: 1px solid var(--practice-border);
+  border-radius: 6px;
+  padding: 14px 20px 18px;
+  box-shadow: 0 4px 10px rgba(31, 41, 55, 0.2);
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.practice-section-title {
+  color: #101418;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.practice-student-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 520px);
+  align-items: center;
+  gap: 28px;
+}
+
+.practice-student-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 84px;
+}
+
+.practice-student-row {
+  margin: 0;
+  color: #243447;
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.practice-student-row strong {
+  color: #101418;
+  font-weight: 800;
+}
+
+.practice-student-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  justify-self: center;
+  width: 100%;
+  gap: 14px;
+  padding-bottom: 15px;
+}
+
+.practice-action-btn {
+  text-transform: none;
+  background-color: var(--practice-action);
+  min-width: 146px;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: none;
+  border-radius: 6px;
+}
+
+.practice-action-btn.Mui-disabled {
+  background-color: var(--practice-action-disabled);
+  color: #f2f2f2;
+}
+
+.practice-link-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.practice-link-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 960px) {
+  .practice-detail-page {
+    padding: 24px 16px 36px;
+  }
+
+  .practice-content-shell {
+    gap: 26px;
+  }
+
+  .practice-task-card {
+    grid-template-columns: 1fr;
+    padding: 36px 24px;
+    min-height: unset;
+    row-gap: 18px;
+  }
+
+  .practice-task-title-block {
+    justify-content: center;
+    min-height: 120px;
+    padding-right: 0;
+  }
+
+  .practice-task-meta-block {
+    justify-content: center;
+  }
+
+  .practice-task-meta-row {
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .practice-section-title {
+    font-size: 28px;
+  }
+
+  .practice-student-content {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .practice-student-details {
+    gap: 10px;
+  }
+
+  .practice-student-row {
+    font-size: 16px;
+  }
+
+  .practice-student-details {
+    gap: 10px 24px;
+  }
+
+  .practice-student-actions {
+    justify-content: flex-start;
+  }
+
+  .practice-action-btn {
+    min-width: 100%;
+    font-size: 16px;
+    padding-bottom: 55px;
+  }
+}
