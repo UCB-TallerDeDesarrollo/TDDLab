@@ -9,14 +9,10 @@ export const loginUserWithGoogle = async (
   idToken: string,
   _: TokenVerifier = new FirebaseTokenVerifier()
 ): Promise<{ user: User; jwtToken: string }> => {
-  //const email = await tokenVerifier.verifyAndExtractEmail(idToken);
-  
   // Verificar el proveedor del token
   let email = "";
   try {
-    console.log("Verifying Google token with Firebase Admin SDK");
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log("Decoded token:", decodedToken);
     email = decodedToken.email??"";
     const firebaseData = decodedToken.firebase as any;
     const providerId = firebaseData?.sign_in_provider;
@@ -31,7 +27,6 @@ export const loginUserWithGoogle = async (
       throw new Error("Usuario no encontrado");
     }
   } catch (error: any) {
-    console.log("Error verifying Google token:", error);
     if (error.message === "DEBE_USAR_GOOGLE") {
       throw error;
     }
@@ -43,14 +38,12 @@ export const loginUserWithGoogle = async (
 
   const userResult = await getUserByemail(email);
   
-  console.log("User result from database:", userResult);
   if (!userResult || "error" in userResult || userResult === null) {
     throw new Error("Usuario no encontrado");
   }
 
   const user = userResult as User;
   const jwtToken = await getUserToken(user);
-  console.log("Generated JWT token:", jwtToken);
   return { user, jwtToken };
 };
 

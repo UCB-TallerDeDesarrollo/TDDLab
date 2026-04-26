@@ -144,7 +144,6 @@ class UserController {
 
   async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
-    console.log("Received Google login request");
     if (!idToken) {
       res.status(400).json({ error: "Debes proporcionar un token válido" });
       return;
@@ -325,7 +324,6 @@ async  logoutController (res: Response): Promise<void> {
       return;
     }
     try {
-      console.log(userId);
       await removeUser(userId);
       res
         .status(200)

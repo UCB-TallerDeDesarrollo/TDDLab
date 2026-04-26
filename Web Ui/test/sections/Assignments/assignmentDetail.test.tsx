@@ -30,6 +30,22 @@ jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
   })),
 }));
 
+jest.mock("../../../src/modules/Users/repository/UsersRepository", () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    getUserById: jest.fn().mockImplementation((userid: number) =>
+      Promise.resolve({
+        email:
+          userid === 123
+            ? "student1@example.com"
+            : userid === 124
+              ? "student2@example.com"
+              : "unknown@example.com",
+      })
+    ),
+  })),
+}));
+
 jest.mock(
   "../../../src/modules/Submissions/Aplication/getSubmissionsByAssignmentId",
   () => ({
@@ -57,18 +73,6 @@ jest.mock(
     })),
   })
 );
-
-jest.mock("../../../src/modules/Users/repository/UsersRepository", () => {
-  return jest.fn().mockImplementation(() => ({
-    getUserById: jest.fn().mockImplementation((id: number) => {
-      const map: Record<number, { email: string }> = {
-        123: { email: "student1@test.com" },
-        124: { email: "student2@test.com" },
-      };
-      return Promise.resolve(map[id] ?? { email: "Desconocido" });
-    }),
-  }));
-});
 
 describe("AssignmentDetail Component", () => {
   it("displays the group name", async () => {
@@ -174,12 +178,13 @@ describe("AssignmentDetail Component", () => {
         expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
         expect(screen.getByText("Enviado")).toBeInTheDocument();
         expect(screen.getByText("En progreso")).toBeInTheDocument();
-
+        expect(screen.getByText("student1@example.com")).toBeInTheDocument();
+        expect(screen.getByText("student2@example.com")).toBeInTheDocument();
         expect(
-          screen.getByRole("link", { name: /Abrir repositorio de student1@test\.com/i })
+          screen.getByLabelText("Abrir repositorio de student1@example.com")
         ).toBeInTheDocument();
         expect(
-          screen.getByRole("link", { name: /Abrir repositorio de student2@test\.com/i })
+          screen.getByLabelText("Abrir repositorio de student2@example.com")
         ).toBeInTheDocument();
       },
       { timeout: 3000 }
