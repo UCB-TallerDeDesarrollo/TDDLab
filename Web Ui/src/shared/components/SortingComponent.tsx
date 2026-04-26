@@ -4,20 +4,30 @@ interface SortingProps {
   selectedSorting: string;
   onChangeHandler: (event: { target: { value: string } }) => void;
   prototypeStyle?: boolean;
+  placeholderText?: string;
 }
 
 const SortingComponent: React.FC<SortingProps> = ({
   selectedSorting,
   onChangeHandler,
   prototypeStyle = false,
+  placeholderText,
 }) => {
+  const sortingLabels: Record<string, string> = {
+    "": placeholderText ?? (prototypeStyle ? "Filtrar" : "Ordenar"),
+    A_Up_Order: "A-Z",
+    A_Down_Order: "Z-A",
+    Time_Up: "Recientes",
+    Time_Down: "Antiguos",
+  };
+
   return (
     <Select
       value={selectedSorting}
       onChange={onChangeHandler}
       inputProps={{ "aria-label": "Ordenar" }}
       displayEmpty
-      renderValue={() => (prototypeStyle ? "Filtrar" : selectedSorting || "Ordenar")}
+      renderValue={(value) => sortingLabels[String(value)] ?? String(value)}
       MenuProps={{
         PaperProps: { sx: { bgcolor: '#F0F0F0', borderRadius: 1, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', mt: 0.5 } },
         sx: {
@@ -32,7 +42,7 @@ const SortingComponent: React.FC<SortingProps> = ({
         prototypeStyle
           ? {
               height: "34px",
-              width: "89px",
+              minWidth: "112px",
               fontSize: "14px",
               borderRadius: "5px",
               backgroundColor: "#D9D9D9",
@@ -54,7 +64,7 @@ const SortingComponent: React.FC<SortingProps> = ({
                 color: "#000000",
                 transition: "color 0.2s ease",
                 paddingLeft: "14px",
-                paddingRight: "24px !important",
+                paddingRight: "30px !important",
                 paddingTop: "8px",
                 paddingBottom: "8px",
               },

@@ -29,6 +29,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.80",
     "@types/cookie-parser": "^1.4.9",
     "axios": "^1.9.0",
     "cookie-parser": "^1.4.7",
