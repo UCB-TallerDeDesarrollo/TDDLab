@@ -9,7 +9,6 @@ import { Group } from "../types";
 import AnimatedIcon from "../../../shared/components/AnimatedIcon";
 
 interface Props {
-
   group: Group;
   onCopy: () => void;
   onLink: () => void;
@@ -27,7 +26,7 @@ export function GroupItem({
   onDelete,
   onEdit, 
   onTasks,
-}: Props) {
+}: Readonly<Props>) {
   return (
     <Box className="group-item-card">
       <Typography className="group-name">

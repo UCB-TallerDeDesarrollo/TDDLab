@@ -62,7 +62,17 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      {!validationDialogOpen ? (
+      {validationDialogOpen ? (
+        <ValidationDialog
+          open={validationDialogOpen}
+          title="Grupo creado exitosamente"
+          closeText="Cerrar"
+          onClose={() => {
+            setValidationDialogOpen(false);
+            handleClose();
+          }}
+        />
+      ) : (
         <>
           <DialogTitle>Crear grupo</DialogTitle>
 
@@ -98,16 +108,6 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
             <Button onClick={handleCreate}>Crear</Button>
           </DialogActions>
         </>
-      ) : (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title="Grupo creado exitosamente"
-          closeText="Cerrar"
-          onClose={() => {
-            setValidationDialogOpen(false);
-            handleClose();
-          }}
-        />
       )}
     </Dialog>
   );

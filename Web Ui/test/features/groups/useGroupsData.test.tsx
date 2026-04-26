@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import { useGroupsData } from "../../../src/features/groups/hooks/useGroupsData";
 
 const setAuthDataMock = jest.fn();
-var registerMock = jest.fn();
+const registerMock = jest.fn();
 const mockGetByUser = jest.fn();
 const mockGetAll = jest.fn();
 const mockDelete = jest.fn();

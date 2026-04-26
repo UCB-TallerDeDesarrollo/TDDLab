@@ -65,7 +65,17 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      {!validationDialogOpen ? (
+      {validationDialogOpen ? (
+        <ValidationDialog
+          open={validationDialogOpen}
+          title="Grupo actualizado exitosamente"
+          closeText="Cerrar"
+          onClose={() => {
+            setValidationDialogOpen(false);
+            handleClose();
+          }}
+        />
+      ) : (
         <>
           <DialogTitle>Editar grupo</DialogTitle>
 
@@ -101,16 +111,6 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
             <Button onClick={handleUpdate}>Guardar</Button>
           </DialogActions>
         </>
-      ) : (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title="Grupo actualizado exitosamente"
-          closeText="Cerrar"
-          onClose={() => {
-            setValidationDialogOpen(false);
-            handleClose();
-          }}
-        />
       )}
     </Dialog>
   );

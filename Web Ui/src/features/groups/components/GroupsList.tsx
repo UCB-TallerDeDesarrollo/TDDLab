@@ -21,7 +21,7 @@ export function GroupsList({
   onDelete,
   onEdit, 
   onTasks,
-}: Props) {
+}: Readonly<Props>) {
   return (
     <div className="groups-list">
       <FeatureItemsLayout>

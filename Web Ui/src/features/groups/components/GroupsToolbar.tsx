@@ -9,7 +9,11 @@ interface Props {
   onCreate: () => void;
 }
 
-export function GroupsToolbar({ selectedSorting, onSort, onCreate }: Props) {
+export function GroupsToolbar({
+  selectedSorting,
+  onSort,
+  onCreate,
+}: Readonly<Props>) {
   return (
     <Box
       sx={{
