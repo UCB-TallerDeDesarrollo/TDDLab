@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
 
 import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
 import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
@@ -7,6 +8,7 @@ import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivi
 import FeatureListSection from "../../../shared/components/FeatureListSection";
 import ContentState from "../../../shared/components/ContentState";
 import SortingComponent from "../../../shared/components/SortingComponent";
+import ActionButton from "../../../shared/components/ActionButton";
 
 import { GroupsList } from "../components/GroupsList";
 import { useGroupsData } from "../hooks/useGroupsData";
@@ -53,14 +55,17 @@ function GroupsPage() {
               <SortingComponent
                 selectedSorting={selectedSorting}
                 onChangeHandler={handleGroupsOrder}
+                prototypeStyle
+                placeholderText="Ordenar"
               />
 
-              <button
-                className="create-group-btn"
+              <ActionButton
+                startIcon={<AddIcon />}
+                variantStyle="primary"
                 onClick={() => setCreateOpen(true)}
               >
-                Crear Grupo
-              </button>
+                Crear
+              </ActionButton>
             </>
           }
         />
