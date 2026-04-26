@@ -10,7 +10,7 @@ import {
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
-import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
+import ValidationDialog from "../../../shared/components/ValidationDialog";
 
 interface EditGroupPopupProps {
   open: boolean;
@@ -29,16 +29,14 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  
+
   const groupRepository = new GroupsRepository();
 
   useEffect(() => {
     if (open && groupToEdit) {
       setGroupName(groupToEdit.groupName);
       setGroupDescription(groupToEdit.groupDetail);
-    } else if (!open) {
-      setSave(false);
-      setValidationDialogOpen(false);
+    } else {
       setGroupName("");
       setGroupDescription("");
     }
@@ -51,8 +49,8 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
     if (formInvalid() || !groupToEdit) return;
 
     const updateGroupApp = new UpdateGroup(groupRepository);
-    
-    const payload: GroupDataObject = {
+
+    const payload = {
       ...groupToEdit,
       groupName,
       groupDetail: groupDescription,
@@ -63,7 +61,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
       onUpdated?.(payload);
       setValidationDialogOpen(true);
     } catch (error) {
-      console.error("Error al actualizar el grupo:", error);
+      console.error(error);
     } finally {
       setSave(false);
     }
@@ -71,48 +69,38 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      {!validationDialogOpen && (
+      {!validationDialogOpen ? (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Editar grupo</DialogTitle>
+          <DialogTitle>Editar grupo</DialogTitle>
+
           <DialogContent>
             <TextField
-              error={formInvalid() && !!save}
+              error={formInvalid() && save}
               autoFocus
               margin="dense"
-              id="edit-group-name"
               label="Nombre del grupo*"
-              type="text"
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
-              helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
+
             <TextField
               multiline
-              rows={3.7}
+              rows={4}
               margin="dense"
-              id="edit-group-description"
-              label="Descripcion"
-              type="text"
+              label="Descripción"
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
           </DialogContent>
+
           <DialogActions>
-            <Button onClick={handleClose} style={{ color: "#555", textTransform: "none" }}>
-              Cancelar
-            </Button>
-            <Button onClick={handleUpdate} color="primary" style={{ textTransform: "none" }}>
-              Guardar Cambios
-            </Button>
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button onClick={handleUpdate}>Guardar</Button>
           </DialogActions>
         </>
-      )}
-
-      {validationDialogOpen && (
+      ) : (
         <ValidationDialog
           open={validationDialogOpen}
           title="Grupo actualizado exitosamente"

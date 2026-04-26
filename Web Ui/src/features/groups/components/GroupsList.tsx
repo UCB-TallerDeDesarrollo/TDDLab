@@ -1,54 +1,37 @@
-import React from "react";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableContainer,
-  Paper,
-} from "@mui/material";
+import { Group } from "../types";
+import { GroupItem } from "./GroupItem";
+
+import FeatureItemsLayout from "../../../shared/components/FeatureItemsLayout";
 
 interface Props {
-  groups: any[];
-  renderRow: (group: any, index: number) => React.ReactNode;
+  groups: Group[];
+  onCopy: (id: number) => void;
+  onLink: (id: number) => void;
+  onParticipants: (id: number) => void;
+  onDelete: (index: number) => void;
 }
 
-export function GroupsList({ groups, renderRow }: Props) {
+export function GroupsList({
+  groups,
+  onCopy,
+  onLink,
+  onParticipants,
+  onDelete,
+}: Props) {
   return (
-    <TableContainer
-      component={Paper}
-      elevation={0}
-      sx={{
-        border: "1px solid #E7E7E7",
-        borderRadius: 2,
-      }}
-    >
-      <Table>
-        <TableHead sx={{ backgroundColor: "#f9fafb" }}>
-          <TableRow>
-            <TableCell padding="checkbox" sx={{ width: "5%" }} />
-            <TableCell sx={{ fontWeight: 600, width: "35%" }}>
-              NOMBRE DEL GRUPO
-            </TableCell>
-            <TableCell align="right" sx={{ fontWeight: 600 }}>
-              ACCIONES
-            </TableCell>
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {groups.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
-                No hay grupos disponibles
-              </TableCell>
-            </TableRow>
-          )}
-
-          {groups.map((group, index) => renderRow(group, index))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <div className="groups-list">
+      <FeatureItemsLayout>
+        {groups.map((group, index) => (
+          <GroupItem
+            key={group.id}
+            group={group}
+            onCopy={() => onCopy(group.id)}
+            onLink={() => onLink(group.id)}
+            onParticipants={() => onParticipants(group.id)}
+            onDelete={() => onDelete(index)}
+          />
+        ))}
+      </FeatureItemsLayout>
+    </div>
   );
 }

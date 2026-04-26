@@ -10,10 +10,9 @@ import {
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
-import { ValidationDialog } from "../../../sections/Shared/Components/ValidationDialog";
+import ValidationDialog from "../../../shared/components/ValidationDialog";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
-
 
 interface CreateGroupPopupProps {
   open: boolean;
@@ -48,6 +47,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     if (formInvalid()) return;
 
     const createGroup = new CreateGroup(groupRepository);
+
     const payload: GroupDataObject = {
       id: 0 as unknown as number,
       groupName,
@@ -57,25 +57,13 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
     try {
       const newGroup = await createGroup.createGroup(payload);
-      // avisa al padre
+
       if (auth?.userEmail) {
         await dbAuthPort.register({
           email: auth.userEmail,
           groupid: newGroup.id,
           role: "teacher",
         });
-      }
-
-      try {
-        const raw = localStorage.getItem("userGroups");
-        if (raw) {
-          const arr = JSON.parse(raw);
-          if (Array.isArray(arr) && !arr.includes(newGroup.id)) {
-            localStorage.setItem("userGroups", JSON.stringify([newGroup.id, ...arr]));
-          }
-        }
-      } catch {
-        // ignore
       }
 
       onCreated?.(newGroup);
@@ -98,57 +86,50 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      {!validationDialogOpen && (
+      {!validationDialogOpen ? (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Crear grupo</DialogTitle>
+          <DialogTitle>Crear grupo</DialogTitle>
+
           <DialogContent>
             <TextField
               error={formInvalid() && !!save}
               autoFocus
               margin="dense"
-              id="group-name"
-              name="groupName"
               label="Nombre del grupo*"
-              type="text"
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
-              helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
+              helperText={
+                formInvalid() && save
+                  ? "El nombre del grupo no puede estar vacío"
+                  : ""
+              }
             />
+
             <TextField
               multiline
-              rows={3.7}
+              rows={4}
               margin="dense"
-              id="group-description"
-              name="groupDescription"
-              label="Descripcion"
-              type="text"
+              label="Descripción"
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
           </DialogContent>
+
           <DialogActions>
-            <Button onClick={handleCancel} style={{ color: "#555", textTransform: "none" }}>
-              Cancelar
-            </Button>
-            <Button onClick={handleCreate} color="primary" style={{ textTransform: "none" }}>
-              Crear
-            </Button>
+            <Button onClick={handleCancel}>Cancelar</Button>
+            <Button onClick={handleCreate}>Crear</Button>
           </DialogActions>
         </>
-      )}
-
-      {validationDialogOpen && (
+      ) : (
         <ValidationDialog
           open={validationDialogOpen}
           title="Grupo creado exitosamente"
           closeText="Cerrar"
           onClose={() => {
             setValidationDialogOpen(false);
-            handleClose(); // cierra el popup después de mostrar el mensaje
+            handleClose();
           }}
         />
       )}

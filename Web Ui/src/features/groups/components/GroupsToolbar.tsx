@@ -1,7 +1,7 @@
-import React from "react";
+
 import { Box, Typography, Stack, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import SortingComponent from "../../../sections/GeneralPurposeComponents/SortingComponent";
+import SortingComponent from "../../../shared/components/SortingComponent";
 
 interface Props {
   selectedSorting: string;
@@ -25,7 +25,7 @@ export function GroupsToolbar({ selectedSorting, onSort, onCreate }: Props) {
         Grupos
       </Typography>
 
-      <Stack direction="row" spacing={2} alignItems="center">
+      <Stack direction="row" spacing={2}>
         <SortingComponent
           selectedSorting={selectedSorting}
           onChangeHandler={onSort}
@@ -33,10 +33,8 @@ export function GroupsToolbar({ selectedSorting, onSort, onCreate }: Props) {
 
         <Button
           variant="contained"
-          color="primary"
           startIcon={<AddIcon />}
           onClick={onCreate}
-          sx={{ borderRadius: "17px", textTransform: "none", px: 3 }}
         >
           Crear Grupo
         </Button>

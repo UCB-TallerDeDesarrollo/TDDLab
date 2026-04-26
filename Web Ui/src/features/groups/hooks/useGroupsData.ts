@@ -4,6 +4,10 @@ import { useGlobalState } from "../../../modules/User-Authentication/domain/auth
 import { groupsService } from "../services";
 import { Group } from "../types";
 
+import { getCourseLink } from "../../../modules/Groups/application/GetCourseLink";
+import UsersRepository from "../../../modules/Users/repository/UsersRepository";
+import GetUsersByGroupId from "../../../modules/Users/application/getUsersByGroupid";
+
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
@@ -12,10 +16,19 @@ const asId = (v: unknown): number => {
 export const useGroupsData = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [authData, setAuthData] = useGlobalState("authData");
+
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
-  // 🔹 Sync selección
+  // ✅ nuevos estados QA
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  // 🔹 dependencias movidas aquí (NO en UI)
+  const userRepository = new UsersRepository();
+  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
+
+  // 🔹 Sync selección (fuente principal: hook)
   const selectAndSync = (rawId: unknown) => {
     const id = asId(rawId);
     if (!id) return;
@@ -28,46 +41,43 @@ export const useGroupsData = () => {
     }
   };
 
-  // 🔹 Fetch con service
+  // 🔹 Fetch con estados
   useEffect(() => {
     const fetchGroups = async () => {
+      setLoading(true);
+      setError(false);
+
       try {
         const role = authData?.userRole ?? "";
         const uid = authData?.userid ?? -1;
 
+        let data: Group[] = [];
+
         if (role === "teacher") {
-          const data = await groupsService.getByUser(uid);
-          setGroups(data);
+          data = await groupsService.getByUser(uid);
         } else {
-          const data = await groupsService.getAll();
-          setGroups(data);
+          data = await groupsService.getAll();
         }
+
+        setGroups(data);
+
+        // selección inicial simple (fuente única)
+        if (!currentSelectedGroupId && data.length > 0) {
+          selectAndSync(data[0].id);
+        }
+
       } catch (e) {
         console.error(e);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchGroups();
   }, [authData?.userRole, authData?.userid]);
 
-  // 🔹 Selección inicial
-  useEffect(() => {
-    if (!groups.length || currentSelectedGroupId) return;
-
-    const fromURL = asId(new URLSearchParams(window.location.search).get("groupId"));
-    if (fromURL) return selectAndSync(fromURL);
-
-    const fromLS = asId(localStorage.getItem("selectedGroup"));
-    if (fromLS) return selectAndSync(fromLS);
-
-    const fromAuth = asId(authData?.usergroupid);
-    if (fromAuth) return selectAndSync(fromAuth);
-
-    const firstVisible = asId(groups[0]?.id);
-    if (firstVisible) selectAndSync(firstVisible);
-  }, [groups, currentSelectedGroupId, authData?.usergroupid]);
-
-  // 🔹 Sorting (adaptado a nuevo tipo)
+  // 🔹 Sorting
   const handleGroupsOrder = (event: { target: { value: string } }) => {
     setSelectedSorting(event.target.value);
 
@@ -97,7 +107,7 @@ export const useGroupsData = () => {
     setGroups(sortings[key]());
   };
 
-  // 🔹 Delete usando service
+  // 🔹 Delete
   const deleteGroupItem = async (groupIndex: number) => {
     const item = groups[groupIndex];
     if (!item) return;
@@ -120,13 +130,27 @@ export const useGroupsData = () => {
     }
   };
 
-  // 🔹 Create (adaptado a nuevo tipo)
+  // 🔹 acciones de negocio (movidas desde UI)
+  const copyTeacherLink = (groupId: number) => {
+    getCourseLink(groupId, "teacher");
+  };
+
+  const copyStudentLink = (groupId: number) => {
+    getCourseLink(groupId, "student");
+  };
+
+  const goToParticipants = async (groupId: number, navigate: any) => {
+    await getUsersByGroupId.execute(groupId);
+    navigate(`/users/group/${groupId}`);
+  };
+
+  // 🔹 Create
   const handleGroupCreated = (newGroup: Group) => {
     setGroups((prev) => [newGroup, ...prev]);
     selectAndSync(newGroup.id);
   };
 
-  // 🔹 Update (adaptado)
+  // 🔹 Update
   const handleGroupUpdated = (updatedGroup: Group) => {
     setGroups((prev) =>
       prev.map((g) => (g.id === updatedGroup.id ? updatedGroup : g))
@@ -135,11 +159,19 @@ export const useGroupsData = () => {
 
   return {
     groups,
+    loading,
+    error,
     currentSelectedGroupId,
     selectedSorting,
+
     selectAndSync,
     handleGroupsOrder,
     deleteGroupItem,
+
+    copyTeacherLink,
+    copyStudentLink,
+    goToParticipants,
+
     handleGroupCreated,
     handleGroupUpdated,
   };
