@@ -31,15 +31,13 @@ function GroupsPage() {
     copyTeacherLink,
     copyStudentLink,
     goToParticipants,
-    createGroup,      // ✅ nuevo
-    updateGroup,      // ✅ nuevo
+    createGroup,
+    updateGroup,
     selectAndSync,
   } = useGroupsData();
 
-  // 🔹 CREATE
   const [createOpen, setCreateOpen] = useState(false);
 
-  // 🔹 EDIT
   const [editOpen, setEditOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
 
@@ -99,14 +97,14 @@ function GroupsPage() {
             ) : (
               <GroupsList
                 groups={groups}
-                onCopy={(id) => copyTeacherLink(id)}
-                onLink={(id) => copyStudentLink(id)}
+                onCopy={copyTeacherLink}
+                onLink={copyStudentLink}
                 onParticipants={(id) => {
                   selectAndSync(id);
                   goToParticipants(id, navigate);
                 }}
                 onTasks={(id) => navigate(`/tareas?groupId=${id}`)}
-                onDelete={(index) => deleteGroupItem(index)}
+                onDelete={deleteGroupItem}
                 onEdit={(group) => {
                   selectAndSync(group.id);
                   setGroupToEdit(group);
@@ -116,39 +114,36 @@ function GroupsPage() {
             )}
           </FeatureListSection>
         )}
-
       </div>
 
       {/* CREATE */}
       <CreateGroupPopup
-        open={createOpen}
-        handleClose={() => setCreateOpen(false)}
-        onCreate={async (data) => {
-          await createGroup(data);
-          setCreateOpen(false);
-        }}
-      />
+  open={createOpen}
+  handleClose={() => setCreateOpen(false)}
+  onCreate={async (data) => {
+    await createGroup(data);
+    setCreateOpen(false);
+  }}
+/>
 
-      {/* EDIT */}
-      <EditGroupPopup
-        open={editOpen}
-        handleClose={() => setEditOpen(false)}
-        groupToEdit={
-          groupToEdit
-            ? {
-                id: groupToEdit.id,
-                groupName: groupToEdit.name,
-                groupDetail: "",
-                creationDate: groupToEdit.creationDate ?? new Date(),
-              }
-            : null
+<EditGroupPopup
+  open={editOpen}
+  handleClose={() => setEditOpen(false)}
+  groupToEdit={
+    groupToEdit
+      ? {
+          id: groupToEdit.id,
+          groupName: groupToEdit.name,
+          groupDetail: "",
+          creationDate: groupToEdit.creationDate ?? new Date(),
         }
-        onUpdate={async (data) => {
-          await updateGroup(data);
-          setEditOpen(false);
-        }}
-      />
-
+      : null
+  }
+  onUpdate={async (data) => {
+    await updateGroup(data);
+    setEditOpen(false);
+  }}
+/>
     </FeatureScreenLayout>
   );
 }

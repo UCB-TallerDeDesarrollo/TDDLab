@@ -8,10 +8,12 @@ import { getCourseLink } from "../../../modules/Groups/application/GetCourseLink
 import UsersRepository from "../../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../../modules/Users/application/getUsersByGroupid";
 
-// ✅ nuevos imports para create/update
+import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
+
+const dbAuthPort = new RegisterUserOnDb();
 
 const asId = (v: unknown): number => {
   const n = Number(v);
@@ -127,7 +129,7 @@ export const useGroupsData = () => {
     }
   };
 
-  // ✅ CREATE usando UseCase
+  // ✅ CREATE (FIX: registrar docente)
   const createGroup = async (data: {
     name: string;
     description: string;
@@ -144,6 +146,15 @@ export const useGroupsData = () => {
 
     const newGroup = await createGroupUseCase.createGroup(payload);
 
+    // 🔥 FIX QA: registrar docente
+    if (authData?.userEmail) {
+      await dbAuthPort.register({
+        email: authData.userEmail,
+        groupid: newGroup.id,
+        role: "teacher",
+      });
+    }
+
     handleGroupCreated({
       id: newGroup.id,
       name: newGroup.groupName,
@@ -151,7 +162,7 @@ export const useGroupsData = () => {
     });
   };
 
-  // ✅ UPDATE usando UseCase
+  // ✅ UPDATE (FIX: preservar creationDate)
   const updateGroup = async (data: {
     id: number;
     name: string;
@@ -160,11 +171,13 @@ export const useGroupsData = () => {
     const repo = new GroupsRepository();
     const updateGroupUseCase = new UpdateGroup(repo);
 
+    const existing = groups.find((g) => g.id === data.id);
+
     const payload = {
       id: data.id,
       groupName: data.name,
       groupDetail: data.description,
-      creationDate: new Date(),
+      creationDate: existing?.creationDate ?? new Date(), // 🔥 FIX QA
     };
 
     await updateGroupUseCase.updateGroup(data.id, payload);
@@ -172,7 +185,7 @@ export const useGroupsData = () => {
     handleGroupUpdated({
       id: data.id,
       name: data.name,
-      creationDate: payload.creationDate,
+      creationDate: existing?.creationDate, // 🔥 FIX QA
     });
   };
 
