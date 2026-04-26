@@ -96,17 +96,6 @@
   margin-top: 12px;
 }
 
-.practice-action-btn {
-  text-transform: none;
-  background-color: var(--practice-action);
-  min-width: 98px;
-}
-
-.practice-action-btn.Mui-disabled {
-  background-color: var(--practice-action-disabled);
-  color: #f2f2f2;
-}
-
 .practice-link-cell {
   display: inline-flex;
   align-items: center;

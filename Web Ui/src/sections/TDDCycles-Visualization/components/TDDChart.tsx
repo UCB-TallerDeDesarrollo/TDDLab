@@ -97,6 +97,16 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
             value={metricSelected}
             data-testid="select-graph-type"
             label="Métricas"
+            MenuProps={{
+              PaperProps: { sx: { bgcolor: '#F0F0F0', borderRadius: 1, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', mt: 0.5 } },
+              sx: {
+                '& .MuiMenuItem-root': { backgroundColor: 'transparent' },
+                '& .MuiMenuItem-root:hover': { backgroundColor: '#E6F0FA' },
+                '& .MuiMenuItem-root.Mui-selected': { backgroundColor: 'transparent' },
+                '& .MuiMenuItem-root.Mui-selected:hover': { backgroundColor: '#E6F0FA' },
+                '& .MuiMenuItem-root.Mui-focusVisible': { backgroundColor: 'transparent' }
+              }
+            }}
           >
             {options.filter(option => {
               if (!tddLogs || tddLogs.length === 0) {

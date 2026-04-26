@@ -13,7 +13,6 @@ const HeaderContainer = styled(Box)(({ theme }) => ({
   height: 69,
   border: "1.5px solid #898989",
   borderRadius: 5,
-  boxSizing: "border-box",
   paddingInline: theme.spacing(12.75, 2.25),
   display: "flex",
   alignItems: "center",

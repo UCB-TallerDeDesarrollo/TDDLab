@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
-import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ActionButton from "../../../shared/components/ActionButton";
 import ConfirmationDialog from "../../../shared/components/ConfirmationDialog";
 import ContentState from "../../../shared/components/ContentState";
@@ -77,7 +77,7 @@ function AssignmentsList({
         actions={
           <>
             <ActionButton
-              startIcon={<FilterListRoundedIcon />}
+              endIcon={<KeyboardArrowDownIcon />}
               variantStyle="secondary"
               onClick={(event) => setFiltersAnchorEl(event.currentTarget)}
             >

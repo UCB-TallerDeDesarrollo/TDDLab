@@ -1,7 +1,5 @@
 import { useState } from "react";
 import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -10,6 +8,7 @@ import { styled } from "@mui/material/styles";
 import EditAssignmentForm from "./EditAssignmentForm";
 import { getStatusIcon, getStatusTooltip } from "../../../shared/helpers/statusHelpers";
 import { AssignmentListItemViewModel } from "../types/assignmentScreen";
+import AnimatedIcon from "../../../shared/components/AnimatedIcon";
 
 interface AssignmentRowProps {
   item: AssignmentListItemViewModel;
@@ -24,6 +23,10 @@ const RowContainer = styled(Box)(({ theme }) => ({
   border: "0.5px solid #898989",
   borderRadius: 5,
   backgroundColor: "#FFFFFF",
+  transition: "background-color 0.2s ease",
+  "&:hover": {
+    backgroundColor: "#F0F4F8",
+  },
   padding: theme.spacing(1.625, 2.5),
   display: "flex",
   alignItems: "center",
@@ -57,17 +60,6 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
 }));
 
-const ActionIcon = styled(IconButton)({
-  width: 40,
-  height: 40,
-  borderRadius: "50%",
-  color: "#002346",
-  backgroundColor: "transparent",
-  "&:hover": {
-    backgroundColor: "rgba(0, 35, 70, 0.08)",
-  },
-});
-
 function AssignmentRow({
   item,
   canManage,
@@ -81,11 +73,13 @@ function AssignmentRow({
     <RowContainer>
       <RowTitle>{item.title}</RowTitle>
       <ActionsContainer>
-        <Tooltip title="Ver tarea" arrow>
-          <ActionIcon aria-label="see" onClick={() => onView(item.id)}>
-            <VisibilityIcon />
-          </ActionIcon>
-        </Tooltip>
+        <AnimatedIcon
+          title="Ver tarea"
+          actionType="view"
+          aria-label="see"
+          onClick={() => onView(item.id)}
+          icon={<VisibilityIcon />}
+        />
 
         {canManage && isEditFormOpen ? (
           <EditAssignmentForm
@@ -98,26 +92,31 @@ function AssignmentRow({
         ) : null}
 
         {canManage && !isEditFormOpen ? (
-          <Tooltip title="Editar tarea" arrow>
-            <ActionIcon aria-label="edit" onClick={() => setIsEditFormOpen(true)}>
-              <EditIcon />
-            </ActionIcon>
-          </Tooltip>
+          <AnimatedIcon
+            title="Editar tarea"
+            actionType="edit"
+            aria-label="edit"
+            onClick={() => setIsEditFormOpen(true)}
+            icon={<EditIcon />}
+          />
         ) : null}
 
         {canManage ? (
-          <Tooltip title="Eliminar tarea" arrow>
-            <ActionIcon aria-label="delete" onClick={() => onDelete(item.id)}>
-              <DeleteIcon />
-            </ActionIcon>
-          </Tooltip>
+          <AnimatedIcon
+            title="Eliminar tarea"
+            actionType="delete"
+            aria-label="delete"
+            onClick={() => onDelete(item.id)}
+            icon={<DeleteIcon />}
+          />
         ) : null}
 
-        <Tooltip title={getStatusTooltip(item.state)} arrow>
-          <ActionIcon aria-label="status">
-            {statusIcon}
-          </ActionIcon>
-        </Tooltip>
+        <AnimatedIcon
+          title={item.state === 'pending' ? "Sugerencias" : getStatusTooltip(item.state)}
+          actionType={item.state === 'pending' ? "suggestion" : "default"}
+          aria-label="status"
+          icon={statusIcon}
+        />
       </ActionsContainer>
     </RowContainer>
   );

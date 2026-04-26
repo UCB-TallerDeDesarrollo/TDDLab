@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { Link as LinkIcon } from "@mui/icons-material";
+import StatefulButton from "../../../shared/components/StatefulButton";
 import { CommentDialog } from "../../../shared/components/CommentDialog";
 import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 import { GitLinkDialog } from "../../../shared/components/GitHubLinkDialog";
@@ -99,32 +100,26 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
           </p>
 
           <div className="practice-student-actions">
-            <Button
-              variant="contained"
-              className="practice-action-btn"
-              disabled={Boolean(submission)}
-              onClick={openLinkDialog}
+            <StatefulButton
+              variantStyle={!Boolean(submission) ? 'primary' : 'secondary'}
+              onClick={!Boolean(submission) ? openLinkDialog : undefined}
             >
-              Iniciar practica
-            </Button>
+              Iniciar práctica
+            </StatefulButton>
 
-            <Button
-              variant="contained"
-              className="practice-action-btn"
-              disabled={!submission?.repository_link}
-              onClick={redirectToGraph}
+            <StatefulButton
+              variantStyle={submission?.repository_link ? 'primary' : 'secondary'}
+              onClick={submission?.repository_link ? redirectToGraph : undefined}
             >
               Ver gráfica
-            </Button>
+            </StatefulButton>
 
-            <Button
-              variant="contained"
-              className="practice-action-btn"
-              disabled={isTaskInProgress}
-              onClick={openCommentDialog}
+            <StatefulButton
+              variantStyle={!isTaskInProgress ? 'primary' : 'secondary'}
+              onClick={!isTaskInProgress ? openCommentDialog : undefined}
             >
-              Finalizar practica
-            </Button>
+              Finalizar práctica
+            </StatefulButton>
           </div>
         </section>
       </div>
