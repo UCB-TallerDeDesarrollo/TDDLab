@@ -61,6 +61,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
     uiMessage,
     closeUiMessage,
   } = useAssignmentDetailData({ role, userid, assignmentid, navigate });
+  const hasStudentSubmission = !!studentSubmission;
+  const hasStudentRepository = !!studentSubmission?.repository_link;
+  const canFinishTask = !isTaskInProgress;
 
   if (assignmentState === "loading") {
     return (
@@ -100,27 +103,27 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
             <div className="assignment-student-actions">
               <StatefulButton
-                variantStyle={!Boolean(studentSubmission) ? 'primary' : 'secondary'}
+                variantStyle={!hasStudentSubmission ? 'primary' : 'secondary'}
                 onClick={() => {
-                  if (!Boolean(studentSubmission)) openLinkDialog();
+                  if (!hasStudentSubmission) openLinkDialog();
                 }}
               >
                 Iniciar tarea
               </StatefulButton>
 
               <StatefulButton
-                variantStyle={studentSubmission?.repository_link ? 'primary' : 'secondary'}
+                variantStyle={hasStudentRepository ? 'primary' : 'secondary'}
                 onClick={() => {
-                  if (studentSubmission?.repository_link) redirectStudentToGraph();
+                  if (hasStudentRepository) redirectStudentToGraph();
                 }}
               >
                 Ver gráfica
               </StatefulButton>
 
               <StatefulButton
-                variantStyle={!isTaskInProgress ? 'primary' : 'secondary'}
+                variantStyle={canFinishTask ? 'primary' : 'secondary'}
                 onClick={() => {
-                  if (!isTaskInProgress) openCommentDialog();
+                  if (canFinishTask) openCommentDialog();
                 }}
               >
                 Finalizar tarea
