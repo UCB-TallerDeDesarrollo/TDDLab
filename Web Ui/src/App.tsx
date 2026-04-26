@@ -183,7 +183,7 @@ useEffect(() => {
           path="/mis-practicas/:id"
           element={
             <ProtectedRouteComponent>
-              <PracticeDetailPage userid={authData.userid ?? 0} title={""} />
+              <PracticeDetailPage userid={authData.userid ?? 0} />
             </ProtectedRouteComponent>
           }
         />

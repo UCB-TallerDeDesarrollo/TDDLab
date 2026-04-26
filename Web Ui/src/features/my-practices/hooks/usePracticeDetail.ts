@@ -65,8 +65,7 @@ export function usePracticeDetail({
     fetchSubmissionsByPracticeId(practiceid)
       .then((fetched) => {
         setPracticeSubmissions(fetched);
-        const selected =
-          fetched.find((item) => item.userid === userid) || fetched[0] || null;
+        const selected = fetched.find((item) => item.userid === userid) || null;
         setSubmission(selected);
         setSubmissionState(selected ? "success" : "empty");
       })
