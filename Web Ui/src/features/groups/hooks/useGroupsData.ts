@@ -158,11 +158,12 @@ export const useGroupsData = () => {
     handleGroupCreated({
       id: newGroup.id,
       name: newGroup.groupName,
+      description: newGroup.groupDetail,
       creationDate: newGroup.creationDate,
     });
   };
 
-  // ✅ UPDATE (FIX: preservar creationDate)
+  //  UPDATE (FIX: preservar creationDate)
   const updateGroup = async (data: {
     id: number;
     name: string;
@@ -177,7 +178,7 @@ export const useGroupsData = () => {
       id: data.id,
       groupName: data.name,
       groupDetail: data.description,
-      creationDate: existing?.creationDate ?? new Date(), // 🔥 FIX QA
+      creationDate: existing?.creationDate ?? new Date(), 
     };
 
     await updateGroupUseCase.updateGroup(data.id, payload);
@@ -185,7 +186,8 @@ export const useGroupsData = () => {
     handleGroupUpdated({
       id: data.id,
       name: data.name,
-      creationDate: existing?.creationDate, // 🔥 FIX QA
+      description: data.description, 
+      creationDate: existing?.creationDate,
     });
   };
 

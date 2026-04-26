@@ -134,7 +134,7 @@ function GroupsPage() {
       ? {
           id: groupToEdit.id,
           groupName: groupToEdit.name,
-          groupDetail: "",
+          groupDetail: groupToEdit.description ?? "", 
           creationDate: groupToEdit.creationDate ?? new Date(),
         }
       : null
