@@ -94,6 +94,7 @@
   color: #101418;
   font-size: 36px;
   font-weight: 800;
+  line-height: 1.08;
   letter-spacing: -0.02em;
   margin-bottom: 14px;
 }
@@ -193,7 +194,7 @@
   }
 
   .practice-section-title {
-    font-size: 28px;
+    font-size: 22px;
   }
 
   .practice-student-content {
@@ -221,5 +222,11 @@
     min-width: 100%;
     font-size: 16px;
     padding-bottom: 55px;
+  }
+}
+
+@media (max-width: 600px) {
+  .practice-section-title {
+    font-size: 10px;
   }
 }

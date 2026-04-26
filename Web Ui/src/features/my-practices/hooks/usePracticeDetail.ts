@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { NavigateFunction } from "react-router-dom";
 import {
   fetchPracticeById,
-  fetchSubmissionByUserAndPractice,
   fetchSubmissionsByPracticeId,
   startPracticeSubmission,
   finishPracticeSubmission,
@@ -14,29 +13,11 @@ import {
   PracticeSubmissionUpdateObject,
   ViewState,
 } from "../types";
-import { formatDate } from "../../../utils/dateUtils";
-import { handleRedirectStudent } from "../../../sections/Shared/handlers";
-
-function getDisplayStatus(status: string | undefined): string {
-  switch (status) {
-    case "pending":
-      return "Pendiente";
-    case "in progress":
-      return "En progreso";
-    case "delivered":
-      return "Enviado";
-    case undefined:
-      return "Pendiente";
-    default:
-      return status;
-  }
-}
-
-function toDisplayDate(value: Date | string | null | undefined): string {
-  if (!value) return "N/A";
-  const normalized = value instanceof Date ? value.toISOString() : value.toString();
-  return formatDate(normalized);
-}
+import {
+  getDisplayStatus,
+  redirectStudentToGraph,
+  toDisplayDate,
+} from "../services/practiceDetail.service";
 
 interface UsePracticeDetailProps {
   userid: number;
@@ -92,17 +73,6 @@ export function usePracticeDetail({
       .catch((err) => {
         console.error("Error fetching practice submissions:", err);
         setSubmissionState("error");
-      });
-  }, [practiceid, userid, refreshTick]);
-
-  useEffect(() => {
-    if (!practiceid || !userid || userid === -1) return;
-    fetchSubmissionByUserAndPractice(practiceid, userid)
-      .then((fetched) => {
-        setSubmission(fetched);
-      })
-      .catch((err) => {
-        console.error("Error fetching user submission:", err);
       });
   }, [practiceid, userid, refreshTick]);
 
@@ -173,7 +143,7 @@ export function usePracticeDetail({
   const redirectToGraph = () => {
     if (!submission?.repository_link) return;
     localStorage.setItem("selectedMetric", "Dashboard");
-    handleRedirectStudent(
+    redirectStudentToGraph(
       submission.repository_link,
       submission.id,
       navigate,

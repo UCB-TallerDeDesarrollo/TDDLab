@@ -1,8 +1,7 @@
-export type { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
+export type { PracticeDataObject } from "./practice.types";
 export type {
   PracticeSubmissionCreationObject,
   PracticeSubmissionDataObject,
   PracticeSubmissionUpdateObject,
-} from "../../../modules/PracticeSubmissions/Domain/PracticeSubmissionInterface";
-
-export type ViewState = "loading" | "error" | "empty" | "success";
+} from "./practiceSubmission.types";
+export type { ViewState } from "./viewState.types";

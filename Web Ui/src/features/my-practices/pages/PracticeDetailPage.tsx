@@ -1,21 +1,15 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Snackbar,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Snackbar, Typography } from "@mui/material";
 import { Link as LinkIcon } from "@mui/icons-material";
-import { GitLinkDialog } from "../../../sections/Shared/Components/GitHubLinkDialog";
-import { CommentDialog } from "../../../sections/Shared/Components/CommentDialog";
+import { GitLinkDialog } from "../components/GitLinkDialog";
+import { CommentDialog } from "../components/CommentDialog";
+import { ContentState } from "../components/ContentState";
 import { PracticeOverviewCard } from "../components/PracticeOverviewCard";
 import { usePracticeDetail } from "../hooks/usePracticeDetail";
 import "./PracticeDetailPage.css";
 
 interface PracticeDetailPageProps {
-  title: string;
   userid: number;
 }
 
@@ -47,25 +41,41 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
 
   if (practiceState === "loading") {
     return (
-      <div className="practice-detail-page practice-center-state">
-        <CircularProgress
-          size={60}
-          thickness={5}
-          data-testid="loading-indicator"
+      <div className="practice-detail-page">
+        <ContentState
+          state="loading"
+          loadingTestId="loading-indicator"
+          className="practice-center-state"
         />
       </div>
     );
   }
 
-  if (practiceState === "error" || practiceState === "empty" || !practice) {
+  if (practiceState === "error") {
     return (
-      <div className="practice-detail-page practice-center-state">
-        <Typography color="error">
-          No se pudo cargar el detalle de la practica. Intenta nuevamente.
-        </Typography>
+      <div className="practice-detail-page">
+        <ContentState
+          state="error"
+          errorMessage="No se pudo cargar el detalle de la practica. Intenta nuevamente."
+          className="practice-center-state"
+        />
       </div>
     );
   }
+
+  if (practiceState === "empty") {
+    return (
+      <div className="practice-detail-page">
+        <ContentState
+          state="empty"
+          emptyMessage="No se encontro la practica solicitada."
+          className="practice-center-state"
+        />
+      </div>
+    );
+  }
+
+  if (!practice) return null;
 
   return (
     <div className="practice-detail-page">
@@ -76,11 +86,6 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
           <Typography
             component="h2"
             className="practice-section-title"
-            sx={{
-              fontSize: { xs: "10px", md: "22px" },
-              fontWeight: 900,
-              lineHeight: 1.08,
-            }}
           >
             Mi practica
           </Typography>
