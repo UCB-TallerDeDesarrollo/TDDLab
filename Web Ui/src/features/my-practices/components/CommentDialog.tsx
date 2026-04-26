@@ -11,7 +11,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import InputAdornment from "@mui/material/InputAdornment";
 import { Typography } from "@mui/material";
-import { useGitHubLinkValidation } from "../../../sections/Shared/hooks/useGitHubLinkValidation";
+import { useGitHubLinkValidation } from "../hooks/useGitHubLinkValidation";
 
 interface CommentDialogProps {
   open: boolean;
@@ -38,7 +38,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     if (link) {
       setIsLoading(false);
       setInputLink(link);
-      handleLinkChange({ target: { value: link } } as React.ChangeEvent<HTMLInputElement>);
+      handleLinkChange(link);
     } else {
       setInputLink("");
       setIsLoading(true);
@@ -53,9 +53,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
 
   const handleCancel = () => {
     if (originalLink) {
-      handleLinkChange({
-        target: { value: originalLink },
-      } as React.ChangeEvent<HTMLInputElement>);
+      handleLinkChange(originalLink);
       setInputLink(originalLink);
     }
     setComment("");
@@ -88,9 +86,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const newLink = e.target.value;
               setInputLink(newLink);
-              handleLinkChange({
-                target: { value: newLink },
-              } as React.ChangeEvent<HTMLInputElement>);
+              handleLinkChange(newLink);
             }}
             disabled={!edit}
             color={repo === "" ? "primary" : validLink ? "success" : "error"}

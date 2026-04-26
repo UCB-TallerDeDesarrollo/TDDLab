@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
-import { useGitHubLinkValidation } from "../../../sections/Shared/hooks/useGitHubLinkValidation";
+import { useGitHubLinkValidation } from "../hooks/useGitHubLinkValidation";
 
 interface GithubLinkDialogProps {
   open: boolean;
