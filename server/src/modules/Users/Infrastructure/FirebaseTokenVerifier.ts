@@ -1,4 +1,4 @@
-import admin from "firebase-admin";
+import admin from "../../../config/firebaseAdmin";
 import { TokenVerifier } from "../Domain/TokenVerifier";
 
 export class FirebaseTokenVerifier implements TokenVerifier {

@@ -3,7 +3,7 @@ import { getUserToken } from "./getUserToken";
 import { TokenVerifier } from "../Domain/TokenVerifier";
 import { FirebaseTokenVerifier } from "../Infrastructure/FirebaseTokenVerifier";
 import { User } from "../Domain/User";
-import admin from "firebase-admin";
+import admin from "../../../config/firebaseAdmin";
 
 export const loginUserWithGoogle = async (
   idToken: string,

@@ -1,1 +1,1 @@
-export { default } from "../../features/my-practices/components/PracticeListItem";
+export { default } from "../../features/my-practices/components/PracticeRow";
