@@ -167,7 +167,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
     localStorage.setItem("selectedMetric", graphText);
-    window.dispatchEvent(new Event("storage"));
+    window.location.reload();
   };
 
   const getChartOptions = (yAxisText: string) => {

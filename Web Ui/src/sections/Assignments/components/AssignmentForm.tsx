@@ -81,14 +81,12 @@ interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
   groupid: number;
-  onCreated: () => void;
 }
 
-function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignmentPopupProps>) {
+function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
-  const [createdSuccessfully, setCreatedSuccessfully] = useState(false);
   const [auth] = useGlobalState("authData");
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
@@ -135,10 +133,8 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
     
       await createAssignments.createAssignment(assignmentData);
       setValidationMessage("Tarea creada exitosamente");
-      setCreatedSuccessfully(true);
       setValidationDialogOpen(true);
     } catch (error) {
-      setCreatedSuccessfully(false);
       if (error instanceof Error) {
         // Verifica si el mensaje del backend menciona el límite de caracteres
         if (error.message.includes("Limite de caracteres excedido")) {
@@ -192,10 +188,10 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
   };
 
   useEffect(() => {
-  const effectiveGroupId = groupid || auth?.usergroupid || 0;
+  const effectiveGroupId =
+    groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
 
   setSave(false);
-  setCreatedSuccessfully(false);
   setAssignmentData({
     id: 0,
     title: "",
@@ -223,7 +219,14 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
       } else if (auth?.userRole === "admin") {
         list = await getGroups.getGroups();
       } else if (auth?.userRole === "student") {
-          const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
+        let ids: number[] = [];
+        try {
+          const fromLS = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
+          if (Array.isArray(fromLS) && fromLS.length) ids = fromLS;
+        } catch {}
+        if (!ids.length) {
+          ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
+        }
         list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
       } else {
         list = [];
@@ -330,10 +333,10 @@ function Form({ open, handleClose, groupid, onCreated }: Readonly<CreateAssignme
           title={validationMessage}
           closeText="Cerrar"
           onClose={() => {
-            setValidationDialogOpen(false);
-            if (createdSuccessfully) {
-              handleClose();
-              onCreated();
+            if (!validationMessage.includes("Error")) {
+              window.location.reload();
+            } else {
+              setValidationDialogOpen(false);
             }
           }}
         />

@@ -58,18 +58,6 @@ jest.mock(
   })
 );
 
-jest.mock("../../../src/modules/Users/repository/UsersRepository", () => {
-  return jest.fn().mockImplementation(() => ({
-    getUserById: jest.fn().mockImplementation((id: number) => {
-      const map: Record<number, { email: string }> = {
-        123: { email: "student1@test.com" },
-        124: { email: "student2@test.com" },
-      };
-      return Promise.resolve(map[id] ?? { email: "Desconocido" });
-    }),
-  }));
-});
-
 describe("AssignmentDetail Component", () => {
   it("displays the group name", async () => {
     const { getByText } = render(
@@ -171,16 +159,12 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
+        expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
         expect(screen.getByText("Enviado")).toBeInTheDocument();
         expect(screen.getByText("En progreso")).toBeInTheDocument();
-
-        expect(
-          screen.getByRole("link", { name: /Abrir repositorio de student1@test\.com/i })
-        ).toBeInTheDocument();
-        expect(
-          screen.getByRole("link", { name: /Abrir repositorio de student2@test\.com/i })
-        ).toBeInTheDocument();
+        
+        expect(screen.getByText("https://github.com/student/repo1")).toBeInTheDocument();
+        expect(screen.getByText("https://github.com/student/repo2")).toBeInTheDocument();
       },
       { timeout: 3000 }
     );

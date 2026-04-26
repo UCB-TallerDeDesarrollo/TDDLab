@@ -48,7 +48,6 @@ interface AssignmentsProps {
   userRole: string;
   userGroupid: number | number[] ;
   onGroupChange: (groupId: number) => void;
-  refreshToken: number;
 }
 
 function Assignments({
@@ -56,7 +55,6 @@ function Assignments({
                        userRole,
                        userGroupid,
                        onGroupChange,
-                       refreshToken,
                      }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -180,7 +178,7 @@ function Assignments({
 
 useEffect(() => {
   fetchData();
-}, [location, refreshToken]);
+}, [location]);
 
   // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {
@@ -209,7 +207,7 @@ useEffect(() => {
         }
 
         const data = await assignmentsRepository.getAssignmentsByGroupid(preferredGroupId);
-        setSelectedGroup(preferredGroupId==-1 ? 0 : preferredGroupId);
+        setSelectedGroup(preferredGroupId);
         setAssignments(data);
         orderAssignments([...data], selectedSorting);
       } catch (error) {
@@ -226,7 +224,7 @@ useEffect(() => {
   };
 
   const loadAssignmentsByGroupId = async (groupId: number) => {
-    setSelectedGroup(groupId==-1 ? 0 : groupId);
+    setSelectedGroup(groupId);
     onGroupChange(groupId);
 
     // Guardar en localStorage

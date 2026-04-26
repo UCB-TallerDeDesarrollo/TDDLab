@@ -22,7 +22,6 @@ import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/r
 import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
-import TDDBar from "./Graficas-Adicionales/TDDBarCycle";
 import TDDPie from "./Graficas-Adicionales/TDDPie";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
@@ -54,10 +53,10 @@ function TDDLineCharts({
   optionSelected,
   port,
   role,
-  commitsCycles
+  commitsCycles: _
 }: LineChartProps) {
   
-  let dataChart: any = null;
+  let dataChart: any = {};
   const chartRef = useRef<any>();
 
   
@@ -286,11 +285,10 @@ function TDDLineCharts({
   
   
   const onClick = (event: any) => {
-    const points = getElementAtEvent(chartRef.current, event);
-
-    if (points.length > 0 && dataChart?.datasets) {
-      const dataSetIndexNum = points[0].datasetIndex;
-      const dataPoint = points[0].index;
+    if (getElementAtEvent(chartRef.current, event).length >= 0) {
+      const dataSetIndexNum = getElementAtEvent(chartRef.current, event)[0]
+        .datasetIndex;
+      const dataPoint = getElementAtEvent(chartRef.current, event)[0].index;
       window.open(
         dataChart.datasets[dataSetIndexNum].links[dataPoint],
         "_blank"
@@ -303,8 +301,6 @@ function TDDLineCharts({
     let optionsChart: any = null;
     let dataTestid: string = "";
     switch (optionSelected) {
-      case "Complejidad":
-        return <TDDBar CommitsCycles={commitsCycles || []} />;
       case "Cobertura de Código":
         dataChart = getDataChart(
           getCommitCoverage(),
@@ -363,11 +359,6 @@ function TDDLineCharts({
       case "Pie":
         return <TDDPie commits={filteredCommitsObject || []} />;     
     }
-
-    if (!dataChart || !optionsChart) {
-      return <div>No data available</div>;
-    }
-
     return (
       <Line
         height="100"

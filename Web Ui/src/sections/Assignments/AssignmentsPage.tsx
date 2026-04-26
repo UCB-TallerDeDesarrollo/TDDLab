@@ -26,14 +26,9 @@ function AssignmentManager({
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
-  const [refreshToken, setRefreshToken] = useState(0);
 
   const handleCreateAssignmentClick = () => {
     setCreateAssignmentPopupOpen(true);
-  };
-
-  const refreshAssignments = () => {
-    setRefreshToken((prev) => prev + 1);
   };
 
   return (
@@ -44,7 +39,6 @@ function AssignmentManager({
           userRole={userRole}
           userGroupid={userGroupid}
           onGroupChange={setSelectedGroupId}
-          refreshToken={refreshToken}
         />
       </AssignmentsContainer>
       <FormsContainer>
@@ -53,8 +47,11 @@ function AssignmentManager({
           data-testid="form-container"
           open={createAssignmentPopupOpen}
           handleClose={() => setCreateAssignmentPopupOpen(false)}
-          groupid={selectedGroupId ?? userGroupid}
-          onCreated={refreshAssignments}
+          // ⬇⬇⬇  usa localStorage como respaldo antes de userGroupid
+          groupid={
+            selectedGroupId ??
+            (Number(localStorage.getItem("selectedGroup") ?? NaN) || userGroupid)
+          }
           />
         )}
       </FormsContainer>
