@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -7,30 +7,30 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
-import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
-import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
 import ValidationDialog from "../../../shared/components/ValidationDialog";
+import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 
 interface EditGroupPopupProps {
   open: boolean;
   handleClose: () => void;
   groupToEdit: GroupDataObject | null;
-  onUpdated?: (group: GroupDataObject) => void;
+  onUpdate: (data: {
+    id: number;
+    name: string;
+    description: string;
+  }) => Promise<void>;
 }
 
 const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
   open,
   handleClose,
   groupToEdit,
-  onUpdated,
+  onUpdate,
 }) => {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-
-  const groupRepository = new GroupsRepository();
 
   useEffect(() => {
     if (open && groupToEdit) {
@@ -48,20 +48,16 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
     setSave(true);
     if (formInvalid() || !groupToEdit) return;
 
-    const updateGroupApp = new UpdateGroup(groupRepository);
-
-    const payload = {
-      ...groupToEdit,
-      groupName,
-      groupDetail: groupDescription,
-    };
-
     try {
-      await updateGroupApp.updateGroup(groupToEdit.id, payload);
-      onUpdated?.(payload);
+      await onUpdate({
+        id: groupToEdit.id,
+        name: groupName,
+        description: groupDescription,
+      });
+
       setValidationDialogOpen(true);
     } catch (error) {
-      console.error(error);
+      console.error("Error al actualizar el grupo:", error);
     } finally {
       setSave(false);
     }
@@ -82,6 +78,11 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
+              helperText={
+                formInvalid() && save
+                  ? "El nombre del grupo no puede estar vacío"
+                  : ""
+              }
             />
 
             <TextField

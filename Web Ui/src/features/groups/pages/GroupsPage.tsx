@@ -31,8 +31,8 @@ function GroupsPage() {
     copyTeacherLink,
     copyStudentLink,
     goToParticipants,
-    handleGroupCreated,
-    handleGroupUpdated,
+    createGroup,      // ✅ nuevo
+    updateGroup,      // ✅ nuevo
     selectAndSync,
   } = useGroupsData();
 
@@ -108,7 +108,7 @@ function GroupsPage() {
                 onTasks={(id) => navigate(`/tareas?groupId=${id}`)}
                 onDelete={(index) => deleteGroupItem(index)}
                 onEdit={(group) => {
-                  selectAndSync(group.id); // ✅ mejora pro
+                  selectAndSync(group.id);
                   setGroupToEdit(group);
                   setEditOpen(true);
                 }}
@@ -123,13 +123,9 @@ function GroupsPage() {
       <CreateGroupPopup
         open={createOpen}
         handleClose={() => setCreateOpen(false)}
-        onCreated={(g) => {
-          handleGroupCreated({
-            id: g.id,
-            name: g.groupName,
-            creationDate: g.creationDate ?? new Date(),
-          });
-          setCreateOpen(false); // ✅ cerrar modal
+        onCreate={async (data) => {
+          await createGroup(data);
+          setCreateOpen(false);
         }}
       />
 
@@ -147,13 +143,9 @@ function GroupsPage() {
               }
             : null
         }
-        onUpdated={(g) => {
-          handleGroupUpdated({
-            id: g.id,
-            name: g.groupName,
-            creationDate: g.creationDate,
-          });
-          setEditOpen(false); // ✅ cerrar modal
+        onUpdate={async (data) => {
+          await updateGroup(data);
+          setEditOpen(false);
         }}
       />
 
