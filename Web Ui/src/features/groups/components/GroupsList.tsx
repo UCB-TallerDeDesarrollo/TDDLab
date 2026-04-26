@@ -9,6 +9,8 @@ interface Props {
   onLink: (id: number) => void;
   onParticipants: (id: number) => void;
   onDelete: (index: number) => void;
+  onEdit: (group: Group) => void;
+  onTasks: (id: number) => void;
 }
 
 export function GroupsList({
@@ -17,6 +19,8 @@ export function GroupsList({
   onLink,
   onParticipants,
   onDelete,
+  onEdit, 
+  onTasks,
 }: Props) {
   return (
     <div className="groups-list">
@@ -29,6 +33,8 @@ export function GroupsList({
             onLink={() => onLink(group.id)}
             onParticipants={() => onParticipants(group.id)}
             onDelete={() => onDelete(index)}
+            onEdit={() => onEdit(group)} 
+            onTasks={() => onTasks(group.id)}
           />
         ))}
       </FeatureItemsLayout>

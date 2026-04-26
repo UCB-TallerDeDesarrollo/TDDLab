@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
@@ -9,6 +10,11 @@ import SortingComponent from "../../../shared/components/SortingComponent";
 
 import { GroupsList } from "../components/GroupsList";
 import { useGroupsData } from "../hooks/useGroupsData";
+
+import CreateGroupPopup from "../components/GroupsForm";
+import EditGroupPopup from "../components/EditGroupForm";
+
+import { Group } from "../types";
 
 import "./GroupsPage.css";
 
@@ -25,7 +31,17 @@ function GroupsPage() {
     copyTeacherLink,
     copyStudentLink,
     goToParticipants,
+    handleGroupCreated,
+    handleGroupUpdated,
+    selectAndSync,
   } = useGroupsData();
+
+  // 🔹 CREATE
+  const [createOpen, setCreateOpen] = useState(false);
+
+  // 🔹 EDIT
+  const [editOpen, setEditOpen] = useState(false);
+  const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
 
   return (
     <FeatureScreenLayout className="groups-page">
@@ -35,10 +51,19 @@ function GroupsPage() {
         <FeaturePageHeader
           title="Grupos"
           actions={
-            <SortingComponent
-              selectedSorting={selectedSorting}
-              onChangeHandler={handleGroupsOrder}
-            />
+            <>
+              <SortingComponent
+                selectedSorting={selectedSorting}
+                onChangeHandler={handleGroupsOrder}
+              />
+
+              <button
+                className="create-group-btn"
+                onClick={() => setCreateOpen(true)}
+              >
+                Crear Grupo
+              </button>
+            </>
           }
         />
 
@@ -76,14 +101,62 @@ function GroupsPage() {
                 groups={groups}
                 onCopy={(id) => copyTeacherLink(id)}
                 onLink={(id) => copyStudentLink(id)}
-                onParticipants={(id) => goToParticipants(id, navigate)}
+                onParticipants={(id) => {
+                  selectAndSync(id);
+                  goToParticipants(id, navigate);
+                }}
+                onTasks={(id) => navigate(`/tareas?groupId=${id}`)}
                 onDelete={(index) => deleteGroupItem(index)}
+                onEdit={(group) => {
+                  selectAndSync(group.id); // ✅ mejora pro
+                  setGroupToEdit(group);
+                  setEditOpen(true);
+                }}
               />
             )}
           </FeatureListSection>
         )}
 
       </div>
+
+      {/* CREATE */}
+      <CreateGroupPopup
+        open={createOpen}
+        handleClose={() => setCreateOpen(false)}
+        onCreated={(g) => {
+          handleGroupCreated({
+            id: g.id,
+            name: g.groupName,
+            creationDate: g.creationDate ?? new Date(),
+          });
+          setCreateOpen(false); // ✅ cerrar modal
+        }}
+      />
+
+      {/* EDIT */}
+      <EditGroupPopup
+        open={editOpen}
+        handleClose={() => setEditOpen(false)}
+        groupToEdit={
+          groupToEdit
+            ? {
+                id: groupToEdit.id,
+                groupName: groupToEdit.name,
+                groupDetail: "",
+                creationDate: groupToEdit.creationDate ?? new Date(),
+              }
+            : null
+        }
+        onUpdated={(g) => {
+          handleGroupUpdated({
+            id: g.id,
+            name: g.groupName,
+            creationDate: g.creationDate,
+          });
+          setEditOpen(false); // ✅ cerrar modal
+        }}
+      />
+
     </FeatureScreenLayout>
   );
 }
