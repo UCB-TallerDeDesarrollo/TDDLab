@@ -30,6 +30,22 @@ jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
   })),
 }));
 
+jest.mock("../../../src/modules/Users/repository/UsersRepository", () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    getUserById: jest.fn().mockImplementation((userid: number) =>
+      Promise.resolve({
+        email:
+          userid === 123
+            ? "student1@example.com"
+            : userid === 124
+              ? "student2@example.com"
+              : "unknown@example.com",
+      })
+    ),
+  })),
+}));
+
 jest.mock(
   "../../../src/modules/Submissions/Aplication/getSubmissionsByAssignmentId",
   () => ({
@@ -159,12 +175,17 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Lista de Estudiantes")).toBeInTheDocument();
+        expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
         expect(screen.getByText("Enviado")).toBeInTheDocument();
         expect(screen.getByText("En progreso")).toBeInTheDocument();
-        
-        expect(screen.getByText("https://github.com/student/repo1")).toBeInTheDocument();
-        expect(screen.getByText("https://github.com/student/repo2")).toBeInTheDocument();
+        expect(screen.getByText("student1@example.com")).toBeInTheDocument();
+        expect(screen.getByText("student2@example.com")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Abrir repositorio de student1@example.com")
+        ).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Abrir repositorio de student2@example.com")
+        ).toBeInTheDocument();
       },
       { timeout: 3000 }
     );

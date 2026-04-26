@@ -140,7 +140,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
           </section>
         ) : (
           <>
-            <h2 className="assignment-section-title">Lista de Estudiantes</h2>
+            <h2 className="assignment-section-title">Lista de entregas</h2>
 
             <section className="assignment-deliveries-card">
               <DeliveriesTable
