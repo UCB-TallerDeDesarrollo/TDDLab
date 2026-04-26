@@ -16,9 +16,21 @@ import admin from "firebase-admin";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-admin.initializeApp({
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  credential: admin.credential.applicationDefault(),});
+const firebaseAdmin = admin as typeof admin & {
+  apps?: unknown[];
+  credential?: {
+    applicationDefault?: () => unknown;
+  };
+};
+
+if (!firebaseAdmin.apps?.length) {
+  const applicationDefault = firebaseAdmin.credential?.applicationDefault;
+
+  firebaseAdmin.initializeApp({
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+    ...(applicationDefault ? { credential: applicationDefault() } : {}),
+  });
+}
 
 const getErrorDebugCode = (error: unknown): string => {
   const err = error as { code?: string; message?: string };
