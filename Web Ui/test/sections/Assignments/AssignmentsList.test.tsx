@@ -157,7 +157,6 @@ describe("AssignmentsList Component", () => {
       userRole: "teacher",
       userGroupid: 1,
       onGroupChange: mockOnGroupChange,
-      refreshToken: 0,
       ...props,
     };
 
