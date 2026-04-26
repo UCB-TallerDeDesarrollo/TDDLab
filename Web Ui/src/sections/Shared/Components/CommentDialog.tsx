@@ -27,7 +27,12 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   onSend,
 }) => {
   const [comment, setComment] = useState("");
-  const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
+  const {
+    repo,
+    validLink,
+    handleLinkChange,
+    isLoading: isLinkLoading,
+  } = useGitHubLinkValidation(link);
   const [edit, setEdit] = useState(false);
   const [originalLink] = useState(link);
   const [inputLink, setInputLink] = useState(link || "");
@@ -37,7 +42,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     if (link) {
       setIsLoading(false);
       setInputLink(link);
-      handleLinkChange({ target: { value: link } } as React.ChangeEvent<HTMLInputElement>);
+      handleLinkChange(link);
     } else {
       setInputLink("");
       setIsLoading(true);
@@ -45,20 +50,14 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   }, [link, open]);
 
   useEffect(() => {
-    if (repo || !link) {
+    if (repo || !link || !isLinkLoading) {
       setIsLoading(false);
     }
-  }, [repo, link]);
-
-  useEffect(() => {
-    if (repo || !isLinkLoading) {
-      setIsLoading(false);
-    }
-  }, [repo, isLinkLoading]);
+  }, [repo, link, isLinkLoading]);
 
   const handleCancel = () => {
     if (originalLink) {
-      handleLinkChange({ target: { value: originalLink } } as React.ChangeEvent<HTMLInputElement>);
+      handleLinkChange(originalLink);
       setInputLink(originalLink);
     }
     setComment("");
@@ -73,14 +72,10 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     }
   };
 
-  const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setComment(event.target.value);
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLink = e.target.value;
     setInputLink(newLink);
-    handleLinkChange({ target: { value: newLink } } as React.ChangeEvent<HTMLInputElement>);
+    handleLinkChange(newLink);
   };
 
   const dialogContentStyle = {
@@ -104,11 +99,11 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const getInputColor = () => {
     if (repo === "") {
       return "primary";
-    } else if (!validLink) {
-      return "error";
-    } else {
-      return "success";
     }
+    if (!validLink) {
+      return "error";
+    }
+    return "success";
   };
 
   return (
@@ -136,7 +131,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         )}
         {!validLink && inputLink !== "" && !isLoading && (
           <Typography variant="body2" color="error">
-            Advertencia: Link inválido
+            Advertencia: Link invÃ¡lido
           </Typography>
         )}
       </DialogContent>
@@ -156,7 +151,9 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
           rows={4.5}
           fullWidth
           value={comment}
-          onChange={handleCommentChange}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setComment(event.target.value)
+          }
         />
       </DialogContent>
       <DialogActions>

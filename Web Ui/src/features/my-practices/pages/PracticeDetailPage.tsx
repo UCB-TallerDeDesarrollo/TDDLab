@@ -161,7 +161,7 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
       <CommentDialog
         open={isCommentDialogOpen}
         link={submission?.repository_link}
-        onSend={sendComment}
+        onSend={(comment) => sendComment(comment)}
         onClose={closeCommentDialog}
       />
 

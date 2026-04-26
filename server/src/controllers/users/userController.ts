@@ -155,7 +155,6 @@ class UserController {
 
   async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
-    console.log("Received Google login request with token:", idToken);
     if (!idToken) {
       res.status(400).json({ error: "Debes proporcionar un token válido" });
       return;
