@@ -13,6 +13,9 @@ jest.mock("../../src/modules/Users/Repositories/UserRepository");
 jest.mock("firebase-admin", () => ({
   initializeApp: jest.fn(),
   auth: jest.fn(),
+  credential: {
+    applicationDefault: jest.fn(),
+  },
 }));
 jest.mock("../../src/modules/Users/Application/getUser", () => ({
   getUser: jest.fn(),
