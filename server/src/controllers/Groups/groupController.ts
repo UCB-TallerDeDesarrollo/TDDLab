@@ -66,6 +66,18 @@ class GroupsController {
       const { groupName } = req.body;
       const { groupDetail } = req.body;
       const { creationDate } = req.body;
+
+      const existingGroups = await this.getGroupsUseCase.execute();
+      const normalizedGroupName = String(groupName).trim().toLowerCase();
+      const alreadyExists = existingGroups.some(
+        (group) => String(group.groupName).trim().toLowerCase() === normalizedGroupName
+      );
+
+      if (alreadyExists) {
+        res.status(409).json({ error: "Group already exists" });
+        return;
+      }
+
       const newGroup = await this.createGroupUseCase.execute({
         groupName,
         groupDetail,

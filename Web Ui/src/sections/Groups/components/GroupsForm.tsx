@@ -6,6 +6,8 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
@@ -29,6 +31,8 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 }) => {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [errorToastOpen, setErrorToastOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
 
@@ -81,6 +85,13 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
       setValidationDialogOpen(true);
     } catch (error) {
       console.error("Error al crear el grupo:", error);
+      const isDuplicate = (error as { response?: { status?: number } }).response?.status === 409;
+      setErrorMessage(
+        isDuplicate
+          ? "Ya existe un grupo con ese nombre."
+          : "No se pudo crear el grupo. Intenta nuevamente."
+      );
+      setErrorToastOpen(true);
     } finally {
       setSave(false);
     }
@@ -152,6 +163,22 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
           handleClose();
         }}
       />
+
+      <Snackbar
+        open={errorToastOpen}
+        autoHideDuration={4000}
+        onClose={() => setErrorToastOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setErrorToastOpen(false)}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };
