@@ -67,7 +67,7 @@ class GroupsController {
       const { groupDetail } = req.body;
       const { creationDate } = req.body;
 
-      const existingGroups = await this.getGroupsUseCase.execute();
+      const existingGroups = (await this.getGroupsUseCase.execute()) ?? [];
       const normalizedGroupName = String(groupName).trim().toLowerCase();
       const alreadyExists = existingGroups.some(
         (group) => String(group.groupName).trim().toLowerCase() === normalizedGroupName
