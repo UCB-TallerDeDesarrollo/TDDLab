@@ -16,7 +16,6 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@iconify/react": "^6.0.2",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.16",
     "@mui/x-date-pickers": "^5.0.20",
@@ -42,6 +41,7 @@
     "tddlab": "file:"
   },
   "devDependencies": {
+    "@iconify/react": "^6.0.2",
     "@testing-library/cypress": "^10.0.2",
     "@testing-library/jest-dom": "^6.1.3",
     "@testing-library/react": "^14.0.0",
