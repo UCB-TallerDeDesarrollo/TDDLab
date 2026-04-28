@@ -12,6 +12,15 @@ class CreatePractice {
     practice: Omit<PracticeCreationObject, "id">
   ): Promise<PracticeCreationObject> {
     try {
+      const titleExists = await this.adapter.practiceTitleExistsForUser(
+        practice.title,
+        practice.userid
+      );
+
+      if (titleExists) {
+        throw new Error("Practice already exists");
+      }
+
       const newPractice = await this.adapter.createPractice(practice);
       return newPractice;
     } catch (error) {

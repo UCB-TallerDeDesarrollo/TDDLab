@@ -6,6 +6,8 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
@@ -25,6 +27,8 @@ function MyPracticesForm({
 }: Readonly<CreatePracticePopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [errorToastOpen, setErrorToastOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [practiceData, setPracticeData] = useState({
     id: 0,
     title: "",
@@ -44,12 +48,19 @@ function MyPracticesForm({
     const createPractices = new CreatePractice(practicesRepository);
     try {
       await createPractices.createPractice(practiceData);
+      setValidationDialogOpen(true);
     } catch (error) {
       console.error(error);
+      const isDuplicate = (error as { response?: { status?: number } }).response?.status === 409;
+      setErrorMessage(
+        isDuplicate
+          ? "Ya existe una práctica con ese nombre."
+          : "No se pudo crear la práctica. Intenta nuevamente."
+      );
+      setErrorToastOpen(true);
     } finally {
       setSave(false);
     }
-    setValidationDialogOpen(true);
   };
 
   const handleInputChange = (
@@ -123,6 +134,22 @@ function MyPracticesForm({
         closeText="Cerrar"
         onClose={() => window.location.reload()}
       />
+
+      <Snackbar
+        open={errorToastOpen}
+        autoHideDuration={4000}
+        onClose={() => setErrorToastOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setErrorToastOpen(false)}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 }

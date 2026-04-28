@@ -93,14 +93,27 @@ describe("Create Group", () => {
     it("should respond with a status 201 and return the created group", async () => {
         const req = createRequest(undefined, getModifiedGroupDataMock);
         const res = createResponse();
+        groupsRepositoryMock.obtainGroups.mockResolvedValue([]);
         groupsRepositoryMock.createGroup.mockResolvedValue(getModifiedGroupDataMock);
         await controller.createGroup(req, res);
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith(getModifiedGroupDataMock);
     });
+    it("should respond with 409 when the group name already exists", async () => {
+        const req = createRequest(undefined, getModifiedGroupDataMock);
+        const res = createResponse();
+        groupsRepositoryMock.obtainGroups.mockResolvedValue([
+            getDataGroupMock,
+            getModifiedGroupDataMock,
+        ]);
+        await controller.createGroup(req, res);
+        expect(res.status).toHaveBeenCalledWith(409);
+        expect(res.json).toHaveBeenCalledWith({ error: "Group already exists" });
+    });
     it("should respond with a status 500 and error message when createGroup fails", async () => {
         const req = createRequest(undefined, getModifiedGroupDataMock);
         const res = createResponse();
+        groupsRepositoryMock.obtainGroups.mockResolvedValue([]);
         groupsRepositoryMock.createGroup.mockRejectedValue(new Error());
         await controller.createGroup(req, res);
         expect(res.status).toHaveBeenCalledWith(500);

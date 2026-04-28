@@ -52,6 +52,20 @@ class PracticeRepository {
     return rows.map(this.mapRowToPractice);
   }
 
+  async practiceTitleExistsForUser(title: string, userid: number): Promise<boolean> {
+    const query = `
+      SELECT EXISTS (
+        SELECT 1
+        FROM practices
+        WHERE userid = $1
+          AND LOWER(TRIM(title)) = LOWER(TRIM($2))
+      ) AS exists
+    `;
+    const values = [userid, title];
+    const rows = await this.executeQuery(query, values);
+    return Boolean(rows[0]?.exists);
+  }
+
   async createPractice(
     practice: PracticeCreationObject
   ): Promise<PracticeCreationObject> {

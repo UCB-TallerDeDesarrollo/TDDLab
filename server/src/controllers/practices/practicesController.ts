@@ -65,6 +65,10 @@ class PracticesController {
       });
       res.status(201).json(newPractice);
     } catch (error) {
+      if (error instanceof Error && error.message === "Practice already exists") {
+        res.status(409).json({ error: "Practice already exists" });
+        return;
+      }
       res.status(500).json({ error: "Server error" });
     }
   }
