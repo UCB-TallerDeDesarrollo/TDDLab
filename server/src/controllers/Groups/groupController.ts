@@ -7,14 +7,6 @@ import UpdateGroupUseCase from "../../modules/Groups/application/GroupUseCases/u
 import GroupRepository from "../../modules/Groups/repositories/GroupRepository";
 import CheckGroupExistsUseCase from "../../modules/Groups/application/GroupUseCases/checkGroupUseCase";
 
-function normalizeGroupName(value: unknown): string {
-  return String(value ?? "")
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
-
 class GroupsController {
   private readonly createGroupUseCase: CreateGroupUseCase;
   private readonly deleteGroupUseCase: DeleteGroupUseCase;
@@ -76,9 +68,9 @@ class GroupsController {
       const { creationDate } = req.body;
 
       const existingGroups = (await this.getGroupsUseCase.execute()) ?? [];
-      const normalizedGroupName = normalizeGroupName(groupName);
+      const normalizedGroupName = String(groupName).trim().toLowerCase();
       const alreadyExists = existingGroups.some(
-        (group) => normalizeGroupName(group.groupName) === normalizedGroupName
+        (group) => String(group.groupName).trim().toLowerCase() === normalizedGroupName
       );
 
       if (alreadyExists) {

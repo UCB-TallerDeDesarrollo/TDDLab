@@ -110,25 +110,6 @@ describe("Create Group", () => {
         expect(res.status).toHaveBeenCalledWith(409);
         expect(res.json).toHaveBeenCalledWith({ error: "Group already exists" });
     });
-    it("should respond with 409 when the group name matches another one ignoring accents and case", async () => {
-        const req = createRequest(undefined, {
-            groupName: "Cafe",
-            groupDetail: "Detalles del grupo",
-            creationDate: new Date(),
-        });
-        const res = createResponse();
-        groupsRepositoryMock.obtainGroups.mockResolvedValue([
-            {
-                id: 1,
-                groupName: "Café",
-                groupDetail: "Detalles del grupo",
-                creationDate: new Date(),
-            },
-        ]);
-        await controller.createGroup(req, res);
-        expect(res.status).toHaveBeenCalledWith(409);
-        expect(res.json).toHaveBeenCalledWith({ error: "Group already exists" });
-    });
     it("should respond with a status 500 and error message when createGroup fails", async () => {
         const req = createRequest(undefined, getModifiedGroupDataMock);
         const res = createResponse();
