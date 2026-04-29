@@ -9,6 +9,7 @@ import { UpdatePractice } from "../../modules/Practices/application/UpdatePracti
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { normalizeTextForComparison } from "../../utils/normalizeText";
 import "../../App.css";
 
 interface EditPracticeDialogProps {
@@ -35,8 +36,29 @@ function EditPracticeDialog({
       const currentPractice = await getCurrentPractice();
 
       if (currentPractice) {
+        const practicesRepository = new PracticesRepository();
+        const existingPractices = await practicesRepository.getPracticeByUserId(
+          currentPractice.userid
+        );
+        const nextTitle = title.trim() !== "" ? title : currentPractice.title;
+        const duplicatePractice = existingPractices.find(
+          (practice) =>
+            practice.id !== currentPractice.id &&
+            normalizeTextForComparison(practice.title) ===
+              normalizeTextForComparison(nextTitle)
+        );
+
+        if (duplicatePractice) {
+          setIsError(true);
+          setValidationMessage(
+            "Error: Ya existe una práctica con ese nombre para este usuario"
+          );
+          setValidationOpen(true);
+          return;
+        }
+
         const updatedPracticeData: PracticeDataObject = {
-          title: title !== "" ? title : currentPractice.title,
+          title: nextTitle,
           description:
             description !== "" ? description : currentPractice.description,
           id: currentPractice.id,
@@ -45,8 +67,7 @@ function EditPracticeDialog({
           userid: currentPractice.userid,
         };
 
-        const practiceRepository = new PracticesRepository();
-        const updatePractice = new UpdatePractice(practiceRepository);
+        const updatePractice = new UpdatePractice(practicesRepository);
         await updatePractice.updatePractice(practiceId, updatedPracticeData);
 
         setIsError(false);

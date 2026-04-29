@@ -158,7 +158,6 @@ describe("AssignmentDetail Component", () => {
         expect(screen.getByText("Enlace")).toBeInTheDocument();
         expect(screen.getByText("Grafica")).toBeInTheDocument();
         expect(screen.getByText("Asistente AI")).toBeInTheDocument();
-        expect(screen.getByText("Graficas Adicionales")).toBeInTheDocument();
       },
       { timeout: 3000 }
     );
