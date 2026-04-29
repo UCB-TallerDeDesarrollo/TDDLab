@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
-import { APP_ICONS } from "../../utils/IconLibrary";
-import { PiChalkboardTeacherFill } from "react-icons/pi";
-import Checkbox from "@mui/material/Checkbox";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Button,
-  Collapse,
-} from "@mui/material";
+import { Button, Collapse } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { PiChalkboardTeacherFill } from "react-icons/pi";
+
+import { AppIcon } from "../../sections/Shared/Components/AppIcon";
+import { APP_ICONS } from "../../utils/IconLibrary";
 
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
@@ -54,8 +46,7 @@ function Groups() {
 
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
-  const [currentSelectedGroupId, setCurrentSelectedGroupId] =
-    useState<number>(0);
+  const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
   const groupRepository = new GroupsRepository();
   const userRepository = new UsersRepository();
@@ -83,9 +74,7 @@ function Groups() {
       if (role === "teacher") {
         const ids = await getGroupsApp.getGroupsByUserId(uid);
         const allGroups = (
-          await Promise.all(
-            ids.map((id: number) => getGroupsApp.getGroupById(id))
-          )
+          await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id)))
         ).filter(Boolean) as GroupDataObject[];
         setGroups(allGroups);
       } else {
@@ -100,9 +89,7 @@ function Groups() {
   useEffect(() => {
     if (!groups.length || currentSelectedGroupId) return;
 
-    const fromURL = asId(
-      new URLSearchParams(window.location.search).get("groupId")
-    );
+    const fromURL = asId(new URLSearchParams(window.location.search).get("groupId"));
     if (fromURL) {
       selectAndSync(fromURL);
       return;
@@ -142,12 +129,7 @@ function Groups() {
         selectAndSync(firstVisible);
       }
     })();
-  }, [
-    groups,
-    currentSelectedGroupId,
-    authData?.usergroupid,
-    authData?.userid,
-  ]);
+  }, [groups, currentSelectedGroupId, authData?.usergroupid, authData?.userid]);
 
   const handleGroupsOrder = (event: { target: { value: string } }) => {
     const sorting = event.target.value;
@@ -314,138 +296,131 @@ function Groups() {
   };
 
   const isRowSelected = (index: number) =>
-    index === selectedRow || index === hoveredRow;
+    index === selectedRow ||
+    index === hoveredRow ||
+    asId(currentSelectedGroupId) === asId(groups[index]?.id);
 
   return (
-    <div className="centered-container">
-      <section className="table-container-full">
-        <Table className="styled-table">
-          <TableHead>
-            <TableRow className="table-row-bordered">
-              <TableCell className="table-cell-header">Grupos</TableCell>
-              <TableCell align="right" colSpan={2}>
-                <div className="filter-container">
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleGroupsOrder}
-                  />
-                  <Button
-                    className="btn-std btn-primary"
-                    startIcon={<AppIcon icon={APP_ICONS.PLUS} size={20} />}
-                    onClick={handleCreateGroupClick}
-                  >
-                    Crear
-                  </Button>
+    <div className="groups-figma-page">
+      <section className="groups-figma-content">
+        <div className="groups-figma-header">
+          <div className="groups-figma-title">
+            <span>Grupos</span>
+            <span className="groups-figma-arrow">⌄</span>
+          </div>
+
+          <div className="groups-figma-search">
+            <span>Buscar</span>
+            <input type="text" aria-label="Buscar grupo" />
+            <AppIcon icon={APP_ICONS.SEARCH} size={16} />
+          </div>
+        </div>
+
+        <div className="groups-figma-toolbar">
+          <Button
+            className="groups-create-button"
+            startIcon={<AppIcon icon={APP_ICONS.PLUS} size={16} />}
+            onClick={handleCreateGroupClick}
+          >
+            Crear
+          </Button>
+
+          <div className="groups-filter-actions">
+            <Button className="groups-filter-button">Todos</Button>
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleGroupsOrder}
+            />
+          </div>
+        </div>
+
+        <div className="groups-card-grid">
+          {groups.map((group, index) => (
+            <div
+              key={asId(group.id) || index}
+              className={`group-card-row ${
+                isRowSelected(index) ? "group-card-row-selected" : ""
+              }`}
+              onClick={() => handleRowClick(index)}
+              onMouseEnter={() => setHoveredRow(index)}
+              onMouseLeave={() => setHoveredRow(null)}
+            >
+              <div className="group-card-main">
+                <div className="group-card-blue">
+                  <div className="group-card-pattern" />
+                  <div className="group-card-name">{group.groupName}</div>
                 </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
 
-          <TableBody>
-            {groups.map((group, index) => (
-              <React.Fragment key={asId(group.id) || index}>
-                <TableRow
-                  className="table-row-bordered"
-                  selected={isRowSelected(index)}
-                  onClick={() => handleRowClick(index)}
-                  onMouseEnter={() => setHoveredRow(index)}
-                  onMouseLeave={() => setHoveredRow(null)}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={asId(currentSelectedGroupId) === asId(group.id)}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={() => handleRowClick(index)}
-                    />
-                  </TableCell>
-
-                  <TableCell className="practice-title-cell">
-                    {group.groupName}
-                  </TableCell>
-
-                  <TableCell align="right">
-                    <div className="action-buttons-group">
-                      <Tooltip title="Editar grupo" arrow>
-                        <IconButton
-                          aria-label="editar"
-                          onClick={(e) => handleEditClick(e, index)}
-                        >
-                          <AppIcon icon={APP_ICONS.EDIT} className="icon-gray" />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Tareas" arrow>
-                        <IconButton
-                          aria-label="tareas"
-                          onClick={(e) => handleHomeworksClick(e, index)}
-                        >
-                          <AppIcon icon={APP_ICONS.TASKS} className="icon-gray" />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Participantes" arrow>
-                        <IconButton
-                          aria-label="estudiantes"
-                          onClick={(e) => handleStudentsClick(e, index)}
-                        >
-                          <AppIcon icon={APP_ICONS.GROUPS} className="icon-gray" />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip
-                        title="Copiar enlace de invitacion a estudiante"
-                        arrow
-                      >
-                        <IconButton
-                          aria-label="enlace-estudiante"
-                          onClick={(e) => handleLinkClick(e, index)}
-                        >
-                          <AppIcon icon={APP_ICONS.LINK} className="icon-gray" />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip
-                        title="Copiar enlace de invitacion a docente"
-                        arrow
-                      >
-                        <IconButton
-                          aria-label="enlace-docente"
-                          onClick={(e) => handleLinkClickTeacher(e, index)}
-                        >
-                          <PiChalkboardTeacherFill />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton
-                          aria-label="eliminar"
-                          onClick={(e) => handleDeleteClick(e, index)}
-                        >
-                          <AppIcon icon={APP_ICONS.DELETE} className="icon-gray" />
-                        </IconButton>
-                      </Tooltip>
-                    </div>
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell colSpan={3} style={{ padding: 0 }}>
-                    <Collapse
-                      in={expandedRows.includes(index)}
-                      timeout="auto"
-                      unmountOnExit
+                <div className="group-card-actions">
+                  <Tooltip title="Editar grupo" arrow>
+                    <IconButton
+                      aria-label="editar"
+                      onClick={(e) => handleEditClick(e, index)}
                     >
-                      <div className="group-detail-box">
-                        <strong>Detalle del grupo:</strong>{" "}
-                        {group.groupDetail || "Sin descripción disponible."}
-                      </div>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </Table>
+                      <AppIcon icon={APP_ICONS.EDIT} className="icon-gray" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Tareas" arrow>
+                    <IconButton
+                      aria-label="tareas"
+                      onClick={(e) => handleHomeworksClick(e, index)}
+                    >
+                      <AppIcon icon={APP_ICONS.TASKS} className="icon-gray" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Participantes" arrow>
+                    <IconButton
+                      aria-label="estudiantes"
+                      onClick={(e) => handleStudentsClick(e, index)}
+                    >
+                      <AppIcon icon={APP_ICONS.GROUPS} className="icon-gray" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
+                    <IconButton
+                      aria-label="enlace-estudiante"
+                      onClick={(e) => handleLinkClick(e, index)}
+                    >
+                      <AppIcon icon={APP_ICONS.LINK} className="icon-gray" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+                    <IconButton
+                      aria-label="enlace-docente"
+                      onClick={(e) => handleLinkClickTeacher(e, index)}
+                    >
+                      <PiChalkboardTeacherFill />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Eliminar grupo" arrow>
+                    <IconButton
+                      aria-label="eliminar"
+                      onClick={(e) => handleDeleteClick(e, index)}
+                    >
+                      <AppIcon icon={APP_ICONS.DELETE} className="icon-gray" />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+
+                <Collapse
+                  in={expandedRows.includes(index)}
+                  timeout="auto"
+                  unmountOnExit
+                >
+                  <div className="group-card-detail">
+                    <strong>Detalle del grupo:</strong>{" "}
+                    {group.groupDetail || "Sin descripción disponible."}
+                  </div>
+                </Collapse>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {confirmationOpen && (

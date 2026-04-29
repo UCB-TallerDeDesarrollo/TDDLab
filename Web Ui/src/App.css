@@ -544,3 +544,141 @@ a:hover {
   margin-bottom: 16px !important;
   text-align: left;
 }
+/* ===================== GROUPS FIGMA FINAL ===================== */
+
+.groups-figma-page {
+  width: 100%;
+  background: #ffffff;
+}
+
+.groups-figma-content {
+  width: 78%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding-top: 28px;
+}
+
+/* HEADER */
+
+.groups-figma-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.groups-figma-title {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.groups-figma-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.groups-figma-search input {
+  width: 220px;
+  height: 28px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  padding: 0 8px;
+}
+
+/* TOOLBAR */
+
+.groups-figma-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.groups-create-button {
+  background-color: #62bd46 !important;
+  color: white !important;
+  height: 32px !important;
+  min-width: 90px !important;
+  text-transform: none !important;
+  border-radius: 4px !important;
+}
+
+.groups-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* GRID */
+
+.groups-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 300px);
+  gap: 34px 90px;
+}
+
+/* CARD */
+
+.group-card-row {
+  cursor: pointer;
+}
+
+.group-card-main {
+  width: 300px;
+}
+
+/* CARD AZUL */
+
+.group-card-blue {
+  width: 300px;
+  height: 86px;
+  background: #4564c2;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+/* NOMBRE */
+
+.group-card-name {
+  width: 245px;
+  height: 28px;
+  background: white;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  border-radius: 0 4px 0 0;
+}
+
+/* ICONOS */
+
+.group-card-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.group-card-actions .MuiIconButton-root {
+  padding: 0 !important;
+  color: #777 !important;
+}
+
+/* DETALLE */
+
+.group-card-detail {
+  padding: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+/* SELECCIÓN */
+
+.group-card-row-selected .group-card-blue {
+  outline: 2px solid #1976d2;
+}
