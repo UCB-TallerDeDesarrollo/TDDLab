@@ -67,7 +67,7 @@ function MyPracticesForm({
 
       await createPractices.createPractice(practiceData);
       setIsError(false);
-      setValidationMessage("Práctica creada exitosamente");
+      setValidationMessage("La practica fue creada exitosamente");
     } catch (error) {
       console.error(error);
       setIsError(true);
