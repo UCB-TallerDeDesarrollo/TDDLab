@@ -1,7 +1,7 @@
 import Button from "@mui/material/Button";
 import { Dialog, DialogActions, DialogTitle } from "@mui/material";
 import { Warning, CheckCircle } from "@mui/icons-material";
-import { styles } from "../styles/Form.styles";
+import { styles } from "../styles/AssignmentForm.styles";
 
 interface ValidationDialogProps {
   open: boolean;

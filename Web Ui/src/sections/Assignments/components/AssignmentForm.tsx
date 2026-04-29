@@ -9,7 +9,7 @@ import Filter from "./DatePicker";
 import ValidationDialog from "./ValidationDialog";
 import { useAssignmentForm } from "../hooks/useAssignmentForm";
 import { useGroups } from "../hooks/useGroups";
-import { styles } from "../styles/Form.styles";
+import { styles } from "../styles/AssignmentForm.styles";
 
 /**
  * Este componente es un formulario para crear una Tarea
