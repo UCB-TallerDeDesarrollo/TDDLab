@@ -35,11 +35,7 @@ class PracticesController {
 
   async getPracticesById(req: Request, res: Response): Promise<void> {
     try {
-      const id = String(req.params.id).trim();
-      if (!id || isNaN(Number(id))) {
-        res.status(400).json({ error: "Invalid id parameter" });
-        return;
-      }
+      const id = req.params.id;
       const practice = await this.getPracticeByIdUseCase.execute(id);
       res.status(200).json(practice);
     } catch (error) {
@@ -49,11 +45,7 @@ class PracticesController {
 
   async getPracticesByUserId(req: Request, res: Response): Promise<void> {
     try {
-      const userid = String(req.params.userid).trim();
-      if (!userid || isNaN(Number(userid))) {
-        res.status(400).json({ error: "Invalid userid parameter" });
-        return;
-      }
+      const userid = req.params.userid;
       const practices = await this.getPracticesByUserIdUseCase.execute(userid);
       res.status(200).json(practices);
     } catch (error) {
@@ -83,11 +75,7 @@ class PracticesController {
 
   async deletePractice(req: Request, res: Response): Promise<void> {
     try {
-      const id = String(req.params.id).trim();
-      if (!id || isNaN(Number(id))) {
-        res.status(400).json({ error: "Invalid id parameter" });
-        return;
-      }
+      const id = req.params.id;
       await this.deletePracticeUseCase.execute(id);
       res.status(204).send();
     } catch (error) {
@@ -97,21 +85,8 @@ class PracticesController {
 
   async updatePractice(req: Request, res: Response): Promise<void> {
     try {
-      const practiceId = String(req.params.id).trim();
-      if (!practiceId || isNaN(Number(practiceId))) {
-        res.status(400).json({ error: "Invalid id parameter" });
-        return;
-      }
+      const practiceId = req.params.id;
       const { title, description, state, creation_date, userid } = req.body;
-      
-      // Validate required fields
-      if (!title || !description || !userid) {
-        res.status(400).json({ 
-          error: "Missing required fields: title, description, userid" 
-        });
-        return;
-      }
-
       const updatedPractice = await this.updatePracticeUseCase.execute(
         practiceId,
         {
