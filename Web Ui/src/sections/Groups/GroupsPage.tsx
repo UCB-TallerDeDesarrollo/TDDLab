@@ -320,7 +320,7 @@ function Groups() {
         <div className="page-header">
           <div className="page-title">
             <span>Grupos</span>
-            <span className="page-title-arrow">⌵</span>
+            <span className="page-title-arrow"></span>
           </div>
 
           <div className="page-title-line" />

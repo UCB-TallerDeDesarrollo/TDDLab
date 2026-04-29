@@ -9,7 +9,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Container,
   Select,
   MenuItem,
   InputLabel,
@@ -138,45 +137,63 @@ function UserPage() {
   }
   
 
-  return (
-    <Container className="centered-container" style={{paddingTop:'30px'}}>
-      <div className="filter-container" style={{ marginBottom: '24px', gap: '16px' }}>
-        <TextField
-          label="Buscar por email"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          variant="outlined"
-          size="small"
-          sx={{ 
-            width: 360,
-            '& .MuiOutlinedInput-root': { height: 36, borderRadius: '4px' } 
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <AppIcon icon={APP_ICONS.SEARCH} size={18} className="icon-gray" />
-              </InputAdornment>
-            ),
-          }}
-        />
+ return (
+  <div className="page-container">
+    <section className="page-content">
+      <div className="page-top-line" />
 
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="group-select-label">Filtrar por Grupo</InputLabel>
-          <Select 
-            labelId="group-select-label"
-            value={selectedGroup} 
-            onChange={handleGroupChange} 
-            label="Filtrar por Grupo"
-            className="select-compact" // Altura de 36px y fuente Inter
-          >
-            <MenuItem value="all">Todos los grupos</MenuItem>
-            {groups.map((g) => (
-              <MenuItem key={g.id} value={g.id}>
-                {g.groupName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <div className="page-header">
+        <div className="page-title">
+          <span>Usuarios</span>
+        </div>
+
+        <div className="page-title-line" />
+
+        <div className="filter-container" style={{ marginBottom: "24px", gap: "16px" }}>
+          <TextField
+            label="Buscar por email"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            variant="outlined"
+            size="small"
+            sx={{
+              width: 360,
+              "& .MuiOutlinedInput-root": {
+                height: 36,
+                borderRadius: "4px",
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AppIcon
+                    icon={APP_ICONS.SEARCH}
+                    size={18}
+                    className="icon-gray"
+                  />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel id="group-select-label">Filtrar por Grupo</InputLabel>
+            <Select
+              labelId="group-select-label"
+              value={selectedGroup}
+              onChange={handleGroupChange}
+              label="Filtrar por Grupo"
+              className="select-compact"
+            >
+              <MenuItem value="all">Todos los grupos</MenuItem>
+              {groups.map((g) => (
+                <MenuItem key={g.id} value={g.id}>
+                  {g.groupName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
       </div>
 
       <Table className="styled-table">
@@ -234,8 +251,9 @@ function UserPage() {
         closeText="Cerrar"
         onClose={() => setValidationDialogOpen(false)}
       />
-    </Container>
-  );
+    </section>
+  </div>
+);
 }
 
 export default UserPage;
