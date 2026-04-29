@@ -7,6 +7,7 @@ import { GroupDataObject } from "../../../src/modules/Groups/domain/GroupInterfa
 // Mock de las dependencias usando las mejores prácticas aprendidas
 const mockAssignmentsRepo = {
   getAssignmentById: jest.fn(),
+  getAssignmentsByGroupid: jest.fn(),
   updateAssignment: jest.fn(),
 };
 
@@ -94,6 +95,7 @@ describe("EditAssignmentDialog Component", () => {
     
     // Configurar mocks por defecto
     mockAssignmentsRepo.getAssignmentById.mockResolvedValue(mockAssignment);
+    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue([mockAssignment]);
     mockGetGroups.getGroups.mockResolvedValue(mockGroups);
     mockUpdateAssignment.updateAssignment.mockResolvedValue(undefined);
   });

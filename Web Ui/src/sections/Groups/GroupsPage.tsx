@@ -477,12 +477,14 @@ function Groups() {
       <CreateGroupPopup
         open={createGroupPopupOpen}
         handleClose={() => setCreateGroupPopupOpen(false)}
+        existingGroups={groups}
         onCreated={handleGroupCreated}
       />
 
       <EditGroupPopup
         open={editGroupPopupOpen}
         handleClose={() => setEditGroupPopupOpen(false)}
+        existingGroups={groups}
         groupToEdit={groupToEdit}
         onUpdated={handleGroupUpdated}
       />

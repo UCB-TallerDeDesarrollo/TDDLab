@@ -13,6 +13,7 @@ import { UpdateAssignment } from "../../../modules/Assignments/application/Updat
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { normalizeTextForComparison } from "../../../utils/normalizeText";
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
@@ -58,12 +59,34 @@ function EditAssignmentDialog({
     try {
       const currentAssignment = await getCurrentAssignment();
       if (currentAssignment) {
+        const nextTitle = title.trim() !== "" ? title : currentAssignment.title;
+        const nextGroupId =
+          selectedGroup !== 0 ? selectedGroup : currentAssignment.groupid;
+        const assignmentsRepository = new AssignmentsRepository();
+        const assignments = await assignmentsRepository.getAssignmentsByGroupid(
+          nextGroupId
+        );
+        const duplicateAssignment = assignments.find(
+          (assignment) =>
+            assignment.id !== currentAssignment.id &&
+            normalizeTextForComparison(assignment.title) ===
+              normalizeTextForComparison(nextTitle)
+        );
+
+        if (duplicateAssignment) {
+          setIsError(true);
+          setValidationMessage(
+            "Error: Ya existe una tarea con el mismo nombre en este grupo"
+          );
+          setValidationOpen(true);
+          return;
+        }
+
         const updatedAssignmentData: AssignmentDataObject = {
-          title: title !== "" ? title : currentAssignment.title,
+          title: nextTitle,
           description:
             description !== "" ? description : currentAssignment.description,
-          groupid:
-            selectedGroup !== 0 ? selectedGroup : currentAssignment.groupid,
+          groupid: nextGroupId,
           id: currentAssignment.id,
           start_date: currentAssignment.start_date,
           end_date: currentAssignment.end_date,
@@ -71,7 +94,6 @@ function EditAssignmentDialog({
           link: currentAssignment.link,
           comment: currentAssignment.comment,
         };
-        const assignmentsRepository = new AssignmentsRepository();
         const updateAssignment = new UpdateAssignment(assignmentsRepository);
         await updateAssignment.updateAssignment(assignmentId, updatedAssignmentData);
 

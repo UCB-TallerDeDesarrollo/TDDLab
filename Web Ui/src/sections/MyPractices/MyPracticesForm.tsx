@@ -8,8 +8,10 @@ import {
   TextField,
 } from "@mui/material";
 import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
+import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { normalizeTextForComparison } from "../../utils/normalizeText";
 import "../../App.css";
 
 interface CreatePracticePopupProps {
@@ -25,6 +27,8 @@ function MyPracticesForm({
 }: Readonly<CreatePracticePopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const [practiceData, setPracticeData] = useState({
     id: 0,
     title: "",
@@ -43,9 +47,31 @@ function MyPracticesForm({
     const practicesRepository = new PracticesRepository();
     const createPractices = new CreatePractice(practicesRepository);
     try {
+      const existingPractices = await practicesRepository.getPracticeByUserId(
+        userid
+      );
+      const duplicatePractice = existingPractices.find(
+        (practice: PracticeDataObject) =>
+          normalizeTextForComparison(practice.title) ===
+          normalizeTextForComparison(practiceData.title)
+      );
+
+      if (duplicatePractice) {
+        setIsError(true);
+        setValidationMessage(
+          "Error: Ya existe una práctica con ese nombre para este usuario"
+        );
+        setValidationDialogOpen(true);
+        return;
+      }
+
       await createPractices.createPractice(practiceData);
+      setIsError(false);
+      setValidationMessage("La practica fue creada exitosamente");
     } catch (error) {
       console.error(error);
+      setIsError(true);
+      setValidationMessage("Error al crear la práctica");
     } finally {
       setSave(false);
     }
@@ -62,10 +88,13 @@ function MyPracticesForm({
 
   const handleCancel = () => handleClose();
 
-  const formInvalid = () => practiceData.title === "";
+  const formInvalid = () => practiceData.title.trim() === "";
 
   useEffect(() => {
     setSave(false);
+    setValidationDialogOpen(false);
+    setValidationMessage("");
+    setIsError(false);
   }, [open]);
 
   return (
@@ -119,9 +148,16 @@ function MyPracticesForm({
 
       <ValidationDialog
         open={validationDialogOpen}
-        title="Práctica creada exitosamente"
+        title={validationMessage}
+        isError={isError}
         closeText="Cerrar"
-        onClose={() => window.location.reload()}
+        onClose={() => {
+          if (!isError) {
+            window.location.reload();
+          } else {
+            setValidationDialogOpen(false);
+          }
+        }}
       />
     </Dialog>
   );
