@@ -10,17 +10,23 @@ import {
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { normalizeTextForComparison } from "../../../utils/normalizeText";
 import "../../../App.css";
 
 const EditGroupPopup: React.FC<{
   open: boolean;
   handleClose: () => void;
+  existingGroups: any[];
   groupToEdit: any;
   onUpdated?: (g: any) => void;
-}> = ({ open, handleClose, groupToEdit, onUpdated }) => {
+}> = ({ open, handleClose, existingGroups, groupToEdit, onUpdated }) => {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [auth] = useGlobalState("authData");
 
   useEffect(() => {
     if (open && groupToEdit) {
@@ -34,12 +40,35 @@ const EditGroupPopup: React.FC<{
     try {
       const repo = new GroupsRepository();
       const updater = new UpdateGroup(repo);
+      if (auth?.userRole === "teacher") {
+        const duplicateGroup = existingGroups.find(
+          (group) =>
+            group.id !== groupToEdit.id &&
+            normalizeTextForComparison(group.groupName) ===
+              normalizeTextForComparison(groupName)
+        );
+
+        if (duplicateGroup) {
+          setIsError(true);
+          setValidationMessage(
+            "Error: Ya existe un grupo con ese nombre para este docente"
+          );
+          setValidationDialogOpen(true);
+          return;
+        }
+      }
+
       const payload = { ...groupToEdit, groupName, groupDetail: groupDescription };
       await updater.updateGroup(groupToEdit.id, payload);
       onUpdated?.(payload);
+      setIsError(false);
+      setValidationMessage("Grupo actualizado exitosamente");
       setValidationDialogOpen(true);
     } catch (e) {
       console.error(e);
+      setIsError(true);
+      setValidationMessage("Error al actualizar el grupo");
+      setValidationDialogOpen(true);
     }
   };
 
@@ -85,11 +114,14 @@ const EditGroupPopup: React.FC<{
 
       <ValidationDialog
         open={validationDialogOpen}
-        title="Grupo actualizado exitosamente"
+        title={validationMessage}
+        isError={isError}
         closeText="Cerrar"
         onClose={() => {
           setValidationDialogOpen(false);
-          handleClose();
+          if (!isError) {
+            handleClose();
+          }
         }}
       />
     </Dialog>
