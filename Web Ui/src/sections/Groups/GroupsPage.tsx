@@ -77,6 +77,7 @@ function Groups() {
         const allGroups = (
           await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id)))
         ).filter(Boolean) as GroupDataObject[];
+
         setGroups(allGroups);
       } else {
         const allGroups = await getGroupsApp.getGroups();
@@ -116,6 +117,7 @@ function Groups() {
         if (uid) {
           const ids = await getGroupsApp.getGroupsByUserId(uid);
           const first = asId(ids?.[0]);
+
           if (first) {
             selectAndSync(first);
             return;
@@ -184,6 +186,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
+
     const group = filteredGroups[index];
     if (!group) return;
 
@@ -196,6 +199,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
+
     const clickedGroup = filteredGroups[index];
     if (clickedGroup?.id) {
       navigate(`/?groupId=${clickedGroup.id}`);
@@ -207,6 +211,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
+
     const groupid = asId(filteredGroups[index]?.id);
     if (!groupid) return;
 
@@ -234,6 +239,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
+
     const id = asId(filteredGroups[index]?.id);
     if (id) {
       getCourseLink(id, "student");
@@ -245,6 +251,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
+
     const id = asId(filteredGroups[index]?.id);
     if (id) {
       getCourseLink(id, "teacher");
@@ -267,6 +274,7 @@ function Groups() {
 
           if (asId(currentSelectedGroupId) === asId(itemFound.id)) {
             const next = asId(copy[0]?.id);
+
             if (next) {
               selectAndSync(next);
             } else {
@@ -305,19 +313,19 @@ function Groups() {
     asId(currentSelectedGroupId) === asId(filteredGroups[index]?.id);
 
   return (
-    <div className="groups-figma-page">
-      <section className="groups-figma-content">
-        <div className="groups-figma-top-line" />
+    <div className="page-container">
+      <section className="page-content">
+        <div className="page-top-line" />
 
-        <div className="groups-figma-header">
-          <div className="groups-figma-title">
+        <div className="page-header">
+          <div className="page-title">
             <span>Grupos</span>
-            <span className="groups-figma-arrow">⌵</span>
+            <span className="page-title-arrow">⌵</span>
           </div>
 
-          <div className="groups-figma-title-line" />
+          <div className="page-title-line" />
 
-          <div className="groups-figma-search">
+          <div className="page-search">
             <span>Buscar</span>
             <input
               type="text"
@@ -329,7 +337,7 @@ function Groups() {
           </div>
         </div>
 
-        <div className="groups-figma-toolbar">
+        <div className="page-toolbar">
           <Button
             className="groups-create-button"
             startIcon={<AppIcon icon={APP_ICONS.PLUS} size={16} />}
@@ -338,8 +346,8 @@ function Groups() {
             Crear
           </Button>
 
-          <div className="groups-filter-actions">
-            <Button className="groups-filter-button">Todos</Button>
+          <div className="page-filter-actions">
+            <Button className="page-filter-button">Todos</Button>
             <SortingComponent
               selectedSorting={selectedSorting}
               onChangeHandler={handleGroupsOrder}

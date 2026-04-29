@@ -544,48 +544,22 @@ a:hover {
   margin-bottom: 16px !important;
   text-align: left;
 }
-/* ===================== GROUPS FIGMA FINAL ===================== */
+/* ===================== GLOBAL PAGE LAYOUT ===================== */
 
-.groups-figma-page {
+.page-container {
   width: 100%;
   min-height: calc(100vh - 64px);
   background: #ffffff;
 }
 
-.groups-figma-content {
-  width: 88%;
-  max-width: 1180px;
+.page-content {
+  width: 90%;
+  max-width: 1280px;
   margin: 0 auto;
   padding-top: 36px;
 }
 
-/* HEADER */
-
-.groups-figma-header {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  column-gap: 18px;
-  margin-bottom: 18px;
-}
-
-.groups-figma-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #07132f;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-.groups-figma-arrow {
-  font-size: 18px;
-  line-height: 1;
-  transform: translateY(1px);
-}
-
-.groups-figma-top-line {
+.page-top-line {
   width: 100%;
   height: 2px;
   margin-bottom: 28px;
@@ -599,7 +573,7 @@ a:hover {
   position: relative;
 }
 
-.groups-figma-top-line::after {
+.page-top-line::after {
   content: "";
   width: 10px;
   height: 10px;
@@ -610,7 +584,7 @@ a:hover {
   top: -4px;
 }
 
-.groups-figma-header {
+.page-header {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -618,7 +592,23 @@ a:hover {
   margin-bottom: 18px;
 }
 
-.groups-figma-title-line {
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #07132f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.page-title-arrow {
+  font-size: 18px;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.page-title-line {
   width: 100%;
   height: 2px;
   background: linear-gradient(
@@ -631,7 +621,7 @@ a:hover {
   position: relative;
 }
 
-.groups-figma-title-line::after {
+.page-title-line::after {
   content: "";
   width: 9px;
   height: 9px;
@@ -641,21 +631,19 @@ a:hover {
   right: 0;
   top: -4px;
 }
-/* SEARCH */
 
-.groups-figma-search {
-  grid-column: 3;
+.page-search {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.groups-figma-search span {
+.page-search span {
   font-size: 14px;
   color: #111;
 }
 
-.groups-figma-search input {
+.page-search input {
   width: 300px;
   height: 34px;
   border: 1px solid #dcdcdc;
@@ -664,14 +652,28 @@ a:hover {
   font-size: 14px;
 }
 
-/* TOOLBAR */
-
-.groups-figma-toolbar {
+.page-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 26px;
+  margin-bottom: 28px;
 }
+
+.page-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.page-filter-button {
+  height: 32px !important;
+  min-width: 90px !important;
+  text-transform: none !important;
+  color: #3157b7 !important;
+  border: 1px solid #dcdcdc !important;
+}
+
+/* ===================== GROUPS MODULE ===================== */
 
 .groups-create-button {
   background-color: #62bd46 !important;
@@ -682,28 +684,12 @@ a:hover {
   border-radius: 4px !important;
 }
 
-.groups-filter-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.groups-filter-button {
-  height: 32px !important;
-  min-width: 90px !important;
-  text-transform: none !important;
-  color: #3157b7 !important;
-  border: 1px solid #dcdcdc !important;
-}
-
-/* GRID SIN CÍRCULOS */
-
 .groups-card-grid {
   display: grid;
-  grid-template-columns: repeat(3, 300px);
-  column-gap: 70px;
-  row-gap: 38px;
-  justify-content: start;
+  grid-template-columns: repeat(3, minmax(300px, 1fr));
+  column-gap: 56px;
+  row-gap: 42px;
+  width: 100%;
 }
 
 .group-card-row {
@@ -711,14 +697,12 @@ a:hover {
 }
 
 .group-card-main {
-  width: 300px;
+  width: 100%;
 }
 
-/* CARD AZUL */
-
 .group-card-blue {
-  width: 300px;
-  height: 118px;
+  width: 100%;
+  height: 125px;
   background-color: #4564c2;
   border-radius: 4px;
   display: flex;
@@ -739,8 +723,8 @@ a:hover {
 }
 
 .group-card-name {
-  width: 245px;
-  height: 34px;
+  width: 78%;
+  height: 36px;
   background: #ffffff;
   color: #111111;
   font-size: 14px;
@@ -771,4 +755,44 @@ a:hover {
 
 .group-card-row-selected .group-card-blue {
   outline: 2px solid #1976d2;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .groups-card-grid {
+    grid-template-columns: repeat(2, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .page-content {
+    width: 92%;
+  }
+
+  .page-header {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+
+  .page-title-line {
+    display: none;
+  }
+
+  .page-search {
+    width: 100%;
+  }
+
+  .page-search input {
+    width: 100%;
+  }
+
+  .page-toolbar {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .groups-card-grid {
+    grid-template-columns: 1fr;
+  }
 }
