@@ -4,8 +4,7 @@ module.exports = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
-  modulePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/build/"],
-  testPathIgnorePatterns: ["<rootDir>/build/"],
+  modulePathIgnorePatterns: ["<rootDir>/dist/"],
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
