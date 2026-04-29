@@ -6,13 +6,12 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { ErrorSnackbar } from "../../Shared/Components/ErrorSnackbar";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
 
@@ -164,21 +163,11 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
         }}
       />
 
-      <Snackbar
+      <ErrorSnackbar
         open={errorToastOpen}
-        autoHideDuration={4000}
+        message={errorMessage}
         onClose={() => setErrorToastOpen(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setErrorToastOpen(false)}
-          severity="error"
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+      />
     </Dialog>
   );
 };

@@ -6,12 +6,11 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { ErrorSnackbar } from "../Shared/Components/ErrorSnackbar";
 import "../../App.css";
 
 interface CreatePracticePopupProps {
@@ -135,21 +134,11 @@ function MyPracticesForm({
         onClose={() => window.location.reload()}
       />
 
-      <Snackbar
+      <ErrorSnackbar
         open={errorToastOpen}
-        autoHideDuration={4000}
+        message={errorMessage}
         onClose={() => setErrorToastOpen(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setErrorToastOpen(false)}
-          severity="error"
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+      />
     </Dialog>
   );
 }
