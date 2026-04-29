@@ -312,8 +312,10 @@ function Groups() {
         <div className="groups-figma-header">
           <div className="groups-figma-title">
             <span>Grupos</span>
-            <span className="groups-figma-arrow">⌄</span>
+            <span className="groups-figma-arrow">⌵</span>
           </div>
+
+          <div className="groups-figma-title-line" />
 
           <div className="groups-figma-search">
             <span>Buscar</span>
