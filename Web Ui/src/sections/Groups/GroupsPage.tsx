@@ -46,6 +46,7 @@ function Groups() {
 
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
   const groupRepository = new GroupsRepository();
@@ -158,13 +159,17 @@ function Groups() {
     setGroups(sorted);
   };
 
+  const filteredGroups = groups.filter((group) =>
+    group.groupName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const handleRowClick = (index: number) => {
+    const clickedGroup = filteredGroups[index];
+    if (!clickedGroup?.id) return;
+
     setExpandedRows((prev) =>
       prev.includes(index) ? prev.filter((r) => r !== index) : [index]
     );
-
-    const clickedGroup = groups[index];
-    if (!clickedGroup?.id) return;
 
     setSelectedRow(index);
     selectAndSync(clickedGroup.id);
@@ -179,7 +184,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    const group = groups[index];
+    const group = filteredGroups[index];
     if (!group) return;
 
     setGroupToEdit(group);
@@ -191,7 +196,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    const clickedGroup = groups[index];
+    const clickedGroup = filteredGroups[index];
     if (clickedGroup?.id) {
       navigate(`/?groupId=${clickedGroup.id}`);
     }
@@ -202,7 +207,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    const groupid = asId(groups[index]?.id);
+    const groupid = asId(filteredGroups[index]?.id);
     if (!groupid) return;
 
     try {
@@ -229,7 +234,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    const id = asId(groups[index]?.id);
+    const id = asId(filteredGroups[index]?.id);
     if (id) {
       getCourseLink(id, "student");
     }
@@ -240,7 +245,7 @@ function Groups() {
     index: number
   ) => {
     event.stopPropagation();
-    const id = asId(groups[index]?.id);
+    const id = asId(filteredGroups[index]?.id);
     if (id) {
       getCourseLink(id, "teacher");
     }
@@ -249,7 +254,7 @@ function Groups() {
   const handleConfirmDelete = async () => {
     try {
       if (selectedRow !== null) {
-        const itemFound = groups[selectedRow];
+        const itemFound = filteredGroups[selectedRow];
 
         if (itemFound) {
           const deleteGroup = new DeleteGroup(groupRepository);
@@ -257,8 +262,7 @@ function Groups() {
 
           setValidationDialogOpen(true);
 
-          const copy = [...groups];
-          copy.splice(selectedRow, 1);
+          const copy = groups.filter((g) => asId(g.id) !== asId(itemFound.id));
           setGroups(copy);
 
           if (asId(currentSelectedGroupId) === asId(itemFound.id)) {
@@ -298,11 +302,13 @@ function Groups() {
   const isRowSelected = (index: number) =>
     index === selectedRow ||
     index === hoveredRow ||
-    asId(currentSelectedGroupId) === asId(groups[index]?.id);
+    asId(currentSelectedGroupId) === asId(filteredGroups[index]?.id);
 
   return (
     <div className="groups-figma-page">
       <section className="groups-figma-content">
+        <div className="groups-figma-top-line" />
+
         <div className="groups-figma-header">
           <div className="groups-figma-title">
             <span>Grupos</span>
@@ -311,7 +317,12 @@ function Groups() {
 
           <div className="groups-figma-search">
             <span>Buscar</span>
-            <input type="text" aria-label="Buscar grupo" />
+            <input
+              type="text"
+              aria-label="Buscar grupo"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <AppIcon icon={APP_ICONS.SEARCH} size={16} />
           </div>
         </div>
@@ -335,7 +346,7 @@ function Groups() {
         </div>
 
         <div className="groups-card-grid">
-          {groups.map((group, index) => (
+          {filteredGroups.map((group, index) => (
             <div
               key={asId(group.id) || index}
               className={`group-card-row ${

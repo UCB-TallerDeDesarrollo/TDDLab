@@ -548,31 +548,55 @@ a:hover {
 
 .groups-figma-page {
   width: 100%;
+  min-height: calc(100vh - 64px);
   background: #ffffff;
 }
 
 .groups-figma-content {
-  width: 78%;
-  max-width: 1050px;
+  width: 86%;
+  max-width: 1180px;
   margin: 0 auto;
-  padding-top: 28px;
+  padding-top: 34px;
 }
 
-/* HEADER */
+.groups-figma-top-line {
+  width: 100%;
+  height: 2px;
+  margin-bottom: 28px;
+  background: linear-gradient(
+    90deg,
+    #d7deea 0%,
+    #d7deea 45%,
+    #ffc2c2 78%,
+    #ff9fb0 100%
+  );
+  position: relative;
+}
+
+.groups-figma-top-line::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #ffb4c1;
+  border-radius: 50%;
+  position: absolute;
+  right: 0;
+  top: -4px;
+}
 
 .groups-figma-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .groups-figma-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .groups-figma-search {
@@ -581,28 +605,31 @@ a:hover {
   gap: 8px;
 }
 
-.groups-figma-search input {
-  width: 220px;
-  height: 28px;
-  border: 1px solid #dcdcdc;
-  border-radius: 4px;
-  padding: 0 8px;
+.groups-figma-search span {
+  font-size: 14px;
 }
 
-/* TOOLBAR */
+.groups-figma-search input {
+  width: 300px;
+  height: 34px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 14px;
+}
 
 .groups-figma-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .groups-create-button {
   background-color: #62bd46 !important;
   color: white !important;
-  height: 32px !important;
-  min-width: 90px !important;
+  height: 34px !important;
+  min-width: 92px !important;
   text-transform: none !important;
   border-radius: 4px !important;
 }
@@ -610,18 +637,23 @@ a:hover {
 .groups-filter-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-/* GRID */
+.groups-filter-button {
+  height: 32px !important;
+  min-width: 90px !important;
+  text-transform: none !important;
+  color: #3157b7 !important;
+  border: 1px solid #dcdcdc !important;
+}
 
 .groups-card-grid {
   display: grid;
   grid-template-columns: repeat(2, 300px);
-  gap: 34px 90px;
+  gap: 34px 230px;
+  justify-content: start;
 }
-
-/* CARD */
 
 .group-card-row {
   cursor: pointer;
@@ -631,53 +663,58 @@ a:hover {
   width: 300px;
 }
 
-/* CARD AZUL */
-
 .group-card-blue {
   width: 300px;
-  height: 86px;
-  background: #4564c2;
+  height: 118px;
+  background-color: #4564c2;
   border-radius: 4px;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
+  position: relative;
 }
 
-/* NOMBRE */
+.group-card-blue::before {
+  content: "</>  </>  </>  </>  </>  </>  </>";
+  position: absolute;
+  inset: 0;
+  color: rgba(255, 255, 255, 0.08);
+  font-size: 22px;
+  line-height: 38px;
+  padding: 14px;
+  letter-spacing: 10px;
+}
 
 .group-card-name {
   width: 245px;
-  height: 28px;
+  height: 34px;
   background: white;
-  font-size: 12px;
+  color: #111111;
+  font-size: 14px;
   display: flex;
   align-items: center;
-  padding-left: 10px;
+  padding-left: 12px;
   border-radius: 0 4px 0 0;
+  position: relative;
+  z-index: 1;
 }
-
-/* ICONOS */
 
 .group-card-actions {
   display: flex;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 18px;
+  margin-top: 10px;
 }
 
 .group-card-actions .MuiIconButton-root {
   padding: 0 !important;
-  color: #777 !important;
+  color: #777777 !important;
 }
 
-/* DETALLE */
-
 .group-card-detail {
-  padding: 10px;
+  padding: 10px 0;
   font-size: 13px;
   color: #555;
 }
-
-/* SELECCIÓN */
 
 .group-card-row-selected .group-card-blue {
   outline: 2px solid #1976d2;
