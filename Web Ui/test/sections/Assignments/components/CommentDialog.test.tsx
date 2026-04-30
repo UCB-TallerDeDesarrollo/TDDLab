@@ -189,6 +189,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -202,6 +203,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange,
         isLoading: false,
       });
@@ -219,6 +221,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: true,
       });
@@ -235,6 +238,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -287,6 +291,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "invalid-link",
         validLink: false,
+        errorMessage: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -298,6 +303,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -335,6 +341,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -346,6 +353,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -364,6 +372,7 @@ describe("CommentDialog", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
