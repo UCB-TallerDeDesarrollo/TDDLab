@@ -19,24 +19,33 @@ export const useAssignmentEmails = (submissions: SubmissionDataObject[]) => {
         return;
       }
 
-      try {
-        const entries = await Promise.all(
-          missingUserIds.map(async (studentId) => {
-            const student = await usersRepository.getUserById(studentId);
-            return [studentId, student.email] as const;
-          })
-        );
+      const results = await Promise.allSettled(
+        missingUserIds.map(async (studentId) => {
+          const student = await usersRepository.getUserById(studentId);
+          return [studentId, student.email] as const;
+        })
+      );
 
-        setStudentEmails((prev) => {
-          const next = { ...prev };
-          entries.forEach(([studentId, email]) => {
-            next[studentId] = email;
-          });
-          return next;
-        });
-      } catch (error) {
-        console.error("Error fetching student emails:", error);
+      const entries = results.flatMap((result) => {
+        if (result.status === "fulfilled") {
+          return [result.value];
+        }
+
+        console.error("Error fetching student emails:", result.reason);
+        return [];
+      });
+
+      if (entries.length === 0) {
+        return;
       }
+
+      setStudentEmails((prev) => {
+        const next = { ...prev };
+        entries.forEach(([studentId, email]) => {
+          next[studentId] = email;
+        });
+        return next;
+      });
     };
 
     loadStudentEmails();

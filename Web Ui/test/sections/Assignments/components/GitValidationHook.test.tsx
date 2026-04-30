@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import { useGitHubLinkValidation } from "../../../src/sections/Assignments/components/GitValidationHook";
+import { useGitHubLinkValidation } from "../../../../src/sections/Assignments/components/GitValidationHook";
 
 describe("useGitHubLinkValidation", () => {
   describe("validateGitHubLink branches", () => {

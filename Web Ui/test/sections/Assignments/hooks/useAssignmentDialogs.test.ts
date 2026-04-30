@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { useAssignmentDialogs } from "../../../src/sections/Assignments/hooks/useAssignmentDialogs";
+import { useAssignmentDialogs } from "../../../../src/sections/Assignments/hooks/useAssignmentDialogs";
 
 describe("useAssignmentDialogs", () => {
   describe("initial state", () => {

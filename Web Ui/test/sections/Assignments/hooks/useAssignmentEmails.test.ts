@@ -1,10 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { useAssignmentEmails } from "../../../src/sections/Assignments/hooks/useAssignmentEmails";
-import UsersRepository from "../../../src/modules/Users/repository/UsersRepository";
-import type { SubmissionDataObject } from "../../../src/modules/Submissions/Domain/submissionInterfaces";
+import { useAssignmentEmails } from "../../../../src/sections/Assignments/hooks/useAssignmentEmails";
+import UsersRepository from "../../../../src/modules/Users/repository/UsersRepository";
+import type { SubmissionDataObject } from "../../../../src/modules/Submissions/Domain/submissionInterfaces";
 
-jest.mock("../../../src/modules/Users/repository/UsersRepository");
+jest.mock("../../../../src/modules/Users/repository/UsersRepository");
 
 const mockGetUserById = jest.fn();
 
