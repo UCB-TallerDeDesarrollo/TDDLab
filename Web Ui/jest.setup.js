@@ -1,7 +1,5 @@
 /* eslint-disable */
 
-require('@testing-library/jest-dom');
-
 require('dotenv').config();
 // Mock para evitar el error de Vite en los tests
 jest.mock('./config.ts', () => ({

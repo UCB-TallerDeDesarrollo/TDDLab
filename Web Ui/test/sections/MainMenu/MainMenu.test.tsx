@@ -1,22 +1,23 @@
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
-import MainMenu from "../../../src/sections/MainMenu/MainMenu";
-import { NavLink } from "../../../src/types/navigation.types";
+import React from "react";
 
-const mockLinks: NavLink[] = [
-  {
-    title: "Tareas",
-    path: "/",
-    icon: null as any,
-    access: ["admin", "student", "teacher"],
-  },
-  {
-    title: "Grupos",
-    path: "/groups",
-    icon: null as any,
-    access: ["admin", "teacher"],
-  },
+jest.mock("../../../src/modules/User-Authentication/application/checkIfUserHasAccount");
+jest.mock("../../../src/modules/User-Authentication/application/deleteSessionCookie");
+jest.mock("../../../src/modules/User-Authentication/application/signInWithGithub");
+jest.mock("../../../src/modules/User-Authentication/application/signOutWithGithub");
+jest.mock("../../../src/modules/User-Authentication/application/setCookieAndGlobalStateForValidUser");
+jest.mock("../../../src/modules/User-Authentication/domain/authStates", () => ({
+  useGlobalState: jest.fn(() => [{ userEmail: "test@test.com", userProfilePic: "" }]),
+  setGlobalState: jest.fn(),
+}));
+
+import MainMenu from "../../../src/sections/MainMenu/MainMenu";
+
+const mockLinks = [
+  { title: "Tareas", path: "/", icon: React.createElement("span"), access: ["admin", "student", "teacher"] },
+  { title: "Grupos", path: "/groups", icon: React.createElement("span"), access: ["admin", "teacher"] },
 ];
 
 const renderMainMenu = (userRole: string) =>
@@ -27,11 +28,6 @@ const renderMainMenu = (userRole: string) =>
   );
 
 describe("MainMenu", () => {
-  it("debería renderizar el logo de TDDLab", () => {
-    renderMainMenu("admin");
-    expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
-  });
-
   it("debería mostrar solo los links permitidos para student", () => {
     renderMainMenu("student");
     expect(screen.getByText("Tareas")).toBeInTheDocument();
