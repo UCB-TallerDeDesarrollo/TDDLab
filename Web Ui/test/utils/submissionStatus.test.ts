@@ -1,4 +1,4 @@
-import { getSubmissionStatusLabel } from "../../../src/utils/submissionStatus";
+import { getSubmissionStatusLabel } from "../../src/utils/submissionStatus";
 
 describe("submissionStatus", () => {
   describe("getSubmissionStatusLabel", () => {

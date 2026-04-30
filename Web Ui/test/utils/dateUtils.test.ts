@@ -1,4 +1,4 @@
-import { formatDate } from "../../../src/utils/dateUtils";
+import { formatDate } from "../../src/utils/dateUtils";
 
 describe("dateUtils", () => {
   describe("formatDate", () => {
