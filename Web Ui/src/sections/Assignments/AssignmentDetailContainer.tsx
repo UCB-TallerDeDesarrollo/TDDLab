@@ -19,14 +19,11 @@ import {
   handleRedirectAdmin,
   handleRedirectStudent,
 } from "../Shared/handlers.ts";
+import { isStudent } from "../../utils/roleGuards";
 
 export interface AssignmentDetailProps {
   role: string;
   userid: number;
-}
-
-function isStudent(role: string) {
-  return role === "student";
 }
 
 const AssignmentDetailContainer: React.FC<AssignmentDetailProps> = ({

@@ -16,6 +16,7 @@ import { CommentDataObject, CommentsCreationObject } from "../../modules/teacher
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { CommitCycle } from "../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { isStudent } from "../../utils/roleGuards";
 
 interface CycleReportViewProps {
   port: CommitHistoryRepository;
@@ -27,10 +28,6 @@ interface CycleReportViewProps {
 interface Submission {
   id: number;
   repository_link: string;
-}
-
-function isStudent(role: string) {
-  return role === "student";
 }
 
 function TDDChartPage({ port, role, teacher_id, graphs }: Readonly<CycleReportViewProps>) {
