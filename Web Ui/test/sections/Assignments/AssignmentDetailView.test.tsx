@@ -126,7 +126,7 @@ describe("AssignmentDetailView", () => {
     it("debería mostrar las instrucciones (description) solo para estudiantes", () => {
       renderView({ role: "student" });
 
-      expect(screen.getByText("Instrucciones: Descripción de la tarea")).toBeInTheDocument();
+      expect(screen.getByText("Descripción de la tarea")).toBeInTheDocument();
     });
 
     it("debería mostrar las fechas formateadas de inicio y finalización", () => {
@@ -139,13 +139,13 @@ describe("AssignmentDetailView", () => {
     it("debería mostrar el estado de la submission cuando existe studentSubmission", () => {
       renderView({ role: "student", studentSubmission: mockSubmission });
 
-      expect(screen.getByText("Estado: Status: in progress")).toBeInTheDocument();
+      expect(screen.getByText("Status: in progress")).toBeInTheDocument();
     });
 
     it("debería mostrar 'Pendiente' como estado cuando no hay studentSubmission", () => {
       renderView({ role: "student", studentSubmission: undefined });
 
-      expect(screen.getByText("Estado: Pendiente")).toBeInTheDocument();
+      expect(screen.getByText("Pendiente")).toBeInTheDocument();
     });
 
     it("debería mostrar el enlace del repositorio cuando existe studentSubmission", () => {
@@ -161,7 +161,7 @@ describe("AssignmentDetailView", () => {
     it("debería mostrar el comentario del profesor cuando existe en el assignment", () => {
       renderView({ role: "student" });
 
-      expect(screen.getByText("Comentario: Comentario del profesor")).toBeInTheDocument();
+      expect(screen.getByText("Comentario del profesor")).toBeInTheDocument();
     });
 
     it("NO debería mostrar la sección de Comentario cuando el assignment no tiene comment", () => {

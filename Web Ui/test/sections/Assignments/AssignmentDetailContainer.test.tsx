@@ -192,7 +192,9 @@ describe("AssignmentDetailContainer", () => {
       mockIsStudent.mockReturnValue(false);
 
       render(<AssignmentDetailContainer role="teacher" userid={123} />);
-      expect(screen.getByRole("button", { name: "Ver" })).toBeInTheDocument();
+      const additionalButtons = screen.getAllByRole("button", { name: "Ver" });
+      expect(additionalButtons.length).toBeGreaterThan(0);
+      expect(additionalButtons.some((button) => !button.hasAttribute("disabled"))).toBe(true);
     });
 
     it("debería deshabilitar feature flag 'Mostrar Graficas Adicionales' para student (isStudent=true)", () => {

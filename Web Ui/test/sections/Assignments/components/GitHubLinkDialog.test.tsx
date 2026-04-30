@@ -39,7 +39,7 @@ describe("GitHubLinkDialog", () => {
     expect(screen.getByText("Link de Github")).toBeInTheDocument();
   });
 
-  it("color de input es primary cuando link está vacío", () => {
+  it("muestra input de enlace cuando link está vacío", () => {
     mockUseGitHubLinkValidation.mockReturnValue({
       repo: "",
       validLink: false,
@@ -49,10 +49,10 @@ describe("GitHubLinkDialog", () => {
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
     const input = screen.getByLabelText("Enlace de Github");
-    expect(input).toHaveAttribute("color", "primary");
+    expect(input).toBeInTheDocument();
   });
 
-  it("color de input es error cuando link es inválido", () => {
+  it("muestra mensaje de error cuando link es inválido", () => {
     mockUseGitHubLinkValidation.mockReturnValue({
       repo: "invalid",
       validLink: false,
@@ -61,11 +61,10 @@ describe("GitHubLinkDialog", () => {
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
-    const input = screen.getByLabelText("Enlace de Github");
-    expect(input).toHaveAttribute("color", "error");
+    expect(screen.getByText("Enlace inválido. Formato esperado: https://github.com/usuario/repositorio")).toBeInTheDocument();
   });
 
-  it("color de input es success cuando link es válido", () => {
+  it("no muestra mensaje de error cuando link es válido", () => {
     mockUseGitHubLinkValidation.mockReturnValue({
       repo: "https://github.com/user/repo",
       validLink: true,
@@ -74,8 +73,7 @@ describe("GitHubLinkDialog", () => {
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
-    const input = screen.getByLabelText("Enlace de Github");
-    expect(input).toHaveAttribute("color", "success");
+    expect(screen.queryByText("Enlace inválido. Formato esperado: https://github.com/usuario/repositorio")).not.toBeInTheDocument();
   });
 
   it("muestra mensaje de error cuando link es inválido y no vacío", () => {

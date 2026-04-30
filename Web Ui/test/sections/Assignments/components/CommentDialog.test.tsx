@@ -5,6 +5,14 @@ import { useGitHubLinkValidation } from "../../../../src/sections/Assignments/co
 
 jest.mock("../../../../src/sections/Assignments/components/GitValidationHook");
 
+const defaultGitHubValidation = {
+  repo: "",
+  validLink: false,
+  errorMessage: "",
+  handleLinkChange: jest.fn(),
+  isLoading: false,
+};
+
 describe("CommentDialog", () => {
   const defaultProps = {
     open: true,
@@ -21,11 +29,7 @@ describe("CommentDialog", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(useGitHubLinkValidation).mockReturnValue({
-      repo: "",
-      validLink: false,
-      errorMessage: "",
-      handleLinkChange: jest.fn(),
-      isLoading: false,
+      ...defaultGitHubValidation,
     });
   });
 
@@ -44,10 +48,7 @@ describe("CommentDialog", () => {
   describe("loading state (branch: isLoading)", () => {
     it("debería mostrar 'Cargando...' cuando isLoading es true", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
-        repo: "",
-        validLink: false,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
+        ...defaultGitHubValidation,
         isLoading: true,
       });
       renderDialog();
@@ -56,11 +57,9 @@ describe("CommentDialog", () => {
 
     it("NO debería mostrar 'Cargando...' cuando isLoading es false", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "https://github.com/user/repo",
         validLink: true,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
       });
       renderDialog();
       expect(screen.queryByText("Cargando...")).not.toBeInTheDocument();
@@ -72,11 +71,10 @@ describe("CommentDialog", () => {
     it("debería inicializar con link definido (branch: link truthy)", () => {
       const handleLinkChange = jest.fn();
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "https://github.com/user/repo",
         validLink: true,
-        errorMessage: "",
         handleLinkChange,
-        isLoading: false,
       });
       renderDialog({ link: "https://github.com/user/repo" });
       expect(screen.getByLabelText("Enlace del Repositorio")).toHaveValue("https://github.com/user/repo");
@@ -84,10 +82,7 @@ describe("CommentDialog", () => {
 
     it("debería manejar link undefined (branch: link falsy)", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
-        repo: "",
-        validLink: false,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
+        ...defaultGitHubValidation,
         isLoading: true,
       });
       renderDialog({ link: undefined });
@@ -123,11 +118,9 @@ describe("CommentDialog", () => {
 
     it("NO debería mostrar advertencia cuando validLink es true (branch: validLink)", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "https://github.com/user/repo",
         validLink: true,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
       });
       renderDialog({ link: "https://github.com/user/repo" });
       expect(screen.queryByText("Advertencia: Link inválido")).not.toBeInTheDocument();
@@ -149,11 +142,9 @@ describe("CommentDialog", () => {
   describe("edit mode (branch: edit true/false)", () => {
     it("debería mostrar input deshabilitado cuando edit es false", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "https://github.com/user/repo",
         validLink: true,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
       });
       renderDialog({ link: "https://github.com/user/repo" });
       const textField = screen.getByLabelText("Enlace del Repositorio");
@@ -258,11 +249,10 @@ describe("CommentDialog", () => {
     it("NO debería llamar a onSend cuando validLink es false (branch: !validLink)", () => {
       const onSend = jest.fn();
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "invalid-link",
         validLink: false,
         errorMessage: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
       });
       renderDialog({ link: "invalid-link", onSend });
       fireEvent.click(screen.getByText("Enviar"));
@@ -272,11 +262,7 @@ describe("CommentDialog", () => {
     it("NO debería llamar a onSend cuando repo está vacío (branch: repo === '')", () => {
       const onSend = jest.fn();
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
-        repo: "",
-        validLink: false,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
+        ...defaultGitHubValidation,
       });
       renderDialog({ link: undefined, onSend });
       fireEvent.click(screen.getByText("Enviar"));
@@ -286,11 +272,9 @@ describe("CommentDialog", () => {
     it("debería enviar comentario vacío cuando validLink es true", () => {
       const onSend = jest.fn();
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "https://github.com/user/repo",
         validLink: true,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
       });
       renderDialog({ link: "https://github.com/user/repo", onSend });
       fireEvent.click(screen.getByText("Enviar"));
@@ -323,11 +307,9 @@ describe("CommentDialog", () => {
 
     it("debería habilitar Enviar cuando validLink es true y repo no está vacío", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "https://github.com/user/repo",
         validLink: true,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
       });
       renderDialog({ link: "https://github.com/user/repo" });
       expect(screen.getByText("Enviar")).not.toBeDisabled();
@@ -337,11 +319,9 @@ describe("CommentDialog", () => {
   describe("comment field", () => {
     it("debería actualizar el comentario al escribir", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
+        ...defaultGitHubValidation,
         repo: "https://github.com/user/repo",
         validLink: true,
-        errorMessage: "",
-        handleLinkChange: jest.fn(),
-        isLoading: false,
       });
       renderDialog({ link: "https://github.com/user/repo" });
       const commentField = screen.getByLabelText("Comentario");
