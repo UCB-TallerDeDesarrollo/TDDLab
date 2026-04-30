@@ -251,6 +251,72 @@ const Login = () => {
             </article>
           </div>
         </section>
+
+        <section className="ideal-section">
+          <div className="ideal-intro">
+            <div className="ideal-logo">
+              <TDDLabLogoDark />
+            </div>
+            <h2>Ideal para...</h2>
+            <p>
+              Ideal para quienes quieren aprender desarrollo de forma estructurada, práctica y alineada con la industria, construyendo habilidades reales desde etapas tempranas de formación.
+            </p>
+          </div>
+
+          <div className="ideal-grid">
+            <article className="ideal-card">
+              <div className="ideal-card-image image-1" />
+              <div className="ideal-card-content">
+                <h3>Desarrolladores en formación</h3>
+                <p>Perfecto para estudiantes que buscan aprender programación con bases sólidas, desarrollar lógica, disciplina y buenas prácticas desde el inicio.</p>
+                <span className="ideal-bullet bullet-pink" />
+              </div>
+            </article>
+            <article className="ideal-card">
+              <div className="ideal-card-image image-2" />
+              <div className="ideal-card-content">
+                <h3>Programadores profesionales</h3>
+                <p>Útil para profesionales que desean mejorar la calidad de su código, optimizar procesos y adoptar metodologías modernas en su flujo de trabajo.</p>
+                <span className="ideal-bullet bullet-blue" />
+              </div>
+            </article>
+            <article className="ideal-card">
+              <div className="ideal-card-image image-3" />
+              <div className="ideal-card-content">
+                <h3>Mentores o formadores</h3>
+                <p>Herramienta ideal para enseñar programación de forma estructurada, guiando procesos reales y facilitando el seguimiento del progreso de los estudiantes.</p>
+                <span className="ideal-bullet bullet-green" />
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="faq-section">
+          <div className="section-header">
+            <span className="section-line" />
+            <h2>Preguntas Frecuentes <span className="faq-label">(FAQ)</span></h2>
+            <span className="section-line" />
+          </div>
+
+          <div className="faq-list">
+            <article className="faq-item">
+              <span className="faq-dot" />
+              <p>¿Necesito experiencia previa en programación para usar TDDLab?</p>
+            </article>
+            <article className="faq-item">
+              <span className="faq-dot" />
+              <p>¿Necesito experiencia previa en programación para usar TDDLab?</p>
+            </article>
+            <article className="faq-item">
+              <span className="faq-dot" />
+              <p>¿TDDLab es solo teórico o incluye práctica real?</p>
+            </article>
+            <article className="faq-item">
+              <span className="faq-dot" />
+              <p>¿Puedo usar TDDLab con mis herramientas de desarrollo habituales?</p>
+            </article>
+          </div>
+        </section>
       </div>
     </>
   );
