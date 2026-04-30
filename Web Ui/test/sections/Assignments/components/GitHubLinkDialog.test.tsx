@@ -1,13 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { GitLinkDialog } from "../../../src/sections/Assignments/components/GitHubLinkDialog";
+import { GitLinkDialog } from "../../../../src/sections/Assignments/components/GitHubLinkDialog";
+import { useGitHubLinkValidation } from "../../../../src/sections/Assignments/components/GitValidationHook";
 
-jest.mock("../../../src/sections/Assignments/components/GitValidationHook", () => ({
-  useGitHubLinkValidation: jest.fn(),
-}));
+jest.mock("../../../../src/sections/Assignments/components/GitValidationHook");
 
-const mockUseGitHubLinkValidation = require("../../../src/sections/Assignments/components/GitValidationHook")
-  .useGitHubLinkValidation;
+const mockUseGitHubLinkValidation = useGitHubLinkValidation as jest.MockedFunction<typeof useGitHubLinkValidation>;
 
 describe("GitHubLinkDialog", () => {
   const onClose = jest.fn();
@@ -22,6 +20,7 @@ describe("GitHubLinkDialog", () => {
       repo: "",
       validLink: false,
       errorMessage: "",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={false} onClose={onClose} onSend={onSend} />);
@@ -33,6 +32,7 @@ describe("GitHubLinkDialog", () => {
       repo: "",
       validLink: false,
       errorMessage: "",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
@@ -44,6 +44,7 @@ describe("GitHubLinkDialog", () => {
       repo: "",
       validLink: false,
       errorMessage: "",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
@@ -56,6 +57,7 @@ describe("GitHubLinkDialog", () => {
       repo: "invalid",
       validLink: false,
       errorMessage: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
@@ -68,6 +70,7 @@ describe("GitHubLinkDialog", () => {
       repo: "https://github.com/user/repo",
       validLink: true,
       errorMessage: "",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
@@ -80,6 +83,7 @@ describe("GitHubLinkDialog", () => {
       repo: "invalid",
       validLink: false,
       errorMessage: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
@@ -91,6 +95,7 @@ describe("GitHubLinkDialog", () => {
       repo: "invalid",
       validLink: false,
       errorMessage: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
@@ -104,6 +109,7 @@ describe("GitHubLinkDialog", () => {
       repo: "https://github.com/user/repo",
       validLink: true,
       errorMessage: "",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSendMock} />);
@@ -116,6 +122,7 @@ describe("GitHubLinkDialog", () => {
       repo: "",
       validLink: false,
       errorMessage: "",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSend} />);
@@ -131,6 +138,7 @@ describe("GitHubLinkDialog", () => {
       repo: "https://github.com/user/repo",
       validLink: true,
       errorMessage: "",
+      isLoading: false,
       handleLinkChange: jest.fn(),
     });
     render(<GitLinkDialog open={true} onClose={onClose} onSend={onSendMock} />);

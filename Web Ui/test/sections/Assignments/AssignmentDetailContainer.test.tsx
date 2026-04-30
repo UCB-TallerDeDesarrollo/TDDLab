@@ -2,6 +2,20 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import AssignmentDetailContainer from "../../../src/sections/Assignments/AssignmentDetailContainer";
 import type { SubmissionDataObject } from "../../../src/modules/Submissions/Domain/submissionInterfaces";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  useAssignmentDetail,
+  useGroupDetail,
+  useAssignmentSubmissions,
+  useStudentSubmission,
+  useSubmissionByUserAndAssignment,
+  useFeatureFlagEnabled,
+} from "../../../src/sections/Assignments/hooks/useAssignmentDetailData";
+import { useAssignmentSubmissionActions } from "../../../src/sections/Assignments/hooks/useAssignmentSubmissionActions";
+import { useAssignmentEmails } from "../../../src/sections/Assignments/hooks/useAssignmentEmails";
+import { useAssignmentDialogs } from "../../../src/sections/Assignments/hooks/useAssignmentDialogs";
+import { handleRedirectAdmin, handleRedirectStudent } from "../../../src/sections/Shared/handlers";
+import { isStudent } from "../../../src/utils/roleGuards";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -9,47 +23,12 @@ jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
 }));
 
-jest.mock(
-  "../../../src/sections/Assignments/hooks/useAssignmentDetailData",
-  () => ({
-    useAssignmentDetail: jest.fn(),
-    useGroupDetail: jest.fn(),
-    useAssignmentSubmissions: jest.fn(),
-    useStudentSubmission: jest.fn(),
-    useSubmissionByUserAndAssignment: jest.fn(),
-    useFeatureFlagEnabled: jest.fn(),
-  })
-);
-
-jest.mock(
-  "../../../src/sections/Assignments/hooks/useAssignmentSubmissionActions",
-  () => ({
-    useAssignmentSubmissionActions: jest.fn(),
-  })
-);
-
-jest.mock(
-  "../../../src/sections/Assignments/hooks/useAssignmentEmails",
-  () => ({
-    useAssignmentEmails: jest.fn(),
-  })
-);
-
-jest.mock(
-  "../../../src/sections/Assignments/hooks/useAssignmentDialogs",
-  () => ({
-    useAssignmentDialogs: jest.fn(),
-  })
-);
-
-jest.mock("../../../src/sections/Shared/handlers.ts", () => ({
-  handleRedirectAdmin: jest.fn(),
-  handleRedirectStudent: jest.fn(),
-}));
-
-jest.mock("../../../src/utils/roleGuards", () => ({
-  isStudent: jest.fn(),
-}));
+jest.mock("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
+jest.mock("../../../src/sections/Assignments/hooks/useAssignmentSubmissionActions");
+jest.mock("../../../src/sections/Assignments/hooks/useAssignmentEmails");
+jest.mock("../../../src/sections/Assignments/hooks/useAssignmentDialogs");
+jest.mock("../../../src/sections/Shared/handlers");
+jest.mock("../../../src/utils/roleGuards");
 
 const mockNavigate = jest.fn();
 const mockHandleRedirectAdmin = jest.fn();
@@ -63,8 +42,8 @@ const mockSubmission: SubmissionDataObject = {
   status: "in progress",
   repository_link: "https://github.com/student/repo",
   start_date: new Date("2024-01-02"),
-  end_date: null,
-  comment: null,
+  end_date: new Date("2024-01-02"),
+  comment: "",
 };
 
 const mockSubmission2: SubmissionDataObject = {
@@ -93,7 +72,7 @@ const defaultHookReturns = {
     groupid: 1,
   },
   useGroupDetail: { id: 1, groupName: "Grupo Test", groupDetail: "", creationDate: new Date() },
-  useAssignmentSubmissions: { submissions: [mockSubmission, mockSubmission2], loading: false, refresh: jest.fn() },
+  useAssignmentSubmissions: { submissions: [mockSubmission, mockSubmission2], loading: false, error: null, refresh: jest.fn() },
   useStudentSubmission: { studentSubmission: mockSubmission, error: null, refresh: jest.fn() },
   useSubmissionByUserAndAssignment: { submission: mockSubmission, refresh: jest.fn() },
   useFeatureFlagEnabled: false,
@@ -115,49 +94,28 @@ const defaultHookReturns = {
 beforeEach(() => {
   jest.clearAllMocks();
 
-  const {
-    useParams,
-    useNavigate,
-    useAssignmentDetail,
-    useGroupDetail,
-    useAssignmentSubmissions,
-    useStudentSubmission,
-    useSubmissionByUserAndAssignment,
-    useFeatureFlagEnabled,
-    useAssignmentEmails,
-    useAssignmentDialogs,
-    useAssignmentSubmissionActions,
-  } = defaultHookReturns;
-
-  require("react-router-dom").useParams.mockReturnValue(useParams);
-  require("react-router-dom").useNavigate.mockReturnValue(useNavigate);
-  const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-  hooksData.useAssignmentDetail.mockReturnValue(useAssignmentDetail);
-  hooksData.useGroupDetail.mockReturnValue(useGroupDetail);
-  hooksData.useAssignmentSubmissions.mockReturnValue(useAssignmentSubmissions);
-  hooksData.useStudentSubmission.mockReturnValue(useStudentSubmission);
-  hooksData.useSubmissionByUserAndAssignment.mockReturnValue(useSubmissionByUserAndAssignment);
-  hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string, options?: { enabled?: boolean }) => {
+  (useParams as jest.Mock).mockReturnValue(defaultHookReturns.useParams);
+  (useNavigate as jest.Mock).mockReturnValue(defaultHookReturns.useNavigate);
+  (useAssignmentDetail as jest.Mock).mockReturnValue(defaultHookReturns.useAssignmentDetail);
+  (useGroupDetail as jest.Mock).mockReturnValue(defaultHookReturns.useGroupDetail);
+  (useAssignmentSubmissions as jest.Mock).mockReturnValue(defaultHookReturns.useAssignmentSubmissions);
+  (useStudentSubmission as jest.Mock).mockReturnValue(defaultHookReturns.useStudentSubmission);
+  (useSubmissionByUserAndAssignment as jest.Mock).mockReturnValue(defaultHookReturns.useSubmissionByUserAndAssignment);
+  (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
     if (flagName === "Mostrar Graficas Adicionales") return false;
     if (flagName === "Boton Asistente IA") return false;
     return false;
   });
 
-  const hooksActions = require("../../../src/sections/Assignments/hooks/useAssignmentSubmissionActions");
-  hooksActions.useAssignmentSubmissionActions.mockReturnValue(useAssignmentSubmissionActions);
+  (useAssignmentSubmissionActions as jest.Mock).mockReturnValue(defaultHookReturns.useAssignmentSubmissionActions);
+  (useAssignmentEmails as jest.Mock).mockReturnValue(defaultHookReturns.useAssignmentEmails);
+  (useAssignmentDialogs as jest.Mock).mockReturnValue(defaultHookReturns.useAssignmentDialogs);
 
-  const hooksEmails = require("../../../src/sections/Assignments/hooks/useAssignmentEmails");
-  hooksEmails.useAssignmentEmails.mockReturnValue(useAssignmentEmails);
-
-  const hooksDialogs = require("../../../src/sections/Assignments/hooks/useAssignmentDialogs");
-  hooksDialogs.useAssignmentDialogs.mockReturnValue(useAssignmentDialogs);
-
-  const handlers = require("../../../src/sections/Shared/handlers.ts");
-  handlers.handleRedirectAdmin.mockImplementation(mockHandleRedirectAdmin);
-  handlers.handleRedirectStudent.mockImplementation(mockHandleRedirectStudent);
+  (handleRedirectAdmin as jest.Mock).mockImplementation(mockHandleRedirectAdmin);
+  (handleRedirectStudent as jest.Mock).mockImplementation(mockHandleRedirectStudent);
 
   mockIsStudent.mockImplementation((role: string) => role === "student");
-  require("../../../src/utils/roleGuards").isStudent.mockImplementation(mockIsStudent);
+  (isStudent as jest.Mock).mockImplementation(mockIsStudent);
 });
 
 describe("AssignmentDetailContainer", () => {
@@ -176,10 +134,10 @@ describe("AssignmentDetailContainer", () => {
 
   describe("branches: isStudent en hooks", () => {
     it("debería habilitar submissions para teacher (isStudent=false)", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useAssignmentSubmissions.mockReturnValue({
+      (useAssignmentSubmissions as jest.Mock).mockReturnValue({
         submissions: [mockSubmission],
         loading: false,
+        error: null,
         refresh: jest.fn(),
       });
       mockIsStudent.mockReturnValue(false);
@@ -189,10 +147,10 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería deshabilitar submissions para student (isStudent=true)", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useAssignmentSubmissions.mockReturnValue({
+      (useAssignmentSubmissions as jest.Mock).mockReturnValue({
         submissions: [],
         loading: false,
+        error: null,
         refresh: jest.fn(),
       });
       mockIsStudent.mockReturnValue(true);
@@ -203,8 +161,7 @@ describe("AssignmentDetailContainer", () => {
 
     it("debería habilitar useStudentSubmission cuando isStudent=true", () => {
       const studentSub = { ...mockSubmission, userid: 123 };
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: studentSub,
         error: null,
         refresh: jest.fn(),
@@ -216,8 +173,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería deshabilitar useStudentSubmission cuando isStudent=false", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: undefined,
         error: null,
         refresh: jest.fn(),
@@ -229,8 +185,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería habilitar feature flag 'Mostrar Graficas Adicionales' para teacher (isStudent=false)", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Mostrar Graficas Adicionales") return true;
         return false;
       });
@@ -241,8 +196,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería deshabilitar feature flag 'Mostrar Graficas Adicionales' para student (isStudent=true)", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Mostrar Graficas Adicionales") return false;
         return false;
       });
@@ -253,8 +207,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería habilitar feature flag 'Boton Asistente IA' para student (isStudent=true)", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Boton Asistente IA") return true;
         return false;
       });
@@ -265,8 +218,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería usar fallbackValue=true para 'Boton Asistente IA' cuando isStudent=true y flag no existe", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string, options?: { enabled?: boolean; defaultValue?: boolean; fallbackValue?: boolean }) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string, options?: { enabled?: boolean; defaultValue?: boolean; fallbackValue?: boolean }) => {
         if (flagName === "Boton Asistente IA" && options?.enabled) return options.fallbackValue ?? false;
         return false;
       });
@@ -279,8 +231,7 @@ describe("AssignmentDetailContainer", () => {
 
   describe("branch: isTaskInProgress", () => {
     it("debería deshabilitar 'Finalizar tarea' cuando isTaskInProgress es true (status !== 'in progress')", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useSubmissionByUserAndAssignment.mockReturnValue({
+      (useSubmissionByUserAndAssignment as jest.Mock).mockReturnValue({
         submission: { ...mockSubmission, status: "delivered" },
         refresh: jest.fn(),
       });
@@ -291,8 +242,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería habilitar 'Finalizar tarea' cuando isTaskInProgress es false (status === 'in progress')", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useSubmissionByUserAndAssignment.mockReturnValue({
+      (useSubmissionByUserAndAssignment as jest.Mock).mockReturnValue({
         submission: { ...mockSubmission, status: "in progress" },
         refresh: jest.fn(),
       });
@@ -303,8 +253,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería deshabilitar 'Finalizar tarea' cuando submission es null", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useSubmissionByUserAndAssignment.mockReturnValue({
+      (useSubmissionByUserAndAssignment as jest.Mock).mockReturnValue({
         submission: null,
         refresh: jest.fn(),
       });
@@ -317,8 +266,7 @@ describe("AssignmentDetailContainer", () => {
 
   describe("branch: disableAdditionalGraphs", () => {
     it("debería ocultar botón 'Ver grafica adicional' cuando disableAdditionalGraphs es true", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Mostrar Graficas Adicionales") return false;
         return false;
       });
@@ -329,8 +277,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería mostrar botón 'Ver grafica adicional' cuando disableAdditionalGraphs es false", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Mostrar Graficas Adicionales") return true;
         return false;
       });
@@ -343,10 +290,10 @@ describe("AssignmentDetailContainer", () => {
 
   describe("callback: handleViewGraph", () => {
     it("debería llamar a handleRedirectAdmin con parámetros correctos al hacer clic en 'Ver grafica' (teacher)", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useAssignmentSubmissions.mockReturnValue({
+      (useAssignmentSubmissions as jest.Mock).mockReturnValue({
         submissions: [mockSubmission],
         loading: false,
+        error: null,
         refresh: jest.fn(),
       });
       mockIsStudent.mockReturnValue(false);
@@ -368,13 +315,13 @@ describe("AssignmentDetailContainer", () => {
 
   describe("callback: handleOpenAssistant", () => {
     it("debería navegar a /asistente-ia con repository_link al hacer clic en 'Asistente' (teacher)", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useAssignmentSubmissions.mockReturnValue({
+      (useAssignmentSubmissions as jest.Mock).mockReturnValue({
         submissions: [mockSubmission],
         loading: false,
+        error: null,
         refresh: jest.fn(),
       });
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Boton Asistente IA") return true;
         return false;
       });
@@ -392,14 +339,14 @@ describe("AssignmentDetailContainer", () => {
 
   describe("callback: handleViewAdditionalGraph", () => {
     it("debería llamar a handleRedirectAdmin con /aditionalgraph al hacer clic en 'Ver grafica adicional'", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Mostrar Graficas Adicionales") return true;
         return false;
       });
-      hooksData.useAssignmentSubmissions.mockReturnValue({
+      (useAssignmentSubmissions as jest.Mock).mockReturnValue({
         submissions: [mockSubmission],
         loading: false,
+        error: null,
         refresh: jest.fn(),
       });
       mockIsStudent.mockReturnValue(false);
@@ -421,8 +368,7 @@ describe("AssignmentDetailContainer", () => {
 
   describe("callback: handleViewStudentGraph", () => {
     it("debería llamar a handleRedirectStudent cuando studentSubmission tiene repository_link", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: mockSubmission,
         error: null,
         refresh: jest.fn(),
@@ -442,8 +388,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("NO debería llamar a handleRedirectStudent cuando studentSubmission es undefined", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: undefined,
         error: null,
         refresh: jest.fn(),
@@ -456,8 +401,7 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("NO debería llamar a handleRedirectStudent cuando studentSubmission.repository_link es vacío", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: { ...mockSubmission, repository_link: "" },
         error: null,
         refresh: jest.fn(),
@@ -472,13 +416,12 @@ describe("AssignmentDetailContainer", () => {
 
   describe("callback: handleOpenStudentAssistant", () => {
     it("debería navegar a /asistente-ia con repository_link de studentSubmission", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: mockSubmission,
         error: null,
         refresh: jest.fn(),
       });
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Boton Asistente IA") return true;
         return false;
       });
@@ -495,13 +438,12 @@ describe("AssignmentDetailContainer", () => {
     });
 
     it("debería navegar a /asistente-ia con repository_link undefined cuando studentSubmission es null", () => {
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: undefined,
         error: null,
         refresh: jest.fn(),
       });
-      hooksData.useFeatureFlagEnabled.mockImplementation((flagName: string) => {
+      (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Boton Asistente IA") return true;
         return false;
       });
@@ -515,8 +457,7 @@ describe("AssignmentDetailContainer", () => {
 
   describe("useParams: assignmentid", () => {
     it("debería usar el id de useParams correctamente", () => {
-      const { useParams } = require("react-router-dom");
-      useParams.mockReturnValue({ id: "42" });
+      (useParams as jest.Mock).mockReturnValue({ id: "42" });
 
       render(<AssignmentDetailContainer role="student" userid={123} />);
       expect(screen.getByText("Tarea de prueba")).toBeInTheDocument();
@@ -529,18 +470,18 @@ describe("AssignmentDetailContainer", () => {
       const refreshStudentSubmission = jest.fn();
       const refreshSubmission = jest.fn();
 
-      const hooksData = require("../../../src/sections/Assignments/hooks/useAssignmentDetailData");
-      hooksData.useAssignmentSubmissions.mockReturnValue({
+      (useAssignmentSubmissions as jest.Mock).mockReturnValue({
         submissions: [],
         loading: false,
+        error: null,
         refresh: refreshSubmissions,
       });
-      hooksData.useStudentSubmission.mockReturnValue({
+      (useStudentSubmission as jest.Mock).mockReturnValue({
         studentSubmission: undefined,
         error: null,
         refresh: refreshStudentSubmission,
       });
-      hooksData.useSubmissionByUserAndAssignment.mockReturnValue({
+      (useSubmissionByUserAndAssignment as jest.Mock).mockReturnValue({
         submission: null,
         refresh: refreshSubmission,
       });

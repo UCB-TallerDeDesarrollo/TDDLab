@@ -1,12 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { CommentDialog } from "../../../../src/sections/Assignments/components/CommentDialog";
+import { useGitHubLinkValidation } from "../../../../src/sections/Assignments/components/GitValidationHook";
 
-jest.mock("../../../../src/sections/Assignments/components/GitValidationHook", () => ({
-  useGitHubLinkValidation: jest.fn(),
-}));
-
-const mockUseGitHubLinkValidation = require("../../../../src/sections/Assignments/components/GitValidationHook").useGitHubLinkValidation;
+jest.mock("../../../../src/sections/Assignments/components/GitValidationHook");
 
 describe("CommentDialog", () => {
   const defaultProps = {
@@ -23,9 +20,10 @@ describe("CommentDialog", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseGitHubLinkValidation.mockReturnValue({
+    jest.mocked(useGitHubLinkValidation).mockReturnValue({
       repo: "",
       validLink: false,
+      errorMessage: "",
       handleLinkChange: jest.fn(),
       isLoading: false,
     });
@@ -45,9 +43,10 @@ describe("CommentDialog", () => {
 
   describe("loading state (branch: isLoading)", () => {
     it("debería mostrar 'Cargando...' cuando isLoading es true", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: true,
       });
@@ -56,9 +55,10 @@ describe("CommentDialog", () => {
     });
 
     it("NO debería mostrar 'Cargando...' cuando isLoading es false", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -71,9 +71,10 @@ describe("CommentDialog", () => {
   describe("useEffect con link (branches: link truthy/falsy)", () => {
     it("debería inicializar con link definido (branch: link truthy)", () => {
       const handleLinkChange = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange,
         isLoading: false,
       });
@@ -82,9 +83,10 @@ describe("CommentDialog", () => {
     });
 
     it("debería manejar link undefined (branch: link falsy)", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: true,
       });
@@ -95,9 +97,10 @@ describe("CommentDialog", () => {
 
   describe("getInputColor (branches: repo empty / invalid / valid)", () => {
     it("debería tener color primary cuando repo está vacío", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -107,9 +110,10 @@ describe("CommentDialog", () => {
     });
 
     it("debería mostrar advertencia cuando validLink es false y hay input (branch: !validLink)", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "invalid-link",
         validLink: false,
+        errorMessage: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -118,9 +122,10 @@ describe("CommentDialog", () => {
     });
 
     it("NO debería mostrar advertencia cuando validLink es true (branch: validLink)", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -129,9 +134,10 @@ describe("CommentDialog", () => {
     });
 
     it("NO debería mostrar advertencia cuando inputLink está vacío", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -142,9 +148,10 @@ describe("CommentDialog", () => {
 
   describe("edit mode (branch: edit true/false)", () => {
     it("debería mostrar input deshabilitado cuando edit es false", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -154,9 +161,10 @@ describe("CommentDialog", () => {
     });
 
     it("debería habilitar input al hacer clic en editar (branch: edit true)", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -168,9 +176,10 @@ describe("CommentDialog", () => {
     });
 
     it("debería salir de edit mode al hacer clic en cancelar edición", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -186,7 +195,7 @@ describe("CommentDialog", () => {
   describe("handleCancel (branches: originalLink truthy/falsy)", () => {
     it("debería llamar a onClose al cancelar", () => {
       const onClose = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
         handleLinkChange: jest.fn(),
@@ -199,7 +208,7 @@ describe("CommentDialog", () => {
 
     it("debería resetear al link original al cancelar con originalLink (branch: originalLink truthy)", () => {
       const handleLinkChange = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
         handleLinkChange,
@@ -216,7 +225,7 @@ describe("CommentDialog", () => {
 
     it("debería manejar cancelar sin originalLink (branch: originalLink falsy)", () => {
       const onClose = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
         handleLinkChange: jest.fn(),
@@ -232,7 +241,7 @@ describe("CommentDialog", () => {
     it("debería llamar a onSend cuando validLink es true y repo no está vacío (branch: success)", () => {
       const onSend = jest.fn();
       const onClose = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
         handleLinkChange: jest.fn(),
@@ -248,9 +257,10 @@ describe("CommentDialog", () => {
 
     it("NO debería llamar a onSend cuando validLink es false (branch: !validLink)", () => {
       const onSend = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "invalid-link",
         validLink: false,
+        errorMessage: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -261,9 +271,10 @@ describe("CommentDialog", () => {
 
     it("NO debería llamar a onSend cuando repo está vacío (branch: repo === '')", () => {
       const onSend = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -274,9 +285,10 @@ describe("CommentDialog", () => {
 
     it("debería enviar comentario vacío cuando validLink es true", () => {
       const onSend = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -288,7 +300,7 @@ describe("CommentDialog", () => {
 
   describe("botón Enviar disabled state (branch: !validLink || repo === '')", () => {
     it("debería deshabilitar Enviar cuando validLink es false", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "invalid-link",
         validLink: false,
         handleLinkChange: jest.fn(),
@@ -299,7 +311,7 @@ describe("CommentDialog", () => {
     });
 
     it("debería deshabilitar Enviar cuando repo está vacío", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
         validLink: false,
         handleLinkChange: jest.fn(),
@@ -310,9 +322,10 @@ describe("CommentDialog", () => {
     });
 
     it("debería habilitar Enviar cuando validLink es true y repo no está vacío", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -323,9 +336,10 @@ describe("CommentDialog", () => {
 
   describe("comment field", () => {
     it("debería actualizar el comentario al escribir", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
+        errorMessage: "",
         handleLinkChange: jest.fn(),
         isLoading: false,
       });
@@ -338,7 +352,7 @@ describe("CommentDialog", () => {
 
   describe("input value en edit/no-edit (branch: edit ? inputLink : repo)", () => {
     it("debería mostrar repo cuando edit es false", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
         handleLinkChange: jest.fn(),
@@ -349,7 +363,7 @@ describe("CommentDialog", () => {
     });
 
     it("debería mostrar inputLink cuando edit es true", () => {
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
         handleLinkChange: jest.fn(),
@@ -367,7 +381,7 @@ describe("CommentDialog", () => {
   describe("onClose por clic fuera del diálogo", () => {
     it("debería llamar a onClose cuando se cierra el diálogo", () => {
       const onClose = jest.fn();
-      mockUseGitHubLinkValidation.mockReturnValue({
+      jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "https://github.com/user/repo",
         validLink: true,
         handleLinkChange: jest.fn(),
