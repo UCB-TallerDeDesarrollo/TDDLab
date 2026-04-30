@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   SubmissionDataObject,
 } from "../../modules/Submissions/Domain/submissionInterfaces";
-import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { AssignmentDetailView } from "./AssignmentDetailView";
 import {
   useAssignmentDetail,
@@ -14,6 +13,8 @@ import {
   useSubmissionByUserAndAssignment,
 } from "./hooks/useAssignmentDetailData";
 import { useAssignmentSubmissionActions } from "./hooks/useAssignmentSubmissionActions";
+import { useAssignmentEmails } from "./hooks/useAssignmentEmails";
+import { useAssignmentDialogs } from "./hooks/useAssignmentDialogs";
 
 import {
   handleRedirectAdmin,
@@ -30,12 +31,9 @@ const AssignmentDetailContainer: React.FC<AssignmentDetailProps> = ({
   role,
   userid,
 }) => {
-  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
   const assignmentid = Number(id);
-  const [studentEmails, setStudentEmails] = useState<Record<number, string>>({});
   const navigate = useNavigate();
-  const usersRepository = useMemo(() => new UsersRepository(), []);
   const assignment = useAssignmentDetail(assignmentid);
   const groupDetails = useGroupDetail(assignment?.groupid);
   const {
@@ -58,41 +56,15 @@ const AssignmentDetailContainer: React.FC<AssignmentDetailProps> = ({
   });
   const disableAdditionalGraphs = !additionalGraphsEnabled;
   const isTaskInProgress = submission?.status !== "in progress";
-  const missingUserIds = useMemo(() => {
-    const uniqueIds = new Set(submissions.map((item) => item.userid));
-    return Array.from(uniqueIds).filter(
-      (studentId) => studentEmails[studentId] === undefined
-    );
-  }, [studentEmails, submissions]);
-
-  useEffect(() => {
-    const loadStudentEmails = async () => {
-      if (missingUserIds.length === 0) {
-        return;
-      }
-
-      try {
-        const entries = await Promise.all(
-          missingUserIds.map(async (studentId) => {
-            const student = await usersRepository.getUserById(studentId);
-            return [studentId, student.email] as const;
-          })
-        );
-
-        setStudentEmails((prev) => {
-          const next = { ...prev };
-          entries.forEach(([studentId, email]) => {
-            next[studentId] = email;
-          });
-          return next;
-        });
-      } catch (error) {
-        console.error("Error fetching student emails:", error);
-      }
-    };
-
-    loadStudentEmails();
-  }, [missingUserIds, usersRepository]);
+  const { studentEmails } = useAssignmentEmails(submissions);
+  const {
+    linkDialogOpen,
+    isCommentDialogOpen,
+    handleOpenLinkDialog,
+    handleCloseLinkDialog,
+    handleOpenCommentDialog,
+    handleCloseCommentDialog,
+  } = useAssignmentDialogs();
 
   const refreshSubmissionData = useCallback(async () => {
     await Promise.all([
@@ -101,24 +73,6 @@ const AssignmentDetailContainer: React.FC<AssignmentDetailProps> = ({
       refreshSubmission(),
     ]);
   }, [refreshSubmissions, refreshStudentSubmission, refreshSubmission]);
-
-  const handleOpenLinkDialog = () => {
-    setLinkDialogOpen(true);
-  };
-
-  const handleCloseLinkDialog = () => {
-    setLinkDialogOpen(false);
-  };
-
-  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-
-  const handleOpenCommentDialog = () => {
-    setIsCommentDialogOpen(true);
-  };
-
-  const handleCloseCommentDialog = () => {
-    setIsCommentDialogOpen(false);
-  };
 
   const { sendGithubLink, sendComment } = useAssignmentSubmissionActions({
     assignmentId: assignmentid,
