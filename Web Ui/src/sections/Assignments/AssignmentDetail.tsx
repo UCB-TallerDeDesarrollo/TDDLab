@@ -72,7 +72,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
   const [studentRows, setStudentRows] = useState<JSX.Element[]>([]);
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
   const [showIAButton, setShowIAButton] = useState(false);
-  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
 
   const navigate = useNavigate();
   const usersRepository = new UsersRepository();
@@ -91,22 +90,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
         return status;
     }
   };
-
-  useEffect(() => {
-    const fetchFlag = async () => {
-      if (!isStudent(role)) {
-        const getFlagUseCase = new GetFeatureFlagByName();
-        try {
-          const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
-          setDisableAdditionalGraphs(!(flag?.is_enabled));
-        } catch (error) {
-          console.error("Error al obtener flag gráficas:", error);
-          setDisableAdditionalGraphs(true);
-        }
-      }
-    };
-    fetchFlag();
-  }, [role]);
 
   useEffect(() => {
     if (!isStudent(role)) return;
@@ -190,7 +173,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
 
   useEffect(() => {
     renderStudentRows();
-  }, [submissions, disableAdditionalGraphs]);
+  }, [submissions]);
 
   const handleOpenLinkDialog = () => setLinkDialogOpen(true);
 
@@ -342,22 +325,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                 }
               >
                 Asistente
-              </Button>
-            </TableCell>
-            <TableCell>
-              <Button
-                className="btn-std btn-primary"
-                disabled={!sub.repository_link || disableAdditionalGraphs}
-                onClick={() =>
-                  handleRedirectAdmin(
-                    sub.repository_link,
-                    submissions,
-                    sub.id,
-                    "/aditionalgraph"
-                  )
-                }
-              >
-                Ver
               </Button>
             </TableCell>
           </TableRow>
@@ -537,9 +504,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                 </TableCell>
                 <TableCell className="table-cell-header">Grafica</TableCell>
                 <TableCell className="table-cell-header">Asistente AI</TableCell>
-                <TableCell className="table-cell-header">
-                  Graficas Adicionales
-                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>{studentRows}</TableBody>

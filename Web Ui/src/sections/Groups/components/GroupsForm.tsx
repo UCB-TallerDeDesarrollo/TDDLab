@@ -13,22 +13,27 @@ import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
+import { normalizeTextForComparison } from "../../../utils/normalizeText";
 
 import "../../../App.css";
 
 interface CreateGroupPopupProps {
   open: boolean;
   handleClose: () => void;
+  existingGroups: GroupDataObject[];
   onCreated?: (group: GroupDataObject) => void;
 }
 
 const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   open,
   handleClose,
+  existingGroups,
   onCreated,
 }) => {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
 
@@ -57,6 +62,22 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     };
 
     try {
+      const duplicateGroup = existingGroups.find(
+        (group) =>
+          normalizeTextForComparison(group.groupName) ===
+          normalizeTextForComparison(groupName)
+      );
+
+      if (duplicateGroup) {
+        setIsError(true);
+        setValidationMessage(
+          "Error: Ya existe un grupo con ese nombre para este docente"
+        );
+        setValidationDialogOpen(true);
+        setSave(false);
+        return;
+      }
+
       const newGroup = await createGroup.createGroup(payload);
 
       if (auth?.userEmail) {
@@ -78,9 +99,14 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
       } catch { /* ignore */ }
 
       onCreated?.(newGroup);
+      setIsError(false);
+      setValidationMessage("Grupo creado exitosamente");
       setValidationDialogOpen(true);
     } catch (error) {
       console.error("Error al crear el grupo:", error);
+      setIsError(true);
+      setValidationMessage("Error al crear el grupo");
+      setValidationDialogOpen(true);
     } finally {
       setSave(false);
     }
@@ -90,6 +116,8 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     if (!open) {
       setSave(false);
       setValidationDialogOpen(false);
+      setValidationMessage("");
+      setIsError(false);
       setGroupName("");
       setGroupDescription("");
     }
@@ -145,11 +173,14 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
       <ValidationDialog
         open={validationDialogOpen}
-        title="Grupo creado exitosamente"
+        title={validationMessage}
+        isError={isError}
         closeText="Cerrar"
         onClose={() => {
           setValidationDialogOpen(false);
-          handleClose();
+          if (!isError) {
+            handleClose();
+          }
         }}
       />
     </Dialog>

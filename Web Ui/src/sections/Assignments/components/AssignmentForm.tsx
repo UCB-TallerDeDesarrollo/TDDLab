@@ -22,6 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { normalizeTextForComparison } from "../../../utils/normalizeText";
 
 // ─── Form principal ───────────────────────────────────────────────────────────
 interface CreateAssignmentPopupProps {
@@ -79,7 +80,8 @@ function Form({
       );
       const duplicateAssignment = assignments.find(
         (assignment) =>
-          assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
+          normalizeTextForComparison(assignment.title) ===
+          normalizeTextForComparison(assignmentData.title)
       );
       if (duplicateAssignment) {
         setValidationMessage(
