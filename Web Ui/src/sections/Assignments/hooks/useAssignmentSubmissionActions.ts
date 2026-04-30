@@ -80,12 +80,10 @@ export const useAssignmentSubmissionActions = ({
 
         await finishSubmission.finishSubmission(submission.id, submissionData);
         await onRefresh();
-        onCloseLinkDialog();
+        onCloseCommentDialog();
       }
-
-      onCloseCommentDialog();
     },
-    [finishSubmission, onCloseCommentDialog, onCloseLinkDialog, onRefresh, submission]
+    [finishSubmission, onCloseCommentDialog, onRefresh, submission]
   );
 
   return {
