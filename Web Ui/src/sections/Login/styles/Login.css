@@ -27,6 +27,13 @@
   transform: rotate(0deg);
 }
 
+.topbar-center-rectangle {
+  width: 700px;
+  height: 2px;
+  background-color: white;
+  flex-shrink: 0;
+}
+
 .topbar-logo {
   display: flex;
   align-items: center;
@@ -202,6 +209,126 @@
   font-size: 0.95rem;
 }
 
+.feature-card p {
+  margin: 0;
+  color: #4d5d75;
+  line-height: 1.75;
+  font-size: 0.95rem;
+}
+
+.benefits-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 64px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.section-line {
+  display: block;
+  width: 110px;
+  height: 2px;
+  background: #0d2950;
+}
+
+.benefits-slider {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr minmax(360px, 440px) 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.benefit-card {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 28px 70px rgba(11, 25, 50, 0.08);
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.side-card {
+  min-height: 240px;
+}
+
+.benefit-preview {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e9eff8 0%, #ffffff 100%);
+}
+
+.main-card {
+  position: relative;
+  padding: 40px 32px;
+  min-height: 360px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.benefit-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  font-size: 1.4rem;
+}
+
+.main-card h3 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #0d2950;
+}
+
+.main-card p {
+  margin: 0;
+  color: #4d5d75;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.benefits-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d3d7db;
+}
+
+.dot.active {
+  background: #64c55f;
+}
+
 @media (max-width: 980px) {
   .feature-grid {
     grid-template-columns: 1fr;
@@ -211,6 +338,14 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+
+  .benefits-slider {
+    grid-template-columns: 1fr;
+  }
+
+  .main-card {
+    min-height: 320px;
   }
 }
 

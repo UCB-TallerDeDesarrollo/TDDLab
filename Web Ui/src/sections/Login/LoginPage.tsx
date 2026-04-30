@@ -8,6 +8,7 @@ import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authenti
 import { useEffect } from "react";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import TDDLabLogo from "../../assets/TDDLabLogo";
+import TDDLabLogoDark from "../../assets/TDDLabLogoDark";
 import { ActionButton } from "../Shared/Components/ActionButton";
 
 const Login = () => {
@@ -93,6 +94,7 @@ const Login = () => {
           <div className="topbar-logo">
             <TDDLabLogo />
           </div>
+          <div className="topbar-center-rectangle"></div>
           <div className="topbar-actions">
             <ActionButton
               onClick={handleGitHubLogin}
@@ -114,7 +116,7 @@ const Login = () => {
         <main className="hero-section">
           <div className="hero-card">
             <div className="hero-logo">
-              <TDDLabLogo />
+              <TDDLabLogoDark />
             </div>
             <p className="hero-description">
               TDDLab es una plataforma diseñada para aprender y practicar el desarrollo guiado por pruebas de forma clara, progresiva y aplicada. Convierte la teoría en práctica real, mejora tu lógica, calidad de código y flujo de trabajo con herramientas usadas en entornos profesionales.
@@ -141,6 +143,36 @@ const Login = () => {
               Sirve para mejorar tu lógica de programación, escribir código más confiable y dominar metodologías modernas usadas por equipos de desarrollo en la industria.
             </p>
           </article>
+        </section>
+
+        <section className="benefits-section">
+          <div className="section-header">
+            <span className="section-line" />
+            <h2>Beneficios</h2>
+            <span className="section-line" />
+          </div>
+
+          <div className="benefits-slider">
+            <article className="benefit-card side-card left-card">
+              <div className="benefit-preview" />
+            </article>
+            <article className="benefit-card main-card">
+              <div className="benefit-icon">👥</div>
+              <h3>Aprendizaje práctico real</h3>
+              <p>
+                Desarrolla habilidades aplicadas con ejercicios reales, mejora tu lógica, reduce errores y aprende un flujo profesional desde el inicio.
+              </p>
+            </article>
+            <article className="benefit-card side-card right-card">
+              <div className="benefit-preview" />
+            </article>
+          </div>
+
+          <div className="benefits-dots">
+            <span className="dot" />
+            <span className="dot active" />
+            <span className="dot" />
+          </div>
         </section>
       </div>
     </>
