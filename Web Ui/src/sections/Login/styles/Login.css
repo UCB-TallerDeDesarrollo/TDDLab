@@ -30,6 +30,8 @@
 .topbar-logo {
   display: flex;
   align-items: center;
+  width: 88px;
+  height: 39.31px;
 }
 
 .topbar-actions {
