@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { Button, Collapse } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
+import {
+  Button,
+  Collapse,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 
@@ -47,7 +55,8 @@ function Groups() {
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
+  const [currentSelectedGroupId, setCurrentSelectedGroupId] =
+    useState<number>(0);
 
   const groupRepository = new GroupsRepository();
   const userRepository = new UsersRepository();
@@ -75,7 +84,9 @@ function Groups() {
       if (role === "teacher") {
         const ids = await getGroupsApp.getGroupsByUserId(uid);
         const allGroups = (
-          await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id)))
+          await Promise.all(
+            ids.map((id: number) => getGroupsApp.getGroupById(id))
+          )
         ).filter(Boolean) as GroupDataObject[];
 
         setGroups(allGroups);
@@ -91,7 +102,9 @@ function Groups() {
   useEffect(() => {
     if (!groups.length || currentSelectedGroupId) return;
 
-    const fromURL = asId(new URLSearchParams(window.location.search).get("groupId"));
+    const fromURL = asId(
+      new URLSearchParams(window.location.search).get("groupId")
+    );
     if (fromURL) {
       selectAndSync(fromURL);
       return;
@@ -109,30 +122,11 @@ function Groups() {
       return;
     }
 
-    (async () => {
-      try {
-        const getGroupsApp = new GetGroups(groupRepository);
-        const uid = asId(authData?.userid);
-
-        if (uid) {
-          const ids = await getGroupsApp.getGroupsByUserId(uid);
-          const first = asId(ids?.[0]);
-
-          if (first) {
-            selectAndSync(first);
-            return;
-          }
-        }
-      } catch {
-        // ignore
-      }
-
-      const firstVisible = asId(groups[0]?.id);
-      if (firstVisible) {
-        selectAndSync(firstVisible);
-      }
-    })();
-  }, [groups, currentSelectedGroupId, authData?.usergroupid, authData?.userid]);
+    const firstVisible = asId(groups[0]?.id);
+    if (firstVisible) {
+      selectAndSync(firstVisible);
+    }
+  }, [groups, currentSelectedGroupId, authData?.usergroupid]);
 
   const handleGroupsOrder = (event: { target: { value: string } }) => {
     const sorting = event.target.value;
@@ -177,8 +171,8 @@ function Groups() {
     selectAndSync(clickedGroup.id);
   };
 
-  const handleGroupCardKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
+  const handleRowKeyDown = (
+    event: React.KeyboardEvent<HTMLTableRowElement>,
     index: number
   ) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -228,8 +222,8 @@ function Groups() {
     try {
       await getUsersByGroupId.execute(groupid);
       navigate(`/users/group/${groupid}`);
-    } catch (error) {
-      console.error("Failed to fetch users for group:", error);
+    } catch {
+      // handled
     }
 
     setSelectedRow(index);
@@ -295,8 +289,8 @@ function Groups() {
           }
         }
       }
-    } catch (error) {
-      console.error("Error deleting group:", error);
+    } catch {
+      // handled
     } finally {
       setConfirmationOpen(false);
     }
@@ -365,96 +359,135 @@ function Groups() {
           </div>
         </div>
 
-        <div className="groups-card-grid">
-          {filteredGroups.map((group, index) => (
-            <div
-              key={asId(group.id) || index}
-              className={`group-card-row ${
-                isRowSelected(index) ? "group-card-row-selected" : ""
-              }`}
-              role="button"
-              tabIndex={0}
-              onClick={() => handleRowClick(index)}
-              onKeyDown={(event) => handleGroupCardKeyDown(event, index)}
-              onMouseEnter={() => setHoveredRow(index)}
-              onMouseLeave={() => setHoveredRow(null)}
-            >
-              <div className="group-card-main">
-                <div className="group-card-blue">
-                  <div className="group-card-pattern" />
-                  <div className="group-card-name">{group.groupName}</div>
-                </div>
+        <section className="table-container-full">
+          <Table className="styled-table">
+            <TableBody>
+              {filteredGroups.map((group, index) => (
+                <React.Fragment key={asId(group.id) || index}>
+                  <TableRow
+                    className="table-row-bordered"
+                    selected={isRowSelected(index)}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleRowClick(index)}
+                    onKeyDown={(event) => handleRowKeyDown(event, index)}
+                    onMouseEnter={() => setHoveredRow(index)}
+                    onMouseLeave={() => setHoveredRow(null)}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={asId(currentSelectedGroupId) === asId(group.id)}
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={() => handleRowClick(index)}
+                      />
+                    </TableCell>
 
-                <div className="group-card-actions">
-                  <Tooltip title="Editar grupo" arrow>
-                    <IconButton
-                      aria-label="editar"
-                      onClick={(e) => handleEditClick(e, index)}
-                    >
-                      <AppIcon icon={APP_ICONS.EDIT} className="icon-gray" />
-                    </IconButton>
-                  </Tooltip>
+                    <TableCell className="practice-title-cell">
+                      {group.groupName}
+                    </TableCell>
 
-                  <Tooltip title="Tareas" arrow>
-                    <IconButton
-                      aria-label="tareas"
-                      onClick={(e) => handleHomeworksClick(e, index)}
-                    >
-                      <AppIcon icon={APP_ICONS.TASKS} className="icon-gray" />
-                    </IconButton>
-                  </Tooltip>
+                    <TableCell align="right">
+                      <div className="action-buttons-group">
+                        <Tooltip title="Editar grupo" arrow>
+                          <IconButton
+                            aria-label="editar"
+                            onClick={(event) => handleEditClick(event, index)}
+                          >
+                            <AppIcon icon={APP_ICONS.EDIT} className="icon-gray" />
+                          </IconButton>
+                        </Tooltip>
 
-                  <Tooltip title="Participantes" arrow>
-                    <IconButton
-                      aria-label="estudiantes"
-                      onClick={(e) => handleStudentsClick(e, index)}
-                    >
-                      <AppIcon icon={APP_ICONS.GROUPS} className="icon-gray" />
-                    </IconButton>
-                  </Tooltip>
+                        <Tooltip title="Tareas" arrow>
+                          <IconButton
+                            aria-label="tareas"
+                            onClick={(event) =>
+                              handleHomeworksClick(event, index)
+                            }
+                          >
+                            <AppIcon
+                              icon={APP_ICONS.TASKS}
+                              className="icon-gray"
+                            />
+                          </IconButton>
+                        </Tooltip>
 
-                  <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                    <IconButton
-                      aria-label="enlace-estudiante"
-                      onClick={(e) => handleLinkClick(e, index)}
-                    >
-                      <AppIcon icon={APP_ICONS.LINK} className="icon-gray" />
-                    </IconButton>
-                  </Tooltip>
+                        <Tooltip title="Participantes" arrow>
+                          <IconButton
+                            aria-label="estudiantes"
+                            onClick={(event) =>
+                              handleStudentsClick(event, index)
+                            }
+                          >
+                            <AppIcon
+                              icon={APP_ICONS.GROUPS}
+                              className="icon-gray"
+                            />
+                          </IconButton>
+                        </Tooltip>
 
-                  <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                    <IconButton
-                      aria-label="enlace-docente"
-                      onClick={(e) => handleLinkClickTeacher(e, index)}
-                    >
-                      <PiChalkboardTeacherFill />
-                    </IconButton>
-                  </Tooltip>
+                        <Tooltip
+                          title="Copiar enlace de invitacion a estudiante"
+                          arrow
+                        >
+                          <IconButton
+                            aria-label="enlace-estudiante"
+                            onClick={(event) => handleLinkClick(event, index)}
+                          >
+                            <AppIcon
+                              icon={APP_ICONS.LINK}
+                              className="icon-gray"
+                            />
+                          </IconButton>
+                        </Tooltip>
 
-                  <Tooltip title="Eliminar grupo" arrow>
-                    <IconButton
-                      aria-label="eliminar"
-                      onClick={(e) => handleDeleteClick(e, index)}
-                    >
-                      <AppIcon icon={APP_ICONS.DELETE} className="icon-gray" />
-                    </IconButton>
-                  </Tooltip>
-                </div>
+                        <Tooltip
+                          title="Copiar enlace de invitacion a docente"
+                          arrow
+                        >
+                          <IconButton
+                            aria-label="enlace-docente"
+                            onClick={(event) =>
+                              handleLinkClickTeacher(event, index)
+                            }
+                          >
+                            <PiChalkboardTeacherFill />
+                          </IconButton>
+                        </Tooltip>
 
-                <Collapse
-                  in={expandedRows.includes(index)}
-                  timeout="auto"
-                  unmountOnExit
-                >
-                  <div className="group-card-detail">
-                    <strong>Detalle del grupo:</strong>{" "}
-                    {group.groupDetail || "Sin descripción disponible."}
-                  </div>
-                </Collapse>
-              </div>
-            </div>
-          ))}
-        </div>
+                        <Tooltip title="Eliminar grupo" arrow>
+                          <IconButton
+                            aria-label="eliminar"
+                            onClick={(event) => handleDeleteClick(event, index)}
+                          >
+                            <AppIcon
+                              icon={APP_ICONS.DELETE}
+                              className="icon-gray"
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell colSpan={3} style={{ padding: 0 }}>
+                      <Collapse
+                        in={expandedRows.includes(index)}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <div className="group-detail-box">
+                          <strong>Detalle del grupo:</strong>{" "}
+                          {group.groupDetail || "Sin descripción disponible."}
+                        </div>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </section>
       </section>
 
       {confirmationOpen && (
