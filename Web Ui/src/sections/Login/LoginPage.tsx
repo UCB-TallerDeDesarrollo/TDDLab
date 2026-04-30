@@ -174,6 +174,83 @@ const Login = () => {
             <span className="dot" />
           </div>
         </section>
+
+        <section className="resources-section">
+          <div className="section-header">
+            <span className="section-line" />
+            <h2>Recursos</h2>
+            <span className="section-line" />
+          </div>
+
+          <div className="resources-grid">
+            <div className="resources-column left-column">
+              <article className="resource-card large-image-card">
+                <div className="resource-image resource-image-1" />
+              </article>
+              <article className="resource-card large-image-card">
+                <div className="resource-image resource-image-2" />
+              </article>
+            </div>
+
+            <div className="resources-column middle-column">
+              <article className="resource-card small-image-card">
+                <div className="resource-image resource-image-3" />
+              </article>
+              <article className="resource-card small-image-card">
+                <div className="resource-image resource-image-4" />
+              </article>
+            </div>
+
+            <div className="resources-column right-column">
+              <article className="resource-card text-card">
+                <h3>Guías</h3>
+                <p>
+                  Accede a guías estructuradas que explican paso a paso cómo aplicar Test-Driven Development, desde conceptos básicos hasta flujos avanzados.
+                </p>
+                <p>
+                  Diseñadas para acompañarte en cada etapa, facilitando la comprensión técnica sin perder el enfoque práctico necesario para programar con confianza.
+                </p>
+              </article>
+              <article className="resource-card text-card">
+                <h3>Tutoriales</h3>
+                <p>
+                  Explora tutoriales dinámicos que te muestran cómo resolver ejercicios reales utilizando TDD. Aprende viendo procesos completos.
+                </p>
+                <p>
+                  Desde la creación de pruebas hasta la implementación final, entiende no solo el resultado, sino también la lógica detrás de cada decisión.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="integration-section">
+          <div className="section-header">
+            <span className="section-line" />
+            <h2>Integración</h2>
+            <span className="section-line" />
+          </div>
+
+          <div className="integration-grid">
+            <article className="integration-card card-left">
+              <div className="integration-logo integration-logo-vscode">VS</div>
+              <h3>Visual Studio Code</h3>
+              <p>
+                Trabaja directamente desde Visual Studio Code integrando TDDLab a tu entorno habitual, facilitando la ejecución de pruebas, gestión de código y seguimiento continuo sin salir de tu flujo.
+              </p>
+            </article>
+
+            <article className="integration-card card-right">
+              <div className="integration-logo integration-logo-tddlab">
+                <TDDLabLogo />
+              </div>
+              <h3>TDDLab</h3>
+              <p>
+                TDDLab centraliza tus ejercicios, progreso y validaciones en un solo lugar, permitiéndote practicar, medir tu evolución y mantener un control claro de tu aprendizaje.
+              </p>
+            </article>
+          </div>
+        </section>
       </div>
     </>
   );

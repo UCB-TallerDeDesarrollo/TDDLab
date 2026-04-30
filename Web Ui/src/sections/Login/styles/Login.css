@@ -329,6 +329,148 @@
   background: #64c55f;
 }
 
+.resources-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 64px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.resources-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 0.8fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.resources-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.resource-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(11, 25, 50, 0.08);
+  overflow: hidden;
+}
+
+.large-image-card {
+  min-height: 240px;
+}
+
+.small-image-card {
+  min-height: 116px;
+}
+
+.resource-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.resource-image-1,
+.resource-image-2 {
+  background: linear-gradient(135deg, #1f2d57 0%, #2c4ca4 100%);
+}
+
+.integration-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 64px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.integration-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: stretch;
+}
+
+.integration-card {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 28px 70px rgba(11, 25, 50, 0.08);
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  min-height: 260px;
+}
+
+.integration-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.integration-logo-vscode {
+  font-weight: 800;
+  color: #256eff;
+  font-size: 1.5rem;
+}
+
+.integration-logo-tddlab {
+  width: 72px;
+  height: 72px;
+}
+
+.integration-card h3 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #0d2950;
+}
+
+.integration-card p {
+  margin: 0;
+  color: #4d5d75;
+  line-height: 1.8;
+  font-size: 0.96rem;
+}
+
+.resource-image-3,
+.resource-image-4 {
+  background: linear-gradient(135deg, #081a32 0%, #2f4484 100%);
+}
+
+.text-card {
+  padding: 32px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.text-card h3 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.text-card p {
+  margin: 0;
+  color: #2f3e55;
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
 @media (max-width: 980px) {
   .feature-grid {
     grid-template-columns: 1fr;
