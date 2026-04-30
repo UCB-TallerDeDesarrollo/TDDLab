@@ -589,7 +589,7 @@ a:hover {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   column-gap: 18px;
-  margin-bottom: 18px;
+  margin-bottom: 10px; 
 }
 
 .page-title {
@@ -656,6 +656,7 @@ a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 0;
   margin-bottom: 28px;
 }
 
@@ -795,4 +796,56 @@ a:hover {
   .groups-card-grid {
     grid-template-columns: 1fr;
   }
+}
+/* ===================== ASSIGNMENTS MODULE ===================== */
+
+.assignments-header {
+  grid-template-columns: auto 1fr auto;
+}
+
+.assignment-group-badge {
+  height: 36px;
+  min-width: 260px;
+  background-color: #647fd0;
+  color: #ffffff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+}
+
+.assignment-group-icon {
+  display: flex;
+  align-items: center;
+}
+
+.assignment-group-label {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.assignment-group-badge .MuiInputBase-root {
+  color: #ffffff !important;
+  height: 32px !important;
+  min-width: 140px !important;
+  border: none !important;
+}
+
+.assignment-group-badge .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+
+.assignment-group-badge .MuiSvgIcon-root {
+  color: #ffffff !important;
+}
+
+.assignment-group-badge .MuiSelect-select {
+  padding-left: 0 !important;
+  font-weight: 600 !important;
+}
+
+.assignments-toolbar {
+  margin-top: 0;
+  margin-bottom: 26px;
 }
