@@ -149,10 +149,7 @@ export const AssignmentDetailView = ({
                 <InfoRow
                   icon={<CommentIcon sx={assignmentDetailSx.secondaryIcon} />}
                   label="Comentario"
-                  value={
-                    studentSubmission?.repository_link === "" ||
-                    studentSubmission == null
-                  }
+                  value={assignment.comment}
                   containerSx={assignmentDetailSx.compactRow}
                   textSx={assignmentDetailSx.secondaryText}
                 />
