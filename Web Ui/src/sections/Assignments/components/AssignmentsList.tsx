@@ -264,37 +264,30 @@ function Assignments({
     setConfirmationOpen(true);
   };
 
-  const handleConfirmDelete = async () => {
-    if (
-      selectedAssignmentIndex === null ||
-      !assignments[selectedAssignmentIndex]
-    ) {
-      setConfirmationOpen(false);
-      return;
-    }
+ const handleConfirmDelete = async () => {
+  const assignmentToDelete =
+    selectedAssignmentIndex !== null
+      ? assignments[selectedAssignmentIndex]
+      : null;
 
-    setDeleteLoading(true);
+  if (!assignmentToDelete) {
+    setConfirmationOpen(false);
+    return;
+  }
 
-    try {
-      const assignmentToDelete = assignments[selectedAssignmentIndex];
+  setDeleteLoading(true);
 
-      console.log("Eliminando assignment:", assignmentToDelete);
-
-      const result = await deleteAssignmentUseCase.deleteAssignment(
-        assignmentToDelete.id
-      );
-
-      console.log("Resultado obtenido al intentar eliminar:", result);
-
-      setValidationDialogOpen(true);
-    } catch (error: any) {
-      console.error("Error eliminando assignment:", error);
-    } finally {
-      setConfirmationOpen(false);
-      setDeleteLoading(false);
-      setSelectedAssignmentIndex(null);
-    }
-  };
+  try {
+    await deleteAssignmentUseCase.deleteAssignment(assignmentToDelete.id);
+    setValidationDialogOpen(true);
+  } catch {
+    setValidationDialogOpen(false);
+  } finally {
+    setConfirmationOpen(false);
+    setDeleteLoading(false);
+    setSelectedAssignmentIndex(null);
+  }
+};
 
   const handleRowHover = (index: number | null) => setHoveredRow(index);
 
