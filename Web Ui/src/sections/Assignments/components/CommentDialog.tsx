@@ -16,7 +16,7 @@ import { Typography } from "@mui/material";
 interface CommentDialogProps {
   open: boolean;
   link?: string;
-  onSend: (comment: string, link: string) => void;
+  onSend: (comment: string) => void;
   onClose: () => void;
 }
 
@@ -67,7 +67,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
 
   const handleSend = () => {
     if (validLink && repo) {
-      onSend(comment, repo);
+      onSend(comment);
       setEdit(false);
       onClose();
     }
