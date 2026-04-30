@@ -252,6 +252,9 @@ body * { font-family: var(--font-family) !important; }
   height: 36px !important;
   border-radius: 4px !important;
 }
+.date-picker-wrapper {
+  margin-top: 10px;
+}
 
 /* ==========================================================================
    DIÁLOGOS & FORMULARIOS (POP-UPS)

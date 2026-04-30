@@ -177,6 +177,16 @@ function Groups() {
     selectAndSync(clickedGroup.id);
   };
 
+  const handleGroupCardKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    index: number
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleRowClick(index);
+    }
+  };
+
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
   };
@@ -362,7 +372,10 @@ function Groups() {
               className={`group-card-row ${
                 isRowSelected(index) ? "group-card-row-selected" : ""
               }`}
+              role="button"
+              tabIndex={0}
               onClick={() => handleRowClick(index)}
+              onKeyDown={(event) => handleGroupCardKeyDown(event, index)}
               onMouseEnter={() => setHoveredRow(index)}
               onMouseLeave={() => setHoveredRow(null)}
             >
