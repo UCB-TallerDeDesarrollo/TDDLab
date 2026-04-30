@@ -132,4 +132,65 @@ describe("SubmissionTable Component", () => {
     expect(onViewGraph).toHaveBeenCalledTimes(1);
     expect(onViewGraph).toHaveBeenCalledWith(baseSubmission);
   });
+
+  it("renderiza LinkIcon cuando submission tiene repository_link", () => {
+    renderSubmissionTable({
+      submissions: [baseSubmission],
+    });
+
+    expect(screen.getByTestId("LinkIcon")).toBeInTheDocument();
+  });
+
+  it("renderiza RemoveCircleIcon cuando submission NO tiene repository_link", () => {
+    renderSubmissionTable({
+      submissions: [submissionWithoutLink],
+    });
+
+    expect(screen.getByTestId("RemoveCircleIcon")).toBeInTheDocument();
+  });
+
+  it("renderiza estado 'Enviado' cuando hay repository_link", () => {
+    renderSubmissionTable({
+      submissions: [baseSubmission],
+    });
+
+    expect(screen.getByText("Enviado")).toBeInTheDocument();
+  });
+
+  it("renderiza estado 'No enviado' cuando NO hay repository_link", () => {
+    renderSubmissionTable({
+      submissions: [submissionWithoutLink],
+    });
+
+    expect(screen.getByText("No enviado")).toBeInTheDocument();
+  });
+
+  it("llama onOpenAssistant con la submission correcta al hacer clic en Asistente", () => {
+    const onOpenAssistant = jest.fn();
+    renderSubmissionTable({
+      onOpenAssistant,
+      submissions: [baseSubmission],
+    });
+
+    const assistantButton = screen.getByRole("button", { name: "Asistente" });
+    assistantButton.click();
+
+    expect(onOpenAssistant).toHaveBeenCalledTimes(1);
+    expect(onOpenAssistant).toHaveBeenCalledWith(baseSubmission);
+  });
+
+  it("llama onViewAdditionalGraph cuando se hace clic en Ver de graficas adicionales", () => {
+    const onViewAdditionalGraph = jest.fn();
+    renderSubmissionTable({
+      showAdditionalGraphs: true,
+      onViewAdditionalGraph,
+      submissions: [baseSubmission],
+    });
+
+    const verButton = screen.getByRole("button", { name: "Ver" });
+    verButton.click();
+
+    expect(onViewAdditionalGraph).toHaveBeenCalledTimes(1);
+    expect(onViewAdditionalGraph).toHaveBeenCalledWith(baseSubmission);
+  });
 });
