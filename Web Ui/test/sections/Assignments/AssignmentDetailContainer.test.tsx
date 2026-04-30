@@ -265,7 +265,7 @@ describe("AssignmentDetailContainer", () => {
   });
 
   describe("branch: disableAdditionalGraphs", () => {
-    it("debería ocultar botón 'Ver grafica adicional' cuando disableAdditionalGraphs es true", () => {
+    it("debería deshabilitar botones de gráficas adicionales cuando disableAdditionalGraphs es true", () => {
       (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Mostrar Graficas Adicionales") return false;
         return false;
@@ -273,10 +273,14 @@ describe("AssignmentDetailContainer", () => {
       mockIsStudent.mockReturnValue(false);
 
       render(<AssignmentDetailContainer role="teacher" userid={123} />);
-      expect(screen.queryByRole("button", { name: "Ver" })).not.toBeInTheDocument();
+      const additionalButtons = screen.getAllByRole("button", { name: "Ver" });
+      expect(additionalButtons.length).toBeGreaterThan(0);
+      additionalButtons.forEach((button) => {
+        expect(button).toBeDisabled();
+      });
     });
 
-    it("debería mostrar botón 'Ver grafica adicional' cuando disableAdditionalGraphs es false", () => {
+    it("debería habilitar botones de gráficas adicionales cuando disableAdditionalGraphs es false", () => {
       (useFeatureFlagEnabled as jest.Mock).mockImplementation((flagName: string) => {
         if (flagName === "Mostrar Graficas Adicionales") return true;
         return false;
@@ -284,7 +288,11 @@ describe("AssignmentDetailContainer", () => {
       mockIsStudent.mockReturnValue(false);
 
       render(<AssignmentDetailContainer role="teacher" userid={123} />);
-      expect(screen.getByRole("button", { name: "Ver" })).toBeInTheDocument();
+      const additionalButtons = screen.getAllByRole("button", { name: "Ver" });
+      expect(additionalButtons.length).toBeGreaterThan(0);
+      additionalButtons.forEach((button) => {
+        expect(button).not.toBeDisabled();
+      });
     });
   });
 
