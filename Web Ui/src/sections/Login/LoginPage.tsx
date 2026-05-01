@@ -10,6 +10,9 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import TDDLabLogo from "../../assets/TDDLabLogo";
 import TDDLabLogoDark from "../../assets/TDDLabLogoDark";
 import bancoImage from "../../assets/BancoIMG.png";
+import focoImage from "../../assets/Foco.png";
+import barrasImage from "../../assets/Barras.png";
+import interrogacionImage from "../../assets/Interrogacion.png";
 import { ActionButton } from "../Shared/Components/ActionButton";
 
 const Login = () => {
@@ -127,18 +130,27 @@ const Login = () => {
 
         <section className="feature-grid">
           <article className="feature-card">
+            <div className="feature-icon feature-icon-question">
+              <img src={interrogacionImage} alt="Interrogación" />
+            </div>
             <h3>Qué es</h3>
             <p>
               TDDLab es un entorno de aprendizaje práctico donde aplicas Test-Driven Development mediante ejercicios, pruebas automatizadas y control de versiones en proyectos reales.
             </p>
           </article>
           <article className="feature-card">
+            <div className="feature-icon feature-icon-bars">
+              <img src={barrasImage} alt="Barras" />
+            </div>
             <h3>Cómo funciona</h3>
             <p>
               Aprendes resolviendo retos guiados: escribes pruebas, desarrollas código, haces commits y validas resultados siguiendo un flujo de trabajo profesional.
             </p>
           </article>
-          <article className="feature-card">
+          <article className="feature-card focus-card">
+            <div className="feature-icon feature-icon-focus">
+              <img src={focoImage} alt="Foco" />
+            </div>
             <h3>Para qué sirve</h3>
             <p>
               Sirve para mejorar tu lógica de programación, escribir código más confiable y dominar metodologías modernas usadas por equipos de desarrollo en la industria.
