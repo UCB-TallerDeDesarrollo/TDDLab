@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import TDDLabLogo from "../../assets/TDDLabLogo";
 import TDDLabLogoDark from "../../assets/TDDLabLogoDark";
+import bancoImage from "../../assets/BancoIMG.png";
 import { ActionButton } from "../Shared/Components/ActionButton";
 
 const Login = () => {
@@ -182,22 +183,10 @@ const Login = () => {
             <span className="section-line" />
           </div>
 
-          <div className="resources-grid">
+          <div className="resources-grid resources-grid-two-col">
             <div className="resources-column left-column">
               <article className="resource-card large-image-card">
-                <div className="resource-image resource-image-1" />
-              </article>
-              <article className="resource-card large-image-card">
-                <div className="resource-image resource-image-2" />
-              </article>
-            </div>
-
-            <div className="resources-column middle-column">
-              <article className="resource-card small-image-card">
-                <div className="resource-image resource-image-3" />
-              </article>
-              <article className="resource-card small-image-card">
-                <div className="resource-image resource-image-4" />
+                <img src={bancoImage} alt="Banco de imágenes" className="resource-image" />
               </article>
             </div>
 
@@ -317,6 +306,38 @@ const Login = () => {
             </article>
           </div>
         </section>
+
+        <footer className="footer-section">
+          <div className="footer-top">
+            <div className="footer-column footer-brand">
+              <div className="footer-logo">
+                <TDDLabLogo />
+              </div>
+            </div>
+            <div className="footer-column footer-contact">
+              <p>Email: <a href="mailto:contact@tddlab.com">contact@tddlab.com</a></p>
+              <p>Teléfono: +1 (123) 456-7890</p>
+            </div>
+            <div className="footer-column footer-links">
+              <a href="#">Política de Privacidad</a>
+              <a href="#">Términos y Condiciones</a>
+              <a href="#">Política de Cookies</a>
+            </div>
+            <div className="footer-column footer-social">
+              <p>Conecta con nosotros</p>
+              <div className="footer-social-icons">
+                <a href="#">F</a>
+                <a href="#">G</a>
+                <a href="#">Y</a>
+                <a href="#">I</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <p>© 2025 TDDLab. Todos los derechos reservados.</p>
+          </div>
+        </footer>
       </div>
     </>
   );

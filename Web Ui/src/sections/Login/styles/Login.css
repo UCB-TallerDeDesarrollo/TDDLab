@@ -342,9 +342,13 @@
 .resources-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: 1.3fr 0.9fr 0.8fr;
+  grid-template-columns: 1.3fr 0.95fr;
   gap: 24px;
   align-items: start;
+}
+
+.resources-grid.resources-grid-two-col {
+  grid-template-columns: 1.6fr 1fr;
 }
 
 .resources-column {
@@ -605,6 +609,92 @@
   line-height: 1.7;
 }
 
+.footer-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 64px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  color: #ffffff;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 24px;
+  background: #0c2f5d;
+  border-radius: 24px;
+  padding: 32px 40px;
+  align-items: start;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+}
+
+.footer-logo {
+  width: 120px;
+  height: auto;
+}
+
+.footer-contact p,
+.footer-links a,
+.footer-social p {
+  margin: 0;
+  color: #ffffff;
+  line-height: 1.8;
+}
+
+.footer-contact a,
+.footer-links a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-social {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer-social-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.footer-social-icons a {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.footer-bottom {
+  background: #0b2547;
+  border-radius: 0 0 24px 24px;
+  padding: 18px 40px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.95rem;
+}
+
 .resource-image-3,
 .resource-image-4 {
   background: linear-gradient(135deg, #081a32 0%, #2f4484 100%);
@@ -649,6 +739,10 @@
   .main-card {
     min-height: 320px;
   }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -664,5 +758,9 @@
 
   .topbar-button {
     flex: 1 1 auto;
+  }
+
+  .footer-top {
+    padding: 28px 20px;
   }
 }
