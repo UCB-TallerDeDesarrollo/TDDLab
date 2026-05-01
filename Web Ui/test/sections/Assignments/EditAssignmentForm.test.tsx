@@ -165,7 +165,15 @@ describe("EditAssignmentDialog Component", () => {
     });
   });
 
-  
+  it("debería cerrar el diálogo cuando se hace clic en Cancelar", async () => {
+    renderEditDialog();
+
+    await waitFor(() => {
+      const cancelButton = screen.getByText("Cancelar");
+      fireEvent.click(cancelButton);
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
+  });
 
   it("debería guardar los cambios cuando se hace clic en Guardar Cambios", async () => {
     renderEditDialog();

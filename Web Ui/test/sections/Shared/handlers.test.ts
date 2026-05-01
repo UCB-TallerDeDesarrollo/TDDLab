@@ -9,10 +9,26 @@ import type { SubmissionDataObject } from "../../../src/modules/Submissions/Doma
 describe("handlers", () => {
   let mockSetDialogState: jest.Mock;
 
+  const originalLocation = window.location;
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...originalLocation, reload: jest.fn() }
+    });
+  });
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation
+    });
+  });
+
   beforeEach(() => {
     mockSetDialogState = jest.fn();
     jest.spyOn(window, "alert").mockImplementation(() => {});
-    jest.spyOn(window.location, "reload").mockImplementation(() => {});
+    (window.location.reload as jest.Mock).mockClear();
   });
 
   afterEach(() => {

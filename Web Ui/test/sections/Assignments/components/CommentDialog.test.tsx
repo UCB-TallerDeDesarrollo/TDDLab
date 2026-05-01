@@ -78,7 +78,26 @@ const setupValidationMock = (overrides: Partial<typeof defaultGitHubValidation> 
     });
   });
 
-    describe("getInputColor (branches: repo empty / invalid / valid)", () => {
+  describe("useEffect con link (branches: link truthy/falsy)", () => {
+    it("debería inicializar con link definido (branch: link truthy)", () => {
+      const handleLinkChange = jest.fn();
+      setupValidationMock({
+        repo: "https://github.com/user/repo",
+        validLink: true,
+        handleLinkChange,
+      });
+      renderDialog({ link: "https://github.com/user/repo" });
+      expect(screen.getByLabelText("Enlace del Repositorio")).toHaveValue("https://github.com/user/repo");
+    });
+
+    it("debería manejar link undefined (branch: link falsy)", () => {
+      setupValidationMock({ isLoading: true });
+      renderDialog({ link: undefined });
+      expect(screen.getByText("Cargando...")).toBeInTheDocument();
+    });
+  });
+
+  describe("getInputColor (branches: repo empty / invalid / valid)", () => {
     it("debería tener color primary cuando repo está vacío", () => {
       jest.mocked(useGitHubLinkValidation).mockReturnValue({
         repo: "",
