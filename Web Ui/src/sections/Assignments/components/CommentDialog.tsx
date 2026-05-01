@@ -45,12 +45,6 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   }, [link, open]);
 
   useEffect(() => {
-    if (repo || !link) {
-      setIsLoading(false);
-    }
-  }, [repo, link]);
-
-  useEffect(() => {
     if (repo || !isLinkLoading) {
       setIsLoading(false);
     }

@@ -190,7 +190,7 @@ describe("handlers", () => {
 
       expect(mockNavigate).toHaveBeenCalledWith({
         pathname: "/admin",
-        search: expect.stringContaining("fetchedSubmissions=" + JSON.stringify(mockSubmissions)),
+        search: expect.stringContaining("fetchedSubmissions=" + encodeURIComponent(JSON.stringify(mockSubmissions))),
       });
     });
 
@@ -240,7 +240,7 @@ describe("handlers", () => {
 
       expect(mockNavigate).toHaveBeenCalledWith({
         pathname: "/admin",
-        search: expect.stringContaining("fetchedSubmissions=[]"),
+        search: expect.stringContaining("fetchedSubmissions=" + encodeURIComponent(JSON.stringify([]))),
       });
     });
   });
