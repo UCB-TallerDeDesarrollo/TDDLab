@@ -9,6 +9,7 @@ import { Table,
   Button,
   SelectChangeEvent } from "@mui/material";
 import { FullScreenLoader } from "../../../components/FullScreenLoader";
+import { AssignmentSkeleton } from "../../../components/Skeleton";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 import { styled } from "@mui/system";
@@ -309,7 +310,45 @@ useEffect(() => {
  return (
   <Container>
     {isLoading ? (
-      <FullScreenLoader variant="page" />
+      <section className="Tareas">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "12px",
+            marginBottom: "1rem",
+            width: "82%",
+            marginLeft: "auto",
+            marginRight: "auto",
+            flexWrap: "nowrap"
+          }}
+        >
+          <Skeleton variant="rectangular" width={200} height={40} sx={{ borderRadius: "8px" }} />
+          <Skeleton variant="rectangular" width={150} height={40} sx={{ borderRadius: "8px" }} />
+          {userRole !== "student" && (
+            <Skeleton variant="rectangular" width={90} height={40} sx={{ borderRadius: "17px" }} />
+          )}
+        </div>
+        <StyledTable>
+          <TableHead>
+            <TableRow
+              sx={{
+                borderBottom: "none",
+              }}
+            >
+              <CustomTableCell1
+                sx={{ ...typographyVariants.h5, color: "#333" }}
+              >
+                Tareas
+              </CustomTableCell1>
+            </TableRow>
+          </TableHead>
+          <StyledTableBody>
+            <AssignmentSkeleton count={3} />
+          </StyledTableBody>
+        </StyledTable>
+      </section>
     ) : (
       <section className="Tareas">
         {/* 🔹 Botones separados de la tabla */}

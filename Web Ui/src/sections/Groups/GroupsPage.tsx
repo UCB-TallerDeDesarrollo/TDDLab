@@ -26,6 +26,7 @@ import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
+import { GroupSkeleton } from "../../components/Skeleton";
 import { typographyVariants } from "../../styles/typography";
 
 const CenteredContainer = styled(Container)({
@@ -309,7 +310,25 @@ function Groups() {
     );
   };
 
-  if (isLoading) return <FullScreenLoader variant="page" />;
+  if (isLoading) return (
+    <CenteredContainer>
+      <section className="Grupos">
+        <PageHeader>
+          <Skeleton variant="text" width={150} height={40} sx={{ ...typographyVariants.h3, color: "#171717" }} />
+          <HeaderActions>
+            <Skeleton variant="rectangular" width={150} height={40} sx={{ borderRadius: "8px" }} />
+            <Skeleton variant="rectangular" width={112} height={40} sx={{ borderRadius: "8px" }} />
+          </HeaderActions>
+        </PageHeader>
+
+        <Divider sx={{ width: "82%", margin: "0 auto", mt: 1.5, borderColor: "#BDBDBD" }} />
+
+        <GroupsList>
+          <GroupSkeleton count={3} />
+        </GroupsList>
+      </section>
+    </CenteredContainer>
+  );
 
   return (
     <CenteredContainer>

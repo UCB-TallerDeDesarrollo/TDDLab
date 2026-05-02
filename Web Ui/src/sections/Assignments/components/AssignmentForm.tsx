@@ -330,9 +330,9 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
                 paddingY: "10px",
                 textTransform: "none",
               }}
-              disabled={formInvalid()}
+              disabled={formInvalid() || save}
             >
-              Crear
+              {save ? "Creando..." : "Crear"}
             </Button>
           </DialogActions>
         </>

@@ -13,6 +13,7 @@ import {
   IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button,
 } from "@mui/material";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
+import { UserSkeleton } from "../../components/Skeleton";
 
 import { styled } from "@mui/system";
 import { IconifyIcon } from "../../sections/Shared/Components";
@@ -189,7 +190,42 @@ function UserPage() {
   };
 
   // ------------------- RENDER -------------------
-  if (loading) return <FullScreenLoader variant="page" />;
+  if (loading) return (
+    <div>
+      <CenteredContainer sx={{ maxWidth: '100% !important', pb: 4 }}>
+        <div className="section-header" style={{ marginTop: "32px" }}>
+          <Skeleton variant="text" width={200} height={40} sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }} />
+          <div className="section-actions">
+            <Skeleton variant="rectangular" width={180} height={56} sx={{ borderRadius: "14px" }} />
+          </div>
+        </div>
+
+        <FilterContainer>
+          <Skeleton variant="rectangular" width={360} height={56} sx={{ borderRadius: "8px" }} />
+          <Skeleton variant="rectangular" width={200} height={56} sx={{ borderRadius: "8px" }} />
+        </FilterContainer>
+
+        <Divider sx={{ width: '82%', margin: '0 auto', mt: 2, mb: 4, borderColor: '#D9D9D9' }} />
+
+        <section className="Usuarios">
+          <StyledTable sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#EAF2FC" }}>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderTopLeftRadius: "12px", borderBottom: 'none', py: 2 }}>Usuario</TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderBottom: 'none', py: 2 }}>Grupo</TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderBottom: 'none', py: 2 }}>Rol</TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold", borderTopRightRadius: "12px", borderBottom: 'none', py: 2 }}>Opciones</TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              <UserSkeleton count={5} />
+            </TableBody>
+          </StyledTable>
+        </section>
+      </CenteredContainer>
+    </div>
+  );
 
   if (error) return <div>Error: {(error as Error).message}</div>;
 
@@ -330,7 +366,14 @@ function UserPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setAddUserDialogOpen(false)} color="primary">Cancelar</Button>
-            <Button onClick={handleAssignUserToGroup} color="primary" variant="contained">Guardar</Button>
+            <Button 
+              onClick={handleAssignUserToGroup} 
+              color="primary" 
+              variant="contained"
+              disabled={assignEmail.trim() === "" || assignGroupId === ""}
+            >
+              Guardar
+            </Button>
           </DialogActions>
         </Dialog>
 

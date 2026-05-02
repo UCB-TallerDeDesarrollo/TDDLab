@@ -162,7 +162,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
               onClick={handleCreate} 
               variant="contained"
               color="primary" 
-              disabled={formInvalid()}
+              disabled={formInvalid() || save}
               sx={{
                 flex: 1,
                 borderRadius: "10px",
@@ -178,7 +178,7 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
                 },
               }}
             >
-              Crear
+              {save ? "Creando..." : "Crear"}
             </Button>
           </DialogActions>
         </>
