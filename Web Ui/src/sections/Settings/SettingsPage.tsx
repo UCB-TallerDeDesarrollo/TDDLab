@@ -191,18 +191,19 @@ const ConfigurationPage = () => {
 
         {error && <p className="settings-error-text">{error}</p>}
 
-        {flags.map((flag) => (
-          <div key={flag.id} className="settings-flag-item">
-            <label>
+        <div className="settings-flag-list">
+          {flags.map((flag) => (
+            <label key={flag.id} className="settings-flag-item">
+              <span className="settings-flag-name">{flag.feature_name}</span>
               <input
+                className="settings-flag-checkbox"
                 type="checkbox"
                 checked={flag.is_enabled}
                 onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
               />
-              {flag.feature_name}
             </label>
-          </div>
-        ))}
+          ))}
+        </div>
       </Container>
     </div>
   );
