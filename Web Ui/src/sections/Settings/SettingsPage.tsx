@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FormControl, InputLabel, Select, MenuItem,
-         Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
+         Typography, Container, Box, CircularProgress } from '@mui/material';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
@@ -22,11 +22,9 @@ const ConfigurationPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [notification, setNotification] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error' | 'info' | 'warning';
-  }>({ open: false, message: '', severity: 'info' });
+  const [promptValidationOpen, setPromptValidationOpen] = useState(false);
+  const [promptValidationMessage, setPromptValidationMessage] = useState("");
+  const [promptValidationIsError, setPromptValidationIsError] = useState(false);
   const [flagValidationOpen, setFlagValidationOpen] = useState(false);
   const [flagValidationMessage, setFlagValidationMessage] = useState("");
   const [flagConfirmationOpen, setFlagConfirmationOpen] = useState(false);
@@ -89,10 +87,14 @@ const ConfigurationPage = () => {
         updatePrompts.evaluateTDDPrompt
       );
       setPrompts(updatePrompts);
-      setNotification({ open: true, message: "Prompt actualizado correctamente", severity: "success" });
+      setPromptValidationMessage("Prompt actualizado");
+      setPromptValidationIsError(false);
+      setPromptValidationOpen(true);
       setEditing(false);
     } catch (error) {
-      setNotification({ open: true, message: "Error al actualizar el prompt", severity: "error" });
+      setPromptValidationMessage("Error al actualizar el prompt");
+      setPromptValidationIsError(true);
+      setPromptValidationOpen(true);
     } finally {
       setSaving(false);
     }
@@ -103,7 +105,11 @@ const ConfigurationPage = () => {
     loadPrompts();
   };
 
-  const handleCloseNotification = () => setNotification({ ...notification, open: false });
+  const handleClosePromptValidation = () => {
+    setPromptValidationOpen(false);
+    setPromptValidationMessage("");
+    setPromptValidationIsError(false);
+  };
 
   const handleCheckboxChange = (flag: FeatureFlag) => {
     setPendingFlag(flag);
@@ -189,21 +195,6 @@ const ConfigurationPage = () => {
               onCancel={handleCancelEdit}
             />
 
-            <Snackbar
-              open={notification.open}
-              autoHideDuration={6000}
-              onClose={handleCloseNotification}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-              <Alert
-                onClose={handleCloseNotification}
-                severity={notification.severity}
-                sx={{ width: '100%' }}
-              >
-                {notification.message}
-              </Alert>
-            </Snackbar>
-
             {saving && (
               <div className="saving-overlay">
                 <CircularProgress color="primary" />
@@ -263,6 +254,14 @@ const ConfigurationPage = () => {
           title={flagValidationMessage}
           closeText="Cerrar"
           onClose={handleCloseFlagValidation}
+        />
+
+        <ValidationDialog
+          open={promptValidationOpen}
+          title={promptValidationMessage}
+          closeText="Cerrar"
+          onClose={handleClosePromptValidation}
+          isError={promptValidationIsError}
         />
       </Container>
     </div>
