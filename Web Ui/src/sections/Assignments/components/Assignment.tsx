@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditAssignmentForm from "./EditAssignmentForm";
+import EditAssignmentDialog from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltip } from "../../Shared/statusHelpers";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
@@ -65,7 +65,7 @@ export const AssignmentActions: React.FC<AssignmentActionsProps> = ({
 
       {userIsAdmin && (
         isEditFormOpen ? (
-          <EditAssignmentForm
+          <EditAssignmentDialog
             assignmentId={assignment.id}
             currentGroupName={groupName}
             currentTitle={assignment.title}

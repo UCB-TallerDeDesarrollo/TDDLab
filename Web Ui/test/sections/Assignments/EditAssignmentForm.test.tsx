@@ -12,11 +12,15 @@ const mockAssignmentsRepo = {
 
 const mockGetGroups = {
   getGroups: jest.fn(),
+  getGroupById: jest.fn(),
+  getGroupsByUserId: jest.fn(),
 };
 
 const mockUpdateAssignment = {
   updateAssignment: jest.fn(),
 };
+
+const mockUseGlobalState = jest.fn(() => [{ userid: 1, userRole: "admin" }, jest.fn()]);
 
 jest.mock("../../../src/modules/Assignments/repository/AssignmentsRepository", () => {
   return {
@@ -50,6 +54,10 @@ jest.mock("../../../src/modules/Assignments/application/UpdateAssignment", () =>
 Object.defineProperty(window, 'dispatchEvent', {
   value: jest.fn(),
 });
+
+jest.mock("../../../src/modules/User-Authentication/domain/authStates", () => ({
+  useGlobalState: () => mockUseGlobalState(),
+}));
 
 describe("EditAssignmentDialog Component", () => {
   const mockOnClose = jest.fn();
@@ -90,11 +98,13 @@ describe("EditAssignmentDialog Component", () => {
   };
 
   beforeEach(() => {
+    mockUseGlobalState.mockReturnValue([{ userid: 1, userRole: "admin" }, jest.fn()]);
     jest.clearAllMocks();
-    
-    // Configurar mocks por defecto
+
     mockAssignmentsRepo.getAssignmentById.mockResolvedValue(mockAssignment);
     mockGetGroups.getGroups.mockResolvedValue(mockGroups);
+    mockGetGroups.getGroupById.mockResolvedValue(mockGroups[0]);   
+    mockGetGroups.getGroupsByUserId.mockResolvedValue([1]);        
     mockUpdateAssignment.updateAssignment.mockResolvedValue(undefined);
   });
 
@@ -359,6 +369,108 @@ describe("EditAssignmentDialog Component", () => {
       expect(updatedData.state).toBe(mockAssignment.state);
       expect(updatedData.link).toBe(mockAssignment.link);
       expect(updatedData.comment).toBe(mockAssignment.comment);
+    });
+  });
+
+  describe("Carga de grupos según rol", () => {
+    it("teacher: debería cargar grupos por userId", async () => {
+      mockUseGlobalState.mockReturnValue([{ userid: 10, userRole: "teacher" }, jest.fn()]);
+      mockGetGroups.getGroupsByUserId = jest.fn().mockResolvedValue([1]);
+      mockGetGroups.getGroupById = jest.fn().mockResolvedValue(mockGroups[0]);
+      mockGetGroups.getGroups = jest.fn();
+
+      renderEditDialog();
+
+      await waitFor(() => {
+        expect(mockGetGroups.getGroupsByUserId).toHaveBeenCalledWith(10);
+        expect(mockGetGroups.getGroupById).toHaveBeenCalledWith(1);
+      });
+    });
+
+    it("student: debería cargar grupos desde localStorage si existen", async () => {
+      const localStorageMock = {
+        getItem: jest.fn((key: string) => (key === "userGroups" ? "[1, 2]" : null)),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(globalThis, "localStorage", { value: localStorageMock, writable: true });
+
+      mockUseGlobalState.mockReturnValue([{ userid: 5, userRole: "student" }, jest.fn()]);
+      mockGetGroups.getGroupsByUserId = jest.fn();
+      mockGetGroups.getGroups = jest.fn();
+      mockGetGroups.getGroupById = jest.fn().mockImplementation((id: number) =>
+        Promise.resolve({ id, groupName: `Grupo ${id}`, groupDetail: "", creationDate: new Date() })
+      );
+
+      renderEditDialog();
+
+      await waitFor(() => {
+        expect(mockGetGroups.getGroupById).toHaveBeenCalledWith(1);
+        expect(mockGetGroups.getGroupById).toHaveBeenCalledWith(2);
+        expect(mockGetGroups.getGroupsByUserId).not.toHaveBeenCalled();
+      });
+    });
+
+    it("student: debería usar getGroupsByUserId si localStorage está vacío", async () => {
+      const localStorageMock = {
+        getItem: jest.fn().mockReturnValue(null),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(globalThis, "localStorage", { value: localStorageMock, writable: true });
+
+      mockUseGlobalState.mockReturnValue([{ userid: 5, userRole: "student" }, jest.fn()]);
+      mockGetGroups.getGroupsByUserId = jest.fn().mockResolvedValue([1]);
+      mockGetGroups.getGroups = jest.fn();
+      mockGetGroups.getGroupById = jest.fn().mockResolvedValue(mockGroups[0]);
+
+      renderEditDialog();
+
+      await waitFor(() => {
+        expect(mockGetGroups.getGroupsByUserId).toHaveBeenCalledWith(5);
+      });
+    });
+  });
+
+  it("debería manejar error cuando getAssignmentById falla", async () => {
+    mockAssignmentsRepo.getAssignmentById.mockRejectedValue(new Error("Error de conexión"));
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    renderEditDialog();
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("Guardar Cambios"));
+    });
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error obteniendo la tarea actual:",
+        expect.any(Error)
+      );
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error al guardar los cambios:",
+        expect.any(Error)
+      );
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it("debería mostrar error genérico si el catch recibe un valor no-Error", async () => {
+    mockAssignmentsRepo.getAssignmentById.mockResolvedValue(mockAssignment);
+    mockUpdateAssignment.updateAssignment.mockRejectedValue({ message: "fallo inesperado" });
+
+    renderEditDialog();
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("Guardar Cambios"));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Error")).toBeInTheDocument();
+      expect(screen.getByText(/fallo inesperado/i)).toBeInTheDocument();
     });
   });
 });
