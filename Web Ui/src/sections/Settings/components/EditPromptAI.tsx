@@ -66,7 +66,7 @@ const EditPromptAI = ({
               autoFocus
             />
           </Box>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 4 }}>
             <Button 
               className="btn-std btn-primary" 
               onClick={() => onSave(value)}
