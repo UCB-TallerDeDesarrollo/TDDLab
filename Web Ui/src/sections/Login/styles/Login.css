@@ -1,11 +1,19 @@
-/* Estilos globales del login */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%; 
+}
+
+
+
 .login-container {
   min-height: 100vh;
   background-color: #eef2f7;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 24px 48px;
+  padding: 0 0 0;
   font-family: "Inter", "Arial", sans-serif;
 }
 
@@ -313,6 +321,22 @@
   flex-direction: column;
   justify-content: center;
   gap: 20px;
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+}
+
+.main-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 18, 33, 0.45);
+  z-index: 0;
+}
+
+.main-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .benefit-icon {
@@ -322,20 +346,20 @@
   border-radius: 18px;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   font-size: 1.4rem;
 }
 
 .main-card h3 {
   margin: 0;
   font-size: 1.75rem;
-  color: #0d2950;
+  color: #ffffff;
 }
 
 .main-card p {
   margin: 0;
-  color: #4d5d75;
+  color: rgba(255, 255, 255, 0.92);
   line-height: 1.8;
   font-size: 1rem;
 }
@@ -649,115 +673,41 @@
 }
 
 .footer-section {
-  width: 100%;
-  max-width: 1200px;
-  margin: 64px auto 0;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  color: #ffffff;
+  display: flex;            
+  justify-content: space-between; 
+  align-items: center;       
+  
+
+  width: 100%;             
+  box-sizing: border-box;  
+  padding: 30px 80px;     
+  margin-top: auto;       
+  margin-top: 100px;
+  background-color: rgba(0, 9, 38, 1); 
+  border-top: 1px solid rgba(255, 255, 255, 0.1); 
 }
 
-.footer-top {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 24px;
-  background: #0c2f5d;
-  border-radius: 24px;
-  padding: 32px 40px;
-  align-items: start;
+.footer-logo svg, .footer-logo img {
+  display: block;
+  height: 45px; 
+  fill: white; 
 }
 
-.footer-brand {
-  display: flex;
-  align-items: center;
-}
-
-.footer-logo {
-  width: 120px;
-  height: auto;
-}
-
-.footer-contact p,
-.footer-links a,
-.footer-social p {
-  margin: 0;
-  color: #ffffff;
-  line-height: 1.8;
-}
-
-.footer-contact a,
-.footer-links a {
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.footer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.footer-social {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.footer-social-icons {
-  display: flex;
-  gap: 10px;
-}
-
-.footer-social-icons a {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.footer-bottom {
-  background: #0b2547;
-  border-radius: 0 0 24px 24px;
-  padding: 18px 40px;
-  text-align: center;
-}
-
-.footer-bottom p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.95rem;
-}
-
-.resource-image-3,
-.resource-image-4 {
-  background: linear-gradient(135deg, #081a32 0%, #2f4484 100%);
+.footer-copyright p {
+  margin: 0;                 
+  font-size: 14px;
+  color: #ffffff; 
+  font-weight: 400;
+  letter-spacing: 0.5px; 
 }
 
 .text-card {
-  padding: 32px;
+  padding: 20px;
   min-height: 240px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 16px;
-}
-
-.text-card h3 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-.text-card p {
-  margin: 0;
-  color: #2f3e55;
-  line-height: 1.8;
-  font-size: 0.95rem;
 }
 
 @media (max-width: 980px) {
@@ -803,3 +753,36 @@
     padding: 28px 20px;
   }
 }
+
+
+
+.benefits-slider {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 10px;
+  align-items: center;
+  perspective: 1000px; 
+}
+
+
+.benefit-card.main-card {
+  position: relative;
+  min-height: 380px;
+  border-radius: 24px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+
+

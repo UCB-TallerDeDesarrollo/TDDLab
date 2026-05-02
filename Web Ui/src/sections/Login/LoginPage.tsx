@@ -10,10 +10,14 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import TDDLabLogo from "../../assets/TDDLabLogo";
 import TDDLabLogoDark from "../../assets/TDDLabLogoDark";
 import bancoImage from "../../assets/BancoIMG.png";
+import beneficio1Image from "../../assets/Beneficio1.png";
+import beneficio2Image from "../../assets/Beneficio2.png";
+import beneficio3Image from "../../assets/Beneficio3.png";
 import focoImage from "../../assets/Foco.png";
 import barrasImage from "../../assets/Barras.png";
 import interrogacionImage from "../../assets/Interrogacion.png";
 import { ActionButton } from "../Shared/Components/ActionButton";
+import isotipoTDD from "../../assets/isotipotdd.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -158,35 +162,47 @@ const Login = () => {
           </article>
         </section>
 
-        <section className="benefits-section">
-          <div className="section-header">
-            <span className="section-line" />
-            <h2>Beneficios</h2>
-            <span className="section-line" />
-          </div>
+      <section className="benefits-section">
+        <div className="section-header">
+          <span className="section-line" />
+          <h2>Beneficios</h2>
+          <span className="section-line" />
+        </div>
 
-          <div className="benefits-slider">
-            <article className="benefit-card side-card left-card">
-              <div className="benefit-preview" />
-            </article>
-            <article className="benefit-card main-card">
-              <div className="benefit-icon">👥</div>
-              <h3>Aprendizaje práctico real</h3>
-              <p>
-                Desarrolla habilidades aplicadas con ejercicios reales, mejora tu lógica, reduce errores y aprende un flujo profesional desde el inicio.
-              </p>
-            </article>
-            <article className="benefit-card side-card right-card">
-              <div className="benefit-preview" />
-            </article>
-          </div>
+        <div className="benefits-slider">
+        
+          <article
+            className="benefit-card main-card side-card"
+            style={{ backgroundImage: `url(${beneficio2Image})` }}
+          >
+            <h3>Código más confiable</h3>
+            <p>Reduce errores y asegura que tu software funcione como esperas.</p>
+          </article>
 
-          <div className="benefits-dots">
-            <span className="dot" />
-            <span className="dot active" />
-            <span className="dot" />
-          </div>
-        </section>
+
+          <article
+            className="benefit-card main-card"
+            style={{ backgroundImage: `url(${beneficio1Image})` }}
+          >
+
+            <h3>Aprendizaje práctico real</h3>
+            <p>
+              Desarrolla habilidades aplicadas con ejercicios reales y aprende un flujo profesional.
+            </p>
+          </article>
+
+
+          <article
+            className="benefit-card main-card side-card"
+            style={{ backgroundImage: `url(${beneficio3Image})` }}
+          >
+            <h3>Flujo Profesional</h3>
+            <p>Domina Git, commits y pruebas automatizadas desde el primer día.</p>
+          </article>
+        </div>
+
+
+      </section>
 
         <section className="resources-section">
           <div className="section-header">
@@ -243,7 +259,7 @@ const Login = () => {
 
             <article className="integration-card card-right">
               <div className="integration-logo integration-logo-tddlab">
-                <TDDLabLogo />
+                <img src={isotipoTDD} alt="TDD Isotipo" className="isotipo-integration" />
               </div>
               <h3>TDDLab</h3>
               <p>
@@ -292,61 +308,14 @@ const Login = () => {
           </div>
         </section>
 
-        <section className="faq-section">
-          <div className="section-header">
-            <span className="section-line" />
-            <h2>Preguntas Frecuentes <span className="faq-label">(FAQ)</span></h2>
-            <span className="section-line" />
-          </div>
 
-          <div className="faq-list">
-            <article className="faq-item">
-              <span className="faq-dot" />
-              <p>¿Necesito experiencia previa en programación para usar TDDLab?</p>
-            </article>
-            <article className="faq-item">
-              <span className="faq-dot" />
-              <p>¿Necesito experiencia previa en programación para usar TDDLab?</p>
-            </article>
-            <article className="faq-item">
-              <span className="faq-dot" />
-              <p>¿TDDLab es solo teórico o incluye práctica real?</p>
-            </article>
-            <article className="faq-item">
-              <span className="faq-dot" />
-              <p>¿Puedo usar TDDLab con mis herramientas de desarrollo habituales?</p>
-            </article>
-          </div>
-        </section>
 
         <footer className="footer-section">
-          <div className="footer-top">
-            <div className="footer-column footer-brand">
-              <div className="footer-logo">
-                <TDDLabLogo />
-              </div>
-            </div>
-            <div className="footer-column footer-contact">
-              <p>Email: <a href="mailto:contact@tddlab.com">contact@tddlab.com</a></p>
-              <p>Teléfono: +1 (123) 456-7890</p>
-            </div>
-            <div className="footer-column footer-links">
-              <a href="#">Política de Privacidad</a>
-              <a href="#">Términos y Condiciones</a>
-              <a href="#">Política de Cookies</a>
-            </div>
-            <div className="footer-column footer-social">
-              <p>Conecta con nosotros</p>
-              <div className="footer-social-icons">
-                <a href="#">F</a>
-                <a href="#">G</a>
-                <a href="#">Y</a>
-                <a href="#">I</a>
-              </div>
-            </div>
+          <div className="footer-logo">
+            <TDDLabLogo />
           </div>
-
-          <div className="footer-bottom">
+          
+          <div className="footer-copyright">
             <p>© 2025 TDDLab. Todos los derechos reservados.</p>
           </div>
         </footer>
