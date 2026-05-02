@@ -28,9 +28,11 @@ import EditGroupPopup from "./components/EditGroupForm";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
 import { typographyVariants } from "../../styles/typography";
 
-const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
+const MainContainer = styled(Container)({
+  width: "100%",
+  margin: 0,
+  maxWidth: "none",
+  padding: "24px",
 });
 
 const ButtonContainer = styled("div")(({ theme }) => ({
@@ -343,7 +345,7 @@ function Groups() {
   if (isLoading) return <FullScreenLoader variant="page" />;
 
   return (
-    <CenteredContainer>
+    <MainContainer>
       <section className="Grupos">
         <PageHeader>
           <Typography sx={{ ...typographyVariants.h3, color: "#171717" }}>

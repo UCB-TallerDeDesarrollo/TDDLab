@@ -23,8 +23,7 @@ import { FullScreenLoader } from "../../components/FullScreenLoader";
 
 const PracticesContainer = styled(Box)({
   width: "100%",
-  maxWidth: "1400px",
-  margin: "0 auto",
+  margin: 0,
   padding: "24px",
 });
 
