@@ -33,8 +33,27 @@ export default function MainMenu({
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const authData = useGlobalState("authData"); 
-  
-  const isActive = (path: string) => location.pathname === path;
+
+  const isActive = (item: any) => {
+    const { pathname, search } = location;
+    const params = new URLSearchParams(search);
+    const source = params.get("source");
+
+    if (pathname === "/graph" || pathname === "/asistente-ia") {
+      if (item.path === "/assignments") return source === "assignment";
+      if (item.path === "/mis-practicas") return source === "practice";
+    }
+
+    if (item.path === "/assignments") {
+      return pathname.startsWith("/assignments") || pathname.startsWith("/assignment");
+    }
+
+    if (item.path === "/mis-practicas") {
+      return pathname.startsWith("/mis-practicas");
+    }
+
+    return pathname.startsWith(item.path);
+  };
 
   const handleLogoutAction = async () => {
     await handleGithubSignOut();
@@ -76,7 +95,7 @@ export default function MainMenu({
                     key={item.title}
                     component={NavLink}
                     to={item.path}
-                    className={`nav-link-btn ${isActive(item.path) ? "nav-link-active" : ""}`}
+                    className={`nav-link-btn ${isActive(item) ? "nav-link-active" : ""}`}
                   >
                     {item.title}
                   </Button>

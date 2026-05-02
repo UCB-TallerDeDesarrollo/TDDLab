@@ -21,7 +21,8 @@ export const createLinkDialogHandlers = (
 export const handleRedirectStudent = (
   link: string,
   id : number,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  source: "assignment" | "practice" 
 ) => {
   if (link) {
     const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
@@ -35,6 +36,7 @@ export const handleRedirectStudent = (
           repoOwner: user,
           repoName: repo,
           submissionId: id.toString(),
+          source: source 
         }).toString(),
       });
     } else {

@@ -282,7 +282,8 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                     handleRedirectStudent(
                       practiceSubmissions[0].repository_link,
                       practiceSubmissions[0].id,
-                      navigate
+                      navigate,
+                      "practice"
                     );
                   }
                 }}
