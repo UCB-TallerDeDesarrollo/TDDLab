@@ -5,9 +5,28 @@ body, html {
   height: 100%; 
 }
 
+/* ESTILO ÚNICO PARA TODOS LOS CUADROS (GLASS EFFECT) */
+.hero-card, 
+.feature-card, 
+.ideal-card, 
+.integration-card, 
+.faq-item {
+  background: rgba(255, 255, 255, 0.7) !important; 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px); 
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 20px 50px 32px 0 rgba(0, 0, 0, 0.08) !important;
+  
+  border-radius: 20px; 
+}
 
+.ideal-card-content, .integration-card {
+  position: relative;
+  z-index: 1;
+}
 
 .login-container {
+  background-color: #ffffff !important;
   min-height: 100vh;
   background-color: #eef2f7;
   display: flex;
