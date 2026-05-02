@@ -36,24 +36,24 @@ import AssignmentDetailModal from "./AssignmentDetailModal";
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number | number[] ;
+  userGroupid: number | number[];
   userid: number;
   onGroupChange: (groupId: number) => void;
 }
 
 function Assignments({
-                       ShowForm: showForm,
-                       userRole,
-                       userGroupid,
-                       userid,
-                       onGroupChange,
-                     }: Readonly<AssignmentsProps>) {
+  ShowForm: showForm,
+  userRole,
+  userGroupid,
+  userid,
+  onGroupChange,
+}: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-      number | null
+    number | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
@@ -74,8 +74,8 @@ function Assignments({
   const [authData, setAuthData] = useGlobalState("authData");
 
   const orderAssignments = (
-      assignmentsArray: AssignmentDataObject[],
-      selectedSorting: string
+    assignmentsArray: AssignmentDataObject[],
+    selectedSorting: string
   ) => {
     if (assignmentsArray.length == 0) {
       return;
@@ -102,10 +102,10 @@ function Assignments({
         if (Array.isArray(studentGroups)) {
           allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
         }
-        else{
+        else {
           allGroups = await Promise.all([getGroups.getGroupById(studentGroups)]);
         }
-      } else if(localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
+      } else if (localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
         const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
         localStorage.setItem('userGroups', JSON.stringify(studentGroups));
         allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
@@ -121,7 +121,7 @@ function Assignments({
       allGroups = await getGroups.getGroups();
     }
 
-    if(selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
+    if (selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
       await loadAssignmentsByGroupId(allGroups[0].id);
     }
 
@@ -130,49 +130,49 @@ function Assignments({
   }
 
   const fetchData = async () => {
-  try {
-    const allGroups = await getUserGroups();
-    setGroupList(allGroups);
-
-    const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
-    const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
-
-    const savedSelectedGroup = localStorage.getItem("selectedGroup");
-    const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
-    const groupIdAuth = authData?.usergroupid ?? null;
-
-    let firstUserGroup: number | null = null;
     try {
-      const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
-      if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
-        firstUserGroup = storedUserGroups[0];
+      const allGroups = await getUserGroups();
+      setGroupList(allGroups);
+
+      const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
+      const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
+
+      const savedSelectedGroup = localStorage.getItem("selectedGroup");
+      const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
+      const groupIdAuth = authData?.usergroupid ?? null;
+
+      let firstUserGroup: number | null = null;
+      try {
+        const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
+        if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
+          firstUserGroup = storedUserGroups[0];
+        }
+      } catch { }
+
+      const finalGroupId =
+        groupIdUrl ||
+        groupIdLocal ||
+        groupIdAuth ||
+        firstUserGroup ||
+        allGroups?.[0]?.id ||
+        null;
+
+      if (finalGroupId) {
+        await loadAssignmentsByGroupId(finalGroupId);
+      } else {
+        setSelectedGroup(0);
+        setAssignments([]);
       }
-    } catch {}
-
-    const finalGroupId =
-      groupIdUrl ||
-      groupIdLocal ||
-      groupIdAuth ||
-      firstUserGroup ||
-      allGroups?.[0]?.id ||
-      null;
-
-    if (finalGroupId) {
-      await loadAssignmentsByGroupId(finalGroupId);
-    } else {
-      setSelectedGroup(0);
-      setAssignments([]);
+    } catch (error) {
+      console.error("Error en fetchData:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error en fetchData:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-useEffect(() => {
-  fetchData();
-}, [location]);
+  useEffect(() => {
+    fetchData();
+  }, [location]);
 
   // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {
@@ -248,8 +248,8 @@ useEffect(() => {
   };
 
   const filteredAssignments = selectedGroup
-      ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-      : assignments;
+    ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
+    : assignments;
 
   const handleClickDetail = (index: number) => {
     const assignmentId = filteredAssignments[index].id;
@@ -300,15 +300,15 @@ useEffect(() => {
         <FullScreenLoader variant="page" />
       ) : (
         <section className="Tareas">
-          <Box sx={{ width: { xs: '95%', sm: '90%', md: '82%' }, margin: '0 auto', mt: "120px" }}>
+          <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
             {/* Encabezado */}
             <Box sx={{ pb: 2 }}>
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: { xs: 'flex-start', sm: 'flex-end' }, 
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: { xs: 'flex-start', sm: 'flex-end' },
                 flexDirection: { xs: 'column', sm: 'row' },
-                width: '100%', 
+                width: '100%',
                 mb: 1,
                 gap: { xs: '16px', sm: '0' }
               }}>
@@ -390,54 +390,54 @@ useEffect(() => {
             </Grid>
           </Box>
 
-        {/* Diálogos */}
-        {confirmationOpen && (
-          <ConfirmationDialog
-            open={confirmationOpen}
-            title="¿Eliminar la tarea?"
-            content={
-              <>
-                Ten en cuenta que esta acción también eliminará <br /> todas las
-                entregas asociadas.
-              </>
-            }
-            cancelText="Cancelar"
-            deleteText="Eliminar"
-            onCancel={() => setConfirmationOpen(false)}
-            onDelete={handleConfirmDelete}
-          />
-        )}
-        {validationDialogOpen && (
-          <ValidationDialog
-            open={validationDialogOpen}
-            title="Tarea eliminada exitosamente"
-            closeText="Cerrar"
-            onClose={() => {
-              setValidationDialogOpen(false);
-              // Refrescar datos del grupo actual sin recargar página
-              if (selectedGroup) {
-                loadAssignmentsByGroupId(selectedGroup);
-              } else if (authData?.usergroupid) {
-                loadAssignmentsByGroupId(authData.usergroupid);
+          {/* Diálogos */}
+          {confirmationOpen && (
+            <ConfirmationDialog
+              open={confirmationOpen}
+              title="¿Eliminar la tarea?"
+              content={
+                <>
+                  Ten en cuenta que esta acción también eliminará <br /> todas las
+                  entregas asociadas.
+                </>
               }
-            }}
-          />
-        )}
+              cancelText="Cancelar"
+              deleteText="Eliminar"
+              onCancel={() => setConfirmationOpen(false)}
+              onDelete={handleConfirmDelete}
+            />
+          )}
+          {validationDialogOpen && (
+            <ValidationDialog
+              open={validationDialogOpen}
+              title="Tarea eliminada exitosamente"
+              closeText="Cerrar"
+              onClose={() => {
+                setValidationDialogOpen(false);
+                // Refrescar datos del grupo actual sin recargar página
+                if (selectedGroup) {
+                  loadAssignmentsByGroupId(selectedGroup);
+                } else if (authData?.usergroupid) {
+                  loadAssignmentsByGroupId(authData.usergroupid);
+                }
+              }}
+            />
+          )}
 
-        {selectedAssignmentId !== null && (
-          <AssignmentDetailModal
-            open={detailModalOpen}
-            assignmentId={selectedAssignmentId}
-            role={userRole}
-            userid={userid}
-            onClose={() => {
-              setDetailModalOpen(false);
-              setSelectedAssignmentId(null);
-            }}
-          />
-        )}
-      </section>
-    )}
+          {selectedAssignmentId !== null && (
+            <AssignmentDetailModal
+              open={detailModalOpen}
+              assignmentId={selectedAssignmentId}
+              role={userRole}
+              userid={userid}
+              onClose={() => {
+                setDetailModalOpen(false);
+                setSelectedAssignmentId(null);
+              }}
+            />
+          )}
+        </section>
+      )}
     </Container>
   );
 }

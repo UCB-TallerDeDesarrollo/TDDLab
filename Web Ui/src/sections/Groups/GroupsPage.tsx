@@ -44,18 +44,20 @@ const ButtonContainer = styled("div")(({ theme }) => ({
 }));
 
 const PageHeader = styled("div")(({ theme }) => ({
-  width: "82%",
+  width: "92%",
   [theme.breakpoints.down("md")]: {
     width: "90%",
+    margin: "0 auto",
   },
   [theme.breakpoints.down("sm")]: {
     width: "95%",
+    margin: "0 auto",
     flexDirection: "column",
     alignItems: "flex-start",
   },
-  marginLeft: "auto",
+  marginLeft: "40px",
   marginRight: "auto",
-  marginTop: "120px",
+  marginTop: "32px",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
@@ -75,14 +77,16 @@ const HeaderActions = styled("div")(({ theme }) => ({
 }));
 
 const GroupsList = styled("div")(({ theme }) => ({
-  width: "82%",
+  width: "92%",
   [theme.breakpoints.down("md")]: {
     width: "90%",
+    margin: "0 auto",
   },
   [theme.breakpoints.down("sm")]: {
     width: "95%",
+    margin: "0 auto",
   },
-  marginLeft: "auto",
+  marginLeft: "40px",
   marginRight: "auto",
   marginTop: "26px",
   display: "flex",
@@ -375,7 +379,7 @@ function Groups() {
           </HeaderActions>
         </PageHeader>
 
-        <Divider sx={{ width: { xs: "95%", sm: "90%", md: "82%" }, margin: "0 auto", mt: 1.5, borderColor: "#BDBDBD" }} />
+        <Divider sx={{ width: { xs: "95%", sm: "90%", md: "92%" }, ml: { xs: "auto", md: "40px" }, mr: { xs: "auto", md: 0 }, mt: 1.5, borderColor: "#BDBDBD" }} />
 
         <GroupsList>
           {groups.map((group, index) => (
