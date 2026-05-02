@@ -14,7 +14,7 @@ import "../../App.css";
 const PROMPT_OPTIONS = [
   { label: "Prompt Analizar TDD", value: "tddPrompt" },
   { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" },
-  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" },
+  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" }
 ];
 
 const ConfigurationPage = () => {
@@ -164,7 +164,7 @@ const ConfigurationPage = () => {
                 sx={{ mb: 2, width: '50%' }} 
                 size="small" // 'small' ayuda a que el label de MUI se alinee mejor con el alto de 36px
               >
-                <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
+                <InputLabel id="prompt-select-label">Seleccionar tipo de Prompt</InputLabel>
                 <Select
                   labelId="prompt-select-label"
                   value={selectedPrompt}
@@ -213,7 +213,7 @@ const ConfigurationPage = () => {
         )}
 
         <div className="settings-section-title--spaced">
-          Habilitación de Funcionalidades
+          Habilitación de Funcionalidades :
         </div>
 
         {error && <p className="settings-error-text">{error}</p>}

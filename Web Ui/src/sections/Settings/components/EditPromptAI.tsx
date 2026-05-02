@@ -43,7 +43,7 @@ const EditPromptAI = ({
               maxRows={16}
             />
           </Box>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
             <Button 
               className="btn-std btn-primary" 
               onClick={onEdit}
