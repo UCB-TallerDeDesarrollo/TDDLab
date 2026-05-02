@@ -478,7 +478,7 @@ function Groups() {
         groupToEdit={groupToEdit}
         onUpdated={handleGroupUpdated}
       />
-    </CenteredContainer>
+    </MainContainer>
   );
 }
 
