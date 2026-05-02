@@ -18,11 +18,11 @@ interface StudentSidebarProps {
   isMobile?: boolean;
 }
 
-export default function StudentSidebar({ 
-  navArrayLinks, 
-  mobileOpen = false, 
+export default function StudentSidebar({
+  navArrayLinks,
+  mobileOpen = false,
   onClose,
-  isMobile = false 
+  isMobile = false
 }: Readonly<StudentSidebarProps>) {
   const location = useLocation();
 
@@ -94,7 +94,6 @@ export default function StudentSidebar({
       open={isMobile ? mobileOpen : true}
       onClose={onClose}
       sx={{
-        width: 280,
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: {
           width: 280,
@@ -104,6 +103,7 @@ export default function StudentSidebar({
           boxShadow: "2px 0 8px rgba(0,0,0,0.05)",
           top: isMobile ? 0 : 90,
           height: isMobile ? "100%" : "calc(100% - 90px)",
+          paddingTop: isMobile ? "90px" : "0px",
         },
       }}
     >

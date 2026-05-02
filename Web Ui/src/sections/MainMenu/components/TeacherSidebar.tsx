@@ -23,11 +23,11 @@ interface TeacherSidebarProps {
   isMobile?: boolean;
 }
 
-export default function TeacherSidebar({ 
-  navArrayLinks, 
-  mobileOpen = false, 
+export default function TeacherSidebar({
+  navArrayLinks,
+  mobileOpen = false,
   onClose,
-  isMobile = false 
+  isMobile = false
 }: Readonly<TeacherSidebarProps>) {
   const location = useLocation();
 
@@ -102,7 +102,7 @@ export default function TeacherSidebar({
       open={isMobile ? mobileOpen : true}
       onClose={onClose}
       sx={{
-        width: 280,
+
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: {
           width: 280,
@@ -112,6 +112,7 @@ export default function TeacherSidebar({
           boxShadow: "2px 0 8px rgba(0,0,0,0.05)",
           top: isMobile ? 0 : 90, // Position below the top bar on desktop
           height: isMobile ? "100%" : "calc(100% - 90px)",
+          paddingTop: isMobile ? "90px" : "0px",
         },
       }}
     >

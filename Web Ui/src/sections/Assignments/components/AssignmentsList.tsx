@@ -295,7 +295,7 @@ function Assignments({
   };
 
   return (
-    <Container sx={{ width: "100%", margin: 0, padding: { xs: "16px", md: "24px" }, maxWidth: "none" }}>
+    <Container sx={{ width: "100%", maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
       {isLoading ? (
         <FullScreenLoader variant="page" />
       ) : (
