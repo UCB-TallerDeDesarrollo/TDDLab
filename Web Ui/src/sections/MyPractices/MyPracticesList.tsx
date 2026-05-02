@@ -137,7 +137,7 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   return (
     <PracticesContainer>
       <section className="Practicas">
-        <Box sx={{ width: '82%', margin: '0 auto', mt: 4 }}>
+        <Box sx={{ width: { xs: '95%', sm: '90%', md: '82%' }, margin: '0 auto', mt: '120px' }}>
           {/* Encabezado */}
           <Box sx={{ pb: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', mb: 1 }}>

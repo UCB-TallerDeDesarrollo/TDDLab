@@ -75,15 +75,17 @@ export default function MainMenu({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              px: "30px !important",
+              px: { xs: "16px", sm: "30px" }, // More compact on mobile
             }}
           >
             {/* Logo in Top Bar */}
             <NavLink to="/" style={{ display: "flex", alignItems: "center" }}>
-              <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "52px", width: "auto" }} />
+              <img src="/logo.svg" alt="TDDLab Logo" style={{ height: { xs: "36px", sm: "52px" }, width: "auto" }} />
             </NavLink>
 
-            <LoginComponent />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: '8px', sm: '16px' } }}>
+              <LoginComponent />
+            </Box>
           </Toolbar>
         </AppBar>
 
@@ -93,7 +95,7 @@ export default function MainMenu({
             sx={{
               position: "fixed",
               top: 100, // Just below the 90px AppBar
-              left: 20,
+              left: 16,
               zIndex: (theme) => theme.zIndex.appBar,
             }}
           >
@@ -106,11 +108,11 @@ export default function MainMenu({
                 "&:hover": {
                   backgroundColor: "#f5f5f5",
                 },
-                width: 48,
-                height: 48,
+                width: 44,
+                height: 44,
               }}
             >
-              <IconifyIcon icon="mdi:menu" color="#0d1b2a" width={28} height={28} />
+              <IconifyIcon icon="mdi:menu" color="#0d1b2a" width={24} height={24} />
             </IconButton>
           </Box>
         )}
