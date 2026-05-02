@@ -33,14 +33,26 @@ const CenteredContainer = styled(Container)({
   alignItems: "center",
 });
 
-const ButtonContainer = styled("div")({
+const ButtonContainer = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "flex-end",
   gap: "8px",
-});
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    justifyContent: "flex-start",
+  },
+}));
 
-const PageHeader = styled("div")({
+const PageHeader = styled("div")(({ theme }) => ({
   width: "82%",
+  [theme.breakpoints.down("md")]: {
+    width: "90%",
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "95%",
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
   marginLeft: "auto",
   marginRight: "auto",
   marginTop: "32px",
@@ -49,26 +61,36 @@ const PageHeader = styled("div")({
   alignItems: "center",
   gap: "12px",
   flexWrap: "wrap",
-});
+}));
 
-const HeaderActions = styled("div")({
+const HeaderActions = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
   gap: "12px",
-});
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    justifyContent: "space-between",
+  },
+}));
 
-const GroupsList = styled("div")({
+const GroupsList = styled("div")(({ theme }) => ({
   width: "82%",
+  [theme.breakpoints.down("md")]: {
+    width: "90%",
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "95%",
+  },
   marginLeft: "auto",
   marginRight: "auto",
   marginTop: "26px",
   display: "flex",
   flexDirection: "column",
   gap: "18px",
-});
+}));
 
-const GroupCard = styled(Paper)({
+const GroupCard = styled(Paper)(({ theme }) => ({
   borderRadius: "10px",
   border: "1px solid #e7e7e7",
   boxShadow: "0 2px 6px rgba(0, 0, 0, 0.16)",
@@ -77,7 +99,12 @@ const GroupCard = styled(Paper)({
   alignItems: "center",
   justifyContent: "space-between",
   cursor: "pointer",
-});
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: "12px",
+  },
+}));
 
 // Estilos reutilizables para IconButton
 const iconButtonSx = {
@@ -348,7 +375,7 @@ function Groups() {
           </HeaderActions>
         </PageHeader>
 
-        <Divider sx={{ width: "82%", margin: "0 auto", mt: 1.5, borderColor: "#BDBDBD" }} />
+        <Divider sx={{ width: { xs: "95%", sm: "90%", md: "82%" }, margin: "0 auto", mt: 1.5, borderColor: "#BDBDBD" }} />
 
         <GroupsList>
           {groups.map((group, index) => (
