@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Table,
   TableHead,
   TableBody,
@@ -72,7 +72,6 @@ function Assignments({
   const [, setDeleteLoading] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
-  const navigate = useNavigate();
   const location = useLocation();
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);

@@ -67,7 +67,6 @@ const AssignmentDetailModal: React.FC<AssignmentDetailModalProps> = ({
   const {
     assignment,
     groupDetails,
-    loadingSubmissions,
     submissions,
     studentSubmission,
     submission,
