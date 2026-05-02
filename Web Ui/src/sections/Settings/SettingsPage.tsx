@@ -8,6 +8,7 @@ import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatu
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import "../../App.css";
 
 const PROMPT_OPTIONS = [
@@ -26,6 +27,8 @@ const ConfigurationPage = () => {
     message: string;
     severity: 'success' | 'error' | 'info' | 'warning';
   }>({ open: false, message: '', severity: 'info' });
+  const [flagValidationOpen, setFlagValidationOpen] = useState(false);
+  const [flagValidationMessage, setFlagValidationMessage] = useState("");
   const [flagConfirmationOpen, setFlagConfirmationOpen] = useState(false);
   const [pendingFlag, setPendingFlag] = useState<FeatureFlag | null>(null);
   const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt: string }>({ tddPrompt: "", refactoringPrompt: "", evaluateTDDPrompt: "" });
@@ -117,6 +120,8 @@ const ConfigurationPage = () => {
       setFlags((prevFlags) =>
         prevFlags.map((flag) => (flag.id === pendingFlag.id ? updatedFlag : flag))
       );
+      setFlagValidationMessage(pendingFlag.is_enabled ? "Se deshabilitó" : "Se habilitó");
+      setFlagValidationOpen(true);
       setFlagConfirmationOpen(false);
       setPendingFlag(null);
     } catch (err) {
@@ -128,6 +133,11 @@ const ConfigurationPage = () => {
   const handleCancelFlagChange = () => {
     setFlagConfirmationOpen(false);
     setPendingFlag(null);
+  };
+
+  const handleCloseFlagValidation = () => {
+    setFlagValidationOpen(false);
+    setFlagValidationMessage("");
   };
 
   return (
@@ -245,6 +255,14 @@ const ConfigurationPage = () => {
           deleteText={pendingFlag?.is_enabled ? "Deshabilitar" : "Habilitar"}
           onCancel={handleCancelFlagChange}
           onDelete={handleConfirmFlagChange}
+          confirmButtonClassName="btn-primary"
+        />
+
+        <ValidationDialog
+          open={flagValidationOpen}
+          title={flagValidationMessage}
+          closeText="Cerrar"
+          onClose={handleCloseFlagValidation}
         />
       </Container>
     </div>
