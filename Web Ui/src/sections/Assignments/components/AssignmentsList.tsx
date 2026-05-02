@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
+import {
   Container,
   Button,
-  SelectChangeEvent } from "@mui/material";
+  SelectChangeEvent,
+  Box,
+  Grid,
+  Typography,
+  Divider,
+} from "@mui/material";
 import { FullScreenLoader } from "../../../components/FullScreenLoader";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
@@ -27,21 +28,7 @@ import { useGlobalState } from "../../../modules/User-Authentication/domain/auth
 import { typographyVariants } from "../../../styles/typography";
 import AssignmentDetailModal from "./AssignmentDetailModal";
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
 
-const CustomTableCell1 = styled(TableCell)({
-  width: "80%",
-});
-
-const StyledTableBody = styled(TableBody)({
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
-});
 
 
 
@@ -307,100 +294,92 @@ useEffect(() => {
     setHoveredRow(index);
   };
 
- return (
-  <Container>
-    {isLoading ? (
-      <FullScreenLoader variant="page" />
-    ) : (
-      <section className="Tareas">
-        {/* 🔹 Botones separados de la tabla */}
-        {/* 🔹 Botones arriba de la tabla en una sola línea */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "1rem",
-            width: "82%",
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexWrap: "nowrap"
-          }}
-        >
-          <GroupFilter
-            selectedGroup={selectedGroup}
-            groupList={groupList}
-            onChangeHandler={handleGroupChange}
-            defaultName={
-              groupList.find((group) => group.id == selectedGroup)?.groupName ||
-              groupList[0]?.groupName ||
-              "Selecciona un grupo"
-            }
-          />
-          <SortingComponent
-            selectedSorting={selectedSorting}
-            onChangeHandler={handleOrderAssignments}
-          />
-          {userRole !== "student" && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              sx={{
-                borderRadius: "17px",
-                textTransform: "none",
-                ...typographyVariants.paragraphMedium,
-                paddingX: "16px",
-                paddingY: "8px",
-                minWidth: "90px",
-                whiteSpace: "nowrap",
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
-              }}
-              onClick={showForm}
-            >
-              Crear
-            </Button>
-          )}
-        </div>
+  return (
+    <Container sx={{ width: "100%", maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
+      {isLoading ? (
+        <FullScreenLoader variant="page" />
+      ) : (
+        <section className="Tareas">
+          <Box sx={{ width: '82%', margin: '0 auto', mt: 4 }}>
+            {/* Encabezado */}
+            <Box sx={{ pb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', mb: 1 }}>
+                <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
+                  Tareas
+                </Typography>
 
+                {/* Controles */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: "12px",
+                  }}
+                >
+                  <GroupFilter
+                    selectedGroup={selectedGroup}
+                    groupList={groupList}
+                    onChangeHandler={handleGroupChange}
+                    defaultName={
+                      groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                      groupList[0]?.groupName ||
+                      "Selecciona un grupo"
+                    }
+                  />
+                  <SortingComponent
+                    selectedSorting={selectedSorting}
+                    onChangeHandler={handleOrderAssignments}
+                  />
+                  {userRole !== "student" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                      sx={{
+                        borderRadius: "17px",
+                        textTransform: "none",
+                        ...typographyVariants.paragraphMedium,
+                        paddingX: "16px",
+                        paddingY: "8px",
+                        minWidth: "90px",
+                        whiteSpace: "nowrap",
+                        transition: "all 0.175s ease-out",
+                        "&:hover": {
+                          filter: "brightness(0.9)",
+                          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
+                        },
+                        "&:active": {
+                          transform: "scale(0.97)",
+                        },
+                      }}
+                      onClick={showForm}
+                    >
+                      Crear
+                    </Button>
+                  )}
+                </Box>
+              </Box>
+              <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
+            </Box>
 
-        {/* 🔹 Tabla solo con encabezado de columnas */}
-        <StyledTable>
-          <TableHead>
-            <TableRow
-              sx={{
-                borderBottom: "none",
-              }}
-            >
-              <CustomTableCell1
-                sx={{ ...typographyVariants.h5, color: "#333" }}
-              >
-                Tareas
-              </CustomTableCell1>
-            </TableRow>
-          </TableHead>
-          <StyledTableBody>
-            {filteredAssignments.map((assignment, index) => (
-              <Assignment
-                key={assignment.id}
-                assignment={assignment}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-                role={userRole}
-              />
-            ))}
-          </StyledTableBody>
-        </StyledTable>
+            {/* Listado apilado de tarjetas */}
+            <Grid container spacing={2}>
+              {filteredAssignments.map((assignment, index) => (
+                <Grid item xs={12} key={assignment.id}>
+                  <Assignment
+                    assignment={assignment}
+                    index={index}
+                    handleClickDetail={handleClickDetail}
+                    handleClickDelete={handleClickDelete}
+                    handleRowHover={handleRowHover}
+                    role={userRole}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
 
         {/* Diálogos */}
         {confirmationOpen && (
@@ -450,9 +429,8 @@ useEffect(() => {
         )}
       </section>
     )}
-  </Container>
-);
-
+    </Container>
+  );
 }
 
 export default Assignments;
