@@ -26,21 +26,23 @@ const EditPromptAI = ({
   const handleClear = () => setValue("");
 
   return (
-    <Box sx={{ mt: 4, mb: 8, p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+    <Box sx={{ mt: 4, mb: 8 }}>
       {!isEditing ? (
         <>
-          <TextField
-            value={initialPrompt}
-            multiline
-            fullWidth
-            InputProps={{
-              readOnly: true,
-              inputProps: { className: "prompt-input-readonly" }
-            }}
-            variant="outlined"
-            minRows={8}
-            maxRows={16}
-          />
+          <Box sx={{ p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+            <TextField
+              value={initialPrompt}
+              multiline
+              fullWidth
+              InputProps={{
+                readOnly: true,
+                inputProps: { className: "prompt-input-readonly" }
+              }}
+              variant="outlined"
+              minRows={8}
+              maxRows={16}
+            />
+          </Box>
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
             <Button 
               className="btn-std btn-primary" 
@@ -52,16 +54,18 @@ const EditPromptAI = ({
         </>
       ) : (
         <>
-          <TextField
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            multiline
-            fullWidth
-            variant="outlined"
-            minRows={8}
-            maxRows={16}
-            autoFocus
-          />
+          <Box sx={{ p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+            <TextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              multiline
+              fullWidth
+              variant="outlined"
+              minRows={8}
+              maxRows={16}
+              autoFocus
+            />
+          </Box>
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
             <Button 
               className="btn-std btn-primary" 

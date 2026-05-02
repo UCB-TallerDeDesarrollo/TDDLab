@@ -458,7 +458,7 @@ body * { font-family: var(--font-family) !important; }
 
 /* Estilo para el input de Prompt cuando está bloqueado */
 .prompt-input-readonly {
-  background-color: #f5f5f5 !important;
+  background-color: #ffffff !important;
   cursor: default;
 }
 /* ==========================================================================
