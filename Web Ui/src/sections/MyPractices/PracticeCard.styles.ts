@@ -42,9 +42,9 @@ export const practiceCardStyles = {
   cardContentStacked: {
     flex: 1,
     display: "flex",
-    flexDirection: "row",
+    flexDirection: { xs: "column", sm: "row" },
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: { xs: "flex-start", sm: "center" },
     padding: "16px 20px",
     gap: "16px",
   } as SxProps<Theme>,
@@ -52,10 +52,11 @@ export const practiceCardStyles = {
   // Contenedor principal que agrupa contenido + acciones
   mainContent: {
     display: "flex",
+    flexDirection: { xs: "column", sm: "row" },
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: { xs: "flex-start", sm: "center" },
     width: "100%",
-    gap: "24px",
+    gap: { xs: "12px", sm: "24px" },
   } as SxProps<Theme>,
 
   // Estilos del contenido anterior (para compatibilidad)
@@ -114,11 +115,12 @@ export const practiceCardStyles = {
   // Contenedor de acciones para layout apilado (horizontal, derecha)
   actionsContainerStacked: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: { xs: "flex-start", sm: "flex-end" },
     alignItems: "center",
     gap: "6px",
     flexShrink: 0,
     minHeight: "36px",
+    width: { xs: "100%", sm: "auto" },
   } as SxProps<Theme>,
 
   // Contenedor de acciones anterior (para compatibilidad)

@@ -303,8 +303,16 @@ useEffect(() => {
           <Box sx={{ width: { xs: '95%', sm: '90%', md: '82%' }, margin: '0 auto', mt: 4 }}>
             {/* Encabezado */}
             <Box sx={{ pb: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', mb: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: { xs: 'flex-start', sm: 'flex-end' }, 
+                flexDirection: { xs: 'column', sm: 'row' },
+                width: '100%', 
+                mb: 1,
+                gap: { xs: '16px', sm: '0' }
+              }}>
+                <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
                   Tareas
                 </Typography>
 
@@ -312,10 +320,11 @@ useEffect(() => {
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "flex-end",
+                    justifyContent: { xs: "flex-start", sm: "flex-end" },
                     alignItems: "center",
                     flexWrap: "wrap",
                     gap: "12px",
+                    width: { xs: "100%", sm: "auto" }
                   }}
                 >
                   <GroupFilter
