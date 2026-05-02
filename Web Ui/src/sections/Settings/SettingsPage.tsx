@@ -7,6 +7,7 @@ import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePromp
 import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
+import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import "../../App.css";
 
 const PROMPT_OPTIONS = [
@@ -25,6 +26,8 @@ const ConfigurationPage = () => {
     message: string;
     severity: 'success' | 'error' | 'info' | 'warning';
   }>({ open: false, message: '', severity: 'info' });
+  const [flagConfirmationOpen, setFlagConfirmationOpen] = useState(false);
+  const [pendingFlag, setPendingFlag] = useState<FeatureFlag | null>(null);
   const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt: string }>({ tddPrompt: "", refactoringPrompt: "", evaluateTDDPrompt: "" });
   const [selectedPrompt, setSelectedPrompt] = useState<string>("tddPrompt");
   const [isEditing, setEditing] = useState(false);
@@ -99,18 +102,32 @@ const ConfigurationPage = () => {
 
   const handleCloseNotification = () => setNotification({ ...notification, open: false });
 
-  const handleCheckboxChange = async (id: number, currentValue: boolean) => {
-    const confirmChange = window.confirm(
-      `¿Estás seguro de que quieres ${!currentValue ? "habilitar" : "deshabilitar"} esta funcionalidad?`
-    );
-    if (!confirmChange) return;
+  const handleCheckboxChange = (flag: FeatureFlag) => {
+    setPendingFlag(flag);
+    setFlagConfirmationOpen(true);
+  };
+
+  const handleConfirmFlagChange = async () => {
+    if (!pendingFlag) return;
     try {
-      const updatedFlag = await updateFlagUseCase.execute(id, !currentValue);
-      setFlags((prevFlags) => prevFlags.map((flag) => flag.id === id ? updatedFlag : flag));
+      const updatedFlag = await updateFlagUseCase.execute(
+        pendingFlag.id,
+        !pendingFlag.is_enabled
+      );
+      setFlags((prevFlags) =>
+        prevFlags.map((flag) => (flag.id === pendingFlag.id ? updatedFlag : flag))
+      );
+      setFlagConfirmationOpen(false);
+      setPendingFlag(null);
     } catch (err) {
       console.error("Error al actualizar el flag", err);
       setError("Error al actualizar el flag");
     }
+  };
+
+  const handleCancelFlagChange = () => {
+    setFlagConfirmationOpen(false);
+    setPendingFlag(null);
   };
 
   return (
@@ -199,11 +216,36 @@ const ConfigurationPage = () => {
                 className="settings-flag-checkbox"
                 type="checkbox"
                 checked={flag.is_enabled}
-                onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
+                onChange={() => handleCheckboxChange(flag)}
               />
             </label>
           ))}
         </div>
+
+        <ConfirmationDialog
+          open={flagConfirmationOpen}
+          title={
+            pendingFlag?.is_enabled
+              ? "Confirmar deshabilitación"
+              : "Confirmar habilitación"
+          }
+          content={
+            pendingFlag ? (
+              <>
+                {pendingFlag.is_enabled
+                  ? "Vas a deshabilitar"
+                  : "Vas a habilitar"}{" "}
+                la funcionalidad <strong>{pendingFlag.feature_name}</strong>.
+              </>
+            ) : (
+              ""
+            )
+          }
+          cancelText="Cancelar"
+          deleteText={pendingFlag?.is_enabled ? "Deshabilitar" : "Habilitar"}
+          onCancel={handleCancelFlagChange}
+          onDelete={handleConfirmFlagChange}
+        />
       </Container>
     </div>
   );
