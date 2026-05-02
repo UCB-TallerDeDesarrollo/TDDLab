@@ -36,6 +36,7 @@ interface PracticesProps {
 function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
   const isTeacher = userRole?.toLowerCase() === 'docente' || userRole?.toLowerCase() === 'teacher';
+
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -111,7 +112,7 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const handleConfirmDelete = async () => {
     try {
       if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
-        
+
         await deletePractice.DeletePractice(
           practices[selectedPracticeIndex].id
         );
@@ -136,94 +137,94 @@ function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   return (
     <PracticesContainer>
       <section className="Practicas">
-        <Box sx={{ width: isTeacher ? '82%' : '100%', margin: '0 auto', mt: 4 }}>
-        {/* Encabezado */}
-        <Box sx={{ pb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', mb: 1 }}>
-            <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
-              Prácticas
-            </Typography>
+        <Box sx={{ width: '82%', margin: '0 auto', mt: 4 }}>
+          {/* Encabezado */}
+          <Box sx={{ pb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', mb: 1 }}>
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
+                Prácticas
+              </Typography>
 
-            {/* Controles */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "12px",
-              }}
-            >
-            <SortingComponent
-              selectedSorting={selectedSorting}
-              onChangeHandler={handleOrderPractices}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={
-                <IconifyIcon
-                  icon="mdi:plus"
-                  width={20}
-                  height={20}
-                  color="white"
-                  hoverColor="#e0e0e0"
+              {/* Controles */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "12px",
+                }}
+              >
+                <SortingComponent
+                  selectedSorting={selectedSorting}
+                  onChangeHandler={handleOrderPractices}
                 />
-              }
-              sx={{
-                textTransform: "none",
-                ...typographyVariants.paragraphMedium,
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
-              }}
-              onClick={showForm}
-            >
-              Crear
-            </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={
+                    <IconifyIcon
+                      icon="mdi:plus"
+                      width={20}
+                      height={20}
+                      color="white"
+                      hoverColor="#e0e0e0"
+                    />
+                  }
+                  sx={{
+                    textTransform: "none",
+                    ...typographyVariants.paragraphMedium,
+                    transition: "all 0.175s ease-out",
+                    "&:hover": {
+                      filter: "brightness(0.9)",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                    },
+                    "&:active": {
+                      transform: "scale(0.97)",
+                    },
+                  }}
+                  onClick={showForm}
+                >
+                  Crear
+                </Button>
+              </Box>
             </Box>
+            <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
           </Box>
-          <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
-        </Box>
 
-        {/* Listado apilado de tarjetas */}
-        <Grid container spacing={2}>
-          {practices.map((practice, index) => (
-            <Grid item xs={12} key={practice.id}>
-              <PracticeCard
-                practice={practice}
-                index={index}
-                onClickDetail={handleClickDetail}
-                onClickDelete={handleClickDelete}
-              />
-            </Grid>
-          ))}
-        </Grid>
+          {/* Listado apilado de tarjetas */}
+          <Grid container spacing={2}>
+            {practices.map((practice, index) => (
+              <Grid item xs={12} key={practice.id}>
+                <PracticeCard
+                  practice={practice}
+                  index={index}
+                  onClickDetail={handleClickDetail}
+                  onClickDelete={handleClickDelete}
+                />
+              </Grid>
+            ))}
+          </Grid>
 
-        {confirmationOpen && (
-          <ConfirmationDialog
-            open={confirmationOpen}
-            title="¿Eliminar la practica?"
-            content="Ten en cuenta que esta acción también eliminará todas las entregas asociadas."
-            cancelText="Cancelar"
-            deleteText="Eliminar"
-            onCancel={() => setConfirmationOpen(false)}
-            onDelete={handleConfirmDelete}
-          />
-        )}
-        {validationDialogOpen && (
-          <ValidationDialog
-            open={validationDialogOpen}
-            title="Practica eliminada exitosamente"
-            closeText="Cerrar"
-            onClose={() => window.location.reload()}
-          />
-        )}
+          {confirmationOpen && (
+            <ConfirmationDialog
+              open={confirmationOpen}
+              title="¿Eliminar la practica?"
+              content="Ten en cuenta que esta acción también eliminará todas las entregas asociadas."
+              cancelText="Cancelar"
+              deleteText="Eliminar"
+              onCancel={() => setConfirmationOpen(false)}
+              onDelete={handleConfirmDelete}
+            />
+          )}
+          {validationDialogOpen && (
+            <ValidationDialog
+              open={validationDialogOpen}
+              title="Practica eliminada exitosamente"
+              closeText="Cerrar"
+              onClose={() => window.location.reload()}
+            />
+          )}
         </Box>
       </section>
     </PracticesContainer>
