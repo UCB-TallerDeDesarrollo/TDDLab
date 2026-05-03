@@ -221,6 +221,7 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
             repoName: repo,
             fetchedSubmissions: JSON.stringify(fetchedSubmissions),
             submissionId: submissionId.toString(),
+            source: "assignment"
           }).toString(),
         });
       } else {
@@ -319,8 +320,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                 className="btn-std btn-primary"
                 disabled={!sub.repository_link}
                 onClick={() =>
-                  navigate("/asistente-ia", {
-                    state: { repositoryLink: sub.repository_link },
+                  navigate({
+                    pathname: "/asistente-ia",
+                    search: createSearchParams({
+                      repositoryLink: sub.repository_link,
+                      source: "assignment" 
+                    }).toString(),
                   })
                 }
               >
@@ -426,7 +431,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({ role, userid }) => 
                     handleRedirectStudent(
                       submission.repository_link,
                       submission.id,
-                      navigate
+                      navigate,
+                      "assignment"
                     )
                   }
                   className="btn-std btn-primary"

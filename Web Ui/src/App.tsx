@@ -27,8 +27,27 @@ import { CircularProgress } from "@mui/material";
 
 const navArrayLinks = [
   { title: "Grupos", path: "/groups", icon: <GroupsIcon />, access: ["admin", "teacher"] },
-  { title: "Tareas", path: "/", icon: <DescriptionIcon />, access: ["admin", "student", "teacher"] },
-  { title: "Mis prácticas", path: "/mis-practicas", icon: <NoteAdd />, access: ["admin", "teacher", "student"] },
+  { 
+    title: "Tareas", 
+    path: "/assignments", 
+    icon: <DescriptionIcon />, 
+    access: ["admin", "student", "teacher"],
+    // Reglas adicionales para marcar como activo:
+    activeRules: {
+      paths: ["/assignments", "/assignment"], // Cubre lista y detalle
+      source: "assignment" // Si estamos en /graph?source=assignment
+    }
+  },
+  { 
+    title: "Mis prácticas", 
+    path: "/mis-practicas", 
+    icon: <NoteAdd />, 
+    access: ["admin", "teacher", "student"],
+    activeRules: {
+      paths: ["/mis-practicas"], 
+      source: "practice" // Si estamos en /graph?source=practice
+    }
+  },
   { title: "Usuarios", path: "/user", icon: <PersonIcon />, access: ["admin", "teacher"] },
   { title: "Ajustes", path: "/configuraciones", icon: <SettingsIcon />, access: ["admin", "teacher"] },
 ];
@@ -60,11 +79,6 @@ function App() {
   }, []);
 
   if (authData.userid === undefined) {
-    /*
-      CAMBIO 1: div con style={{ display:"flex", justifyContent:"center",
-      alignItems:"center", height:"100vh", width:"100vw" }}
-      → className="fullscreen-loading" (definida en App.css)
-    */
     return (
       <div className="fullscreen-loading">
         <CircularProgress />
@@ -79,7 +93,7 @@ function App() {
       )}
       <Routes>
         <Route
-          path="/"
+          path="/assignments"
           element={
             <ProtectedRouteComponent>
               <GestionTareas userRole={authData.userRole ?? ""} userGroupid={authData.usergroupid ?? -1} />

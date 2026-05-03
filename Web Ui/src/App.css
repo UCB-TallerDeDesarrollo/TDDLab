@@ -361,12 +361,15 @@ body * { font-family: var(--font-family) !important; }
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 8px;
+  color: #111111;
 }
 
 .settings-section-title--spaced {
-  font-weight: 600;
-  font-size: 16px;
-  margin: 1.5rem 0 0.5rem 0;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.2;
+  margin: 2rem 0 1.25rem 0;
+  color: #111111;
 }
 
 /* Overlay de carga al guardar prompts */
@@ -384,11 +387,70 @@ body * { font-family: var(--font-family) !important; }
 }
 
 /* Items de checkboxes en settings */
+.settings-flag-list {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .settings-flag-item {
-  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  font-size: 18px;
+  line-height: 1.35;
+  color: #111111;
+}
+
+.settings-flag-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-flag-checkbox {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transform: translateY(-1px);
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid #6bbf45;
+  border-radius: 4px;
+  background: #ffffff;
+  display: grid;
+  place-content: center;
+}
+
+.settings-flag-checkbox::after {
+  content: "";
+  width: 6px;
+  height: 11px;
+  border-right: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.12s ease-in-out;
+  margin-top: -2px;
+}
+
+.settings-flag-checkbox:checked {
+  background: #6bbf45;
+}
+
+.settings-flag-checkbox:checked::after {
+  border-right-color: #ffffff;
+  border-bottom-color: #ffffff;
+  transform: rotate(45deg) scale(1);
+}
+
+.settings-flag-checkbox:focus-visible {
+  outline: 2px solid rgba(105, 191, 69, 0.45);
+  outline-offset: 2px;
 }
 
 .settings-error-text {
@@ -399,7 +461,7 @@ body * { font-family: var(--font-family) !important; }
 
 /* Estilo para el input de Prompt cuando está bloqueado */
 .prompt-input-readonly {
-  background-color: #f5f5f5 !important;
+  background-color: #ffffff !important;
   cursor: default;
 }
 /* ==========================================================================
@@ -547,6 +609,7 @@ a:hover {
   margin-bottom: 16px !important;
   text-align: left;
 }
+
 /* ===================== GLOBAL PAGE LAYOUT ===================== */
 
 .page-container {

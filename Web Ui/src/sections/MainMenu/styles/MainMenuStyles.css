@@ -54,15 +54,16 @@
 .nav-link-active { 
   opacity: 1 !important;
   font-weight: 700 !important; 
+  font-size: 1.2rem !important; 
 }
 
 .nav-link-active::after {
   content: "";
   position: absolute;
-  bottom: 12px; 
-  left: 20px;   
-  right: 20px;  
-  height: 3px;
+  bottom: 15px; 
+  left: 15px;   
+  right: 15px;  
+  height: 4px;
   background-color: #ffffff;
   border-radius: 2px; 
 }
