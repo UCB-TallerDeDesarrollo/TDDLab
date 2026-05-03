@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
 import { FormControl, InputLabel, Select, MenuItem,
-         Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
+         Typography, Container, Box, CircularProgress } from '@mui/material';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
 import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
+import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import "../../App.css";
 
 const PROMPT_OPTIONS = [
   { label: "Prompt Analizar TDD", value: "tddPrompt" },
   { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" },
-  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" },
+  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" }
 ];
 
 const ConfigurationPage = () => {
@@ -20,11 +22,13 @@ const ConfigurationPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [notification, setNotification] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error' | 'info' | 'warning';
-  }>({ open: false, message: '', severity: 'info' });
+  const [promptValidationOpen, setPromptValidationOpen] = useState(false);
+  const [promptValidationMessage, setPromptValidationMessage] = useState("");
+  const [promptValidationIsError, setPromptValidationIsError] = useState(false);
+  const [flagValidationOpen, setFlagValidationOpen] = useState(false);
+  const [flagValidationMessage, setFlagValidationMessage] = useState("");
+  const [flagConfirmationOpen, setFlagConfirmationOpen] = useState(false);
+  const [pendingFlag, setPendingFlag] = useState<FeatureFlag | null>(null);
   const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt: string }>({ tddPrompt: "", refactoringPrompt: "", evaluateTDDPrompt: "" });
   const [selectedPrompt, setSelectedPrompt] = useState<string>("tddPrompt");
   const [isEditing, setEditing] = useState(false);
@@ -83,10 +87,14 @@ const ConfigurationPage = () => {
         updatePrompts.evaluateTDDPrompt
       );
       setPrompts(updatePrompts);
-      setNotification({ open: true, message: "Prompt actualizado correctamente", severity: "success" });
+      setPromptValidationMessage("Prompt actualizado");
+      setPromptValidationIsError(false);
+      setPromptValidationOpen(true);
       setEditing(false);
     } catch (error) {
-      setNotification({ open: true, message: "Error al actualizar el prompt", severity: "error" });
+      setPromptValidationMessage("Error al actualizar el prompt");
+      setPromptValidationIsError(true);
+      setPromptValidationOpen(true);
     } finally {
       setSaving(false);
     }
@@ -97,20 +105,45 @@ const ConfigurationPage = () => {
     loadPrompts();
   };
 
-  const handleCloseNotification = () => setNotification({ ...notification, open: false });
+  const handleClosePromptValidation = () => {
+    setPromptValidationOpen(false);
+    setPromptValidationMessage("");
+    setPromptValidationIsError(false);
+  };
 
-  const handleCheckboxChange = async (id: number, currentValue: boolean) => {
-    const confirmChange = window.confirm(
-      `¿Estás seguro de que quieres ${!currentValue ? "habilitar" : "deshabilitar"} esta funcionalidad?`
-    );
-    if (!confirmChange) return;
+  const handleCheckboxChange = (flag: FeatureFlag) => {
+    setPendingFlag(flag);
+    setFlagConfirmationOpen(true);
+  };
+
+  const handleConfirmFlagChange = async () => {
+    if (!pendingFlag) return;
     try {
-      const updatedFlag = await updateFlagUseCase.execute(id, !currentValue);
-      setFlags((prevFlags) => prevFlags.map((flag) => flag.id === id ? updatedFlag : flag));
+      const updatedFlag = await updateFlagUseCase.execute(
+        pendingFlag.id,
+        !pendingFlag.is_enabled
+      );
+      setFlags((prevFlags) =>
+        prevFlags.map((flag) => (flag.id === pendingFlag.id ? updatedFlag : flag))
+      );
+      setFlagValidationMessage(pendingFlag.is_enabled ? "Se deshabilitó" : "Se habilitó");
+      setFlagValidationOpen(true);
+      setFlagConfirmationOpen(false);
+      setPendingFlag(null);
     } catch (err) {
       console.error("Error al actualizar el flag", err);
       setError("Error al actualizar el flag");
     }
+  };
+
+  const handleCancelFlagChange = () => {
+    setFlagConfirmationOpen(false);
+    setPendingFlag(null);
+  };
+
+  const handleCloseFlagValidation = () => {
+    setFlagValidationOpen(false);
+    setFlagValidationMessage("");
   };
 
   return (
@@ -137,7 +170,7 @@ const ConfigurationPage = () => {
                 sx={{ mb: 2, width: '50%' }} 
                 size="small" // 'small' ayuda a que el label de MUI se alinee mejor con el alto de 36px
               >
-                <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
+                <InputLabel id="prompt-select-label">Seleccionar tipo de Prompt</InputLabel>
                 <Select
                   labelId="prompt-select-label"
                   value={selectedPrompt}
@@ -162,21 +195,6 @@ const ConfigurationPage = () => {
               onCancel={handleCancelEdit}
             />
 
-            <Snackbar
-              open={notification.open}
-              autoHideDuration={6000}
-              onClose={handleCloseNotification}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-              <Alert
-                onClose={handleCloseNotification}
-                severity={notification.severity}
-                sx={{ width: '100%' }}
-              >
-                {notification.message}
-              </Alert>
-            </Snackbar>
-
             {saving && (
               <div className="saving-overlay">
                 <CircularProgress color="primary" />
@@ -186,23 +204,65 @@ const ConfigurationPage = () => {
         )}
 
         <div className="settings-section-title--spaced">
-          Habilitación de Funcionalidades
+          Habilitación de Funcionalidades :
         </div>
 
         {error && <p className="settings-error-text">{error}</p>}
 
-        {flags.map((flag) => (
-          <div key={flag.id} className="settings-flag-item">
-            <label>
+        <div className="settings-flag-list">
+          {flags.map((flag) => (
+            <label key={flag.id} className="settings-flag-item">
+              <span className="settings-flag-name">{flag.feature_name}</span>
               <input
+                className="settings-flag-checkbox"
                 type="checkbox"
                 checked={flag.is_enabled}
-                onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
+                onChange={() => handleCheckboxChange(flag)}
               />
-              {flag.feature_name}
             </label>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <ConfirmationDialog
+          open={flagConfirmationOpen}
+          title={
+            pendingFlag?.is_enabled
+              ? "Confirmar deshabilitación"
+              : "Confirmar habilitación"
+          }
+          content={
+            pendingFlag ? (
+              <>
+                {pendingFlag.is_enabled
+                  ? "Vas a deshabilitar"
+                  : "Vas a habilitar"}{" "}
+                la funcionalidad <strong>{pendingFlag.feature_name}</strong>.
+              </>
+            ) : (
+              ""
+            )
+          }
+          cancelText="Cancelar"
+          deleteText={pendingFlag?.is_enabled ? "Deshabilitar" : "Habilitar"}
+          onCancel={handleCancelFlagChange}
+          onDelete={handleConfirmFlagChange}
+          confirmButtonClassName="btn-primary"
+        />
+
+        <ValidationDialog
+          open={flagValidationOpen}
+          title={flagValidationMessage}
+          closeText="Cerrar"
+          onClose={handleCloseFlagValidation}
+        />
+
+        <ValidationDialog
+          open={promptValidationOpen}
+          title={promptValidationMessage}
+          closeText="Cerrar"
+          onClose={handleClosePromptValidation}
+          isError={promptValidationIsError}
+        />
       </Container>
     </div>
   );

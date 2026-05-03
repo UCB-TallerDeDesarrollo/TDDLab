@@ -15,6 +15,7 @@ interface ConfirmationDialogProps {
   deleteText: string;
   onCancel: () => void;
   onDelete: () => void;
+  confirmButtonClassName?: string;
 }
 
 export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
@@ -25,6 +26,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   deleteText,
   onCancel,
   onDelete,
+  confirmButtonClassName = "btn-danger",
 }) => {
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
@@ -48,7 +50,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
         <Button
           onClick={onDelete}
-          className="btn-std btn-danger"
+          className={`btn-std ${confirmButtonClassName}`}
         >
           {deleteText}
         </Button>
