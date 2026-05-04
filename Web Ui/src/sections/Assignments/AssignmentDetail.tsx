@@ -46,6 +46,7 @@ import { GetSubmissionByUserandAssignmentId } from "../../modules/Submissions/Ap
 import {
   handleRedirectStudent,
 } from '../Shared/handlers.ts';
+import "./AssignmentDetail.css";
 
 
 interface AssignmentDetailProps {
@@ -454,17 +455,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   return (
 
-    <div
-      style={{
-        display: "flex",
-        flexDirection: 'column',
-        justifyContent: "center",
-        alignItems: "center",
-        gap: '10px',
-      }}
-    >
+    <div className="assignment-detail-page">
       {assignment ? (
-        <Card variant="elevation" elevation={0}>
+        <Card variant="elevation" elevation={0} className="assignment-detail-card">
           <CardContent>
             <div style={{ marginBottom: "40px" }}>
               <Typography
@@ -715,12 +708,12 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
         </div>
       )}
       {!isStudent(role) && (
-        <Card variant="elevation" elevation={0}>
+        <Card variant="elevation" elevation={0} className="assignment-detail-card">
           <CardContent>
             <Typography
               variant="h6"
               component="div"
-              align="center"
+              align="left"
               style={{ fontSize: "24px", lineHeight: "3.8" }}
             >
               Lista de Estudiantes

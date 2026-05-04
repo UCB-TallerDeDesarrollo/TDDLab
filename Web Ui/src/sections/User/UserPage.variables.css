@@ -1,5 +1,5 @@
 :root {
-  --users-table-bg: #ececec;
+  --users-table-bg: transparent;
   --users-table-border: #c8c8c8;
   --users-table-header-text: #1b1b1b;
   --users-table-cell-text: #2a2a2a;
