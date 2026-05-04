@@ -22,6 +22,7 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 import './EditAssignmentForm.css';
 import { t } from './EditAssignmentFormSX.tsx';
+import { useNavigate } from "react-router-dom";
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
@@ -38,6 +39,7 @@ function EditAssignmentDialog({
   currentDescription,
   onClose,
 }: EditAssignmentDialogProps) {
+  const navigate = useNavigate();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
@@ -89,6 +91,8 @@ function EditAssignmentDialog({
         onClose();
         // Notificar a la lista para refrescar sin recargar la página
         window.dispatchEvent(new CustomEvent('assignment-updated'));
+        
+        navigate(`/assignment/${assignmentId}`);
       } else {
         // Manejar el caso en el que la tarea actual no existe
         console.error("La tarea actual no se encontró.");
@@ -121,7 +125,14 @@ function EditAssignmentDialog({
   };
 
   return (
-    <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog 
+      open={true} 
+      onClose={onClose} 
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+      maxWidth="sm" 
+      fullWidth
+    >
       <DialogTitle>Editar Tarea : {currentTitle}</DialogTitle>
       <DialogContent>
         <Box className="edit-assignment-form-grid">

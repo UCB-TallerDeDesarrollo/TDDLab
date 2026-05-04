@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Box, Button, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
+import './EditPromptAI.css';
 
 interface EditPromptAIProps {
   initialPrompt: string;
@@ -25,7 +26,7 @@ const EditPromptAI = ({
   const handleClear = () => setValue("");
 
   return (
-    <Box sx={{ mt: 4, mb: 8, p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+    <div className="edit-prompt-container">
       {!isEditing ? (
         <>
           <TextField
@@ -40,11 +41,11 @@ const EditPromptAI = ({
             minRows={8} 
             maxRows={16}
           />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
+          <div className="edit-prompt-actions">
             <Button variant="contained" onClick={onEdit}>
               Editar Prompt
             </Button>
-          </Box>
+          </div>
         </>
       ) : (
         <>
@@ -58,7 +59,7 @@ const EditPromptAI = ({
             maxRows={16}
             autoFocus
           />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
+          <div className="edit-prompt-actions--editing">
             <Button variant="contained" color="primary" onClick={() => onSave(value)}>
               Guardar
             </Button>
@@ -68,10 +69,10 @@ const EditPromptAI = ({
             <Button variant="contained" color="primary" onClick={handleClear}>
               Limpiar
             </Button>
-          </Box>
+          </div>
         </>
       )}
-    </Box>
+    </div>
   );
 };
 

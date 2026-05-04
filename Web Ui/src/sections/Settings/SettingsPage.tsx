@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FormControl, InputLabel, Select, MenuItem, 
-         Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
+         Typography, Container, CircularProgress, Snackbar, Alert } from '@mui/material';
+import './SettingsPage.css';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
@@ -134,20 +135,18 @@ const ConfigurationPage = () => {
   };
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
-          Configuración de Prompts
-        </div>
-      </Box>
+      <div className="settings-page-header">
+        Configuración de Prompts
+      </div>
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+        <div className="settings-page-loading">
           <CircularProgress />
-        </Box>
+        </div>
       ) : error ? (
-        <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
+        <div className="settings-page-error-box">
           <Typography color="error">{error}</Typography>
-        </Box>
+        </div>
       ) : (
         <>
           <FormControl sx={{ mb: 2, width: '50%' }}>
@@ -190,32 +189,19 @@ const ConfigurationPage = () => {
           </Snackbar>
           
           {saving && (
-            <Box
-              sx={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1300,
-              }}
-            >
+            <div className="settings-page-saving-overlay">
               <CircularProgress color="primary" />
-            </Box>
+            </div>
           )}
         </>
       )}
        
-      <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
+      <div className="settings-features-header">
         Habilitación de Funcionalidades
       </div> 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="settings-error-text">{error}</p>}
       {flags.map((flag) => (
-        <div key={flag.id} style={{ marginBottom: "10px" }}>
+        <div key={flag.id} className="settings-flag-item">
           <label>
             <input
               type="checkbox"
