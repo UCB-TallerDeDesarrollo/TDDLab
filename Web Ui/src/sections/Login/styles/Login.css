@@ -1,65 +1,134 @@
-.login-container {
+/* Contenedor Principal */
+.landing-wrapper {
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* Hero Section con fondo oscuro/imagen */
+.hero-section {
+  background: linear-gradient(rgba(0, 35, 70, 0.85), rgba(0, 35, 70, 0.85)), 
+              url('https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=2128&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  min-height: 500px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: var(--white);
-  font-family: 'Inter', sans-serif;
+  padding: 0 10%;
+  color: white;
 }
 
-.app-header {
-  background-color: var(--primary-color); /* Color oscuro neutro */
-  color: var(--white);
-  padding: 20px;
-  width: 100%;
-  text-align: center;
-  top: 0;
-  position: absolute;
-}
+.hero-logo { width: 280px; margin-bottom: 24px; }
+.hero-description { font-size: 1.1rem; line-height: 1.6; max-width: 600px; margin-bottom: 32px; opacity: 0.9; }
 
-.app-header h1 {
-  margin: 0;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.login-content {
-  text-align: center;
-  max-width: 500px;
-  padding: 20px;
-}
-
-.login-Title {
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--text-primary);
-  line-height: 1.4;
-  margin-bottom: 30px;
-}
-
-.login-buttons {
+/* Tarjetas de Información */
+.info-cards-container {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: center;
+  gap: 30px;
+  padding: 80px 5%;
+  background-color: #fff;
+}
+
+.info-card {
+  background-color: #002346; /* El azul oscuro de tu prototipo */
+  color: white;
+  padding: 40px 25px;
+  border-radius: 4px;
+  text-align: center;
+  flex: 1;
+  max-width: 350px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card-icon { font-size: 45px !important; margin-bottom: 15px; }
+
+/* Botones de Login en el Modal */
+.btn-auth-github { background-color: #24292e !important; color: white !important; }
+.btn-auth-google { background-color: #4285f4 !important; color: white !important; }
+
+/* Responsive sencillo */
+@media (max-width: 768px) {
+  .info-cards-container { flex-direction: column; align-items: center; }
+  .hero-section { text-align: center; justify-content: center; }
+}
+
+/* Sección Beneficios */
+.benefits-section {
+  background-color: #001b36; /* Azul profundo del prototipo */
+  color: white;
+  padding: 80px 10%;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 60px !important;
+  font-weight: 700 !important;
+}
+
+.benefit-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.benefit-text { flex: 1; }
+.benefit-text h5 { margin-bottom: 15px !important; font-weight: 600 !important; }
+
+.benefit-image {
+  flex: 1;
+  height: 220px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Grid inferior de beneficios */
+.benefits-grid { margin-top: 60px !important; }
+.benefit-grid-item { display: flex; gap: 20px; align-items: flex-start; }
+.benefit-image-small {
+  width: 150px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background-color: #333;
+}
+.benefit-text-small h6 { margin-bottom: 8px !important; font-weight: 600 !important; }
+
+/* Estilos Footer */
+.landing-footer {
+  background-color: #001529;
+  color: #fff;
+  padding: 40px 10% 20px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 30px;
+  margin-bottom: 20px;
+}
+
+.footer-logo { height: 35px; }
+.footer-links a { 
+  display: block; 
+  color: rgba(255,255,255,0.7); 
+  text-decoration: none; 
+  margin-bottom: 5px;
+  font-size: 0.85rem;
+}
+.social-icons svg { cursor: pointer; opacity: 0.8; transition: 0.2s; }
+.social-icons svg:hover { opacity: 1; color: #1976d2; }
+
+.copyright {
+  display: block;
+  text-align: center;
+  color: rgba(255,255,255,0.5);
   width: 100%;
 }
 
-/* Variantes Sociales (Basadas en btn-std) */
-.btn-auth-github {
-  background-color: #24292e !important; /* Color oficial GitHub */
-  color: white !important;
-  border: none !important;
-}
-.btn-auth-github:hover {
-  background-color: #1a1e22 !important;
-}
-
-.btn-auth-google {
-  background-color: #4285f4 !important; /* Color oficial Google */
-  color: white !important;
-  border: none !important;
-}
-.btn-auth-google:hover {
-  background-color: #3367d6 !important;
-}
+/* Imágenes de ejemplo (Unsplash) */
+.placeholder-img-guides { background-image: url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=500'); }
+.placeholder-img-tutorials { background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=500'); }

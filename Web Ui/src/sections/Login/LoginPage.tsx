@@ -1,154 +1,94 @@
 import "./styles/Login.css";
-import { CheckIfUserHasAccount } from "../../modules/User-Authentication/application/checkIfUserHasAccount";
-import { useNavigate } from "react-router-dom";
-import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
-import { handleSignInWithGoogle } from "../../modules/User-Authentication/application/signInWithGoogle";
-import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { useEffect, useState } from "react";
-import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
-import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { useNavigate } from "react-router-dom";
+import { Button, Dialog, DialogContent, Typography, Box, IconButton } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import GitHubIcon from "@mui/icons-material/GitHub";
 import GoogleIcon from "@mui/icons-material/Google";
-import { Button } from "@mui/material"; 
 
-const Login = () => {
+// Componentes internos
+import { HeroSection } from "./components/HeroSection";
+import { InfoCards } from "./components/InfoCards";
+import { BenefitsSection } from "./components/BenefitsSection";
+import { LandingFooter } from "./components/LandingFooter";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+
+// Lógica de negocio (importaciones que ya tenías)
+import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
+import { handleSignInWithGoogle } from "../../modules/User-Authentication/application/signInWithGoogle";
+import { CheckIfUserHasAccount } from "../../modules/User-Authentication/application/checkIfUserHasAccount";
+import { setCookieAndGlobalStateForValidUser } from "../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
+
+const LoginPage = () => {
   const navigate = useNavigate();
   const authData = useGlobalState("authData");
-
-  const [validationOpen, setValidationOpen] = useState(false);
-  const [validationMessage, setValidationMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-
-  const showDialog = (message: string, error = true) => {
-    setValidationMessage(message);
-    setIsError(error);
-    setValidationOpen(true);
-  };
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [validation, setValidation] = useState({ open: false, msg: "", isError: false });
 
   useEffect(() => {
-    if (authData[0].userEmail) {
-      navigate({
-        pathname: "/",
-      });
-    }
+    if (authData[0].userEmail) navigate("/");
   }, [authData, navigate]);
 
-  const handleGitHubLogin = async () => {
+  const handleLogin = async (provider: 'github' | 'google') => {
     try {
-      const userData = await handleSignInWithGitHub();
-
+      const userData = provider === 'github' ? await handleSignInWithGitHub() : await handleSignInWithGoogle();
       if (userData?.email) {
         const idToken = await userData.getIdToken();
         const loginPort = new CheckIfUserHasAccount();
-        const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
+        const userCourse = provider === 'github' 
+            ? await loginPort.userHasAnAccountWithToken(idToken)
+            : await loginPort.userHasAnAccountWithGoogleToken(idToken);
 
         if (userCourse) {
-          setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
-            navigate({
-              pathname: "/",
-            }),
-          );
-          localStorage.setItem("userProfilePic", userData.photoURL || "");
+          setCookieAndGlobalStateForValidUser(userData, userCourse, () => navigate("/"));
         } else {
-          showDialog("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
+          setValidation({ open: true, msg: "Usuario no registrado.", isError: true });
         }
-      } else {
-        showDialog("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
       }
     } catch (error: any) {
-      const errorMessage = error?.message || "Error al iniciar sesión";
-
-      if (errorMessage.includes("Google")) {
-        showDialog("Este usuario está registrado con Google. Por favor, inicia sesión con Google.");
-      } else if (
-        errorMessage.includes("no encontrado") ||
-        errorMessage.includes("404")
-      ) {
-        showDialog("Usuario no encontrado. Por favor, regístrate primero.");
-      } else {
-        showDialog(errorMessage);
-      }
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      const userData = await handleSignInWithGoogle();
-
-      if (userData?.email) {
-        const idToken = await userData.getIdToken();
-        const loginPort = new CheckIfUserHasAccount();
-        const userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
-
-        if (userCourse) {
-          setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
-            navigate({
-              pathname: "/",
-            }),
-          );
-          localStorage.setItem("userProfilePic", userData.photoURL || "");
-        } else {
-          showDialog("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
-        }
-      } else {
-        showDialog("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
-      }
-    } catch (error: any) {
-      const errorMessage = error?.message || "Error al iniciar sesión";
-
-      if (errorMessage.includes("GitHub")) {
-        showDialog("Este usuario está registrado con GitHub. Por favor, inicia sesión con GitHub.");
-      } else if (
-        errorMessage.includes("no encontrado") ||
-        errorMessage.includes("404")
-      ) {
-        showDialog("Usuario no encontrado. Por favor, regístrate primero.");
-      } else {
-        showDialog(errorMessage);
-      }
+      setValidation({ open: true, msg: error.message, isError: true });
     }
   };
 
   return (
-    <>
-      <div className="login-container">
-        <header className="app-header">
-          <h1>TDDLab</h1>
-        </header>
-        <div className="login-content">
-          <p className="login-Title">
-            ¡Bienvenido a TDDLab!, usa tu cuenta para acceder:
-          </p>
-          <div className="login-buttons">
-            <Button
-              className="btn-std btn-auth-github"
-              onClick={handleGitHubLogin}
-              startIcon={<GitHubIcon />}
-              fullWidth
-            >
-              Accede con GitHub
-            </Button>
-            <Button
-              className="btn-std btn-auth-google"
-              onClick={handleGoogleLogin}
-              startIcon={<GoogleIcon />}
-              fullWidth
-            >
-              Accede con Google
-            </Button>
-          </div>
-        </div>
-      </div>
+    <div className="landing-wrapper">
+      <HeroSection onLoginClick={() => setLoginModalOpen(true)} />
+      <InfoCards />
+      <BenefitsSection />
+      <LandingFooter />
+
+      {/* Modal de Acceso */}
+      <Dialog open={loginModalOpen} onClose={() => setLoginModalOpen(false)} maxWidth="xs" fullWidth>
+        <Box p={3} textAlign="center">
+            <Box display="flex" justifyContent="flex-end">
+                <IconButton onClick={() => setLoginModalOpen(false)}><CloseIcon /></IconButton>
+            </Box>
+          <Typography variant="h5" fontWeight="bold" gutterBottom>Bienvenido a TDDLab</Typography>
+          <Typography variant="body2" color="textSecondary" mb={3}>Usa tu cuenta para acceder:</Typography>
+          
+          <Button 
+            className="btn-std btn-auth-github" 
+            fullWidth onClick={() => handleLogin('github')}
+            startIcon={<GitHubIcon />}
+            sx={{ mb: 2 }}
+          >Accede con GitHub</Button>
+
+          <Button 
+            className="btn-std btn-auth-google" 
+            fullWidth onClick={() => handleLogin('google')}
+            startIcon={<GoogleIcon />}
+          >Accede con Google</Button>
+        </Box>
+      </Dialog>
 
       <ValidationDialog
-        open={validationOpen}
-        title={validationMessage}
-        closeText="Aceptar"
-        onClose={() => setValidationOpen(false)}
-        isError={isError}
-      />
-    </>
+        open={validation.open}
+        title={validation.msg}
+        isError={validation.isError}
+        onClose={() => setValidation({ ...validation, open: false })} closeText={""}      />
+    </div>
   );
 };
 
-export default Login;
+export default LoginPage;
