@@ -87,9 +87,10 @@ function App() {
 
   return (
     <Router>
-      {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
-      )}
+      <MainMenu 
+        navArrayLinks={navArrayLinks} 
+        userRole={authData.userRole ?? "guest"} 
+      />
       <Routes>
         <Route
           path="/assignments"

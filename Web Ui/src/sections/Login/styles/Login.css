@@ -1,24 +1,44 @@
-/* Contenedor Principal */
+/* 1. Limpiamos el contenedor principal */
 .landing-wrapper {
-  background-color: #ffffff;
-  color: #333;
+  margin: 0;
+  padding: 0;
+  /* Quitamos el color blanco de aquí para que no "se filtre" arriba */
+  background-color: transparent; 
 }
 
-/* Hero Section con fondo oscuro/imagen */
+/* 2. Ajustamos el Hero para que suba hasta el tope */
 .hero-section {
-  background: linear-gradient(rgba(0, 35, 70, 0.85), rgba(0, 35, 70, 0.85)), 
-              url('https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=2128&auto=format&fit=crop');
+  /* Importante: El padding-top debe estar AQUÍ, no en el wrapper. 
+     Esto hace que el fondo azul suba, pero el texto baje para no quedar bajo el menú */
+  padding-top: 100px !important; 
+  padding-bottom: 60px;
+  padding-left: 10%;
+  padding-right: 10%;
+
+  /* El degradado ahora cubre todo desde y=0 */
+  background: linear-gradient(90deg, #001b36 40%, rgba(0, 27, 54, 0.7) 70%, rgba(0, 27, 54, 0.4) 100%), 
+              url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop');
   background-size: cover;
-  background-position: center;
-  min-height: 500px;
+  background-position: center right;
+  
+  min-height: 85vh; 
   display: flex;
   align-items: center;
-  padding: 0 10%;
   color: white;
+  position: relative;
+  /* Aseguramos que empiece desde el borde superior de la pantalla */
+  margin-top: -70px; /* Ajusta este valor si ves que todavía hay un mínimo borde (depende de la altura de tu nav) */
 }
 
-.hero-logo { width: 280px; margin-bottom: 24px; }
-.hero-description { font-size: 1.1rem; line-height: 1.6; max-width: 600px; margin-bottom: 32px; opacity: 0.9; }
+/* 3. Aseguramos que el contenido no se pegue al borde */
+.hero-content {
+  max-width: 750px;
+  text-align: left;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
 /* Tarjetas de Información */
 .info-cards-container {
