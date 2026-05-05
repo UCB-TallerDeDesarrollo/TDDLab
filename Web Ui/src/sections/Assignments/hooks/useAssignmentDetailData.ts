@@ -195,12 +195,11 @@ export const useStudentSubmission = (
           await getSubmissionsByAssignmentId.getSubmissionsByAssignmentId(
             assignmentId
           );
-        const userSubmission = allSubmissions.find(
+        const userSubmissions = allSubmissions.filter(
           (submission) => submission.userid === userId
         );
-        if (userSubmission) {
-          setStudentSubmission(userSubmission);
-        }
+        const userSubmission = userSubmissions[userSubmissions.length - 1];
+        setStudentSubmission(userSubmission);
       } catch (error) {
         console.error("Error fetching student submission:", error);
         setError("An error occurred while fetching the student submission.");

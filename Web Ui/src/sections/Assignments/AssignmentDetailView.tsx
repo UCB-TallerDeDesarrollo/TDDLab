@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { formatDate } from "../../utils/dateUtils";
 import { getSubmissionStatusLabel } from "../../utils/submissionStatus";
+import { isStudent } from "../../utils/roleGuards";
 import { ActionButton } from "../Shared/Components/ActionButton";
 import { InfoRow } from "../Shared/Components/InfoRow";
 import { SubmissionTable } from "./components/SubmissionTable";
@@ -48,8 +49,6 @@ interface AssignmentDetailViewProps {
   onOpenAssistant: (submission: SubmissionDataObject) => void;
   onViewAdditionalGraph: (submission: SubmissionDataObject) => void;
 }
-
-const isStudent = (role: string) => role === "student";
 
 export const AssignmentDetailView = ({
   role,
@@ -149,10 +148,7 @@ export const AssignmentDetailView = ({
                 <InfoRow
                   icon={<CommentIcon sx={assignmentDetailSx.secondaryIcon} />}
                   label="Comentario"
-                  value={
-                    studentSubmission?.repository_link === "" ||
-                    studentSubmission == null
-                  }
+                  value={assignment.comment}
                   containerSx={assignmentDetailSx.compactRow}
                   textSx={assignmentDetailSx.secondaryText}
                 />

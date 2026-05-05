@@ -24,7 +24,9 @@ export const useGitHubLinkValidation = (
 
     try {
       const url = new URL(text);
-      const pathParts = url.pathname.split('/').filter(part => part.length > 0);
+      const pathParts = url.pathname
+        .split("/")
+        .filter((part) => part.length > 0);
 
       if (!text.includes("github.com")) {
         return { isValid: false, error: "El enlace debe pertenecer a GitHub." };
@@ -51,24 +53,38 @@ export const useGitHubLinkValidation = (
       }
 
     } catch (error) {
-      if (error instanceof TypeError) {
-        return {
-          isValid: false,
-          error: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio"
-        };
-      }
-      throw new Error(`Error validando enlace GitHub: ${error instanceof Error ? error.message : String(error)}`);
+      return {
+        isValid: false,
+        error: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio",
+      };
     }
 
     return { isValid: true, error: "" };
   };
 
   useEffect(() => {
-    if (initialRepo !== undefined) {
-      setRepo(initialRepo);
+    if (initialRepo === undefined) {
+      setRepo("");
+      setValidLink(true);
+      setErrorMessage("");
+      return;
+    }
+
+    setRepo(initialRepo);
+    try {
       const { isValid, error } = validateGitHubLink(initialRepo);
       setValidLink(isValid);
       setErrorMessage(error);
+    } catch (error) {
+      setValidLink(false);
+      if (error instanceof TypeError || error instanceof RangeError) {
+        setErrorMessage(
+          "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio"
+        );
+      } else {
+        setErrorMessage("Error inesperado al validar el enlace.");
+        console.error("Error validating GitHub link:", error);
+      }
     }
   }, [initialRepo]);
 
@@ -84,8 +100,14 @@ export const useGitHubLinkValidation = (
       setErrorMessage(error);
     } catch (error) {
       setValidLink(false);
-      setErrorMessage("Error inesperado al validar el enlace.");
-      console.error("Error validating GitHub link:", error);
+      if (error instanceof TypeError || error instanceof RangeError) {
+        setErrorMessage(
+          "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio"
+        );
+      } else {
+        setErrorMessage("Error inesperado al validar el enlace.");
+        console.error("Error validating GitHub link:", error);
+      }
     }
 
     setIsLoading(false);
@@ -94,4 +116,3 @@ export const useGitHubLinkValidation = (
   return { repo, validLink, isLoading, errorMessage, handleLinkChange };
 
 };
-

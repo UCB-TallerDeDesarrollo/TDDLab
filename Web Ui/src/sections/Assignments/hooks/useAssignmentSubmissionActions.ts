@@ -64,28 +64,32 @@ export const useAssignmentSubmissionActions = ({
 
   const sendComment = useCallback(
     async (comment: string) => {
-      if (submission) {
-        const endDate = new Date();
-        const end_date = new Date(
-          endDate.getFullYear(),
-          endDate.getMonth(),
-          endDate.getDate()
-        );
-        const submissionData: SubmissionUpdateObject = {
-          id: submission.id,
-          status: "delivered",
-          end_date: end_date,
-          comment: comment,
-        };
-
-        await finishSubmission.finishSubmission(submission.id, submissionData);
-        await onRefresh();
-        onCloseLinkDialog();
+      if (!submission) {
+        onCloseCommentDialog();
+        return;
       }
 
-      onCloseCommentDialog();
+      const endDate = new Date();
+      const end_date = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      const submissionData: SubmissionUpdateObject = {
+        id: submission.id,
+        status: "delivered",
+        end_date: end_date,
+        comment: comment,
+      };
+
+      try {
+        await finishSubmission.finishSubmission(submission.id, submissionData);
+        await onRefresh();
+      } finally {
+        onCloseCommentDialog();
+      }
     },
-    [finishSubmission, onCloseCommentDialog, onCloseLinkDialog, onRefresh, submission]
+    [finishSubmission, onCloseCommentDialog, onRefresh, submission]
   );
 
   return {

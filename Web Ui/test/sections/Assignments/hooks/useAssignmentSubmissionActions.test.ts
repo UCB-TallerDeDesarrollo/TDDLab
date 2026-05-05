@@ -96,7 +96,6 @@ describe("useAssignmentSubmissionActions", () => {
       })
     );
     expect(onRefresh).toHaveBeenCalledTimes(1);
-    expect(onCloseLinkDialog).toHaveBeenCalledTimes(1);
     expect(onCloseCommentDialog).toHaveBeenCalledTimes(1);
   });
 
@@ -119,6 +118,75 @@ describe("useAssignmentSubmissionActions", () => {
     expect(finishSubmissionMock).not.toHaveBeenCalled();
     expect(onRefresh).not.toHaveBeenCalled();
     expect(onCloseLinkDialog).not.toHaveBeenCalled();
+    expect(onCloseCommentDialog).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns early without side effects when assignmentId is falsy", async () => {
+    const { result } = renderHook(() =>
+      useAssignmentSubmissionActions({
+        assignmentId: 0,
+        userId: 7,
+        submission: baseSubmission,
+        onRefresh,
+        onCloseLinkDialog,
+        onCloseCommentDialog,
+      })
+    );
+
+    await act(async () => {
+      await result.current.sendGithubLink("https://github.com/demo/project");
+    });
+
+    expect(createSubmissionMock).not.toHaveBeenCalled();
+    expect(onRefresh).not.toHaveBeenCalled();
+    expect(onCloseLinkDialog).not.toHaveBeenCalled();
+  });
+
+  it("propagates error and skips side effects when sendGithubLink fails", async () => {
+    createSubmissionMock.mockRejectedValue(new Error("Network error"));
+
+    const { result } = renderHook(() =>
+      useAssignmentSubmissionActions({
+        assignmentId: 4,
+        userId: 7,
+        submission: baseSubmission,
+        onRefresh,
+        onCloseLinkDialog,
+        onCloseCommentDialog,
+      })
+    );
+
+    await expect(
+      act(async () => {
+        await result.current.sendGithubLink("https://github.com/demo/project");
+      })
+    ).rejects.toThrow("Network error");
+
+    expect(onRefresh).not.toHaveBeenCalled();
+    expect(onCloseLinkDialog).not.toHaveBeenCalled();
+  });
+
+  it("propagates error and skips side effects when sendComment fails", async () => {
+    finishSubmissionMock.mockRejectedValue(new Error("Update failed"));
+
+    const { result } = renderHook(() =>
+      useAssignmentSubmissionActions({
+        assignmentId: 4,
+        userId: 7,
+        submission: baseSubmission,
+        onRefresh,
+        onCloseLinkDialog,
+        onCloseCommentDialog,
+      })
+    );
+
+    await expect(
+      act(async () => {
+        await result.current.sendComment("Done");
+      })
+    ).rejects.toThrow("Update failed");
+
+    expect(onRefresh).not.toHaveBeenCalled();
     expect(onCloseCommentDialog).toHaveBeenCalledTimes(1);
   });
 });

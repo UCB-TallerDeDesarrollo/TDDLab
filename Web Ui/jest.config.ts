@@ -20,4 +20,8 @@ export default {
     },
   },
   silent: true,
+  collectCoverageFrom: [
+    "<rootDir>/src/**/*.{ts,tsx}",
+    "!<rootDir>/src/**/*.d.ts",
+  ],
 };
