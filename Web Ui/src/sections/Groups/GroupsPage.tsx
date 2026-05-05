@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Container,
   Button,
-  Box,
   Typography,
   Divider,
   Paper,
@@ -32,16 +31,6 @@ const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "center",
 });
-
-const ButtonContainer = styled("div")(({ theme }) => ({
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: "8px",
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-    justifyContent: "flex-start",
-  },
-}));
 
 const PageHeader = styled("div")(({ theme }) => ({
   width: "92%",
@@ -94,23 +83,68 @@ const GroupsList = styled("div")(({ theme }) => ({
   gap: "18px",
 }));
 
-const GroupCard = styled(Paper)(({ theme }) => ({
-  borderRadius: "10px",
-  border: "1px solid #e7e7e7",
-  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.16)",
-  padding: "16px 18px",
+const GroupCard = styled(Paper)({
+  borderRadius: "12px",
+  border: "1px solid #E7E7E7",
+  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.12)",
   display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
+  flexDirection: "column",
   cursor: "pointer",
+  backgroundColor: "#FFFFFF",
+  overflow: "hidden",
+  position: "relative",
+  transition: "all 0.32s cubic-bezier(0.4, 0, 0.2, 1)",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "3px",
+    backgroundColor: "#1565c0",
+    transform: "scaleX(0)",
+    transformOrigin: "left",
+    transition: "transform 0.32s cubic-bezier(0.4, 0, 0.2, 1)",
+  },
+  "&:hover": {
+    borderColor: "#D0D0D0",
+    backgroundColor: "#F5F7FA",
+    boxShadow: "0 12px 28px rgba(0, 0, 0, 0.12)",
+    transform: "translateY(-6px)",
+    "&::before": {
+      transform: "scaleX(1)",
+    },
+  },
+});
+
+const GroupCardContent = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "16px",
+  width: "100%",
+  padding: "16px 20px",
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
     alignItems: "flex-start",
-    gap: "12px",
   },
 }));
 
-// Estilos reutilizables para IconButton
+const GroupActions = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "flex-end",
+  alignItems: "center",
+  gap: "6px",
+  flexShrink: 0,
+  minHeight: "36px",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    justifyContent: "flex-start",
+  },
+}));
+
 const iconButtonSx = {
   transition: "all 0.175s ease-out",
   "&:hover": {
@@ -122,7 +156,6 @@ const iconButtonSx = {
   },
 };
 
-// Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
@@ -131,7 +164,6 @@ const asId = (v: unknown): number => {
 function Groups() {
   const navigate = useNavigate();
 
-  // UI state
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -139,7 +171,6 @@ function Groups() {
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
-  // data
   const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -149,7 +180,6 @@ function Groups() {
   const getUsersByGroupId = new GetUsersByGroupId(userRepository);
   const [authData, setAuthData] = useGlobalState("authData");
 
-  // id seleccionado (sincronizado con auth/localStorage)
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
   // Sincroniza selección en toda la app
@@ -389,51 +419,59 @@ function Groups() {
               sx={{
                 backgroundColor:
                   selectedRow === index || asId(currentSelectedGroupId) === asId(group.id)
-                    ? "#dfe8f2"
+                    ? "#F5F7FA"
                     : "#ffffff",
+                "&::before": {
+                  transform:
+                    selectedRow === index || asId(currentSelectedGroupId) === asId(group.id)
+                      ? "scaleX(1)"
+                      : "scaleX(0)",
+                },
               }}
             >
-              <Typography sx={{ ...typographyVariants.paragraphBig, color: "#202124" }}>
-                {group.groupName}
-              </Typography>
+              <GroupCardContent>
+                <Typography sx={{ ...typographyVariants.paragraphBig, color: "#202124" }}>
+                  {group.groupName}
+                </Typography>
 
-              <ButtonContainer>
-                <Tooltip title="Editar grupo" arrow>
-                  <IconButton
-                    aria-label="editar"
-                    onClick={(e) => handleEditClick(e, index)}
-                    sx={iconButtonSx}
-                  >
-                    <IconifyIcon icon="mdi:file-document-multiple-outline" color="#7d7d7d" hoverColor="#616161" />
-                  </IconButton>
-                </Tooltip>
+                <GroupActions>
+                  <Tooltip title="Editar grupo" arrow>
+                    <IconButton
+                      aria-label="editar"
+                      onClick={(e) => handleEditClick(e, index)}
+                      sx={iconButtonSx}
+                    >
+                      <IconifyIcon icon="mdi:file-document-multiple-outline" color="#7d7d7d" hoverColor="#616161" />
+                    </IconButton>
+                  </Tooltip>
 
-                <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                  <IconButton
-                    aria-label="enlace"
-                    onClick={(e) => handleStudentLinkClick(e, index)}
-                    sx={iconButtonSx}
-                  >
-                    <IconifyIcon icon="mdi:link-variant" color="#7d7d7d" hoverColor="#616161" />
-                  </IconButton>
-                </Tooltip>
+                  <Tooltip title="Participantes" arrow>
+                    <IconButton
+                      aria-label="estudiantes"
+                      onClick={(e) => handleStudentsClick(e, index)}
+                      sx={iconButtonSx}
+                    >
+                      <IconifyIcon icon="mdi:account-group" color="#7d7d7d" hoverColor="#616161" />
+                    </IconButton>
+                  </Tooltip>
 
-                <Tooltip title="Participantes" arrow>
-                  <IconButton
-                    aria-label="estudiantes"
-                    onClick={(e) => handleStudentsClick(e, index)}
-                    sx={iconButtonSx}
-                  >
-                    <IconifyIcon icon="mdi:account-group" color="#7d7d7d" hoverColor="#616161" />
-                  </IconButton>
-                </Tooltip>
+                  <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
+                    <IconButton
+                      aria-label="enlace"
+                      onClick={(e) => handleStudentLinkClick(e, index)}
+                      sx={iconButtonSx}
+                    >
+                      <IconifyIcon icon="mdi:link-variant" color="#7d7d7d" hoverColor="#616161" />
+                    </IconButton>
+                  </Tooltip>
 
-                <Tooltip title="Eliminar grupo" arrow>
-                  <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                    <IconifyIcon icon="mdi:trash-can" color="#7d7d7d" hoverColor="#616161" />
-                  </IconButton>
-                </Tooltip>
-              </ButtonContainer>
+                  <Tooltip title="Eliminar grupo" arrow>
+                    <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)} sx={iconButtonSx}>
+                      <IconifyIcon icon="mdi:trash-can" color="#7d7d7d" hoverColor="#616161" />
+                    </IconButton>
+                  </Tooltip>
+                </GroupActions>
+              </GroupCardContent>
             </GroupCard>
           ))}
         </GroupsList>
