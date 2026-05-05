@@ -40,20 +40,20 @@ const HeaderNav = ({ userName, avatarUrl, currentDate }: HeaderNavProps) => {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "0.75rem 1.5rem",
-                backgroundColor: "#ffffff",
+                backgroundColor: "var(--color-surface)",
                 gap: "1rem",
-                borderBottom: "2px solid #000000", 
+                borderBottom: "2px solid var(--color-border-contrast)", 
             }}
         >
             <Box sx={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <CalendarTodayIcon sx={{ color: "#1976d2" }} aria-hidden />
+                <CalendarTodayIcon sx={{ color: "var(--color-primary-hover)" }} aria-hidden />
                 <Typography variant="body1" fontWeight={500} color="text.primary">
                     {formattedDate}
                 </Typography>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <NotificationsNoneIcon sx={{ color: "#616161" }} aria-hidden />
+                <NotificationsNoneIcon sx={{ color: "var(--color-text-secondary)" }} aria-hidden />
                 <Typography variant="body1" fontWeight={600} color="text.primary">
                     {userName}
                 </Typography>

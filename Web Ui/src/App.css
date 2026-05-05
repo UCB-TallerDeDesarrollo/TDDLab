@@ -1,3 +1,32 @@
+:root {
+  --color-app-background: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-soft: #e3f2fd;
+  --color-surface-hover: #f0f4ff;
+  --color-surface-dark: #052845;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #5f5f5f;
+  --color-text-muted: #a9a9a9;
+  --color-text-strong: #000000;
+  --color-primary: #1565c0;
+  --color-primary-hover: #1976d2;
+  --color-primary-soft: #e8f0fe;
+  --color-accent: #4285f4;
+  --color-accent-hover: #3367d6;
+  --color-success: #2e7d32;
+  --color-danger: #d32f2f;
+  --color-warning: #ffb300;
+  --color-border: #d9e1ec;
+  --color-border-strong: #c8c8c8;
+  --color-border-contrast: #000000;
+  --color-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --color-shadow-medium: 2px 0 8px rgba(0, 0, 0, 0.1);
+  --color-shadow-strong: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
 body {
   margin: 0;
+  background: var(--color-app-background);
+  color: var(--color-text-primary);
 }

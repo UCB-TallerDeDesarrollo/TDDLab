@@ -13,16 +13,16 @@
 }
 
 .ai-assistant-header-icon {
-  color: #1976D2;
+  color: var(--color-primary-hover);
 }
 
 .ai-assistant-github-icon {
-  color: gray;
+  color: var(--color-text-secondary);
 }
 
 .ai-assistant-repo-link {
   text-decoration: none;
-  color: gray;
+  color: var(--color-text-secondary);
   font-size: 14px;
 }
 
@@ -72,15 +72,15 @@
 }
 
 .ai-assistant-bot-avatar {
-  color: #1976D2;
-  background-color: #F1F5F9;
+  color: var(--color-primary-hover);
+  background-color: var(--color-surface-muted);
   width: 32px;
   height: 32px;
 }
 
 .ai-assistant-bot-bubble {
-  background-color: #F1F5F9;
-  color: #000;
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-strong);
   padding: 8px 16px;
   border-radius: 8px;
   white-space: pre-line;
@@ -88,8 +88,8 @@
 }
 
 .ai-assistant-user-bubble {
-  background-color: #e3f2fd;
-  color: #000;
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-strong);
   padding: 8px 16px;
   border-radius: 8px;
   max-width: 75%;

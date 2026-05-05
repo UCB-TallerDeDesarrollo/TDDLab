@@ -43,7 +43,7 @@ export default function MainMenu({
 
   return (
     <div className="main-menu-wrapper">
-      <AppBar position="fixed" sx={{ background: "#052845" }}>
+      <AppBar position="fixed" sx={{ background: "var(--color-surface-dark)" }}>
         <Toolbar className="main-menu-toolbar">
           <div className="main-menu-left">
             <IconButton
