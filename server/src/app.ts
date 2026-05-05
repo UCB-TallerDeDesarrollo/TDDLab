@@ -1,4 +1,4 @@
-  import express from "express";
+import express from "express";
 import cors from "cors"; // Import the cors middleware
 import bodyParser from "body-parser";
 import server from "./config/server";
