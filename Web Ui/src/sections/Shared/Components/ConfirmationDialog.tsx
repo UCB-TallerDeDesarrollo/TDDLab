@@ -39,10 +39,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           onClick={onCancel}
           color="primary"
           style={{ ...dialogContentStyle, ...secondaryButtonStyle, 
-            color: '#d32f2f',
-            borderColor: '#d32f2f', // Color del borde
-            borderWidth: '2px', // Ancho del borde
-            borderStyle: 'solid', // Estilo del borde
             padding: '5px 20px' // Añade padding para un mayor relieve 
           }}
         >
@@ -51,7 +47,12 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         <Button
           onClick={onDelete}
           color="primary"
-          style={{ ...dialogContentStyle, ...primaryButtonStyle }}
+          style={{ ...dialogContentStyle, ...primaryButtonStyle,
+            color: '#d32f2f',
+            borderColor: '#d32f2f', // Color del borde
+            borderWidth: '2px', // Ancho del borde
+            borderStyle: 'solid', // Estilo del borde
+           }}
         >
           {deleteText}
         </Button>
