@@ -26,6 +26,7 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import EditGroupPopup from "./components/EditGroupForm";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
 import { typographyVariants } from "../../styles/typography";
+import { PiChalkboardTeacherFill } from "react-icons/pi";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -316,6 +317,26 @@ function Groups() {
     if (id) getCourseLink(id, "student");
   };
 
+  const handleTeacherLinkClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    const id = asId(groups[index]?.id);
+    if (id) getCourseLink(id, "teacher");
+  };
+
+  const handleTasksClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    const id = asId(groups[index]?.id);
+    if (!id) return;
+    selectAndSync(id);
+    navigate(`/?groupId=${id}`);
+  };
+
   const handleDeleteClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number
@@ -446,6 +467,16 @@ function Groups() {
                     </IconButton>
                   </Tooltip>
 
+                  <Tooltip title="Tareas" arrow>
+                    <IconButton
+                      aria-label="tareas"
+                      onClick={(e) => handleTasksClick(e, index)}
+                      sx={iconButtonSx}
+                    >
+                      <IconifyIcon icon="mdi:motion" color="#7d7d7d" hoverColor="#616161" />
+                    </IconButton>
+                  </Tooltip>
+
                   <Tooltip title="Participantes" arrow>
                     <IconButton
                       aria-label="estudiantes"
@@ -463,6 +494,16 @@ function Groups() {
                       sx={iconButtonSx}
                     >
                       <IconifyIcon icon="mdi:link-variant" color="#7d7d7d" hoverColor="#616161" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+                    <IconButton
+                      aria-label="enlace-docente"
+                      onClick={(e) => handleTeacherLinkClick(e, index)}
+                      sx={iconButtonSx}
+                    >
+                      <PiChalkboardTeacherFill color="#7d7d7d" />
                     </IconButton>
                   </Tooltip>
 
