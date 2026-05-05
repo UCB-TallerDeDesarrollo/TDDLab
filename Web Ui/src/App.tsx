@@ -123,7 +123,7 @@ function App() {
       )}
       <Box sx={{ ml: authData.userEmail !== "" && 
         authData.userRole !== undefined  &&
-        isTabletOrMobile ? 0 : "220px",
+        !isTabletOrMobile ? "220px" : 0,
         minWidth: 0,
         boxSizing: "border-box",}}>
         {authData.userEmail !== "" && authData.userRole !== undefined && (
