@@ -24,6 +24,7 @@ import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import { CircularProgress } from "@mui/material";
+import ProfilePage from "./sections/Profile/ProfilePage";
 
 const navArrayLinks = [
   { title: "Grupos", path: "/groups", icon: <GroupsIcon />, access: ["admin", "teacher"] },
@@ -147,6 +148,7 @@ function App() {
         <Route path="/users/group/:groupid" element={<ProtectedRouteComponent><UsersByGroupPage /></ProtectedRouteComponent>} />
         <Route path="/asistente-ia" element={<ProtectedRouteComponent><AIAssistantPage /></ProtectedRouteComponent>} />
         <Route path="/configuraciones" element={<ProtectedRouteComponent><SettingsPage /></ProtectedRouteComponent>} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </Router>
   );
