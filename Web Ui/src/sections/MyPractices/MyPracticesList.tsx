@@ -118,12 +118,9 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <div className="page-container">
       <section className="page-content">
-        <div className="page-top-line" />
-
         <div className="page-header">
           <div className="page-title">
             <span>Mis Prácticas</span>
-            <span className="page-title-arrow">⌵</span>
           </div>
 
           <div className="page-title-line" />
@@ -142,7 +139,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
         <div className="page-toolbar">
           <Button
-            className="groups-create-button"
+            className="btn-std btn-primary"
             startIcon={<AppIcon icon={APP_ICONS.PLUS} size={16} />}
             onClick={showForm}
           >

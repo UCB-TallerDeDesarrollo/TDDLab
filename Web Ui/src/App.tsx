@@ -32,10 +32,9 @@ const navArrayLinks = [
     path: "/assignments", 
     icon: <DescriptionIcon />, 
     access: ["admin", "student", "teacher"],
-    // Reglas adicionales para marcar como activo:
     activeRules: {
-      paths: ["/assignments", "/assignment"], // Cubre lista y detalle
-      source: "assignment" // Si estamos en /graph?source=assignment
+      paths: ["/assignments", "/assignment"], 
+      source: "assignment" 
     }
   },
   { 
@@ -45,7 +44,7 @@ const navArrayLinks = [
     access: ["admin", "teacher", "student"],
     activeRules: {
       paths: ["/mis-practicas"], 
-      source: "practice" // Si estamos en /graph?source=practice
+      source: "practice" 
     }
   },
   { title: "Usuarios", path: "/user", icon: <PersonIcon />, access: ["admin", "teacher"] },
@@ -88,9 +87,10 @@ function App() {
 
   return (
     <Router>
-      {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
-      )}
+      <MainMenu 
+        navArrayLinks={navArrayLinks} 
+        userRole={authData.userRole ?? "guest"} 
+      />
       <Routes>
         <Route
           path="/assignments"

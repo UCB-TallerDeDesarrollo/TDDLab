@@ -1,6 +1,6 @@
 .main-navbar { 
   background-color: var(--primary-dark) !important; 
-  height: var(--nav-height); 
+  height: 75px; 
 }
 
 .navbar-toolbar { 
