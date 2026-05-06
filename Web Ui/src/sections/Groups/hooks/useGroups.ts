@@ -21,21 +21,29 @@ function useGroups(authData: AuthData | undefined) {
   const groupRepository = useMemo(() => new GroupsRepository(), []);
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchGroups = async () => {
+      setIsLoading(true);
       const getGroupsApp = new GetGroups(groupRepository);
       const role = authData?.userRole ?? "";
       const uid  = authData?.userid ?? -1;
 
-      if (role === "teacher") {
-        const ids = await getGroupsApp.getGroupsByUserId(uid);
-        const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
-          .filter(Boolean) as GroupDataObject[];
-        setGroups(allGroups);
-      } else {
-        const allGroups = await getGroupsApp.getGroups();
-        setGroups(allGroups);
+      try {
+        if (role === "teacher") {
+          const ids = await getGroupsApp.getGroupsByUserId(uid);
+          const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
+            .filter(Boolean) as GroupDataObject[];
+          setGroups(allGroups);
+        } else {
+          const allGroups = await getGroupsApp.getGroups();
+          setGroups(allGroups);
+        }
+      } catch (error) {
+        console.error("Error fetching groups:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchGroups();
@@ -57,7 +65,7 @@ function useGroups(authData: AuthData | undefined) {
     setGroups((prev) => prev.map((g) => (g.id === updatedGroup.id ? updatedGroup : g)));
   };
 
-  return { groups, setGroups, groupRepository, selectedSorting, handleGroupsOrder, handleGroupUpdated };
+  return { groups, setGroups, groupRepository, selectedSorting, isLoading, handleGroupsOrder, handleGroupUpdated };
 }
 
 export {useGroups, asId }

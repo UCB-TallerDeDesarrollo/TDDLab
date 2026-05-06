@@ -22,7 +22,15 @@ const StyledTable = styled(Table)({
   marginRight: "auto",
 });
 
+const LoadingContainer = styled("div")({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "100vh",
+});
+
 
 export { CenteredContainer,
   ButtonContainer,
-  StyledTable}
+  StyledTable,
+  LoadingContainer}
