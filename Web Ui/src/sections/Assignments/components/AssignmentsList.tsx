@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  Container,
-  Button,
-  SelectChangeEvent,
-  Box,
-  Grid,
-  Typography,
+import { 
+  Box, 
+  Container, 
+  Button, 
+  Grid, 
   Divider,
+  SelectChangeEvent,
+  Typography,
 } from "@mui/material";
 import { FullScreenLoader } from "../../../components/FullScreenLoader";
+import { AssignmentSkeleton } from "../../../components/Skeleton";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
 import { styled } from "@mui/system";
@@ -57,6 +58,8 @@ function Assignments({
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
   const location = useLocation();
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
@@ -290,132 +293,130 @@ function Assignments({
     setHoveredRow(index);
   };
 
-  return (
-    <Container sx={{ width: "100%", maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
-      {isLoading ? (
-        <FullScreenLoader variant="page" />
-      ) : (
-        <section className="Tareas">
-          <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
-            {/* Encabezado */}
-            <Box sx={{ pb: 2 }}>
+return (
+  <Container sx={{ width: "100%", maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
+    {isLoading ? (
+      <FullScreenLoader variant="page" />
+    ) : (
+      <section className="Tareas">
+        <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
+          
+          {/* Header & Title */}
+          <Box sx={{ pb: 2 }}>
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: { xs: 'flex-start', sm: 'flex-end' },
+              flexDirection: { xs: 'column', sm: 'row' },
+              width: '100%',
+              mb: 1,
+              gap: { xs: '16px', sm: '0' }
+            }}>
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
+                Tareas
+              </Typography>
+
+              {/* Filters and Controls */}
               <Box sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: { xs: 'flex-start', sm: 'flex-end' },
-                flexDirection: { xs: 'column', sm: 'row' },
-                width: '100%',
-                mb: 1,
-                gap: { xs: '16px', sm: '0' }
+                display: "flex",
+                justifyContent: { xs: "flex-start", sm: "flex-end" },
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "12px",
+                width: { xs: "100%", sm: "auto" }
               }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
-                  Tareas
-                </Typography>
-
-                {/* Controles */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: { xs: "flex-start", sm: "flex-end" },
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: "12px",
-                    width: { xs: "100%", sm: "auto" }
-                  }}
-                >
-                  <GroupFilter
-                    selectedGroup={selectedGroup}
-                    groupList={groupList}
-                    onChangeHandler={handleGroupChange}
-                    defaultName={
-                      groupList.find((group) => group.id == selectedGroup)?.groupName ||
-                      groupList[0]?.groupName ||
-                      "Selecciona un grupo"
-                    }
-                  />
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderAssignments}
-                  />
-                  {userRole !== "student" && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<AddIcon />}
-                      sx={{
-                        borderRadius: "17px",
-                        textTransform: "none",
-                        ...typographyVariants.paragraphMedium,
-                        paddingX: "16px",
-                        paddingY: "8px",
-                        minWidth: "90px",
-                        whiteSpace: "nowrap",
-                        transition: "all 0.175s ease-out",
-                        "&:hover": {
-                          filter: "brightness(0.9)",
-                          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
-                        },
-                        "&:active": {
-                          transform: "scale(0.97)",
-                        },
-                      }}
-                      onClick={showForm}
-                    >
-                      Crear
-                    </Button>
-                  )}
-                </Box>
+                <GroupFilter
+                  selectedGroup={selectedGroup}
+                  groupList={groupList}
+                  onChangeHandler={handleGroupChange}
+                  defaultName={
+                    groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                    groupList[0]?.groupName ||
+                    "Selecciona un grupo"
+                  }
+                />
+                <SortingComponent
+                  selectedSorting={selectedSorting}
+                  onChangeHandler={handleOrderAssignments}
+                />
+                {userRole !== "student" && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    sx={{
+                      borderRadius: "17px",
+                      textTransform: "none",
+                      ...typographyVariants.paragraphMedium,
+                      paddingX: "16px",
+                      paddingY: "8px",
+                      minWidth: "90px",
+                      whiteSpace: "nowrap",
+                      transition: "all 0.175s ease-out",
+                      "&:hover": {
+                        filter: "brightness(0.9)",
+                        boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
+                      },
+                      "&:active": { transform: "scale(0.97)" },
+                    }}
+                    onClick={showForm}
+                  >
+                    Crear
+                  </Button>
+                )}
               </Box>
-              <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
             </Box>
-
-            {/* Listado apilado de tarjetas */}
-            <Grid container spacing={2}>
-              {filteredAssignments.map((assignment, index) => (
-                <Grid item xs={12} key={assignment.id}>
-                  <Assignment
-                    assignment={assignment}
-                    index={index}
-                    handleClickDetail={handleClickDetail}
-                    handleClickDelete={handleClickDelete}
-                    handleRowHover={handleRowHover}
-                    role={userRole}
-                  />
-                </Grid>
-              ))}
-            </Grid>
+            <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
           </Box>
 
-          {/* Diálogos */}
-          {confirmationOpen && (
-            <ConfirmationDialog
-              open={confirmationOpen}
-              title="¿Eliminar la tarea?"
-              content={
-                <>
-                  Ten en cuenta que esta acción también eliminará <br /> todas las
-                  entregas asociadas.
-                </>
+          {/* Assignments List (Responsive Cards) */}
+          <Grid container spacing={2}>
+            {filteredAssignments.map((assignment, index) => (
+              <Grid item xs={12} key={assignment.id}>
+                <Assignment
+                  assignment={assignment}
+                  index={index}
+                  handleClickDetail={handleClickDetail}
+                  handleClickDelete={handleClickDelete}
+                  handleRowHover={handleRowHover}
+                  role={userRole}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* Dialogs/Modals (Keeping the logic from the second branch) */}
+        {confirmationOpen && (
+          <ConfirmationDialog
+            open={confirmationOpen}
+            title="¿Eliminar la tarea?"
+            content={<>Ten en cuenta que esta acción también eliminará <br /> todas las entregas asociadas.</>}
+            cancelText="Cancelar"
+            deleteText="Eliminar"
+            onCancel={() => setConfirmationOpen(false)}
+            onDelete={handleConfirmDelete}
+          />
+        )}
+        {validationDialogOpen && (
+          <ValidationDialog
+            open={validationDialogOpen}
+            title="Tarea eliminada exitosamente"
+            closeText="Cerrar"
+            onClose={() => {
+              setValidationDialogOpen(false);
+              if (selectedGroup) {
+                loadAssignmentsByGroupId(selectedGroup);
+              } else if (authData?.usergroupid) {
+                loadAssignmentsByGroupId(authData.usergroupid);
               }
-              cancelText="Cancelar"
-              deleteText="Eliminar"
-              onCancel={() => setConfirmationOpen(false)}
-              onDelete={handleConfirmDelete}
-            />
-          )}
-          {validationDialogOpen && (
-            <ValidationDialog
-              open={validationDialogOpen}
-              title="Tarea eliminada exitosamente"
-              closeText="Cerrar"
-              onClose={() => {
-                setValidationDialogOpen(false);
-                // Refrescar datos del grupo actual sin recargar página
-                if (selectedGroup) {
-                  loadAssignmentsByGroupId(selectedGroup);
-                } else if (authData?.usergroupid) {
-                  loadAssignmentsByGroupId(authData.usergroupid);
-                }
+            }}
+          />
+        )}
+      </section>
+    )}
+  </Container>
+);
               }}
             />
           )}

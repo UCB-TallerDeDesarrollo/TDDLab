@@ -143,6 +143,7 @@ describe("AssignmentsList Component", () => {
       ShowForm: mockShowForm,
       userRole: "teacher",
       userGroupid: 1,
+      userid: 123,
       onGroupChange: mockOnGroupChange,
       ...props,
     };

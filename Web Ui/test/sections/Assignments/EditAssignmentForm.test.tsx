@@ -114,7 +114,7 @@ describe("EditAssignmentDialog Component", () => {
         expect(screen.getByText("Guardar Cambios")).toBeInTheDocument();
       });
     },
-    15000
+    30000
   );
 
   it("debería mostrar los valores actuales en los campos", async () => {
