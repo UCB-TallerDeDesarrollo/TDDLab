@@ -1,13 +1,14 @@
 .lineChartContainer {
   display: flex;
   flex-direction: column;
-  width: 80%;
+  width: 90%;
   height: 100%;
 }
 
 .navigation-buttons {
   display: flex;
   justify-content: center;
+  width: 50%;
   gap: 20px;
   margin: 20px 0;
 }
