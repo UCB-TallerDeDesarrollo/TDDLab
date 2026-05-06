@@ -27,8 +27,19 @@ export default function LoginComponent({ loginModalOpen, setLoginModalOpen }: Lo
   const navigate = useNavigate();
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  
   const open = Boolean(anchorEl);
+
+  // --- ESTADOS PARA LOS POP-UPS DE VALIDACIÓN ---
+  const [validation, setValidation] = useState({
+    open: false,
+    message: "",
+    isError: false
+  });
+
+  const showDialog = (message: string, error = true) => {
+    setLoginModalOpen(false); 
+    setValidation({ open: true, message, isError: error });
+  };
 
   const handleClick = (event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -39,21 +50,41 @@ export default function LoginComponent({ loginModalOpen, setLoginModalOpen }: Lo
         setLoginModalOpen(false);
         navigate("/assignments");
       });
+      localStorage.setItem("userProfilePic", userData.photoURL || "");
+    } else {
+      showDialog("Disculpa, tu usuario no está registrado. Por favor, regístrate primero.");
     }
   };
 
   const handleLogin = async (provider: 'github' | 'google') => {
     try {
       const userData = provider === 'github' ? await handleSignInWithGitHub() : await handleSignInWithGoogle();
+      
       if (userData?.email) {
         const idToken = await userData.getIdToken();
         const loginPort = new CheckIfUserHasAccount();
+        
+        // Ejecutamos la validación según el proveedor
         const userAccount = provider === 'github' 
             ? await loginPort.userHasAnAccountWithToken(idToken)
             : await loginPort.userHasAnAccountWithGoogleToken(idToken);
+
         handlePostLogin(userData, userAccount);
       }
-    } catch (e) { console.error(e); }
+    } catch (error: any) {
+      const errorMessage = error?.message || "Error al iniciar sesión";
+
+      // Lógica de errores específicos recuperada
+      if (errorMessage.includes("Google")) {
+        showDialog("Este usuario está registrado con Google. Por favor, inicia sesión con Google.");
+      } else if (errorMessage.includes("GitHub")) {
+        showDialog("Este usuario está registrado con GitHub. Por favor, inicia sesión con GitHub.");
+      } else if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
+        showDialog("Usuario no encontrado en el sistema. Por favor, regístrate primero.");
+      } else {
+        showDialog(errorMessage);
+      }
+    }
   };
 
   const handleLogoutAction = async () => {
@@ -87,6 +118,7 @@ export default function LoginComponent({ loginModalOpen, setLoginModalOpen }: Lo
         </Box>
       )}
 
+      {/* POP-UP DE SELECCIÓN DE CUENTA */}
       <Dialog open={loginModalOpen} onClose={() => setLoginModalOpen(false)} maxWidth="xs" fullWidth>
         <Box p={3} textAlign="center">
           <Box display="flex" justifyContent="flex-end">
@@ -104,6 +136,15 @@ export default function LoginComponent({ loginModalOpen, setLoginModalOpen }: Lo
           </Button>
         </Box>
       </Dialog>
+
+      {/* POP-UP DE ERROR / VALIDACIÓN (Recuperado) */}
+      <ValidationDialog
+        open={validation.open}
+        title={validation.message}
+        closeText="Aceptar"
+        onClose={() => setValidation({ ...validation, open: false })}
+        isError={validation.isError}
+      />
     </div>
   );
 }
