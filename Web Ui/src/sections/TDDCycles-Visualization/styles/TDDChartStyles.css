@@ -8,7 +8,6 @@
 .navigation-buttons {
   display: flex;
   justify-content: center;
-  width: 50%;
   gap: 20px;
   margin: 20px 0;
 }
