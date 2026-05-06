@@ -417,13 +417,5 @@ return (
     )}
   </Container>
 );
-              }}
-            />
-          )}
-        </section>
-      )}
-    </Container>
-  );
 }
-
 export default Assignments;
