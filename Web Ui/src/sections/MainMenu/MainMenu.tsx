@@ -32,12 +32,7 @@ export default function MainMenu({
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  
-  // ESTADO PARA EL MODAL DE LOGIN
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
-  
   const authData = useGlobalState("authData"); 
-  const isLanding = !authData[0].userEmail || authData[0].userEmail === "";
 
   const isActive = (item: any) => {
     const { pathname, search } = location;
@@ -48,15 +43,27 @@ export default function MainMenu({
       if (item.path === "/assignments") return source === "assignment";
       if (item.path === "/mis-practicas") return source === "practice";
     }
-    if (item.path === "/assignments") return pathname.startsWith("/assignments") || pathname.startsWith("/assignment");
-    if (item.path === "/mis-practicas") return pathname.startsWith("/mis-practicas");
+
+    if (item.path === "/assignments") {
+      return pathname.startsWith("/assignments") || pathname.startsWith("/assignment");
+    }
+
+    if (item.path === "/mis-practicas") {
+      return pathname.startsWith("/mis-practicas");
+    }
 
     return pathname.startsWith(item.path);
   };
 
   const handleLogoutAction = async () => {
     await handleGithubSignOut();
-    setGlobalState("authData", { userid: -1, userProfilePic: "", userEmail: "", usergroupid: -1, userRole: "", });
+    setGlobalState("authData", {
+      userid: -1,
+      userProfilePic: "",
+      userEmail: "",
+      usergroupid: -1,
+      userRole: "",
+    });
     await removeSessionCookie();
     localStorage.clear();
     setOpen(false); 
@@ -64,13 +71,8 @@ export default function MainMenu({
   };
 
   return (
-    // Si es landing, no aplicamos el spacer para que el Hero pegue arriba
-    <div className={isLanding ? "" : "page-top-spacer"}>
-      <AppBar 
-        position="fixed" 
-        className={`main-navbar ${isLanding ? "navbar-landing" : ""}`} 
-        elevation={0}
-      >
+    <div className="page-top-spacer">
+      <AppBar position="fixed" className="main-navbar" elevation={0}>
         <Toolbar className="navbar-toolbar">
           <div className="navbar-brand-group">
             <IconButton
@@ -87,8 +89,7 @@ export default function MainMenu({
 
           <div className="navbar-actions-group">
             <Box className="desktop-nav-links">
-              {/* Solo mostramos links si NO es landing */}
-              {!isLanding && navArrayLinks.map((item) =>
+              {navArrayLinks.map((item) =>
                 item.access.includes(userRole) && (
                   <Button
                     key={item.title}
@@ -101,12 +102,7 @@ export default function MainMenu({
                 )
               )}
             </Box>
-            
-            {/* PASAMOS EL ESTADO AL COMPONENTE DE LOGIN */}
-            <LoginComponent 
-              loginModalOpen={loginModalOpen} 
-              setLoginModalOpen={setLoginModalOpen} 
-            />
+            <LoginComponent />
           </div>
         </Toolbar>
       </AppBar>
@@ -124,8 +120,6 @@ export default function MainMenu({
           userEmail={authData[0].userEmail ?? ""} 
           userRole={userRole}
           onLogout={handleLogoutAction}
-          // PASAMOS LA FUNCIÓN PARA ABRIR DESDE EL MÓVIL
-          onLoginOpen={() => setLoginModalOpen(true)}
         />
       </Drawer>
     </div>
