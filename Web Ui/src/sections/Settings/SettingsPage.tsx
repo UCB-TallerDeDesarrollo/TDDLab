@@ -147,123 +147,136 @@ const ConfigurationPage = () => {
   };
 
   return (
-    <div className="centered-container">
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ mb: 4 }}>
-          <div className="settings-section-title">
-            Configuración de Prompts
-          </div>
-        </Box>
+    <div className="page-container">
+      <section className="page-content">
+        <div className="page-top-line" />
 
-        {loading ? (
-          <div className="fullscreen-loading">
-            <CircularProgress />
+        <div className="page-header">
+          <div className="page-title">
+            <span>Ajustes</span>
+            <span className="page-title-arrow">⌵</span>
           </div>
-        ) : error ? (
-          <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
-            <Typography color="error">{error}</Typography>
-          </Box>
-        ) : (
-          <>
-            <div className="sorting-container">
-              <FormControl 
-                sx={{ mb: 2, width: '50%' }} 
-                size="small" // 'small' ayuda a que el label de MUI se alinee mejor con el alto de 36px
-              >
-                <InputLabel id="prompt-select-label">Seleccionar tipo de Prompt</InputLabel>
-                <Select
-                  labelId="prompt-select-label"
-                  value={selectedPrompt}
-                  label="Selecciona el tipo de Prompt"
-                  onChange={handlePromptChange}
-                  className="select-compact"
-                >
-                  {PROMPT_OPTIONS.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+
+          <div className="page-title-line" />
+        </div>
+
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          <Box sx={{ mb: 4 }}>
+            <div className="settings-section-title">
+              Configuración de Prompts
             </div>
+          </Box>
 
-            <EditPromptAI
-              initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
-              isEditing={isEditing}
-              onEdit={handleEditPrompt}
-              onSave={handleSavePrompt}
-              onCancel={handleCancelEdit}
-            />
-
-            {saving && (
-              <div className="saving-overlay">
-                <CircularProgress color="primary" />
+          {loading ? (
+            <div className="fullscreen-loading">
+              <CircularProgress />
+            </div>
+          ) : error ? (
+            <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
+              <Typography color="error">{error}</Typography>
+            </Box>
+          ) : (
+            <>
+              <div className="sorting-container">
+                <FormControl
+                  sx={{ mb: 2, width: '50%' }}
+                  size="small"
+                >
+                  <InputLabel id="prompt-select-label">Seleccionar tipo de Prompt</InputLabel>
+                  <Select
+                    labelId="prompt-select-label"
+                    value={selectedPrompt}
+                    label="Selecciona el tipo de Prompt"
+                    onChange={handlePromptChange}
+                    className="select-compact"
+                  >
+                    {PROMPT_OPTIONS.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
-            )}
-          </>
-        )}
 
-        <div className="settings-section-title--spaced">
-          Habilitación de Funcionalidades :
-        </div>
-
-        {error && <p className="settings-error-text">{error}</p>}
-
-        <div className="settings-flag-list">
-          {flags.map((flag) => (
-            <label key={flag.id} className="settings-flag-item">
-              <span className="settings-flag-name">{flag.feature_name}</span>
-              <input
-                className="settings-flag-checkbox"
-                type="checkbox"
-                checked={flag.is_enabled}
-                onChange={() => handleCheckboxChange(flag)}
+              <EditPromptAI
+                initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
+                isEditing={isEditing}
+                onEdit={handleEditPrompt}
+                onSave={handleSavePrompt}
+                onCancel={handleCancelEdit}
               />
-            </label>
-          ))}
-        </div>
 
-        <ConfirmationDialog
-          open={flagConfirmationOpen}
-          title={
-            pendingFlag?.is_enabled
-              ? "Confirmar deshabilitación"
-              : "Confirmar habilitación"
-          }
-          content={
-            pendingFlag ? (
-              <>
-                {pendingFlag.is_enabled
-                  ? "Vas a deshabilitar"
-                  : "Vas a habilitar"}{" "}
-                la funcionalidad <strong>{pendingFlag.feature_name}</strong>.
-              </>
-            ) : (
-              ""
-            )
-          }
-          cancelText="Cancelar"
-          deleteText={pendingFlag?.is_enabled ? "Deshabilitar" : "Habilitar"}
-          onCancel={handleCancelFlagChange}
-          onDelete={handleConfirmFlagChange}
-          confirmButtonClassName="btn-primary"
-        />
+              {saving && (
+                <div className="saving-overlay">
+                  <CircularProgress color="primary" />
+                </div>
+              )}
+            </>
+          )}
 
-        <ValidationDialog
-          open={flagValidationOpen}
-          title={flagValidationMessage}
-          closeText="Cerrar"
-          onClose={handleCloseFlagValidation}
-        />
+          <div className="settings-section-title--spaced">
+            Habilitación de Funcionalidades :
+          </div>
 
-        <ValidationDialog
-          open={promptValidationOpen}
-          title={promptValidationMessage}
-          closeText="Cerrar"
-          onClose={handleClosePromptValidation}
-          isError={promptValidationIsError}
-        />
-      </Container>
+          {error && <p className="settings-error-text">{error}</p>}
+
+          <div className="settings-flag-list">
+            {flags.map((flag) => (
+              <label key={flag.id} className="settings-flag-item">
+                <span className="settings-flag-name">{flag.feature_name}</span>
+                <input
+                  className="settings-flag-checkbox"
+                  type="checkbox"
+                  checked={flag.is_enabled}
+                  onChange={() => handleCheckboxChange(flag)}
+                />
+              </label>
+            ))}
+          </div>
+
+          <ConfirmationDialog
+            open={flagConfirmationOpen}
+            title={
+              pendingFlag?.is_enabled
+                ? "Confirmar deshabilitación"
+                : "Confirmar habilitación"
+            }
+            content={
+              pendingFlag ? (
+                <>
+                  {pendingFlag.is_enabled
+                    ? "Vas a deshabilitar"
+                    : "Vas a habilitar"}{" "}
+                  la funcionalidad <strong>{pendingFlag.feature_name}</strong>.
+                </>
+              ) : (
+                ""
+              )
+            }
+            cancelText="Cancelar"
+            deleteText={pendingFlag?.is_enabled ? "Deshabilitar" : "Habilitar"}
+            onCancel={handleCancelFlagChange}
+            onDelete={handleConfirmFlagChange}
+            confirmButtonClassName="btn-primary"
+          />
+
+          <ValidationDialog
+            open={flagValidationOpen}
+            title={flagValidationMessage}
+            closeText="Cerrar"
+            onClose={handleCloseFlagValidation}
+          />
+
+          <ValidationDialog
+            open={promptValidationOpen}
+            title={promptValidationMessage}
+            closeText="Cerrar"
+            onClose={handleClosePromptValidation}
+            isError={promptValidationIsError}
+          />
+        </Container>
+      </section>
     </div>
   );
 };
