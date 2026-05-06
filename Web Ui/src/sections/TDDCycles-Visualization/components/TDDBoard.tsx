@@ -308,47 +308,47 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  right: -230,
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
+                  right: "-60px",
+                  top: "50%",
+                  transform: "translateY(-75%)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}>
               <div
                 style={{
-                  width: "20px",
-                  height: `${barraHeight}px`, // Altura dinámica ajustada
-                  transform:  'translateX(-655%) translateY(6%)',
-                  background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
-                  textAlign: "center",
-                  display: "flex",
-                }}
-              >
+                width: "20px",
+                height: `${barraHeight}px`,
+                background:
+                  "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                position: "relative",
+                }}>
               <p
                 style={{
-                  transform: 'translateX(-33%) translateY(-18%)',
-                  color: "#000",
-
-                  fontWeight: "bold",
-                }}
-              >
+                position: "absolute",
+                top: "-25px",
+                margin: 0,
+                color: "#000",
+                fontWeight: "bold",
+                fontSize: "12px",
+                }}>
                 Cobertura
               </p>
             </div>
 
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                transform:
-                  labels.includes(0) 
-                    ? "translateX(-1700%) translateY(3%)"
-                    : "translateX(-599%) translateY(3%)",
-                justifyContent: "space-between",
-                height: `${barraHeight * 0.93}px`,
-                fontSize: "12px",
-                color: "#000",
-              }}
-            >
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: `${barraHeight * 0.93}px`,
+              fontSize: "12px",
+              color: "#000",
+              }}>
               {labels.map((label) => (
                 <p key={label} style={{ margin: 0 }}>
                   {label}
