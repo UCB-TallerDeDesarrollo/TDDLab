@@ -5,9 +5,7 @@ export const HeroSection = () => (
     <div className="hero-content">
       <img src={logoTddLab} alt="TDDLab Logo" className="hero-logo" />
       <p className="hero-description">
-        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Domina el desarrollo guiado por pruebas (Test-Driven Development) de manera práctica y eficiente. Una plataforma diseñada para elevar la calidad de tu código, reduciendo errores y optimizando tus ciclos de desarrollo desde el primer test.
       </p>
     </div>
   </header>
