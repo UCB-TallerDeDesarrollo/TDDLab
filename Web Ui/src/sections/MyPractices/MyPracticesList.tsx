@@ -157,22 +157,20 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           </div>
         </div>
 
-        <section className="table-container-full">
-          <Table className="styled-table">
-            <TableBody>
-              {filteredPractices.map((practice, index) => (
-                <Practice
-                  key={practice.id}
-                  practice={practice}
-                  index={index}
-                  handleClickDetail={handleClickDetail}
-                  handleClickDelete={handleClickDelete}
-                  handleRowHover={handleRowHover}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </section>
+        <Table className="styled-table">
+          <TableBody>
+            {filteredPractices.map((practice, index) => (
+              <Practice
+                key={practice.id}
+                practice={practice}
+                index={index}
+                handleClickDetail={handleClickDetail}
+                handleClickDelete={handleClickDelete}
+                handleRowHover={handleRowHover}
+              />
+            ))}
+          </TableBody>
+        </Table>
 
         {confirmationOpen && (
           <ConfirmationDialog
