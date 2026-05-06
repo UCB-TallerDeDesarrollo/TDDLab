@@ -21,13 +21,16 @@ interface NavItem {
   icon: ReactElement;
 }
 
+// ... (tus imports actuales)
+
 interface NavLateralMenuProps {
   navArrayLinks: NavItem[];
   NavLink: React.ComponentType<any>;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   userEmail: string;
   userRole: string;
   onLogout: () => void;
+  onLoginOpen: () => void; // NUEVA PROP para abrir el modal
 }
 
 export default function NavLateralMenu({
@@ -36,15 +39,13 @@ export default function NavLateralMenu({
   setOpen,
   userEmail,
   userRole,
-  onLogout
+  onLogout,
+  onLoginOpen 
 }: Readonly<NavLateralMenuProps>) {
   return (
     <Box className="drawer-container">
       <Box className="drawer-header">
-        <IconButton 
-          onClick={() => setOpen(false)} 
-          className="drawer-close-btn"
-        >
+        <IconButton onClick={() => setOpen(false)} className="drawer-close-btn">
           <MenuIcon />
         </IconButton>
       </Box>
@@ -54,12 +55,7 @@ export default function NavLateralMenu({
             item.access.includes(userRole) && (
               <Box key={item.title}>
                 <ListItem disablePadding>
-                  <ListItemButton
-                    component={NavLink}
-                    to={item.path}
-                    onClick={() => setOpen(false)}
-                    className="drawer-item-button"
-                  >
+                  <ListItemButton component={NavLink} to={item.path} onClick={() => setOpen(false)} className="drawer-item-button">
                     <ListItemIcon className="drawer-icon">{item.icon}</ListItemIcon>
                     <ListItemText primary={item.title} className="drawer-text" />
                   </ListItemButton>
@@ -83,15 +79,14 @@ export default function NavLateralMenu({
             Cerrar sesión
           </Button>
         ) : (
+          /* CAMBIO AQUÍ: Ahora llama al modal y cierra el drawer */
           <Button 
             fullWidth 
             variant="contained" 
-            component={NavLink} 
-            to="/login"
-            onClick={() => setOpen(false)}
+            onClick={() => { onLoginOpen(); setOpen(false); }}
             className="drawer-login-btn"
           >
-            Iniciar sesión
+            Ir a TDD Lab
           </Button>
         )}
       </Box>

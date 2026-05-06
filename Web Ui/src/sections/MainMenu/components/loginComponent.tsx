@@ -16,12 +16,16 @@ import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authe
 
 import "../styles/loginComponentStyles.css";
 
-export default function LoginComponent() {
+interface LoginComponentProps {
+  loginModalOpen: boolean;
+  setLoginModalOpen: (open: boolean) => void;
+}
+
+export default function LoginComponent({ loginModalOpen, setLoginModalOpen }: LoginComponentProps) {
   const authData = useGlobalState("authData");
   const navigate = useNavigate();
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [loginModalOpen, setLoginModalOpen] = useState(false); // Estado para el modal
   const open = Boolean(anchorEl);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
