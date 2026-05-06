@@ -1,7 +1,7 @@
 import { Grid, TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import React from "react";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 interface FilterProps {
   onUpdateDates: (newStartDate: Date, newEndDate: Date) => void;
@@ -9,20 +9,20 @@ interface FilterProps {
 
 const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
   const [dataForm, setDataForm] = React.useState({
-    dateFrom: new Date(),
-    dateTo: new Date(),
+    dateFrom: dayjs(),
+    dateTo: dayjs(),
   });
 
-  const handleDateFromChange = (newValue: Date | null) => {
-    const updatedDateFrom = newValue ?? new Date();
+  const handleDateFromChange = (newValue: Dayjs | null | any) => {
+    const updatedDateFrom = newValue ? dayjs(newValue) : dayjs();
     setDataForm({ ...dataForm, dateFrom: updatedDateFrom });
-    onUpdateDates(updatedDateFrom, dataForm.dateTo);
+    onUpdateDates(updatedDateFrom.toDate(), dataForm.dateTo.toDate());
   };
 
-  const handleDateToChange = (newValue: Date | null) => {
-    const updatedDateTo = newValue ?? new Date();
+  const handleDateToChange = (newValue: Dayjs | null | any) => {
+    const updatedDateTo = newValue ? dayjs(newValue) : dayjs();
     setDataForm({ ...dataForm, dateTo: updatedDateTo });
-    onUpdateDates(dataForm.dateFrom, updatedDateTo);
+    onUpdateDates(dataForm.dateFrom.toDate(), updatedDateTo.toDate());
   };
 
   return (
@@ -47,7 +47,7 @@ const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
                 style={{ width: "100%" }}
                 value={
                   dataForm.dateFrom
-                    ? dayjs(dataForm.dateFrom).format("DD/MM/YYYY")
+                    ? dataForm.dateFrom.format("DD/MM/YYYY")
                     : ""
                 }
               />
@@ -74,7 +74,7 @@ const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
                 style={{ width: "100%" }}
                 value={
                   dataForm.dateTo
-                    ? dayjs(dataForm.dateTo).format("DD/MM/YYYY")
+                    ? dataForm.dateTo.format("DD/MM/YYYY")
                     : ""
                 }
               />
