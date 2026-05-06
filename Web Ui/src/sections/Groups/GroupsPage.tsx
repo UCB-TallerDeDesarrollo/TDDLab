@@ -165,7 +165,7 @@ function Groups() {
               <>
                 <Button
                   variant="outlined"
-                  className="groups-filter-btn"
+                  className="generic-list-action-btn generic-list-action-btn--outlined"
                   endIcon={<FilterListIcon />}
                   onClick={(e) => setFilterAnchor(e.currentTarget)}
                 >
@@ -193,7 +193,7 @@ function Groups() {
                   variant="contained"
                   color="primary"
                   startIcon={<AddIcon />}
-                  className="groups-create-btn"
+                  className="generic-list-action-btn generic-list-action-btn--contained"
                   onClick={handleCreateGroupClick}
                 >
                   Crear

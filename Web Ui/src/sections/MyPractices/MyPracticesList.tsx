@@ -20,7 +20,6 @@ import {
   GenericListBody 
 } from "../Shared/Components/GenericList";
 import Practice from "./Practice";
-import "../Groups/GroupsPage.css";
 import "./MyPracticesPage.css";
 
 interface PracticesProps {
@@ -134,7 +133,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
               <>
                 <Button
                   variant="outlined"
-                  className="groups-filter-btn"
+                  className="generic-list-action-btn generic-list-action-btn--outlined"
                   endIcon={<FilterListIcon />}
                   onClick={(e) => setFilterAnchor(e.currentTarget)}
                 >
@@ -162,7 +161,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                   variant="contained"
                   color="primary"
                   startIcon={<AddIcon />}
-                  className="groups-create-btn"
+                  className="generic-list-action-btn generic-list-action-btn--contained"
                   onClick={showForm}
                 >
                   Crear

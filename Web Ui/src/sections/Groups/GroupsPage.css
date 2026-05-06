@@ -22,22 +22,6 @@
   flex-wrap: wrap;
 }
 
-.groups-filter-btn {
-  border-radius: 20px !important;
-  text-transform: none !important;
-  font-size: 0.9rem !important;
-  color: #333 !important;
-  border-color: #bbb !important;
-  padding: 6px 18px !important;
-}
-
-.groups-create-btn {
-  border-radius: 20px !important;
-  text-transform: none !important;
-  font-size: 0.9rem !important;
-  padding: 6px 20px !important;
-}
-
 /* ── Divider ────────────────────────────────────────── */
 .groups-divider {
   border: none;
@@ -254,12 +238,6 @@
   .groups-header-actions {
     width: 100%;
     justify-content: flex-end;
-  }
-
-  .groups-filter-btn,
-  .groups-create-btn {
-    font-size: 0.82rem !important;
-    padding: 5px 14px !important;
   }
 
   .groups-card-actions {
