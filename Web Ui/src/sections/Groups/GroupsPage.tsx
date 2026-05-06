@@ -24,7 +24,6 @@ import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
-import { FullScreenLoader } from "../../components/FullScreenLoader";
 import { GroupSkeleton } from "../../components/Skeleton";
 import Skeleton from "@mui/material/Skeleton";
 import { typographyVariants } from "../../styles/typography";
