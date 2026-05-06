@@ -140,10 +140,12 @@ function UserPage() {
  return (
   <div className="page-container">
     <section className="page-content">
+      <div className="page-top-line" />
 
       <div className="page-header">
         <div className="page-title">
           <span>Usuarios</span>
+          <span className="page-title-arrow">⌵</span>
         </div>
 
         <div className="page-title-line" />

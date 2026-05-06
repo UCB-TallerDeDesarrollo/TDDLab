@@ -319,10 +319,12 @@ function Groups() {
   return (
     <div className="page-container">
       <section className="page-content">
+        <div className="page-top-line" />
 
         <div className="page-header">
           <div className="page-title">
             <span>Grupos</span>
+            <span className="page-title-arrow">⌵</span>
           </div>
 
           <div className="page-title-line" />
@@ -341,7 +343,7 @@ function Groups() {
 
         <div className="page-toolbar">
           <Button
-            className="btn-std btn-primary"
+            className="groups-create-button"
             startIcon={<AppIcon icon={APP_ICONS.PLUS} size={16} />}
             onClick={handleCreateGroupClick}
           >
@@ -349,6 +351,7 @@ function Groups() {
           </Button>
 
           <div className="page-filter-actions">
+            <Button className="page-filter-button">Todos</Button>
             <SortingComponent
               selectedSorting={selectedSorting}
               onChangeHandler={handleGroupsOrder}

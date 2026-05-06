@@ -294,10 +294,12 @@ function Assignments({
   return (
     <div className="page-container assignments-page">
       <section className="page-content">
+        <div className="page-top-line" />
 
         <div className="page-header assignments-header">
           <div className="page-title">
             <span>Tareas</span>
+            <span className="page-title-arrow">⌵</span>
           </div>
 
           <div className="page-title-line" />
@@ -336,7 +338,7 @@ function Assignments({
             <div className="page-toolbar assignments-toolbar">
               {userRole !== "student" ? (
                 <Button
-                  className="btn-std btn-primary"
+                  className="groups-create-button"
                   startIcon={<AppIcon icon={APP_ICONS.PLUS} size={16} />}
                   onClick={showForm}
                 >
