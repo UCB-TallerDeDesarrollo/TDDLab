@@ -12,6 +12,7 @@ import {
   Divider,
   Typography
 } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
 import { CreateSubmission } from "../../modules/Submissions/Aplication/createSubmission";
@@ -268,6 +269,15 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
   return (
 
     <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
+      <Box sx={{ mb: 1 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/")}
+          sx={{ color: '#666', textTransform: 'none', fontWeight: 600, fontSize: '1rem', padding: 0, '&:hover': { backgroundColor: 'transparent', color: '#1a1a1a' } }}
+        >
+          Volver a Tareas
+        </Button>
+      </Box>
       {assignment ? (
         <Box sx={{ mb: 4, mt: 2 }}>
           <AssignmentDetailInfo
