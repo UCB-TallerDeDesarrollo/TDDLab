@@ -4,8 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import {
   Button,
-  Card,
-  CardContent,
   TableCell,
   TableRow,
   Box,
