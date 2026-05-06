@@ -133,7 +133,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
               onClick={handleUpdate} 
               variant="contained"
               color="primary" 
-              disabled={formInvalid()}
+              disabled={formInvalid() || save}
               sx={{
                 flex: 1,
                 borderRadius: "10px",
@@ -149,7 +149,7 @@ const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
                 },
               }}
             >
-              Guardar Cambios
+              {save ? "Guardando..." : "Guardar Cambios"}
             </Button>
           </DialogActions>
         </>
