@@ -13,13 +13,16 @@ import Typography from "@mui/material/Typography";
 import { CircularProgress, Grid } from "@mui/material";
 import { handleSignInWithGitHub } from "../../modules/User-Authentication/application/signInWithGithub";
 import { handleSignInWithGoogle } from "../../modules/User-Authentication/application/signInWithGoogle";
-import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../modules/User-Authentication/application/registerUserOnDb";
 import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 import AdminAlertModal from "./components/AdminAlertModal";
 import "./InvitationPage.css";
+
+import  {setGlobalState} from "../../modules/User-Authentication/domain/authStates";
+import { useNavigate } from "react-router-dom";
+import { removeSessionCookie } from "../../modules/User-Authentication/application/deleteSessionCookie";
 
 function InvitationPage() {
   const location = useLocation();
@@ -65,7 +68,19 @@ function InvitationPage() {
   }, []);
 
   const [showPopUp, setShowPopUp] = useState(false);
-
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+            setGlobalState("authData", {
+            userid: -1,
+            userProfilePic: "",
+            userEmail: "",
+            usergroupid: -1,
+            userRole: "",
+            });
+            await removeSessionCookie();
+            localStorage.clear();
+            navigate("/login");
+  };
   const handleSignUp = async () => {
     setIsLoading(true);
     try {
@@ -220,7 +235,7 @@ function InvitationPage() {
                       </Grid>
                       <Grid item className="invitation-signout-row">
                         <Button
-                          onClick={handleGithubSignOut}
+                          onClick={handleLogout}
                           variant="contained"
                           color="primary"
                           disabled={isLoading}
