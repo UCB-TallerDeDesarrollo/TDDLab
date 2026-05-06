@@ -54,6 +54,7 @@ interface GenericCardProps {
   isSelected?: boolean;
   onSelectionChange?: () => void;
   showCheckbox?: boolean;
+  checkboxInsideCard?: boolean;
   onClick?: () => void;
   onHover?: (isHovered: boolean) => void;
   isHovered?: boolean;
@@ -67,6 +68,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({
   isSelected = false,
   onSelectionChange,
   showCheckbox = false,
+  checkboxInsideCard = false,
   onClick,
   onHover,
   isExpanded = false,
@@ -84,7 +86,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {showCheckbox && (
+        {showCheckbox && !checkboxInsideCard && (
           <Checkbox
             checked={isSelected}
             onChange={onSelectionChange}
@@ -106,6 +108,15 @@ export const GenericCard: React.FC<GenericCardProps> = ({
             }
           } : undefined}
         >
+          {showCheckbox && checkboxInsideCard && (
+            <Checkbox
+              checked={isSelected}
+              onChange={onSelectionChange}
+              onClick={(e) => e.stopPropagation()}
+              size="small"
+              className="generic-card-checkbox generic-card-checkbox--inside"
+            />
+          )}
           <span className="generic-card-name">{title}</span>
           {actions && <div className="generic-card-actions">{actions}</div>}
         </div>

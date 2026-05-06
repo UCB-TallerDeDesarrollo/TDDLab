@@ -34,6 +34,7 @@ import {
   GenericListBody, 
   GenericCard 
 } from "../Shared/Components/GenericList";
+import "./GroupsPage.css";
 
 
 function Groups() {
@@ -205,6 +206,7 @@ function Groups() {
               <GenericCard
                 key={asId(group.id) || index}
                 showCheckbox={true}
+                checkboxInsideCard={true}
                 isSelected={asId(currentSelectedGroupId) === asId(group.id)}
                 onSelectionChange={() => handleCheckboxChange(index)}
                 title={group.groupName}
