@@ -1,7 +1,6 @@
-import { Card, CardContent, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Typography, Box } from "@mui/material";
+import { CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Box } from "@mui/material";
 import { JSX } from "react";
 import { isStudent } from "../utils/assignmentDetailHelpers";
-import { typographyVariants } from "../../../styles/typography";
 
 interface AssignmentSubmissionsTableProps {
   role: string;
