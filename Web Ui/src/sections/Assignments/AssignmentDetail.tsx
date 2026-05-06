@@ -8,6 +8,9 @@ import {
   CardContent,
   TableCell,
   TableRow,
+  Box,
+  Divider,
+  Typography
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionRepository";
@@ -192,10 +195,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           : "N/A";
 
         return (
-          <TableRow key={submission.id}>
-            <TableCell>{studentEmail}</TableCell>
-            <TableCell>{getDisplayStatus(submission.status)}</TableCell>
-            <TableCell>
+          <TableRow key={submission.id} sx={{ backgroundColor: '#fff', '& td': { borderBottom: '1px solid #f0f0f0' } }}>
+            <TableCell align="center">{studentEmail}</TableCell>
+            <TableCell align="center">{getDisplayStatus(submission.status)}</TableCell>
+            <TableCell align="center">
               <a
                 href={submission.repository_link}
                 target="_blank"
@@ -204,10 +207,10 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                 {submission.repository_link}
               </a>
             </TableCell>
-            <TableCell>{formattedStartDate}</TableCell>
-            <TableCell>{formattedEndDate}</TableCell>
-            <TableCell>{submission.comment || "N/A"}</TableCell>
-            <TableCell>
+            <TableCell align="center">{formattedStartDate}</TableCell>
+            <TableCell align="center">{formattedEndDate}</TableCell>
+            <TableCell align="center">{submission.comment || "N/A"}</TableCell>
+            <TableCell align="center">
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
@@ -216,31 +219,29 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                   handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/graph")
                 }}
                 color="primary"
-                style={actionButtonStyle}
+                style={{ ...actionButtonStyle, borderRadius: '8px', boxShadow: 'none' }}
               >
-                Ver gráfica
+                Ver
               </Button>
             </TableCell>
 
-            <TableCell>
-
+            <TableCell align="center">
               <Button
                 variant="contained"
                 disabled={submission.repository_link === ""}
                 onClick={() => {
                   navigate("/asistente-ia", {
-                    state: { repositoryLink: submission.repository_link }, // Pasar el enlace correctamente
+                    state: { repositoryLink: submission.repository_link },
                   });
                 }}
                 color="primary"
-                style={actionButtonStyle}
+                style={{ ...actionButtonStyle, borderRadius: '8px', boxShadow: 'none' }}
               >
-                Asistente IA
+                Asistente
               </Button>
-
             </TableCell>
             {!isStudent(role) && (
-              <TableCell>
+              <TableCell align="center">
                 <Button
                   variant="contained"
                   disabled={submission.repository_link === "" || disableAdditionalGraphs}
@@ -249,9 +250,9 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
                     handleRedirectAdmin(submission.repository_link, submissions, submission.id, "/aditionalgraph")
                   }}
                   color="primary"
-                  style={{ ...actionButtonStyle, marginRight: "7px" }}
+                  style={{ ...actionButtonStyle, marginRight: "7px", borderRadius: '8px', boxShadow: 'none' }}
                 >
-                  Ver gráficas adicionales
+                  Ver
                 </Button>
               </TableCell>
             )}
@@ -266,56 +267,46 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
   return (
 
-    <div
-      style={{
-        display: "flex",
-        flexDirection: 'column',
-        justifyContent: "center",
-        alignItems: "center",
-        gap: '10px',
-      }}
-    >
+    <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
       {assignment ? (
-        <Card variant="elevation" elevation={0}>
-          <CardContent>
-            <AssignmentDetailInfo
-              assignment={assignment}
-              groupDetails={groupDetails}
-              role={role}
-              studentSubmission={studentSubmission}
-              detailTextStyle={detailTextStyle}
-            />
+        <Box sx={{ mb: 4, mt: 2 }}>
+          <AssignmentDetailInfo
+            assignment={assignment}
+            groupDetails={groupDetails}
+            role={role}
+            studentSubmission={studentSubmission}
+            detailTextStyle={detailTextStyle}
+          />
 
-            <StudentAssignmentActions
-              role={role}
-              studentSubmission={studentSubmission}
-              submissionLink={submission?.repository_link}
-              showIAButton={showIAButton}
-              isTaskInProgress={isTaskInProgress}
-              actionButtonStyle={actionButtonStyle}
-              linkDialogOpen={linkDialogOpen}
-              isCommentDialogOpen={isCommentDialogOpen}
-              onOpenLinkDialog={handleOpenLinkDialog}
-              onStudentGraph={() => {
-                localStorage.setItem("selectedMetric", "Dashboard");
-                if (studentSubmission?.repository_link) {
-                  handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate);
-                }
-              }}
-              onOpenCommentDialog={handleOpenCommentDialog}
-              onOpenAssistant={() => {
-                localStorage.setItem("selectedMetric", "AssistantAI");
-                navigate("/asistente-ia", {
-                  state: { repositoryLink: studentSubmission?.repository_link },
-                });
-              }}
-              onCloseLinkDialog={handleCloseLinkDialog}
-              onSendGithubLink={handleSendGithubLink}
-              onCloseCommentDialog={handleCloseCommentDialog}
-              onSendComment={handleSendComment}
-            />
-          </CardContent>
-        </Card>
+          <StudentAssignmentActions
+            role={role}
+            studentSubmission={studentSubmission}
+            submissionLink={submission?.repository_link}
+            showIAButton={showIAButton}
+            isTaskInProgress={isTaskInProgress}
+            actionButtonStyle={actionButtonStyle}
+            linkDialogOpen={linkDialogOpen}
+            isCommentDialogOpen={isCommentDialogOpen}
+            onOpenLinkDialog={handleOpenLinkDialog}
+            onStudentGraph={() => {
+              localStorage.setItem("selectedMetric", "Dashboard");
+              if (studentSubmission?.repository_link) {
+                handleRedirectStudent(studentSubmission.repository_link, studentSubmission.id, navigate);
+              }
+            }}
+            onOpenCommentDialog={handleOpenCommentDialog}
+            onOpenAssistant={() => {
+              localStorage.setItem("selectedMetric", "AssistantAI");
+              navigate("/asistente-ia", {
+                state: { repositoryLink: studentSubmission?.repository_link },
+              });
+            }}
+            onCloseLinkDialog={handleCloseLinkDialog}
+            onSendGithubLink={handleSendGithubLink}
+            onCloseCommentDialog={handleCloseCommentDialog}
+            onSendComment={handleSendComment}
+          />
+        </Box>
       ) : (
         <div
           style={{
@@ -328,12 +319,22 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
           <CircularProgress size={60} thickness={5} data-testid="loading-indicator" />
         </div>
       )}
+      
+      {!isStudent(role) && (
+        <Box sx={{ mt: 4, mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: '600', mb: 2, color: '#1a1a1a', fontSize: '1.5rem' }}>
+            Lista de entregas
+          </Typography>
+          <Divider sx={{ mb: 4, borderColor: '#e0e0e0' }} />
+        </Box>
+      )}
+
       <AssignmentSubmissionsTable
         role={role}
         loadingSubmissions={loadingSubmissions}
         studentRows={studentRows}
       />
-    </div>
+    </Box>
   );
 };
 

@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import GroupsIcon from "@mui/icons-material/Groups";
 import {
   AccessTime as AccessTimeIcon,
   Link as LinkIcon,
@@ -13,7 +13,6 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { SubmissionDataObject } from "../../../modules/Submissions/Domain/submissionInterfaces";
 import { getDisplayStatus, isStudent } from "../utils/assignmentDetailHelpers";
-import { typographyVariants } from "../../../styles/typography";
 
 interface AssignmentDetailInfoProps {
   assignment: AssignmentDataObject;
@@ -28,161 +27,68 @@ export function AssignmentDetailInfo({
   groupDetails,
   role,
   studentSubmission,
-  detailTextStyle,
 }: Readonly<AssignmentDetailInfoProps>) {
   return (
-    <div style={{ marginBottom: "40px" }}>
-      <Typography
-        variant="h5"
-        component="div"
-        style={{ ...typographyVariants.h3, lineHeight: "3.8" }}
-      >
-        {assignment.title}
-      </Typography>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "8px",
-        }}
-      >
-        <ArchiveOutlinedIcon
-          style={{ marginRight: "8px", color: "#666666" }}
-        />
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          style={detailTextStyle}
-        >
-          <strong>Grupo:</strong> {groupDetails?.groupName}
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 4, mb: 2, mt: 2, width: '100%' }}>
+      {/* Columna Izquierda: Título */}
+      <Box sx={{ flex: 1, minWidth: '200px' }}>
+        <Typography variant="h3" sx={{ fontWeight: '400', color: '#1a1a1a', fontSize: '2.5rem' }}>
+          {assignment.title}
         </Typography>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "8px",
-        }}
-      >
-        <NotesOutlinedIcon
-          style={{ marginRight: "8px", color: "#666666" }}
-        />
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          style={detailTextStyle}
-        >
-          <strong>Instrucciones:</strong> {assignment.description}
-        </Typography>
-      </div>
+      </Box>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "8px",
-        }}
-      >
-        <CalendarMonthIcon
-          style={{ marginRight: "8px", color: "#666666" }}
-        />
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          style={detailTextStyle}
-        >
-          <strong>Inicio:</strong>{" "}
-          {formatDate(assignment.start_date.toString())}
-        </Typography>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "8px",
-        }}
-      >
-        <CalendarMonthIcon
-          style={{ marginRight: "8px", color: "#666666" }}
-        />
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          style={detailTextStyle}
-        >
-          <strong>Fecha límite:</strong>{" "}
-          {formatDate(assignment.end_date.toString())}
-        </Typography>
-      </div>
-      {isStudent(role) && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "8px",
-          }}
-        >
-          <AccessTimeIcon
-            style={{ marginRight: "8px", color: "#666666" }}
-          />
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            style={detailTextStyle}
-          >
-            <strong>Estado:</strong>{" "}
-            {getDisplayStatus(studentSubmission?.status)}
-          </Typography>
-        </div>
-      )}
+      {/* Columna Central: Grupo e Instrucciones */}
+      <Box sx={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 1.5, minWidth: '300px' }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <GroupsIcon sx={{ mr: 1.5, color: "#757575", fontSize: '1.6rem' }} />
+          <Typography variant="body1" sx={{ color: '#555', fontWeight: 600, fontSize: '1.05rem', minWidth: '120px' }}>Grupo:</Typography>
+          <Typography variant="body1" sx={{ color: '#333', fontSize: '1.05rem' }}>{groupDetails?.groupName}</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+          <NotesOutlinedIcon sx={{ mr: 1.5, mt: 0.3, color: "#757575", fontSize: '1.6rem' }} />
+          <Typography variant="body1" sx={{ color: '#555', fontWeight: 600, fontSize: '1.05rem', minWidth: '120px' }}>Instrucciones:</Typography>
+          <Typography variant="body1" sx={{ color: '#333', fontSize: '1.05rem', wordBreak: 'break-word' }}>{assignment.description}</Typography>
+        </Box>
+        
+        {/* Información adicional solo para estudiantes */}
+        {isStudent(role) && (
+          <>
+            <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+              <AccessTimeIcon sx={{ mr: 1.5, color: "#757575", fontSize: '1.6rem' }} />
+              <Typography variant="body1" sx={{ color: '#555', fontWeight: 600, fontSize: '1.05rem', minWidth: '120px' }}>Estado:</Typography>
+              <Typography variant="body1" sx={{ color: '#333', fontSize: '1.05rem' }}>{getDisplayStatus(studentSubmission?.status)}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <LinkIcon sx={{ mr: 1.5, color: "#757575", fontSize: '1.6rem' }} />
+              <Typography variant="body1" sx={{ color: '#555', fontWeight: 600, fontSize: '1.05rem', minWidth: '120px' }}>Enlace:</Typography>
+              <a href={studentSubmission?.repository_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', fontSize: '1.05rem', textDecoration: 'none' }}>
+                {studentSubmission?.repository_link || "N/A"}
+              </a>
+            </Box>
+            {studentSubmission && studentSubmission.comment && (
+              <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                <CommentIcon sx={{ mr: 1.5, mt: 0.3, color: "#757575", fontSize: '1.6rem' }} />
+                <Typography variant="body1" sx={{ color: '#555', fontWeight: 600, fontSize: '1.05rem', minWidth: '120px' }}>Comentario:</Typography>
+                <Typography variant="body1" sx={{ color: '#333', fontSize: '1.05rem' }}>{studentSubmission.comment}</Typography>
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
 
-      {isStudent(role) && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "8px",
-          }}
-        >
-          <LinkIcon style={{ marginRight: "8px", color: "#666666" }} />
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            style={detailTextStyle}
-          >
-            <strong>Enlace:</strong>
-            <a
-              href={studentSubmission?.repository_link}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {studentSubmission?.repository_link}
-            </a>
-          </Typography>
-        </div>
-      )}
-
-      {isStudent(role) && studentSubmission && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "8px",
-          }}
-        >
-          <CommentIcon
-            style={{ marginRight: "8px", color: "#666666" }}
-          />
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            style={detailTextStyle}
-          >
-            <strong>Comentario:</strong>{" "}
-            {studentSubmission.comment || "N/A"}
-          </Typography>
-        </div>
-      )}
-    </div>
+      {/* Columna Derecha: Fechas */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1.5, alignItems: { xs: 'flex-start', md: 'flex-start' }, minWidth: '200px' }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <CalendarMonthIcon sx={{ mr: 1.5, color: "#757575", fontSize: '1.6rem' }} />
+          <Typography variant="body1" sx={{ color: '#555', fontWeight: 600, fontSize: '1.05rem', minWidth: '100px' }}>Inicio:</Typography>
+          <Typography variant="body1" sx={{ color: '#333', fontSize: '1.05rem' }}>{formatDate(assignment.start_date.toString())}</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <CalendarMonthIcon sx={{ mr: 1.5, color: "#757575", fontSize: '1.6rem' }} />
+          <Typography variant="body1" sx={{ color: '#555', fontWeight: 600, fontSize: '1.05rem', minWidth: '100px' }}>Finalización:</Typography>
+          <Typography variant="body1" sx={{ color: '#333', fontSize: '1.05rem' }}>{formatDate(assignment.end_date.toString())}</Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 }
