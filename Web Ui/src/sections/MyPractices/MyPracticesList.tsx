@@ -21,6 +21,7 @@ import {
 } from "../Shared/Components/GenericList";
 import Practice from "./Practice";
 import "../Groups/GroupsPage.css";
+import "./MyPracticesPage.css";
 
 interface PracticesProps {
   ShowForm: () => void;
