@@ -1,0 +1,28 @@
+.profile-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.profile-card {
+  width: 400px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-header {
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-info {
+  margin-top: 20px;
+}

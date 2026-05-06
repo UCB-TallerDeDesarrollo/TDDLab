@@ -138,32 +138,28 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   };
   
   const getColorByCoverage = (coverage: number, isRefactor: boolean): string => {
-    let colorValue: number;
-    let opacity: number;
-    const baseColor = isRefactor ? 'blue' : 'green';
+  let opacity: number;
+  // Un verde más suave (tipo esmeralda/menta) en lugar de verde puro
+  const greenRGB = "76, 175, 80"; 
+  const blueRGB = "33, 150, 243"; // Un azul más moderno también
   
-    if (coverage >= 90) {
-      colorValue = 110;
-      opacity = 1;
-    } else if (coverage >= 80) {
-      colorValue = 110;
-      opacity = 0.8;
-    } else if (coverage >= 70) {
-      colorValue = 110;
-      opacity = 0.6;
-    } else if (coverage >= 60) {
-      colorValue = 110;
-      opacity = 0.4;
-    } else {
-      colorValue = 110;
-      opacity = 0.2;
-    }
-  
-    return baseColor === 'green'
-      ? `rgba(0, ${colorValue}, 0, ${opacity})`
-      : `rgba(0, 100, 255, ${opacity})`;
-  };
-   
+  const baseColor = isRefactor ? blueRGB : greenRGB;
+
+  // Ajustamos la opacidad según la cobertura
+  if (coverage >= 90) {
+    opacity = 1;
+  } else if (coverage >= 80) {
+    opacity = 0.8;
+  } else if (coverage >= 70) {
+    opacity = 0.6;
+  } else if (coverage >= 60) {
+    opacity = 0.4;
+  } else {
+    opacity = 0.2;
+  }
+
+  return `rgba(${baseColor}, ${opacity})`;
+};
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
     localStorage.setItem("selectedMetric", graphText);
@@ -318,7 +314,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   width: "20px",
                   height: `${barraHeight}px`, // Altura dinámica ajustada
                   transform:  'translateX(-655%) translateY(6%)',
-                  background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
+                  background: "linear-gradient(to bottom, rgb(0, 150, 0), rgba(0, 255, 0, 0))",
                   textAlign: "center",
                   display: "flex",
                 }}
