@@ -19,9 +19,9 @@
   min-height: 85vh; 
   display: flex;
   align-items: center;
-  padding: 60px 10% 40px 10%; 
+  padding: 95px 10% 40px 10%; 
   color: var(--white);
-  margin-top: -50px;
+  margin-top: -30px;
 }
 
 .hero-content {

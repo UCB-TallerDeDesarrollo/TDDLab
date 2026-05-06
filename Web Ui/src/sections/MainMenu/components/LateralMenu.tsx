@@ -9,7 +9,7 @@ import {
   Button,
   IconButton
 } from "@mui/material";
-import { ReactElement, Dispatch, SetStateAction } from "react";
+import { ReactElement } from "react";
 import LogoutIcon from "@mui/icons-material/Logout"; 
 import "../../../App.css";
 import "../../MainMenu/styles/LateralMenuStyles.css"
@@ -20,8 +20,6 @@ interface NavItem {
   path: string;
   icon: ReactElement;
 }
-
-// ... (tus imports actuales)
 
 interface NavLateralMenuProps {
   navArrayLinks: NavItem[];
