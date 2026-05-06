@@ -6,9 +6,10 @@ interface AssignmentManagerProps {
   userRole: string;
   userGroupid: number;
 }
+
 function AssignmentManager({
   userRole,
-  userGroupid, 
+  userGroupid,
 }: Readonly<AssignmentManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
@@ -19,19 +20,16 @@ function AssignmentManager({
   };
 
   return (
-    <div className="centered-container" data-testid="assignments-container">
-      <div className="table-container-full">
-        <Assignments
-          ShowForm={handleCreateAssignmentClick}
-          userRole={userRole}
-          userGroupid={userGroupid}
-          onGroupChange={setSelectedGroupId}
-        />
-      </div>
+    <>
+      <Assignments
+        ShowForm={handleCreateAssignmentClick}
+        userRole={userRole}
+        userGroupid={userGroupid}
+        onGroupChange={setSelectedGroupId}
+      />
 
       {createAssignmentPopupOpen && (
         <Form
-          /* Pasamos el data-testid al formulario */
           data-testid="form-container"
           open={createAssignmentPopupOpen}
           handleClose={() => setCreateAssignmentPopupOpen(false)}
@@ -41,7 +39,7 @@ function AssignmentManager({
           }
         />
       )}
-    </div>
+    </>
   );
 }
 
