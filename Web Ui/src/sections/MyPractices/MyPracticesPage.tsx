@@ -7,19 +7,17 @@ interface PracticeManagerProps {
   userRole: string;
   userid: number;
 }
+
 function PracticeManager({ userRole, userid }: Readonly<PracticeManagerProps>) {
-  const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
-    useState(false);
+  const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] = useState(false);
 
   return (
-    <div className="centered-container">
-      <div className="table-container-full">
-        <Practices 
-          ShowForm={() => setCreateAssignmentPopupOpen(true)} 
-          userRole={userRole} 
-        />
-      </div>
-      
+    <>
+      <Practices
+        ShowForm={() => setCreateAssignmentPopupOpen(true)}
+        userRole={userRole}
+      />
+
       {createAssignmentPopupOpen && (
         <MyPracticesForm
           open={createAssignmentPopupOpen}
@@ -27,7 +25,7 @@ function PracticeManager({ userRole, userid }: Readonly<PracticeManagerProps>) {
           userid={userid}
         />
       )}
-    </div>
+    </>
   );
 }
 
