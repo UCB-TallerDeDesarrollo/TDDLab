@@ -23,6 +23,7 @@ import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import { CircularProgress } from "@mui/material";
+import ProfilePage from "./sections/Profile/ProfilePage"; // Mantenemos lo de tus compañeros
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 
 const navArrayLinks = [
@@ -87,15 +88,19 @@ function App() {
 
   return (
     <Router>
+      {/* ELIMINAMOS LA CONDICIÓN: El MainMenu debe estar SIEMPRE 
+          para que la Landing muestre el botón de acceso */}
       <MainMenu 
         navArrayLinks={navArrayLinks} 
         userRole={authData.userRole ?? "guest"} 
       />
+
       <Routes>
+        {/* REDIRECCIÓN INICIAL CORRECTA */}
         <Route 
-        path="/" 
-        element={<Navigate to={authData.userEmail ? "/assignments" : "/login"} replace />} 
-      />
+          path="/" 
+          element={<Navigate to={authData.userEmail ? "/assignments" : "/login"} replace />} 
+        />
 
         <Route
           path="/assignments"
@@ -113,7 +118,10 @@ function App() {
             </ProtectedRouteComponent>
           }
         />
+        
+        {/* LA LANDING PAGE */}
         <Route path="/login" element={<Login />} />
+
         <Route path="/groups" element={<ProtectedRouteComponent><Groups /></ProtectedRouteComponent>} />
         <Route path="/user" element={<ProtectedRouteComponent><User /></ProtectedRouteComponent>} />
         <Route
@@ -152,6 +160,9 @@ function App() {
         <Route path="/users/group/:groupid" element={<ProtectedRouteComponent><UsersByGroupPage /></ProtectedRouteComponent>} />
         <Route path="/asistente-ia" element={<ProtectedRouteComponent><AIAssistantPage /></ProtectedRouteComponent>} />
         <Route path="/configuraciones" element={<ProtectedRouteComponent><SettingsPage /></ProtectedRouteComponent>} />
+        
+        {/* RUTA DE PERFIL (Añadida por tus compañeros) */}
+        <Route path="/profile" element={<ProtectedRouteComponent><ProfilePage /></ProtectedRouteComponent>} />
       </Routes>
     </Router>
   );
