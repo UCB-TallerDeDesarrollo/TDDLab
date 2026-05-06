@@ -80,7 +80,12 @@ export default function MainMenu({
           >
             {/* Logo in Top Bar */}
             <NavLink to="/" style={{ display: "flex", alignItems: "center" }}>
-              <img src="/logo.svg" alt="TDDLab Logo" style={{ height: { xs: "36px", sm: "52px" }, width: "auto" }} />
+              <Box
+                component="img"
+                src="/logo.svg"
+                alt="TDDLab Logo"
+                sx={{ height: { xs: 36, sm: 52 }, width: "auto" }}
+              />
             </NavLink>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: '8px', sm: '16px' } }}>
