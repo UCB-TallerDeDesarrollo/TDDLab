@@ -26,6 +26,7 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import EditGroupPopup from "./components/EditGroupForm";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
 import { GroupSkeleton } from "../../components/Skeleton";
+import Skeleton from "@mui/material/Skeleton";
 import { typographyVariants } from "../../styles/typography";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 
@@ -145,6 +146,20 @@ const GroupActions = styled("div")(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     width: "100%",
     justifyContent: "flex-start",
+  },
+}));
+
+const EmptyStateCard = styled(Paper)(({ theme }) => ({
+  borderRadius: "12px",
+  border: "1px dashed #D0D0D0",
+  backgroundColor: "#FAFAFA",
+  padding: "28px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
+  alignItems: "flex-start",
+  [theme.breakpoints.down("sm")]: {
+    padding: "22px",
   },
 }));
 
@@ -453,88 +468,121 @@ function Groups() {
         <Divider sx={{ width: { xs: "95%", sm: "90%", md: "92%" }, ml: { xs: "auto", md: "40px" }, mr: { xs: "auto", md: 0 }, mt: 1.5, borderColor: "#BDBDBD" }} />
 
         <GroupsList>
-          {groups.map((group, index) => (
-            <GroupCard
-              key={asId(group.id) || index}
-              onClick={() => handleRowClick(index)}
-              sx={{
-                backgroundColor:
-                  selectedRow === index || asId(currentSelectedGroupId) === asId(group.id)
-                    ? "#F5F7FA"
-                    : "#ffffff",
-                "&::before": {
-                  transform:
+          {groups.length === 0 ? (
+            <EmptyStateCard>
+              <Typography sx={{ ...typographyVariants.paragraphBig, color: "#202124" }}>
+                No hay grupos creados aun.
+              </Typography>
+              <Typography sx={{ ...typographyVariants.paragraphMedium, color: "#5F6368" }}>
+                Crea un grupo para comenzar a organizar tareas y participantes.
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<IconifyIcon icon="mdi:plus" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
+                sx={{
+                  borderRadius: "8px",
+                  textTransform: "none",
+                  ...typographyVariants.paragraphMedium,
+                  minWidth: "140px",
+                  transition: "all 0.175s ease-out",
+                  "&:hover": {
+                    filter: "brightness(0.9)",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  },
+                  "&:active": {
+                    transform: "scale(0.97)",
+                  },
+                }}
+                onClick={handleCreateGroupClick}
+              >
+                Crear grupo
+              </Button>
+            </EmptyStateCard>
+          ) : (
+            groups.map((group, index) => (
+              <GroupCard
+                key={asId(group.id) || index}
+                onClick={() => handleRowClick(index)}
+                sx={{
+                  backgroundColor:
                     selectedRow === index || asId(currentSelectedGroupId) === asId(group.id)
-                      ? "scaleX(1)"
-                      : "scaleX(0)",
-                },
-              }}
-            >
-              <GroupCardContent>
-                <Typography sx={{ ...typographyVariants.paragraphBig, color: "#202124" }}>
-                  {group.groupName}
-                </Typography>
+                      ? "#F5F7FA"
+                      : "#ffffff",
+                  "&::before": {
+                    transform:
+                      selectedRow === index || asId(currentSelectedGroupId) === asId(group.id)
+                        ? "scaleX(1)"
+                        : "scaleX(0)",
+                  },
+                }}
+              >
+                <GroupCardContent>
+                  <Typography sx={{ ...typographyVariants.paragraphBig, color: "#202124" }}>
+                    {group.groupName}
+                  </Typography>
 
-                <GroupActions>
-                  <Tooltip title="Editar grupo" arrow>
-                    <IconButton
-                      aria-label="editar"
-                      onClick={(e) => handleEditClick(e, index)}
-                      sx={iconButtonSx}
-                    >
-                      <IconifyIcon icon="mdi:file-document-multiple-outline" color="#7d7d7d" hoverColor="#616161" />
-                    </IconButton>
-                  </Tooltip>
+                  <GroupActions>
+                    <Tooltip title="Editar grupo" arrow>
+                      <IconButton
+                        aria-label="editar"
+                        onClick={(e) => handleEditClick(e, index)}
+                        sx={iconButtonSx}
+                      >
+                        <IconifyIcon icon="mdi:file-document-multiple-outline" color="#7d7d7d" hoverColor="#616161" />
+                      </IconButton>
+                    </Tooltip>
 
-                  <Tooltip title="Tareas" arrow>
-                    <IconButton
-                      aria-label="tareas"
-                      onClick={(e) => handleTasksClick(e, index)}
-                      sx={iconButtonSx}
-                    >
-                      <IconifyIcon icon="mdi:motion" color="#7d7d7d" hoverColor="#616161" />
-                    </IconButton>
-                  </Tooltip>
+                    <Tooltip title="Tareas" arrow>
+                      <IconButton
+                        aria-label="tareas"
+                        onClick={(e) => handleTasksClick(e, index)}
+                        sx={iconButtonSx}
+                      >
+                        <IconifyIcon icon="mdi:motion" color="#7d7d7d" hoverColor="#616161" />
+                      </IconButton>
+                    </Tooltip>
 
-                  <Tooltip title="Participantes" arrow>
-                    <IconButton
-                      aria-label="estudiantes"
-                      onClick={(e) => handleStudentsClick(e, index)}
-                      sx={iconButtonSx}
-                    >
-                      <IconifyIcon icon="mdi:account-group" color="#7d7d7d" hoverColor="#616161" />
-                    </IconButton>
-                  </Tooltip>
+                    <Tooltip title="Participantes" arrow>
+                      <IconButton
+                        aria-label="estudiantes"
+                        onClick={(e) => handleStudentsClick(e, index)}
+                        sx={iconButtonSx}
+                      >
+                        <IconifyIcon icon="mdi:account-group" color="#7d7d7d" hoverColor="#616161" />
+                      </IconButton>
+                    </Tooltip>
 
-                  <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                    <IconButton
-                      aria-label="enlace"
-                      onClick={(e) => handleStudentLinkClick(e, index)}
-                      sx={iconButtonSx}
-                    >
-                      <IconifyIcon icon="mdi:link-variant" color="#7d7d7d" hoverColor="#616161" />
-                    </IconButton>
-                  </Tooltip>
+                    <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
+                      <IconButton
+                        aria-label="enlace"
+                        onClick={(e) => handleStudentLinkClick(e, index)}
+                        sx={iconButtonSx}
+                      >
+                        <IconifyIcon icon="mdi:link-variant" color="#7d7d7d" hoverColor="#616161" />
+                      </IconButton>
+                    </Tooltip>
 
-                  <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                    <IconButton
-                      aria-label="enlace-docente"
-                      onClick={(e) => handleTeacherLinkClick(e, index)}
-                      sx={iconButtonSx}
-                    >
-                      <PiChalkboardTeacherFill color="#7d7d7d" />
-                    </IconButton>
-                  </Tooltip>
+                    <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+                      <IconButton
+                        aria-label="enlace-docente"
+                        onClick={(e) => handleTeacherLinkClick(e, index)}
+                        sx={iconButtonSx}
+                      >
+                        <PiChalkboardTeacherFill color="#7d7d7d" />
+                      </IconButton>
+                    </Tooltip>
 
-                  <Tooltip title="Eliminar grupo" arrow>
-                    <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)} sx={iconButtonSx}>
-                      <IconifyIcon icon="mdi:trash-can" color="#7d7d7d" hoverColor="#616161" />
-                    </IconButton>
-                  </Tooltip>
-                </GroupActions>
-              </GroupCardContent>
-            </GroupCard>
-          ))}
+                    <Tooltip title="Eliminar grupo" arrow>
+                      <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)} sx={iconButtonSx}>
+                        <IconifyIcon icon="mdi:trash-can" color="#7d7d7d" hoverColor="#616161" />
+                      </IconButton>
+                    </Tooltip>
+                  </GroupActions>
+                </GroupCardContent>
+              </GroupCard>
+            ))
+          )}
         </GroupsList>
       </section>
 
