@@ -19,6 +19,7 @@ import { useLocation } from "react-router-dom";
 import PasswordComponent from "./components/PasswordPopUp";
 import CheckRegisterGroupPopUp from "./components/CheckRegisterGroupPopUp";
 import AdminAlertModal from "./components/AdminAlertModal";
+import "./InvitationPage.css";
 
 function InvitationPage() {
   const location = useLocation();
@@ -111,21 +112,7 @@ function InvitationPage() {
   };
 
   const LoadingOverlay = () => (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 99999,
-        backdropFilter: "blur(5px)", //blur
-      }}
-    >
+    <div className="invitation-loading-overlay">
       <CircularProgress size={60} />
     </div>
   );
@@ -184,27 +171,17 @@ function InvitationPage() {
   const handleMouseLeave = () => {
     setRotation({ rotateX: 0, rotateY: 0 });
   };
+
+  const hasDisplayName = Boolean(user?.displayName);
+
   return (
-    <div style={{ position: "relative" }}>
+    <div className="invitation-page-root">
       {isLoading && <LoadingOverlay />}
 
       {user ? (
-        <div>
-          <Grid
-            container
-            spacing={2} // Agrega la separación deseada entre los Card
-            justifyContent="center" // Centra los elementos horizontalmente
-            alignItems="center" // Centra los elementos verticalmente
-            style={{ minHeight: "100vh" }} // Asegura que los elementos ocupen toda la altura de la vista
-            direction="column" // Alinea los elementos en una sola columna
-          >
-            <Grid
-              item
-              style={{
-                width: user.displayName ? "400px" : "600px",
-                transition: "width 0.3s ease",
-              }}
-            >
+        <section className="invitation-page-section">
+          <div className="invitation-page-content">
+            <div className={`invitation-user-card-wrap ${hasDisplayName ? "" : "invitation-user-card-wrap--wide"}`}>
               <Card
                 sx={{
                   "&:hover": {
@@ -217,21 +194,8 @@ function InvitationPage() {
                 <CardContent>
                   <Grid container spacing={2}>
                     <Grid item xs={4}>
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: 100,
-                            height: 100,
-                            borderRadius: "10%",
-                            overflow: "hidden",
-                          }}
-                        >
+                      <div className="invitation-card-media-container">
+                        <div className="invitation-avatar-box">
                           <CardMedia
                             component="img"
                             alt="Imagen"
@@ -250,11 +214,11 @@ function InvitationPage() {
                       justifyContent="space-between"
                     >
                       <Grid item>
-                        <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                        <Typography variant="h5" className="invitation-user-name">
                           {user.displayName ?? user.email}
                         </Typography>
                       </Grid>
-                      <Grid item sx={{ marginTop: "auto" }}>
+                      <Grid item className="invitation-signout-row">
                         <Button
                           onClick={handleGithubSignOut}
                           variant="contained"
@@ -268,13 +232,9 @@ function InvitationPage() {
                   </Grid>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item>
+            </div>
+            <div className={`invitation-main-card-wrap ${hasDisplayName ? "" : "invitation-main-card-wrap--wide"}`}>
               <Card
-                sx={{
-                  width: user.displayName ? "400px" : "500px",
-                  transition: "width 0.5s ease",
-                }}
                 variant="outlined"
               >
                 <CardMedia
@@ -282,17 +242,15 @@ function InvitationPage() {
                   alt="Imagen de portada"
                   height="50%" // La mitad superior del card
                   image="https://images.pexels.com/photos/6804068/pexels-photo-6804068.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" // Reemplaza con la ruta de tu imagen
+                  className="invitation-cover-media"
                   sx={{
-                    transition: "transform 0.1s ease-out",
-                    transformStyle: "preserve-3d",
                     transform: `rotateX(${rotation.rotateX}deg) rotateY(${rotation.rotateY}deg)`,
-                    boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.5)",
                   }}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
                 />
                 <CardContent>
-                  <Typography variant="body1" sx={{ textAlign: "center" }}>
+                  <Typography variant="body1" className="invitation-description">
                     Israel Antezana te está invitando al curso
                   </Typography>
                   {userType === "student" && (
@@ -300,7 +258,7 @@ function InvitationPage() {
                       onClick={() => handleAcceptInvitation("student")}
                       variant="contained"
                       color="primary"
-                      sx={{ marginTop: 2 }}
+                      className="invitation-action-btn"
                       fullWidth
                       disabled={isLoading}
                     >
@@ -312,7 +270,7 @@ function InvitationPage() {
                       onClick={handlePopPassword}
                       variant="contained"
                       color="primary"
-                      sx={{ marginTop: 2 }}
+                      className="invitation-action-btn"
                       fullWidth
                       disabled={isLoading}
                     >
@@ -321,8 +279,8 @@ function InvitationPage() {
                   )}
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </div>
+          </div>
           {showPasswordPopup && (
             <PasswordComponent
               open={showPasswordPopup}
@@ -332,7 +290,7 @@ function InvitationPage() {
           )}
           {showPopUp && <SuccessfulEnrollmentPopUp authProvider={authProvider}></SuccessfulEnrollmentPopUp>}
           {openPopup && <CheckRegisterGroupPopUp></CheckRegisterGroupPopUp>}
-        </div>
+        </section>
       ) : (
         <Grid
           container
@@ -340,36 +298,18 @@ function InvitationPage() {
           direction="column"
           alignItems="center"
           justifyContent="center"
-          style={{ minHeight: "100vh" }}
+          className="invitation-auth-grid"
         >
           <Grid item>
-            <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
+            <div className="invitation-auth-actions">
               <Button 
                 onClick={handleSignUp} 
                 disabled={isLoading}
                 variant="contained"
-                sx={{ 
-                  backgroundColor: "#24292e",
-                  color: "white",
-                  padding: "10px 20px",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  "&:hover": { 
-                    backgroundColor: "#1a1e22"
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc"
-                  }
-                }}
+                className="invitation-auth-btn invitation-auth-btn--github"
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <GitHubIcon style={{ marginRight: "8px" }} />
+                <div className="invitation-auth-btn-content">
+                  <GitHubIcon className="invitation-auth-btn-icon" />
                   Registrarse con GitHub
                 </div>
               </Button>
@@ -377,28 +317,10 @@ function InvitationPage() {
                 onClick={handleSignUpWithGoogle} 
                 disabled={isLoading}
                 variant="contained"
-                sx={{ 
-                  backgroundColor: "#4285f4",
-                  color: "white",
-                  padding: "10px 20px",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  "&:hover": { 
-                    backgroundColor: "#3367d6"
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc"
-                  }
-                }}
+                className="invitation-auth-btn invitation-auth-btn--google"
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <GoogleIcon style={{ marginRight: "8px" }} />
+                <div className="invitation-auth-btn-content">
+                  <GoogleIcon className="invitation-auth-btn-icon" />
                   Registrarse con Google
                 </div>
               </Button>
