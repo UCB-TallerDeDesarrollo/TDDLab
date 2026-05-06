@@ -53,6 +53,10 @@
   padding: 24px;
 }
 
+.Grupos .generic-list-body {
+  gap: 0;
+}
+
 /* ── Card row (checkbox + card) ─────────────────────── */
 .groups-card-row {
   display: flex;
@@ -70,13 +74,14 @@
 
 .Grupos .generic-card {
   gap: 8px;
+  border-radius: 0;
 }
 
 .Grupos .generic-card-detail {
   margin: -12px 0 0;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0;
 }
 
 .Grupos .generic-card-checkbox--inside {
@@ -195,6 +200,10 @@
   .groups-card-list {
     padding: 16px;
     gap: 12px;
+  }
+
+  .Grupos .generic-list-body {
+    gap: 0;
   }
 
   .groups-card-row {
