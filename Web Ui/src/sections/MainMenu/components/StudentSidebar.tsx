@@ -13,43 +13,25 @@ const labelMap: Record<string, string> = {
 
 interface StudentSidebarProps {
   navArrayLinks: { title: string; path: string; icon: string; access: string[] }[];
+  mobileOpen?: boolean;
+  onClose?: () => void;
+  isMobile?: boolean;
 }
 
-export default function StudentSidebar({ navArrayLinks }: Readonly<StudentSidebarProps>) {
+export default function StudentSidebar({
+  navArrayLinks,
+  mobileOpen = false,
+  onClose,
+  isMobile = false
+}: Readonly<StudentSidebarProps>) {
   const location = useLocation();
 
   const studentLinks = navArrayLinks.filter(
     (item) => item.title === "Tareas" || item.title === "Mis Practicas"
   );
 
-  return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: 260,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {
-          width: 280,
-          boxSizing: "border-box",
-          backgroundColor: "#ffffff",
-          borderRight: "none",
-          boxShadow: "2px 0 8px rgba(0,0,0,0.05)",
-        },
-      }}
-    >
-      <Box
-        sx={{
-          height: 90,
-          backgroundColor: "#0d1b2a",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          paddingLeft: "30px",
-        }}
-      >
-        <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "52px", width: "auto" }} />
-      </Box>
-
+  const drawerContent = (
+    <Box>
       <Box sx={{ px: 2, pt: 3 }}>
         <List sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
           {studentLinks.map((item) => {
@@ -66,6 +48,7 @@ export default function StudentSidebar({ navArrayLinks }: Readonly<StudentSideba
                 <ListItemButton
                   component={NavLink}
                   to={item.path}
+                  onClick={onClose}
                   sx={{
                     borderRadius: "12px",
                     mb: 1.5,
@@ -102,6 +85,29 @@ export default function StudentSidebar({ navArrayLinks }: Readonly<StudentSideba
           })}
         </List>
       </Box>
+    </Box>
+  );
+
+  return (
+    <Drawer
+      variant={isMobile ? "temporary" : "permanent"}
+      open={isMobile ? mobileOpen : true}
+      onClose={onClose}
+      sx={{
+        flexShrink: 0,
+        [`& .MuiDrawer-paper`]: {
+          width: 280,
+          boxSizing: "border-box",
+          backgroundColor: "#ffffff",
+          borderRight: "none",
+          boxShadow: "2px 0 8px rgba(0,0,0,0.05)",
+          top: isMobile ? 0 : 90,
+          height: isMobile ? "100%" : "calc(100% - 90px)",
+          paddingTop: isMobile ? "90px" : "0px",
+        },
+      }}
+    >
+      {drawerContent}
     </Drawer>
   );
 }

@@ -11,6 +11,7 @@ import NavLateralMenu from "./components/LateralMenu";
 import { IconifyIcon } from "../../sections/Shared/Components";
 import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
+import { useTheme, useMediaQuery } from "@mui/material";
 import LoginComponent from "./components/loginComponent";
 import { typographyVariants } from "../../styles/typography";
 import TeacherSidebar from "./components/TeacherSidebar";
@@ -33,7 +34,13 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
-  const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const activeButton = navArrayLinks.find(
     (navLink) => navLink.path === location.pathname
@@ -43,30 +50,73 @@ export default function MainMenu({
     const SidebarComponent = userRole === "teacher" ? TeacherSidebar : StudentSidebar;
 
     return (
-      <div style={{ position: "absolute" }}>
-        <SidebarComponent navArrayLinks={navArrayLinks} />
+      <>
+        <SidebarComponent 
+          navArrayLinks={navArrayLinks} 
+          isMobile={isMobile}
+          mobileOpen={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+        />
+        
+        {/* Top Bar (Blue Line) */}
         <AppBar
           position="fixed"
           sx={{
-            width: `calc(100% - 280px)`,
-            left: "280px",
+            width: "100%",
             background: "#0d1b2a",
             boxShadow: "none",
             height: 90,
             justifyContent: "center",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
           }}
         >
           <Toolbar
-            style={{
+            sx={{
               display: "flex",
-              justifyContent: "flex-end",
-              paddingRight: "20px", // using 20px so it's not too far left
+              justifyContent: "space-between",
+              alignItems: "center",
+              px: { xs: "16px", sm: "30px" }, // More compact on mobile
             }}
           >
-            <LoginComponent />
+            {/* Logo in Top Bar */}
+            <NavLink to="/" style={{ display: "flex", alignItems: "center" }}>
+              <img src="/logo.svg" alt="TDDLab Logo" style={{ height: { xs: "36px", sm: "52px" }, width: "auto" }} />
+            </NavLink>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: '8px', sm: '16px' } }}>
+              <LoginComponent />
+            </Box>
           </Toolbar>
         </AppBar>
-      </div>
+
+        {/* Hamburger button below the logo on mobile */}
+        {isMobile && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 100, // Just below the 90px AppBar
+              left: 16,
+              zIndex: (theme) => theme.zIndex.appBar,
+            }}
+          >
+            <IconButton
+              onClick={handleDrawerToggle}
+              sx={{
+                backgroundColor: "#ffffff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                border: "1px solid #e0e0e0",
+                "&:hover": {
+                  backgroundColor: "#f5f5f5",
+                },
+                width: 44,
+                height: 44,
+              }}
+            >
+              <IconifyIcon icon="mdi:menu" color="#0d1b2a" width={24} height={24} />
+            </IconButton>
+          </Box>
+        )}
+      </>
     );
   }
 
@@ -85,7 +135,7 @@ export default function MainMenu({
             <IconButton
               color="inherit"
               size="large"
-              onClick={() => setOpen(true)}
+              onClick={() => setMobileOpen(true)}
               sx={{ display: { xs: "flex", sm: "none" } }}
             >
               <IconifyIcon icon="mdi:menu" color="white" hoverColor="#e0e0e0" />
@@ -132,15 +182,15 @@ export default function MainMenu({
       </AppBar>
 
       <Drawer
-        open={open}
+        open={mobileOpen}
         anchor="left"
-        onClose={() => setOpen(false)}
+        onClose={() => setMobileOpen(false)}
         sx={{ display: { xs: "flex", sm: "none" } }}
       >
         <NavLateralMenu
           navArrayLinks={navArrayLinks}
           NavLink={NavLink}
-          setOpen={setOpen}
+          setOpen={setMobileOpen}
         />
       </Drawer>
     </div>

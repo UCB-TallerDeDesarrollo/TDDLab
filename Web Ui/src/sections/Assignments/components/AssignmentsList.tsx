@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  Button,
-  SelectChangeEvent } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { 
+  Box, 
+  Container, 
+  Button, 
+  Grid, 
+  Divider,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import { FullScreenLoader } from "../../../components/FullScreenLoader";
 import { AssignmentSkeleton } from "../../../components/Skeleton";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
@@ -28,21 +29,7 @@ import { useGlobalState } from "../../../modules/User-Authentication/domain/auth
 import { typographyVariants } from "../../../styles/typography";
 import AssignmentDetailModal from "./AssignmentDetailModal";
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
 
-const CustomTableCell1 = styled(TableCell)({
-  width: "80%",
-});
-
-const StyledTableBody = styled(TableBody)({
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
-});
 
 
 
@@ -50,24 +37,24 @@ const StyledTableBody = styled(TableBody)({
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number | number[] ;
+  userGroupid: number | number[];
   userid: number;
   onGroupChange: (groupId: number) => void;
 }
 
 function Assignments({
-                       ShowForm: showForm,
-                       userRole,
-                       userGroupid,
-                       userid,
-                       onGroupChange,
-                     }: Readonly<AssignmentsProps>) {
+  ShowForm: showForm,
+  userRole,
+  userGroupid,
+  userid,
+  onGroupChange,
+}: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-      number | null
+    number | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
@@ -87,8 +74,8 @@ function Assignments({
   const [authData, setAuthData] = useGlobalState("authData");
 
   const orderAssignments = (
-      assignmentsArray: AssignmentDataObject[],
-      selectedSorting: string
+    assignmentsArray: AssignmentDataObject[],
+    selectedSorting: string
   ) => {
     if (assignmentsArray.length == 0) {
       return;
@@ -115,10 +102,10 @@ function Assignments({
         if (Array.isArray(studentGroups)) {
           allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
         }
-        else{
+        else {
           allGroups = await Promise.all([getGroups.getGroupById(studentGroups)]);
         }
-      } else if(localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
+      } else if (localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
         const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
         localStorage.setItem('userGroups', JSON.stringify(studentGroups));
         allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
@@ -134,7 +121,7 @@ function Assignments({
       allGroups = await getGroups.getGroups();
     }
 
-    if(selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
+    if (selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
       await loadAssignmentsByGroupId(allGroups[0].id);
     }
 
@@ -143,49 +130,49 @@ function Assignments({
   }
 
   const fetchData = async () => {
-  try {
-    const allGroups = await getUserGroups();
-    setGroupList(allGroups);
-
-    const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
-    const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
-
-    const savedSelectedGroup = localStorage.getItem("selectedGroup");
-    const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
-    const groupIdAuth = authData?.usergroupid ?? null;
-
-    let firstUserGroup: number | null = null;
     try {
-      const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
-      if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
-        firstUserGroup = storedUserGroups[0];
+      const allGroups = await getUserGroups();
+      setGroupList(allGroups);
+
+      const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
+      const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
+
+      const savedSelectedGroup = localStorage.getItem("selectedGroup");
+      const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
+      const groupIdAuth = authData?.usergroupid ?? null;
+
+      let firstUserGroup: number | null = null;
+      try {
+        const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
+        if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
+          firstUserGroup = storedUserGroups[0];
+        }
+      } catch { }
+
+      const finalGroupId =
+        groupIdUrl ||
+        groupIdLocal ||
+        groupIdAuth ||
+        firstUserGroup ||
+        allGroups?.[0]?.id ||
+        null;
+
+      if (finalGroupId) {
+        await loadAssignmentsByGroupId(finalGroupId);
+      } else {
+        setSelectedGroup(0);
+        setAssignments([]);
       }
-    } catch {}
-
-    const finalGroupId =
-      groupIdUrl ||
-      groupIdLocal ||
-      groupIdAuth ||
-      firstUserGroup ||
-      allGroups?.[0]?.id ||
-      null;
-
-    if (finalGroupId) {
-      await loadAssignmentsByGroupId(finalGroupId);
-    } else {
-      setSelectedGroup(0);
-      setAssignments([]);
+    } catch (error) {
+      console.error("Error en fetchData:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error en fetchData:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-useEffect(() => {
-  fetchData();
-}, [location]);
+  useEffect(() => {
+    fetchData();
+  }, [location]);
 
   // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {
@@ -261,8 +248,8 @@ useEffect(() => {
   };
 
   const filteredAssignments = selectedGroup
-      ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-      : assignments;
+    ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
+    : assignments;
 
   const handleClickDetail = (index: number) => {
     const assignmentId = filteredAssignments[index].id;
@@ -307,150 +294,105 @@ useEffect(() => {
     setHoveredRow(index);
   };
 
- return (
-  <Container>
+return (
+  <Container sx={{ width: "100%", maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
     {isLoading ? (
-      <section className="Tareas">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "1rem",
-            width: "82%",
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexWrap: "nowrap"
-          }}
-        >
-          <Skeleton variant="rectangular" width={200} height={40} sx={{ borderRadius: "8px" }} />
-          <Skeleton variant="rectangular" width={150} height={40} sx={{ borderRadius: "8px" }} />
-          {userRole !== "student" && (
-            <Skeleton variant="rectangular" width={90} height={40} sx={{ borderRadius: "17px" }} />
-          )}
-        </div>
-        <StyledTable>
-          <TableHead>
-            <TableRow
-              sx={{
-                borderBottom: "none",
-              }}
-            >
-              <CustomTableCell1
-                sx={{ ...typographyVariants.h5, color: "#333" }}
-              >
-                Tareas
-              </CustomTableCell1>
-            </TableRow>
-          </TableHead>
-          <StyledTableBody>
-            <AssignmentSkeleton count={3} />
-          </StyledTableBody>
-        </StyledTable>
-      </section>
+      <FullScreenLoader variant="page" />
     ) : (
       <section className="Tareas">
-        {/* 🔹 Botones separados de la tabla */}
-        {/* 🔹 Botones arriba de la tabla en una sola línea */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "1rem",
-            width: "82%",
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexWrap: "nowrap"
-          }}
-        >
-          <GroupFilter
-            selectedGroup={selectedGroup}
-            groupList={groupList}
-            onChangeHandler={handleGroupChange}
-            defaultName={
-              groupList.find((group) => group.id == selectedGroup)?.groupName ||
-              groupList[0]?.groupName ||
-              "Selecciona un grupo"
-            }
-          />
-          <SortingComponent
-            selectedSorting={selectedSorting}
-            onChangeHandler={handleOrderAssignments}
-          />
-          {userRole !== "student" && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              sx={{
-                borderRadius: "17px",
-                textTransform: "none",
-                ...typographyVariants.paragraphMedium,
-                paddingX: "16px",
-                paddingY: "8px",
-                minWidth: "90px",
-                whiteSpace: "nowrap",
-                transition: "all 0.175s ease-out",
-                "&:hover": {
-                  filter: "brightness(0.9)",
-                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
-                },
-                "&:active": {
-                  transform: "scale(0.97)",
-                },
-              }}
-              onClick={showForm}
-            >
-              Crear
-            </Button>
-          )}
-        </div>
-
-
-        {/* 🔹 Tabla solo con encabezado de columnas */}
-        <StyledTable>
-          <TableHead>
-            <TableRow
-              sx={{
-                borderBottom: "none",
-              }}
-            >
-              <CustomTableCell1
-                sx={{ ...typographyVariants.h5, color: "#333" }}
-              >
+        <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
+          
+          {/* Header & Title */}
+          <Box sx={{ pb: 2 }}>
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: { xs: 'flex-start', sm: 'flex-end' },
+              flexDirection: { xs: 'column', sm: 'row' },
+              width: '100%',
+              mb: 1,
+              gap: { xs: '16px', sm: '0' }
+            }}>
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
                 Tareas
-              </CustomTableCell1>
-            </TableRow>
-          </TableHead>
-          <StyledTableBody>
-            {filteredAssignments.map((assignment, index) => (
-              <Assignment
-                key={assignment.id}
-                assignment={assignment}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-                role={userRole}
-              />
-            ))}
-          </StyledTableBody>
-        </StyledTable>
+              </Typography>
 
-        {/* Diálogos */}
+              {/* Filters and Controls */}
+              <Box sx={{
+                display: "flex",
+                justifyContent: { xs: "flex-start", sm: "flex-end" },
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "12px",
+                width: { xs: "100%", sm: "auto" }
+              }}>
+                <GroupFilter
+                  selectedGroup={selectedGroup}
+                  groupList={groupList}
+                  onChangeHandler={handleGroupChange}
+                  defaultName={
+                    groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                    groupList[0]?.groupName ||
+                    "Selecciona un grupo"
+                  }
+                />
+                <SortingComponent
+                  selectedSorting={selectedSorting}
+                  onChangeHandler={handleOrderAssignments}
+                />
+                {userRole !== "student" && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    sx={{
+                      borderRadius: "17px",
+                      textTransform: "none",
+                      ...typographyVariants.paragraphMedium,
+                      paddingX: "16px",
+                      paddingY: "8px",
+                      minWidth: "90px",
+                      whiteSpace: "nowrap",
+                      transition: "all 0.175s ease-out",
+                      "&:hover": {
+                        filter: "brightness(0.9)",
+                        boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
+                      },
+                      "&:active": { transform: "scale(0.97)" },
+                    }}
+                    onClick={showForm}
+                  >
+                    Crear
+                  </Button>
+                )}
+              </Box>
+            </Box>
+            <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
+          </Box>
+
+          {/* Assignments List (Responsive Cards) */}
+          <Grid container spacing={2}>
+            {filteredAssignments.map((assignment, index) => (
+              <Grid item xs={12} key={assignment.id}>
+                <Assignment
+                  assignment={assignment}
+                  index={index}
+                  handleClickDetail={handleClickDetail}
+                  handleClickDelete={handleClickDelete}
+                  handleRowHover={handleRowHover}
+                  role={userRole}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* Dialogs/Modals (Keeping the logic from the second branch) */}
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
             title="¿Eliminar la tarea?"
-            content={
-              <>
-                Ten en cuenta que esta acción también eliminará <br /> todas las
-                entregas asociadas.
-              </>
-            }
+            content={<>Ten en cuenta que esta acción también eliminará <br /> todas las entregas asociadas.</>}
             cancelText="Cancelar"
             deleteText="Eliminar"
             onCancel={() => setConfirmationOpen(false)}
@@ -464,7 +406,6 @@ useEffect(() => {
             closeText="Cerrar"
             onClose={() => {
               setValidationDialogOpen(false);
-              // Refrescar datos del grupo actual sin recargar página
               if (selectedGroup) {
                 loadAssignmentsByGroupId(selectedGroup);
               } else if (authData?.usergroupid) {
@@ -473,24 +414,30 @@ useEffect(() => {
             }}
           />
         )}
-
-        {selectedAssignmentId !== null && (
-          <AssignmentDetailModal
-            open={detailModalOpen}
-            assignmentId={selectedAssignmentId}
-            role={userRole}
-            userid={userid}
-            onClose={() => {
-              setDetailModalOpen(false);
-              setSelectedAssignmentId(null);
-            }}
-          />
-        )}
       </section>
     )}
   </Container>
 );
+              }}
+            />
+          )}
 
+          {selectedAssignmentId !== null && (
+            <AssignmentDetailModal
+              open={detailModalOpen}
+              assignmentId={selectedAssignmentId}
+              role={userRole}
+              userid={userid}
+              onClose={() => {
+                setDetailModalOpen(false);
+                setSelectedAssignmentId(null);
+              }}
+            />
+          )}
+        </section>
+      )}
+    </Container>
+  );
 }
 
 export default Assignments;
