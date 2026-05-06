@@ -1,6 +1,7 @@
 import { useState, MouseEvent } from "react";
 import { Button, Menu, MenuItem, Avatar, ListItemIcon, Divider } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
+import AccountCircle from "@mui/icons-material/AccountCircle"; // Importé un icono opcional para el perfil
 import { useNavigate } from "react-router-dom";
 
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
@@ -25,6 +26,12 @@ export default function LoginComponent() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  // Nueva función para navegar al perfil
+  const handleGoToProfile = () => {
+    handleClose();
+    navigate("/profile");
   };
 
   const handleLogin = async () => {
@@ -61,6 +68,7 @@ export default function LoginComponent() {
             alt="Profile"
             onClick={handleClick}
             className="user-avatar"
+            style={{ cursor: "pointer" }}
           />
           <Menu
             anchorEl={anchorEl}
@@ -71,10 +79,17 @@ export default function LoginComponent() {
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             slotProps={{ paper: { className: 'user-menu-paper' } }}
           >
-            <MenuItem disabled className="user-menu-email">
-              {authData[0].userEmail}
+            {/* Opción de Perfil (Reemplaza al correo estático) */}
+            <MenuItem onClick={handleGoToProfile} className="user-menu-item">
+              <ListItemIcon>
+                <AccountCircle fontSize="small" />
+              </ListItemIcon>
+              Mi Perfil
             </MenuItem>
+
             <Divider />
+
+            {/* Opción de Cerrar Sesión */}
             <MenuItem onClick={handleLogoutAction} className="logout-menu-item">
               <ListItemIcon>
                 <Logout className="logout-icon-red" />
