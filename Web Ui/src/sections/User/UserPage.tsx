@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { FullScreenLoader } from "../../components/FullScreenLoader";
 import { UserSkeleton } from "../../components/Skeleton";
+import Skeleton from "@mui/material/Skeleton";
 
 import { styled } from "@mui/system";
 import { IconifyIcon } from "../../sections/Shared/Components";
