@@ -55,15 +55,23 @@
   padding: 10px !important;
 }
 
-.drawer-logout-btn:hover {
-  background-color: rgba(255, 82, 82, 0.1) !important;
-  border-color: #ff5252 !important;
-}
-
 .drawer-login-btn {
-  background-color: var(--primary-blue) !important;
+  /* Usamos la variable correcta de tu app.css */
+  background-color: var(--primary-color) !important; 
+  color: white !important;
   text-transform: none !important;
   font-weight: 600 !important;
+  padding: 12px !important;
+  margin-top: 10px;
+}
+
+.drawer-login-btn:hover {
+  background-color: var(--primary-color-hover) !important;
+}
+
+/* Aseguramos que la hamburguesa sea blanca en la landing */
+.navbar-landing .mobile-menu-btn {
+  color: white !important;
 }
 
 .drawer-close-btn {

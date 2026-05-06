@@ -19,6 +19,7 @@ interface NavItem {
   title: string;
   path: string;
   icon: ReactElement;
+  access: string[];
 }
 
 interface NavLateralMenuProps {
@@ -28,6 +29,7 @@ interface NavLateralMenuProps {
   userEmail: string;
   userRole: string;
   onLogout: () => void;
+  onLoginOpen: () => void; 
 }
 
 export default function NavLateralMenu({
@@ -36,7 +38,8 @@ export default function NavLateralMenu({
   setOpen,
   userEmail,
   userRole,
-  onLogout
+  onLogout,
+  onLoginOpen // La recibimos aquí
 }: Readonly<NavLateralMenuProps>) {
   return (
     <Box className="drawer-container">
@@ -86,12 +89,13 @@ export default function NavLateralMenu({
           <Button 
             fullWidth 
             variant="contained" 
-            component={NavLink} 
-            to="/login"
-            onClick={() => setOpen(false)}
+            onClick={() => { 
+              onLoginOpen();
+              setOpen(false); 
+            }}
             className="drawer-login-btn"
           >
-            Iniciar sesión
+            Ir a TDD Lab
           </Button>
         )}
       </Box>

@@ -1,4 +1,3 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
@@ -24,7 +23,8 @@ import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import { CircularProgress } from "@mui/material";
-import ProfilePage from "./sections/Profile/ProfilePage";
+import ProfilePage from "./sections/Profile/ProfilePage"; // Mantenemos lo de tus compañeros
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 
 const navArrayLinks = [
   { title: "Grupos", path: "/groups", icon: <GroupsIcon />, access: ["admin", "teacher"] },
@@ -33,10 +33,9 @@ const navArrayLinks = [
     path: "/assignments", 
     icon: <DescriptionIcon />, 
     access: ["admin", "student", "teacher"],
-    // Reglas adicionales para marcar como activo:
     activeRules: {
-      paths: ["/assignments", "/assignment"], // Cubre lista y detalle
-      source: "assignment" // Si estamos en /graph?source=assignment
+      paths: ["/assignments", "/assignment"], 
+      source: "assignment" 
     }
   },
   { 
@@ -46,15 +45,17 @@ const navArrayLinks = [
     access: ["admin", "teacher", "student"],
     activeRules: {
       paths: ["/mis-practicas"], 
-      source: "practice" // Si estamos en /graph?source=practice
+      source: "practice" 
     }
   },
   { title: "Usuarios", path: "/user", icon: <PersonIcon />, access: ["admin", "teacher"] },
   { title: "Ajustes", path: "/configuraciones", icon: <SettingsIcon />, access: ["admin", "teacher"] },
 ];
 
+
 function App() {
-  const authData = useGlobalState("authData")[0];
+  const [authData] = useGlobalState("authData"); 
+  const currentAuth = authData;
 
   useEffect(() => {
     getSessionCookie().then((storedSession) => {
@@ -79,7 +80,11 @@ function App() {
     });
   }, []);
 
-  if (authData.userid === undefined) {
+  // DEBUG: Mira esto en tu consola F12 para saber qué valor tiene la sesión
+  console.log("Auth State:", currentAuth);
+
+  // Cargando inicial
+  if (currentAuth.userid === undefined) {
     return (
       <div className="fullscreen-loading">
         <CircularProgress />
@@ -89,66 +94,41 @@ function App() {
 
   return (
     <Router>
-      {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
-      )}
+      <MainMenu 
+        navArrayLinks={navArrayLinks} 
+        userRole={currentAuth.userRole ?? "guest"} 
+      />
+
       <Routes>
-        <Route
-          path="/assignments"
+        {/* REDIRECCIÓN MAESTRA */}
+        <Route 
+          path="/" 
           element={
-            <ProtectedRouteComponent>
-              <GestionTareas userRole={authData.userRole ?? ""} userGroupid={authData.usergroupid ?? -1} />
-            </ProtectedRouteComponent>
-          }
+            currentAuth.userEmail 
+              ? <Navigate to="/assignments" replace /> 
+              : <Navigate to="/login" replace />
+          } 
         />
-        <Route
-          path="/assignment/:id"
-          element={
-            <ProtectedRouteComponent>
-              <AssignmentDetail role={authData.userRole ?? ""} userid={authData.userid ?? -1} />
-            </ProtectedRouteComponent>
-          }
-        />
+
         <Route path="/login" element={<Login />} />
+
+        {/* RUTAS PROTEGIDAS */}
+        <Route path="/assignments" element={<ProtectedRouteComponent><GestionTareas userRole={currentAuth.userRole ?? ""} userGroupid={currentAuth.usergroupid ?? -1} /></ProtectedRouteComponent>} />
+        <Route path="/assignment/:id" element={<ProtectedRouteComponent><AssignmentDetail role={currentAuth.userRole ?? ""} userid={currentAuth.userid ?? -1} /></ProtectedRouteComponent>} />
         <Route path="/groups" element={<ProtectedRouteComponent><Groups /></ProtectedRouteComponent>} />
         <Route path="/user" element={<ProtectedRouteComponent><User /></ProtectedRouteComponent>} />
-        <Route
-          path="/graph"
-          element={
-            <ProtectedRouteComponent>
-              <TDDChartPage port={new CommitHistoryAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="graph" />
-            </ProtectedRouteComponent>
-          }
-        />
-        <Route
-          path="/aditionalgraph"
-          element={
-            <ProtectedRouteComponent>
-              <TDDChartPage port={new CommitHistoryAdapter()} role={authData.userRole ?? ""} teacher_id={authData.userid ?? -1} graphs="aditionalgraph" />
-            </ProtectedRouteComponent>
-          }
-        />
+        <Route path="/graph" element={<ProtectedRouteComponent><TDDChartPage port={new CommitHistoryAdapter()} role={currentAuth.userRole ?? ""} teacher_id={currentAuth.userid ?? -1} graphs="graph" /></ProtectedRouteComponent>} />
+        <Route path="/aditionalgraph" element={<ProtectedRouteComponent><TDDChartPage port={new CommitHistoryAdapter()} role={currentAuth.userRole ?? ""} teacher_id={currentAuth.userid ?? -1} graphs="aditionalgraph" /></ProtectedRouteComponent>} />
         <Route path="/invitation" element={<InvitationPage />} />
-        <Route
-          path="/mis-practicas"
-          element={
-            <ProtectedRouteComponent>
-              <MyPracticesPage userRole={authData.userRole ?? ""} userid={authData.userid ?? 0} />
-            </ProtectedRouteComponent>
-          }
-        />
-        <Route
-          path="/mis-practicas/:id"
-          element={
-            <ProtectedRouteComponent>
-              <PracticeDetail userid={authData.userid ?? 0} title={""} />
-            </ProtectedRouteComponent>
-          }
-        />
+        <Route path="/mis-practicas" element={<ProtectedRouteComponent><MyPracticesPage userRole={currentAuth.userRole ?? ""} userid={currentAuth.userid ?? 0} /></ProtectedRouteComponent>} />
+        <Route path="/mis-practicas/:id" element={<ProtectedRouteComponent><PracticeDetail userid={currentAuth.userid ?? 0} title={""} /></ProtectedRouteComponent>} />
         <Route path="/users/group/:groupid" element={<ProtectedRouteComponent><UsersByGroupPage /></ProtectedRouteComponent>} />
         <Route path="/asistente-ia" element={<ProtectedRouteComponent><AIAssistantPage /></ProtectedRouteComponent>} />
         <Route path="/configuraciones" element={<ProtectedRouteComponent><SettingsPage /></ProtectedRouteComponent>} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile" element={<ProtectedRouteComponent><ProfilePage /></ProtectedRouteComponent>} />
+
+        {/* Captura cualquier otra ruta y mándala a login si se pierden */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

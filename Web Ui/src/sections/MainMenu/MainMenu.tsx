@@ -32,7 +32,12 @@ export default function MainMenu({
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+
   const authData = useGlobalState("authData"); 
+
+  const isLanding = !authData[0].userEmail || authData[0].userEmail === "";
 
   const isActive = (item: any) => {
     const { pathname, search } = location;
@@ -71,25 +76,30 @@ export default function MainMenu({
   };
 
   return (
-    <div className="page-top-spacer">
-      <AppBar position="fixed" className="main-navbar" elevation={0}>
+    <div className={isLanding ? "" : "page-top-spacer"}>
+      <AppBar 
+        position="fixed" 
+        className={`main-navbar ${isLanding ? "navbar-landing" : ""}`} 
+        elevation={0}
+      >
         <Toolbar className="navbar-toolbar">
           <div className="navbar-brand-group">
             <IconButton
               color="inherit"
               onClick={() => setOpen(true)}
-              className="mobile-menu-btn"
+              className="mobile-menu-btn" 
             >
               <MenuIcon />
             </IconButton>
-            <NavLink to="/" className="navbar-brand-link">
+            
+            <NavLink to={isLanding ? "/login" : "/assignments"} className="navbar-brand-link">
               <img src={logoTddLab} alt="TDDLab Logo" className="navbar-logo" />
             </NavLink>
           </div>
 
           <div className="navbar-actions-group">
             <Box className="desktop-nav-links">
-              {navArrayLinks.map((item) =>
+              {!isLanding && navArrayLinks.map((item) =>
                 item.access.includes(userRole) && (
                   <Button
                     key={item.title}
@@ -102,26 +112,32 @@ export default function MainMenu({
                 )
               )}
             </Box>
-            <LoginComponent />
+            
+            <LoginComponent 
+              loginModalOpen={loginModalOpen} 
+              setLoginModalOpen={setLoginModalOpen} 
+            />
           </div>
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        open={open}
-        anchor="left"
-        onClose={() => setOpen(false)}
-        className="main-drawer"
-      >
-        <NavLateralMenu
-          navArrayLinks={navArrayLinks}
-          NavLink={NavLink}
-          setOpen={setOpen}
-          userEmail={authData[0].userEmail ?? ""} 
-          userRole={userRole}
-          onLogout={handleLogoutAction}
-        />
-      </Drawer>
+        <Drawer
+          open={open}
+          anchor="left"
+          onClose={() => setOpen(false)}
+          className="main-drawer"
+        >
+          <NavLateralMenu
+            navArrayLinks={navArrayLinks}
+            NavLink={NavLink}
+            setOpen={setOpen}
+            userEmail={authData[0].userEmail ?? ""} 
+            userRole={userRole}
+            onLogout={handleLogoutAction}
+            onLoginOpen={() => setLoginModalOpen(true)}
+          />
+        </Drawer>
+      
     </div>
   );
 }

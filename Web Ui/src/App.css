@@ -622,31 +622,6 @@ a:hover {
   padding-top: 36px;
 }
 
-.page-top-line {
-  width: 100%;
-  height: 2px;
-  margin-bottom: 28px;
-  background: linear-gradient(
-    90deg,
-    #d7deea 0%,
-    #d7deea 45%,
-    #ffc2c2 78%,
-    #ff9fb0 100%
-  );
-  position: relative;
-}
-
-.page-top-line::after {
-  content: "";
-  width: 10px;
-  height: 10px;
-  background: #ffb4c1;
-  border-radius: 50%;
-  position: absolute;
-  right: 0;
-  top: -4px;
-}
-
 .page-header {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -673,22 +648,22 @@ a:hover {
 
 .page-title-line {
   width: 100%;
-  height: 2px;
+  height: 1.6px;
   background: linear-gradient(
     90deg,
-    #d9e0eb 0%,
-    #e9ead9 48%,
-    #ffd5d5 82%,
-    #ffb5c1 100%
+    #001b36 0%,  
+    #003366 45%, 
+    #1976d2 78%, 
+    #64b5f6 100%   
   );
   position: relative;
 }
 
 .page-title-line::after {
   content: "";
-  width: 9px;
-  height: 9px;
-  background: #ffb4c1;
+  width: 8px;
+  height: 8px;
+  background: #64b5f6;
   border-radius: 50%;
   position: absolute;
   right: 0;
@@ -738,15 +713,6 @@ a:hover {
 }
 
 /* ===================== GROUPS MODULE ===================== */
-
-.groups-create-button {
-  background-color: #62bd46 !important;
-  color: white !important;
-  height: 34px !important;
-  min-width: 92px !important;
-  text-transform: none !important;
-  border-radius: 4px !important;
-}
 
 .groups-card-grid {
   display: grid;
@@ -869,7 +835,7 @@ a:hover {
 .assignment-group-badge {
   height: 36px;
   min-width: 260px;
-  background-color: #647fd0;
+  background-color: var(--primary-color);
   color: #ffffff;
   border-radius: 4px;
   display: flex;
