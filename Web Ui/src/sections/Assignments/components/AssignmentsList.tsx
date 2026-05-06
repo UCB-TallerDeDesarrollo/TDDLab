@@ -27,7 +27,6 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import { typographyVariants } from "../../../styles/typography";
-import AssignmentDetailModal from "./AssignmentDetailModal";
 
 
 
@@ -58,6 +57,7 @@ function Assignments({
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
+  const navigate = useNavigate();
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
   const location = useLocation();
@@ -253,8 +253,7 @@ function Assignments({
 
   const handleClickDetail = (index: number) => {
     const assignmentId = filteredAssignments[index].id;
-    setSelectedAssignmentId(assignmentId);
-    setDetailModalOpen(true);
+    navigate(`/assignment/${assignmentId}`);
   };
 
   const handleClickDelete = (index: number) => {
@@ -418,19 +417,6 @@ return (
     )}
   </Container>
 );
-              }}
-            />
-          )}
-
-          {selectedAssignmentId !== null && (
-            <AssignmentDetailModal
-              open={detailModalOpen}
-              assignmentId={selectedAssignmentId}
-              role={userRole}
-              userid={userid}
-              onClose={() => {
-                setDetailModalOpen(false);
-                setSelectedAssignmentId(null);
               }}
             />
           )}
