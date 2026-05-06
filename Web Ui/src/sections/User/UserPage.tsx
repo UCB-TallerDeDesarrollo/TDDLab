@@ -13,7 +13,6 @@ import {
   SelectChangeEvent, Tooltip, TextField, InputAdornment, Chip, Typography, Divider,
   IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Card, CardContent, Box,
 } from "@mui/material";
-import { FullScreenLoader } from "../../components/FullScreenLoader";
 import { UserSkeleton } from "../../components/Skeleton";
 import Skeleton from "@mui/material/Skeleton";
 

@@ -10,10 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 import { FullScreenLoader } from "../../../components/FullScreenLoader";
-import { AssignmentSkeleton } from "../../../components/Skeleton";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
-import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AddIcon from "@mui/icons-material/Add";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
@@ -45,7 +43,6 @@ function Assignments({
   ShowForm: showForm,
   userRole,
   userGroupid,
-  userid,
   onGroupChange,
 }: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -58,8 +55,6 @@ function Assignments({
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
-  const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
   const location = useLocation();
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
