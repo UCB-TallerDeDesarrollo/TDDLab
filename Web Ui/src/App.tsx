@@ -1,4 +1,3 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
@@ -24,6 +23,7 @@ import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
 import { CircularProgress } from "@mui/material";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 
 const navArrayLinks = [
   { title: "Grupos", path: "/groups", icon: <GroupsIcon />, access: ["admin", "teacher"] },
@@ -92,6 +92,11 @@ function App() {
         userRole={authData.userRole ?? "guest"} 
       />
       <Routes>
+        <Route 
+        path="/" 
+        element={<Navigate to={authData.userEmail ? "/assignments" : "/login"} replace />} 
+      />
+
         <Route
           path="/assignments"
           element={

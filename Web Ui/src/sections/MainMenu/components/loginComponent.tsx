@@ -13,6 +13,7 @@ import { handleSignInWithGitHub } from "../../../modules/User-Authentication/app
 import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
 
 import "../styles/loginComponentStyles.css";
 
@@ -26,6 +27,7 @@ export default function LoginComponent({ loginModalOpen, setLoginModalOpen }: Lo
   const navigate = useNavigate();
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  
   const open = Boolean(anchorEl);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);

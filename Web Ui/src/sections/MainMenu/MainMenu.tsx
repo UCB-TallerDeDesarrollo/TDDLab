@@ -80,7 +80,7 @@ export default function MainMenu({
             >
               <MenuIcon />
             </IconButton>
-            <NavLink to="/" className="navbar-brand-link">
+            <NavLink to={isLanding ? "/login" : "/assignments"} className="navbar-brand-link">
               <img src={logoTddLab} alt="TDDLab Logo" className="navbar-logo" />
             </NavLink>
           </div>
