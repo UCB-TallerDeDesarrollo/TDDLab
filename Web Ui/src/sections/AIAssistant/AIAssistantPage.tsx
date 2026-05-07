@@ -92,14 +92,14 @@ const AIAssistantPage = () => {
 
 
   return (
-    <Box sx={{ padding: 4, display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <Box sx={{ padding: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
         <Box display="flex" alignItems="center" gap={1}>
           <IconifyIcon icon="mdi:chat-outline" color="#1976D2" hoverColor="#1565c0" />
           <Typography variant="h5" fontWeight="bold">Asistente IA</Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap={1}>
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
           <IconifyIcon icon="mdi:github" color="gray" hoverColor="#333" />
           <a
             href={repositoryLink}
@@ -117,11 +117,11 @@ const AIAssistantPage = () => {
       </Box>
 
       {/* Contenedor Chat + Botones */}
-      <Box sx={{ display: 'flex', flexGrow: 1, gap: 3 }}>
+      <Box sx={{ display: 'flex', flexGrow: 1, gap: { xs: 2, md: 3 }, flexDirection: { xs: 'column', md: 'row' } }}>
         {/* Chat Section */}
         <Paper
           elevation={3}
-          sx={{maxWidth: '1100px',flexGrow: 1,display: 'flex',flexDirection: 'column',padding: 2,borderRadius: 2,height: '100%',maxHeight: '80vh', overflow: 'hidden'}}>
+          sx={{ maxWidth: '1100px', flexGrow: 1, display: 'flex', flexDirection: 'column', padding: 2, borderRadius: 2, height: { xs: '55vh', md: '75vh' }, overflow: 'hidden' }}>
                   {/* Mensajes */}
         <Box
           sx={{flexGrow: 1, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 2, height: '100%'}}>
@@ -212,7 +212,7 @@ const AIAssistantPage = () => {
         </Paper>
 
         {/* Botones al costado */}
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: { xs: '100%', md: 'auto' } }}>
           <Button
             variant="contained"
             color="primary"
@@ -221,6 +221,7 @@ const AIAssistantPage = () => {
             fullWidth
             startIcon={<IconifyIcon icon="mdi:code-braces" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
             sx={{
+              minHeight: '44px',
               transition: "all 0.175s ease-out",
               "&:hover:not(:disabled)": {
                 filter: "brightness(0.9)",
@@ -241,6 +242,7 @@ const AIAssistantPage = () => {
             fullWidth
             startIcon={<IconifyIcon icon="mdi:refresh" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
             sx={{
+              minHeight: '44px',
               transition: "all 0.175s ease-out",
               "&:hover:not(:disabled)": {
                 filter: "brightness(0.9)",
@@ -261,6 +263,7 @@ const AIAssistantPage = () => {
             fullWidth
             startIcon={<IconifyIcon icon="mdi:star" width={20} height={20} color="white" hoverColor="#e0e0e0" />}
             sx={{
+              minHeight: '44px',
               transition: "all 0.175s ease-out",
               "&:hover:not(:disabled)": {
                 filter: "brightness(0.9)",

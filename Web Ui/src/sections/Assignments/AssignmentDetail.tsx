@@ -70,13 +70,6 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
 
 
   const navigate = useNavigate();
-  const studentRowSx = useMemo(
-    () => ({
-      backgroundColor: "#fff",
-      "& td": { borderBottom: "1px solid #f0f0f0" },
-    }),
-    []
-  );
 
   const isTaskInProgress = submission?.status !== "in progress";
 
@@ -141,11 +134,8 @@ const AssignmentDetail: React.FC<AssignmentDetailProps> = ({
     submissions,
     role,
     disableAdditionalGraphs,
-    actionButtonStyle,
     onRedirectAdmin: handleRedirectAdmin,
     onOpenAssistant: handleOpenAssistant,
-    rowSx: studentRowSx,
-    cellAlign: "center",
   });
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
