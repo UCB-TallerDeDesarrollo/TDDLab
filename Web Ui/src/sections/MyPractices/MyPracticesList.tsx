@@ -213,7 +213,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                 minWidth="120px"
               />
 
-              <CreateButton onClick={showForm} label="Crear +" minWidth="100px" />
+              <CreateButton onClick={showForm} label="Crear" minWidth="100px" />
             </div>
           }
         />
