@@ -4,6 +4,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, TextField } from "@mui/material";
+import type { MouseEvent, KeyboardEvent } from "react";
 import { useState } from "react";
 import { UpdatePractice } from "../../modules/Practices/application/UpdatePractice";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
@@ -65,7 +66,17 @@ function EditPracticeDialog({
   };
 
   return (
-    <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={true}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+          onClick: (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(),
+          onMouseDown: (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(),
+          onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => e.stopPropagation(),
+      }}
+    >
       <DialogTitle>Editar Practica : {currentTitle}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: "grid", gap: 2, marginTop: 2 }}>
@@ -80,7 +91,7 @@ function EditPracticeDialog({
           />
           <TextField
             id="descripcion"
-            label="Descripcion"
+            label="Descripción"
             variant="outlined"
             size="small"
             required

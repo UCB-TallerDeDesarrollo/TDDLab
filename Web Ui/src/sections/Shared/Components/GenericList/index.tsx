@@ -102,6 +102,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({
           role={isClickable ? "button" : undefined}
           tabIndex={isClickable ? 0 : undefined}
           onKeyDown={isClickable ? (e) => {
+            if (e.currentTarget !== e.target) return;
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               onClick?.();
