@@ -9,7 +9,7 @@ import {
 import { Dispatch, SetStateAction } from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import { NavLink as NavLinkType } from "../../../types/navigation.types";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import TDDLabLogoDark from "../../../assets/TDDLabLogoDark";
 
 interface NavLateralMenuProps {
