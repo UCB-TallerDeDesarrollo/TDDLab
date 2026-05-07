@@ -174,6 +174,14 @@ describe("AssignmentsList Component", () => {
     });
   });
 
+  it("debería mostrar el header de la columna Título", async () => {
+    renderAssignmentsList();
+
+    await waitFor(() => {
+      expect(screen.getByText("Título")).toBeInTheDocument();
+    });
+  });
+
   it("debería mostrar el botón 'Crear' para roles de teacher y admin", async () => {
     renderAssignmentsList({ userRole: "teacher" });
 

@@ -10,13 +10,6 @@ const CenteredContainer = styled(Container)({
   marginTop: "28px",
 });
 
-const DividerLine = styled("div")({
-  width: "82%",
-  height: "1px",
-  backgroundColor: "#8f8f8f",
-  margin: "10px auto 16px auto",
-});
-
 const StyledTableContainer = styled(TableContainer)({
   width: "82%",
   marginLeft: "auto",
@@ -59,8 +52,6 @@ function UserPage() {
         onSearchChange={setSearchQuery}
         onGroupChange={handleGroupChange}
       />
-
-      <DividerLine />
 
       <StyledTableContainer>
         <UsersTable

@@ -16,6 +16,7 @@ import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import CreateButton from "../../GeneralPurposeComponents/CreateButton";
 import { TableView, TableViewColumn } from "../../Shared/Components/TableView";
+import PageHeader from "../../Shared/Components/PageHeader";
 
 const LoadingContainer = styled("div")({
   display: "flex",
@@ -311,33 +312,13 @@ function Assignments({
   const assignmentColumns: TableViewColumn<AssignmentTableRow>[] = [
     {
       id: "title",
-      header: "Tareas",
+      header: "Título",
       headerSx: { fontWeight: 560, color: "#333", fontSize: "1rem" },
       renderCell: ({ assignment }) => assignment.title,
     },
     {
       id: "actions",
-      header: (
-        <ButtonContainer>
-          <GroupFilter
-            selectedGroup={selectedGroup}
-            groupList={groupList}
-            onChangeHandler={handleGroupChange}
-            defaultName={
-              groupList.find((g) => g.id === selectedGroup)?.groupName ||
-              groupList[0]?.groupName ||
-              "Selecciona un grupo"
-            }
-          />
-          <SortingComponent
-            selectedSorting={selectedSorting}
-            onChangeHandler={handleOrderAssignments}
-          />
-          {userRole !== "student" && (
-            <CreateButton onClick={showForm} label="Crear" minWidth="90px" />
-          )}
-        </ButtonContainer>
-      ),
+      header: "Acciones",
       renderCell: ({ assignment, index, groupName, isEditFormOpen, onEditClick, onCloseEditForm }) => (
         <AssignmentActions
           assignment={assignment}
@@ -363,6 +344,30 @@ function Assignments({
         </LoadingContainer>
       ) : (
         <div className="Tareas">
+          <PageHeader
+            title="Tareas"
+            actions={
+              <ButtonContainer>
+                <GroupFilter
+                  selectedGroup={selectedGroup}
+                  groupList={groupList}
+                  onChangeHandler={handleGroupChange}
+                  defaultName={
+                    groupList.find((g) => g.id === selectedGroup)?.groupName ||
+                    groupList[0]?.groupName ||
+                    "Selecciona un grupo"
+                  }
+                />
+                <SortingComponent
+                  selectedSorting={selectedSorting}
+                  onChangeHandler={handleOrderAssignments}
+                />
+                {userRole !== "student" && (
+                  <CreateButton onClick={showForm} label="Crear" minWidth="90px" />
+                )}
+              </ButtonContainer>
+            }
+          />
           <TableView
             rows={assignmentRows}
             columns={assignmentColumns}
