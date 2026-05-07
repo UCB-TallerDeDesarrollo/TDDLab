@@ -78,11 +78,14 @@ export default function LoginComponent() {
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
             >
-              <Avatar 
-                src={authData.userProfilePic} 
-                alt="Profile" 
-                sx={{ width: 40, height: 40, border: '2px solid #1976d2', marginRight:'50px' }}
-              />
+              <Avatar
+                src={authData.userProfilePic ?? undefined}
+                imgProps={{ referrerPolicy: "no-referrer" }}
+                alt={authData.userEmail ?? "Profile"}
+                sx={{ width: 40, height: 40, border: "2px solid #1976d2", marginRight: "50px" }}
+              >
+                {(authData.userEmail ?? "").slice(0, 1).toUpperCase()}
+              </Avatar>
             </IconButton>
           </Tooltip>
 
