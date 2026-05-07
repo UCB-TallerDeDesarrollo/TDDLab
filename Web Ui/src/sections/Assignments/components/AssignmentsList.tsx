@@ -127,9 +127,9 @@ function Assignments({
   <Container>
     {isLoading ? (
       <LoadingContainer>
-         <div className="assignments-list-loading">
+        <div className="assignments-list-loading">
       <CircularProgress />
-    </div>
+        </div>
       </LoadingContainer>
     ) : (
       <section className="Tareas">

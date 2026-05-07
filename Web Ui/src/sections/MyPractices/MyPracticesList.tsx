@@ -131,6 +131,11 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   };
   return (
     <Container>
+      {isLoading ? (
+            <LoadingContainer>
+              <CircularProgress />
+            </LoadingContainer>
+      ) : (
       <section className="Practicas">
         <GenericListContainer>
           <GenericListHeader
@@ -174,10 +179,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
                 </Button>
               </>
             }
-          />
-
-                    
-
+          />   
             <GenericListBody>
               {practices.map((practice, index) => (
                 <Practice
@@ -213,6 +215,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
         )}
       </section>
+      )}
     </Container>
   );
 }
