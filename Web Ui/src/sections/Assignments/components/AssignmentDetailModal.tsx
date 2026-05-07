@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,16 +17,13 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { SubmissionDataObject } from "../../../modules/Submissions/Domain/submissionInterfaces";
 import { useNavigate } from "react-router-dom";
-import { typographyVariants } from "../../../styles/typography";
 import { isStudent, redirectToAdminGraph } from "../utils/assignmentDetailHelpers";
 import { useAssignmentDetailData } from "../hooks/useAssignmentDetailData";
 import { AssignmentDetailInfo } from "./AssignmentDetailInfo";
 import { StudentAssignmentActions } from "./StudentAssignmentActions";
 import { useStudentSubmissionRows } from "../hooks/useStudentSubmissionRows";
-import {
-  createAssignmentSubmission,
-  finishAssignmentSubmission,
-} from "../utils/submissionActions";
+import { useAssignmentDetailStyles } from "../hooks/useAssignmentDetailStyles";
+import { useAssignmentSubmissionActions } from "../hooks/useAssignmentSubmissionActions";
 
 interface AssignmentDetailModalProps {
   open: boolean;
@@ -43,21 +40,7 @@ const AssignmentDetailModal: React.FC<AssignmentDetailModalProps> = ({
   userid,
   onClose,
 }) => {
-  const actionButtonStyle = useMemo(
-    () => ({
-      textTransform: "none",
-      ...typographyVariants.paragraphMedium,
-      marginRight: "8px",
-    }),
-    []
-  );
-
-  const detailTextStyle = {
-    ...typographyVariants.paragraphBig,
-    lineHeight: "1.8",
-  };
-
-  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const { actionButtonStyle, detailTextStyle } = useAssignmentDetailStyles();
   const {
     assignment,
     groupDetails,
@@ -79,31 +62,22 @@ const AssignmentDetailModal: React.FC<AssignmentDetailModalProps> = ({
     []
   );
 
-  const isTaskInProgress = submission?.status !== "in progress";
-
-  const handleSendGithubLink = async (repository_link: string) => {
-    if (assignmentId) {
-      try {
-        await createAssignmentSubmission({
-          assignmentId: assignmentId,
-          userId: userid,
-          repositoryLink: repository_link,
-        });
-        handleCloseLinkDialog();
-        await refreshAssignmentDetailData();
-      } catch (error) {
-        throw error;
-      }
-    }
-  };
-
-  const handleOpenLinkDialog = () => {
-    setLinkDialogOpen(true);
-  };
-
-  const handleCloseLinkDialog = () => {
-    setLinkDialogOpen(false);
-  };
+  const {
+    linkDialogOpen,
+    isCommentDialogOpen,
+    isTaskInProgress,
+    handleOpenLinkDialog,
+    handleCloseLinkDialog,
+    handleOpenCommentDialog,
+    handleCloseCommentDialog,
+    handleSendGithubLink,
+    handleSendComment,
+  } = useAssignmentSubmissionActions({
+    assignmentId: assignmentId,
+    userId: userid,
+    submission: submission,
+    refreshAssignmentDetailData,
+  });
 
   const handleRedirectAdmin = useCallback(
     (
@@ -147,31 +121,6 @@ const AssignmentDetailModal: React.FC<AssignmentDetailModalProps> = ({
     onOpenAssistant: handleOpenAssistant,
     labels: studentRowLabels,
   });
-
-  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-
-  const handleOpenCommentDialog = () => {
-    setIsCommentDialogOpen(true);
-  };
-
-  const handleCloseCommentDialog = () => {
-    setIsCommentDialogOpen(false);
-  };
-
-  const handleSendComment = async (comment: string) => {
-    if (submission) {
-      try {
-        await finishAssignmentSubmission({
-          submissionId: submission.id,
-          comment,
-        });
-        await refreshAssignmentDetailData();
-      } catch (error) {
-        throw error;
-      }
-    }
-    handleCloseCommentDialog();
-  };
 
   return (
     <Dialog
