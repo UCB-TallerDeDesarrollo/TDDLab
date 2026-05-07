@@ -5,12 +5,12 @@ import {
   ListItemIcon,
   ListItemButton,
   ListItemText,
-  Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import { NavLink as NavLinkType } from "../../../types/navigation.types";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import TDDLabLogoDark from "../../../assets/TDDLabLogoDark";
 
 interface NavLateralMenuProps {
   navArrayLinks: NavLinkType[];
@@ -29,7 +29,11 @@ export default function NavLateralMenu({
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
+          <Box sx={{ padding: "16px 14px 8px 14px" }}>
+            <Link to="/login" style={{ display: "flex", alignItems: "center" }}>
+              <TDDLabLogoDark width={110} height={50} />
+            </Link>
+          </Box>
 
           {navArrayLinks.map((item) => {
             const isActive = location.pathname === item.path;

@@ -1,6 +1,11 @@
-export default function TDDLabLogoDark() {
+interface TDDLabLogoDarkProps {
+  width?: number;
+  height?: number;
+}
+
+export default function TDDLabLogoDark({ width = 289.08, height = 131.52 }: TDDLabLogoDarkProps) {
   return (
-    <svg width="289.08" height="131.52" viewBox="0 0 88 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={width} height={height} viewBox="0 0 88 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         {/* Isotipo (Diamantes) */}
         <path d="M19.7098 29.3942L14.8221 34.2819C14.6748 34.4292 14.6748 34.668 14.8222 34.8153L19.7098 39.703C19.8571 39.8503 20.096 39.8503 20.2433 39.703L25.131 34.8153C25.2783 34.668 25.2783 34.4292 25.131 34.2819L20.2433 29.3942C20.096 29.2469 19.8571 29.2469 19.7098 29.3942Z" fill="#1A1A1A"/>
         <path d="M19.7094 15.6429L15.6263 19.7259C15.479 19.8733 15.479 20.1121 15.6263 20.2594L19.7094 24.3425C19.8567 24.4898 20.0956 24.4898 20.2429 24.3425L24.326 20.2594C24.4733 20.1121 24.4733 19.8733 24.326 19.7259L20.2429 15.6429C20.0956 15.4956 19.8567 15.4956 19.7094 15.6429Z" fill="#1A1A1A"/>
