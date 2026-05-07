@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 import EditAssignmentDialog from "../../../src/sections/Assignments/components/EditAssignmentForm";
 import { AssignmentDataObject } from "../../../src/modules/Assignments/domain/assignmentInterfaces";
@@ -100,7 +101,12 @@ describe("EditAssignmentDialog Component", () => {
 
   const renderEditDialog = (props = {}) => {
     const mergedProps = { ...defaultProps, ...props };
-    return render(<EditAssignmentDialog {...mergedProps} />);
+
+    return render(
+      <MemoryRouter>
+        <EditAssignmentDialog {...mergedProps} />
+      </MemoryRouter>
+    );
   };
 
   it("debería renderizar el diálogo de edición correctamente", async () => {
