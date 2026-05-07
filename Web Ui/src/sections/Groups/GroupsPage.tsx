@@ -37,8 +37,7 @@ import {
 } from "../Shared/Components/GenericList";
 import "./GroupsPage.css";
 import { LoadingContainer } from "./components/WrappedStyledComponents";
-
-
+import { PiChalkboardTeacherFill } from "react-icons/pi";
 function Groups() {
   const navigate = useNavigate();
 
@@ -87,6 +86,15 @@ function Groups() {
     if (!clickedGroup?.id) return;
     setSelectedRow(index);
     selectAndSync(clickedGroup.id);
+  };
+
+  const handleLinkClickTeacher = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    const id = asId(groups[index]?.id);
+    if (id) getCourseLink(id, "teacher");
   };
 
   const handleHomeworksClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
@@ -240,6 +248,11 @@ function Groups() {
                       <Tooltip title="Participantes" arrow>
                         <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
                           <GroupsIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+                        <IconButton aria-label="eliminar" onClick={(e) => handleLinkClickTeacher(e, index)}>
+                          <PiChalkboardTeacherFill />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Eliminar grupo" arrow>
