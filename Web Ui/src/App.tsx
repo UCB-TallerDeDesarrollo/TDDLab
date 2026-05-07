@@ -98,7 +98,7 @@ useEffect(() => {
             flexGrow: 1,
             width: hasSidebarLayout ? "calc(100% - 280px)" : "100%",
             marginLeft: hasSidebarLayout ? "280px" : 0,
-            paddingTop: (authData.userRole === "teacher" || authData.userRole === "student") ? "120px" : "100px",
+            paddingTop: authData.userEmail === "" ? 0 : (authData.userRole === "teacher" || authData.userRole === "student") ? "120px" : "100px",
             overflowX: "hidden"
           }}
         >
