@@ -203,11 +203,17 @@ export class GithubRepository implements IGithubRepository {
     commits: CommitDataObject[]
   ) {
     try {
-      const commitsFromSha = await Promise.all(
-        commits.map((commit) =>
-          this.getCommitInfoForTDDCycle(owner, repoName, commit.sha)
-        )
-      );
+      const commitsFromSha = [];
+      const batchSize = 10;
+      for (let i = 0; i < commits.length; i += batchSize) {
+        const batch = commits.slice(i, i + batchSize);
+        const batchResults = await Promise.all(
+          batch.map((commit) =>
+            this.getCommitInfoForTDDCycle(owner, repoName, commit.sha)
+          )
+        );
+        commitsFromSha.push(...batchResults);
+      }
 
       const commitsData: TDDCycleDataObject[] = commitsFromSha.map(
         ({ html_url, stats, commit, sha, coveragePercentage, test_count }) => ({
@@ -290,17 +296,21 @@ export class GithubRepository implements IGithubRepository {
     listOfCommitsWithActions: [string, number][]
   ) {
     const jobs: Record<string, JobDataObject> = {};
-    await Promise.all(
-      listOfCommitsWithActions.map(async (workflowInfo) => {
-        const jobInfo = await this.obtainJobsOfACommit(
-          owner,
-          repoName,
-          workflowInfo[1],
-          1
-        );
-        jobs[workflowInfo[0]] = jobInfo;
-      })
-    );
+    const batchSize = 10;
+    for (let i = 0; i < listOfCommitsWithActions.length; i += batchSize) {
+      const batch = listOfCommitsWithActions.slice(i, i + batchSize);
+      await Promise.all(
+        batch.map(async (workflowInfo) => {
+          const jobInfo = await this.obtainJobsOfACommit(
+            owner,
+            repoName,
+            workflowInfo[1],
+            1
+          );
+          jobs[workflowInfo[0]] = jobInfo;
+        })
+      );
+    }
     return jobs;
   }
 
