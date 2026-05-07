@@ -5,22 +5,15 @@ import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
 import {
-  Typography,Table, TableHead, TableBody, TableRow, TableCell, Container
+  Typography,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import { CenteredContainer, StyledTable } from "./userTableStyles";
 import { GroupDataObject } from "../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
-
-const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
 
 function UsersByGroupPage() {
   const [users, setUsers] = useState<UserDataObject[]>([]);
