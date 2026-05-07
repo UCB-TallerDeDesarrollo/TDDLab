@@ -84,8 +84,8 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <header className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 0' }}>
-        <img src="/logo.svg" alt="TDDLab Logo" style={{ height: '72px', width: 'auto' }} />
+      <header className="app-header">
+        <img src="/logo.svg" alt="TDDLab Logo" className="app-header-logo" />
       </header>
       <div className="login-content">
         <p className="login-Title">
