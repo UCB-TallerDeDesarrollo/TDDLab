@@ -1,9 +1,9 @@
 import { NavLink } from "../types/navigation.types";
 import GroupsIcon from "@mui/icons-material/Groups";
-import DescriptionIcon from "@mui/icons-material/Description";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+import CodeIcon from "@mui/icons-material/Code";   
 import PersonIcon from "@mui/icons-material/Person";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { NoteAdd } from "@mui/icons-material";
+import ReorderIcon from "@mui/icons-material/Reorder";
 
 export const navArrayLinks: NavLink[] = [
     {
@@ -15,13 +15,13 @@ export const navArrayLinks: NavLink[] = [
     {
         title: "Tareas",
         path: "/",
-        icon: <DescriptionIcon />,
+        icon: <FactCheckIcon />,
         access: ["admin", "student", "teacher"],
     },
     {
         title: "Mis Practicas",
         path: "/mis-practicas",
-        icon: <NoteAdd />,
+        icon: <CodeIcon />,
         access: ["admin", "teacher", "student"],
     },
     {
@@ -33,7 +33,7 @@ export const navArrayLinks: NavLink[] = [
     {
         title: "Configuraciones",
         path: "/configuraciones",
-        icon: <SettingsIcon />,
+        icon: <ReorderIcon />,
         access: ["admin", "teacher"],
     },
 ];
