@@ -53,7 +53,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   }, [data]);
 
   const chartHeight = 400;
-  const chartWidth = 1200;
+  const chartWidth = 1000;
   const leftPadding = 60;
   const rightPadding = 60;
   const topPadding = 40;

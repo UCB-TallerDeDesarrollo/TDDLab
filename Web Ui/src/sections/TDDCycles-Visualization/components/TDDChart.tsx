@@ -87,8 +87,8 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
 
   return (
     <div className="lineChartContainer">
-      <Box>
-        <FormControl fullWidth>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <FormControl sx={{ width: '50%' }}>
           <InputLabel id="simple-select-label">Métricas</InputLabel>
           <Select
             labelId="select-label"

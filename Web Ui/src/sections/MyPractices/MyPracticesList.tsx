@@ -7,7 +7,9 @@ import {
   Button,
   Menu,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
+import { LoadingContainer } from "../Groups/components/WrappedStyledComponents";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import AddIcon from "@mui/icons-material/Add";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -39,6 +41,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterAnchor, setFilterAnchor] = useState<null | HTMLElement>(null);
 
   const practicesRepository = new PracticesRepository();
@@ -71,6 +74,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const fetchData = async () => {
     if (!authData?.userid) return;
     try {
+      setIsLoading(true);
       const data = await practicesRepository.getPracticeByUserId(
         authData.userid
       );
@@ -78,6 +82,8 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
       orderPractices(data, selectedSorting);
     } catch (error) {
       console.error("Error fetching practices:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -170,19 +176,45 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             }
           />
 
-          <GenericListBody>
-            {practices.map((practice, index) => (
-              <Practice
-                key={practice.id}
-                practice={practice}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-              />
-            ))}
-          </GenericListBody>
-        </GenericListContainer>
+                    <MenuItem
+                      onClick={() => {
+                        handleOrderPractices({
+                          target: { value: "Time_Down" },
+                        });
+                        setFilterAnchor(null);
+                      }}
+                    >
+                      Antiguos
+                    </MenuItem>
+                  </Menu>
+
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    className="generic-list-action-btn generic-list-action-btn--contained"
+                    onClick={showForm}
+                  >
+                    Crear
+                  </Button>
+                </>
+              }
+            />
+
+            <GenericListBody>
+              {practices.map((practice, index) => (
+                <Practice
+                  key={practice.id}
+                  practice={practice}
+                  index={index}
+                  handleClickDetail={handleClickDetail}
+                  handleClickDelete={handleClickDelete}
+                  handleRowHover={handleRowHover}
+                />
+              ))}
+            </GenericListBody>
+          </GenericListContainer>
+        )}
 
         {confirmationOpen && (
           <ConfirmationDialog
@@ -195,6 +227,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             onDelete={handleConfirmDelete}
           />
         )}
+
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}
