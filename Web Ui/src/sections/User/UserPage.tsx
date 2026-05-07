@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { useTheme, useMediaQuery } from "@mui/material";
 
 import GetUsers from "../../modules/Users/application/getUsers";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
@@ -8,15 +7,38 @@ import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserF
 import { UpdateUser } from "../../modules/Users/application/updateUser";
 
 import {
-  Table, TableHead, TableBody, TableRow, TableCell, Container,
-  Select, MenuItem, InputLabel, FormControl,
-  SelectChangeEvent, Tooltip, TextField, InputAdornment, Chip, Typography, Divider,
-  IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Card, CardContent, Box,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  SelectChangeEvent,
+  Tooltip,
+  TextField,
+  InputAdornment,
+  Chip,
+  Typography,
+  Divider,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Card,
+  CardContent,
+  Box,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { UserSkeleton } from "../../components/Skeleton";
 import Skeleton from "@mui/material/Skeleton";
 
 import { styled } from "@mui/system";
+import { CenteredContainer, StyledTable } from "./userTableStyles";
 import { IconifyIcon } from "../../sections/Shared/Components";
 
 import GetGroups from "../../modules/Groups/application/GetGroups";
@@ -28,18 +50,6 @@ import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 
 // -------------------  ESTILOS  -------------------
-const CenteredContainer = styled(Container)({
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-  marginTop: "20px",
-});
-
 const FilterContainer = styled("div")({
   display: "flex",
   alignItems: "center",
@@ -226,7 +236,7 @@ function UserPage() {
         <Divider sx={{ width: '82%', margin: '0 auto', mt: 2, mb: 4, borderColor: '#D9D9D9' }} />
 
         <section className="Usuarios">
-          <StyledTable sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+          <StyledTable sx={{ borderCollapse: 'separate', borderSpacing: 0, marginTop: '20px' }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#EAF2FC" }}>
                 <TableCell align="center" sx={{ fontWeight: "bold", borderTopLeftRadius: "12px", borderBottom: 'none', py: 2 }}>Usuario</TableCell>
@@ -368,7 +378,7 @@ function UserPage() {
           </CardsContainer>
         ) : (
           <section className="Usuarios">
-            <StyledTable sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+            <StyledTable sx={{ borderCollapse: 'separate', borderSpacing: 0, marginTop: '20px' }}>
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#EAF2FC" }}>
                   <TableCell align="center" sx={{ fontWeight: "bold", borderTopLeftRadius: "12px", borderBottom: 'none', py: 2 }}>Usuario</TableCell>
