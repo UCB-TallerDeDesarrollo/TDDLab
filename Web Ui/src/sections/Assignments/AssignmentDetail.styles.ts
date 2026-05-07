@@ -12,18 +12,19 @@ export const assignmentDetailStyles: Record<string, CSSProperties> = {
   },
   card: {
     width: "100%",
-    maxWidth: "520px",
+    maxWidth: "440px",
     border: "1px solid #BFBFBF",
     borderRadius: "6px",
   },
   cardContent: {
-    padding: "20px 34px 18px",
+    padding: "18px 28px 16px",
   },
   detailsSection: {
     marginBottom: "20px",
   },
   assignmentTitle: {
-    fontSize: "46px",
+    // Match legacy UI scale while keeping current typography
+    fontSize: "clamp(28px, 3.2vw, 36px)",
     fontWeight: 700,
     lineHeight: 1.1,
     marginBottom: "20px",
@@ -39,7 +40,7 @@ export const assignmentDetailStyles: Record<string, CSSProperties> = {
     maxWidth: "1260px",
   },
   adminTitle: {
-    fontSize: "38px",
+    fontSize: "clamp(26px, 2.6vw, 32px)",
     fontWeight: 700,
     marginBottom: "8px",
   },
@@ -52,9 +53,9 @@ export const assignmentDetailStyles: Record<string, CSSProperties> = {
 };
 
 export const assignmentDetailSx = {
-  metaIcon: { color: "#7A7A7A", fontSize: 28 },
+  metaIcon: { color: "#7A7A7A", fontSize: 22 },
   secondaryIcon: { color: "#666666" },
-  metaText: { fontSize: "26px", lineHeight: 1.45 },
+  metaText: { fontSize: "clamp(16px, 1.6vw, 20px)", lineHeight: 1.45 },
   secondaryText: { fontSize: "16px", lineHeight: "1.8" },
   compactRow: { mb: 1 },
 };
