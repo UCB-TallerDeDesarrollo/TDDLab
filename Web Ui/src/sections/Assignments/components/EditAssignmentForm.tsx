@@ -8,6 +8,8 @@ import {
    TextField,
    MenuItem,
    Select,
+  FormControl,
+  InputLabel,
   } from "@mui/material";
 import {
    useState,
@@ -146,7 +148,8 @@ function EditAssignmentDialog({
             onChange={(e) => setTitle(e.target.value)}
             defaultValue={currentTitle}
             className="edit-assignment-title-field"
-            sx={t.class2}
+             InputLabelProps={{ shrink: true }}
+            sx={{ ...t.class2, marginTop: "10px" }}
           />
           <TextField
             id="descripcion"
@@ -160,23 +163,25 @@ function EditAssignmentDialog({
             sx={t.class1}
             onChange={(e) => setDescription(e.target.value)}
             defaultValue={currentDescription}
+             InputLabelProps={{ shrink: true }}
           />
           {
-            <Select
-              label="Grupos"
-              value={selectedGroup}
-              onChange={handleGroupChange}
-              variant="outlined"
-              size="small"
-              required
-            >
-              <MenuItem value={0}>{currentGroupName}</MenuItem>
-              {groups.map((group) => (
-                <MenuItem key={group.id} value={group.id}>
-                  {group.groupName}
-                </MenuItem>
-              ))}
-            </Select>
+              <FormControl variant="outlined" size="small" required fullWidth>
+                <InputLabel id="edit-assignment-group-label">Grupo</InputLabel>
+                <Select
+                  labelId="edit-assignment-group-label"
+                  label="Grupo"
+                  value={selectedGroup}
+                  onChange={handleGroupChange}
+                >
+                  <MenuItem value={0}>{currentGroupName}</MenuItem>
+                  {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.groupName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
           }
 
           <section>{/* The rest of your components go here */}</section>
