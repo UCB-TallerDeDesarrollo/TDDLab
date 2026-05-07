@@ -49,18 +49,8 @@ export default function useAssignments({ userRole, userGroupid, onGroupChange }:
     let allGroups: GroupDataObject[] = [];
 
     if (userRole === "student") {
-      if (localStorage.getItem("userGroups") === null) {
-        localStorage.setItem("userGroups", JSON.stringify(userGroupid));
-        const ids = Array.isArray(userGroupid) ? userGroupid : [userGroupid];
-        allGroups = await Promise.all(ids.map((id) => getGroups.getGroupById(id)));
-      } else if (localStorage.getItem("userGroups") === "[0]") {
-        const ids = await getGroups.getGroupsByUserId(authData.userid ?? -1);
-        localStorage.setItem("userGroups", JSON.stringify(ids));
-        allGroups = await Promise.all(ids.map((id) => getGroups.getGroupById(id)));
-      } else {
-        const ids: number[] = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
-        allGroups = await Promise.all(ids.map((id) => getGroups.getGroupById(id)));
-      }
+      const ids = await getGroups.getGroupsByUserId(authData.userid ?? -1);
+      allGroups = await Promise.all(ids.map((id) => getGroups.getGroupById(id)));
     } else if (userRole === "teacher") {
       const ids = await getGroups.getGroupsByUserId(authData.userid ?? -1);
       allGroups = await Promise.all(ids.map((id) => getGroups.getGroupById(id)));
