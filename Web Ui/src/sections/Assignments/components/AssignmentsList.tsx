@@ -157,7 +157,7 @@ function Assignments({
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
-                    className="assignments-list-create-btn"
+                    className="generic-list-action-btn generic-list-action-btn--contained"
                     onClick={showForm}
                   >
                     Crear

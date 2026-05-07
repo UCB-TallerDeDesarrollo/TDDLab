@@ -22,7 +22,7 @@ import {
   GenericListBody 
 } from "../Shared/Components/GenericList";
 import Practice from "./Practice";
-import "../Groups/GroupsPage.css";
+import "./MyPracticesPage.css";
 
 interface PracticesProps {
   ShowForm: () => void;
@@ -132,62 +132,49 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <Container>
       <section className="Practicas">
-        {isLoading ? (
-          <LoadingContainer>
-            <CircularProgress />
-          </LoadingContainer>
-        ) : (
-          <GenericListContainer>
-            <GenericListHeader
-              title="Practicas"
-              actions={
-                <>
-                  <Button
-                    variant="outlined"
-                    className="generic-list-action-btn generic-list-action-btn--outlined"
-                    endIcon={<FilterListIcon />}
-                    onClick={(e) => setFilterAnchor(e.currentTarget)}
-                  >
-                    Filtrar
-                  </Button>
-
-                  <Menu
-                    anchorEl={filterAnchor}
-                    open={Boolean(filterAnchor)}
-                    onClose={() => setFilterAnchor(null)}
-                  >
-                    <MenuItem
-                      onClick={() => {
-                        handleOrderPractices({
-                          target: { value: "A_Up_Order" },
-                        });
-                        setFilterAnchor(null);
-                      }}
-                    >
-                      Orden alfabetico ascendente
-                    </MenuItem>
-
-                    <MenuItem
-                      onClick={() => {
-                        handleOrderPractices({
-                          target: { value: "A_Down_Order" },
-                        });
-                        setFilterAnchor(null);
-                      }}
-                    >
-                      Orden alfabetico descendente
-                    </MenuItem>
-
-                    <MenuItem
-                      onClick={() => {
-                        handleOrderPractices({
-                          target: { value: "Time_Up" },
-                        });
-                        setFilterAnchor(null);
-                      }}
-                    >
-                      Recientes
-                    </MenuItem>
+        <GenericListContainer>
+          <GenericListHeader
+            title="Practicas"
+            actions={
+              <>
+                <Button
+                  variant="outlined"
+                  className="generic-list-action-btn generic-list-action-btn--outlined"
+                  endIcon={<FilterListIcon />}
+                  onClick={(e) => setFilterAnchor(e.currentTarget)}
+                >
+                  Filtrar
+                </Button>
+                <Menu
+                  anchorEl={filterAnchor}
+                  open={Boolean(filterAnchor)}
+                  onClose={() => setFilterAnchor(null)}
+                >
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Up_Order" } }); setFilterAnchor(null); }}>
+                    Orden alfabetico ascendente
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "A_Down_Order" } }); setFilterAnchor(null); }}>
+                    Orden alfabetico descendente
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Up" } }); setFilterAnchor(null); }}>
+                    Recientes
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleOrderPractices({ target: { value: "Time_Down" } }); setFilterAnchor(null); }}>
+                    Antiguos
+                  </MenuItem>
+                </Menu>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  className="generic-list-action-btn generic-list-action-btn--contained"
+                  onClick={showForm}
+                >
+                  Crear
+                </Button>
+              </>
+            }
+          />
 
                     <MenuItem
                       onClick={() => {

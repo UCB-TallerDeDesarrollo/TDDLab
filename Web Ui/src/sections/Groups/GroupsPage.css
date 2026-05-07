@@ -22,22 +22,6 @@
   flex-wrap: wrap;
 }
 
-.groups-filter-btn {
-  border-radius: 20px !important;
-  text-transform: none !important;
-  font-size: 0.9rem !important;
-  color: #333 !important;
-  border-color: #bbb !important;
-  padding: 6px 18px !important;
-}
-
-.groups-create-btn {
-  border-radius: 20px !important;
-  text-transform: none !important;
-  font-size: 0.9rem !important;
-  padding: 6px 20px !important;
-}
-
 /* ── Divider ────────────────────────────────────────── */
 .groups-divider {
   border: none;
@@ -53,6 +37,10 @@
   padding: 24px;
 }
 
+.Grupos .generic-list-body {
+  gap: 0;
+}
+
 /* ── Card row (checkbox + card) ─────────────────────── */
 .groups-card-row {
   display: flex;
@@ -62,6 +50,27 @@
 
 .groups-card-checkbox {
   flex-shrink: 0;
+}
+
+.Grupos .generic-card-row {
+  gap: 0;
+}
+
+.Grupos .generic-card {
+  gap: 8px;
+  border-radius: 0;
+}
+
+.Grupos .generic-card-detail {
+  margin: -12px 0 0;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+.Grupos .generic-card-checkbox--inside {
+  margin-left: -6px;
+  margin-right: 2px;
 }
 
 .Grupos .generic-card-checkbox .MuiSvgIcon-root {
@@ -177,8 +186,20 @@
     gap: 12px;
   }
 
+  .Grupos .generic-list-body {
+    gap: 0;
+  }
+
   .groups-card-row {
     align-items: flex-start;
+  }
+
+  .Grupos .generic-card {
+    gap: 4px;
+  }
+
+  .Grupos .generic-card-detail {
+    margin-top: -8px;
   }
 
   .groups-card {
@@ -217,12 +238,6 @@
   .groups-header-actions {
     width: 100%;
     justify-content: flex-end;
-  }
-
-  .groups-filter-btn,
-  .groups-create-btn {
-    font-size: 0.82rem !important;
-    padding: 5px 14px !important;
   }
 
   .groups-card-actions {

@@ -31,6 +31,24 @@
   justify-content: flex-end;
 }
 
+.generic-list-action-btn {
+  text-transform: none !important;
+  font-size: 0.95rem !important;
+  padding: 8px 16px !important;
+  min-width: 90px !important;
+  white-space: nowrap !important;
+  border-radius: 17px !important;
+}
+
+.generic-list-action-btn--outlined {
+  color: #333 !important;
+  border-color: #bbb !important;
+}
+
+.generic-list-action-btn--contained {
+  border-radius: 17px !important;
+}
+
 /* ── Divider ────────────────────────────────────────── */
 .generic-list-divider {
   border: none;
@@ -164,6 +182,11 @@
   .generic-list-header-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  .generic-list-action-btn {
+    font-size: 0.82rem !important;
+    padding: 5px 14px !important;
   }
 
   .generic-card-actions {

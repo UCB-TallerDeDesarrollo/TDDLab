@@ -11,18 +11,6 @@
   flex-wrap: wrap;
 }
 
-.assignments-list-create-btn {
-  border-radius: 17px !important;
-  text-transform: none !important;
-  font-size: 0.95rem !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-  min-width: 90px !important;
-  white-space: nowrap !important;
-}
-
 .assignments-list-body {
   display: flex;
   flex-direction: column;
@@ -58,4 +46,12 @@
   align-items: center;
   height: 100vh;
   width: 100vw;
+}
+
+.Tareas .generic-list-body {
+  gap: 0;
+}
+
+.Tareas .generic-card {
+  border-radius: 0;
 }

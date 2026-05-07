@@ -231,7 +231,9 @@ describe("AssignmentsList Component", () => {
     renderAssignmentsList();
 
     await waitFor(() => {
-      expect(screen.getByRole("combobox", { name: "Ordenar" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /filtrar/i })
+      ).toBeInTheDocument();
     });
   });
 
