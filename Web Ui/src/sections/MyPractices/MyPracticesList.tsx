@@ -176,30 +176,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             }
           />
 
-                    <MenuItem
-                      onClick={() => {
-                        handleOrderPractices({
-                          target: { value: "Time_Down" },
-                        });
-                        setFilterAnchor(null);
-                      }}
-                    >
-                      Antiguos
-                    </MenuItem>
-                  </Menu>
-
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    className="generic-list-action-btn generic-list-action-btn--contained"
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </>
-              }
-            />
+                    
 
             <GenericListBody>
               {practices.map((practice, index) => (
@@ -214,7 +191,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
               ))}
             </GenericListBody>
           </GenericListContainer>
-        )}
 
         {confirmationOpen && (
           <ConfirmationDialog
