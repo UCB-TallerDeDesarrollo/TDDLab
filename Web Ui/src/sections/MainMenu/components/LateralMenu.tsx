@@ -29,10 +29,8 @@ export default function NavLateralMenu({
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          <Box sx={{ padding: "16px 14px 8px 14px" }}>
-            <Link to="/login" style={{ display: "flex", alignItems: "center" }}>
-              <TDDLabLogoDark width={110} height={50} />
-            </Link>
+          <Box sx={{ padding: "32px 14px 32px 2px", display: "flex", justifyContent: "center"  }}>
+            <TDDLabLogoDark width={110} height={50} />
           </Box>
 
           {navArrayLinks.map((item) => {
@@ -46,6 +44,7 @@ export default function NavLateralMenu({
                   sx={{
                     borderLeft: isActive ? "4px solid #002345" : "4px solid transparent",
                     backgroundColor: isActive ? "rgba(0, 35, 69, 0.08)" : "transparent",
+                    paddingY: "18px",
                     "&:hover": {
                       backgroundColor: "rgba(0, 35, 69, 0.05)",
                     },
