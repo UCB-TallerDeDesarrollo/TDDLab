@@ -11,7 +11,7 @@ import NavLateralMenu from "./components/LateralMenu";
 import { IconifyIcon } from "../../sections/Shared/Components";
 import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import LoginComponent from "./components/loginComponent";
 import { typographyVariants } from "../../styles/typography";
 import TeacherSidebar from "./components/TeacherSidebar";
@@ -34,8 +34,7 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery("(max-width:767px)");
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {

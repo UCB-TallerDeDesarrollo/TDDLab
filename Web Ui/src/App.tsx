@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Box, useTheme, useMediaQuery } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter"; //Revisar el cambio por puerto
@@ -59,8 +59,7 @@ const navArrayLinks = [
 
 function App() {
   const authData = useGlobalState("authData")[0];
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery("(max-width:767px)");
   const hasSidebarLayout = (authData.userRole === "teacher" || authData.userRole === "student") && !isMobile;
 useEffect(() => {
   getSessionCookie().then((storedSession) => {
@@ -99,7 +98,7 @@ useEffect(() => {
             flexGrow: 1,
             width: hasSidebarLayout ? "calc(100% - 280px)" : "100%",
             marginLeft: hasSidebarLayout ? "280px" : 0,
-            paddingTop: (authData.userRole === "teacher" || authData.userRole === "student") ? "120px" : "100px",
+            paddingTop: authData.userEmail === "" ? 0 : (authData.userRole === "teacher" || authData.userRole === "student") ? "120px" : "100px",
             overflowX: "hidden"
           }}
         >

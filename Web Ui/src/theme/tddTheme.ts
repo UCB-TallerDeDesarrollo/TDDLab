@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 import { fontFamilies, typographyVariants } from "../styles/typography";
 
 const tddTheme = createTheme({
@@ -71,4 +71,4 @@ const tddTheme = createTheme({
 	},
 });
 
-export default tddTheme;
+export default responsiveFontSizes(tddTheme);
