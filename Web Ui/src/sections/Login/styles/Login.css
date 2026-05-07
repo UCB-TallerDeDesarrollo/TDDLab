@@ -6,13 +6,12 @@
   align-items: center;
   height: 100vh;
   font-family: Arial, sans-serif;
-  color: var(--color-text-primary);
 }
 
 /* Estilos para el encabezado */
 .app-header {
-  background-color: var(--color-surface-dark);
-  color: var(--color-surface);
+  background-color: #333;
+  color: #fff;
   padding: 20px;
   width: 100%;
   text-align: center;
@@ -38,8 +37,8 @@
 .github-button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: var(--color-accent);
-  color: var(--color-text-strong);
+  background-color: #18fca4;
+  color: black;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -49,19 +48,19 @@
 .login-Title {
   font-size: 25px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: black;
 }
 .github-button:hover {
-  background-color: var(--color-accent-hover);
-  color: var(--color-surface);
+  background-color: #555;
+  color: white;
 }
 
 /* Estilos para el botón de Google */
 .google-button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: var(--color-accent);
-  color: var(--color-surface);
+  background-color: #4285f4;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -69,5 +68,5 @@
 }
 
 .google-button:hover {
-  background-color: var(--color-accent-hover);
+  background-color: #3367d6;
 }
