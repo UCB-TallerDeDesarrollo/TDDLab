@@ -76,11 +76,15 @@ export default function useAssignments({ userRole, userGroupid, onGroupChange }:
         const stored = JSON.parse(localStorage.getItem("userGroups") || "[]");
         if (Array.isArray(stored) && stored.length > 0) firstUserGroup = stored[0];
       } catch {}
-
-      const finalGroupId = groupIdUrl ?? groupIdLocal ?? groupIdAuth ?? firstUserGroup ?? allGroups[0]?.id ?? null;
-
+      let numerUserGroupId = userGroupid as number
+      const finalGroupId =  groupIdUrl  ?? groupIdLocal ?? groupIdAuth ?? numerUserGroupId?? firstUserGroup ?? allGroups[0]?.id ?? null;
+      
       if (finalGroupId) {
-        await loadAssignmentsByGroupId(finalGroupId);
+        if(Array.isArray(finalGroupId) && finalGroupId.length > 0) {
+          await loadAssignmentsByGroupId(finalGroupId[0]);
+        } else if (typeof finalGroupId === "number") {
+          await loadAssignmentsByGroupId(finalGroupId);
+        }
       } else {
         setSelectedGroup(0);
         setAssignments([]);
