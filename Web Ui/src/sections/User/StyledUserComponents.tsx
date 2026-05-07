@@ -28,13 +28,4 @@ const StyledTable = styled(Table)({
   backgroundColor: "var(--users-table-bg)",
 });
 
-const FilterContainer = styled("div")({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "20px",
-  marginBottom: "20px",
-  gap: "20px",
-});
-
-export { CenteredContainer, StyledTable, FilterContainer };
+export { CenteredContainer, StyledTable };

@@ -1,5 +1,33 @@
+.Usuarios .generic-list-body {
+  gap: 0;
+}
+
+.users-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+.users-filter-search {
+  width: 360px;
+}
+
+.users-filter-group {
+  min-width: 200px;
+}
+
+.users-filter-search .MuiOutlinedInput-root,
+.users-filter-group .MuiOutlinedInput-root {
+  border-radius: 17px;
+}
+
 .users-table {
   background-color: var(--users-table-bg);
+  width: 100% !important;
+  margin: 0 !important;
 }
 
 .users-table .MuiTableCell-root {
@@ -67,8 +95,8 @@
 }
 
 @media (max-width: 900px) {
-  .users-table {
-    width: 96% !important;
+  .users-filter-search {
+    width: 300px;
   }
 
   .users-table .MuiTableCell-root {
@@ -86,6 +114,20 @@
 }
 
 @media (max-width: 600px) {
+  .users-filter-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .users-filter-search {
+    width: 100%;
+  }
+
+  .users-filter-group {
+    width: 100%;
+    min-width: 0;
+  }
+
   .users-table .MuiTableCell-root {
     font-size: 0.89rem;
     padding: 10px 8px;

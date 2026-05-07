@@ -6,12 +6,11 @@ import { UserDataObject } from "../../modules/Users/domain/UsersInterface";
 import { RemoveUserFromGroup } from "../../modules/Users/application/removeUserFromGroup";
 
 import {
-  Table, TableHead, TableBody, TableRow, TableCell, Container,
+  TableHead, TableBody, TableRow, TableCell,
   Select, MenuItem, InputLabel, FormControl, CircularProgress,
   SelectChangeEvent, Tooltip, TextField, InputAdornment
 } from "@mui/material";
 
-import { styled } from "@mui/system";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -23,7 +22,12 @@ import { SearchUsersByEmail } from "../../modules/Users/application/SearchUsersB
 import "./UserPage.variables.css";
 import "./UserPage.css";
 
-import { CenteredContainer, StyledTable, FilterContainer } from "./StyledUserComponents";
+import { CenteredContainer, StyledTable } from "./StyledUserComponents";
+import {
+  GenericListContainer,
+  GenericListHeader,
+  GenericListBody,
+} from "../Shared/Components/GenericList";
 
 
 function UserPage() {
@@ -128,78 +132,87 @@ function UserPage() {
   return (
     <div>
       <CenteredContainer>
-        <FilterContainer>
-          <TextField
-            label="Buscar por email"
-            variant="outlined"
-            placeholder="Ej: nombre@ucb.edu.bo"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 360 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-            <InputLabel id="group-filter-label">Grupo</InputLabel>
-            <Select
-              labelId="group-filter-label"
-              value={selectedGroup}
-              onChange={handleGroupChange}
-              label="Grupo"
-            >
-              <MenuItem value="all">Todos los grupos</MenuItem>
-              {groups.map((group) => (
-                <MenuItem key={group.id} value={group.id}>
-                  {group.groupName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </FilterContainer>
-
         <section className="Usuarios">
-          <StyledTable className="users-table">
-            <TableHead>
-              <TableRow className="users-table-header-row">
-                <TableCell className="users-table-header users-table-col-email">Correo</TableCell>
-                <TableCell className="users-table-header users-table-col-group">Grupo</TableCell>
-                <TableCell className="users-table-header users-table-col-role">Rol</TableCell>
-                <TableCell className="users-table-header users-table-col-delete">Eliminar</TableCell>
-              </TableRow>
-            </TableHead>
+          <GenericListContainer>
+            <GenericListHeader
+              title="Usuarios"
+              actions={
+                <div className="users-filter-actions">
+                  <TextField
+                    label="Buscar por email"
+                    variant="outlined"
+                    placeholder="Ej: nombre@ucb.edu.bo"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="users-filter-search"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
 
-            <TableBody>
-              {filteredUsers.length === 0 ? (
-                <TableRow className="users-table-row">
-                  <TableCell colSpan={4} className="users-table-empty">
-                    No se encontraron resultados
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id} className="users-table-row">
-                    <TableCell className="users-table-cell users-table-col-email">{user.email}</TableCell>
-                    <TableCell className="users-table-cell users-table-col-group">{groupMap[user.groupid] || "Unknown"}</TableCell>
-                    <TableCell className="users-table-cell users-table-col-role">{user.role}</TableCell>
-                    <TableCell className="users-table-cell users-table-col-delete users-delete-cell">
-                      <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
-                        <DoNotDisturbOnIcon
-                          onClick={() => handleRemoveUserFromGroup(user.id)}
-                          className="users-remove-icon"
-                        />
-                      </Tooltip>
-                    </TableCell>
+                  <FormControl variant="outlined" className="users-filter-group">
+                    <InputLabel id="group-filter-label">Grupo</InputLabel>
+                    <Select
+                      labelId="group-filter-label"
+                      value={selectedGroup}
+                      onChange={handleGroupChange}
+                      label="Grupo"
+                    >
+                      <MenuItem value="all">Todos los grupos</MenuItem>
+                      {groups.map((group) => (
+                        <MenuItem key={group.id} value={group.id}>
+                          {group.groupName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              }
+            />
+
+            <GenericListBody>
+              <StyledTable className="users-table">
+                <TableHead>
+                  <TableRow className="users-table-header-row">
+                    <TableCell className="users-table-header users-table-col-email">Correo</TableCell>
+                    <TableCell className="users-table-header users-table-col-group">Grupo</TableCell>
+                    <TableCell className="users-table-header users-table-col-role">Rol</TableCell>
+                    <TableCell className="users-table-header users-table-col-delete">Eliminar</TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </StyledTable>
+                </TableHead>
+
+                <TableBody>
+                  {filteredUsers.length === 0 ? (
+                    <TableRow className="users-table-row">
+                      <TableCell colSpan={4} className="users-table-empty">
+                        No se encontraron resultados
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredUsers.map((user) => (
+                      <TableRow key={user.id} className="users-table-row">
+                        <TableCell className="users-table-cell users-table-col-email">{user.email}</TableCell>
+                        <TableCell className="users-table-cell users-table-col-group">{groupMap[user.groupid] || "Unknown"}</TableCell>
+                        <TableCell className="users-table-cell users-table-col-role">{user.role}</TableCell>
+                        <TableCell className="users-table-cell users-table-col-delete users-delete-cell">
+                          <Tooltip title={`Eliminar de ${groupMap[user.groupid]}`} arrow>
+                            <DoNotDisturbOnIcon
+                              onClick={() => handleRemoveUserFromGroup(user.id)}
+                              className="users-remove-icon"
+                            />
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </StyledTable>
+            </GenericListBody>
+          </GenericListContainer>
         </section>
       </CenteredContainer>
     </div>
