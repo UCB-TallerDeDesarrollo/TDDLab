@@ -619,7 +619,7 @@ a:hover {
   width: 90%;
   max-width: 1280px;
   margin: 0 auto;
-  padding-top: 36px;
+  padding-top: 32px;
 }
 
 .page-header {
@@ -627,7 +627,8 @@ a:hover {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   column-gap: 18px;
-  margin-bottom: 10px; 
+  margin-bottom: 16px;
+  padding: 0;
 }
 
 .page-title {
@@ -695,7 +696,8 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   margin-top: 0;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
+  padding: 0;
 }
 
 .page-filter-actions {
@@ -798,6 +800,7 @@ a:hover {
 @media (max-width: 720px) {
   .page-content {
     width: 92%;
+    padding-top: 24px;
   }
 
   .page-header {
@@ -876,5 +879,5 @@ a:hover {
 
 .assignments-toolbar {
   margin-top: 0;
-  margin-bottom: 26px;
+  margin-bottom: 24px;
 }
