@@ -311,7 +311,7 @@ function Assignments({
   const assignmentColumns: TableViewColumn<AssignmentTableRow>[] = [
     {
       id: "title",
-      header: "Tareas",
+      header: "Título",
       headerSx: { fontWeight: 560, color: "#333", fontSize: "1rem" },
       renderCell: ({ assignment }) => assignment.title,
     },

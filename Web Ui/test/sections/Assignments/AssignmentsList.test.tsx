@@ -170,7 +170,15 @@ describe("AssignmentsList Component", () => {
     renderAssignmentsList();
 
     await waitFor(() => {
-      expect(screen.getByText("Tareas")).toBeInTheDocument();
+      expect(screen.getByText("Título")).toBeInTheDocument();
+    });
+  });
+
+  it("debería mostrar el header de la columna Título", async () => {
+    renderAssignmentsList();
+
+    await waitFor(() => {
+      expect(screen.getByText("Título")).toBeInTheDocument();
     });
   });
 
@@ -258,7 +266,7 @@ describe("AssignmentsList Component", () => {
     renderAssignmentsList();
 
     await waitFor(() => {
-      expect(screen.getByText("Tareas")).toBeInTheDocument();
+      expect(screen.getByText("Título")).toBeInTheDocument();
       expect(screen.queryByText("Tarea 1")).not.toBeInTheDocument(); // La tabla debería estar vacía pero presente
     });
   });

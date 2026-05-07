@@ -26,6 +26,7 @@ import EditGroupPopup from "./components/EditGroupForm";
 import { TableView, type TableViewColumn } from "../Shared/Components/TableView";
 import CreateButton from "../GeneralPurposeComponents/CreateButton";
 import ActionSelect from "../GeneralPurposeComponents/ActionSelect";
+import PageHeader from "../Shared/Components/PageHeader";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -331,27 +332,13 @@ function Groups() {
     },
     {
       id: "name",
-      header: "Grupos",
+      header: "Nombre",
       headerSx: { fontWeight: 560, color: "#333", fontSize: "1rem" },
       renderCell: ({ group }) => group.groupName,
     },
     {
       id: "actions",
-      header: (
-        <ButtonContainer>
-          <ActionSelect
-            value={selectedSorting}
-            onChange={handleGroupsOrder}
-            options={sortingOptions}
-            placeholder="Ordenar"
-          />
-          <CreateButton
-            onClick={handleCreateGroupClick}
-            label="Crear"
-            borderRadius="17px"
-          />
-        </ButtonContainer>
-      ),
+      header: "Acciones",
       renderCell: ({ index }) => (
         <ButtonContainer>
           <Tooltip title="Editar grupo" arrow>
@@ -403,6 +390,24 @@ function Groups() {
   return (
     <CenteredContainer>
       <section className="Grupos">
+        <PageHeader
+          title="Grupos"
+          actions={
+            <ButtonContainer>
+              <ActionSelect
+                value={selectedSorting}
+                onChange={handleGroupsOrder}
+                options={sortingOptions}
+                placeholder="Ordenar"
+              />
+              <CreateButton
+                onClick={handleCreateGroupClick}
+                label="Crear"
+                borderRadius="17px"
+              />
+            </ButtonContainer>
+          }
+        />
         <TableView
           rows={groupRows}
           columns={groupColumns}

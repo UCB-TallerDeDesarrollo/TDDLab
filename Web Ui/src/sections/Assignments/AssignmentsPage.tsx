@@ -2,6 +2,8 @@ import Form from "./components/AssignmentForm";
 import Assignments from "./components/AssignmentsList";
 import { styled } from "@mui/system";
 import { useState } from "react";
+import PageHeader from "../Shared/Components/PageHeader";
+import { Container } from "@mui/material";
 
 const AssignmentsContainer = styled("div")({
   justifyContent: "center",
@@ -33,6 +35,9 @@ function AssignmentManager({
 
   return (
     <>
+      <Container>
+        <PageHeader title="Tareas" />
+      </Container>
       <AssignmentsContainer data-testid="assignments-container">
         <Assignments
           ShowForm={handleCreateAssignmentClick}

@@ -7,14 +7,27 @@ export function setCookieAndGlobalStateForValidUser(
   usergroupid: UserOnDb | null,
   positiveCallback = () => {},
 ) {
-  if (usergroupid && userData.photoURL && userData.email) {
+  // photoURL can be null depending on provider/account settings.
+  // We still consider the user valid if we have an account + email.
+  if (usergroupid && userData.email) {
+    const userProfilePic = userData.photoURL ?? "";
+
     setGlobalState("authData", {
       userid: usergroupid.id,
-      userProfilePic: userData.photoURL,
+      userProfilePic,
       userEmail: userData.email,
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,
     });
+
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage?.setItem("userProfilePic", userProfilePic);
+      }
+    } catch {
+      // ignore storage errors (private mode, quota, etc.)
+    }
+
     positiveCallback();
   } else {
     console.log("Invalid User");

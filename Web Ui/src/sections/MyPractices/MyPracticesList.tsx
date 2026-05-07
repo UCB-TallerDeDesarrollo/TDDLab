@@ -17,6 +17,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon } from "../Shared/statusHelpers";
+import PageHeader from "../Shared/Components/PageHeader";
 
 interface PracticesProps {
   ShowForm: () => void;
@@ -200,37 +201,22 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   return (
     <div style={{ width: "80%", maxWidth: "960px", padding: "0 16px", margin: "0 auto" }}>
       <section className="Practicas" style={{ width: "100%", margin: "0 auto" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "16px",
-            paddingTop: "6px",
-            borderBottom: "1px solid #D1D5DB",
-            paddingBottom: "16px",
-            width: "100%",
-          }}
-        >
-          <h2 style={{ margin: 0, fontWeight: 700, fontSize: "24px" }}>
-            Practicas
-          </h2>
+        <PageHeader
+          title="Mis Practicas"
+          width="100%"
+          actions={
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <ActionSelect
+                value={selectedFilter}
+                onChange={handleFilterChange}
+                options={filterOptions}
+                minWidth="120px"
+              />
 
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <ActionSelect
-              value={selectedFilter}
-              onChange={handleFilterChange}
-              options={filterOptions}
-              minWidth="120px"
-            />
-
-            <CreateButton
-              onClick={showForm}
-              label="Crear +"
-              minWidth="100px"
-            />
-          </div>
-        </div>
+              <CreateButton onClick={showForm} label="Crear" minWidth="100px" />
+            </div>
+          }
+        />
 
         <TableView
           columns={columns}

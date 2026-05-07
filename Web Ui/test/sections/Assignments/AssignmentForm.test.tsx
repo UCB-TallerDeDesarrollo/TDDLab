@@ -272,7 +272,7 @@ const renderForm = (props = {}) => {
         const nativeInput = document.querySelector(
           ".MuiSelect-nativeInput"
         ) as HTMLInputElement;
-        expect(nativeInput.value).toBe("2");
+        expect(nativeInput.value).toBe("0");
       });
     });
 

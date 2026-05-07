@@ -11,12 +11,12 @@ describe("MyPracticesList Component", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Practicas")).toBeInTheDocument();
+    expect(screen.getByText("Mis Practicas")).toBeInTheDocument();
     expect(screen.getByText("Título")).toBeInTheDocument();
     expect(screen.getByText("Descripción")).toBeInTheDocument();
     expect(screen.getByText("Fecha de Creación")).toBeInTheDocument();
     expect(screen.getByText("Estado")).toBeInTheDocument();
     expect(screen.getByText("Acciones")).toBeInTheDocument();
-    expect(screen.getByText("Crear +")).toBeInTheDocument();
+    expect(screen.getByText("Crear")).toBeInTheDocument();
   });
 });
