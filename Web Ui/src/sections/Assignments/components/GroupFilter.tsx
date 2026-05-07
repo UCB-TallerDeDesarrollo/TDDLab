@@ -21,7 +21,22 @@ const GroupFilter: React.FC<GroupFilterProps> = ({
       value={selectedGroup}
       onChange={onChangeHandler}
       displayEmpty
-      style={{ fontSize: "14px", height: "36px" }}
+      sx={{
+        fontSize: "0.95rem",
+        minHeight: "42px",
+        borderRadius: "17px",
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderRadius: "17px",
+        },
+        "& .MuiSelect-select": {
+          display: "flex",
+          alignItems: "center",
+          minHeight: "42px",
+          boxSizing: "border-box",
+          paddingTop: "8px",
+          paddingBottom: "8px",
+        },
+      }}
     >
       <MenuItem value={0} disabled>
         {defaultName}
