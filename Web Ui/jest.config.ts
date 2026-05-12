@@ -11,5 +11,17 @@ export default {
     "^.+\\.(css|less)$": "<rootDir>/CSSStub.js",
   },
   setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        jsx: 'react-jsx',
+      },
+    },
+  },
   silent: true,
+  collectCoverageFrom: [
+    "<rootDir>/src/**/*.{ts,tsx}",
+    "!<rootDir>/src/**/*.d.ts",
+  ],
 };

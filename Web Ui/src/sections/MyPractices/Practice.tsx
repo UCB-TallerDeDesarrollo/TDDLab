@@ -16,6 +16,7 @@ interface PracticeProps {
   handleClickDetail: (index: number) => void;
   handleClickDelete: (index: number) => void;
   handleRowHover: (index: number | null) => void;
+  isHovered: boolean;
 }
 
 const Practice: React.FC<PracticeProps> = ({
@@ -24,6 +25,7 @@ const Practice: React.FC<PracticeProps> = ({
   handleClickDetail,
   handleClickDelete,
   handleRowHover,
+  isHovered,
 }) => {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
@@ -39,19 +41,28 @@ const Practice: React.FC<PracticeProps> = ({
   return (
     <TableRow
       key={practice.id}
+      onMouseEnter={() => handleRowHover(index)}
+      onMouseLeave={() => handleRowHover(null)}
       sx={{
-        borderBottom: "2px solid #E7E7E7",
+        borderBottom: "1px solid #E5E7EB",
+        backgroundColor: isHovered ? "#EBF5FF" : "white",
+        transition: "background-color 0.2s",
+        height: "60px",
+        minHeight: "60px",
+        boxSizing: "border-box",
       }}
     >
       <TableCell
         sx={{
           fontSize: "16px",
-          padding: "16px",
+          padding: "12px 16px",
           verticalAlign: "middle",
-          maxWidth: "600px",
+          maxWidth: "200px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          height: "60px",
+          minHeight: "60px",
         }}
       >
         {practice.title}
@@ -59,9 +70,11 @@ const Practice: React.FC<PracticeProps> = ({
       
         <TableCell
       sx={{
-        padding: "16px",
+        padding: "12px 16px",
         verticalAlign: "middle",
-        width: "240px", // Fija el ancho
+        width: "200px", // Fija el ancho
+        height: "60px",
+        minHeight: "60px",
       }}
     >
       <div

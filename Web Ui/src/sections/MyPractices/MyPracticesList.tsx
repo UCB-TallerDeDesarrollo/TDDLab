@@ -2,29 +2,22 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  Button,
-} from "@mui/material";
-import { styled } from "@mui/system";
+import { SelectChangeEvent } from "@mui/material";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import AddIcon from "@mui/icons-material/Add";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
-import Practice from "./Practice";
-import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
+import EditPracticeForm from "./EditPracticeForm";
+import CreateButton from "../GeneralPurposeComponents/CreateButton";
+import ActionSelect from "../GeneralPurposeComponents/ActionSelect";
+import { TableView, type TableViewColumn } from "../Shared/Components/TableView";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Tooltip from "@mui/material/Tooltip";
+import { getStatusIcon } from "../Shared/statusHelpers";
+import PageHeader from "../Shared/Components/PageHeader";
 
 interface PracticesProps {
   ShowForm: () => void;
@@ -33,43 +26,112 @@ interface PracticesProps {
 
 function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
+
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState<string>("");
-  const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<
-    number | null
-  >(null);
-  const navigate = useNavigate();
+  const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<number | null>(null);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [selectedPracticeForEdit, setSelectedPracticeForEdit] = useState<PracticeDataObject | null>(null);
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);
 
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
+
+  const navigate = useNavigate();
+
   const practicesRepository = new PracticesRepository();
   const deletePractice = new DeletePractice(practicesRepository);
 
-  const orderPractices = (
-    practicesArray: PracticeDataObject[],
-    sorting: string
-  ) => {
-    if (practicesArray.length > 0) {
-      const sortedPractices = [...practicesArray].sort((a, b) => {
-        switch (sorting) {
-          case "A_Up_Order":
-            return a.title.localeCompare(b.title);
-          case "A_Down_Order":
-            return b.title.localeCompare(a.title);
-          case "Time_Up":
-            return b.id - a.id;
-          case "Time_Down":
-            return a.id - b.id;
-          default:
-            return 0;
-        }
-      });
-      setPractices(sortedPractices);
-    }
-  };
-  // Obtener prácticas
+  const columns: TableViewColumn<PracticeDataObject>[] = [
+    {
+      id: "title",
+      header: "Título",
+      renderCell: (practice) => practice.title,
+      cellSx: {
+        fontSize: "16px",
+        padding: "12px 16px",
+        verticalAlign: "middle",
+        maxWidth: "120px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      },
+    },
+    {
+      id: "description",
+      header: "Descripción",
+      renderCell: (practice) => practice.description,
+      cellSx: {
+        fontSize: "16px",
+        padding: "12px 16px",
+        verticalAlign: "middle",
+      },
+    },
+    {
+      id: "creation_date",
+      header: "Fecha de Creación",
+      renderCell: (practice) => new Date(practice.creation_date).toLocaleDateString(),
+      cellSx: {
+        fontSize: "16px",
+        padding: "12px 16px",
+        verticalAlign: "middle",
+      },
+    },
+    {
+      id: "state",
+      header: "Estado",
+      renderCell: (practice) => getStatusIcon(practice.state),
+      cellSx: {
+        padding: "12px 16px",
+        verticalAlign: "middle",
+      },
+    },
+    {
+      id: "actions",
+      header: "Acciones",
+      renderCell: (_practice, index) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "20px",
+          }}
+        >
+          <Tooltip title="Ver práctica" arrow>
+            <IconButton
+              aria-label="see"
+              onClick={() => handleClickDetail(index)}
+            >
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Editar práctica" arrow>
+            <IconButton
+              aria-label="edit"
+              onClick={() => handleClickEdit(index)}
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar práctica" arrow>
+            <IconButton
+              aria-label="delete"
+              onClick={() => handleClickDelete(index)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      ),
+      cellSx: {
+        padding: "12px 16px",
+        verticalAlign: "middle",
+        width: "200px",
+      },
+    },
+  ];
 
   const fetchData = async () => {
     try {
@@ -77,7 +139,6 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
         authData.userid
       );
       setPractices(data);
-      orderPractices(data, selectedSorting);
     } catch (error) {
       console.error("Error fetching practices:", error);
     }
@@ -85,13 +146,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
 
   useEffect(() => {
     fetchData();
-  }, [selectedSorting, authData]);
-
-  const handleOrderPractices = (event: { target: { value: string } }) => {
-    const sorting = event.target.value;
-    setSelectedSorting(sorting);
-    orderPractices(practices, sorting);
-  };
+  }, [authData]);
 
   const handleClickDetail = (index: number) => {
     navigate(`/mis-practicas/${practices[index].id}`);
@@ -102,13 +157,23 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     setConfirmationOpen(true);
   };
 
+  const handleClickEdit = (index: number) => {
+    setSelectedPracticeForEdit(practices[index]);
+    setIsEditFormOpen(true);
+  };
+
+  const handleCloseEditForm = () => {
+    setIsEditFormOpen(false);
+    setSelectedPracticeForEdit(null);
+  };
+
   const handleConfirmDelete = async () => {
     try {
       if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
-        
         await deletePractice.DeletePractice(
           practices[selectedPracticeIndex].id
         );
+
         const updatedPractices = [...practices];
         updatedPractices.splice(selectedPracticeIndex, 1);
         setPractices(updatedPractices);
@@ -117,63 +182,70 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
     } catch (error) {
       console.error(error);
     }
+
     setValidationDialogOpen(true);
     setConfirmationOpen(false);
   };
 
-  const handleRowHover = (index: number | null) => {
-    setHoveredRow(index);
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    setSelectedFilter(event.target.value);
   };
+
+  const filterOptions = [
+    { value: "", label: "Filtrar" },
+    { value: "all", label: "Todas" },
+    { value: "pending", label: "Pendientes" },
+    { value: "completed", label: "Completadas" },
+  ];
+
   return (
-    <Container>
-      <section className="Practicas">
-        <StyledTable>
-           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {practices.map((practice, index) => (
-              <Practice
-                key={practice.id}
-                practice={practice}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
+    <div style={{ width: "80%", maxWidth: "960px", padding: "0 16px", margin: "0 auto" }}>
+      <section className="Practicas" style={{ width: "100%", margin: "0 auto" }}>
+        <PageHeader
+          title="Mis Practicas"
+          width="100%"
+          actions={
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <ActionSelect
+                value={selectedFilter}
+                onChange={handleFilterChange}
+                options={filterOptions}
+                minWidth="120px"
               />
-            ))}
-          </TableBody>
-        </StyledTable>
+
+              <CreateButton onClick={showForm} label="Crear" minWidth="100px" />
+            </div>
+          }
+        />
+
+        <TableView
+          columns={columns}
+          rows={practices}
+          getRowKey={(practice) => practice.id}
+          tableSx={{ width: "100%", marginLeft: "0", marginRight: "0" }}
+          bodyRowSx={{
+            borderBottom: "1px solid #E5E7EB",
+            height: "60px",
+            minHeight: "60px",
+            boxSizing: "border-box",
+          }}
+          onRowMouseEnter={(_, index) => setHoveredRow(index)}
+          onRowMouseLeave={() => setHoveredRow(null)}
+          getBodyRowSx={(_, index) => ({
+            backgroundColor: _hoveredRow === index ? "#EBF5FF" : "white",
+            transition: "background-color 0.2s",
+          })}
+        />
+
+        {isEditFormOpen && selectedPracticeForEdit && (
+          <EditPracticeForm
+            practiceId={selectedPracticeForEdit.id}
+            currentTitle={selectedPracticeForEdit.title}
+            currentDescription={selectedPracticeForEdit.description}
+            onClose={handleCloseEditForm}
+          />
+        )}
+
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
@@ -185,6 +257,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
             onDelete={handleConfirmDelete}
           />
         )}
+
         {validationDialogOpen && (
           <ValidationDialog
             open={validationDialogOpen}
@@ -194,7 +267,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
         )}
       </section>
-    </Container>
+    </div>
   );
 }
 

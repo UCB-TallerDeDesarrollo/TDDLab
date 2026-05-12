@@ -7,11 +7,6 @@ import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
 import MainMenu from "./sections/MainMenu/MainMenu";
-import GroupsIcon from "@mui/icons-material/Groups";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PersonIcon from "@mui/icons-material/Person";
-import SettingsIcon from "@mui/icons-material/Settings"; 
-import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
@@ -29,39 +24,7 @@ import SettingsPage from "./sections/Settings/SettingsPage";
 import {
   CircularProgress,
 } from "@mui/material";
-
-const navArrayLinks = [
-  {
-    title: "Grupos",
-    path: "/groups",
-    icon: <GroupsIcon />,
-    access: ["admin", "teacher"],
-  },
-  {
-    title: "Tareas",
-    path: "/",
-    icon: <DescriptionIcon />,
-    access: ["admin", "student", "teacher"],
-  },
-  {
-    title: "Mis Practicas",
-    path: "/mis-practicas",
-    icon: <NoteAdd />,
-    access: ["admin", "teacher", "student"],
-  },
-  {
-    title: "Usuarios",
-    path: "/user",
-    icon: <PersonIcon />,
-    access: ["admin", "teacher"],
-  },
-  {
-    title: "Configuraciones",
-    path: "/configuraciones",
-    icon: <SettingsIcon />,
-    access: ["admin", "teacher"], 
-  },
-];
+import { navArrayLinks } from "./config/navLinks";
 
 function App() {
   const authData = useGlobalState("authData")[0];

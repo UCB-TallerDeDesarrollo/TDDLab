@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
@@ -17,23 +16,17 @@ import GroupsRepository from "../../modules/Groups/repository/GroupsRepository";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  Button,
-  Collapse,
-} from "@mui/material";
+import { Container, Collapse } from "@mui/material";
 import { styled } from "@mui/system";
 import { getCourseLink } from "../../modules/Groups/application/GetCourseLink";
-import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
 import UsersRepository from "../../modules/Users/repository/UsersRepository";
 import GetUsersByGroupId from "../../modules/Users/application/getUsersByGroupid";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import EditGroupPopup from "./components/EditGroupForm";
+import { TableView, type TableViewColumn } from "../Shared/Components/TableView";
+import CreateButton from "../GeneralPurposeComponents/CreateButton";
+import ActionSelect from "../GeneralPurposeComponents/ActionSelect";
+import PageHeader from "../Shared/Components/PageHeader";
 
 const CenteredContainer = styled(Container)({
   justifyContent: "center",
@@ -46,22 +39,19 @@ const ButtonContainer = styled("div")({
   gap: "8px",
 });
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
-// Normaliza cualquier id a number
 const asId = (v: unknown): number => {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
 };
 
+interface GroupTableRow {
+  group: GroupDataObject;
+  index: number;
+}
+
 function Groups() {
   const navigate = useNavigate();
 
-  // UI state
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -71,48 +61,52 @@ function Groups() {
   const [editGroupPopupOpen, setEditGroupPopupOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<GroupDataObject | null>(null);
 
-  // data
   const [groups, setGroups] = useState<GroupDataObject[]>([]);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
 
-  const groupRepository = new GroupsRepository();
-  const userRepository = new UsersRepository();
-  const getUsersByGroupId = new GetUsersByGroupId(userRepository);
+  const groupRepository = useMemo(() => new GroupsRepository(), []);
+  const userRepository = useMemo(() => new UsersRepository(), []);
+  const getUsersByGroupId = useMemo(
+    () => new GetUsersByGroupId(userRepository),
+    [userRepository]
+  );
   const [authData, setAuthData] = useGlobalState("authData");
 
-  // id seleccionado (sincronizado con auth/localStorage)
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
 
-  // Sincroniza selección en toda la app
-  const selectAndSync = (rawId: unknown) => {
-    const id = asId(rawId);
-    if (!id) return;
-    setCurrentSelectedGroupId(id);
-    localStorage.setItem("selectedGroup", String(id));
-    if (asId(authData?.usergroupid) !== id) {
-      setAuthData({ ...authData, usergroupid: id });
-    }
-  };
+  const selectAndSync = useCallback(
+    (rawId: unknown) => {
+      const id = asId(rawId);
+      if (!id) return;
+      setCurrentSelectedGroupId(id);
+      localStorage.setItem("selectedGroup", String(id));
+      if (asId(authData?.usergroupid) !== id) {
+        setAuthData({ ...authData, usergroupid: id });
+      }
+    },
+    [authData, setAuthData]
+  );
 
-  // Cargar 
   useEffect(() => {
-  const fetchGroups = async () => {
-    const getGroupsApp = new GetGroups(groupRepository);
-    const role = authData?.userRole ?? "";
-    const uid  = authData?.userid ?? -1;
+    const fetchGroups = async () => {
+      const getGroupsApp = new GetGroups(groupRepository);
+      const role = authData?.userRole ?? "";
+      const uid = authData?.userid ?? -1;
 
-    if (role === "teacher") {
-      const ids = await getGroupsApp.getGroupsByUserId(uid);
-      const allGroups = (await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id))))
-        .filter(Boolean) as GroupDataObject[];
+      if (role === "teacher") {
+        const ids = await getGroupsApp.getGroupsByUserId(uid);
+        const allGroups = (
+          await Promise.all(ids.map((id: number) => getGroupsApp.getGroupById(id)))
+        ).filter(Boolean) as GroupDataObject[];
         setGroups(allGroups);
-    } else {
-      const allGroups = await getGroupsApp.getGroups();
-      setGroups(allGroups);
-    }
+      } else {
+        const allGroups = await getGroupsApp.getGroups();
+        setGroups(allGroups);
+      }
     };
-      fetchGroups();
-  }, [authData?.userRole, authData?.userid]);
+
+    fetchGroups();
+  }, [authData?.userRole, authData?.userid, groupRepository]);
 
   useEffect(() => {
     if (!groups.length || currentSelectedGroupId) return;
@@ -135,17 +129,30 @@ function Groups() {
           const first = asId(ids?.[0]);
           if (first) return selectAndSync(first);
         }
-      } catch { /* ignore */ }
+      } catch {
+        // ignore fallback failures and use first visible group when available
+      }
+
       const firstVisible = asId(groups[0]?.id);
       if (firstVisible) selectAndSync(firstVisible);
     })();
-  }, [groups, currentSelectedGroupId, authData?.usergroupid, authData?.userid]);
+  }, [
+    groups,
+    currentSelectedGroupId,
+    authData?.usergroupid,
+    authData?.userid,
+    groupRepository,
+    selectAndSync,
+  ]);
 
   const handleCreateGroupClick = () => {
     setCreateGroupPopupOpen(true);
   };
 
-  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+  const handleEditClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
     event.stopPropagation();
     const group = groups[index];
     if (group) {
@@ -154,8 +161,10 @@ function Groups() {
     }
   };
 
-  const handleGroupsOrder = (event: { target: { value: string } }) => {
-    setSelectedSorting(event.target.value);
+  const handleGroupsOrder = (event: any) => {
+    const value = event.target.value;
+    setSelectedSorting(value);
+
     const sortings = {
       A_Up_Order: () =>
         [...groups].sort((a, b) => a.groupName.localeCompare(b.groupName)),
@@ -173,11 +182,20 @@ function Groups() {
             new Date(a.creationDate).getTime() -
             new Date(b.creationDate).getTime()
         ),
-    } as const;
+    };
 
-    const key = event.target.value as keyof typeof sortings;
-    setGroups(sortings[key]());
+    if (sortings[value as keyof typeof sortings]) {
+      setGroups(sortings[value as keyof typeof sortings]());
+    }
   };
+
+  const sortingOptions = [
+    { value: "", label: "Ordenar" },
+    { value: "A_Up_Order", label: "Ascendente" },
+    { value: "A_Down_Order", label: "Descendente" },
+    { value: "Time_Up", label: "Más recientes" },
+    { value: "Time_Down", label: "Más antiguos" },
+  ];
 
   const handleRowClick = async (index: number) => {
     if (expandedRows.includes(index)) {
@@ -212,12 +230,14 @@ function Groups() {
     event.stopPropagation();
     const groupid = asId(groups[index]?.id);
     if (!groupid) return;
+
     try {
       await getUsersByGroupId.execute(groupid);
       navigate(`/users/group/${groupid}`);
     } catch (error) {
       console.error("Failed to fetch users for group:", error);
     }
+
     setSelectedRow(index);
   };
 
@@ -294,107 +314,128 @@ function Groups() {
     );
   };
 
+  const groupRows: GroupTableRow[] = groups.map((group, index) => ({ group, index }));
+
+  const groupColumns: TableViewColumn<GroupTableRow>[] = [
+    {
+      id: "selection",
+      header: "",
+      headerSx: { width: "6%" },
+      cellSx: { width: "6%" },
+      renderCell: ({ group, index }) => (
+        <Checkbox
+          checked={asId(currentSelectedGroupId) === asId(group.id)}
+          onClick={(event) => event.stopPropagation()}
+          onChange={() => handleRowClick(index)}
+        />
+      ),
+    },
+    {
+      id: "name",
+      header: "Nombre",
+      headerSx: { fontWeight: 560, color: "#333", fontSize: "1rem" },
+      renderCell: ({ group }) => group.groupName,
+    },
+    {
+      id: "actions",
+      header: "Acciones",
+      renderCell: ({ index }) => (
+        <ButtonContainer>
+          <Tooltip title="Editar grupo" arrow>
+            <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Tareas" arrow>
+            <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
+              <AutoAwesomeMotionIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Participantes" arrow>
+            <IconButton
+              aria-label="estudiantes"
+              onClick={(e) => handleStudentsClick(e, index)}
+            >
+              <GroupsIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
+            <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
+              <LinkIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Copiar enlace de invitacion a docente" arrow>
+            <IconButton
+              aria-label="enlace-docente"
+              onClick={(e) => handleLinkClickTeacher(e, index)}
+            >
+              <PiChalkboardTeacherFill />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Eliminar grupo" arrow>
+            <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </ButtonContainer>
+      ),
+    },
+  ];
+
   return (
     <CenteredContainer>
       <section className="Grupos">
-        <StyledTable>
-          <TableHead>
-            <TableRow sx={{ borderBottom: "2px solid #E7E7E7" }}>
-              <TableCell sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}>
-                Grupos
-              </TableCell>
-              <TableCell>
-                <ButtonContainer>
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleGroupsOrder}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    sx={{ borderRadius: "17px", textTransform: "none", fontSize: "0.95rem" }}
-                    onClick={handleCreateGroupClick}
-                  >
-                    Crear
-                  </Button>
-                </ButtonContainer>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {groups.map((group, index) => (
-              <React.Fragment key={asId(group.id) || index}>
-                <TableRow
-                  selected={isRowSelected(index)}
-                  onClick={() => handleRowClick(index)}
-                  onMouseEnter={() => handleRowHover(index)}
-                  onMouseLeave={() => handleRowHover(null)}
-                >
-                  <TableCell>
-                    <Checkbox
-                      checked={asId(currentSelectedGroupId) === asId(group.id)}
-                      onChange={() => handleRowClick(index)}
-                    />
-                  </TableCell>
-                  <TableCell>{group.groupName}</TableCell>
-                  <TableCell>
-                    <ButtonContainer>
-                      <Tooltip title="Editar grupo" arrow>
-                        <IconButton aria-label="editar" onClick={(e) => handleEditClick(e, index)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Tareas" arrow>
-                        <IconButton aria-label="tareas" onClick={(e) => handleHomeworksClick(e, index)}>
-                          <AutoAwesomeMotionIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Participantes" arrow>
-                        <IconButton aria-label="estudiantes" onClick={(e) => handleStudentsClick(e, index)}>
-                          <GroupsIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Copiar enlace de invitacion a estudiante" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClick(e, index)}>
-                          <LinkIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Copiar enlace de invitacion a docente" arrow>
-                        <IconButton aria-label="enlace" onClick={(e) => handleLinkClickTeacher(e, index)}>
-                          <PiChalkboardTeacherFill />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Eliminar grupo" arrow>
-                        <IconButton aria-label="eliminar" onClick={(e) => handleDeleteClick(e, index)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </ButtonContainer>
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell style={{ width: "100%", padding: 0, margin: 0 }} colSpan={2}>
-                    <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
-                      <div style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "2px" }}>
-                        <div style={{ padding: "50px", marginLeft: "-30px" }}>
-                          Detalle del grupo: {groups[index].groupDetail}
-                        </div>
-                      </div>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </StyledTable>
+        <PageHeader
+          title="Grupos"
+          actions={
+            <ButtonContainer>
+              <ActionSelect
+                value={selectedSorting}
+                onChange={handleGroupsOrder}
+                options={sortingOptions}
+                placeholder="Ordenar"
+              />
+              <CreateButton
+                onClick={handleCreateGroupClick}
+                label="Crear"
+                borderRadius="17px"
+              />
+            </ButtonContainer>
+          }
+        />
+        <TableView
+          rows={groupRows}
+          columns={groupColumns}
+          getRowKey={({ group, index }) => asId(group.id) || index}
+          tableSx={{ width: "82%", marginLeft: "auto", marginRight: "auto" }}
+          headRowSx={{ borderBottom: "2px solid #E7E7E7" }}
+          isRowSelected={({ index }) => isRowSelected(index)}
+          onRowClick={({ index }) => {
+            void handleRowClick(index);
+          }}
+          onRowMouseEnter={({ index }) => handleRowHover(index)}
+          onRowMouseLeave={() => handleRowHover(null)}
+          renderExpandedRow={({ group, index }) => (
+            <Collapse in={expandedRows.includes(index)} timeout="auto" unmountOnExit>
+              <div
+                style={{
+                  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                  borderRadius: "2px",
+                }}
+              >
+                <div style={{ padding: "50px", marginLeft: "-30px" }}>
+                  Detalle del grupo: {group.groupDetail}
+                </div>
+              </div>
+            </Collapse>
+          )}
+          expandedRowCellSx={{ width: "100%", padding: 0, margin: 0 }}
+        />
       </section>
 
       {confirmationOpen && (
@@ -403,7 +444,8 @@ function Groups() {
           title="¿Eliminar el grupo?"
           content={
             <>
-              Ten en cuenta que esta acción también eliminará <br /> todas las tareas asociadas.
+              Ten en cuenta que esta acción también eliminará <br /> todas las tareas
+              asociadas.
             </>
           }
           cancelText="Cancelar"

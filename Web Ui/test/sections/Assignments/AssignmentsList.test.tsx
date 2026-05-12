@@ -21,6 +21,12 @@ const mockDeleteAssignment = {
   deleteAssignment: jest.fn(),
 };
 
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
+
 jest.mock("../../../src/modules/Assignments/repository/AssignmentsRepository", () => {
   return {
     __esModule: true,
@@ -164,7 +170,15 @@ describe("AssignmentsList Component", () => {
     renderAssignmentsList();
 
     await waitFor(() => {
-      expect(screen.getByText("Tareas")).toBeInTheDocument();
+      expect(screen.getByText("Título")).toBeInTheDocument();
+    });
+  });
+
+  it("debería mostrar el header de la columna Título", async () => {
+    renderAssignmentsList();
+
+    await waitFor(() => {
+      expect(screen.getByText("Título")).toBeInTheDocument();
     });
   });
 
@@ -252,7 +266,7 @@ describe("AssignmentsList Component", () => {
     renderAssignmentsList();
 
     await waitFor(() => {
-      expect(screen.getByText("Tareas")).toBeInTheDocument();
+      expect(screen.getByText("Título")).toBeInTheDocument();
       expect(screen.queryByText("Tarea 1")).not.toBeInTheDocument(); // La tabla debería estar vacía pero presente
     });
   });
@@ -293,6 +307,204 @@ describe("AssignmentsList Component", () => {
 
     await waitFor(() => {
       expect(mockAssignmentsRepo.getAssignmentsByGroupid).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it("debería navegar al detalle al hacer clic en ver tarea", async () => {
+    renderAssignmentsList({ userRole: "teacher" });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    const detailButtons = screen.getAllByRole("button", { name: "see" });
+    fireEvent.click(detailButtons[0]);
+
+    expect(mockNavigate).toHaveBeenCalledWith("/assignment/1");
+  });
+
+  it("debería abrir el diálogo de confirmación al hacer clic en eliminar", async () => {
+    renderAssignmentsList({ userRole: "teacher" });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    const deleteButtons = screen.getAllByRole("button", { name: "delete" });
+    fireEvent.click(deleteButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("¿Eliminar la tarea?")).toBeInTheDocument();
+    });
+  });
+
+  it("debería cancelar la eliminación", async () => {
+    renderAssignmentsList({ userRole: "teacher" });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getAllByRole("button", { name: "delete" })[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("¿Eliminar la tarea?")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Cancelar"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("¿Eliminar la tarea?")).not.toBeInTheDocument();
+    });
+  });
+
+  it("debería confirmar la eliminación y mostrar diálogo de éxito", async () => {
+    mockDeleteAssignment.deleteAssignment.mockResolvedValue({});
+    renderAssignmentsList({ userRole: "teacher" });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getAllByRole("button", { name: "delete" })[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("Eliminar")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Eliminar"));
+
+    await waitFor(() => {
+      expect(mockDeleteAssignment.deleteAssignment).toHaveBeenCalledTimes(1);
+      expect(screen.getByText("Tarea eliminada exitosamente")).toBeInTheDocument();
+    });
+  });
+
+  it("debería cerrar el diálogo de éxito y recargar tareas", async () => {
+    mockDeleteAssignment.deleteAssignment.mockResolvedValue({});
+    renderAssignmentsList({ userRole: "teacher" });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getAllByRole("button", { name: "delete" })[0]);
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("Eliminar"));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea eliminada exitosamente")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Cerrar"));
+
+    await waitFor(() => {
+      expect(mockAssignmentsRepo.getAssignmentsByGroupid).toHaveBeenCalled();
+    });
+  });
+
+  it("debería manejar error al eliminar una tarea", async () => {
+    mockDeleteAssignment.deleteAssignment.mockRejectedValue(new Error("Error al eliminar"));
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    renderAssignmentsList({ userRole: "teacher" });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getAllByRole("button", { name: "delete" })[0]);
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("Eliminar"));
+    });
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error eliminando assignment:",
+        expect.any(Error)
+      );
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it("debería abrir el formulario de edición al hacer clic en editar", async () => {
+    renderAssignmentsList({ userRole: "teacher" });
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    const editButtons = screen.getAllByRole("button", { name: "edit" });
+    fireEvent.click(editButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("Editar Tarea : Tarea 1")).toBeInTheDocument();
+    });
+  });
+
+  it("debería ordenar tareas al cambiar el selector de ordenamiento", async () => {
+    renderAssignmentsList();
+
+    await waitFor(() => {
+      expect(screen.getByRole("combobox", { name: "Ordenar" })).toBeInTheDocument();
+    });
+
+    const sortCombobox = screen.getByRole("combobox", { name: "Ordenar" });
+    fireEvent.mouseDown(sortCombobox);
+
+    await waitFor(() => {
+      expect(screen.getByRole("option", { name: "Orden alfabetico ascendente" })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("option", { name: "Orden alfabetico ascendente" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+  });
+
+  it("debería cargar todos los grupos para rol admin", async () => {
+    renderAssignmentsList({ userRole: "admin" });
+
+    await waitFor(() => {
+      expect(mockGetGroups.getGroups).toHaveBeenCalled();
+    });
+  });
+
+  it("debería cargar tareas al cambiar de grupo en el filtro", async () => {
+    renderAssignmentsList();
+
+    await waitFor(() => {
+      expect(screen.getByText("Tarea 1")).toBeInTheDocument();
+    });
+
+    localStorageMock.getItem.mockImplementation((key: string) => {
+      if (key === "selectedGroup") return "2";
+      return null;
+    });
+
+    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue([
+      {
+        id: 3,
+        title: "Tarea del Grupo 2",
+        description: "desc",
+        start_date: new Date(),
+        end_date: new Date(),
+        state: "pending",
+        link: "",
+        comment: "",
+        groupid: 2,
+      },
+    ]);
+
+    globalThis.dispatchEvent(new CustomEvent("assignment-updated"));
+
+    await waitFor(() => {
+      expect(mockAssignmentsRepo.getAssignmentsByGroupid).toHaveBeenCalledWith(2);
     });
   });
 });
