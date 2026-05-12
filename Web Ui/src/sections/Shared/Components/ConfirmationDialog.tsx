@@ -4,12 +4,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import {
-  dialogContentStyle,
-  titleStyle,
-  primaryButtonStyle,
-  secondaryButtonStyle,
-} from "../Styles/DialogBoxStyles";
+import "../Styles/sharedStyles.css";
+import "../../../App.css";
 
 interface ConfirmationDialogProps {
   open: boolean;
@@ -19,6 +15,7 @@ interface ConfirmationDialogProps {
   deleteText: string;
   onCancel: () => void;
   onDelete: () => void;
+  confirmButtonClassName?: string;
 }
 
 export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
@@ -29,29 +26,31 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   deleteText,
   onCancel,
   onDelete,
+  confirmButtonClassName = "btn-danger",
 }) => {
   return (
-    <Dialog open={open}>
-      <DialogTitle style={titleStyle}>{title}</DialogTitle>
-      <DialogContent style={dialogContentStyle}>{content}</DialogContent>
-      <DialogActions>
+    <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
+      <DialogTitle className="shared-dialog-title">
+        {title}
+      </DialogTitle>
+
+      <DialogContent className="shared-dialog-content">
+        <div className="shared-dialog-text">
+          {content}
+        </div>
+      </DialogContent>
+
+      <DialogActions className="shared-dialog-footer">
         <Button
           onClick={onCancel}
-          color="primary"
-          style={{ ...dialogContentStyle, ...secondaryButtonStyle, 
-            color: '#d32f2f',
-            borderColor: '#d32f2f', // Color del borde
-            borderWidth: '2px', // Ancho del borde
-            borderStyle: 'solid', // Estilo del borde
-            padding: '5px 20px' // Añade padding para un mayor relieve 
-          }}
+          className="btn-std btn-secondary"
         >
           {cancelText}
         </Button>
+
         <Button
           onClick={onDelete}
-          color="primary"
-          style={{ ...dialogContentStyle, ...primaryButtonStyle }}
+          className={`btn-std ${confirmButtonClassName}`}
         >
           {deleteText}
         </Button>

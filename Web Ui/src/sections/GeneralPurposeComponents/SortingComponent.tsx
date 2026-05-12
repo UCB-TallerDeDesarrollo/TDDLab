@@ -15,7 +15,8 @@ const SortingComponent: React.FC<SortingProps> = ({
       onChange={onChangeHandler}
       inputProps={{ "aria-label": "Ordenar" }}
       displayEmpty
-      style={{ fontSize: "14px", height: "36px" }}
+      className="select-compact"
+      variant="outlined"
     >
       <MenuItem value="" disabled>
         Ordenar

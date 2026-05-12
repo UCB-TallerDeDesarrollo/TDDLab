@@ -8,121 +8,122 @@ import {
   TextField,
 } from "@mui/material";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
-import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
 import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { normalizeTextForComparison } from "../../../utils/normalizeText";
+import "../../../App.css";
 
-interface EditGroupPopupProps {
+const EditGroupPopup: React.FC<{
   open: boolean;
   handleClose: () => void;
-  groupToEdit: GroupDataObject | null;
-  onUpdated?: (group: GroupDataObject) => void;
-}
-
-const EditGroupPopup: React.FC<EditGroupPopupProps> = ({
-  open,
-  handleClose,
-  groupToEdit,
-  onUpdated,
-}) => {
-  const [save, setSave] = useState(false);
-  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  existingGroups: any[];
+  groupToEdit: any;
+  onUpdated?: (g: any) => void;
+}> = ({ open, handleClose, existingGroups, groupToEdit, onUpdated }) => {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  
-  const groupRepository = new GroupsRepository();
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [auth] = useGlobalState("authData");
 
   useEffect(() => {
     if (open && groupToEdit) {
       setGroupName(groupToEdit.groupName);
       setGroupDescription(groupToEdit.groupDetail);
-    } else if (!open) {
-      setSave(false);
-      setValidationDialogOpen(false);
-      setGroupName("");
-      setGroupDescription("");
     }
   }, [open, groupToEdit]);
 
-  const formInvalid = () => groupName.trim() === "";
-
   const handleUpdate = async () => {
-    setSave(true);
-    if (formInvalid() || !groupToEdit) return;
-
-    const updateGroupApp = new UpdateGroup(groupRepository);
-    
-    const payload: GroupDataObject = {
-      ...groupToEdit,
-      groupName,
-      groupDetail: groupDescription,
-    };
-
+    if (!groupName.trim() || !groupToEdit) return;
     try {
-      await updateGroupApp.updateGroup(groupToEdit.id, payload);
+      const repo = new GroupsRepository();
+      const updater = new UpdateGroup(repo);
+      if (auth?.userRole === "teacher") {
+        const duplicateGroup = existingGroups.find(
+          (group) =>
+            group.id !== groupToEdit.id &&
+            normalizeTextForComparison(group.groupName) ===
+              normalizeTextForComparison(groupName)
+        );
+
+        if (duplicateGroup) {
+          setIsError(true);
+          setValidationMessage(
+            "Error: Ya existe un grupo con ese nombre para este docente"
+          );
+          setValidationDialogOpen(true);
+          return;
+        }
+      }
+
+      const payload = { ...groupToEdit, groupName, groupDetail: groupDescription };
+      await updater.updateGroup(groupToEdit.id, payload);
       onUpdated?.(payload);
+      setIsError(false);
+      setValidationMessage("Grupo actualizado exitosamente");
       setValidationDialogOpen(true);
-    } catch (error) {
-      console.error("Error al actualizar el grupo:", error);
-    } finally {
-      setSave(false);
+    } catch (e) {
+      console.error(e);
+      setIsError(true);
+      setValidationMessage("Error al actualizar el grupo");
+      setValidationDialogOpen(true);
     }
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>Editar grupo</DialogTitle>
-          <DialogContent>
+          <DialogTitle className="dialog-title-std">Editar grupo</DialogTitle>
+
+          <DialogContent className="dialog-content-box">
             <TextField
-              error={formInvalid() && !!save}
               autoFocus
               margin="dense"
-              id="edit-group-name"
               label="Nombre del grupo*"
-              type="text"
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
-              helperText={formInvalid() && !!save ? "El nombre del grupo no puede estar vacío" : ""}
             />
             <TextField
               multiline
               rows={3.7}
               margin="dense"
-              id="edit-group-description"
-              label="Descripcion"
-              type="text"
+              label="Descripción"
               fullWidth
               value={groupDescription}
               onChange={(e) => setGroupDescription(e.target.value)}
               InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} style={{ color: "#555", textTransform: "none" }}>
+
+          <DialogActions className="dialog-footer">
+            {/* Outline rojo — consistente con el resto de formularios */}
+            <Button onClick={handleClose} className="btn-std btn-secondary">
               Cancelar
             </Button>
-            <Button onClick={handleUpdate} color="primary" style={{ textTransform: "none" }}>
+            <Button onClick={handleUpdate} className="btn-std btn-primary">
               Guardar Cambios
             </Button>
           </DialogActions>
         </>
       )}
 
-      {validationDialogOpen && (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title="Grupo actualizado exitosamente"
-          closeText="Cerrar"
-          onClose={() => {
-            setValidationDialogOpen(false);
+      <ValidationDialog
+        open={validationDialogOpen}
+        title={validationMessage}
+        isError={isError}
+        closeText="Cerrar"
+        onClose={() => {
+          setValidationDialogOpen(false);
+          if (!isError) {
             handleClose();
-          }}
-        />
-      )}
+          }
+        }}
+      />
     </Dialog>
   );
 };

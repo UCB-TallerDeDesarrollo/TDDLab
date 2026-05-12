@@ -33,7 +33,7 @@ function PopUp({
       <DialogTitle id="responsive-dialog-title">{dialogTitle}</DialogTitle>
       <DialogContent>{dialogContent}</DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} autoFocus>
+        <Button onClick={handleClose} className="btn-std btn-primary">
           Aceptar
         </Button>
       </DialogActions>

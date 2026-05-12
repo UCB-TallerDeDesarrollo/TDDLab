@@ -1,8 +1,69 @@
-.profilePicture {
+.user-profile-group {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+/* Estilos para el contenido del Modal de Login */
+.btn-auth-github {
+  background-color: #24292e !important; /* Color oficial GitHub */
+  color: white !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  padding: 10px !important;
+}
+
+.btn-auth-google {
+  background-color: #4285f4 !important; /* Color oficial Google */
+  color: white !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  padding: 10px !important;
+}
+
+.user-avatar {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.user-menu-paper {
+  margin-top: 12px !important;
+  overflow: visible !important;
+  filter: drop-shadow(0px 2px 8px rgba(0,0,0,0.32));
+}
+
+.user-menu-paper::before {
+  content: "";
   display: block;
-  width: 50px;
-  height: 50px;
-  margin-left: 12px;
-  border-radius: 10px;
-  bottom: 0;
+  position: absolute;
+  top: 0;
+  right: 14px;
+  width: 10;
+  height: 10;
+  background-color: white;
+  transform: translateY(-50%) rotate(45deg);
+  z-index: 0;
+}
+
+.user-menu-email {
+  font-size: 0.8rem !important;
+}
+
+.logout-menu-item {
+  color: #d32f2f !important;
+}
+
+.logout-icon-red {
+  color: #d32f2f !important;
+  font-size: 1.25rem !important;
+}
+
+@media (max-width: 600px) {
+  .user-avatar {
+    display: none !important;
+  }
+  
+  .user-profile-group {
+    display: none !important;
+  }
 }

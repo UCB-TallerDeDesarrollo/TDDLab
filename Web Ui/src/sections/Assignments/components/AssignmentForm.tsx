@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import Button from "@mui/material/Button";
 import {
   Dialog,
@@ -19,137 +19,182 @@ import AssignmentsRepository from "../../../modules/Assignments/repository/Assig
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
-import { SelectChangeEvent } from '@mui/material/Select';
-import { Warning, CheckCircle } from "@mui/icons-material";
+import { SelectChangeEvent } from "@mui/material/Select";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { ValidationDialog } from "../../Shared/Components/ValidationDialog";
+import { normalizeTextForComparison } from "../../../utils/normalizeText";
 
-// Componente ValidationDialog
-interface ValidationDialogProps {
-  open: boolean;
-  title: string;
-  closeText: string;
-  onClose: () => void;
-}
-
-const ValidationDialog = ({
-  open,
-  title,
-  closeText,
-  onClose,
-}: ValidationDialogProps) => {
-  const isError = title.toLowerCase().includes('error');
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle 
-        sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 1.5,
-          color: isError ? '#d32f2f' : '#2e7d32',
-          fontSize: '1rem',
-          fontWeight: 400,
-          py: 2,
-          fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
-        }}
-      >
-        {isError ? (
-          <Warning sx={{ color: '#d32f2f', fontSize: 22 }} />
-        ) : (
-          <CheckCircle sx={{ color: '#2e7d32', fontSize: 22 }} />
-        )}
-        {title}
-      </DialogTitle>
-      <DialogActions sx={{ pb: 2, pr: 2 }}>
-        <Button 
-          onClick={onClose}
-          style={{ 
-            color: isError ? '#d32f2f' : '#2e7d32',
-            textTransform: 'none',
-            fontSize: '0.875rem'
-          }}
-        >
-          {closeText}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-// Componente Form principal
 interface CreateAssignmentPopupProps {
   open: boolean;
   handleClose: () => void;
   groupid: number;
+  "data-testid"?: string;
 }
 
-function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProps>) {
+interface AssignmentFormData {
+  id: number;
+  title: string;
+  description: string;
+  start_date: Date;
+  end_date: Date;
+  state: string;
+  link: string;
+  comment: string;
+  groupid: number;
+}
+
+const createInitialAssignmentData = (groupid: number): AssignmentFormData => ({
+  id: 0,
+  title: "",
+  description: "",
+  start_date: new Date(),
+  end_date: new Date(),
+  state: "pending",
+  link: "",
+  comment: "",
+  groupid,
+});
+
+const isValidGroup = (
+  group: GroupDataObject | null | undefined
+): group is GroupDataObject => Boolean(group);
+
+const getStoredUserGroupIds = (): number[] => {
+  try {
+    const storedGroups = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
+    return Array.isArray(storedGroups) ? storedGroups : [];
+  } catch {
+    return [];
+  }
+};
+
+const fetchGroupsByIds = async (
+  getGroups: GetGroups,
+  ids: number[]
+): Promise<GroupDataObject[]> => {
+  const groups = await Promise.all(
+    ids.map((id: number) => getGroups.getGroupById(id))
+  );
+
+  return groups.filter(isValidGroup);
+};
+
+const fetchAvailableGroups = async (
+  getGroups: GetGroups,
+  userRole?: string,
+  userId?: number
+): Promise<GroupDataObject[]> => {
+  if (userRole === "teacher") {
+    const ids = await getGroups.getGroupsByUserId(userId ?? -1);
+    return fetchGroupsByIds(getGroups, ids);
+  }
+
+  if (userRole === "admin") {
+    return getGroups.getGroups();
+  }
+
+  if (userRole === "student") {
+    const storedIds = getStoredUserGroupIds();
+    const ids =
+      storedIds.length > 0
+        ? storedIds
+        : await getGroups.getGroupsByUserId(userId ?? -1);
+
+    return fetchGroupsByIds(getGroups, ids);
+  }
+
+  return [];
+};
+
+const resolveGroupId = (
+  currentGroupId: number,
+  availableGroups: GroupDataObject[]
+): number => {
+  const keepCurrentGroup = availableGroups.some(
+    (group) => group.id === currentGroupId
+  );
+
+  return keepCurrentGroup ? currentGroupId : availableGroups[0]?.id ?? 0;
+};
+
+const getErrorMessage = (error: unknown): string => {
+  if (!(error instanceof Error)) {
+    return "Error desconocido al crear la tarea.";
+  }
+
+  if (error.message.includes("Limite de caracteres excedido")) {
+    return "Error: El título no puede tener más de 50 caracteres.";
+  }
+
+  return `Error: ${error.message}`;
+};
+
+function Form({
+  open,
+  handleClose,
+  groupid,
+  "data-testid": testId,
+}: Readonly<CreateAssignmentPopupProps>) {
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
+  const [validationMessage, setValidationMessage] = useState(
+    "Tarea creada exitosamente"
+  );
   const [auth] = useGlobalState("authData");
-  const [assignmentData, setAssignmentData] = useState({
-    id: 0,
-    title: "",
-    description: "",
-    start_date: new Date(),
-    end_date: new Date(),
-    state: "pending",
-    link: "",
-    comment: "",
-    groupid: groupid,
-  });
-  const isCreateButtonClicked = useRef(false);
+  const [groups, setGroups] = useState<GroupDataObject[]>([]);
+  const [assignmentData, setAssignmentData] = useState<AssignmentFormData>(
+    createInitialAssignmentData(groupid)
+  );
+
+  const formInvalid = () =>
+    assignmentData.title.trim() === "" || assignmentData.groupid === 0;
 
   const handleSaveClick = async () => {
     setSave(true);
-    if (formInvalid()) {
-      return;
-    }
 
-    isCreateButtonClicked.current = true;
-    const assignmentsRepository = new AssignmentsRepository();
-    const createAssignments = new CreateAssignments(assignmentsRepository);
-    
+    if (formInvalid()) return;
+
     if (assignmentData.start_date > assignmentData.end_date) {
-      setValidationMessage("Error: La fecha de inicio no puede ser posterior a la fecha de fin");
+      setValidationMessage(
+        "Error: La fecha de inicio no puede ser posterior a la fecha de fin"
+      );
       setValidationDialogOpen(true);
       setSave(false);
       return;
     }
 
+    const assignmentsRepository = new AssignmentsRepository();
+    const createAssignments = new CreateAssignments(assignmentsRepository);
+
     try {
-      const assignments = await assignmentsRepository.getAssignmentsByGroupid(assignmentData.groupid);
-      const duplicateAssignment = assignments.find(
-        (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
+      const assignments = await assignmentsRepository.getAssignmentsByGroupid(
+        assignmentData.groupid
       );
-    
+
+      const duplicateAssignment = assignments.find(
+        (assignment) =>
+          normalizeTextForComparison(assignment.title) ===
+          normalizeTextForComparison(assignmentData.title)
+      );
+
       if (duplicateAssignment) {
-        setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
+        setValidationMessage(
+          "Error: Ya existe una tarea con el mismo nombre en este grupo"
+        );
         setValidationDialogOpen(true);
         setSave(false);
         return;
       }
-    
+
       await createAssignments.createAssignment(assignmentData);
       setValidationMessage("Tarea creada exitosamente");
       setValidationDialogOpen(true);
     } catch (error) {
-      if (error instanceof Error) {
-        // Verifica si el mensaje del backend menciona el límite de caracteres
-        if (error.message.includes("Limite de caracteres excedido")) {
-          setValidationMessage("Error: El título no puede tener más de 50 caracteres.");
-        } else {
-          setValidationMessage(`Error: ${error.message}`);
-        }
-      } else {
-        setValidationMessage("Error desconocido al crear la tarea.");
-      }
+      setValidationMessage(getErrorMessage(error));
       setValidationDialogOpen(true);
     } finally {
       setSave(false);
     }
-    
   };
 
   const handleUpdateDates = (newStartDate: Date, newEndDate: Date) => {
@@ -161,10 +206,11 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   };
 
   const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: string,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: keyof AssignmentFormData
   ) => {
     const { value } = event.target;
+
     setAssignmentData((prevData) => ({
       ...prevData,
       [field]: value,
@@ -172,109 +218,97 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   };
 
   const handleGroupChange = (event: SelectChangeEvent<number>) => {
-    const groupid = event.target.value as number;
+    const selectedGroupId = Number(event.target.value);
+
     setAssignmentData((prevData) => ({
       ...prevData,
-      groupid,
+      groupid: selectedGroupId,
     }));
   };
 
-  const handleCancel = () => {
-    handleClose();
-  };
-
-  const formInvalid = () => {
-    return assignmentData.title.trim() === "" || assignmentData.groupid === 0;
-  };
+  const handleCancel = () => handleClose();
 
   useEffect(() => {
-  const effectiveGroupId =
-    groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
+    const effectiveGroupId =
+      groupid || Number(localStorage.getItem("selectedGroup") ?? 0) || 0;
 
-  setSave(false);
-  setAssignmentData({
-    id: 0,
-    title: "",
-    description: "",
-    start_date: new Date(),
-    end_date: new Date(),
-    state: "pending",
-    link: "",
-    comment: "",
-    groupid: effectiveGroupId,
-  });
-}, [open, groupid]);
+    setSave(false);
+    setAssignmentData(createInitialAssignmentData(effectiveGroupId));
+  }, [open, groupid]);
 
-  const groupRepository = new GroupsRepository();
-  const [groups, setGroups] = useState<GroupDataObject[]>([]);
-  
   useEffect(() => {
-    const fetchGroups = async () => {
-      const getGroups = new GetGroups(groupRepository);
-      let list: GroupDataObject[] = [];
+    if (!open) return;
 
-      if (auth?.userRole === "teacher") {
-        const ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
-        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
-      } else if (auth?.userRole === "admin") {
-        list = await getGroups.getGroups();
-      } else if (auth?.userRole === "student") {
-        let ids: number[] = [];
-        try {
-          const fromLS = JSON.parse(localStorage.getItem("userGroups") ?? "[]");
-          if (Array.isArray(fromLS) && fromLS.length) ids = fromLS;
-        } catch {}
-        if (!ids.length) {
-          ids = await getGroups.getGroupsByUserId(auth.userid ?? -1);
-        }
-        list = (await Promise.all(ids.map((id: number) => getGroups.getGroupById(id)))).filter(Boolean) as GroupDataObject[];
-      } else {
-        list = [];
-      }
+    const loadGroups = async () => {
+      const getGroups = new GetGroups(new GroupsRepository());
+      const list = await fetchAvailableGroups(
+        getGroups,
+        auth?.userRole,
+        auth?.userid
+      );
 
       setGroups(list);
 
-      setAssignmentData(prev => {
-        const keepCurrent = list.some(g => g.id === prev.groupid);
-        const fallbackId = list[0]?.id ?? 0;
-        return { ...prev, groupid: keepCurrent ? prev.groupid : fallbackId };
-      });
+      setAssignmentData((prevData) => ({
+        ...prevData,
+        groupid: resolveGroupId(prevData.groupid, list),
+      }));
     };
 
-    if (open) fetchGroups();
+    void loadGroups();
   }, [open, auth?.userRole, auth?.userid]);
 
+  const isError = validationMessage.toLowerCase().includes("error");
+
+  const handleValidationClose = () => {
+    if (isError) {
+      setValidationDialogOpen(false);
+      return;
+    }
+
+    window.location.reload();
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{ "data-testid": testId }}
+    >
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8rem" }}>Crear tarea</DialogTitle>
-          <DialogContent>
-            <section className="mb-4">
-              <FormControl fullWidth variant="outlined" margin="normal">
-                <InputLabel htmlFor="group-select">
-                  Grupo
-                </InputLabel>
-                <Select
-                  id="group-select"
-                  value={assignmentData.groupid}
-                  onChange={handleGroupChange}
-                  label="Grupo"
-                  error={save && assignmentData.groupid === 0}
-                >
-                  <MenuItem value={0}>Selecciona un grupo</MenuItem>
-                  {groups.map((group) => (
-                    <MenuItem key={group.id} value={group.id}>
-                      {group.groupName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </section>
-            
+          <DialogTitle className="dialog-title-std">Crear tarea</DialogTitle>
+
+          <DialogContent className="dialog-content-box">
+            <FormControl fullWidth variant="outlined" margin="dense">
+              <InputLabel htmlFor="group-select">Grupo</InputLabel>
+
+              <Select
+                id="group-select"
+                value={assignmentData.groupid}
+                onChange={handleGroupChange}
+                label="Grupo"
+                error={save && assignmentData.groupid === 0}
+              >
+                <MenuItem value={0}>Selecciona un grupo</MenuItem>
+
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.groupName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <TextField
               error={save && !assignmentData.title.trim()}
-              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
+              helperText={
+                save && !assignmentData.title.trim()
+                  ? "El título es requerido"
+                  : ""
+              }
               autoFocus
               margin="dense"
               id="assignment-title"
@@ -283,10 +317,9 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               type="text"
               fullWidth
               value={assignmentData.title}
-              onChange={(e) => handleInputChange(e, "title")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              onChange={(event) => handleInputChange(event, "title")}
             />
-            
+
             <TextField
               multiline
               rows={3.7}
@@ -297,28 +330,24 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               type="text"
               fullWidth
               value={assignmentData.description}
-              onChange={(e) => handleInputChange(e, "description")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              onChange={(event) => handleInputChange(event, "description")}
             />
-            
-            <section className="mt-4">
+
+            <div className="date-picker-wrapper">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Filter onUpdateDates={handleUpdateDates} />
               </LocalizationProvider>
-            </section>
+            </div>
           </DialogContent>
-          
-          <DialogActions>
-            <Button
-              onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
-            >
+
+          <DialogActions className="dialog-footer">
+            <Button onClick={handleCancel} className="btn-std btn-secondary">
               Cancelar
             </Button>
+
             <Button
               onClick={handleSaveClick}
-              color="primary"
-              style={{ textTransform: "none" }}
+              className="btn-std btn-primary"
               disabled={formInvalid()}
             >
               Crear
@@ -326,21 +355,14 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           </DialogActions>
         </>
       )}
-      
-      {validationDialogOpen && (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title={validationMessage}
-          closeText="Cerrar"
-          onClose={() => {
-            if (!validationMessage.includes("Error")) {
-              window.location.reload();
-            } else {
-              setValidationDialogOpen(false);
-            }
-          }}
-        />
-      )}
+
+      <ValidationDialog
+        open={validationDialogOpen}
+        title={validationMessage}
+        isError={isError}
+        closeText="Cerrar"
+        onClose={handleValidationClose}
+      />
     </Dialog>
   );
 }

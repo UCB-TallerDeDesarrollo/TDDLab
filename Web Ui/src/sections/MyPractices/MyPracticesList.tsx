@@ -4,27 +4,18 @@ import { useGlobalState } from "../../modules/User-Authentication/domain/authSta
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
   Table,
-  TableHead,
   TableBody,
-  TableRow,
-  TableCell,
-  Container,
   Button,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import AddIcon from "@mui/icons-material/Add";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon";
+import { APP_ICONS } from "../../utils/IconLibrary";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
 import Practice from "./Practice";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
+import "../../App.css";
 
 interface PracticesProps {
   ShowForm: () => void;
@@ -36,9 +27,8 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
-  const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<
-    number | null
-  >(null);
+  const [selectedPracticeIndex, setSelectedPracticeIndex] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const navigate = useNavigate();
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
@@ -47,10 +37,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const practicesRepository = new PracticesRepository();
   const deletePractice = new DeletePractice(practicesRepository);
 
-  const orderPractices = (
-    practicesArray: PracticeDataObject[],
-    sorting: string
-  ) => {
+  const orderPractices = (practicesArray: PracticeDataObject[], sorting: string) => {
     if (practicesArray.length > 0) {
       const sortedPractices = [...practicesArray].sort((a, b) => {
         switch (sorting) {
@@ -69,13 +56,10 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
       setPractices(sortedPractices);
     }
   };
-  // Obtener prácticas
 
   const fetchData = async () => {
     try {
-      const data = await practicesRepository.getPracticeByUserId(
-        authData.userid
-      );
+      const data = await practicesRepository.getPracticeByUserId(authData.userid);
       setPractices(data);
       orderPractices(data, selectedSorting);
     } catch (error) {
@@ -94,21 +78,21 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   };
 
   const handleClickDetail = (index: number) => {
-    navigate(`/mis-practicas/${practices[index].id}`);
+    navigate(`/mis-practicas/${filteredPractices[index].id}`);
   };
 
   const handleClickDelete = (index: number) => {
-    setSelectedPracticeIndex(index);
+    // Map filtered index back to main array index
+    const practice = filteredPractices[index];
+    const mainIndex = practices.findIndex((p) => p.id === practice.id);
+    setSelectedPracticeIndex(mainIndex);
     setConfirmationOpen(true);
   };
 
   const handleConfirmDelete = async () => {
     try {
       if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
-        
-        await deletePractice.DeletePractice(
-          practices[selectedPracticeIndex].id
-        );
+        await deletePractice.DeletePractice(practices[selectedPracticeIndex].id);
         const updatedPractices = [...practices];
         updatedPractices.splice(selectedPracticeIndex, 1);
         setPractices(updatedPractices);
@@ -124,45 +108,54 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
+
+  const filteredPractices = practices.filter((p) =>
+    p.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <Container>
-      <section className="Practicas">
-        <StyledTable>
-           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
+    <div className="page-container">
+      <section className="page-content">
+
+        <div className="page-header">
+          <div className="page-title">
+            <span>Mis Prácticas</span>
+          </div>
+
+          <div className="page-title-line" />
+
+          <div className="page-search">
+            <span>Buscar</span>
+            <input
+              type="text"
+              aria-label="Buscar práctica"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <AppIcon icon={APP_ICONS.SEARCH} size={16} />
+          </div>
+        </div>
+
+        <div className="page-toolbar">
+          <Button
+            className="btn-std btn-primary"
+            startIcon={<AppIcon icon={APP_ICONS.PLUS} size={16} />}
+            onClick={showForm}
+          >
+            Crear
+          </Button>
+
+          <div className="page-filter-actions">
+            <SortingComponent
+              selectedSorting={selectedSorting}
+              onChangeHandler={handleOrderPractices}
+            />
+          </div>
+        </div>
+
+        <Table className="styled-table">
           <TableBody>
-            {practices.map((practice, index) => (
+            {filteredPractices.map((practice, index) => (
               <Practice
                 key={practice.id}
                 practice={practice}
@@ -173,7 +166,8 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
               />
             ))}
           </TableBody>
-        </StyledTable>
+        </Table>
+
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
@@ -194,7 +188,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
           />
         )}
       </section>
-    </Container>
+    </div>
   );
 }
 

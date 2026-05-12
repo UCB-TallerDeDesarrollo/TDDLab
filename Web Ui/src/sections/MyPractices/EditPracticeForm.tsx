@@ -3,11 +3,14 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useState } from "react";
 import { UpdatePractice } from "../../modules/Practices/application/UpdatePractice";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import { normalizeTextForComparison } from "../../utils/normalizeText";
+import "../../App.css";
 
 interface EditPracticeDialogProps {
   readonly practiceId: number;
@@ -24,14 +27,38 @@ function EditPracticeDialog({
 }: EditPracticeDialogProps) {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [validationOpen, setValidationOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleSaveChanges = async () => {
     try {
       const currentPractice = await getCurrentPractice();
 
       if (currentPractice) {
+        const practicesRepository = new PracticesRepository();
+        const existingPractices = await practicesRepository.getPracticeByUserId(
+          currentPractice.userid
+        );
+        const nextTitle = title.trim() !== "" ? title : currentPractice.title;
+        const duplicatePractice = existingPractices.find(
+          (practice) =>
+            practice.id !== currentPractice.id &&
+            normalizeTextForComparison(practice.title) ===
+              normalizeTextForComparison(nextTitle)
+        );
+
+        if (duplicatePractice) {
+          setIsError(true);
+          setValidationMessage(
+            "Error: Ya existe una práctica con ese nombre para este usuario"
+          );
+          setValidationOpen(true);
+          return;
+        }
+
         const updatedPracticeData: PracticeDataObject = {
-          title: title !== "" ? title : currentPractice.title,
+          title: nextTitle,
           description:
             description !== "" ? description : currentPractice.description,
           id: currentPractice.id,
@@ -40,69 +67,87 @@ function EditPracticeDialog({
           userid: currentPractice.userid,
         };
 
-        const practiceRepository = new PracticesRepository();
-        const updatePractice = new UpdatePractice(practiceRepository);
+        const updatePractice = new UpdatePractice(practicesRepository);
         await updatePractice.updatePractice(practiceId, updatedPracticeData);
 
-        onClose();
-        window.location.reload();
+        setIsError(false);
+        setValidationMessage("Práctica actualizada exitosamente");
+        setValidationOpen(true);
       } else {
         console.error("La practica actual no se encontró.");
       }
     } catch (error) {
       console.error("Error al guardar los cambios:", error);
+      setIsError(true);
+      setValidationMessage("Error al actualizar la práctica");
+      setValidationOpen(true);
     }
   };
+
   const getCurrentPractice = async () => {
     const practicesRepository = new PracticesRepository();
     try {
-      const practice = await practicesRepository.getPracticeById(practiceId);
-      return practice;
+      return await practicesRepository.getPracticeById(practiceId);
     } catch (error) {
       console.error("Error obteniendo la practica actual:", error);
       throw error;
     }
   };
 
+  const handleValidationClose = () => {
+    setValidationOpen(false);
+    if (!isError) {
+      window.location.reload();
+    }
+  };
+
   return (
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Practica : {currentTitle}</DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: "grid", gap: 2, marginTop: 2 }}>
-          <TextField
-            id="titulo"
-            label="Título"
-            variant="outlined"
-            size="small"
-            required
-            onChange={(e) => setTitle(e.target.value)}
-            defaultValue={currentTitle}
-          />
-          <TextField
-            id="descripcion"
-            label="Descripcion"
-            variant="outlined"
-            size="small"
-            required
-            multiline
-            rows = {5}
-            onChange={(e) => setDescription(e.target.value)}
-            defaultValue={currentDescription}
-          />
-        </Box>
+      <DialogTitle className="dialog-title-std">
+        Editar Práctica: {currentTitle}
+      </DialogTitle>
+
+      <DialogContent className="dialog-content-box">
+        <TextField
+          id="titulo"
+          label="Título"
+          margin="dense"
+          fullWidth
+          required
+          onChange={(e) => setTitle(e.target.value)}
+          defaultValue={currentTitle}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+        />
+        <TextField
+          id="descripcion"
+          label="Descripción"
+          margin="dense"
+          fullWidth
+          required
+          multiline
+          rows={3.7}
+          onChange={(e) => setDescription(e.target.value)}
+          defaultValue={currentDescription}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+        />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button
-          variant="contained"
-          style={{
-            textTransform: "none",
-          }}
-          onClick={handleSaveChanges}
-        >
+
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="btn-std btn-secondary">
+          Cancelar
+        </Button>
+        <Button onClick={handleSaveChanges} className="btn-std btn-primary">
           Guardar Cambios
         </Button>
       </DialogActions>
+
+      <ValidationDialog
+        open={validationOpen}
+        title={validationMessage}
+        isError={isError}
+        closeText="Cerrar"
+        onClose={handleValidationClose}
+      />
     </Dialog>
   );
 }

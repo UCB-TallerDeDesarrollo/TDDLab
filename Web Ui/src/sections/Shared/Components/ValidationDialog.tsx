@@ -1,19 +1,19 @@
 import React from "react";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import {
-  dialogContentStyle,
-  titleStyle2,
-  primaryButtonStyle,
-} from "../Styles/DialogBoxStyles";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import "../Styles/sharedStyles.css";
+import "../../../App.css";
 
 interface ValidationDialogProps {
   open: boolean;
   title: string;
   closeText: string;
   onClose: () => void;
+  isError?: boolean;
 }
 
 export const ValidationDialog: React.FC<ValidationDialogProps> = ({
@@ -21,16 +21,25 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = ({
   title,
   closeText,
   onClose,
+  isError,
 }) => {
+  const showAsError = isError ?? title.toLowerCase().startsWith("error");
+
   return (
-    <Dialog open={open}>
-      <DialogTitle style={titleStyle2}>{title}</DialogTitle>
-      <DialogActions>
-        <Button
-          onClick={onClose}
-          color="primary"
-          style={{ ...dialogContentStyle, ...primaryButtonStyle }}
-        >
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle
+        className={showAsError ? "dialog-title-error" : "dialog-title-success"}
+      >
+        {showAsError ? (
+          <ErrorOutlineIcon fontSize="small" />
+        ) : (
+          <CheckCircleOutlineIcon fontSize="small" />
+        )}
+        {title}
+      </DialogTitle>
+
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className={`btn-std ${showAsError ? "btn-danger" : "btn-success"}`}>
           {closeText}
         </Button>
       </DialogActions>

@@ -5,7 +5,6 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 interface GroupFilterProps {
   selectedGroup: number;
   groupList: GroupDataObject[];
-  
   onChangeHandler: (event: SelectChangeEvent<number>) => void;
   defaultName: string;
 }
@@ -21,7 +20,8 @@ const GroupFilter: React.FC<GroupFilterProps> = ({
       value={selectedGroup}
       onChange={onChangeHandler}
       displayEmpty
-      style={{ fontSize: "14px", height: "36px" }}
+      className="select-compact"
+      variant="outlined"
     >
       <MenuItem value={0} disabled>
         {defaultName}

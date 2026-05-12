@@ -46,10 +46,10 @@ const PasswordComponent: React.FC<PasswordComponentProps> = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} className="btn-std btn-secondary">
           Cancelar
         </Button>
-        <Button onClick={handleSendPassword} color="primary">
+        <Button onClick={handleSendPassword} className="btn-std btn-secondary">
           Enviar
         </Button>
       </DialogActions>

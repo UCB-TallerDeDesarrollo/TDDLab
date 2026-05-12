@@ -2,14 +2,14 @@ import { AssignmentDataObject } from "../../../modules/Assignments/domain/assign
 import React, { useState, useEffect } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
+import { AppIcon } from "../../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../../utils/IconLibrary";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditAssignmentForm from "./EditAssignmentForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltip } from "../../Shared/statusHelpers";
-import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository"
+import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
+
 function isAdmin(role: string): boolean {
   return role === "admin" || role === "teacher";
 }
@@ -30,65 +30,36 @@ const Assignment: React.FC<AssignmentProps> = ({
   handleClickDelete,
   handleRowHover,
   role,
-  //group,
 }) => {
-
   const [groupName, setGroupName] = useState<string>("");
 
   useEffect(() => {
-    if (assignment.groupid) {
-      fetchGroupName(assignment.groupid);
-    }
+    if (assignment.groupid) fetchGroupName(assignment.groupid);
   }, [assignment.groupid]);
 
   const fetchGroupName = async (groupId: number) => {
     try {
       const groupsRepository = new GroupsRepository();
       const group = await groupsRepository.getGroupById(groupId);
-      if (group) {
-        setGroupName(group.groupName);
-      }
+      if (group) setGroupName(group.groupName);
     } catch (error) {
       console.error("Error fetching group name:", error);
     }
   };
 
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-
-  const handleEditClick = () => {
-    setIsEditFormOpen(true);
-  };
-
-  const handleCloseEditForm = () => {
-    setIsEditFormOpen(false);
-  };
+  const handleEditClick = () => setIsEditFormOpen(true);
+  const handleCloseEditForm = () => setIsEditFormOpen(false);
   const statusIcon = getStatusIcon(assignment.state);
 
   return (
-    <TableRow 
-    key={assignment.id}
-    sx={{ 
-      borderBottom: "2px solid #E7E7E7" 
-    }}>
-      <TableCell
-        style={{
-          width: "20%",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
+    <TableRow key={assignment.id} className="table-row-bordered">
+      <TableCell className="practice-title-cell">
         {assignment.title}
       </TableCell>
-      <TableCell style={{ width: "30%", maxWidth: "300px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              flexWrap: "nowrap",
-            }}
-          >
+
+      <TableCell align="right">
+        <div className="action-buttons-group">
           <Tooltip title="Ver tarea" arrow>
             <IconButton
               aria-label="see"
@@ -96,23 +67,23 @@ const Assignment: React.FC<AssignmentProps> = ({
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
             >
-              <VisibilityIcon />
+              <AppIcon icon={APP_ICONS.VIEW} size={20} className="icon-gray" />
             </IconButton>
           </Tooltip>
+
           {isAdmin(role) && isEditFormOpen ? (
             <EditAssignmentForm
               assignmentId={assignment.id}
               currentGroupName={groupName}
               currentTitle={assignment.title}
               currentDescription={assignment.description}
-              //currentGroupId={}
               onClose={handleCloseEditForm}
             />
           ) : (
             isAdmin(role) && (
               <Tooltip title="Editar tarea" arrow>
                 <IconButton aria-label="edit" onClick={handleEditClick}>
-                  <EditIcon />
+                  <AppIcon icon={APP_ICONS.EDIT} size={20} className="icon-gray" />
                 </IconButton>
               </Tooltip>
             )
@@ -126,7 +97,7 @@ const Assignment: React.FC<AssignmentProps> = ({
                 onMouseEnter={() => handleRowHover(index)}
                 onMouseLeave={() => handleRowHover(null)}
               >
-                <DeleteIcon />
+                <AppIcon icon={APP_ICONS.DELETE} size={20} className="icon-gray" />
               </IconButton>
             </Tooltip>
           )}

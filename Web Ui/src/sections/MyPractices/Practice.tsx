@@ -3,12 +3,12 @@ import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInter
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { AppIcon } from "../../sections/Shared/Components/AppIcon"; // O la ruta que elijas
+import { APP_ICONS } from "../../utils/IconLibrary";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltipPractice } from "../Shared/statusHelpers";
+import "../../App.css";
 
 interface PracticeProps {
   practice: PracticeDataObject;
@@ -37,41 +37,12 @@ const Practice: React.FC<PracticeProps> = ({
   const statusIcon = getStatusIcon(practice.state);
 
   return (
-    <TableRow
-      key={practice.id}
-      sx={{
-        borderBottom: "2px solid #E7E7E7",
-      }}
-    >
-      <TableCell
-        sx={{
-          fontSize: "16px",
-          padding: "16px",
-          verticalAlign: "middle",
-          maxWidth: "600px",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
+    <TableRow className="table-row-bordered">
+      <TableCell className="practice-title-cell">
         {practice.title}
       </TableCell>
-      
-        <TableCell
-      sx={{
-        padding: "16px",
-        verticalAlign: "middle",
-        width: "240px", // Fija el ancho
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          gap: "20px",
-        }}
-      >
+      <TableCell align="right">
+        <div className="action-buttons-group">
           <Tooltip title="Ver practica" arrow>
             <IconButton
               aria-label="see"
@@ -79,7 +50,7 @@ const Practice: React.FC<PracticeProps> = ({
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
             >
-              <VisibilityIcon />
+              <AppIcon icon={APP_ICONS.VIEW} className="icon-gray" />
             </IconButton>
           </Tooltip>
           {isEditFormOpen ? (
@@ -91,8 +62,8 @@ const Practice: React.FC<PracticeProps> = ({
             />
           ) : (
             <Tooltip title="Editar practica" arrow>
-              <IconButton aria-label="edit" onClick={handleEditClick}>
-                <EditIcon />
+              <IconButton onClick={handleEditClick}>
+                <AppIcon icon={APP_ICONS.EDIT} size={20} className="icon-gray" />
               </IconButton>
             </Tooltip>
           )}
@@ -103,7 +74,7 @@ const Practice: React.FC<PracticeProps> = ({
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
             >
-              <DeleteIcon />
+              <AppIcon icon={APP_ICONS.DELETE} className="icon-gray" />
             </IconButton>
           </Tooltip>
 

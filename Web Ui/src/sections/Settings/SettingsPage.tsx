@@ -1,37 +1,40 @@
 import { useState, useEffect } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, 
-         Typography, Container, Box, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem,
+         Typography, Container, Box, CircularProgress } from '@mui/material';
 import EditPromptAI from './components/EditPromptAI';
 import { GetPrompts } from '../../modules/AIAssistant/application/GetPrompts';
 import { UpdatePrompts } from '../../modules/AIAssistant/application/UpdatePrompts';
 import { GetFeatureFlags } from "../../modules/FeatureFlags/application/GetFeatureFlags";
 import { FeatureFlag } from "../../modules/FeatureFlags/domain/FeatureFlag";
 import { UpdateFeatureFlag } from "../../modules/FeatureFlags/application/UpdateFeatureFlag";
+import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
+import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import "../../App.css";
 
 const PROMPT_OPTIONS = [
   { label: "Prompt Analizar TDD", value: "tddPrompt" },
   { label: "Prompt Analizar Refactoring", value: "refactoringPrompt" },
-  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" },
+  { label: "Prompt Evaluar TDD", value: "evaluateTDDPrompt" }
 ];
+
 const ConfigurationPage = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [notification, setNotification] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error' | 'info' | 'warning';
-  }>({
-    open: false,
-    message: '',
-    severity: 'info'
-  });
+  const [promptValidationOpen, setPromptValidationOpen] = useState(false);
+  const [promptValidationMessage, setPromptValidationMessage] = useState("");
+  const [promptValidationIsError, setPromptValidationIsError] = useState(false);
+  const [flagValidationOpen, setFlagValidationOpen] = useState(false);
+  const [flagValidationMessage, setFlagValidationMessage] = useState("");
+  const [flagConfirmationOpen, setFlagConfirmationOpen] = useState(false);
+  const [pendingFlag, setPendingFlag] = useState<FeatureFlag | null>(null);
   const [prompts, setPrompts] = useState<{ tddPrompt: string; refactoringPrompt: string; evaluateTDDPrompt: string }>({ tddPrompt: "", refactoringPrompt: "", evaluateTDDPrompt: "" });
   const [selectedPrompt, setSelectedPrompt] = useState<string>("tddPrompt");
   const [isEditing, setEditing] = useState(false);
   const getFlagsUseCase = new GetFeatureFlags();
   const updateFlagUseCase = new UpdateFeatureFlag();
+
   useEffect(() => {
     const fetchFlags = async () => {
       try {
@@ -51,7 +54,6 @@ const ConfigurationPage = () => {
       setLoading(true);
       const getPromptsUseCase = new GetPrompts();
       const promptsData = await getPromptsUseCase.execute();
-      
       setPrompts({
         tddPrompt: promptsData.tddPrompt,
         refactoringPrompt: promptsData.refactoringPrompt,
@@ -71,9 +73,7 @@ const ConfigurationPage = () => {
     setEditing(false);
   };
 
-  const handleEditPrompt = () => {
-    setEditing(true);
-  };
+  const handleEditPrompt = () => setEditing(true);
 
   const handleSavePrompt = async (newPrompt: string) => {
     try {
@@ -87,18 +87,14 @@ const ConfigurationPage = () => {
         updatePrompts.evaluateTDDPrompt
       );
       setPrompts(updatePrompts);
-      setNotification({
-        open: true,
-        message: "Prompt actualizado correctamente",
-        severity: "success"
-      });
+      setPromptValidationMessage("Prompt actualizado");
+      setPromptValidationIsError(false);
+      setPromptValidationOpen(true);
       setEditing(false);
     } catch (error) {
-      setNotification({
-        open: true,
-        message: "Error al actualizar el prompt",
-        severity: "error"
-      });
+      setPromptValidationMessage("Error al actualizar el prompt");
+      setPromptValidationIsError(true);
+      setPromptValidationOpen(true);
     } finally {
       setSaving(false);
     }
@@ -108,127 +104,178 @@ const ConfigurationPage = () => {
     setEditing(false);
     loadPrompts();
   };
-  const handleCloseNotification = () => {
-    setNotification({
-      ...notification,
-      open: false
-    });
-  };
-  const handleCheckboxChange = async (id: number, currentValue: boolean) => {
-    const confirmChange = window.confirm(
-      `¿Estás seguro de que quieres ${!currentValue ? "habilitar" : "deshabilitar"} esta funcionalidad?`
-    );
-    if (!confirmChange) return;
 
+  const handleClosePromptValidation = () => {
+    setPromptValidationOpen(false);
+    setPromptValidationMessage("");
+    setPromptValidationIsError(false);
+  };
+
+  const handleCheckboxChange = (flag: FeatureFlag) => {
+    setPendingFlag(flag);
+    setFlagConfirmationOpen(true);
+  };
+
+  const handleConfirmFlagChange = async () => {
+    if (!pendingFlag) return;
     try {
-      const updatedFlag = await updateFlagUseCase.execute(id, !currentValue);
-      setFlags((prevFlags) =>
-        prevFlags.map((flag) =>
-          flag.id === id ? updatedFlag : flag
-        )
+      const updatedFlag = await updateFlagUseCase.execute(
+        pendingFlag.id,
+        !pendingFlag.is_enabled
       );
+      setFlags((prevFlags) =>
+        prevFlags.map((flag) => (flag.id === pendingFlag.id ? updatedFlag : flag))
+      );
+      setFlagValidationMessage(pendingFlag.is_enabled ? "Se deshabilitó" : "Se habilitó");
+      setFlagValidationOpen(true);
+      setFlagConfirmationOpen(false);
+      setPendingFlag(null);
     } catch (err) {
       console.error("Error al actualizar el flag", err);
       setError("Error al actualizar el flag");
     }
   };
+
+  const handleCancelFlagChange = () => {
+    setFlagConfirmationOpen(false);
+    setPendingFlag(null);
+  };
+
+  const handleCloseFlagValidation = () => {
+    setFlagValidationOpen(false);
+    setFlagValidationMessage("");
+  };
+
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
-          Configuración de Prompts
+    <div className="page-container">
+      <section className="page-content">
+
+        <div className="page-header">
+          <div className="page-title">
+            <span>Ajustes</span>
+          </div>
+
+          <div className="page-title-line" />
         </div>
-      </Box>
 
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
-          <Typography color="error">{error}</Typography>
-        </Box>
-      ) : (
-        <>
-          <FormControl sx={{ mb: 2, width: '50%' }}>
-            <InputLabel id="prompt-select-label">Selecciona el tipo de Prompt</InputLabel>
-            <Select
-              labelId="prompt-select-label"
-              value={selectedPrompt}
-              label="Selecciona el tipo de Prompt"
-              onChange={handlePromptChange}
-            >
-              {PROMPT_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          <Box sx={{ mb: 4 }}>
+            <div className="settings-section-title">
+              Configuración de Prompts
+            </div>
+          </Box>
 
-          <EditPromptAI
-            initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
-            isEditing={isEditing}
-            onEdit={handleEditPrompt}
-            onSave={handleSavePrompt}
-            onCancel={handleCancelEdit}
+          {loading ? (
+            <div className="fullscreen-loading">
+              <CircularProgress />
+            </div>
+          ) : error ? (
+            <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, mb: 4 }}>
+              <Typography color="error">{error}</Typography>
+            </Box>
+          ) : (
+            <>
+              <div className="sorting-container">
+                <FormControl
+                  sx={{ mb: 2, width: '50%' }}
+                  size="small"
+                >
+                  <InputLabel id="prompt-select-label">Seleccionar tipo de Prompt</InputLabel>
+                  <Select
+                    labelId="prompt-select-label"
+                    value={selectedPrompt}
+                    label="Selecciona el tipo de Prompt"
+                    onChange={handlePromptChange}
+                    className="select-compact"
+                  >
+                    {PROMPT_OPTIONS.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+
+              <EditPromptAI
+                initialPrompt={prompts[selectedPrompt as keyof typeof prompts] ?? ""}
+                isEditing={isEditing}
+                onEdit={handleEditPrompt}
+                onSave={handleSavePrompt}
+                onCancel={handleCancelEdit}
+              />
+
+              {saving && (
+                <div className="saving-overlay">
+                  <CircularProgress color="primary" />
+                </div>
+              )}
+            </>
+          )}
+
+          <div className="settings-section-title--spaced">
+            Habilitación de Funcionalidades :
+          </div>
+
+          {error && <p className="settings-error-text">{error}</p>}
+
+          <div className="settings-flag-list">
+            {flags.map((flag) => (
+              <label key={flag.id} className="settings-flag-item">
+                <span className="settings-flag-name">{flag.feature_name}</span>
+                <input
+                  className="settings-flag-checkbox"
+                  type="checkbox"
+                  checked={flag.is_enabled}
+                  onChange={() => handleCheckboxChange(flag)}
+                />
+              </label>
+            ))}
+          </div>
+
+          <ConfirmationDialog
+            open={flagConfirmationOpen}
+            title={
+              pendingFlag?.is_enabled
+                ? "Confirmar deshabilitación"
+                : "Confirmar habilitación"
+            }
+            content={
+              pendingFlag ? (
+                <>
+                  {pendingFlag.is_enabled
+                    ? "Vas a deshabilitar"
+                    : "Vas a habilitar"}{" "}
+                  la funcionalidad <strong>{pendingFlag.feature_name}</strong>.
+                </>
+              ) : (
+                ""
+              )
+            }
+            cancelText="Cancelar"
+            deleteText={pendingFlag?.is_enabled ? "Deshabilitar" : "Habilitar"}
+            onCancel={handleCancelFlagChange}
+            onDelete={handleConfirmFlagChange}
+            confirmButtonClassName="btn-primary"
           />
 
-          <Snackbar 
-            open={notification.open} 
-            autoHideDuration={6000} 
-            onClose={handleCloseNotification}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          >
-            <Alert 
-              onClose={handleCloseNotification} 
-              severity={notification.severity}
-              sx={{ width: '100%' }}
-            >
-              {notification.message}
-            </Alert>
-          </Snackbar>
-          
-          {saving && (
-            <Box
-              sx={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1300,
-              }}
-            >
-              <CircularProgress color="primary" />
-            </Box>
-          )}
-        </>
-      )}
-       
-      <div style={{ fontWeight: 600, fontSize: "16px", margin: "1rem 0 0.5rem 0" }}>
-        Habilitación de Funcionalidades
-      </div> 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {flags.map((flag) => (
-        <div key={flag.id} style={{ marginBottom: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={flag.is_enabled}
-              onChange={() => handleCheckboxChange(flag.id, flag.is_enabled)}
-            />
-            {flag.feature_name}
-          </label>
-        </div>
-      ))}
-     
-    </Container>
-    
+          <ValidationDialog
+            open={flagValidationOpen}
+            title={flagValidationMessage}
+            closeText="Cerrar"
+            onClose={handleCloseFlagValidation}
+          />
+
+          <ValidationDialog
+            open={promptValidationOpen}
+            title={promptValidationMessage}
+            closeText="Cerrar"
+            onClose={handleClosePromptValidation}
+            isError={promptValidationIsError}
+          />
+        </Container>
+      </section>
+    </div>
   );
 };
 

@@ -28,16 +28,19 @@ const InvitationComponent: React.FC = () => {
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={generarLink}>
+      <Button 
+        onClick={generarLink}
+        className="btn-std btn-primary"
+      >
         Generar Link de Invitación
       </Button>
       {mostrarLink && (
         <div>
           <Input type="text" id="linkText" value={currentPage} readOnly />
           <Button
-            variant="contained"
-            color="primary"
+            className="btn-std btn-primary"
             onClick={copiarAlPortapapeles}
+            style={{ minWidth: '50px' }}
           >
             <FileCopyIcon />
           </Button>

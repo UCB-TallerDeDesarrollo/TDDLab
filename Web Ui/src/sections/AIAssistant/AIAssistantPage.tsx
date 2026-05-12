@@ -206,8 +206,7 @@ const AIAssistantPage = () => {
         {/* Botones al costado */}
         <Box display="flex" flexDirection="column" gap={2}>
           <Button
-            variant="contained"
-            color="primary"
+             className="btn-std btn-primary"
             onClick={() => handleApiCall("analiza")}
             disabled={loadingAction !== null}
             fullWidth
@@ -216,8 +215,7 @@ const AIAssistantPage = () => {
             {loadingAction === "analiza" ? <CircularProgress size={20} /> : " Analizar TDD"}
           </Button>
           <Button
-            variant="contained"
-            color="primary"
+            className="btn-std btn-primary"
             onClick={() => handleApiCall("refactoriza")}
             disabled={loadingAction !== null}
             fullWidth
@@ -226,8 +224,7 @@ const AIAssistantPage = () => {
             {loadingAction === "refactoriza" ? <CircularProgress size={20} /> : " Analizar Refactoring"}
           </Button>
           <Button
-            variant="contained"
-            color="primary"
+            className="btn-std btn-primary"
             onClick={() => handleApiCall("califica")}
             disabled={loadingAction !== null}
             fullWidth

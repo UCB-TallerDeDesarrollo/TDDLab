@@ -1,21 +1,19 @@
-import {
-  Button,
-  Box,
-  Drawer,
-  AppBar,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-
-import NavLateralMenu from "./components/LateralMenu";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Button, Box, Drawer, AppBar, IconButton, Toolbar } from "@mui/material";
 import { ReactElement, useState } from "react";
-import { useLocation, NavLink } from "react-router-dom";
-import WindowIcon from "@mui/icons-material/Window";
+import { useLocation, NavLink, useNavigate } from "react-router-dom"; 
+import MenuIcon from "@mui/icons-material/Menu";
+import NavLateralMenu from "./components/LateralMenu";
 import LoginComponent from "./components/loginComponent";
 
-type NavLink = {
+import { useGlobalState, setGlobalState } from "../../modules/User-Authentication/domain/authStates";
+import { handleGithubSignOut } from "../../modules/User-Authentication/application/signOutWithGithub";
+import { removeSessionCookie } from "../../modules/User-Authentication/application/deleteSessionCookie";
+
+import logoTddLab from "../../assets/logo-tddlab.svg";
+import "../../App.css";
+import "../MainMenu/styles/MainMenuStyles.css" 
+
+type NavLinkType = { 
   title: string;
   path: string;
   icon: ReactElement;
@@ -23,7 +21,7 @@ type NavLink = {
 };
 
 interface NavbarProps {
-  navArrayLinks: NavLink[];
+  navArrayLinks: NavLinkType[];
   userRole: string;
 }
 
@@ -32,87 +30,114 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
-  const activeButton = navArrayLinks.find(
-    (navLink) => navLink.path === location.pathname
-  )?.title;
+  const authData = useGlobalState("authData"); 
+
+  const isLanding = !authData[0].userEmail || authData[0].userEmail === "";
+
+  const isActive = (item: any) => {
+    const { pathname, search } = location;
+    const params = new URLSearchParams(search);
+    const source = params.get("source");
+
+    if (pathname === "/graph" || pathname === "/asistente-ia") {
+      if (item.path === "/assignments") return source === "assignment";
+      if (item.path === "/mis-practicas") return source === "practice";
+    }
+
+    if (item.path === "/assignments") {
+      return pathname.startsWith("/assignments") || pathname.startsWith("/assignment");
+    }
+
+    if (item.path === "/mis-practicas") {
+      return pathname.startsWith("/mis-practicas");
+    }
+
+    return pathname.startsWith(item.path);
+  };
+
+  const handleLogoutAction = async () => {
+    await handleGithubSignOut();
+    setGlobalState("authData", {
+      userid: -1,
+      userProfilePic: "",
+      userEmail: "",
+      usergroupid: -1,
+      userRole: "",
+    });
+    await removeSessionCookie();
+    localStorage.clear();
+    setOpen(false); 
+    navigate("/login");
+  };
 
   return (
-    <div style={{ marginTop: "100px" }}>
-      <AppBar position="fixed" sx={{ background: "#052845" }}>
-        <Toolbar
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "row" }}>
+    <div className={isLanding ? "" : "page-top-spacer"}>
+      <AppBar 
+        position="fixed" 
+        className={`main-navbar ${isLanding ? "navbar-landing" : ""}`} 
+        elevation={0}
+      >
+        <Toolbar className="navbar-toolbar">
+          <div className="navbar-brand-group">
             <IconButton
               color="inherit"
-              size="large"
               onClick={() => setOpen(true)}
-              sx={{ display: { xs: "flex", sm: "none" } }}
+              className="mobile-menu-btn" 
             >
               <MenuIcon />
             </IconButton>
-            <WindowIcon sx={{ marginRight: "6px", marginTop: "4px" }} />
-            <NavLink
-              to="/"
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                TDDLab
-              </Typography>
+            
+            <NavLink to={isLanding ? "/login" : "/assignments"} className="navbar-brand-link">
+              <img src={logoTddLab} alt="TDDLab Logo" className="navbar-logo" />
             </NavLink>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginRight: "30px",
-            }}
-          >
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {navArrayLinks.map(
-                (item) =>
-                  item.access.includes(userRole) && (
-                    <Button
-                      key={item.title}
-                      component={NavLink}
-                      to={item.path}
-                      sx={{
-                        borderBottom:
-                          activeButton === item.title
-                            ? "2px solid #fff"
-                            : "none",
-                        color: activeButton === item.title ? "#fff" : "#A9A9A9",
-                      }}
-                    >
-                      {item.title}
-                    </Button>
-                  )
+
+          <div className="navbar-actions-group">
+            <Box className="desktop-nav-links">
+              {!isLanding && navArrayLinks.map((item) =>
+                item.access.includes(userRole) && (
+                  <Button
+                    key={item.title}
+                    component={NavLink}
+                    to={item.path}
+                    className={`nav-link-btn ${isActive(item) ? "nav-link-active" : ""}`}
+                  >
+                    {item.title}
+                  </Button>
+                )
               )}
             </Box>
-            <LoginComponent></LoginComponent>
+            
+            <LoginComponent 
+              loginModalOpen={loginModalOpen} 
+              setLoginModalOpen={setLoginModalOpen} 
+            />
           </div>
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        open={open}
-        anchor="left"
-        onClose={() => setOpen(false)}
-        sx={{ display: { xs: "flex", sm: "none" } }}
-      >
-        <NavLateralMenu
-          navArrayLinks={navArrayLinks}
-          NavLink={NavLink}
-          setOpen={setOpen}
-        />
-      </Drawer>
+        <Drawer
+          open={open}
+          anchor="left"
+          onClose={() => setOpen(false)}
+          className="main-drawer"
+        >
+          <NavLateralMenu
+            navArrayLinks={navArrayLinks}
+            NavLink={NavLink}
+            setOpen={setOpen}
+            userEmail={authData[0].userEmail ?? ""} 
+            userRole={userRole}
+            onLogout={handleLogoutAction}
+            onLoginOpen={() => setLoginModalOpen(true)}
+          />
+        </Drawer>
+      
     </div>
   );
 }

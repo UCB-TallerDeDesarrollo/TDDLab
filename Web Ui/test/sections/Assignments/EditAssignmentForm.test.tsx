@@ -7,6 +7,7 @@ import { GroupDataObject } from "../../../src/modules/Groups/domain/GroupInterfa
 // Mock de las dependencias usando las mejores prácticas aprendidas
 const mockAssignmentsRepo = {
   getAssignmentById: jest.fn(),
+  getAssignmentsByGroupid: jest.fn(),
   updateAssignment: jest.fn(),
 };
 
@@ -94,6 +95,7 @@ describe("EditAssignmentDialog Component", () => {
     
     // Configurar mocks por defecto
     mockAssignmentsRepo.getAssignmentById.mockResolvedValue(mockAssignment);
+    mockAssignmentsRepo.getAssignmentsByGroupid.mockResolvedValue([mockAssignment]);
     mockGetGroups.getGroups.mockResolvedValue(mockGroups);
     mockUpdateAssignment.updateAssignment.mockResolvedValue(undefined);
   });
@@ -107,7 +109,7 @@ describe("EditAssignmentDialog Component", () => {
     renderEditDialog();
 
     await waitFor(() => {
-        expect(screen.getByText("Editar Tarea : Tarea Original")).toBeInTheDocument();
+        expect(screen.getByText("Editar Tarea: Tarea Original")).toBeInTheDocument();
         expect(screen.getByDisplayValue("Tarea Original")).toBeInTheDocument();
         expect(screen.getByDisplayValue("Descripción original")).toBeInTheDocument();
         expect(screen.getByText("Cancelar")).toBeInTheDocument();
@@ -186,6 +188,13 @@ describe("EditAssignmentDialog Component", () => {
     await waitFor(() => {
       expect(mockAssignmentsRepo.getAssignmentById).toHaveBeenCalledWith(1);
       expect(mockUpdateAssignment.updateAssignment).toHaveBeenCalledWith(1, expect.any(Object));
+      expect(screen.getByText("Tarea actualizada exitosamente")).toBeInTheDocument();
+    });
+
+    const closeButton = screen.getByText("Cerrar");
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
       expect(mockOnClose).toHaveBeenCalledTimes(1);
       expect(window.dispatchEvent).toHaveBeenCalledWith(expect.any(CustomEvent));
     });
@@ -282,10 +291,10 @@ describe("EditAssignmentDialog Component", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Error")).toBeInTheDocument();
+      expect(
+        screen.getByText(/Error: Límite de caracteres excedido|Error: Limite de caracteres excedido/i)
+      ).toBeInTheDocument();
     });
-    const errorMessage = screen.getByText(/Límite de caracteres|Limite de caracteres/i);
-  expect(errorMessage).toBeInTheDocument();
   });
 
   it("debería cerrar el diálogo de error", async () => {
@@ -304,7 +313,9 @@ describe("EditAssignmentDialog Component", () => {
     });
 
     await waitFor(() => {
-      expect(screen.queryByText("Error")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Error:|Error al actualizar|Límite de caracteres|Limite de caracteres/i)
+      ).not.toBeInTheDocument();
     });
   });
 

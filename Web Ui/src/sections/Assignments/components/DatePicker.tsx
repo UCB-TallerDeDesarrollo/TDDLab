@@ -44,7 +44,7 @@ const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
               <TextField
                 {...params}
                 fullWidth
-                style={{ width: "100%" }}
+                variant="outlined"
                 value={
                   dataForm.dateFrom
                     ? dayjs(dataForm.dateFrom).format("DD/MM/YYYY")
@@ -71,7 +71,7 @@ const Filter: React.FC<FilterProps> = ({ onUpdateDates }) => {
               <TextField
                 {...params}
                 fullWidth
-                style={{ width: "100%" }}
+                variant="outlined"
                 value={
                   dataForm.dateTo
                     ? dayjs(dataForm.dateTo).format("DD/MM/YYYY")

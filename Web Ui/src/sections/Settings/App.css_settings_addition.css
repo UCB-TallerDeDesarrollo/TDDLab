@@ -1,0 +1,44 @@
+.settings-section-title, 
+.settings-section-title--spaced {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--gray-700);
+}
+
+.settings-section-title--spaced {
+  margin: 2rem 0 1rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-table);
+}
+
+.settings-error-text {
+  color: var(--danger-color);
+  font-size: 14px;
+}
+
+.settings-flag-item {
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.settings-flag-item:hover {
+  background-color: var(--bg-readonly);
+}
+
+/* Overlay de guardado (mismo estilo que el login) */
+.saving-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--overlay-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+.prompt-input-readonly {
+  background-color: var(--bg-readonly) !important;
+  color: var(--gray-700) !important;
+}

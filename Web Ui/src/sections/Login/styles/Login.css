@@ -1,72 +1,318 @@
-/* Estilos para el contenedor principal */
-.login-container {
+/* ==========================================================================
+   LANDING PAGE WRAPPER
+   ========================================================================== */
+.landing-wrapper {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* ==========================================================================
+   HERO SECTION (Bloque 1 - Oscuro)
+   ========================================================================== */
+.hero-section {
+  background: linear-gradient(90deg, #001b36 45%, rgba(0, 27, 54, 0.75) 75%, rgba(0, 27, 54, 0.4) 100%), 
+              url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center right;
+  
+  min-height: 85vh; 
+  display: flex;
+  align-items: center;
+  padding: 95px 10% 40px 10%; 
+  color: var(--white);
+  margin-top: -30px;
+}
+
+.hero-content {
+  max-width: 750px;
   display: flex;
   flex-direction: column;
+  gap: 20px;
+}
+
+.hero-logo { 
+  width: 420px; 
+  height: auto;
+  filter: brightness(0) invert(1); 
+  margin-bottom: 10px;
+}
+
+.hero-description { 
+  font-size: 1.25rem;
+  line-height: 1.7; 
+  opacity: 0.95;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   INFO CARDS (Bloque 2 - Blanco)
+   ========================================================================== */
+.info-cards-container {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  padding: 90px 10%;
+  background-color: var(--white);
+}
+
+.info-card {
+  background-color: #002346;
+  color: var(--white);
+  padding: 45px 30px;
+  border-radius: 12px;
+  text-align: center;
+  flex: 1;
+  max-width: 360px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.icon-box {
+  background-color: var(--white);
+  width: 70px;
+  height: 70px;
+  border-radius: 14px;
+  display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  font-family: Arial, sans-serif;
 }
 
-/* Estilos para el encabezado */
-.app-header {
-  background-color: #333;
-  color: #fff;
-  padding: 20px;
-  width: 100%;
-  text-align: center;
-  top: 0;
-  position: absolute;
+.card-icon-svg {
+  color: #002346 !important;
+  font-size: 38px !important;
 }
 
-/* Estilos para el contenido de inicio de sesión */
-.login-content {
-  margin-top: 20px;
-  text-align: center;
+.info-card h3 {
+  font-size: 1.9rem !important;
+  margin-bottom: 15px;
+  font-weight: 700;
 }
 
-/* Estilos para el contenedor de botones */
-.login-buttons {
+.info-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* ==========================================================================
+   RECURSOS Y BENEFICIOS (Bloque 3 - Azul Marino)
+   ========================================================================== */
+.benefits-section {
+  background-color: #001b36;
+  color: var(--white);
+  padding: 80px 10%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 60px !important;
+  font-weight: 700 !important;
+  font-size: 3.2rem !important;
+}
+
+/* FILAS SUPERIORES COMPACTAS */
+.standard-row {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 40px;
+}
+
+.text-block { flex: 1; }
+.text-block h4 { font-size: 2.1rem !important; margin-bottom: 12px !important; }
+.text-block p { font-size: 1rem; line-height: 1.6; opacity: 0.85; }
+
+.img-block-small {
+  flex: 0 0 460px;
+  height: 200px;
+  border-radius: 18px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* EL MASTER COLLAGE MAESTRO */
+.master-collage-container {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;
+  gap: 60px;
+  margin-top: 60px;
+}
+
+.collage-gallery-side {
+  flex: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.grid-collage-3 {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 15px;
-  margin-top: 20px;
+  height: 200px;
 }
 
-/* Estilos para el botón de GitHub */
-.github-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #18fca4;
-  color: black;
-  border: none;
-  border-radius: 5px;
+.img-span-2 {
+  grid-row: 1 / span 2;
+  border-radius: 18px;
+  background-size: cover;
+}
+
+.img-single-small {
+  border-radius: 15px;
+  background-size: cover;
+}
+
+.grid-collage-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  height: 200px;
+}
+
+.img-half {
+  border-radius: 18px;
+  background-size: cover;
+}
+
+.text-gallery-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 15px 0;
+}
+
+.text-item-compact h4 { font-size: 2.1rem !important; margin-bottom: 15px; }
+.text-item-compact p { font-size: 1rem; line-height: 1.6; opacity: 0.85; }
+
+/* ==========================================================================
+   FOOTER REFINADO (PIXEL PERFECT)
+   ========================================================================== */
+.landing-footer {
+  background-color: #000b1a; /* Un tono aún más oscuro para el cierre */
+  color: #ffffff;
+  padding: 40px 0% 20px 0%;
+  width: 100%;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Columnas individuales */
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-logo {
+  width: 150px;
+  filter: brightness(0) invert(1);
+}
+
+.footer-text {
+  font-size: 0.95rem !important;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-decoration: none !important;
+  font-size: 0.95rem !important;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #1976d2 !important;
+}
+
+/* Columna Social */
+.social-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 5px !important;
+}
+
+.social-icons svg {
+  font-size: 28px !important;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 20px;
-}
-.login-Title {
-  font-size: 25px;
-  font-weight: 600;
-  color: black;
-}
-.github-button:hover {
-  background-color: #555;
-  color: white;
+  opacity: 0.8;
+  transition: all 0.3s ease;
 }
 
-/* Estilos para el botón de Google */
-.google-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.social-icons svg:hover {
+  opacity: 1;
+  color: #1976d2;
+  transform: translateY(-3px);
 }
 
-.google-button:hover {
-  background-color: #3367d6;
+/* Parte inferior y Copyright */
+.footer-bottom {
+  border-top: 1px white solid;
+  padding-top: 15px;
+  margin: 25px auto 0 auto;
+  width: 100%;
 }
+
+.footer-divider {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  margin-bottom: 30px !important;
+}
+
+.copyright {
+  display: block;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem !important;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .footer-column {
+    align-items: center;
+  }
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+  .info-cards-container { flex-direction: column; align-items: center; }
+  .standard-row, .master-collage-container { flex-direction: column; text-align: center; }
+  .img-block-small, .collage-gallery-side { width: 100%; max-width: 600px; }
+  .text-block p, .text-item-compact p { margin: 0 auto; }
+}
+
+/* Placeholders (Usa tus imágenes reales) */
+.placeholder-img-guides { background-image: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600'); }
+.placeholder-img-tutorials { background-image: url('https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=600'); }
+.placeholder-img-collab-1 { background-image: url('https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600'); }
+.placeholder-img-collab-2 { background-image: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600'); }
+.placeholder-img-collab-3 { background-image: url('https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=400'); }
+.placeholder-img-support-1 { background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600'); }
+.placeholder-img-support-2 { background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600'); }

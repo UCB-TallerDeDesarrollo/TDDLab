@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Button, TextField } from "@mui/material";
+import "../../../App.css"; 
 
 interface EditPromptAIProps {
   initialPrompt: string;
@@ -25,47 +26,63 @@ const EditPromptAI = ({
   const handleClear = () => setValue("");
 
   return (
-    <Box sx={{ mt: 4, mb: 8, p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+    <Box sx={{ mt: 4, mb: 8 }}>
       {!isEditing ? (
         <>
-          <TextField
-            value={initialPrompt}
-            multiline
-            fullWidth
-            InputProps={{
-              readOnly: true,
-              style: { background: "#f9f9f9" }
-            }}
-            variant="outlined"
-            minRows={8} 
-            maxRows={16}
-          />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
-            <Button variant="contained" onClick={onEdit}>
+          <Box sx={{ p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+            <TextField
+              value={initialPrompt}
+              multiline
+              fullWidth
+              InputProps={{
+                readOnly: true,
+                inputProps: { className: "prompt-input-readonly" }
+              }}
+              variant="outlined"
+              minRows={8}
+              maxRows={16}
+            />
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
+            <Button 
+              className="btn-std btn-primary" 
+              onClick={onEdit}
+            >
               Editar Prompt
             </Button>
           </Box>
         </>
       ) : (
         <>
-          <TextField
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            multiline
-            fullWidth
-            variant="outlined"
-            minRows={8} 
-            maxRows={16}
-            autoFocus
-          />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
-            <Button variant="contained" color="primary" onClick={() => onSave(value)}>
+          <Box sx={{ p: 2, background: "#fff", borderRadius: 2, boxShadow: 1 }}>
+            <TextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              multiline
+              fullWidth
+              variant="outlined"
+              minRows={8}
+              maxRows={16}
+              autoFocus
+            />
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 4 }}>
+            <Button 
+              className="btn-std btn-primary" 
+              onClick={() => onSave(value)}
+            >
               Guardar
             </Button>
-            <Button variant="contained" color="primary" onClick={onCancel}>
+            <Button 
+              className="btn-std btn-primary" 
+              onClick={onCancel}
+            >
               Cancelar
             </Button>
-            <Button variant="contained" color="primary" onClick={handleClear}>
+            <Button 
+              className="btn-std btn-primary" 
+              onClick={handleClear}
+            >
               Limpiar
             </Button>
           </Box>
