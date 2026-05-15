@@ -5,15 +5,14 @@ import {
   ListItemIcon,
   ListItemButton,
   ListItemText,
-  Typography,
 } from "@mui/material";
-import { ReactElement, Dispatch, SetStateAction } from "react";
-import LoginIcon from "@mui/icons-material/Login";
+import { Dispatch, SetStateAction } from "react";
+import { IconifyIcon } from "../../../sections/Shared/Components";
 
 interface NavItem {
   title: string;
   path: string;
-  icon: ReactElement;
+  icon: string;
 }
 interface NavLateralMenuProps {
   navArrayLinks: NavItem[];
@@ -30,7 +29,9 @@ export default function NavLateralMenu({
     <Box sx={{ width: 250 }}>
       <nav>
         <List>
-          <Typography sx={{ marginLeft: "14px" }}>TDDLab</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', ml: '14px', mt: 2, mb: 1 }}>
+            <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "32px", width: "auto" }} />
+          </Box>
 
           {navArrayLinks.map((item) => (
             <ListItem disablePadding key={item.title}>
@@ -39,7 +40,9 @@ export default function NavLateralMenu({
                 to={item.path}
                 onClick={() => setOpen(false)}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemIcon>
+                  <IconifyIcon icon={item.icon} color="primary" hoverColor="#1565c0" />
+                </ListItemIcon>
                 <ListItemText>{item.title}</ListItemText>
               </ListItemButton>
             </ListItem>
@@ -51,7 +54,7 @@ export default function NavLateralMenu({
               onClick={() => setOpen(false)}
             >
               <ListItemIcon>
-                <LoginIcon />
+                <IconifyIcon icon="mdi:login" color="primary" hoverColor="#1565c0" />
               </ListItemIcon>
               <ListItemText>Iniciar sesión</ListItemText>
             </ListItemButton>

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import {
   Dialog,
@@ -22,6 +22,7 @@ import GroupsRepository from "../../../modules/Groups/repository/GroupsRepositor
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import DescriptionIcon from '@mui/icons-material/Description';
 
 // Componente ValidationDialog
 interface ValidationDialogProps {
@@ -47,10 +48,7 @@ const ValidationDialog = ({
           alignItems: 'center', 
           gap: 1.5,
           color: isError ? '#d32f2f' : '#2e7d32',
-          fontSize: '1rem',
-          fontWeight: 400,
           py: 2,
-          fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
         }}
       >
         {isError ? (
@@ -63,10 +61,9 @@ const ValidationDialog = ({
       <DialogActions sx={{ pb: 2, pr: 2 }}>
         <Button 
           onClick={onClose}
-          style={{ 
+          sx={{
             color: isError ? '#d32f2f' : '#2e7d32',
             textTransform: 'none',
-            fontSize: '0.875rem'
           }}
         >
           {closeText}
@@ -99,7 +96,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     comment: "",
     groupid: groupid,
   });
-  const isCreateButtonClicked = useRef(false);
 
   const handleSaveClick = async () => {
     setSave(true);
@@ -107,7 +103,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       return;
     }
 
-    isCreateButtonClicked.current = true;
     const assignmentsRepository = new AssignmentsRepository();
     const createAssignments = new CreateAssignments(assignmentsRepository);
     
@@ -136,7 +131,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       setValidationDialogOpen(true);
     } catch (error) {
       if (error instanceof Error) {
-        // Verifica si el mensaje del backend menciona el límite de caracteres
         if (error.message.includes("Limite de caracteres excedido")) {
           setValidationMessage("Error: El título no puede tener más de 50 caracteres.");
         } else {
@@ -248,7 +242,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8rem" }}>Crear tarea</DialogTitle>
+          <DialogTitle>Crear tarea</DialogTitle>
           <DialogContent>
             <section className="mb-4">
               <FormControl fullWidth variant="outlined" margin="normal">
@@ -273,18 +267,23 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
             </section>
             
             <TextField
-              error={save && !assignmentData.title.trim()}
-              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
-              autoFocus
-              margin="dense"
-              id="assignment-title"
-              name="assignmentTitle"
-              label="Nombre de la Tarea*"
-              type="text"
+              id="title"
+              label={
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  <DescriptionIcon sx={{ mr: 1 }} />
+                  Título de la tarea
+                </span>
+              }
+              variant="outlined"
               fullWidth
               value={assignmentData.title}
               onChange={(e) => handleInputChange(e, "title")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              margin="normal"
+              InputProps={{
+                style: { borderRadius: "10px" },
+              }}
+              error={save && !assignmentData.title.trim()}
+              helperText={save && !assignmentData.title.trim() ? "El título es requerido" : ""}
             />
             
             <TextField
@@ -298,7 +297,6 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
               fullWidth
               value={assignmentData.description}
               onChange={(e) => handleInputChange(e, "description")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
             />
             
             <section className="mt-4">
@@ -310,18 +308,31 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
           
           <DialogActions>
             <Button
+              variant="contained"
+              color="error"
               onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
+              sx={{
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
+                textTransform: "none",
+              }}
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSaveClick}
+              variant="contained"
               color="primary"
-              style={{ textTransform: "none" }}
-              disabled={formInvalid()}
+              onClick={handleSaveClick}
+              sx={{
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
+                textTransform: "none",
+              }}
+              disabled={formInvalid() || save}
             >
-              Crear
+              {save ? "Creando..." : "Crear"}
             </Button>
           </DialogActions>
         </>

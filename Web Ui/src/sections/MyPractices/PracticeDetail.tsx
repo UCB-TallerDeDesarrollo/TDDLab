@@ -23,6 +23,7 @@ import { GetPracticeSubmissionByUserandPracticeSubmissionId } from "../../module
 import { GetPracticeById } from "../../modules/Practices/application/GetPracticeById.ts";
 import { formatDate } from "../../utils/dateUtils.ts";
 import { handleRedirectStudent } from "../Shared/handlers.ts";
+import { typographyVariants } from "../../styles/typography";
 
 interface PracticeDetailProps {
   title: string;
@@ -30,6 +31,17 @@ interface PracticeDetailProps {
 }
 
 const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
+  const actionButtonStyle = {
+    textTransform: "none",
+    ...typographyVariants.paragraphMedium,
+    marginRight: "8px",
+  };
+
+  const detailTextStyle = {
+    ...typographyVariants.paragraphBig,
+    lineHeight: "1.8",
+  };
+
   const [practice, setPractice] = useState<PracticeDetailProps | null>(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const { id } = useParams();
@@ -246,7 +258,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               <Typography
                 variant="h5"
                 component="div"
-                style={{ fontSize: "30px", lineHeight: "3.8" }}
+                style={{ ...typographyVariants.h3, lineHeight: "3.8" }}
               >
                 {practice.title}
               </Typography>
@@ -264,7 +276,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={detailTextStyle}
                 >
                   <strong>Fecha de Creación:</strong>{" "}
                   {formatDate(datePrac?.toString() ?? "")}
@@ -282,7 +294,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  style={{ fontSize: "16px", lineHeight: "1.8" }}
+                  style={detailTextStyle}
                 >
                   <strong>Enlace:</strong>
                   <a
@@ -301,11 +313,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               variant="contained"
               disabled={submissionStatus[userid.toString()] || false}
               onClick={handleOpenLinkDialog}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
+              style={actionButtonStyle}
             >
               Iniciar Practica
             </Button>
@@ -324,11 +332,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               }}
               color="primary"
               disabled={!practiceSubmissions[0]?.repository_link}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
+              style={actionButtonStyle}
             >
               Ver gráfica
             </Button>
@@ -344,11 +348,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ userid }) => {
               variant="contained"
               disabled={isTaskInProgress}
               onClick={handleOpenCommentDialog}
-              style={{
-                textTransform: "none",
-                fontSize: "15px",
-                marginRight: "8px",
-              }}
+              style={actionButtonStyle}
             >
               Finalizar Practica
             </Button>

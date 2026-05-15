@@ -2,27 +2,48 @@
 .login-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-family: Arial, sans-serif;
+  min-height: 100vh;
 }
 
 /* Estilos para el encabezado */
 .app-header {
   background-color: #333;
   color: #fff;
-  padding: 20px;
+  padding: 16px 20px;
   width: 100%;
-  text-align: center;
-  top: 0;
-  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Logo con clase propia para permitir override en media query */
+.app-header-logo {
+  height: 72px;
+  width: auto;
 }
 
 /* Estilos para el contenido de inicio de sesión */
 .login-content {
-  margin-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
   text-align: center;
+  max-width: 420px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* Título principal de login */
+.login-Title {
+  color: black;
+  font-family: "Afacad", "Segoe UI", sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
 }
 
 /* Estilos para el contenedor de botones */
@@ -31,42 +52,61 @@
   flex-direction: column;
   gap: 15px;
   margin-top: 20px;
+  width: 100%;
 }
 
 /* Estilos para el botón de GitHub */
 .github-button {
   padding: 10px 20px;
-  font-size: 16px;
+  min-height: 44px;
+  width: 100%;
   background-color: #18fca4;
   color: black;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 20px;
+  font-family: "Afacad", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
 }
-.login-Title {
-  font-size: 25px;
-  font-weight: 600;
-  color: black;
-}
+
 .github-button:hover {
-  background-color: #555;
+  background-color: #0d1b2a;
   color: white;
 }
 
 /* Estilos para el botón de Google */
 .google-button {
   padding: 10px 20px;
-  font-size: 16px;
+  min-height: 44px;
+  width: 100%;
   background-color: #4285f4;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-family: "Afacad", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .google-button:hover {
   background-color: #3367d6;
+}
+
+@media (max-width: 767px) {
+  .app-header-logo {
+    height: 48px;
+  }
+
+  .login-Title {
+    font-size: 18px;
+  }
+
+  .github-button,
+  .google-button {
+    font-size: 16px;
+  }
 }

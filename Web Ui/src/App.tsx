@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Box, useMediaQuery } from "@mui/material";
 import GestionTareas from "./sections/Assignments/AssignmentsPage";
 import AssignmentDetail from "./sections/Assignments/AssignmentDetail";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter"; //Revisar el cambio por puerto
@@ -7,11 +8,6 @@ import Login from "./sections/Login/LoginPage";
 import Groups from "./sections/Groups/GroupsPage";
 import User from "./sections/User/UserPage";
 import MainMenu from "./sections/MainMenu/MainMenu";
-import GroupsIcon from "@mui/icons-material/Groups";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PersonIcon from "@mui/icons-material/Person";
-import SettingsIcon from "@mui/icons-material/Settings"; 
-import { NoteAdd } from "@mui/icons-material";
 import InvitationPage from "./sections/GroupInvitation/InvitationPage";
 import { useEffect } from "react";
 import {
@@ -26,45 +22,45 @@ import MyPracticesPage from "./sections/MyPractices/MyPracticesPage";
 import PracticeDetail from "./sections/MyPractices/PracticeDetail";
 import AIAssistantPage from "./sections/AIAssistant/AIAssistantPage";
 import SettingsPage from "./sections/Settings/SettingsPage";
-import {
-  CircularProgress,
-} from "@mui/material";
+import { FullScreenLoader } from "./components/FullScreenLoader";
 
 const navArrayLinks = [
   {
     title: "Grupos",
     path: "/groups",
-    icon: <GroupsIcon />,
+    icon: "mdi:account-multiple",
     access: ["admin", "teacher"],
   },
   {
     title: "Tareas",
     path: "/",
-    icon: <DescriptionIcon />,
+    icon: "mdi:document-text",
     access: ["admin", "student", "teacher"],
   },
   {
     title: "Mis Practicas",
     path: "/mis-practicas",
-    icon: <NoteAdd />,
+    icon: "mdi:note-plus",
     access: ["admin", "teacher", "student"],
   },
   {
     title: "Usuarios",
     path: "/user",
-    icon: <PersonIcon />,
+    icon: "mdi:account",
     access: ["admin", "teacher"],
   },
   {
     title: "Configuraciones",
     path: "/configuraciones",
-    icon: <SettingsIcon />,
+    icon: "mdi:cog",
     access: ["admin", "teacher"], 
   },
 ];
 
 function App() {
   const authData = useGlobalState("authData")[0];
+  const isMobile = useMediaQuery("(max-width:767px)");
+  const hasSidebarLayout = (authData.userRole === "teacher" || authData.userRole === "student") && !isMobile;
 useEffect(() => {
   getSessionCookie().then((storedSession) => {
     const savedImage = localStorage.getItem("userProfilePic") || "";
@@ -88,37 +84,37 @@ useEffect(() => {
   });
 }, []);
   if (authData.userid === undefined) {
-     return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <CircularProgress />
-    </div>
-  );
+    return <FullScreenLoader isLoading={true} />;
   }
   return (
     <Router>
-      {authData.userEmail != "" && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
-      )}
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRouteComponent>
-              <GestionTareas
-                userRole={authData.userRole ?? ""}
-                userGroupid={authData.usergroupid ?? -1}
-              />
-            </ProtectedRouteComponent>
-          }
-        />
+      <Box sx={{ display: "flex" }}>
+        {authData.userEmail != "" && authData.userRole !== undefined && (
+          <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+        )}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            width: hasSidebarLayout ? "calc(100% - 280px)" : "100%",
+            marginLeft: hasSidebarLayout ? "280px" : 0,
+            paddingTop: authData.userEmail === "" ? 0 : (authData.userRole === "teacher" || authData.userRole === "student") ? "120px" : "100px",
+            overflowX: "hidden"
+          }}
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRouteComponent>
+                  <GestionTareas
+                    userRole={authData.userRole ?? ""}
+                    userGroupid={authData.usergroupid ?? -1}
+                    userid={authData.userid ?? -1}
+                  />
+                </ProtectedRouteComponent>
+              }
+            />
         <Route
           path="/assignment/:id"
           element={
@@ -216,6 +212,8 @@ useEffect(() => {
        /> 
 
       </Routes>
+        </Box>
+      </Box>
     </Router>
   );
 }

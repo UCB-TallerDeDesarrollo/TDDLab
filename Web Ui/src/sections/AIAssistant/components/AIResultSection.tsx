@@ -1,4 +1,4 @@
-import { Typography, Button } from '@mui/material';
+import { Typography, Button, Box } from '@mui/material';
 
 const AIResultSection = ({
   title,
@@ -13,41 +13,43 @@ const AIResultSection = ({
   onAction: () => void;
   buttonText: string;
 }) => (
-  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-    <div
-      style={{
+  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Box
+      sx={{
         border: '2px solid #b0b0b0',
         borderRadius: '8px',
         backgroundColor: '#f9f9f9',
         width: '100%',
-        height: '60vh',
+        height: { xs: '40vh', sm: '50vh', md: '60vh' },
         overflowY: 'scroll',
         overflowX: 'hidden',
         padding: '10px',
         marginBottom: '10px',
+        boxSizing: 'border-box',
       }}
     >
       <Typography
         variant="body2"
         color="text.secondary"
-        style={{ fontSize: "16px", lineHeight: "1.8", whiteSpace: 'pre-wrap' }}
+        sx={{ fontSize: { xs: '14px', md: '16px' }, lineHeight: '1.8', whiteSpace: 'pre-wrap' }}
       >
-        {loading ? title : response }
+        {loading ? title : response}
       </Typography>
-    </div>
+    </Box>
     <Button
       variant="contained"
       color="primary"
-      style={{
+      sx={{
         textTransform: 'none',
         fontSize: '15px',
+        minHeight: '44px',
       }}
       onClick={onAction}
       disabled={loading}
     >
       {buttonText}
     </Button>
-  </div>
+  </Box>
 );
 
 export default AIResultSection;

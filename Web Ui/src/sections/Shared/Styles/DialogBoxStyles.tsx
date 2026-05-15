@@ -1,16 +1,16 @@
 import { CSSProperties } from "react";
+import { typographyVariants } from "../../../styles/typography";
 
 export const dialogContentStyle: CSSProperties = {
-  fontSize: "15px",
+  ...typographyVariants.paragraphMedium,
 };
 
 export const titleStyle: CSSProperties = {
-  fontSize: "1rem",
-  fontWeight: "bold",
+  ...typographyVariants.h5,
 };
 
 export const titleStyle2: CSSProperties = {
-  fontSize: "15.5px",
+  ...typographyVariants.paragraphMedium,
 };
 
 export const primaryButtonStyle: CSSProperties = {

@@ -3,12 +3,11 @@ import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInter
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { IconifyIcon } from "../Shared/Components";
 import EditPracticeForm from "./EditPracticeForm";
 import Tooltip from "@mui/material/Tooltip";
 import { getStatusIcon, getStatusTooltipPractice } from "../Shared/statusHelpers";
+import { typographyVariants } from "../../styles/typography";
 
 interface PracticeProps {
   practice: PracticeDataObject;
@@ -45,7 +44,7 @@ const Practice: React.FC<PracticeProps> = ({
     >
       <TableCell
         sx={{
-          fontSize: "16px",
+          ...typographyVariants.paragraphMedium,
           padding: "16px",
           verticalAlign: "middle",
           maxWidth: "600px",
@@ -78,8 +77,18 @@ const Practice: React.FC<PracticeProps> = ({
               onClick={() => handleClickDetail(index)}
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
-              <VisibilityIcon />
+              <IconifyIcon icon="mdi:eye" color="primary" hoverColor="#1565c0" />
             </IconButton>
           </Tooltip>
           {isEditFormOpen ? (
@@ -91,8 +100,21 @@ const Practice: React.FC<PracticeProps> = ({
             />
           ) : (
             <Tooltip title="Editar practica" arrow>
-              <IconButton aria-label="edit" onClick={handleEditClick}>
-                <EditIcon />
+              <IconButton 
+                aria-label="edit" 
+                onClick={handleEditClick}
+                sx={{
+                  transition: "all 0.175s ease-out",
+                  "&:hover": {
+                    filter: "brightness(0.9)",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  },
+                  "&:active": {
+                    transform: "scale(0.97)",
+                  },
+                }}
+              >
+                <IconifyIcon icon="mdi:pencil" color="primary" hoverColor="#1565c0" />
               </IconButton>
             </Tooltip>
           )}
@@ -102,8 +124,18 @@ const Practice: React.FC<PracticeProps> = ({
               onClick={() => handleClickDelete(index)}
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
-              <DeleteIcon />
+              <IconifyIcon icon="mdi:trash-can" color="error" hoverColor="#d32f2f" />
             </IconButton>
           </Tooltip>
 
@@ -112,6 +144,16 @@ const Practice: React.FC<PracticeProps> = ({
               aria-label="status"
               onMouseEnter={() => handleRowHover(index)}
               onMouseLeave={() => handleRowHover(null)}
+              sx={{
+                transition: "all 0.175s ease-out",
+                "&:hover": {
+                  filter: "brightness(0.9)",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
+              }}
             >
               {statusIcon}
             </IconButton>

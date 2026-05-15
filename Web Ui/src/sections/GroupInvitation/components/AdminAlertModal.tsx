@@ -1,5 +1,5 @@
 import { Dialog, Typography, Button, Box, Zoom } from "@mui/material";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import { IconifyIcon } from "../../Shared/Components";
 import { useNavigate } from "react-router-dom";
 
 interface AdminAlertModalProps {
@@ -44,7 +44,7 @@ export default function AdminAlertModal({ open }: AdminAlertModalProps) {
         justifyContent="center"
         gap={2}
       >
-        <WarningAmberRoundedIcon sx={{ fontSize: 70, color: "#1976D2" }} />
+        <IconifyIcon icon="mdi:alert" width={70} height={70} color="#1976D2" hoverColor="#1565c0" />
 
         <Typography
           variant="h5"

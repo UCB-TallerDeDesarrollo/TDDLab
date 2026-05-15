@@ -12,6 +12,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useGitHubLinkValidation } from "./GitValidationHook";
 import { Typography } from "@mui/material";
+import { typographyVariants } from "../../../styles/typography";
 
 interface CommentDialogProps {
   open: boolean;
@@ -84,13 +85,12 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   const dialogContentStyle = {
-    fontSize: "15px",
+    ...typographyVariants.paragraphMedium,
     backgroundColor: "transparent",
   };
 
   const titleStyle = {
-    fontSize: "1.1rem",
-    fontWeight: "bold",
+    ...typographyVariants.h5,
   };
 
   const renderEndAdornmentEdit = () => (

@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import {
   setGlobalState,
@@ -41,22 +41,40 @@ export default function LoginComponent() {
   };
 
   return (
-    <React.Fragment>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
       {!authData[0].userEmail && (
         <Button
           onClick={handleLogin}
           variant="contained"
-          sx={{ marginLeft: "18px" }}
+          sx={{ 
+            transition: "all 0.175s ease-out",
+            "&:hover": {
+              filter: "brightness(0.9)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            "&:active": {
+              transform: "scale(0.97)",
+            },
+          }}
         >
           Iniciar sesión
         </Button>
       )}
       {authData[0].userEmail && (
-        <React.Fragment>
+        <>
           <Button
             onClick={handleLogout}
             variant="contained"
-            sx={{ marginLeft: "18px" }}
+            sx={{ 
+              transition: "all 0.175s ease-out",
+              "&:hover": {
+                filter: "brightness(0.9)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              },
+              "&:active": {
+                transform: "scale(0.97)",
+              },
+            }}
           >
             Cerrar Sesion
           </Button>
@@ -65,8 +83,8 @@ export default function LoginComponent() {
             alt="Profile Picture"
             className="profilePicture"
           />
-        </React.Fragment>
+        </>
       )}
-    </React.Fragment>
+    </Box>
   );
 }

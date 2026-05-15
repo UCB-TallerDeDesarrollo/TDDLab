@@ -3,8 +3,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import DescriptionIcon from '@mui/icons-material/Description';
 import {
-   Box,
    TextField,
    MenuItem,
    Select,
@@ -20,6 +20,7 @@ import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { UpdateAssignment } from "../../../modules/Assignments/application/UpdateAssignment";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
+import { typographyVariants } from "../../../styles/typography";
 
 interface EditAssignmentDialogProps {
   readonly assignmentId: number;
@@ -122,21 +123,21 @@ function EditAssignmentDialog({
     <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Editar Tarea : {currentTitle}</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "grid", gap: 2 }}>
+        <div className="flex-column gap-3 mt-4 mb-2">
           <TextField
             id="titulo"
-            label="Título"
+            label={
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <DescriptionIcon sx={{ mr: 1 }} />
+                Título de la tarea
+              </span>
+            }
             variant="outlined"
-            size="small"
-            required
-            fullWidth 
-            onChange={(e) => setTitle(e.target.value)}
             defaultValue={currentTitle}
-            sx={{
-              marginTop: 2, 
-              "& .MuiInputBase-input": {
-                paddingTop: "14px",
-              },
+            onChange={(e) => setTitle(e.target.value)}
+            margin="normal"
+            InputProps={{
+              style: { borderRadius: "10px" },
             }}
           />
           <TextField
@@ -180,27 +181,59 @@ function EditAssignmentDialog({
           }
 
           <section>{/* The rest of your components go here */}</section>
-        </Box>
+        </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
         <Button
-          variant="contained"
-          style={{
-            textTransform: "none",
-          }}
-          onClick={handleSaveChanges} // Asocia la función handleSaveChanges al evento onClick del botón
-        >
-          Guardar Cambios
-        </Button>
+            variant="contained"
+            color="error"
+            onClick={onClose}
+            sx={{
+              flex: 1,
+              borderRadius: "10px",
+              paddingY: "10px",
+              textTransform: "none",
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSaveChanges}
+            sx={{
+              flex: 1,
+              borderRadius: "10px",
+              paddingY: "10px",
+              textTransform: "none",
+            }}
+          >
+            Guardar Cambios
+          </Button>
       </DialogActions>
       <Dialog open={errorOpen} onClose={() => setErrorOpen(false)}>
-        <DialogTitle style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '18px' }}>Error</DialogTitle>
+        <DialogTitle style={{ color: '#dc3545' }}>Error</DialogTitle>
         <DialogContent>
-          <p style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>{errorMessage}</p>
+          <p style={{ color: '#dc3545', ...typographyVariants.paragraphBig, textAlign: 'center' }}>{errorMessage}</p>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="error" onClick={() => setErrorOpen(false)}>Cerrar</Button>
+          <Button 
+            variant="contained" 
+            color="error" 
+            onClick={() => setErrorOpen(false)}
+            sx={{
+              transition: "all 0.175s ease-out",
+              "&:hover": {
+                filter: "brightness(0.9)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              },
+              "&:active": {
+                transform: "scale(0.97)",
+              },
+            }}
+          >
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
     </Dialog>

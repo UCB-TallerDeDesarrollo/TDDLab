@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CircularProgress, Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Container,
-  Button,
-  SelectChangeEvent } from "@mui/material";
+import { 
+  Box, 
+  Container, 
+  Button, 
+  Grid, 
+  Divider,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
+import { FullScreenLoader } from "../../../components/FullScreenLoader";
 import AssignmentsRepository from "../../../modules/Assignments/repository/AssignmentsRepository";
 
-import { styled } from "@mui/system";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
 import AddIcon from "@mui/icons-material/Add";
 import { DeleteAssignment } from "../../../modules/Assignments/application/DeleteAssignment";
@@ -23,45 +24,33 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
-});
-
-const CustomTableCell1 = styled(TableCell)({
-  width: "80%",
-});
+import { typographyVariants } from "../../../styles/typography";
 
 
 
-const LoadingContainer = styled("div")({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "100vh",
-});
+
+
 
 interface AssignmentsProps {
   ShowForm: () => void;
   userRole: string;
-  userGroupid: number | number[] ;
+  userGroupid: number | number[];
+  userid: number;
   onGroupChange: (groupId: number) => void;
 }
 
 function Assignments({
-                       ShowForm: showForm,
-                       userRole,
-                       userGroupid,
-                       onGroupChange,
-                     }: Readonly<AssignmentsProps>) {
+  ShowForm: showForm,
+  userRole,
+  userGroupid,
+  onGroupChange,
+}: Readonly<AssignmentsProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<number>(0);
   const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<
-      number | null
+    number | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [, setDeleteLoading] = useState(false);
@@ -80,8 +69,8 @@ function Assignments({
   const [authData, setAuthData] = useGlobalState("authData");
 
   const orderAssignments = (
-      assignmentsArray: AssignmentDataObject[],
-      selectedSorting: string
+    assignmentsArray: AssignmentDataObject[],
+    selectedSorting: string
   ) => {
     if (assignmentsArray.length == 0) {
       return;
@@ -108,10 +97,10 @@ function Assignments({
         if (Array.isArray(studentGroups)) {
           allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
         }
-        else{
+        else {
           allGroups = await Promise.all([getGroups.getGroupById(studentGroups)]);
         }
-      } else if(localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
+      } else if (localStorage.getItem('userGroups') === "[0]") { // Si el usuario se registro en un nuevo grupo
         const studentGroups = await getGroups.getGroupsByUserId(authData.userid ?? -1);
         localStorage.setItem('userGroups', JSON.stringify(studentGroups));
         allGroups = await Promise.all(studentGroups.map((group) => getGroups.getGroupById(group)));
@@ -127,7 +116,7 @@ function Assignments({
       allGroups = await getGroups.getGroups();
     }
 
-    if(selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
+    if (selectedGroup === 0 && allGroups.length > 0 && !isLoading) {
       await loadAssignmentsByGroupId(allGroups[0].id);
     }
 
@@ -136,49 +125,49 @@ function Assignments({
   }
 
   const fetchData = async () => {
-  try {
-    const allGroups = await getUserGroups();
-    setGroupList(allGroups);
-
-    const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
-    const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
-
-    const savedSelectedGroup = localStorage.getItem("selectedGroup");
-    const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
-    const groupIdAuth = authData?.usergroupid ?? null;
-
-    let firstUserGroup: number | null = null;
     try {
-      const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
-      if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
-        firstUserGroup = storedUserGroups[0];
+      const allGroups = await getUserGroups();
+      setGroupList(allGroups);
+
+      const groupIdFromURL = new URLSearchParams(globalThis.location.search).get("groupId");
+      const groupIdUrl = groupIdFromURL ? Number(groupIdFromURL) : null;
+
+      const savedSelectedGroup = localStorage.getItem("selectedGroup");
+      const groupIdLocal = savedSelectedGroup ? Number(savedSelectedGroup) : null;
+      const groupIdAuth = authData?.usergroupid ?? null;
+
+      let firstUserGroup: number | null = null;
+      try {
+        const storedUserGroups = JSON.parse(localStorage.getItem("userGroups") || "[]");
+        if (Array.isArray(storedUserGroups) && storedUserGroups.length > 0) {
+          firstUserGroup = storedUserGroups[0];
+        }
+      } catch { }
+
+      const finalGroupId =
+        groupIdUrl ||
+        groupIdLocal ||
+        groupIdAuth ||
+        firstUserGroup ||
+        allGroups?.[0]?.id ||
+        null;
+
+      if (finalGroupId) {
+        await loadAssignmentsByGroupId(finalGroupId);
+      } else {
+        setSelectedGroup(0);
+        setAssignments([]);
       }
-    } catch {}
-
-    const finalGroupId =
-      groupIdUrl ||
-      groupIdLocal ||
-      groupIdAuth ||
-      firstUserGroup ||
-      allGroups?.[0]?.id ||
-      null;
-
-    if (finalGroupId) {
-      await loadAssignmentsByGroupId(finalGroupId);
-    } else {
-      setSelectedGroup(0);
-      setAssignments([]);
+    } catch (error) {
+      console.error("Error en fetchData:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error en fetchData:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-useEffect(() => {
-  fetchData();
-}, [location]);
+  useEffect(() => {
+    fetchData();
+  }, [location]);
 
   // Refrescar lista si alguna edición avisa globalmente
   useEffect(() => {
@@ -254,11 +243,12 @@ useEffect(() => {
   };
 
   const filteredAssignments = selectedGroup
-      ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
-      : assignments;
+    ? assignments.filter((assignment) => assignment.groupid === selectedGroup)
+    : assignments;
 
   const handleClickDetail = (index: number) => {
-    navigate(`/assignment/${filteredAssignments[index].id}`);
+    const assignmentId = filteredAssignments[index].id;
+    navigate(`/assignment/${assignmentId}`);
   };
 
   const handleClickDelete = (index: number) => {
@@ -298,116 +288,105 @@ useEffect(() => {
     setHoveredRow(index);
   };
 
- return (
-  <Container>
+return (
+  <Container sx={{ width: "100%", maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
     {isLoading ? (
-      <LoadingContainer>
-         <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <CircularProgress />
-    </div>
-      </LoadingContainer>
+      <FullScreenLoader variant="page" />
     ) : (
       <section className="Tareas">
-        {/* 🔹 Botones separados de la tabla */}
-        {/* 🔹 Botones arriba de la tabla en una sola línea */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "1rem",
-            width: "82%",
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexWrap: "nowrap"
-          }}
-        >
-          <GroupFilter
-            selectedGroup={selectedGroup}
-            groupList={groupList}
-            onChangeHandler={handleGroupChange}
-            defaultName={
-              groupList.find((group) => group.id == selectedGroup)?.groupName ||
-              groupList[0]?.groupName ||
-              "Selecciona un grupo"
-            }
-          />
-          <SortingComponent
-            selectedSorting={selectedSorting}
-            onChangeHandler={handleOrderAssignments}
-          />
-          {userRole !== "student" && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              sx={{
-                borderRadius: "17px",
-                textTransform: "none",
-                fontSize: "0.95rem",
-                paddingX: "16px",
-                paddingY: "8px",
-                minWidth: "90px",
-                whiteSpace: "nowrap",
-              }}
-              onClick={showForm}
-            >
-              Crear
-            </Button>
-          )}
-        </div>
-
-
-        {/* 🔹 Tabla solo con encabezado de columnas */}
-        <StyledTable>
-          <TableHead>
-            <TableRow
-              sx={{
-                borderBottom: "2px solid #E7E7E7",
-              }}
-            >
-              <CustomTableCell1
-                sx={{ fontWeight: 560, color: "#333", fontSize: "1rem" }}
-              >
+        <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
+          
+          {/* Header & Title */}
+          <Box sx={{ pb: 2 }}>
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: { xs: 'flex-start', sm: 'flex-end' },
+              flexDirection: { xs: 'column', sm: 'row' },
+              width: '100%',
+              mb: 1,
+              gap: { xs: '16px', sm: '0' }
+            }}>
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
                 Tareas
-              </CustomTableCell1>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredAssignments.map((assignment, index) => (
-              <Assignment
-                key={assignment.id}
-                assignment={assignment}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-                role={userRole}
-              />
-            ))}
-          </TableBody>
-        </StyledTable>
+              </Typography>
 
-        {/* Diálogos */}
+              {/* Filters and Controls */}
+              <Box sx={{
+                display: "flex",
+                justifyContent: { xs: "flex-start", sm: "flex-end" },
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "12px",
+                width: { xs: "100%", sm: "auto" }
+              }}>
+                <GroupFilter
+                  selectedGroup={selectedGroup}
+                  groupList={groupList}
+                  onChangeHandler={handleGroupChange}
+                  defaultName={
+                    groupList.find((group) => group.id == selectedGroup)?.groupName ||
+                    groupList[0]?.groupName ||
+                    "Selecciona un grupo"
+                  }
+                />
+                <SortingComponent
+                  selectedSorting={selectedSorting}
+                  onChangeHandler={handleOrderAssignments}
+                />
+                {userRole !== "student" && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    sx={{
+                      borderRadius: "17px",
+                      textTransform: "none",
+                      ...typographyVariants.paragraphMedium,
+                      paddingX: "16px",
+                      paddingY: "8px",
+                      minWidth: "90px",
+                      whiteSpace: "nowrap",
+                      transition: "all 0.175s ease-out",
+                      "&:hover": {
+                        filter: "brightness(0.9)",
+                        boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
+                      },
+                      "&:active": { transform: "scale(0.97)" },
+                    }}
+                    onClick={showForm}
+                  >
+                    Crear
+                  </Button>
+                )}
+              </Box>
+            </Box>
+            <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
+          </Box>
+
+          {/* Assignments List (Responsive Cards) */}
+          <Grid container spacing={2}>
+            {filteredAssignments.map((assignment, index) => (
+              <Grid item xs={12} key={assignment.id}>
+                <Assignment
+                  assignment={assignment}
+                  index={index}
+                  handleClickDetail={handleClickDetail}
+                  handleClickDelete={handleClickDelete}
+                  handleRowHover={handleRowHover}
+                  role={userRole}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* Dialogs/Modals (Keeping the logic from the second branch) */}
         {confirmationOpen && (
           <ConfirmationDialog
             open={confirmationOpen}
             title="¿Eliminar la tarea?"
-            content={
-              <>
-                Ten en cuenta que esta acción también eliminará <br /> todas las
-                entregas asociadas.
-              </>
-            }
+            content={<>Ten en cuenta que esta acción también eliminará <br /> todas las entregas asociadas.</>}
             cancelText="Cancelar"
             deleteText="Eliminar"
             onCancel={() => setConfirmationOpen(false)}
@@ -421,7 +400,6 @@ useEffect(() => {
             closeText="Cerrar"
             onClose={() => {
               setValidationDialogOpen(false);
-              // Refrescar datos del grupo actual sin recargar página
               if (selectedGroup) {
                 loadAssignmentsByGroupId(selectedGroup);
               } else if (authData?.usergroupid) {
@@ -434,7 +412,5 @@ useEffect(() => {
     )}
   </Container>
 );
-
 }
-
 export default Assignments;

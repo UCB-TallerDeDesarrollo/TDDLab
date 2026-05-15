@@ -1,5 +1,6 @@
 import React from "react";
 import { MenuItem, Select } from "@mui/material";
+import { typographyVariants } from "../../styles/typography";
 interface SortingProps {
   selectedSorting: string;
   onChangeHandler: (event: { target: { value: string } }) => void;
@@ -15,7 +16,7 @@ const SortingComponent: React.FC<SortingProps> = ({
       onChange={onChangeHandler}
       inputProps={{ "aria-label": "Ordenar" }}
       displayEmpty
-      style={{ fontSize: "14px", height: "36px" }}
+      style={{ ...typographyVariants.paragraphMedium, height: "36px" }}
     >
       <MenuItem value="" disabled>
         Ordenar

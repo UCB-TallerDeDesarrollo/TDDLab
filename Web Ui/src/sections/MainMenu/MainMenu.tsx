@@ -5,20 +5,22 @@ import {
   AppBar,
   IconButton,
   Toolbar,
-  Typography,
 } from "@mui/material";
 
 import NavLateralMenu from "./components/LateralMenu";
-import MenuIcon from "@mui/icons-material/Menu";
-import { ReactElement, useState } from "react";
+import { IconifyIcon } from "../../sections/Shared/Components";
+import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import WindowIcon from "@mui/icons-material/Window";
+import { useMediaQuery } from "@mui/material";
 import LoginComponent from "./components/loginComponent";
+import { typographyVariants } from "../../styles/typography";
+import TeacherSidebar from "./components/TeacherSidebar";
+import StudentSidebar from "./components/StudentSidebar";
 
 type NavLink = {
   title: string;
   path: string;
-  icon: ReactElement;
+  icon: string;
   access: string[];
 };
 
@@ -32,14 +34,98 @@ export default function MainMenu({
   userRole,
 }: Readonly<NavbarProps>) {
   const location = useLocation();
-  const [open, setOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width:767px)");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const activeButton = navArrayLinks.find(
     (navLink) => navLink.path === location.pathname
   )?.title;
 
+  if (userRole === "teacher" || userRole === "student") {
+    const SidebarComponent = userRole === "teacher" ? TeacherSidebar : StudentSidebar;
+
+    return (
+      <>
+        <SidebarComponent 
+          navArrayLinks={navArrayLinks} 
+          isMobile={isMobile}
+          mobileOpen={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+        />
+        
+        {/* Top Bar (Blue Line) */}
+        <AppBar
+          position="fixed"
+          sx={{
+            width: "100%",
+            background: "#0d1b2a",
+            boxShadow: "none",
+            height: 90,
+            justifyContent: "center",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+        >
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              px: { xs: "16px", sm: "30px" }, // More compact on mobile
+            }}
+          >
+            {/* Logo in Top Bar */}
+            <NavLink to="/" style={{ display: "flex", alignItems: "center" }}>
+              <Box
+                component="img"
+                src="/logo.svg"
+                alt="TDDLab Logo"
+                sx={{ height: { xs: 36, sm: 52 }, width: "auto" }}
+              />
+            </NavLink>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: '8px', sm: '16px' } }}>
+              <LoginComponent />
+            </Box>
+          </Toolbar>
+        </AppBar>
+
+        {/* Hamburger button below the logo on mobile */}
+        {isMobile && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 100, // Just below the 90px AppBar
+              left: 16,
+              zIndex: (theme) => theme.zIndex.appBar,
+            }}
+          >
+            <IconButton
+              onClick={handleDrawerToggle}
+              sx={{
+                backgroundColor: "#ffffff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                border: "1px solid #e0e0e0",
+                "&:hover": {
+                  backgroundColor: "#f5f5f5",
+                },
+                width: 44,
+                height: 44,
+              }}
+            >
+              <IconifyIcon icon="mdi:menu" color="#0d1b2a" width={24} height={24} />
+            </IconButton>
+          </Box>
+        )}
+      </>
+    );
+  }
+
   return (
-    <div style={{ marginTop: "100px" }}>
+    <div>
       <AppBar position="fixed" sx={{ background: "#052845" }}>
         <Toolbar
           style={{
@@ -49,23 +135,20 @@ export default function MainMenu({
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
             <IconButton
               color="inherit"
               size="large"
-              onClick={() => setOpen(true)}
+              onClick={() => setMobileOpen(true)}
               sx={{ display: { xs: "flex", sm: "none" } }}
             >
-              <MenuIcon />
+              <IconifyIcon icon="mdi:menu" color="white" hoverColor="#e0e0e0" />
             </IconButton>
-            <WindowIcon sx={{ marginRight: "6px", marginTop: "4px" }} />
             <NavLink
               to="/"
-              style={{ textDecoration: "none", color: "inherit" }}
+              style={{ textDecoration: "none", color: "inherit", display: "flex", alignItems: "center" }}
             >
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                TDDLab
-              </Typography>
+              <img src="/logo.svg" alt="TDDLab Logo" style={{ height: "44px", width: "auto" }} />
             </NavLink>
           </div>
           <div
@@ -89,6 +172,7 @@ export default function MainMenu({
                             ? "2px solid #fff"
                             : "none",
                         color: activeButton === item.title ? "#fff" : "#A9A9A9",
+                        ...typographyVariants.paragraphMedium,
                       }}
                     >
                       {item.title}
@@ -102,15 +186,15 @@ export default function MainMenu({
       </AppBar>
 
       <Drawer
-        open={open}
+        open={mobileOpen}
         anchor="left"
-        onClose={() => setOpen(false)}
+        onClose={() => setMobileOpen(false)}
         sx={{ display: { xs: "flex", sm: "none" } }}
       >
         <NavLateralMenu
           navArrayLinks={navArrayLinks}
           NavLink={NavLink}
-          setOpen={setOpen}
+          setOpen={setMobileOpen}
         />
       </Drawer>
     </div>

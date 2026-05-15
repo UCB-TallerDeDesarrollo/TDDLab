@@ -3,27 +3,29 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../modules/User-Authentication/domain/authStates";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   Container,
   Button,
+  Box,
+  Grid,
+  Typography,
+  Divider,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { PracticeDataObject } from "../../modules/Practices/domain/PracticeInterface";
-import AddIcon from "@mui/icons-material/Add";
+import { IconifyIcon } from "../Shared/Components";
 import { DeletePractice } from "../../modules/Practices/application/DeletePractice";
 import { ConfirmationDialog } from "../Shared/Components/ConfirmationDialog";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
-import Practice from "./Practice";
+import PracticeCard from "./PracticeCard";
 import SortingComponent from "../GeneralPurposeComponents/SortingComponent";
+import { typographyVariants } from "../../styles/typography";
+import { FullScreenLoader } from "../../components/FullScreenLoader";
 
-const StyledTable = styled(Table)({
-  width: "82%",
-  marginLeft: "auto",
-  marginRight: "auto",
+const PracticesContainer = styled(Box)({
+  width: "100%",
+  maxWidth: "1400px",
+  margin: "0 auto",
+  padding: "24px",
 });
 
 interface PracticesProps {
@@ -31,8 +33,10 @@ interface PracticesProps {
   userRole: string;
 }
 
-function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
+function Practices({ ShowForm: showForm, userRole }: Readonly<PracticesProps>) {
   const [authData] = useGlobalState("authData");
+  const isTeacher = userRole?.toLowerCase() === 'docente' || userRole?.toLowerCase() === 'teacher';
+
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -42,6 +46,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const navigate = useNavigate();
 
   const [_hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);
 
   const practicesRepository = new PracticesRepository();
@@ -80,6 +85,8 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
       orderPractices(data, selectedSorting);
     } catch (error) {
       console.error("Error fetching practices:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,7 +112,7 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleConfirmDelete = async () => {
     try {
       if (selectedPracticeIndex !== null && practices[selectedPracticeIndex]) {
-        
+
         await deletePractice.DeletePractice(
           practices[selectedPracticeIndex].id
         );
@@ -124,77 +131,103 @@ function Practices({ ShowForm: showForm }: Readonly<PracticesProps>) {
   const handleRowHover = (index: number | null) => {
     setHoveredRow(index);
   };
+
+  if (isLoading) return <FullScreenLoader variant="page" />;
+
   return (
-    <Container>
+    <PracticesContainer>
       <section className="Practicas">
-        <StyledTable>
-           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div style={{ fontWeight: 600, fontSize: "16px" }}>Practicas</div>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "10px",
+        <Box sx={{ width: { xs: '95%', sm: '90%', md: '92%' }, ml: { xs: 'auto', md: '40px' }, mr: { xs: 'auto', md: 0 }, mt: 2 }}>
+          {/* Encabezado */}
+          <Box sx={{ pb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', mb: 1 }}>
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5, fontSize: '2.5rem' }}>
+                Prácticas
+              </Typography>
+
+              {/* Controles */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "12px",
+                }}
+              >
+                <SortingComponent
+                  selectedSorting={selectedSorting}
+                  onChangeHandler={handleOrderPractices}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={
+                    <IconifyIcon
+                      icon="mdi:plus"
+                      width={20}
+                      height={20}
+                      color="white"
+                      hoverColor="#e0e0e0"
+                    />
+                  }
+                  sx={{
+                    textTransform: "none",
+                    ...typographyVariants.paragraphMedium,
+                    transition: "all 0.175s ease-out",
+                    "&:hover": {
+                      filter: "brightness(0.9)",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                    },
+                    "&:active": {
+                      transform: "scale(0.97)",
+                    },
                   }}
+                  onClick={showForm}
                 >
-                  <SortingComponent
-                    selectedSorting={selectedSorting}
-                    onChangeHandler={handleOrderPractices}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={showForm}
-                  >
-                    Crear
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+                  Crear
+                </Button>
+              </Box>
+            </Box>
+            <Divider sx={{ width: '100%', mb: 2, mt: 1, borderColor: '#D9D9D9' }} />
+          </Box>
+
+          {/* Listado apilado de tarjetas */}
+          <Grid container spacing={2}>
             {practices.map((practice, index) => (
-              <Practice
-                key={practice.id}
-                practice={practice}
-                index={index}
-                handleClickDetail={handleClickDetail}
-                handleClickDelete={handleClickDelete}
-                handleRowHover={handleRowHover}
-              />
+              <Grid item xs={12} key={practice.id}>
+                <PracticeCard
+                  practice={practice}
+                  index={index}
+                  onClickDetail={handleClickDetail}
+                  onClickDelete={handleClickDelete}
+                />
+              </Grid>
             ))}
-          </TableBody>
-        </StyledTable>
-        {confirmationOpen && (
-          <ConfirmationDialog
-            open={confirmationOpen}
-            title="¿Eliminar la practica?"
-            content="Ten en cuenta que esta acción también eliminará todas las entregas asociadas."
-            cancelText="Cancelar"
-            deleteText="Eliminar"
-            onCancel={() => setConfirmationOpen(false)}
-            onDelete={handleConfirmDelete}
-          />
-        )}
-        {validationDialogOpen && (
-          <ValidationDialog
-            open={validationDialogOpen}
-            title="Practica eliminada exitosamente"
-            closeText="Cerrar"
-            onClose={() => window.location.reload()}
-          />
-        )}
+          </Grid>
+
+          {confirmationOpen && (
+            <ConfirmationDialog
+              open={confirmationOpen}
+              title="¿Eliminar la practica?"
+              content="Ten en cuenta que esta acción también eliminará todas las entregas asociadas."
+              cancelText="Cancelar"
+              deleteText="Eliminar"
+              onCancel={() => setConfirmationOpen(false)}
+              onDelete={handleConfirmDelete}
+            />
+          )}
+          {validationDialogOpen && (
+            <ValidationDialog
+              open={validationDialogOpen}
+              title="Practica eliminada exitosamente"
+              closeText="Cerrar"
+              onClose={() => window.location.reload()}
+            />
+          )}
+        </Box>
       </section>
-    </Container>
+    </PracticesContainer>
   );
 }
 

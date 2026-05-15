@@ -85,17 +85,23 @@ const Login = () => {
   return (
     <div className="login-container">
       <header className="app-header">
-        <h1>TDDLab</h1>
+        <img src="/logo.svg" alt="TDDLab Logo" className="app-header-logo" />
       </header>
       <div className="login-content">
         <p className="login-Title">
           ¡Bienvenido a TDDLab!, usa tu cuenta para acceder:
         </p>
         <div className="login-buttons">
-          <button className="github-button" onClick={handleGitHubLogin}>
+          <button
+            className="github-button"
+            onClick={handleGitHubLogin}
+          >
             Accede con GitHub
           </button>
-          <button className="google-button" onClick={handleGoogleLogin}>
+          <button
+            className="google-button"
+            onClick={handleGoogleLogin}
+          >
             Accede con Google
           </button>
         </div>

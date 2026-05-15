@@ -18,10 +18,12 @@ const FormsContainer = styled("div")({
 interface AssignmentManagerProps {
   userRole: string;
   userGroupid: number;
+  userid: number;
 }
 function AssignmentManager({
   userRole,
   userGroupid, // Recibir userGroupid como prop
+  userid,
 }: Readonly<AssignmentManagerProps>) {
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
@@ -38,6 +40,7 @@ function AssignmentManager({
           ShowForm={handleCreateAssignmentClick}
           userRole={userRole}
           userGroupid={userGroupid}
+          userid={userid}
           onGroupChange={setSelectedGroupId}
         />
       </AssignmentsContainer>

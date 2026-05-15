@@ -10,6 +10,7 @@ import {
 import { CreatePractice } from "../../modules/Practices/application/CreatePractice";
 import PracticesRepository from "../../modules/Practices/repository/PracticesRepository";
 import { ValidationDialog } from "../Shared/Components/ValidationDialog";
+import DescriptionIcon from '@mui/icons-material/Description';
 interface CreatePracticePopupProps {
   open: boolean;
   handleClose: () => void;
@@ -80,27 +81,33 @@ function MyPracticesForm({
     <Dialog open={open} onClose={handleClose}>
       {!validationDialogOpen && (
         <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>
+          <DialogTitle>
             Crear una Practica
           </DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
               error={formInvalid() && !!save}
               autoFocus
-              margin="dense"
-              id="assigment-title"
-              name="practiceTitle"
-              label="Nombre de la Practica*"
-              type="text"
+              margin="normal"
+              id="title"
+              label={
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  <DescriptionIcon sx={{ mr: 1 }} />
+                  Título de la tarea
+                </span>
+              }
+              variant="outlined"
               fullWidth
               value={practiceData.title}
               onChange={(e) => handleInputChange(e, "title")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputProps={{
+                style: { borderRadius: "10px" },
+              }}
             />
             <TextField
               multiline
               rows={3.7}
-              margin="dense"
+              margin="normal"
               id="practice-description"
               name="practiceDescription"
               label="Descripción"
@@ -108,20 +115,35 @@ function MyPracticesForm({
               fullWidth
               value={practiceData.description}
               onChange={(e) => handleInputChange(e, "description")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+              InputProps={{
+                style: { borderRadius: "10px" },
+              }}
             />
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ p: 2, gap: 1 }}>
             <Button
+              variant="contained"
+              color="error"
               onClick={handleCancel}
-              style={{ color: "#555", textTransform: "none" }}
+              sx={{
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
+                textTransform: "none",
+              }}
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSaveClick}
+              variant="contained"
               color="primary"
-              style={{ textTransform: "none" }}
+              onClick={handleSaveClick}
+              sx={{
+                flex: 1,
+                borderRadius: "10px",
+                paddingY: "10px",
+                textTransform: "none",
+              }}
             >
               Crear
             </Button>

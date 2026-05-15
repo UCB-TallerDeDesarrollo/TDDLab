@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import { useGitHubLinkValidation } from "./GitValidationHook";
 import { useState } from "react";
+import { typographyVariants } from "../../../styles/typography";
 
 interface GithubLinkDialogProps {
   open: boolean;
@@ -44,15 +45,15 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   };
 
   const dialogTitleStyle = {
-    fontSize: "1rem",
+    ...typographyVariants.h5,
   };
 
   const textFieldStyle = {
-    fontSize: "12px",
+    ...typographyVariants.paragraphMedium,
   };
 
   const contentStyle = {
-    fontSize: ".75rem",
+    ...typographyVariants.paragraphMedium,
     padding: "20px",
   };
 
@@ -90,7 +91,15 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <Button
           onClick={onClose}
           color="primary"
-          style={{ textTransform: "none" }}
+          sx={{ textTransform: "none", transition: "all 0.175s ease-out",
+            "&:hover": {
+              filter: "brightness(0.9)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            "&:active": {
+              transform: "scale(0.97)",
+            },
+          }}
         >
           Cerrar
         </Button>
@@ -98,7 +107,17 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           onClick={handleSend}
           color="primary"
           disabled={sending || !validLink || link === ""}
-          style={{ textTransform: "none" }}
+          sx={{ 
+            textTransform: "none",
+            transition: "all 0.175s ease-out",
+            "&:hover:not(:disabled)": {
+              filter: "brightness(0.9)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            "&:active:not(:disabled)": {
+              transform: "scale(0.97)",
+            },
+          }}
         >
           Enviar
         </Button>
