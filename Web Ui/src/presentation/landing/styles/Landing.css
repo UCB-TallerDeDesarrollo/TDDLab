@@ -114,6 +114,7 @@
   left: 50%;
   top: 394px;
   transform: translateX(-50%);
+  --action-button-active-transform: translateX(-50%) scale(0.98);
   width: 202px;
   min-height: 44px;
   padding: 10px;
