@@ -25,7 +25,7 @@ class AuthRepository implements AuthDBRepositoryInterface {
 
   async getAccountInfoWithToken(idToken: string): Promise<UserOnDb> {
     try {
-      const response = await axios.post(API_URL + "/user/github",
+      const response = await axios.post(API_URL + "/user/google",
       { idToken },
       { withCredentials: true } );
       if (response.status === 200) {
