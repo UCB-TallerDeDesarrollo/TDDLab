@@ -36,6 +36,10 @@ coverage
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
+# Ocultar archivos configuración local
+.AGENTS.md
+.gga
+
 # Bower dependency directory (https://bower.io/)
 bower_components
 
@@ -59,6 +63,7 @@ node_modules/
 
 # Output of 'npm pack'
 *.tgz
+output.zip
 
 # Yarn Integrity file
 .yarn-integrity
@@ -74,6 +79,12 @@ node_modules/
 
 # archivo de reporte generado a la hora de correr los tests en tddlabBaseProject
 /tddlabBaseProject/script/report.json
+
+# Documentacion local no versionada
+docs/
+
+# Archivos comprimidos generados localmente
+output.zip
 
 # Dependecias generadas por husky
 /tddlabBaseProject/.husky/_

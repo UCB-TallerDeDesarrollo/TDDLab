@@ -3,17 +3,17 @@ import { getUserToken } from "./getUserToken";
 import { TokenVerifier } from "../Domain/TokenVerifier";
 import { FirebaseTokenVerifier } from "../Infrastructure/FirebaseTokenVerifier";
 import { User } from "../Domain/User";
-import admin from "firebase-admin";
+import admin from "../../../config/firebaseAdmin";
 
 export const loginUserWithGoogle = async (
   idToken: string,
-  tokenVerifier: TokenVerifier = new FirebaseTokenVerifier()
+  _: TokenVerifier = new FirebaseTokenVerifier()
 ): Promise<{ user: User; jwtToken: string }> => {
-  const email = await tokenVerifier.verifyAndExtractEmail(idToken);
-  
   // Verificar el proveedor del token
+  let email = "";
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
+    email = decodedToken.email??"";
     const firebaseData = decodedToken.firebase as any;
     const providerId = firebaseData?.sign_in_provider;
     
@@ -44,7 +44,6 @@ export const loginUserWithGoogle = async (
 
   const user = userResult as User;
   const jwtToken = await getUserToken(user);
-  
   return { user, jwtToken };
 };
 

@@ -22,10 +22,29 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "Web Ui/package-lock.json"
 
       - name: Install dependencies for Jest
         working-directory: Web Ui
-        run: npm install
+        run: |
+          npm config set fetch-retries 5
+          npm config set fetch-retry-factor 2
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-timeout 300000
+
+          for attempt in 1 2 3; do
+            echo "Install attempt $attempt/3"
+            npm ci --no-audit --prefer-offline && break
+
+            if [ "$attempt" -eq 3 ]; then
+              echo "npm ci failed after 3 attempts"
+              exit 1
+            fi
+
+            sleep $((attempt * 15))
+          done
 
       - name: Run Jest tests
         working-directory: Web Ui
@@ -92,19 +111,42 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: SonarCloud Scan
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies and generate backend coverage
+        working-directory: server
+        run: |
+          npm ci
+          npm test
+
+      - name: Install dependencies and generate frontend coverage
+        working-directory: Web Ui
+        run: |
+          npm install
+          npm test
+
+      - name: SonarCloud Scan (PR)
+        if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@v6
         with:
           args: >
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
-            -Dsonar.pullrequest.provider=GitHub
-            -Dsonar.pullrequest.github.repository=${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_SCANNER_OPTS: -Dsonar.pullrequest.github.summary_comment=true
+
+      - name: SonarCloud Scan (branch)
+        if: github.event_name != 'pull_request'
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Wait for the quality gate result
         run: sleep 5
@@ -210,7 +252,7 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
-          firebase deploy --only hosting:staging
+          firebase deploy --project staging --only hosting:staging
   deploy_firebase_production:
     runs-on: ubuntu-latest
     environment:
@@ -259,7 +301,7 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
-          firebase deploy --only hosting:production
+          firebase deploy --project production --only hosting:production
   deploy_vercel_staging:
     runs-on: ubuntu-latest
     environment:

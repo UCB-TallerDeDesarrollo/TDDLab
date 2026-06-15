@@ -12,4 +12,11 @@ export default {
   },
   setupFiles: ['<rootDir>/jest.setup.js'],
   silent: true,
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/main.tsx",
+    "!src/vite-env.d.ts",
+    "!src/firebaseConfig.tsx",
+  ],
 };

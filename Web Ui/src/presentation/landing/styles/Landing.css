@@ -1,0 +1,644 @@
+:root {
+  --landing-blue: #002346;
+  --landing-footer: #000926;
+  --landing-green: #6abb46;
+  --landing-title: #101828;
+  --landing-body: #4a5565;
+}
+
+.landing-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  background: #ffffff;
+  color: var(--landing-title);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+.landing-container {
+  width: min(1280px, 92%);
+  margin: 0 auto;
+}
+
+.landing-hero {
+  position: relative;
+  min-height: 733px;
+  background: #ffffff;
+}
+
+.landing-navbar {
+  position: relative;
+  z-index: 5;
+  min-height: 113px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--landing-blue);
+  padding: 0 clamp(20px, 4vw, 42px);
+}
+
+.landing-logo {
+  width: 154px;
+  max-width: 30vw;
+}
+
+.landing-navbar-line {
+  width: min(650px, 56vw);
+}
+
+.landing-z-line {
+  position: absolute;
+  top: 244px;
+  z-index: 4;
+  width: min(170px, 17vw);
+  pointer-events: none;
+}
+
+.landing-z-line-left {
+  left: clamp(36px, 8vw, 118px);
+}
+
+.landing-z-line-right {
+  right: clamp(36px, 8vw, 118px);
+  transform: scaleX(-1);
+}
+
+.landing-hero-overlay {
+  position: relative;
+  z-index: 3;
+  margin-top: 0;
+}
+
+.landing-intro-stack {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.landing-intro {
+  width: 100%;
+  height: 620px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.landing-intro::after {
+  content: "";
+}
+
+.landing-intro-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.landing-intro-brand {
+  position: absolute;
+  left: 50%;
+  top: 156px;
+  width: min(349px, 52vw);
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.landing-hero-overlay .landing-action-button {
+  position: absolute;
+  left: 50%;
+  top: 394px;
+  transform: translateX(-50%);
+  width: 202px;
+  min-height: 44px;
+  padding: 10px;
+  border-radius: 5px;
+  background: var(--landing-green);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.47);
+}
+
+.landing-hero-overlay .landing-action-button:hover,
+.landing-hero-overlay .landing-action-button:focus-visible {
+  background: #1370d2;
+}
+
+.landing-intro-copy {
+  margin: 52px auto 0;
+  text-align: center;
+}
+
+.landing-intro-copy h1,
+.landing-section-title,
+.landing-cta-content h2 {
+  margin: 0;
+  white-space: pre-line;
+  font-family: "Palanquin Dark", "Afacad", "Inter", sans-serif;
+  line-height: 1.06;
+}
+
+.landing-intro-copy h1,
+.landing-section-title {
+  font-size: clamp(2rem, 3.9vw, 3.45rem);
+  font-weight: 600;
+}
+
+.landing-intro-copy p {
+  margin: 28px auto 0;
+  width: min(776px, 94%);
+  color: var(--landing-body);
+  font-family: "Palanquin Dark", "Inter", sans-serif;
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  line-height: 1.4;
+}
+
+.landing-benefits {
+  position: relative;
+  padding: 72px 0 92px;
+}
+
+.landing-circuit-left,
+.landing-circuit-right {
+  position: absolute;
+  width: min(290px, 22vw);
+  opacity: 0.88;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.landing-circuit-left {
+  left: 0;
+  top: 30px;
+}
+
+.landing-circuit-right {
+  right: 0;
+  bottom: 10px;
+}
+
+.landing-benefits .landing-container {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-info-cards,
+.landing-benefit-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.landing-info-card {
+  min-height: 345px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: transparent;
+  border-radius: 10px;
+  color: #ffffff;
+  box-shadow: 0 4px 5.5px rgba(0, 0, 0, 0.33);
+  cursor: pointer;
+  transition: box-shadow 240ms cubic-bezier(0.13, 0.31, 0.8, 0.69);
+}
+
+.landing-info-card:focus-visible {
+  outline: 2px solid #65b0ff;
+  outline-offset: 4px;
+}
+
+.landing-info-card:hover,
+.landing-info-card:focus-visible {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.34);
+}
+
+.landing-info-card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  padding: 24px 18px;
+}
+
+.landing-info-card-face::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.landing-info-card-face--default {
+  display: grid;
+  align-items: center;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.landing-info-card-face--default::after {
+  background: var(--landing-blue);
+}
+
+.landing-info-card-face--default h2 {
+  margin: 0;
+  text-align: center;
+  font-family: "Afacad", "Inter", sans-serif;
+  font-size: clamp(2rem, 2.6vw, 3rem);
+  font-weight: 700;
+}
+
+.landing-info-card-face--expanded {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 90px 18px 24px;
+  opacity: 0;
+  transform: translateY(18px);
+  position: relative;
+  row-gap: 0;
+}
+
+.landing-info-card-face--expanded::after {
+  background: #115aa6;
+}
+
+.landing-info-card-chip {
+  position: absolute;
+  top: 0;
+  width: 102px;
+  height: 80px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #115aa6;
+  color: #ffffff;
+  font-family: "Akatab", "Afacad", "Inter", sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 2;
+}
+
+.landing-info-card-chip-icon {
+  position: absolute;
+  top: 0;
+  width: 102px;
+  height: 80px;
+  object-fit: contain;
+  z-index: 2;
+}
+
+.landing-info-card--left .landing-info-card-chip {
+  left: calc(8.66% - 51px);
+  transform: translateX(-50%);
+}
+
+.landing-info-card--left .landing-info-card-chip-icon {
+  left: calc(8.66% - 51px);
+  transform: translateX(-50%);
+}
+
+.landing-info-card--center .landing-info-card-chip {
+  left: 50%;
+  transform: translateX(-50%);
+  letter-spacing: 4px;
+  font-size: 2.5rem;
+}
+
+.landing-info-card--center .landing-info-card-chip-icon {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.landing-info-card--right .landing-info-card-chip {
+  right: calc(7.87% - 51px);
+  transform: translateX(50%);
+  color: transparent;
+  position: absolute;
+}
+
+.landing-info-card--right .landing-info-card-chip-icon {
+  right: calc(7.87% - 51px);
+  transform: translateX(50%);
+}
+
+.landing-info-card--right .landing-info-card-chip::before {
+  content: "";
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.landing-info-card--right .landing-info-card-chip::after {
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 8px;
+  left: calc(50% - 6px);
+  bottom: 16px;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.landing-info-card-face--expanded p {
+  margin: 0;
+  width: min(339px, 100%);
+  padding: 18px 16px;
+  border: 0.5px solid rgba(255, 255, 255, 0.66);
+  text-align: center;
+  color: #ffffff;
+  font-family: "Akatab", "Afacad", "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+}
+
+.landing-section-title {
+  text-align: center;
+  margin: 96px auto 40px;
+}
+
+.landing-benefit-card {
+  background: var(--landing-blue);
+  border: 0.5px solid #ffffff;
+  border-radius: 20px;
+  padding: 16px;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.landing-benefit-card img {
+  width: 100%;
+  aspect-ratio: 314 / 294;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.landing-benefit-card h3 {
+  margin: 18px 0 8px;
+  font-family: "Palanquin Dark", "Inter", sans-serif;
+  font-size: clamp(1.8rem, 2.3vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.landing-resources {
+  padding: 12px 0 120px;
+}
+
+.landing-resource-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  grid-template-areas:
+    "large smallTop"
+    "large smallBottom"
+    "bottomLeft bottomRight";
+}
+
+.landing-resource-grid img {
+  width: 100%;
+  height: 100%;
+  min-height: 165px;
+  object-fit: cover;
+  border: 0.5px solid rgba(10, 10, 10, 0.8);
+  border-radius: 20px;
+}
+
+.resource-large {
+  grid-area: large;
+  min-height: 351px;
+}
+
+.resource-small-top {
+  grid-area: smallTop;
+}
+
+.resource-small-bottom {
+  grid-area: smallBottom;
+}
+
+.resource-bottom-left {
+  grid-area: bottomLeft;
+  min-height: 343px;
+}
+
+.resource-bottom-right {
+  grid-area: bottomRight;
+  min-height: 343px;
+}
+
+.landing-cta {
+  position: relative;
+  min-height: 743px;
+  display: flex;
+  align-items: center;
+}
+
+.landing-cta-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.landing-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0, 13, 40, 0.58) 35%, rgba(0, 13, 40, 0.28) 100%);
+}
+
+.landing-cta-content {
+  position: relative;
+  z-index: 1;
+  width: min(1280px, 92%);
+  margin: 0 auto;
+  color: #ffffff;
+  display: grid;
+  justify-items: end;
+}
+
+.landing-cta-content h2 {
+  width: min(720px, 100%);
+  text-align: center;
+  text-transform: uppercase;
+  font-size: clamp(2rem, 3.9vw, 3.45rem);
+  font-weight: 600;
+  line-height: 1.22;
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.landing-cta-content p {
+  width: min(523px, 100%);
+  margin: 24px 0 0;
+  font-size: clamp(1rem, 1.3vw, 1.25rem);
+  line-height: 1.35;
+}
+
+.landing-cta-content .landing-action-button {
+  margin-top: 42px;
+  width: min(395px, 100%);
+  min-height: 65px;
+  background: var(--landing-green);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.47);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+}
+
+.landing-cta-content .landing-action-button:hover,
+.landing-cta-content .landing-action-button:focus-visible {
+  background: #1370d2;
+}
+
+.landing-footer {
+  background: var(--landing-footer);
+  color: #ffffff;
+  padding: 34px 0 28px;
+}
+
+.landing-footer-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: end;
+  gap: 24px;
+}
+
+.landing-footer-logo {
+  width: 154px;
+}
+
+.landing-footer-links {
+  justify-self: center;
+  text-align: left;
+}
+
+.landing-footer-links p {
+  margin: 0;
+  font-family: "Afacad", "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.landing-footer-copyright {
+  margin: 0;
+  font-family: "Afacad", "Inter", sans-serif;
+  font-size: clamp(0.95rem, 1.4vw, 1.25rem);
+}
+
+@media (max-width: 1024px) {
+  .landing-info-cards,
+  .landing-benefit-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-resource-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "large"
+      "smallTop"
+      "smallBottom"
+      "bottomLeft"
+      "bottomRight";
+  }
+
+  .landing-resource-grid img {
+    min-height: 220px;
+  }
+
+  .landing-cta-content {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .landing-footer-content {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .landing-footer-links {
+    text-align: center;
+  }
+
+  .landing-info-card-face--expanded p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-navbar {
+    min-height: 88px;
+    gap: 14px;
+  }
+
+  .landing-navbar-line {
+    width: min(52vw, 210px);
+  }
+
+  .landing-z-line,
+  .landing-circuit-left,
+  .landing-circuit-right {
+    display: none;
+  }
+
+  .landing-intro {
+    height: 420px;
+  }
+
+  .landing-intro-brand {
+    top: 104px;
+  }
+
+  .landing-hero-overlay .landing-action-button {
+    top: 290px;
+  }
+
+  .landing-intro-copy {
+    margin-top: 36px;
+  }
+
+  .landing-section-title {
+    margin-top: 72px;
+  }
+
+  .landing-info-card-face {
+    padding: 18px 14px;
+  }
+
+  .landing-info-card-chip {
+    width: 86px;
+    height: 68px;
+    font-size: 2.4rem;
+  }
+
+  .landing-cta {
+    min-height: 560px;
+  }
+
+  .landing-cta-content .landing-action-button {
+    min-height: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-action-button,
+  .landing-info-card,
+  .landing-info-card-face {
+    transition: none;
+  }
+}
+

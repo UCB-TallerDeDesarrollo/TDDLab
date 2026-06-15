@@ -1,0 +1,281 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Stack,
+  Typography,
+  FormControl,
+  Select,
+  MenuItem,
+  TextField,
+  Button,
+  CircularProgress,
+  SelectChangeEvent,
+  InputLabel
+} from '@mui/material';
+
+export interface PromptItem {
+  id: string;
+  name: string;
+  content: string;
+}
+
+export interface PromptConfigurationProps {
+  prompts: PromptItem[];
+  selectedPrompt: string; // The ID of the selected prompt
+  onChangePrompt: (promptId: string) => void;
+  onSavePrompt: (promptId: string, newContent: string) => void;
+  saving?: boolean;
+}
+
+export const PromptConfiguration: React.FC<PromptConfigurationProps> = ({
+  prompts,
+  selectedPrompt,
+  onChangePrompt,
+  onSavePrompt,
+  saving = false,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState('');
+
+  const currentPrompt = prompts.find((p) => p.id === selectedPrompt);
+
+  useEffect(() => {
+    if (currentPrompt) {
+      setEditContent(currentPrompt.content);
+      setIsEditing(false); // Reset edit mode when prompt changes
+    }
+  }, [currentPrompt, selectedPrompt]);
+
+  const handleSelectChange = (event: SelectChangeEvent<string>) => {
+    onChangePrompt(event.target.value);
+  };
+
+  const handleSave = () => {
+    if (currentPrompt) {
+      onSavePrompt(currentPrompt.id, editContent);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditContent(currentPrompt?.content || '');
+  };
+
+  return (
+    <Stack spacing={4.25} sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%', pl: 0 }}>
+        <FormControl fullWidth variant="outlined" sx={{ maxWidth: 400 }}>
+          <InputLabel 
+            id="prompt-select-label"
+            sx={{
+              ml: { xs: '2px', md: '18px' },
+              color: '#6F6F6F', // Matching the Figma text color
+              '&.Mui-focused': {
+                color: '#6F6F6F',
+              }
+            }}
+          >
+            Selecciona el tipo de prompt
+          </InputLabel>
+          <Select
+            labelId="prompt-select-label"
+            id="prompt-select"
+            value={selectedPrompt}
+            onChange={handleSelectChange}
+            disabled={isEditing || saving}
+            label="Selecciona el tipo de prompt"
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  bgcolor: '#F0F0F0',
+                  borderRadius: 1,
+                  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                  mt: 0.5
+                }
+              },
+              sx: {
+                '& .MuiMenuItem-root': {
+                  backgroundColor: 'transparent',
+                },
+                '& .MuiMenuItem-root:hover': {
+                  backgroundColor: '#E6F0FA',
+                },
+                '& .MuiMenuItem-root.Mui-selected': {
+                  backgroundColor: 'transparent',
+                },
+                '& .MuiMenuItem-root.Mui-selected:hover': {
+                  backgroundColor: '#E6F0FA',
+                },
+                '& .MuiMenuItem-root.Mui-focusVisible': {
+                  backgroundColor: 'transparent',
+                }
+              },
+            }}
+            sx={{
+              '& .MuiSelect-select': {
+                pl: { xs: '16px', md: '32px' },
+              },
+              '& fieldset legend': {
+                ml: { xs: '2px', md: '18px' },
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#898989',
+                borderWidth: '1.5px',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#898989',
+                borderWidth: '1.5px',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#898989',
+                borderWidth: '1.5px',
+              }
+            }}
+          >
+            {prompts.map((prompt) => (
+              <MenuItem key={prompt.id} value={prompt.id}>
+                {prompt.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Box sx={{ border: '1.5px solid #898989', borderRadius: 2, p: { xs: 2, md: 4 }, width: '100%', boxSizing: 'border-box' }}>
+        <Box
+          sx={{
+            backgroundColor: '#E5E5E5',
+            borderRadius: 1,
+            p: { xs: 2, md: 4 },
+            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 2px rgba(0,0,0,0.24)',
+            display: 'flex',
+            flexDirection: 'column',
+            boxSizing: 'border-box'
+          }}
+        >
+          <Box
+            sx={{
+              maxHeight: 350,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              pr: 2, // Espacio entre el texto y la scrollbar
+              display: 'flex',
+              flexDirection: 'column',
+              '&::-webkit-scrollbar': {
+                width: '18px',
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: '#FFFFFF',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#4A4A4A',
+                borderRadius: '10px',
+                border: '5px solid #FFFFFF',
+                backgroundClip: 'content-box',
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: '#333333',
+              },
+              '&::-webkit-scrollbar-button:single-button': {
+                backgroundColor: '#FFFFFF',
+                display: 'block',
+                backgroundSize: '10px',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                height: '20px',
+              },
+              '&::-webkit-scrollbar-button:single-button:vertical:decrement': {
+                borderTopLeftRadius: '10px',
+                borderTopRightRadius: '10px',
+                backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'10\' height=\'6\' viewBox=\'0 0 10 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M5 0L10 6H0L5 0Z\' fill=\'%234A4A4A\'/%3E%3C/svg%3E")',
+              },
+              '&::-webkit-scrollbar-button:single-button:vertical:increment': {
+                borderBottomLeftRadius: '10px',
+                borderBottomRightRadius: '10px',
+                backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'10\' height=\'6\' viewBox=\'0 0 10 6\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M5 6L0 0H10L5 6Z\' fill=\'%234A4A4A\'/%3E%3C/svg%3E")',
+              }
+            }}
+          >
+            {isEditing ? (
+            <TextField
+              multiline
+              fullWidth
+              minRows={10}
+              variant="outlined"
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              disabled={saving}
+              sx={{
+                backgroundColor: 'background.paper',
+                borderRadius: 1,
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'primary.main',
+                    borderWidth: 1,
+                  },
+                },
+              }}
+            />
+          ) : (
+            <Box sx={{ p: 0 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  color: 'text.primary',
+                  fontFamily: '"Inter", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500
+                }}
+              >
+                {currentPrompt?.content || 'Selecciona un prompt para visualizar su contenido.'}
+              </Typography>
+            </Box>
+          )}
+          </Box>
+        </Box>
+      </Box>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        {isEditing ? (
+          <>
+            <Button
+              variant="outlined"
+              onClick={handleCancel}
+              disabled={saving}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+              disabled={saving || !editContent.trim() || editContent === currentPrompt?.content}
+              startIcon={saving ? <CircularProgress size={16} color="inherit" /> : null}
+            >
+              {saving ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setIsEditing(true)}
+            disabled={!currentPrompt || saving}
+          >
+            Editar Prompt
+          </Button>
+        )}
+      </Box>
+    </Stack>
+  );
+};
+
+export default PromptConfiguration;

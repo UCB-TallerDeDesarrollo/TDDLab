@@ -1,0 +1,157 @@
+/* Keyframe: Card entrance */
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Keyframe: Card face swap (default to expanded) */
+@keyframes faceSwapOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+}
+
+@keyframes faceSwapIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Keyframe: Chip slide into view */
+@keyframes chipSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Keyframe: Text content fade in */
+@keyframes textFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply card entrance animation */
+.landing-info-card {
+  animation: cardEnter 420ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.landing-info-card:nth-child(1) {
+  animation-delay: 120ms;
+}
+
+.landing-info-card:nth-child(2) {
+  animation-delay: 240ms;
+}
+
+.landing-info-card:nth-child(3) {
+  animation-delay: 360ms;
+}
+
+/* Default face animations */
+.landing-info-card:not(:hover):not(:focus-visible) .landing-info-card-face--default {
+  animation: none;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.landing-info-card:hover .landing-info-card-face--default,
+.landing-info-card:focus-visible .landing-info-card-face--default {
+  animation: faceSwapOut 240ms cubic-bezier(0.3, 0, 0.8, 0.15) forwards;
+}
+
+/* Expanded face animations */
+.landing-info-card:not(:hover):not(:focus-visible) .landing-info-card-face--expanded {
+  animation: none;
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  pointer-events: none;
+}
+
+.landing-info-card:hover .landing-info-card-face--expanded,
+.landing-info-card:focus-visible .landing-info-card-face--expanded {
+  animation: faceSwapIn 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  pointer-events: auto;
+}
+
+/* Chip staggered entrance */
+.landing-info-card:not(:hover):not(:focus-visible) .landing-info-card-chip,
+.landing-info-card:not(:hover):not(:focus-visible) .landing-info-card-chip-icon {
+  animation: none;
+  opacity: 0;
+}
+
+.landing-info-card:hover .landing-info-card-chip,
+.landing-info-card:focus-visible .landing-info-card-chip,
+.landing-info-card:hover .landing-info-card-chip-icon,
+.landing-info-card:focus-visible .landing-info-card-chip-icon {
+  animation: chipSlide 280ms cubic-bezier(0.34, 1.56, 0.64, 1) 80ms backwards;
+}
+
+/* Text staggered entrance */
+.landing-info-card:hover .landing-info-card-face--expanded p,
+.landing-info-card:focus-visible .landing-info-card-face--expanded p {
+  animation: textFadeIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) 160ms backwards;
+}
+
+/* Background color smooth transition */
+.landing-info-card-face::after {
+  transition: background-color 240ms ease;
+}
+
+/* Accessibility: Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .landing-info-card,
+  .landing-info-card-face,
+  .landing-info-card-chip,
+  .landing-info-card-face--expanded p {
+    animation: none !important;
+    transition: opacity 150ms ease, background-color 150ms ease !important;
+  }
+
+  .landing-info-card:hover,
+  .landing-info-card:focus-visible {
+    transform: none;
+  }
+
+  .landing-info-card:hover .landing-info-card-face--default,
+  .landing-info-card:focus-visible .landing-info-card-face--default {
+    opacity: 0;
+    transform: none;
+  }
+
+  .landing-info-card:hover .landing-info-card-face--expanded,
+  .landing-info-card:focus-visible .landing-info-card-face--expanded {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+

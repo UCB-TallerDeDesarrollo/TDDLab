@@ -1,0 +1,36 @@
+import React from 'react';
+import { Box, FormControlLabel, Stack } from '@mui/material';
+import { FeatureFlag } from '../types/settings.types';
+import AnimatedCheckbox from '../../../shared/components/AnimatedCheckbox';
+
+interface FeatureFlagsProps {
+  flags: FeatureFlag[];
+  onToggleFlag: (id: number, value: boolean) => void;
+  saving?: boolean;
+}
+
+export const FeatureFlags: React.FC<FeatureFlagsProps> = ({
+  flags,
+  onToggleFlag,
+  saving = false,
+}) => {
+  return (
+    <Box sx={{ width: '100%', pl: 0 }}>
+      <Stack spacing={1}>
+        {flags.map((flag) => (
+          <FormControlLabel
+            key={flag.id}
+            control={
+              <AnimatedCheckbox
+                checked={flag.is_enabled}
+                onChange={(e) => onToggleFlag(flag.id, e.target.checked)}
+                disabled={saving}
+              />
+            }
+            label={flag.feature_name}
+          />
+        ))}
+      </Stack>
+    </Box>
+  );
+};
