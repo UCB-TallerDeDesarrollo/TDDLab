@@ -1,10 +1,7 @@
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { getAuth, onAuthStateChanged, User, signOut } from "firebase/auth";
 import firebase from "../../../firebaseConfig";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
-import { UserOnDb } from "../../../modules/User-Authentication/domain/userOnDb.interface";
 import {
   InvitationAuthProvider,
   InvitationRegistrationParams,
@@ -17,10 +14,6 @@ function resolveAuthProvider(user: User | null): InvitationAuthProvider {
 
   if (providerId === "google.com") {
     return "google";
-  }
-
-  if (providerId === "github.com") {
-    return "github";
   }
 
   return null;
@@ -36,18 +29,18 @@ export function subscribeToInvitationAuth(
   });
 }
 
-export async function signInInvitationWithGithub() {
-  const user = await handleSignInWithGitHub();
-  return user ? { user, authProvider: "github" as const } : null;
-}
-
 export async function signInInvitationWithGoogle() {
   const user = await handleSignInWithGoogle();
   return user ? { user, authProvider: "google" as const } : null;
 }
 
-export function signOutInvitationSession() {
-  return handleGithubSignOut();
+export async function signOutInvitationSession() {
+  const auth = getAuth(firebase);
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Error al cerrar sesión", error);
+  }
 }
 
 export function verifyInvitationPassword(password: string) {
@@ -63,18 +56,5 @@ export async function registerInvitationUser({
   if (authProvider === "google") {
     const idToken = await user.getIdToken();
     await registerUserPort.registerWithGoogle(idToken, groupid, role);
-    return;
   }
-
-  if (!user.email) {
-    return;
-  }
-
-  const userObj: UserOnDb = {
-    email: user.email,
-    groupid,
-    role,
-  };
-
-  await registerUserPort.register(userObj);
 }
