@@ -7,11 +7,9 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
+import { getAuth, signOut } from "firebase/auth";
+import firebase from "../../../firebaseConfig";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import {
   setGlobalState,
   useGlobalState,
@@ -28,19 +26,13 @@ export default function LoginComponent({
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleLogin = async () => {
-    const userData = await handleSignInWithGitHub();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAccountWithToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userAccount);
-    }
+  const handleLogin = () => {
+    navigate("/login");
   };
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleGithubSignOut();
+    await signOut(getAuth(firebase));
     setGlobalState("authData", {
       userid: -1,
       userProfilePic: "",
