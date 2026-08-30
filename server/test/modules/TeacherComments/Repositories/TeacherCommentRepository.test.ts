@@ -1,9 +1,9 @@
 import { Pool } from "pg";
-import { TeacherCommentRepository } from "../../../../src/modules/TeacherCommentsOnSubmissions/Repositories/TeacherCommentRepository";
+import { PostgresTeacherCommentRepository } from "../../../../src/modules/TeacherCommentsOnSubmissions/Infrastructure/PostgresTeacherCommentRepository";
 import { getTeacherCommentMock, getTeacherCommentResponseMock } from "../../../__mocks__/teacherCommentsOnSubmissions/dataMocks";
 
 
-let repository: TeacherCommentRepository;
+let repository: PostgresTeacherCommentRepository;
 let poolConnectMock: jest.Mock;
 let clientQueryMock: jest.Mock;
 
@@ -15,7 +15,7 @@ beforeEach(() => {
     release: jest.fn(),
   });
   jest.spyOn(Pool.prototype, "connect").mockImplementation(poolConnectMock);
-  repository = new TeacherCommentRepository();
+  repository = new PostgresTeacherCommentRepository();
 });
 
 afterEach(() => {

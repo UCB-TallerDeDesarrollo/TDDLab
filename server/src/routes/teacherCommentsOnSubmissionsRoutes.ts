@@ -1,15 +1,15 @@
 import express from "express";
 import { TeacherCommentController } from "../controllers/teacherCommentsOnSubmissions/teacherCommentsOnSubmissionsController"; 
-import { TeacherCommentRepository } from "../modules/TeacherCommentsOnSubmissions/Repositories/TeacherCommentRepository";
+import { PostgresTeacherCommentRepository } from "../modules/TeacherCommentsOnSubmissions/Infrastructure/PostgresTeacherCommentRepository";
+import { ITeacherCommentRepository } from "../modules/TeacherCommentsOnSubmissions/Domain/ITeacherCommentRepository";
 
-const teacherCommentRepository = new TeacherCommentRepository();
-const teacherCommentController = new TeacherCommentController(teacherCommentRepository); // Pasar el repositorio al controlador
+const teacherCommentRepository: ITeacherCommentRepository = new PostgresTeacherCommentRepository();
+const teacherCommentController = new TeacherCommentController(teacherCommentRepository);
 
 const teacherCommentsOnSubmissionRouter = express.Router();
 
 teacherCommentsOnSubmissionRouter.post("/", (req, res) => teacherCommentController.addComment(req, res));
 
-// Ruta para obtener comentarios por ID de entrega
 teacherCommentsOnSubmissionRouter.get("/:submission_id", (req, res) => teacherCommentController.getComments(req, res));
 
 export default teacherCommentsOnSubmissionRouter;
