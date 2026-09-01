@@ -1,7 +1,6 @@
 import InvitationPage from "../../../src/presentation/group-invitation/pages/InvitationPage";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { handleSignInWithGitHub } from "../../../src/modules/User-Authentication/application/signInWithGithub";
 import { mockUserCredential } from "../../modules/__mocks__/Auth/mockedUserCredential";
 import { RegisterUserOnDb } from "../../../src/modules/User-Authentication/application/registerUserOnDb";
 import { MemoryRouter } from "react-router-dom";
@@ -22,12 +21,7 @@ jest.mock("firebase/auth", () => ({
   }),
   User: jest.fn(),
 }));
-jest.mock(
-  "../../../src/modules/User-Authentication/application/signInWithGithub",
-  () => ({
-    handleSignInWithGitHub: jest.fn(),
-  })
-);
+
 jest.mock("../../../src/firebaseConfig", () => {
   return {
     __esModule: true,
@@ -46,14 +40,6 @@ jest.mock(
   }
 );
 describe("InvitationPage component", () => {
-  beforeEach(() => {
-    const mockedUser = mockUserCredential.user;
-    (
-      handleSignInWithGitHub as jest.MockedFunction<
-        typeof handleSignInWithGitHub
-      >
-    ).mockResolvedValue(mockedUser);
-  });
   it("Renders the Sign Up button and press it", async () => {
     const { getByText } = render(
       <MemoryRouter>
@@ -65,7 +51,6 @@ describe("InvitationPage component", () => {
     fireEvent.click(signUpButton);
     expect(RegisterUserOnDb).toHaveBeenCalledTimes(1);
     expect(signUpButton).toBeInTheDocument();
-    expect(handleSignInWithGitHub).toHaveBeenCalled();
     await waitFor(() => {
       const acceptButton = getByText(/Aceptar invitaci.*n al curso/);
       fireEvent.click(acceptButton);
