@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 
-export type InvitationAuthProvider = "github" | "google" | null;
+export type InvitationAuthProvider = "google" | null;
 export type InvitationRole = "student" | "teacher";
 
 export interface InvitationRegistrationParams {
