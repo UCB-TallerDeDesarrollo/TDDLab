@@ -14,6 +14,7 @@ import {
   InvitationRole,
   RotationState,
 } from "../types/invitation.types";
+import { UserRole } from "../../../modules/User-Authentication/domain/session.types";
 
 function getQueryParam(search: string, param: string): string | number | undefined {
   const searchParams = new URLSearchParams(search);
@@ -114,7 +115,7 @@ export function useInvitationPage() {
       const result = await verifyInvitationPassword(password);
 
       if (result === true) {
-        await handleAcceptInvitation("teacher");
+        await handleAcceptInvitation(UserRole.Teacher);
         return;
       }
 

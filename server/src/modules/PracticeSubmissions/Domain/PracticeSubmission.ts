@@ -1,4 +1,16 @@
 type PracticeSubmissionStatus = "pending" | "in progress" | "delivered";
+
+export enum PracticeSubmissionsFields {
+  Id = 'id',
+  PracticeId = 'practiceid',
+  UserId = 'userid',
+  Status = 'status',
+  RepositoryLink = 'repository_link',
+  StartDate = 'start_date',
+  EndDate = 'end_date',
+  Comment = 'comment',
+}
+
 export interface PracticeSubmissionCreationObject {
   practiceid: number;
   userid: number;

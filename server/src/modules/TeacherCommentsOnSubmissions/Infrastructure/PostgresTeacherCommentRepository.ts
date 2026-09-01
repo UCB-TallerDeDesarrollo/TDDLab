@@ -22,13 +22,10 @@ export class PostgresTeacherCommentRepository implements ITeacherCommentReposito
   async createTeacherComment(comment: Omit<TeacherComment, 'id' | 'created_at'>): Promise<TeacherComment> {
     const connection = await this.connectionFactory.getConnection();
     try {
-      const options = new TeacherCommentsOptions()
-        .bySubmissionId(comment.submission_id)
-        .byTeacherId(comment.teacher_id);
       const { query, params } = queryBuilderFactory
         .create(TeacherCommentsSchema)
         .insert(comment)
-        .where(options)
+        .returning()
         .build();
 
       const result = await connection.query(query, params);
@@ -48,6 +45,7 @@ export class PostgresTeacherCommentRepository implements ITeacherCommentReposito
       .bySubmissionId(submission_id);
     const { query, params } = queryBuilderFactory
       .create(TeacherCommentsSchema)
+      .select()
       .where(options)
       .build();
     const rows = await this.executeQuery(query, params);

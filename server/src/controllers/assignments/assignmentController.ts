@@ -4,7 +4,7 @@ import DeleteAssignmentUseCase from "../../modules/Assignments/application/Assig
 import GetAssignmentByIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentByIdUseCase";
 import GetAssignmentsUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentsUseCase";
 import UpdateAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/updateAssignmentUseCase";
-import AssignmentRepository from "../../modules/Assignments/repositories/AssignmentRepository";
+import { IAssignmentRepository } from "../../modules/Assignments/domain/IAssignmentRepository";
 import DeliverAssignmentUseCase from "../../modules/Assignments/application/AssignmentUseCases/deliverAssignmentaUseCase";
 import GetAssignmentsByGroupIdUseCase from "../../modules/Assignments/application/AssignmentUseCases/getAssignmentsByGroupIdUseCase";
 
@@ -17,7 +17,7 @@ class AssignmentController {
   private readonly updateAssignmentUseCase: UpdateAssignmentUseCase;
   private readonly deliverAssignmentUseCase: DeliverAssignmentUseCase;
 
-  constructor(repository: AssignmentRepository) {
+  constructor(repository: IAssignmentRepository) {
     this.createAssignmentUseCase = new CreateAssignmentUseCase(repository);
     this.deleteAssignmentUseCase = new DeleteAssignmentUseCase(repository);
     this.getAssignmentByIdUseCase = new GetAssignmentByIdUseCase(repository);

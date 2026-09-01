@@ -17,7 +17,7 @@ export function authenticateJWT(
     const decoded = authUser.verifyToken(token);
     (req as any).user = decoded;
     next();
-    return res.status(200);
+    return;
   } catch (err) {
     return res.status(403).json({ message: "Token inválido" });
   }
@@ -30,6 +30,6 @@ export function authorizeRoles(...roles: string[]) {
       return res.status(403).json({ message: "No tienes permisos para acceder a esta ruta" });
     }
     next();
-    return res.status(200)
+    return;
   };
 }

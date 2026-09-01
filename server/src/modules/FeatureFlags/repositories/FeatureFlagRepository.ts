@@ -5,6 +5,7 @@ import {
   FeatureFlagCreationObject,
   FeatureFlagUpdateObject,
 } from "../domain/FeatureFlag";
+import { IFeatureFlagRepository } from "../domain/IFeatureFlagRepository";
 
 interface QueryResult {
   exists: boolean;
@@ -12,7 +13,7 @@ interface QueryResult {
 
 const pool = new Pool(config);
 
-class FeatureFlagRepository {
+class FeatureFlagRepository implements IFeatureFlagRepository {
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
     const client = await pool.connect();
     try {

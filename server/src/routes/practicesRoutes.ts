@@ -1,12 +1,14 @@
 import express from "express";
-import PracticeRepository from "../modules/Practices/repository/PracticeRepository";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { PracticeRepositoryBuilder } from "../modules/Practices/infrastructure/PracticeRepositoryBuilder";
 import PracticesController from "../controllers/practices/practicesController";
 import {
   authenticateJWT,
   authorizeRoles,
 } from "../../src/middleware/authMiddleware";
 
-const repository = new PracticeRepository();
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const repository = new PracticeRepositoryBuilder(connectionFactory);
 const practicesController = new PracticesController(repository);
 const practicesRouter = express.Router();
 

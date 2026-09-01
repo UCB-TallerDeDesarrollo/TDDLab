@@ -58,6 +58,10 @@ class AuthRepository implements AuthDBRepositoryInterface {
         const errorMessage = error.response.data?.error || "Error al obtener información del usuario";
         throw new Error(errorMessage);
       }
+      if (axios.isAxiosError(error) && error.request) {
+        console.error("Network error - no response received:", error.request);
+        throw new Error("Error de red: No se pudo conectar con el servidor");
+      }
       console.error("Error fetching user course:", error);
       throw error;
     }
@@ -120,12 +124,12 @@ class AuthRepository implements AuthDBRepositoryInterface {
       console.log("Aqui en el segundo verify")
 
       return response.data.success;
-    } catch (error: unknown) {  
-      if (axios.isAxiosError(error)) { 
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
         if (error.response) {
           console.error("Error response:", error.response.data);
           if (error.response.status === 401) {
-            alert("Contraseña incorrecta. Por favor ingresa una contraseña valida");  
+            alert("Contraseña incorrecta. Por favor ingresa una contraseña valida");
           } else {
             alert(error.response.data.message || "Error en el servidor");
           }

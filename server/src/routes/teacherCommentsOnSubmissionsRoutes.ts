@@ -1,9 +1,10 @@
 import express from "express";
-import { TeacherCommentController } from "../controllers/teacherCommentsOnSubmissions/teacherCommentsOnSubmissionsController"; 
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
 import { PostgresTeacherCommentRepository } from "../modules/TeacherCommentsOnSubmissions/Infrastructure/PostgresTeacherCommentRepository";
-import { ITeacherCommentRepository } from "../modules/TeacherCommentsOnSubmissions/Domain/ITeacherCommentRepository";
+import { TeacherCommentController } from "../controllers/teacherCommentsOnSubmissions/teacherCommentsOnSubmissionsController";
 
-const teacherCommentRepository: ITeacherCommentRepository = new PostgresTeacherCommentRepository();
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const teacherCommentRepository = new PostgresTeacherCommentRepository(connectionFactory);
 const teacherCommentController = new TeacherCommentController(teacherCommentRepository);
 
 const teacherCommentsOnSubmissionRouter = express.Router();

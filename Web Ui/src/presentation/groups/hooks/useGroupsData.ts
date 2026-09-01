@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../modules/User-Authentication/domain/authStore";
 
 import { groupsService } from "../services";
 import { Group } from "../types";
@@ -12,6 +12,7 @@ import { RegisterUserOnDb } from "../../../modules/User-Authentication/applicati
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import CreateGroup from "../../../modules/Groups/application/CreateGroup";
 import { UpdateGroup } from "../../../modules/Groups/application/UpdateGroup";
+import { UserRole } from "../../../modules/User-Authentication/domain/session.types";
 
 const dbAuthPort = new RegisterUserOnDb();
 
@@ -22,7 +23,8 @@ const asId = (v: unknown): number => {
 
 export const useGroupsData = () => {
   const [groups, setGroups] = useState<Group[]>([]);
-  const [authData, setAuthData] = useGlobalState("authData");
+  const authData = useAuthStore((s) => s.authData);
+  const setUserGroupid = useAuthStore((s) => s.setUserGroupid);
 
   const [currentSelectedGroupId, setCurrentSelectedGroupId] = useState<number>(0);
   const [selectedSorting, setSelectedSorting] = useState<string>("");
@@ -41,14 +43,14 @@ export const useGroupsData = () => {
     localStorage.setItem("selectedGroup", String(id));
 
     if (asId(authData?.usergroupid) !== id) {
-      setAuthData({ ...authData, usergroupid: id });
+      setUserGroupid(id);
     }
   };
 
   const clearSelection = () => {
     setCurrentSelectedGroupId(0);
     localStorage.removeItem("selectedGroup");
-    setAuthData({ ...authData, usergroupid: 0 });
+    setUserGroupid(0);
   };
 
   useEffect(() => {
@@ -166,7 +168,7 @@ export const useGroupsData = () => {
       await dbAuthPort.register({
         email: authData.userEmail,
         groupid: newGroup.id,
-        role: "teacher",
+        role: UserRole.Teacher,
       });
     }
 

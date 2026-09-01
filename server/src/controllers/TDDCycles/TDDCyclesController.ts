@@ -6,7 +6,6 @@ import { GetTDDCyclesUseCase } from "../../modules/TDDCycles/Application/getTDDC
 import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLogUseCase";
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
-import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
@@ -45,7 +44,7 @@ class TDDCyclesController {
     );
     this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository);
     this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
-    this.dbCommitsRepository = new DBCommitsRepository();
+    this.dbCommitsRepository = dbCommitsRepository;
     this.dbJobsRepository = dbJobsRepository;
   }
   //NO SE USA

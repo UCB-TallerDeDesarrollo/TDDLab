@@ -1,9 +1,9 @@
-import AssignmentRepository from "../../repositories/AssignmentRepository";
 import { AssignmentCreationObject } from "../../domain/Assignment";
+import { IAssignmentRepository } from "../../domain/IAssignmentRepository";
 class UpdateAssignment {
-  private readonly repository: AssignmentRepository;
+  private readonly repository: IAssignmentRepository;
 
-  constructor(repository: AssignmentRepository) {
+  constructor(repository: IAssignmentRepository) {
     this.repository = repository;
   }
 

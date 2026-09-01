@@ -21,7 +21,7 @@ import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Warning, CheckCircle } from "@mui/icons-material";
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../modules/User-Authentication/domain/authStore";
 import { dispatchAssignmentUpdatedEvent } from "../services/assignmentEvents";
 
 // Componente ValidationDialog
@@ -93,7 +93,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
   const [save, setSave] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("Tarea creada exitosamente");
-  const [auth] = useGlobalState("authData");
+  const auth = useAuthStore((s) => s.authData);
   const [assignmentData, setAssignmentData] = useState({
     id: 0,
     title: "",

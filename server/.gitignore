@@ -5,9 +5,14 @@
 
 .DS_Store
 
+.env
+.env.test
 ## bun
 bun.lock
+
 
 ## Graphify Analisys
 /graphify-out
 AGENTS.md
+/src/graphify-out
+TESTING.md

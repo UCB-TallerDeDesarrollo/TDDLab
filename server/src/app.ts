@@ -20,6 +20,7 @@ const port = 3000;
 const allowedOrigins = [
   process.env.VITE_FRONT_URL,
   "http://localhost:5173",
+  "http://localhost:5000",
   "https://tddlab-staging-firebase.web.app",
 ].filter((origin): origin is string => Boolean(origin));
 
@@ -44,10 +45,10 @@ app.use(express.json());
 
 // Enable CORS for all routes
 //app.use(cors({
-//  origin: "https://tddlab-staging-firebase.web.app/", //process.env.VITE_FRONT_URL, 
+//  origin: "https://tddlab-staging-firebase.web.app/", //process.env.VITE_FRONT_URL,
 //  credentials: true,
 //}));
-//app.use(express.json()); 
+//app.use(express.json());
 
 app.use(bodyParser.json());
 
@@ -70,5 +71,3 @@ app.use("/api/featureFlags", featureFlagsRouter);
 // Start the server
 server(app, port);
 export default app;
-
-

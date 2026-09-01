@@ -1,22 +1,21 @@
 import { User } from "firebase/auth";
-import { setGlobalState } from "../domain/authStates";
+import { useAuthStore } from "../domain/authStore";
 import { UserOnDb } from "../domain/userOnDb.interface";
-
-const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
 export function setCookieAndGlobalStateForValidUser(
   userData: User,
   usergroupid: UserOnDb | null,
   positiveCallback = () => {},
 ) {
-  if (usergroupid && userData.photoURL && userData.email) {
-    localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-    setGlobalState("authData", {
-      userid: usergroupid.id,
-      userProfilePic: userData.photoURL,
-      userEmail: userData.email,
-      usergroupid: usergroupid.groupid,
-      userRole: usergroupid.role,
+  if (usergroupid?.id && userData.photoURL && userData.email) {
+    localStorage.setItem("userProfilePic", userData.photoURL);
+    const groupid = Array.isArray(usergroupid.groupid)
+      ? usergroupid.groupid[0]
+      : usergroupid.groupid;
+    useAuthStore.getState().setSession(userData, {
+      id: usergroupid.id,
+      groupid,
+      role: usergroupid.role,
     });
     positiveCallback();
   } else {

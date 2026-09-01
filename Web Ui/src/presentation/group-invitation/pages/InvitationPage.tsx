@@ -13,6 +13,7 @@ import LoadingOverlay from "../components/LoadingOverlay";
 import PasswordComponent from "../components/PasswordPopUp";
 import SuccessfulEnrollmentPopUp from "../components/SuccessfulEnrollmentPopUp";
 import { useInvitationPage } from "../hooks/useInvitationPage";
+import { UserRole } from "../../../modules/User-Authentication/domain/session.types";
 
 function InvitationPage() {
   const invitation = useInvitationPage();
@@ -128,9 +129,9 @@ function InvitationPage() {
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
                     Israel Antezana te está invitando al curso
                   </Typography>
-                  {invitation.userType === "student" && (
+                  {invitation.userType === UserRole.Student && (
                     <Button
-                      onClick={() => invitation.handleAcceptInvitation("student")}
+                      onClick={() => invitation.handleAcceptInvitation(UserRole.Student)}
                       variant="contained"
                       color="primary"
                       sx={{ marginTop: 2 }}
@@ -140,7 +141,7 @@ function InvitationPage() {
                       Aceptar invitación al curso
                     </Button>
                   )}
-                  {invitation.userType === "teacher" && (
+                  {invitation.userType === UserRole.Teacher && (
                     <Button
                       onClick={() => invitation.setShowPasswordPopup(true)}
                       variant="contained"

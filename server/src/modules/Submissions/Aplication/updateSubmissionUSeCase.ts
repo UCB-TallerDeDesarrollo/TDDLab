@@ -1,10 +1,10 @@
-import SubmissionRepository from "../Repository/SubmissionsRepository";
+import { ISubmissionsRepository } from "../Domain/ISubmissionsRepository";
 import { SubmissionUpdateObject } from "../Domain/Submission";
 
 class UpdateSubmission {
-  private readonly repository: SubmissionRepository;
+  private readonly repository: ISubmissionsRepository;
 
-  constructor(repository: SubmissionRepository) {
+  constructor(repository: ISubmissionsRepository) {
     this.repository = repository;
   }
 

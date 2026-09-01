@@ -1,9 +1,9 @@
-import FeatureFlagRepository from "../repositories/FeatureFlagRepository";
+import { IFeatureFlagRepository } from "../domain/IFeatureFlagRepository";
 
 class DeleteFeatureFlag {
-  private readonly repository: FeatureFlagRepository;
+  private readonly repository: IFeatureFlagRepository;
 
-  constructor(repository: FeatureFlagRepository) {
+  constructor(repository: IFeatureFlagRepository) {
     this.repository = repository;
   }
 

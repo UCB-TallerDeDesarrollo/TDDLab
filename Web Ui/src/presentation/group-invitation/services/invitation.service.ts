@@ -1,7 +1,7 @@
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import firebase from "../../../firebaseConfig";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
+import {firebase} from "../../../firebaseConfig";
+// import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
+// import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
 import { UserOnDb } from "../../../modules/User-Authentication/domain/userOnDb.interface";
@@ -9,21 +9,21 @@ import {
   InvitationAuthProvider,
   InvitationRegistrationParams,
 } from "../types/invitation.types";
+import { fireBaseAuthManager, OAuthProvider } from "../../../modules/User-Authentication/infrastructure/authFirebase";
 
 const registerUserPort = new RegisterUserOnDb();
 
 function resolveAuthProvider(user: User | null): InvitationAuthProvider {
   const providerId = user?.providerData?.[0]?.providerId;
 
-  if (providerId === "google.com") {
-    return "google";
+  switch (providerId) {
+    case "google.com":
+      return OAuthProvider.Google;
+    case "github.com":
+      return OAuthProvider.Github;
+    default:
+      return null;
   }
-
-  if (providerId === "github.com") {
-    return "github";
-  }
-
-  return null;
 }
 
 export function subscribeToInvitationAuth(
@@ -37,13 +37,15 @@ export function subscribeToInvitationAuth(
 }
 
 export async function signInInvitationWithGithub() {
-  const user = await handleSignInWithGitHub();
-  return user ? { user, authProvider: "github" as const } : null;
+  // const user = await handleSignInWithGitHub();
+  const user = await fireBaseAuthManager.loginWithOAuth(OAuthProvider.Github);
+  return user ? { user, authProvider: OAuthProvider.Github } : null;
 }
 
 export async function signInInvitationWithGoogle() {
-  const user = await handleSignInWithGoogle();
-  return user ? { user, authProvider: "google" as const } : null;
+  // const user = await handleSignInWithGoogle();
+  const user = await fireBaseAuthManager.loginWithOAuth(OAuthProvider.Google);
+  return user ? { user, authProvider: OAuthProvider.Google } : null;
 }
 
 export function signOutInvitationSession() {
@@ -60,7 +62,7 @@ export async function registerInvitationUser({
   role,
   user,
 }: InvitationRegistrationParams) {
-  if (authProvider === "google") {
+  if (authProvider === OAuthProvider.Google) {
     const idToken = await user.getIdToken();
     await registerUserPort.registerWithGoogle(idToken, groupid, role);
     return;

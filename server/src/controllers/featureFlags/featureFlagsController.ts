@@ -5,7 +5,7 @@ import GetFeatureFlags from "../../modules/FeatureFlags/application/GetFeatureFl
 import GetFeatureFlagById from "../../modules/FeatureFlags/application/GetFeatureFlagByIdUseCase";
 import GetFeatureFlagByName from "../../modules/FeatureFlags/application/GetFeatureFlagByNameUseCase";
 import UpdateFeatureFlag from "../../modules/FeatureFlags/application/UpdateFeatureFlagUseCase";
-import FeatureFlagRepository from "../../modules/FeatureFlags/repositories/FeatureFlagRepository";
+import { IFeatureFlagRepository } from "../../modules/FeatureFlags/domain/IFeatureFlagRepository";
 
 class FeatureFlagsController {
   private readonly createFeatureFlagUseCase: CreateFeatureFlag;
@@ -15,7 +15,7 @@ class FeatureFlagsController {
   private readonly getFeatureFlagByIdUseCase: GetFeatureFlagById;
   private readonly getFeatureFlagByNameUseCase: GetFeatureFlagByName;
 
-  constructor(repository: FeatureFlagRepository) {
+  constructor(repository: IFeatureFlagRepository) {
     this.createFeatureFlagUseCase = new CreateFeatureFlag(repository);
     this.deleteFeatureFlagUseCase = new DeleteFeatureFlag(repository);
     this.getFeatureFlagByIdUseCase = new GetFeatureFlagById(repository);

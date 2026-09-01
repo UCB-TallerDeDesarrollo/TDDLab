@@ -1,12 +1,14 @@
 import express from "express";
-import { UserRepository } from "../modules/Users/Repositories/UserRepository";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { UserRepositoryBuilder } from "../modules/Users/Infrastructure/UserRepositoryBuilder";
 import UserController from "../controllers/users/userController";
 import {
   authenticateJWT,
   authorizeRoles,
 } from "../../src/middleware/authMiddleware";
 
-const userRepository = new UserRepository();
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const userRepository = new UserRepositoryBuilder(connectionFactory);
 const userController = new UserController(userRepository);
 
 const router = express.Router();
