@@ -1,17 +1,13 @@
 import {
   Avatar,
-  Button,
   IconButton,
   Menu,
   MenuItem,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import {
   setGlobalState,
   useGlobalState,
@@ -21,22 +17,10 @@ interface LoginComponentProps {
   compact?: boolean;
 }
 
-export default function LoginComponent({
-  compact = false,
-}: Readonly<LoginComponentProps>) {
+export default function LoginComponent(_props: Readonly<LoginComponentProps>) {
   const authData = useGlobalState("authData");
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const handleLogin = async () => {
-    const userData = await handleSignInWithGitHub();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAccountWithToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userAccount);
-    }
-  };
 
   const handleLogout = async () => {
     setAnchorEl(null);
@@ -57,7 +41,7 @@ export default function LoginComponent({
 
   return (
     <React.Fragment>
-      {isLoggedIn ? (
+      {isLoggedIn && (
         <React.Fragment>
             <IconButton
               onClick={(event) => setAnchorEl(event.currentTarget)}
@@ -82,22 +66,6 @@ export default function LoginComponent({
             <MenuItem onClick={handleLogout}>Salir</MenuItem>
           </Menu>
         </React.Fragment>
-      ) : (
-        <Button
-          onClick={handleLogin}
-          variant="contained"
-          sx={{
-            marginLeft: compact ? 0 : "18px",
-            textTransform: "none",
-            borderRadius: 999,
-            bgcolor: "#1370D2",
-            boxShadow: "none",
-            px: compact ? 2 : 2.5,
-            minWidth: compact ? "auto" : undefined,
-          }}
-        >
-          Iniciar sesi{"\u00f3"}n
-        </Button>
       )}
     </React.Fragment>
   );
