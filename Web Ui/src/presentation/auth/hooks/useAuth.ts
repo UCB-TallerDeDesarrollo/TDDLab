@@ -30,9 +30,7 @@ export const useAuth = () => {
       });
     } catch (err: any) {
       const errorMessage = err?.message || "Error al iniciar sesión";
-      if (errorMessage.includes("GitHub")) {
-        setError("Este usuario está registrado con GitHub. Por favor, inicia sesión con GitHub.");
-      } else if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
+       if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
         setError("Usuario no encontrado. Por favor, regístrate primero.");
       } else {
         setError(errorMessage);
