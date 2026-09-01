@@ -7,4 +7,3 @@ export async function handleSignInWithGoogle() {
   const result = await signInWithPopup(auth, provider);
   return result.user;
 }
-
