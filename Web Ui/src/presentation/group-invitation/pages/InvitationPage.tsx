@@ -162,9 +162,7 @@ function InvitationPage() {
               onSend={invitation.handlePassVerification}
             />
           )}
-          {invitation.showPopUp && (
-            <SuccessfulEnrollmentPopUp authProvider={invitation.authProvider} />
-          )}
+          {invitation.showPopUp && <SuccessfulEnrollmentPopUp />}
           {invitation.openPopup && <CheckRegisterGroupPopUp />}
         </div>
       ) : (
