@@ -2,7 +2,8 @@ import * as React from "react";
 import DialogContentText from "@mui/material/DialogContentText";
 import PopUp from "./PopUp";
 import { useNavigate } from "react-router-dom";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
+import { getAuth } from "firebase/auth";
+import firebase from "../../../firebaseConfig";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 
@@ -12,11 +13,12 @@ function CheckRegisterGroupPopUp() {
 
   const handleClose = async () => {
     setOpen(false);
-    const userData = await handleSignInWithGitHub();
+    const userData = getAuth(firebase).currentUser;
+
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
+      const userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
       setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
