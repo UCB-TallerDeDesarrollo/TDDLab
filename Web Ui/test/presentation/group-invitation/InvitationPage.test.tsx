@@ -1,7 +1,7 @@
 import InvitationPage from "../../../src/presentation/group-invitation/pages/InvitationPage";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { handleSignInWithGitHub } from "../../../src/modules/User-Authentication/application/signInWithGithub";
+import { handleSignInWithGoogle } from "../../../src/modules/User-Authentication/application/signInWithGoogle";
 import { mockUserCredential } from "../../modules/__mocks__/Auth/mockedUserCredential";
 import { RegisterUserOnDb } from "../../../src/modules/User-Authentication/application/registerUserOnDb";
 import { MemoryRouter } from "react-router-dom";
@@ -49,8 +49,8 @@ describe("InvitationPage component", () => {
   beforeEach(() => {
     const mockedUser = mockUserCredential.user;
     (
-      handleSignInWithGitHub as jest.MockedFunction<
-        typeof handleSignInWithGitHub
+      handleSignInWithGoogle as jest.MockedFunction<
+        typeof handleSignInWithGoogle
       >
     ).mockResolvedValue(mockedUser);
   });
@@ -65,7 +65,7 @@ describe("InvitationPage component", () => {
     fireEvent.click(signUpButton);
     expect(RegisterUserOnDb).toHaveBeenCalledTimes(1);
     expect(signUpButton).toBeInTheDocument();
-    expect(handleSignInWithGitHub).toHaveBeenCalled();
+    expect(handleSignInWithGoogle).toHaveBeenCalled();
     await waitFor(() => {
       const acceptButton = getByText(/Aceptar invitaci.*n al curso/);
       fireEvent.click(acceptButton);
