@@ -1,6 +1,5 @@
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import firebase from "../../../firebaseConfig";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
@@ -34,11 +33,6 @@ export function subscribeToInvitationAuth(
   return onAuthStateChanged(auth, (authUser) => {
     onSessionChange(authUser, resolveAuthProvider(authUser));
   });
-}
-
-export async function signInInvitationWithGithub() {
-  const user = await handleSignInWithGitHub();
-  return user ? { user, authProvider: "github" as const } : null;
 }
 
 export async function signInInvitationWithGoogle() {
