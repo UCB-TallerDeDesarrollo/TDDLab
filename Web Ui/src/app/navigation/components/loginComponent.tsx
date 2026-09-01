@@ -9,9 +9,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
+import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+import { getAuth, signOut } from "firebase/auth";
+import firebase from "../../../firebaseConfig";
 import {
   setGlobalState,
   useGlobalState,
@@ -29,18 +30,19 @@ export default function LoginComponent({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleLogin = async () => {
-    const userData = await handleSignInWithGitHub();
+    const userData = await handleSignInWithGoogle();
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAccountWithToken(idToken);
+      const userAccount = await loginPort.userHasAnAccountWithGoogleToken(idToken);
       setCookieAndGlobalStateForValidUser(userData, userAccount);
     }
   };
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleGithubSignOut();
+    const auth = getAuth(firebase);
+    await signOut(auth);
     setGlobalState("authData", {
       userid: -1,
       userProfilePic: "",
