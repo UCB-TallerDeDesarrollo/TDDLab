@@ -1,0 +1,9 @@
+
+PGHOST=ep-rough-union-a5xn25u7-pooler.us-east-2.aws.neon.tech
+PGDATABASE=neondb
+PGUSER=neondb_owner
+PGPASSWORD=i8umcFGt4DBE
+PGPORT=5432
+VITE_FIREBASE_PROJECT_ID=tddlab-staging-firebase
+JWT_SECRET=tdd-lab-td
+VITE_FRONT_URL=http://localhost:5173
