@@ -12,7 +12,7 @@ import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authe
 import { useNavigate } from "react-router-dom";
 
 interface SuccessfulEnrollmentPopUpProps {
-  authProvider?: "github" | "google" | null;
+  authProvider?: "google" | null;
 }
 
 function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollmentPopUpProps) {
