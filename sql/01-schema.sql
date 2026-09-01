@@ -8,7 +8,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================================
 -- Dominio: Groups
 -- ============================================================
-CREATE TABLE IF NOT EXISTS "Groups" (
+CREATE TABLE IF NOT EXISTS groups (
     id SERIAL PRIMARY KEY,
     groupname VARCHAR(255) NOT NULL,
     groupdetail TEXT,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS practicesubmissions (
 -- ============================================================
 -- Dominio: TeacherComments
 -- ============================================================
-CREATE TABLE IF NOT EXISTS "TeacherComments" (
+CREATE TABLE IF NOT EXISTS teachercomments (
     id SERIAL PRIMARY KEY,
     submission_id INTEGER NOT NULL REFERENCES submissions(id),
     teacher_id INTEGER NOT NULL REFERENCES userstable(id),
