@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import {
   setGlobalState,
@@ -40,7 +39,6 @@ export default function LoginComponent({
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleGithubSignOut();
     setGlobalState("authData", {
       userid: -1,
       userProfilePic: "",
