@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import {
   handleAuthResult,
-  handleSignInWithGitHub,
   handleSignInWithGoogle,
 } from "../services/authService";
 
@@ -18,7 +17,6 @@ export const useAuth = () => {
       navigate({ pathname: "/" });
     }
   }, [authData, navigate]);
-
 
   const loginWithGoogle = async () => {
     try {

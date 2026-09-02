@@ -11,11 +11,11 @@ import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/appl
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
+import { handleSignOutFromGoogle } from "../../../modules/User-Authentication/application/signOutFromGoogle";
 import {
   setGlobalState,
   useGlobalState,
 } from "../../../modules/User-Authentication/domain/authStates";
-
 
 interface LoginComponentProps {
   compact?: boolean;
@@ -40,7 +40,7 @@ export default function LoginComponent({
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleSignInWithGoogle();
+    await handleSignOutFromGoogle();
     setGlobalState("authData", {
       userid: -1,
       userProfilePic: "",
