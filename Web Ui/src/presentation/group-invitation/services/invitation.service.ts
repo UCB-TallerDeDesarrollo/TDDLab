@@ -1,7 +1,7 @@
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import firebase from "../../../firebaseConfig";
 import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutFromGoogle";
+import { handleSignOutFromGoogle } from "../../../modules/User-Authentication/application/signOutFromGoogle";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
 import { UserOnDb } from "../../../modules/User-Authentication/domain/userOnDb.interface";
 import {
@@ -41,7 +41,7 @@ export async function signInInvitationWithGoogle() {
 }
 
 export function signOutInvitationSession() {
-  return handleGithubSignOut();
+  return handleSignOutFromGoogle();
 }
 
 export function verifyInvitationPassword(password: string) {
