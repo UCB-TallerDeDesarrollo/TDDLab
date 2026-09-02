@@ -28,27 +28,24 @@ export default defineConfig({
     },
   ],
   optimizeDeps: {
-      // Fuerza a Vite a procesar correctamente estos submódulos antes de construir
-      // include: ['firebase/app', 'firebase/auth'],
     },
   build: {
+    target: 'es2022',     // Mejor tree-shaking con modern JS
+    minify: 'esbuild',
     commonjsOptions: {
-      // Evita conflictos con transformaciones CommonJS en paquetes modernos
       transformMixedEsModules: true,
     },
     rollupOptions: {
       output: {
         manualChunks: {
-          'chart-libs': ['chart.js', 'react-chartjs-2', 'recharts'],
-          'mui-libs': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled']
+          'chart-libs': ['chart.js', 'react-chartjs-2'],
+          'mui-libs': ['@mui/material', '@mui/icons-material', '@mui/system']
         }
       }
     }
   },
   resolve: {
       alias: {
-        // Fuerza a Vite a resolver cualquier importación suelta hacia el módulo de app
-        // 'firebase': 'firebase/app'
       }
     },
 })
