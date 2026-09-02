@@ -7,8 +7,8 @@ export function setCookieAndGlobalStateForValidUser(
   usergroupid: UserOnDb | null,
   positiveCallback = () => {},
 ) {
-  if (usergroupid?.id && userData.photoURL && userData.email) {
-    localStorage.setItem("userProfilePic", userData.photoURL);
+  if (usergroupid?.id && userData.email) {
+    localStorage.setItem("userProfilePic", userData.photoURL || "");
     const groupid = Array.isArray(usergroupid.groupid)
       ? usergroupid.groupid[0]
       : usergroupid.groupid;

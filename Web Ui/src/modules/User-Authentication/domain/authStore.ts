@@ -35,9 +35,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         isHydrated: true,
       });
     } else {
-      set({ authData: NULL_AUTH_DATA, isHydrated: true });
+      set((state) => {
+        // Si ya hay una sesión activa (ej: login reciente), no la sobreescribir
+        if (state.authData.userEmail) {
+          return { isHydrated: true };
+        }
+        return { authData: NULL_AUTH_DATA, isHydrated: true };
+      });
     }
   },
+
 
   setSession: (user, userCourse) => {
     set({ authData: buildAuthDataFromFirebaseUser(user, userCourse) });

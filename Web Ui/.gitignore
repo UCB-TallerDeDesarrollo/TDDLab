@@ -178,3 +178,7 @@ sketch
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,react
 #
 bun.lock
+
+## output directories
+
+graphify-out/
