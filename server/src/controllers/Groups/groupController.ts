@@ -58,6 +58,7 @@ class GroupsController {
           .json({ error: "Invalid groupid. Group does not exist." });
       }
     } catch (error) {
+      console.error("ERROR :", error)
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -73,6 +74,7 @@ class GroupsController {
       });
       res.status(201).json(newGroup);
     } catch (error) {
+      console.error("ERROR CREANDO GRUPO:", error)
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -83,6 +85,7 @@ class GroupsController {
       await this.deleteGroupUseCase.execute(groupid);
       res.status(204).send();
     } catch (error) {
+      console.error("ERROR ELIMINANDO GRUPO:", error)
       res.status(500).json({ error: "Server error" });
     }
   }

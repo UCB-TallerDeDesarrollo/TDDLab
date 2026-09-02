@@ -78,6 +78,7 @@ export class GroupRepositoryBuilder implements IGroupRepository {
     const { query, params } = queryBuilderFactory
       .create(GroupsSchema)
       .insert(group)
+      .returning()
       .build();
 
     const rows = await this.executeQuery(query, params);
@@ -96,6 +97,7 @@ export class GroupRepositoryBuilder implements IGroupRepository {
       .create(GroupsSchema)
       .update(updatedGroup)
       .where(new GroupsOptions().byId(id))
+      .returning()
       .build();
 
     const rows = await this.executeQuery(query, params);

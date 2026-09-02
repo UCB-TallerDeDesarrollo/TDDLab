@@ -8,6 +8,8 @@ import {
   TextField,
 } from "@mui/material";
 import { Group } from "../types";
+import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
+import { useSnackbarFeedback } from "../../../shared/hooks/useSnackbarFeedback";
 
 interface CreateGroupPopupProps {
   open: boolean;
@@ -25,13 +27,12 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
   const [save, setSave] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const { snackbar, showSuccess, showError, handleClose: handleSnackbarClose } = useSnackbarFeedback();
 
   const handleCancel = () => {
     handleClose();
     setGroupName("");
     setGroupDescription("");
-    setError(null);
   };
 
   const formInvalid = () => groupName.trim() === "";
@@ -45,7 +46,6 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
 
   const handleCreate = async () => {
     setSave(true);
-    setError(null);
 
     if (formInvalid()) {
       setSave(false);
@@ -53,22 +53,25 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
     }
 
     if (isDuplicate()) {
-      setError("Ya existe un grupo con ese nombre");
+      showError("Ya existe un grupo con ese nombre");
       setSave(false);
       return;
     }
 
     try {
       await onCreate({ name: groupName, description: groupDescription });
-      // IMPORTANTE: NO llamar a handleClose() aquí.
-      // El cierre lo controla el padre para poder mostrar el snackbar
-      // DESPUÉS de que el dialog desaparezca y evitar el conflicto aria-hidden.
+      handleClose();
+      showSuccess("Grupo creado exitosamente");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error al crear el grupo";
-      setError(message);
+      showError(message);
     } finally {
       setSave(false);
     }
+  };
+
+  const handleFeedbackClose = () => {
+    handleSnackbarClose();
   };
 
   useEffect(() => {
@@ -76,7 +79,6 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
       setSave(false);
       setGroupName("");
       setGroupDescription("");
-      setError(null);
     }
   }, [open]);
 
@@ -108,20 +110,6 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
           value={groupDescription}
           onChange={(e) => setGroupDescription(e.target.value)}
         />
-        {error && (
-          <TextField
-            error
-            fullWidth
-            margin="dense"
-            value={error}
-            disabled
-            variant="standard"
-            InputProps={{
-              disableUnderline: true,
-              style: { color: "#d32f2f" },
-            }}
-          />
-        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel} disabled={save}>
@@ -134,6 +122,13 @@ const CreateGroupPopup: React.FC<CreateGroupPopupProps> = ({
           {save ? "Creando..." : "Crear"}
         </Button>
       </DialogActions>
+
+      <FeedbackSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleFeedbackClose}
+      />
     </Dialog>
   );
 };

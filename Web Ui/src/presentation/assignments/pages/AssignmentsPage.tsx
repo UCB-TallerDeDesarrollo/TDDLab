@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ActionButton from "../../../shared/components/ActionButton";
@@ -7,6 +7,9 @@ import FeatureListSection from "../../../shared/components/FeatureListSection";
 import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
 import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
 import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivider";
+import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
+import { useSnackbarFeedback } from "../../../shared/hooks/useSnackbarFeedback";
+import { addAssignmentUpdatedListener } from "../services/assignmentEvents";
 import AssignmentForm from "../components/AssignmentForm";
 import AssignmentsFilterPopover from "../components/AssignmentsFilterPopover";
 import AssignmentsList from "../components/AssignmentsList";
@@ -25,6 +28,14 @@ function AssignmentsPage({
   const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(
     null,
   );
+
+  const { snackbar, showSuccess, handleClose: handleSnackbarClose } = useSnackbarFeedback();
+
+  useEffect(() => {
+    return addAssignmentUpdatedListener(() => {
+      showSuccess("Tarea creada exitosamente");
+    });
+  }, [showSuccess]);
 
   const handleCreateAssignmentClick = () => {
     setCreateAssignmentPopupOpen(true);
@@ -125,6 +136,13 @@ function AssignmentsPage({
           groupid={selectedGroupId}
         />
       ) : null}
+
+      <FeedbackSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleSnackbarClose}
+      />
     </FeatureScreenLayout>
   );
 }

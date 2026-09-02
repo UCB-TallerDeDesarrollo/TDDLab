@@ -25,13 +25,23 @@ export class PostgresQueryBuilder<TFields extends string> implements IQueryBuild
     return this;
   }
 
+  private tryNormalizeKey(key: string): string {
+      // Intentar con la clave tal cual, luego en minúsculas
+      if (this.getColumnName(key as TFields) !== undefined) return key;
+      return key.toLowerCase();
+  }
+
   insert(data: Record<string, any>): IQueryBuilder<TFields> {
-    const columns = Object.keys(data);
+    const columns = Object.keys(data).map(key => {
+           const normalizedKey = this.tryNormalizeKey(key);
+           return this.getColumnName(normalizedKey as TFields);
+       });
     const placeholders = columns.map(() => `$${this.paramIndex++}`).join(', ');
     this.sql.push(`INSERT INTO ${this.tableName} (${columns.join(', ')}) VALUES (${placeholders})`);
     this.params.push(...Object.values(data));
     return this;
   }
+
 
   update(data: Record<string, any>): IQueryBuilder<TFields> {
     const setParts = Object.keys(data).map(key => {
