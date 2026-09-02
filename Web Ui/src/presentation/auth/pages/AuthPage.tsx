@@ -7,7 +7,7 @@ import StatefulButton from "../../../shared/components/StatefulButton";
 import ContentState from "../../../shared/components/ContentState";
 
 export default function AuthPage() {
-  const { loginWithGitHub, loginWithGoogle, loading, error, setError } = useAuth();
+  const { loginWithGoogle, loading, error, setError } = useAuth();
   let authStateContent = null;
 
   if (loading) {
@@ -50,8 +50,7 @@ export default function AuthPage() {
           {authStateContent}
 
           <StatefulButton
-            variantStyle="secondary"
-            onClick={loginWithGitHub}
+            variantStyle="secondary"           
             disabled={loading}
             sx={{
               width: "100%",
