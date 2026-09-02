@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
+import { Snackbar, Alert } from "@mui/material";
 
 import FeatureScreenLayout from "../../../shared/components/FeatureScreenLayout";
 import FeaturePageHeader from "../../../shared/components/FeaturePageHeader";
@@ -11,7 +12,7 @@ import SortingComponent from "../../../shared/components/SortingComponent";
 import ActionButton from "../../../shared/components/ActionButton";
 import ConfirmationDialog from "../../../shared/components/ConfirmationDialog";
 
-import { GroupsList } from "../components/GroupsList";
+import { GroupsList } from "../components";
 import { useGroupsData } from "../hooks/useGroupsData";
 import { handleRedirectToTasks } from "../../../shared/helpers/navigationHandlers";
 
@@ -21,6 +22,8 @@ import EditGroupPopup from "../components/EditGroupForm";
 import { Group } from "../types";
 
 import "./GroupsPage.css";
+
+type SnackbarSeverity = "success" | "error";
 
 function GroupsPage() {
   const navigate = useNavigate();
@@ -41,25 +44,50 @@ function GroupsPage() {
   } = useGroupsData();
 
   const [createOpen, setCreateOpen] = useState(false);
-
   const [editOpen, setEditOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
   const [groupToDelete, setGroupToDelete] = useState<{
     group: Group;
     index: number;
   } | null>(null);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: SnackbarSeverity;
+  }>({ open: false, message: "", severity: "success" });
+
+  const showSnackbar = (message: string, severity: SnackbarSeverity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
 
   const handleCloseDeleteDialog = () => {
     setGroupToDelete(null);
   };
 
   const handleConfirmDelete = async () => {
-    if (!groupToDelete) {
-      return;
-    }
+    if (!groupToDelete) return;
 
-    await deleteGroupItem(groupToDelete.index);
-    setGroupToDelete(null);
+    try {
+      await deleteGroupItem(groupToDelete.index);
+      setGroupToDelete(null);
+      showSnackbar("Grupo eliminado exitosamente");
+    } catch {
+      showSnackbar("Error al eliminar el grupo", "error");
+    }
+  };
+
+  const handleCreateGroup = async (data: { name: string; description: string }) => {
+    await createGroup(data);
+    // Cerrar el dialog PRIMERO, luego mostrar el snackbar.
+    // Así evitamos el conflicto aria-hidden entre Dialog y Snackbar.
+    setCreateOpen(false);
+    showSnackbar("Grupo creado exitosamente");
+  };
+
+  const handleUpdateGroup = async (data: { id: number; name: string; description: string }) => {
+    await updateGroup(data);
+    setEditOpen(false);
+    showSnackbar("Grupo actualizado exitosamente");
   };
 
   const renderContent = () => {
@@ -122,7 +150,6 @@ function GroupsPage() {
                 prototypeStyle
                 placeholderText="Filtrar"
               />
-
               <ActionButton
                 startIcon={<AddIcon />}
                 variantStyle="primary"
@@ -133,9 +160,7 @@ function GroupsPage() {
             </>
           }
         />
-
         <FeatureSectionDivider />
-
         <FeatureListSection>
           {renderContent()}
         </FeatureListSection>
@@ -145,9 +170,8 @@ function GroupsPage() {
       <CreateGroupPopup
         open={createOpen}
         handleClose={() => setCreateOpen(false)}
-        onCreate={async (data) => {
-          await createGroup(data);
-        }}
+        onCreate={handleCreateGroup}
+        existingGroups={groups}
       />
 
       <EditGroupPopup
@@ -163,9 +187,7 @@ function GroupsPage() {
               }
             : null
         }
-        onUpdate={async (data) => {
-          await updateGroup(data);
-        }}
+        onUpdate={handleUpdateGroup}
       />
 
       <ConfirmationDialog
@@ -181,6 +203,23 @@ function GroupsPage() {
         onCancel={handleCloseDeleteDialog}
         onDelete={handleConfirmDelete}
       />
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        // Aseguramos que el Snackbar esté por encima de cualquier Dialog
+        sx={{ zIndex: 1401 }}
+      >
+        <Alert
+          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </FeatureScreenLayout>
   );
 }
