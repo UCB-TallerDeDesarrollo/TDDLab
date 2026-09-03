@@ -19,11 +19,13 @@ export const useAuth = () => {
   }, [authData, navigate]);
 
 
-  const loginWithGoogle = async () => {
+    const loginWithGoogle = async () => {
     try {
       setLoading(true);
       setError(null);
+
       const userData = await handleSignInWithGoogle();
+
       await handleAuthResult({
         userData,
         isGoogle: true,
@@ -40,12 +42,15 @@ export const useAuth = () => {
       } else {
         setError(errorMessage);
       }
+    } finally {
+      setLoading(false);
     }
+  };
 
   return {
     loginWithGoogle,
     loading,
     error,
-    setError
+    setError,
   };
 };
