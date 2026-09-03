@@ -18,10 +18,6 @@ function resolveAuthProvider(user: User | null): InvitationAuthProvider {
     return "google";
   }
 
-  if (providerId === "github.com") {
-    return "github";
-  }
-
   return null;
 }
 

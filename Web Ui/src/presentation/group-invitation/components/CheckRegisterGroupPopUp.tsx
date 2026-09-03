@@ -16,7 +16,7 @@ function CheckRegisterGroupPopUp() {
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAccountWithToken(idToken);
+      const userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
       setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
         navigate({
           pathname: "/",
