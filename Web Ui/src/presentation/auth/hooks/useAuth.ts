@@ -25,7 +25,6 @@ export const useAuth = () => {
       const userData = await handleSignInWithGoogle();
       await handleAuthResult({
         userData,
-        isGoogle: true,
         onSuccess: () => navigate({ pathname: "/" }),
       });
     } catch (err: any) {
