@@ -12,7 +12,7 @@ class DeleteAssignment {
       console.log('Eliminando assignment con ID:', assignmentId);
 
       if (!assignmentId || assignmentId.trim() === '') {
-        throw new Error("ID de tarea invalido");
+        throw new Error("ID de tarea inválido");
       }
 
       const existingAssingment = await this.adapter.obtainAssignmentById(assignmentId);
