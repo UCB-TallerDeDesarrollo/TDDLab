@@ -2,7 +2,7 @@ import * as React from "react";
 import DialogContentText from "@mui/material/DialogContentText";
 import PopUp from "./PopUp";
 import { useNavigate } from "react-router-dom";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
+import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 
@@ -12,7 +12,7 @@ function CheckRegisterGroupPopUp() {
 
   const handleClose = async () => {
     setOpen(false);
-    const userData = await handleSignInWithGitHub();
+    const userData = await handleSignInWithGoogle();
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();

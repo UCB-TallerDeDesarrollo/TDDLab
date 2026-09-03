@@ -6,13 +6,10 @@ import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
-import { getUserToken } from "../../modules/Users/Application/getUserToken";
 import { saveUserCookie } from "../../modules/Users/Application/saveUserCookie";
 import { decodeUserTokenFromCookie } from "../../modules/Users/Application/decodeUserTokenFromCookie";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
-import { User } from "../../modules/Users/Domain/User";
-import admin from "../../config/firebaseAdmin";
 
 class UserController {
   private readonly userRepository: UserRepository;
@@ -34,18 +31,18 @@ class UserController {
       await registerUser({ email, groupid, role });
       res.status(201).json({ message: "Usuario registrado con éxito." });
     } catch (error: any) {
-    if (error.message === "UserAlreadyExistsInThatGroup") {
-      res
-        .status(409)
-        .json({ error: "The user is already registered in that group." });
-    } else if (error.message === "No tiene permisos para registrar administradores") {
-      res
-        .status(403)
-        .json({ error: "No tiene permisos para registrar administradores" });
-    } else {
-      res.status(500).json({ error: "Server error while registering user" });
+      if (error.message === "UserAlreadyExistsInThatGroup") {
+        res
+          .status(409)
+          .json({ error: "The user is already registered in that group." });
+      } else if (error.message === "No tiene permisos para registrar administradores") {
+        res
+          .status(403)
+          .json({ error: "No tiene permisos para registrar administradores" });
+      } else {
+        res.status(500).json({ error: "Server error while registering user" });
+      }
     }
-}
 
   }
 
@@ -67,9 +64,9 @@ class UserController {
         res.status(409).json({ error: "The user is already registered in that group." });
       } else if (error.message === "No tiene permisos para registrar administradores") {
         res.status(403).json({ error: "No tiene permisos para registrar administradores" });
-      } else if (error.message === "Token inválido o expirado" || 
-                 error.message === "Token expirado" || 
-                 error.message === "Token inválido") {
+      } else if (error.message === "Token inválido o expirado" ||
+        error.message === "Token expirado" ||
+        error.message === "Token inválido") {
         res.status(401).json({ error: error.message });
       } else if (error.message === "No se pudo obtener email de Firebase") {
         res.status(400).json({ error: error.message });
@@ -98,50 +95,6 @@ class UserController {
     }
   }
 
-  async getUserControllerGithub(req: Request, res: Response): Promise<void> {
-    const { idToken } = req.body;
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      const email = decoded.email;
-      const firebaseData = decoded.firebase as any;
-      const providerId = firebaseData?.sign_in_provider;
-      
-      if (!email) {
-        res.status(400).json({ error: "No se pudo obtener email de Firebase" });
-        return;
-      }
-
-      // Si el token no es de GitHub, verificar si el usuario existe
-      // Si existe, significa que está usando el proveedor equivocado
-      if (providerId && providerId !== "github.com") {
-        const userResult = await getUserByemail(email);
-        if (userResult && !("error" in userResult) && userResult !== null) {
-          res.status(400).json({ 
-            error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
-          });
-          return;
-        }
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-        return;
-      }
-
-      let user = (await getUserByemail(email || "")) as User;
-      if (!user || "error" in user || user === null) {
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-        return;
-      }
-      const token = await getUserToken(user);
-      await saveUserCookie(token, res);
-      res.status(200).json(user);
-    } catch (error: any) {
-      if (error.message && error.message.includes("Usuario no encontrado")) {
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-      } else {
-        res.status(401).json({ error: "Token inválido o expirado" });
-      }
-    }
-  }
-
   async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
     if (!idToken) {
@@ -155,14 +108,14 @@ class UserController {
       res.status(200).json(user);
     } catch (error: any) {
       if (error.message === "DEBE_USAR_GOOGLE") {
-        res.status(400).json({ 
-          error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
+        res.status(400).json({
+          error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google."
         });
       } else if (error.message === "Usuario no encontrado") {
         res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
       } else if (error.message === "Token inválido o expirado" ||
-                 error.message === "Token expirado" ||
-                 error.message === "Token inválido") {
+        error.message === "Token expirado" ||
+        error.message === "Token inválido") {
         res.status(401).json({ error: error.message });
       } else if (error.message === "No se pudo obtener email de Firebase") {
         res.status(400).json({ error: error.message });
@@ -173,14 +126,14 @@ class UserController {
   }
 
 
-async  logoutController (res: Response): Promise<void> {
-  res.clearCookie("userSession", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-  res.status(200).json({ message: "Sesión cerrada correctamente" });
-};
+  async logoutController(res: Response): Promise<void> {
+    res.clearCookie("userSession", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    res.status(200).json({ message: "Sesión cerrada correctamente" });
+  };
 
   async getMeController(req: Request, res: Response): Promise<void> {
     try {
@@ -252,7 +205,7 @@ async  logoutController (res: Response): Promise<void> {
 
     if (Number.isNaN(gid)) {
       res.status(400).json({ error: "Debes proporcionar un groupid válido" });
-    return;
+      return;
     }
 
     try {
@@ -328,14 +281,14 @@ async  logoutController (res: Response): Promise<void> {
       res
         .status(200)
         .json({ message: "Usuario eliminado del grupo exitosamente." });
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error al eliminar usuario del grupo:", error);
       const msg = typeof error === "string" ? error : error?.message;
       if (msg === "Usuario o grupo no encontrado") {
         res.status(404).json({ error: msg });
       } else {
         res.status(500).json({ error: "Error interno del servidor." });
-        }
+      }
     }
   }
 }
