@@ -7,11 +7,8 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
 import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import {
   setGlobalState,
   useGlobalState,
@@ -27,16 +24,6 @@ export default function LoginComponent({
   const authData = useGlobalState("authData");
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const handleLogin = async () => {
-    const userData = await handleSignInWithGitHub();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAccountWithToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userAccount);
-    }
-  };
 
   const handleLogout = async () => {
     setAnchorEl(null);
@@ -84,7 +71,7 @@ export default function LoginComponent({
         </React.Fragment>
       ) : (
         <Button
-          onClick={handleLogin}
+          onClick={() => navigate("/login")}
           variant="contained"
           sx={{
             marginLeft: compact ? 0 : "18px",
