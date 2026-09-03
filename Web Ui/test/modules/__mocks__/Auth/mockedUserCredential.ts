@@ -1,7 +1,6 @@
 import { IdTokenResult, UserCredential } from "firebase/auth";
 
 export const mockUserCredential: UserCredential = {
-  // Mock user credential data
   user: {
     uid: "123",
     displayName: "Test User",
@@ -18,7 +17,7 @@ export const mockUserCredential: UserCredential = {
       throw new Error("Function not implemented.");
     },
     getIdToken: function (_?: boolean | undefined): Promise<string> {
-      throw new Error("Function not implemented.");
+      return Promise.resolve("fake-id-token");
     },
     getIdTokenResult: function (
       _?: boolean | undefined

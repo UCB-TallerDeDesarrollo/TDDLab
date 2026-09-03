@@ -11,6 +11,33 @@ import {
   searchUsersByEmailService,
 } from "../../../src/presentation/users/services/users.service";
 
+// Polyfills requeridos por MUI (Popover/Select) en jsdom
+beforeAll(() => {
+  if (!window.matchMedia) {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+  }
+
+  if (!window.ResizeObserver) {
+    window.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
+});
+
 jest.mock("../../../src/presentation/users/services/users.service", () => ({
   getUsersService: jest.fn(),
   getGroupsService: jest.fn(),
@@ -18,45 +45,23 @@ jest.mock("../../../src/presentation/users/services/users.service", () => ({
   removeUserFromGroupService: jest.fn(),
 }));
 
-const mockedGetUsersService = getUsersService as jest.MockedFunction<
-  typeof getUsersService
->;
-const mockedGetGroupsService = getGroupsService as jest.MockedFunction<
-  typeof getGroupsService
->;
-const mockedSearchUsersByEmailService =
-  searchUsersByEmailService as jest.MockedFunction<
-    typeof searchUsersByEmailService
-  >;
-const mockedRemoveUserFromGroupService =
-  removeUserFromGroupService as jest.MockedFunction<
-    typeof removeUserFromGroupService
-  >;
+function asMock<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
+  return fn as jest.MockedFunction<T>;
+}
+
+const mockedGetUsersService = asMock(getUsersService);
+const mockedGetGroupsService = asMock(getGroupsService);
+const mockedSearchUsersByEmailService = asMock(searchUsersByEmailService);
+const mockedRemoveUserFromGroupService = asMock(removeUserFromGroupService);
 
 const users = [
-  {
-    id: 1,
-    email: "ana@ucb.edu.bo",
-    groupid: 10,
-    role: "student",
-  },
-  {
-    id: 2,
-    email: "bruno@ucb.edu.bo",
-    groupid: 11,
-    role: "teacher",
-  },
+  { id: 1, email: "ana@ucb.edu.bo", groupid: 10, role: "student" },
+  { id: 2, email: "bruno@ucb.edu.bo", groupid: 11, role: "teacher" },
 ];
 
 const groups = [
-  {
-    id: 10,
-    groupName: "Grupo A",
-  },
-  {
-    id: 11,
-    groupName: "Grupo B",
-  },
+  { id: 10, groupName: "Grupo A" },
+  { id: 11, groupName: "Grupo B" },
 ];
 
 describe("UserPage", () => {
@@ -92,19 +97,16 @@ describe("UserPage", () => {
 
     await user.click(filterButton);
 
-    expect(
-      await screen.findByRole("textbox", { name: /buscar por correo/i })
-    ).toBeInTheDocument();
+    const searchInput = await screen.findByRole("textbox", {
+      name: /buscar por correo/i,
+    });
 
     await waitFor(() => {
       expect(screen.getByText("ana@ucb.edu.bo")).toBeInTheDocument();
       expect(screen.getByText("bruno@ucb.edu.bo")).toBeInTheDocument();
     });
 
-    await user.type(
-      screen.getByRole("textbox", { name: /buscar por correo/i }),
-      "ana"
-    );
+    await user.type(searchInput, "ana");
 
     await waitFor(() => {
       expect(screen.getByText("ana@ucb.edu.bo")).toBeInTheDocument();
@@ -118,9 +120,7 @@ describe("UserPage", () => {
     render(<UserPage />);
 
     await user.click(
-      await screen.findByRole("button", {
-        name: /filtrar/i,
-      })
+      await screen.findByRole("button", { name: /filtrar/i })
     );
 
     const searchInput = await screen.findByRole("textbox", {
@@ -130,7 +130,9 @@ describe("UserPage", () => {
     await user.type(searchInput, "zzz");
 
     await waitFor(() => {
-      expect(screen.getByText("No se encontraron resultados")).toBeInTheDocument();
+      expect(
+        screen.getByText("No se encontraron resultados")
+      ).toBeInTheDocument();
     });
   });
 });

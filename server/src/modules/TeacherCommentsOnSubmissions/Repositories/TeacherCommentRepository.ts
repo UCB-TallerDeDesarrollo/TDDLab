@@ -1,61 +1,178 @@
-import { Pool } from "pg"; 
-import config from "../../../config/db";
-import { TeacherComment } from "../Domain/TeacherComment";
+import axios from "axios";
+import AuthDBRepositoryInterface from "../domain/LoginRepositoryInterface";
+import { UserOnDb } from "../domain/userOnDb.interface";
+import { VITE_API } from "../../../../config.ts";
 
-export class TeacherCommentRepository {
-  pool: Pool;
-  
-  constructor() {
-    this.pool = new Pool(config);
-  }
+const API_URL = VITE_API;
 
-  public async executeQuery(query: string, values?: any[]): Promise<any[]> {
-    const client = await this.pool.connect();
+class AuthRepository implements AuthDBRepositoryInterface {
+  async getAccountInfo(email: string): Promise<UserOnDb> {
     try {
-      const result = await client.query(query, values);
-      return result.rows;
-    } finally {
-      client.release();
-    }
-  }
+      const response = await axios.post(API_URL + "/user/login", {
+        email,
+      });
 
-  async createTeacherComment(comment: Omit<TeacherComment, 'id' | 'created_at'>) {
-    const client = await this.pool.connect();
-    try {
-      const query = `INSERT INTO TeacherComments (submission_id, teacher_id, content) 
-                     VALUES ($1, $2, $3) RETURNING *`;
-      const values = [comment.submission_id, comment.teacher_id, comment.content];
-
-      const result = await client.query(query, values);
-      return result.rows[0]; 
-    } catch (error) {
-      console.error("Error inserting teacher comment:", error);
-      throw new Error("Database error"); 
-    } finally {
-      if (client) {
-        client.release();
+      if (response.status === 200) {
+        return response.data;
       }
+
+      throw new Error("Failed to get user Course");
+    } catch (error) {
+      console.error("Error fetching user course:", error);
+      throw error;
     }
   }
 
-  async getTeacherCommentsBySubmission(submission_id: number): Promise<TeacherComment[]> {
-    const query = "SELECT * FROM TeacherComments WHERE submission_id = $1";
-    const values = [submission_id];
-    const rows = await this.executeQuery(query, values);
-    return rows;
+  async getAccountInfoWithGoogleToken(idToken: string): Promise<UserOnDb> {
+    try {
+      const response = await axios.post(
+        API_URL + "/user/google",
+        { idToken },
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        return response.data;
+      }
+
+      throw new Error("Failed to get user Course");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage =
+          error.response.data?.error ||
+          "Error al obtener información del usuario";
+
+        throw new Error(errorMessage);
+      }
+
+      console.error("Error fetching user course:", error);
+      throw error;
+    }
   }
 
-  async isTeacher(teacher_id: number): Promise<boolean> {
-    const query = "SELECT 1 FROM userstable WHERE id = $1 AND role <> $2";
-    const values = [teacher_id, 'student'];
-    const result = await this.executeQuery(query, values);
-    return result.length > 0;
+  async registerAccount(user: UserOnDb): Promise<void> {
+    try {
+      const response = await axios.post(
+        API_URL + "/user/register",
+        user
+      );
+
+      return response.data;
+    } catch (error: unknown) {
+      console.error("Error saving user", error);
+
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(
+            "No tiene permisos para registrar administradores"
+          );
+        }
+
+        throw new Error(
+          error.response.data?.error || "Error al registrar usuario"
+        );
+      }
+
+      throw new Error("Error saving user");
+    }
   }
 
-  async submissionExists(submission_id: number): Promise<boolean> {
-    const query = "SELECT 1 FROM submissions WHERE id = $1";
-    const values = [submission_id];
-    const result = await this.executeQuery(query, values);
-    return result.length > 0;
+  async registerAccountWithGoogle(
+    idToken: string,
+    groupid: number,
+    role: string
+  ): Promise<void> {
+    try {
+      const response = await axios.post(
+        API_URL + "/user/register/google",
+        {
+          idToken,
+          groupid,
+          role,
+        }
+      );
+
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(
+            "No tiene permisos para registrar administradores"
+          );
+        }
+
+        throw new Error(
+          error.response.data?.error ||
+            "Error al registrar usuario con Google"
+        );
+      }
+
+      throw new Error("Error saving user with Google");
+    }
+  }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        API_URL + "/user/verifyPassword",
+        {
+          password,
+        }
+      );
+
+      return response.data.success;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.error(
+            "Error response:",
+            error.response.data
+          );
+
+          if (error.response.status === 401) {
+            alert(
+              "Contraseña incorrecta. Por favor ingresa una contraseña valida"
+            );
+          } else {
+            alert(
+              error.response.data.message ||
+                "Error en el servidor"
+            );
+          }
+        } else if (error.request) {
+          console.error("Error request:", error.request);
+          alert(
+            "Error de red: No se pudo conectar con el servidor"
+          );
+        }
+      } else {
+        console.error("Error:", error);
+        alert("Error desconocido");
+      }
+
+      throw error;
+    }
+  }
+
+  async getUserByid(id: number): Promise<UserOnDb> {
+    try {
+      const response = await axios.get(
+        `${API_URL}/user/${id}`
+      );
+
+      if (response.status === 200) {
+        return response.data;
+      }
+
+      throw new Error("Failed to get user by id");
+    } catch (error) {
+      console.error(
+        "Error fetching user by id:",
+        error
+      );
+      throw error;
+    }
   }
 }
+
+export default AuthRepository;
