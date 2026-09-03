@@ -9,3 +9,4 @@ export async function handleGithubSignOut() {
     console.error("Error al cerrar sesión", error);
   }
 }
+//Borrar 1

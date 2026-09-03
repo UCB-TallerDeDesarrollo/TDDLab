@@ -10,3 +10,4 @@ export async function handleSignInWithGitHub() {
     console.error("Error de autenticación con GitHub", error);
   }
 }
+//Borrar 2
