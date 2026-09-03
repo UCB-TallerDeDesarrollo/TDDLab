@@ -22,13 +22,6 @@ jest.mock("../../../src/modules/User-Authentication/domain/authStates", () => ({
   setGlobalState: jest.fn(),
 }));
 
-jest.mock(
-  "../../../src/modules/User-Authentication/application/signInWithGithub",
-  () => ({
-    handleSignInWithGitHub: jest.fn().mockResolvedValue(null),
-  }),
-);
-
 describe("LoginComponent", () => {
   beforeEach(() => {
     mockNavigate.mockClear();
