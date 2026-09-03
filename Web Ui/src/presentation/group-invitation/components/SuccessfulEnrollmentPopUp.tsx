@@ -12,7 +12,7 @@ import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authe
 import { useNavigate } from "react-router-dom";
 
 interface SuccessfulEnrollmentPopUpProps {
-  authProvider?: "github" | "google" | null;
+  authProvider?:  "google" | null;
 }
 
 function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollmentPopUpProps) {
@@ -38,8 +38,6 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
       let userCourse;
       if (authProvider === "google") {
         userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
-      } else {
-        userCourse = await loginPort.userHasAnAccountWithToken(idToken);
       }
       
       if (userCourse) {
