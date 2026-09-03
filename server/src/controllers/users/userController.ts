@@ -6,12 +6,10 @@ import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
-import { getUserToken } from "../../modules/Users/Application/getUserToken";
 import { saveUserCookie } from "../../modules/Users/Application/saveUserCookie";
 import { decodeUserTokenFromCookie } from "../../modules/Users/Application/decodeUserTokenFromCookie";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
-import { User } from "../../modules/Users/Domain/User";
 
 
 class UserController {

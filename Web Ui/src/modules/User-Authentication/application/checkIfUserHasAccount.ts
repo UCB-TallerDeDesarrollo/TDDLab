@@ -34,12 +34,12 @@ export class CheckIfUserHasAccount {
       } else {
         return null;
       }
-    } catch (error: any) {
-      // Propagar el error con el mensaje original del servidor
-      if (error.message) {
-        throw new Error(error.message);
+   } catch (error: unknown) {
+  
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw error;
       }
-      throw error;
-    }
   }
 }

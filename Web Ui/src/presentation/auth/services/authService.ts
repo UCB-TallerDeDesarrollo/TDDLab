@@ -12,7 +12,7 @@ export const handleSignInWithGoogle = async () => signInWithGoogle();
 
 export const handleAuthResult = async ({
   userData,
-  isGoogle,
+  
   onSuccess,
 }: {
   userData: User | null | undefined;
@@ -26,9 +26,8 @@ export const handleAuthResult = async ({
   const idToken = await userData.getIdToken();
   const loginPort = new CheckIfUserHasAccount();
 
-  const userCourse = isGoogle
-    ? await loginPort.userHasAnAccountWithGoogleToken(idToken)
-    : await loginPort.userHasAnAccountWithToken(idToken);
+  const userCourse =
+       await loginPort.userHasAnAccountWithGoogleToken(idToken);
 
   if (!userCourse) {
     throw new Error(USER_NOT_REGISTERED_MESSAGE);

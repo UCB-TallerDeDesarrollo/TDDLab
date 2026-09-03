@@ -31,8 +31,9 @@ export const useAuth = () => {
         isGoogle: true,
         onSuccess: () => navigate({ pathname: "/" }),
       });
-    } catch (err: any) {
-      const errorMessage = err?.message || "Error al iniciar sesión";
+    } catch (err: unknown) {
+        const errorMessage =
+        err instanceof Error ? err.message : "Error al iniciar sesión";
 
       if (
         errorMessage.includes("no encontrado") ||
