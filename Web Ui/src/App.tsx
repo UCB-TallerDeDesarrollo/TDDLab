@@ -7,7 +7,6 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { NoteAdd } from "@mui/icons-material";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 import { lazy, Suspense, useEffect } from "react";
 import {
@@ -48,12 +47,6 @@ const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIA
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
 const navArrayLinks = [
-  {
-    title: "Inicio",
-    path: "/",
-    icon: <HomeOutlinedIcon />,
-    access: ["admin", "student", "teacher"],
-  },
   {
     title: "Grupos",
     path: "/groups",
