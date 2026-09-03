@@ -12,7 +12,7 @@ import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authe
 import { useNavigate } from "react-router-dom";
 
 interface SuccessfulEnrollmentPopUpProps {
-  authProvider?: "github" | "google" | null;
+  authProvider?: "google" | null;
 }
 
 function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollmentPopUpProps) {
@@ -22,10 +22,10 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
 
   const handleClose = async () => {
     setOpen(false);
-    
+
     const auth = getAuth(firebase);
     const currentUser = auth.currentUser;
-    
+
     if (!currentUser) {
       alert("Disculpa, tu usuario no esta registrado");
       return;
@@ -34,25 +34,20 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
     try {
       const idToken = await currentUser.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
-      
-      let userCourse;
-      if (authProvider === "google") {
-        userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
-      } else {
-        userCourse = await loginPort.userHasAnAccountWithToken(idToken);
-      }
-      
+
+      const userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
+
       if (userCourse) {
         setCookieAndGlobalStateForValidUser(currentUser, userCourse, () =>
           navigate({
             pathname: "/",
           }),
         );
-        
+
         if (currentUser.photoURL) {
           localStorage.setItem("userProfilePic", currentUser.photoURL);
         }
-        
+
         window.location.href = "/";
       } else {
         alert("Disculpa, tu usuario no esta registrado");
@@ -67,7 +62,6 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
     const groupId = urlParams.get("groupid");
 
     if (groupId) {
-      // Realizar una solicitud a la API para obtener el nombre del grupo
       axios.get(`${VITE_API}/groups/${groupId}`)
         .then(response => {
           setGroupName(response.data.groupName);
@@ -77,7 +71,6 @@ function SuccessfulEnrollmentPopUp({ authProvider = null }: SuccessfulEnrollment
         });
     }
   }, []);
-
 
   const dialogContent: any = (
     <DialogContentText>

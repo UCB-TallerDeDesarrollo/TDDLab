@@ -12,7 +12,6 @@ const mockedUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 describe("AuthPage", () => {
   beforeEach(() => {
     mockedUseAuth.mockReturnValue({
-      loginWithGitHub: jest.fn(),
       loginWithGoogle: jest.fn(),
       loading: false,
       error: null,
@@ -24,14 +23,6 @@ describe("AuthPage", () => {
     render(<AuthPage />);
 
     expect(screen.getByRole("img", { name: /tdd lab logo/i })).toBeInTheDocument();
-  });
-
-  it("renders the GitHub login button", () => {
-    render(<AuthPage />);
-
-    expect(
-      screen.getByRole("button", { name: /accedé con github/i }),
-    ).toBeInTheDocument();
   });
 
   it("renders the Google login button", () => {
