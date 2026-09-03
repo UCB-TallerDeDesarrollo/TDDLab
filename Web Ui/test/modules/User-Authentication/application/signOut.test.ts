@@ -1,5 +1,5 @@
 import { signOut, getAuth } from "firebase/auth";
-import { handleGithubSignOut } from "../../../../src/modules/User-Authentication/application/signOutWithGithub";
+import { handleSignOut } from "../../../../src/modules/User-Authentication/application/signOut";
 import { mockAuth } from "../../__mocks__/Auth/mockedAuthObject";
 
 jest.mock("firebase/auth", () => ({
@@ -14,7 +14,7 @@ jest.mock("../../../../src/firebaseConfig", () => {
   };
 });
 
-describe("handleGithubSignOut function", () => {
+describe("handleSignOut function", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -26,7 +26,7 @@ describe("handleGithubSignOut function", () => {
       undefined
     );
 
-    await handleGithubSignOut();
+    await handleSignOut();
 
     expect(getAuth).toHaveBeenCalledTimes(1);
     expect(signOut).toHaveBeenCalledWith(mockAuth);
@@ -41,7 +41,7 @@ describe("handleGithubSignOut function", () => {
     );
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
 
-    await handleGithubSignOut();
+    await handleSignOut();
 
     expect(getAuth).toHaveBeenCalledTimes(1);
     expect(signOut).toHaveBeenCalledWith(mockAuth);

@@ -1,5 +1,4 @@
-import dotenv from "dotenv"; // Import 'dotenv' as a module
-dotenv.config();
+import "./env";
 
 const { PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 

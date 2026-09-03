@@ -135,6 +135,38 @@ Ejecutar Cypress con Vite activo:
 npm run cy:run
 ```
 
+## Variables de entorno locales
+
+Create a `.env` file inside `Web Ui/`.
+
+### Frontend local against the local backend
+
+```bash
+VITE_FIREBASE_API_KEY=AIzaSyBz6XWEbVbQAE3Fom9_vCaJ3mvi-yu6UcE
+VITE_FIREBASE_AUTH_DOMAIN=tddlab-staging-firebase.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=tddlab-staging-firebase
+VITE_FIREBASE_STORAGE_BUCKET=tddlab-staging-firebase.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=258716687908
+VITE_FIREBASE_APP_ID=1:258716687908:web:a3f99db424dce5c7d3c2b1
+VITE_API_URL=http://localhost:3000/api
+VITE_DECRYPTION_KEY=iDHJp8o32$%u4drMjPLq8c!7S@wZEXWC
+```
+
+### Frontend local against the staging backend
+
+```bash
+VITE_FIREBASE_API_KEY=AIzaSyBz6XWEbVbQAE3Fom9_vCaJ3mvi-yu6UcE
+VITE_FIREBASE_AUTH_DOMAIN=tddlab-staging-firebase.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=tddlab-staging-firebase
+VITE_FIREBASE_STORAGE_BUCKET=tddlab-staging-firebase.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=258716687908
+VITE_FIREBASE_APP_ID=1:258716687908:web:a3f99db424dce5c7d3c2b1
+VITE_API_URL=https://tdd-lab-api-staging.vercel.app/api
+VITE_DECRYPTION_KEY=iDHJp8o32$%u4drMjPLq8c!7S@wZEXWC
+```
+
+Firebase authentication only works from authorized domains. `localhost` is supported, but Codespaces or other hostnames may still need to be added to Firebase first.
+
 ## Criterios de mantenimiento
 
 El frontend prioriza una organizacion por dominios funcionales, con responsabilidades separadas y componentes reutilizables. Los cambios nuevos deben mantener consistencia visual, preservar flujos existentes y evitar duplicar logica entre pantallas.

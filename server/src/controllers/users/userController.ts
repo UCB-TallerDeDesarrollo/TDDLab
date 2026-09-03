@@ -12,7 +12,6 @@ import { decodeUserTokenFromCookie } from "../../modules/Users/Application/decod
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
 import { User } from "../../modules/Users/Domain/User";
-import admin from "../../config/firebaseAdmin";
 
 class UserController {
   private readonly userRepository: UserRepository;
@@ -98,50 +97,6 @@ class UserController {
     }
   }
 
-  async getUserControllerGithub(req: Request, res: Response): Promise<void> {
-    const { idToken } = req.body;
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      const email = decoded.email;
-      const firebaseData = decoded.firebase as any;
-      const providerId = firebaseData?.sign_in_provider;
-      
-      if (!email) {
-        res.status(400).json({ error: "No se pudo obtener email de Firebase" });
-        return;
-      }
-
-      // Si el token no es de GitHub, verificar si el usuario existe
-      // Si existe, significa que está usando el proveedor equivocado
-      if (providerId && providerId !== "github.com") {
-        const userResult = await getUserByemail(email);
-        if (userResult && !("error" in userResult) && userResult !== null) {
-          res.status(400).json({ 
-            error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
-          });
-          return;
-        }
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-        return;
-      }
-
-      let user = (await getUserByemail(email || "")) as User;
-      if (!user || "error" in user || user === null) {
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-        return;
-      }
-      const token = await getUserToken(user);
-      await saveUserCookie(token, res);
-      res.status(200).json(user);
-    } catch (error: any) {
-      if (error.message && error.message.includes("Usuario no encontrado")) {
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-      } else {
-        res.status(401).json({ error: "Token inválido o expirado" });
-      }
-    }
-  }
-
   async getUserControllerGoogle(req: Request, res: Response): Promise<void> {
     const { idToken } = req.body;
     if (!idToken) {
@@ -217,66 +172,16 @@ async  logoutController (res: Response): Promise<void> {
 
       if (userData == null) {
         res.status(404).json({ message: "Usuario no encontrado" });
-      } else if ("email" in userData) {
-        let userGroups = await getUserByemail(userData.email);
-        if (userGroups != null && "groupid" in userGroups) {
-          res.status(200).json(userGroups.groupid);
-        } else {
-          res.status(404).json({ message: "Usuario no encontrado" });
-        }
-      } else {
-        res.status(404).json({ message: "Usuario no encontrado" });
+      } else if ("email" in userData) { 
+        res.status(200).json(userData);
       }
     } catch (error) {
-      res.status(500).json({ error: "Server error while fetching user" });
-    }
-  }
-
-  async verifyPassword(req: Request, res: Response): Promise<void> {
-    try {
-      const { password } = req.body;
-      if (password === "TDDLabContraTemporal") {
-        res
-          .status(200)
-          .json({ success: true, message: "Password is correct." });
-      } else {
-        res.status(401).json({ success: false, message: "Wrong password." });
-      }
-    } catch (error) {
-      res.status(500).json({ error: "Server error" });
-    }
-  }
-  async getUsersByGroupid(req: Request, res: Response): Promise<void> {
-    const { groupid } = req.params;
-    const gid = parseInt(groupid);
-
-    if (Number.isNaN(gid)) {
-      res.status(400).json({ error: "Debes proporcionar un groupid válido" });
-    return;
-    }
-
-    try {
-      const users = await this.userRepository.getUsersByGroupid(gid)
-      res.json(users);
-    } catch (error) {
-      res
-        .status(404)
-        .json({ error: "No se encontraron usuarios con ese grupo" });
-    }
-  }
-  async getUsersController(_req: Request, res: Response): Promise<void> {
-    try {
-      let userData = await getUsers();
-      if (userData == null)
-        res.status(404).json({ message: "Usuarios no encontrado" });
-      else res.status(200).json(userData);
-    } catch (error) {
-      res.status(500).json({ error: "Server error while fetching users" });
+      res.status(500).json({ error: "Error en el servidor" });
     }
   }
 
   async getUserbyid(req: Request, res: Response): Promise<void> {
-    const id = parseInt(req.params.id);
+    const id = Number(req.params.id);
 
     if (!id) {
       res.status(400).json({
@@ -286,57 +191,88 @@ async  logoutController (res: Response): Promise<void> {
     }
 
     try {
-      let userData = await getUser(id);
-      if (userData == null)
+      const userData = await getUser(id);
+      if (userData == null) {
         res.status(404).json({ message: "Usuario no encontrado" });
-      else res.status(200).json(userData);
+      } else {
+        res.status(200).json(userData);
+      }
     } catch (error) {
-      res.status(500).json({ error: "Server error while fetching user" });
+      res.status(500).json({ error: "Error en el servidor" });
+    }
+  }
+
+  async getUsersController(req: Request, res: Response): Promise<void> {
+    try {
+      const users = await getUsers();
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ error: "Error en el servidor" });
+    }
+  }
+
+  async getUsersByGroupid(req: Request, res: Response): Promise<void> {
+    const groupid = Number(req.params.groupid);
+    if (!groupid) {
+      res.status(400).json({ error: "Debes proporcionar un groupid valido" });
+      return;
+    }
+
+    try {
+      const users = await getUsers();
+      const filteredUsers = users.filter((user) => user.groupid === groupid);
+      res.status(200).json(filteredUsers);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error en el servidor" });
     }
   }
 
   async updateUser(req: Request, res: Response): Promise<void> {
-    const id = parseInt(req.params.id);
-    const { groupid } = req.body;
-    if (!id) {
-      res.status(400).json({
-        error: "Debes proporcionar un id de usuario valido:",
-      });
+    const { id } = req.params;
+    const { email, role } = req.body;
+    if (!email && !role) {
+      res.status(400).json({ error: "Debes proporcionar al menos un campo para actualizar" });
       return;
     }
+
     try {
-      const userData = await updateUserById(id, groupid);
-      if (userData == null)
-        res.status(404).json({ message: "Usuario no encontrado" });
-      else res.status(200).json(userData);
-    } catch (error) {
-      res.status(500).json({ error: "Server error" });
+      const updatedUser = await updateUserById(Number(id), req.body);
+      res.status(200).json(updatedUser);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Error en el servidor" });
+    }
+  }
+
+  async verifyPassword(req: Request, res: Response): Promise<void> {
+    const { password } = req.body;
+    if (!password) {
+      res.status(400).json({ error: "Debes proporcionar una contraseña" });
+      return;
+    }
+
+    try {
+      const isValidPassword = await this.userRepository.verifyPassword(password);
+      res.status(200).json({ valid: isValidPassword });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Error en el servidor" });
     }
   }
 
   async removeUserFromGroup(req: Request, res: Response): Promise<void> {
-    const userId = parseInt(req.params.userId);
-
+    const { userId } = req.params;
     if (!userId) {
-      res.status(400).json({
-        error: "Debes proporcionar un id de usuario valido:",
-      });
+      res.status(400).json({ error: "Debes proporcionar un userId válido" });
       return;
     }
+
     try {
-      await removeUser(userId);
-      res
-        .status(200)
-        .json({ message: "Usuario eliminado del grupo exitosamente." });
-    } catch (error:any) {
-      console.error("Error al eliminar usuario del grupo:", error);
-      const msg = typeof error === "string" ? error : error?.message;
-      if (msg === "Usuario o grupo no encontrado") {
-        res.status(404).json({ error: msg });
-      } else {
-        res.status(500).json({ error: "Error interno del servidor." });
-        }
+      await removeUser(Number(userId));
+      res.status(200).json({ message: "Usuario removido del grupo con éxito." });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Error en el servidor" });
     }
   }
 }
+
 export default UserController;

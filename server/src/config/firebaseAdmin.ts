@@ -1,7 +1,5 @@
 import admin from "firebase-admin";
-import * as dotenv from "dotenv";
-
-dotenv.config();
+import "./env";
 
 const isTestEnvironment =
   process.env.NODE_ENV === "test" || Boolean(process.env.JEST_WORKER_ID);

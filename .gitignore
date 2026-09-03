@@ -72,7 +72,10 @@ output.zip
 .env
 
 # dotenv db variables file
-./server/.env
+/server/.env
+
+# frontend local environment file
+/Web Ui/.env
 
 # archivo out generado al correr la extension
 /VSCodeExtension/out
