@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react";
+import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+
 
 export const ProfilePage = () => {
-  const [user, setUser] = useState<any>(null);
+  // Consumimos el estado global que ya se cargó en App.tsx
+  const [authData] = useGlobalState("authData");
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    fetch(`${import.meta.env.VITE_API_URL}/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then(setUser);
-  }, []);
-
-  if (!user) return <p>Cargando perfil...</p>;
+  // Validamos si la data del usuario ya está resuelta
+  if (!authData || authData.userid === -1) {
+    return <p>Cargando perfil...</p>;
+  }
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h2>{user.name}</h2>
-      <p>{user.email}</p>
-      <p>Rol: {user.role}</p>
+      <h2>Perfil de Usuario</h2>
+      <p>Email: {authData.userEmail}</p>
+      <p>Rol: {authData.userRole}</p>
+      {/* Si decides mostrar la foto de perfil: */}
+      {authData.userProfilePic && (
+        <img src={authData.userProfilePic} alt="Perfil" width="100" />
+      )}
     </div>
   );
 };
