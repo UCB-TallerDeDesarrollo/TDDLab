@@ -3,7 +3,6 @@ import { User } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import {
   registerInvitationUser,
-  signInInvitationWithGithub,
   signInInvitationWithGoogle,
   signOutInvitationSession,
   subscribeToInvitationAuth,
@@ -15,7 +14,10 @@ import {
   RotationState,
 } from "../types/invitation.types";
 
-function getQueryParam(search: string, param: string): string | number | undefined {
+function getQueryParam(
+  search: string,
+  param: string,
+): string | number | undefined {
   const searchParams = new URLSearchParams(search);
   const value = searchParams.get(param);
 
@@ -36,9 +38,13 @@ export function useInvitationPage() {
   const [openPopup, setOpenPopup] = useState(false);
   const [showPopUp, setShowPopUp] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [rotation, setRotation] = useState<RotationState>({ rotateX: 0, rotateY: 0 });
+  const [rotation, setRotation] = useState<RotationState>({
+    rotateX: 0,
+    rotateY: 0,
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [authProvider, setAuthProvider] = useState<InvitationAuthProvider>(null);
+  const [authProvider, setAuthProvider] =
+    useState<InvitationAuthProvider>(null);
   const [showAdminModal, setShowAdminModal] = useState(false);
 
   useEffect(() => {
@@ -53,19 +59,6 @@ export function useInvitationPage() {
       setShowAdminModal(true);
     }
   }, [userType]);
-
-  const handleSignUp = async () => {
-    setIsLoading(true);
-    try {
-      const session = await signInInvitationWithGithub();
-      if (session) {
-        setUser(session.user);
-        setAuthProvider(session.authProvider);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSignUpWithGoogle = async () => {
     setIsLoading(true);
@@ -87,7 +80,8 @@ export function useInvitationPage() {
         return;
       }
 
-      const userGroupid = typeof groupid === "number" ? groupid : Number(groupid) || 1;
+      const userGroupid =
+        typeof groupid === "number" ? groupid : Number(groupid) || 1;
 
       try {
         await registerInvitationUser({
@@ -126,7 +120,8 @@ export function useInvitationPage() {
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = event;
-    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    const { left, top, width, height } =
+      currentTarget.getBoundingClientRect();
     const x = clientX - (left + width / 2);
     const y = clientY - (top + height / 2);
 
@@ -148,7 +143,6 @@ export function useInvitationPage() {
     handleMouseMove,
     handlePassVerification,
     handleSignOut: signOutInvitationSession,
-    handleSignUp,
     handleSignUpWithGoogle,
     isLoading,
     openPopup,
