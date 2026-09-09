@@ -3,6 +3,17 @@ import SubmissionRepository from "../../../../src/modules/Submissions/Repository
 import { submissionInProgressDataMock } from "../../__mocks__/submissions/data/submissionDataMock";
 import { SubmissionUpdateObject } from "../../../../src/modules/Submissions/Domain/submissionInterfaces";
 
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
+
 const axiosPostSpy = jest.spyOn(axios, 'post');
 const axiosGetSpy = jest.spyOn(axios, 'get');
 const mockRepository = new SubmissionRepository();

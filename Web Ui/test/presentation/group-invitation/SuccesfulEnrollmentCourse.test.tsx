@@ -3,7 +3,16 @@ import '@testing-library/jest-dom';
 import SuccessfulEnrollmentPopUp from '../../../src/presentation/group-invitation/components/SuccessfulEnrollmentPopUp';
 import { MemoryRouter } from 'react-router-dom';
 
-jest.mock('axios');
+jest.mock('axios', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
 
 jest.mock('firebase/auth', () => ({
     getAuth: jest.fn(),

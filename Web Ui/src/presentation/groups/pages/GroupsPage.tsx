@@ -42,6 +42,8 @@ function GroupsPage() {
     selectAndSync,
   } = useGroupsData();
 
+  const title = "Grupos";
+  document.title = title;
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);

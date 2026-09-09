@@ -26,7 +26,7 @@ export default function LoginComponent({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleLogin = async () => {
-    const userData = await fireBaseAuthManager.loginWithOAuth(OAuthProvider.Github);
+    const userData = await fireBaseAuthManager.loginWithOAuth(OAuthProvider.Google);
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();

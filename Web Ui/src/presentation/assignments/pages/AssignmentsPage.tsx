@@ -20,6 +20,7 @@ function AssignmentsPage({
   userRole,
   userGroupid,
 }: Readonly<AssignmentScreenProps>) {
+  const title = "Tareas";
   const [createAssignmentPopupOpen, setCreateAssignmentPopupOpen] =
     useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<number>(
@@ -28,6 +29,7 @@ function AssignmentsPage({
   const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(
     null,
   );
+  document.title = title;
 
   const { snackbar, showSuccess, handleClose: handleSnackbarClose } = useSnackbarFeedback();
 

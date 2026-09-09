@@ -1,6 +1,11 @@
+// @environment jsdom
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import FeatureScreenLayout from "../../src/shared/components/FeatureScreenLayout";
+
+console.log("typeof document:", typeof document);
+console.log("typeof window:", typeof window);
+console.log("globalThis.document:", typeof globalThis.document);
 
 describe("FeatureScreenLayout", () => {
   it("renders children inside a main element", () => {

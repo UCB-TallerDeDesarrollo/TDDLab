@@ -3,7 +3,6 @@ import { User } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import {
   registerInvitationUser,
-  signInInvitationWithGithub,
   signInInvitationWithGoogle,
   signOutInvitationSession,
   subscribeToInvitationAuth,
@@ -54,19 +53,6 @@ export function useInvitationPage() {
       setShowAdminModal(true);
     }
   }, [userType]);
-
-  const handleSignUp = async () => {
-    setIsLoading(true);
-    try {
-      const session = await signInInvitationWithGithub();
-      if (session) {
-        setUser(session.user);
-        setAuthProvider(session.authProvider);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSignUpWithGoogle = async () => {
     setIsLoading(true);
@@ -149,7 +135,6 @@ export function useInvitationPage() {
     handleMouseMove,
     handlePassVerification,
     handleSignOut: signOutInvitationSession,
-    handleSignUp,
     handleSignUpWithGoogle,
     isLoading,
     openPopup,

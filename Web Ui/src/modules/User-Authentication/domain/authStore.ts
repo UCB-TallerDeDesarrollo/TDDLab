@@ -5,6 +5,7 @@ import {
   NULL_AUTH_DATA,
   UserRole,
   buildAuthDataFromFirebaseUser,
+  buildAuthDataFromSession
 } from "./session.types";
 import { getSessionCookie } from "../application/getSessionCookie";
 
@@ -24,19 +25,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   hydrate: async () => {
     const session = await getSessionCookie();
     if (session) {
+      const userProfilePic = localStorage.getItem("userProfilePic") || "";
       set({
-        authData: {
-          userid: session.id,
-          userProfilePic: "",
-          userEmail: session.email,
-          usergroupid: session.groupid,
-          userRole: session.role,
-        },
+        authData: buildAuthDataFromSession(session, userProfilePic),
         isHydrated: true,
       });
     } else {
       set((state) => {
-        // Si ya hay una sesión activa (ej: login reciente), no la sobreescribir
         if (state.authData.userEmail) {
           return { isHydrated: true };
         }

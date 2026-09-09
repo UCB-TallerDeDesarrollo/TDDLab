@@ -6,7 +6,16 @@ import { removeSessionCookie } from "../../../../src/modules/User-Authentication
 import { cookieUserData } from "./__mocks__/cookieData";
 import { SessionData, UserRole, SessionCookieName } from "../../../../src/modules/User-Authentication/domain/session.types";
 import axios from "axios";
-jest.mock("axios");
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
 import {VITE_API} from "../../../../config.ts";
 const API_URL = VITE_API;
 

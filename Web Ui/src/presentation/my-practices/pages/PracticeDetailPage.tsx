@@ -40,6 +40,9 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     closeUiMessage,
   } = usePracticeDetail({ userid, practiceid, navigate });
 
+  const title = `Detalle de practica ${practice?.title}`;
+  document.title = title;
+
   const hasSubmission = Boolean(submission);
   const hasRepo = Boolean(submission?.repository_link);
   const canStart = !hasSubmission;

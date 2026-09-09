@@ -35,6 +35,8 @@ export default function MyPracticesPage({
     updatePractice,
   } = useMyPracticesScreen(userid, userRole);
 
+  const title = "Mis practicas";
+  document.title = title;
   const { snackbar, showSuccess, handleClose: handleSnackbarClose } = useSnackbarFeedback();
 
   useEffect(() => {
