@@ -20,6 +20,20 @@ const firebaseConfig = {
 
 const firebase: any = initializeApp(firebaseConfig);
 
-const auth = getAuth(firebase);
+const isTestEnv = import.meta.env.MODE === 'cypress' || import.meta.env.MODE === 'test';
 
-export { firebase, auth};
+let auth: any = null;
+if (VITE_FIREBASE_API_KEY) {
+  try {
+    auth = getAuth(firebase);
+  } catch (error) {
+    if (!isTestEnv) {
+      throw error;
+    }
+    console.warn('Firebase Auth no inicializado en test:', error);
+  }
+} else if (isTestEnv) {
+  console.warn('Firebase API key ausente en test, Auth se saltea');
+}
+
+export { firebase, auth };

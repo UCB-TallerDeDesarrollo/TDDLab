@@ -98,7 +98,7 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
         with:
           working-directory: Web Ui
-          start: npm run dev
+          start: npm run dev -- --mode cypress
 
       - name: Stop Your Application
         working-directory: Web Ui
