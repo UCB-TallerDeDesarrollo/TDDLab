@@ -3,7 +3,6 @@ import { User } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import {
   registerInvitationUser,
-  signInInvitationWithGithub,
   signInInvitationWithGoogle,
   signOutInvitationSession,
   subscribeToInvitationAuth,
@@ -14,6 +13,7 @@ import {
   InvitationRole,
   RotationState,
 } from "../types/invitation.types";
+import { UserRole } from "../../../modules/User-Authentication/domain/session.types";
 
 function getQueryParam(search: string, param: string): string | number | undefined {
   const searchParams = new URLSearchParams(search);
@@ -53,19 +53,6 @@ export function useInvitationPage() {
       setShowAdminModal(true);
     }
   }, [userType]);
-
-  const handleSignUp = async () => {
-    setIsLoading(true);
-    try {
-      const session = await signInInvitationWithGithub();
-      if (session) {
-        setUser(session.user);
-        setAuthProvider(session.authProvider);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSignUpWithGoogle = async () => {
     setIsLoading(true);
@@ -114,7 +101,7 @@ export function useInvitationPage() {
       const result = await verifyInvitationPassword(password);
 
       if (result === true) {
-        await handleAcceptInvitation("teacher");
+        await handleAcceptInvitation(UserRole.Teacher);
         return;
       }
 
@@ -148,7 +135,6 @@ export function useInvitationPage() {
     handleMouseMove,
     handlePassVerification,
     handleSignOut: signOutInvitationSession,
-    handleSignUp,
     handleSignUpWithGoogle,
     isLoading,
     openPopup,

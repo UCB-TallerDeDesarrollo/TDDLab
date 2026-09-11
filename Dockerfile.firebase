@@ -1,0 +1,44 @@
+# syntax=docker/dockerfile:1.7
+
+############################
+# Build del frontend
+############################
+FROM docker.io/oven/bun:1.4.0-alpine AS builder
+
+WORKDIR /build
+
+COPY ["Web Ui/package.json", "./"]
+COPY ["Web Ui/bun.lock", "./"]
+
+RUN bun install --frozen-lockfile
+
+COPY ["Web Ui/", "./"]
+
+RUN bun run build
+
+############################
+# Runtime Firebase Emulator
+############################
+FROM docker.io/oven/bun:1.4.0-alpine
+
+ARG FIREBASE_TOOLS_VERSION=14.16.0
+
+RUN apk add --no-cache \
+    openjdk21-jre \
+    bash \
+    tini \
+ && bun add -g firebase-tools@${FIREBASE_TOOLS_VERSION}
+
+WORKDIR /app
+
+COPY ["Web Ui/firebase.staging.json", "./firebase.json"]
+COPY ["Web Ui/.firebaserc", "./"]
+
+# ✅ Ruta correcta
+COPY --from=builder /build/dist ./dist
+
+EXPOSE 4000 5000 9099
+
+ENTRYPOINT ["/sbin/tini","--"]
+
+CMD ["firebase","emulators:start","--only","hosting,auth","--project","staging"]

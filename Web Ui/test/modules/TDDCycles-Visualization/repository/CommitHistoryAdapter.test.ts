@@ -3,7 +3,16 @@ import { CommitHistoryAdapter } from '../../../../src/modules/TDDCycles-Visualiz
 import { TDDLogEntry } from '../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces';
 
 // Mocking the axios library
-jest.mock('axios');
+jest.mock('axios', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('CommitHistoryAdapter', () => {

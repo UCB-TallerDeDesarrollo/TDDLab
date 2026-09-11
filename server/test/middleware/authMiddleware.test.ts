@@ -43,14 +43,15 @@ describe("authenticateJWT middleware", () => {
     expect(mockReq.user).toEqual(mockDecoded);
   });
 
-  it("Verificar que devuelve 200 cuando la autenticacion es exitosa", () => {
+  it("Verificar que la autenticacion es exitosa", () => {
     mockReq.cookies.userSession = "token_valido";
     const mockDecoded = { userId: 123 };
     (AuthenticateUser.prototype.verifyToken as jest.Mock).mockReturnValue(
       mockDecoded
     );
     authenticateJWT(mockReq, mockRes, mockNext);
-    expect(mockRes.status).toHaveBeenCalledWith(200);
+    expect(mockNext).toHaveBeenCalled();
+    expect(mockRes.status).not.toHaveBeenCalled();
   });
 
   it("Verificar que devuelve 401 cuando no se manda el token", () => {
@@ -93,7 +94,7 @@ describe("authorizeRoles middleware", () => {
     middleware(mockReq, mockRes, mockNext);
 
     expect(mockNext).toHaveBeenCalled();
-    expect(mockRes.status).toHaveBeenCalledWith(200);
+    expect(mockRes.status).not.toHaveBeenCalled();
   });
 
   it("Verificar que devuelve 403 si el rol no está permitido", () => {

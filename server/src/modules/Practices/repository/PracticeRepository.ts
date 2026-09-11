@@ -1,10 +1,11 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
 import { PracticeDataObject, PracticeCreationObject } from "../domain/Practice";
+import { IPracticeRepository } from "../domain/IPracticeRepository";
 
 const pool = new Pool(config);
 
-class PracticeRepository {
+class PracticeRepository implements IPracticeRepository {
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
     const client = await pool.connect();
     try {

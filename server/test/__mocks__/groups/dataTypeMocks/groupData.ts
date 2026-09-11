@@ -1,6 +1,6 @@
-import GroupDTO from "../../../../src/modules/Groups/domain/Group";
+import { GroupDataObject } from "../../../../src/modules/Groups/domain/Group";
 
-export const getDataListOfGroupsMock: GroupDTO[] = [
+export const getDataListOfGroupsMock: GroupDataObject[] = [
   {
     id: 1,
     groupName: "Grupo 1",
@@ -27,14 +27,14 @@ export const getDataListOfGroupsMock: GroupDTO[] = [
   },
 ];
 
-export const getDataGroupMock: GroupDTO = {
+export const getDataGroupMock: GroupDataObject = {
   id: 1,
   groupName: "Grupo",
   groupDetail: "Detalles del Grupo",
   creationDate: new Date("2023-12-08T08:00:00.000Z"),
 };
 
-export const getModifiedGroupDataMock: GroupDTO = {
+export const getModifiedGroupDataMock: GroupDataObject = {
   id: 1,
   groupName: "Grupo actualizado",
   groupDetail: "Detalles del Grupo actualizado",

@@ -7,7 +7,16 @@ dotenv.config()
 // Mocking Axios to avoid actual HTTP requests
 const API_URL = process.env.VITE_API_URL;
 
-jest.mock("axios");
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
 
 describe("AuthRepository", () => {
   afterEach(() => {

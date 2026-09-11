@@ -70,6 +70,7 @@ output.zip
 
 # dotenv environment variables file
 .env
+.env.local
 
 # dotenv db variables file
 ./server/.env

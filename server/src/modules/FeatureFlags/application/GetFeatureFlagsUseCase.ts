@@ -1,10 +1,10 @@
-import FeatureFlagRepository from "../repositories/FeatureFlagRepository";
 import { FeatureFlagDataObject } from "../domain/FeatureFlag";
+import { IFeatureFlagRepository } from "../domain/IFeatureFlagRepository";
 
 class GetFeatureFlags {
-  private readonly repository: FeatureFlagRepository;
+  private readonly repository: IFeatureFlagRepository;
 
-  constructor(repository: FeatureFlagRepository) {
+  constructor(repository: IFeatureFlagRepository) {
     this.repository = repository;
   }
 

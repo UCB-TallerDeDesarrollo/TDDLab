@@ -1,9 +1,9 @@
-import PracticeRepository from "../../repository/PracticeRepository";
 import { PracticeDataObject } from "../../domain/Practice";
+import { IPracticeRepository } from "../../domain/IPracticeRepository";
 
 class GetPractices {
-  private readonly adapter: PracticeRepository;
-  constructor(adapter: PracticeRepository) {
+  private readonly adapter: IPracticeRepository;
+  constructor(adapter: IPracticeRepository) {
     this.adapter = adapter;
   }
   async execute(): Promise<PracticeDataObject[]> {

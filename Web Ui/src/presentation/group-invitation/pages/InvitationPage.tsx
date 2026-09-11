@@ -1,5 +1,4 @@
 import Button from "@mui/material/Button";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import GoogleIcon from "@mui/icons-material/Google";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -8,13 +7,15 @@ import Typography from "@mui/material/Typography";
 import { Grid } from "@mui/material";
 import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 import AdminAlertModal from "../components/AdminAlertModal";
-import CheckRegisterGroupPopUp from "../components/CheckRegisterGroupPopUp";
 import LoadingOverlay from "../components/LoadingOverlay";
 import PasswordComponent from "../components/PasswordPopUp";
 import SuccessfulEnrollmentPopUp from "../components/SuccessfulEnrollmentPopUp";
 import { useInvitationPage } from "../hooks/useInvitationPage";
+import { UserRole } from "../../../modules/User-Authentication/domain/session.types";
 
 function InvitationPage() {
+  const title = "Invitación";
+  document.title = title;
   const invitation = useInvitationPage();
 
   return (
@@ -128,9 +129,9 @@ function InvitationPage() {
                   <Typography variant="body1" sx={{ textAlign: "center" }}>
                     Israel Antezana te está invitando al curso
                   </Typography>
-                  {invitation.userType === "student" && (
+                  {invitation.userType === UserRole.Student && (
                     <Button
-                      onClick={() => invitation.handleAcceptInvitation("student")}
+                      onClick={() => invitation.handleAcceptInvitation(UserRole.Student)}
                       variant="contained"
                       color="primary"
                       sx={{ marginTop: 2 }}
@@ -140,7 +141,7 @@ function InvitationPage() {
                       Aceptar invitación al curso
                     </Button>
                   )}
-                  {invitation.userType === "teacher" && (
+                  {invitation.userType === UserRole.Teacher && (
                     <Button
                       onClick={() => invitation.setShowPasswordPopup(true)}
                       variant="contained"
@@ -166,7 +167,6 @@ function InvitationPage() {
           {invitation.showPopUp && (
             <SuccessfulEnrollmentPopUp authProvider={invitation.authProvider} />
           )}
-          {invitation.openPopup && <CheckRegisterGroupPopUp />}
         </div>
       ) : (
         <Grid
@@ -179,35 +179,6 @@ function InvitationPage() {
         >
           <Grid item>
             <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
-              <Button
-                onClick={invitation.handleSignUp}
-                disabled={invitation.isLoading}
-                variant="contained"
-                sx={{
-                  backgroundColor: "#24292e",
-                  color: "white",
-                  padding: "10px 20px",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  "&:hover": {
-                    backgroundColor: "#1a1e22",
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc",
-                  },
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <GitHubIcon style={{ marginRight: "8px" }} />
-                  Registrarse con GitHub
-                </div>
-              </Button>
               <Button
                 onClick={invitation.handleSignUpWithGoogle}
                 disabled={invitation.isLoading}

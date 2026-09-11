@@ -1,5 +1,6 @@
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
+import { SessionData } from "../domain/session.types";
 
 const API_URL = VITE_API;
 const SESSION_REQUEST_TIMEOUT_MS = 2000;
@@ -21,14 +22,7 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number) =>
       });
   });
 
-const isSessionResponse = (
-  value: unknown,
-): value is {
-  id: number;
-  email: string;
-  groupid: number;
-  role: string;
-} => {
+const isSessionResponse = (value: unknown): value is SessionData => {
   if (!value || typeof value !== "object") {
     return false;
   }

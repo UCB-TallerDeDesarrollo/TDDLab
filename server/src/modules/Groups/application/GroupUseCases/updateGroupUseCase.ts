@@ -1,17 +1,17 @@
-import GroupRepository from "../../repositories/GroupRepository";
-import GroupDTO from "../../domain/Group";
+import { GroupDataObject } from "../../domain/Group";
+import { IGroupRepository } from "../../domain/IGroupRepository";
 
 class UpdateGroupUseCase {
-  private readonly groupRepository: GroupRepository;
+  private readonly groupRepository: IGroupRepository;
 
-  constructor(groupRepository: GroupRepository) {
+  constructor(groupRepository: IGroupRepository) {
     this.groupRepository = groupRepository;
   }
 
   async execute(
     groupid: number,
-    updatedGroupData: GroupDTO
-  ): Promise<GroupDTO | null> {
+    updatedGroupData: GroupDataObject
+  ): Promise<GroupDataObject | null> {
     try {
       // Check if the group with the given ID exists
       const existingGroup = await this.groupRepository.obtainGroupById(groupid);

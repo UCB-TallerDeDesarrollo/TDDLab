@@ -1,11 +1,11 @@
-import { TeacherCommentRepository } from "../Repositories/TeacherCommentRepository";
+import { ITeacherCommentRepository } from "../Domain/ITeacherCommentRepository";
 
 export const getTeacherComments = async (
   submission_id: number,
-  Adapter: TeacherCommentRepository = new TeacherCommentRepository()
+  repository: ITeacherCommentRepository
 ) => {
   try {
-    return await Adapter.getTeacherCommentsBySubmission(submission_id);
+    return await repository.getTeacherCommentsBySubmission(submission_id);
   } catch (error) {
     console.error("Error obtaining teacher comments:", error);
     return { error: "Error obtaining teacher comments" };

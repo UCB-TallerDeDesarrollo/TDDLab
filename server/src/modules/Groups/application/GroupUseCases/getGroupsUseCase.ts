@@ -1,14 +1,14 @@
-import GroupRepository from "../../repositories/GroupRepository";
-import GroupDTO from "../../domain/Group";
+import { GroupDataObject } from "../../domain/Group";
+import { IGroupRepository } from "../../domain/IGroupRepository";
 
 class GetGroupsUseCase {
-  private readonly groupRepository: GroupRepository;
+  private readonly groupRepository: IGroupRepository;
 
-  constructor(groupRepository: GroupRepository) {
+  constructor(groupRepository: IGroupRepository) {
     this.groupRepository = groupRepository;
   }
 
-  async execute(): Promise<GroupDTO[]> {
+  async execute(): Promise<GroupDataObject[]> {
     try {
       // Call the repository method to obtain all groups
       const groups = await this.groupRepository.obtainGroups();

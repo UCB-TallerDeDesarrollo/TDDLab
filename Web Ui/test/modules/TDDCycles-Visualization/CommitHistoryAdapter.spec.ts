@@ -2,8 +2,21 @@ import { CommitHistoryAdapter } from "../../../src/modules/TDDCycles-Visualizati
 import axios from "axios";
 
 // Simulamos `axios` y `Octokit`
-jest.mock("axios");
-jest.mock("octokit");
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
+jest.mock("octokit", () => ({
+  __esModule: true,
+  default: jest.fn(),
+  Octokit: jest.fn(),
+}));
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 describe("CommitHistoryAdapter", () => {

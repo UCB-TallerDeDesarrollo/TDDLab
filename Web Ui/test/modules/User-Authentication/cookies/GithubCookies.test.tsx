@@ -4,10 +4,20 @@ import { setSessionCookie } from "../../../../src/modules/User-Authentication/ap
 import { getSessionCookie } from "../../../../src/modules/User-Authentication/application/getSessionCookie";
 import { removeSessionCookie } from "../../../../src/modules/User-Authentication/application/deleteSessionCookie";
 import { cookieUserData } from "./__mocks__/cookieData";
+import { SessionData, UserRole, SessionCookieName } from "../../../../src/modules/User-Authentication/domain/session.types";
 import axios from "axios";
-jest.mock("axios");
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
 import {VITE_API} from "../../../../config.ts";
-const API_URL = VITE_API; 
+const API_URL = VITE_API;
 
 jest.mock("js-cookie", () => ({
   set: jest.fn(),
@@ -17,12 +27,16 @@ jest.mock("js-cookie", () => ({
 
 describe("setSessionCookie", () => {
   it("sets the session cookie successfully", () => {
-    const role = "admin"
-    const userData = { cookieUserData, role };
+    const userData: SessionData = {
+      id: 1,
+      email: "test@example.com",
+      groupid: 10,
+      role: UserRole.Student,
+    };
     setSessionCookie(userData);
 
     expect(Cookies.set).toHaveBeenCalledWith(
-      "userSession",
+      SessionCookieName.UserSession,
       JSON.stringify(userData),
       { expires: 30 }
     );
@@ -35,11 +49,11 @@ describe("setSessionCookie", () => {
       throw new Error("Test error");
     });
 
-    setSessionCookie({});
+    setSessionCookie({ id: 0, email: "", groupid: 0, role: UserRole.Student });
 
     expect(Cookies.set).toHaveBeenCalledWith(
-      "userSession",
-      JSON.stringify({},),
+      SessionCookieName.UserSession,
+      JSON.stringify({ id: 0, email: "", groupid: 0, role: UserRole.Student }),
       { expires: 30 }
     );
     expect(console.error).toHaveBeenNthCalledWith(
@@ -103,7 +117,7 @@ describe("removeSessionCookie", () => {
   it("removes the session cookie successfully", () => {
     removeSessionCookie();
 
-    expect(Cookies.remove).toHaveBeenCalledWith("userSession");
+    expect(Cookies.remove).toHaveBeenCalledWith(SessionCookieName.UserSession);
   });
 
   it("logs an error if removing the session cookie fails", () => {

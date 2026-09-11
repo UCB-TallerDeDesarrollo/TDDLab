@@ -5,7 +5,7 @@ import GetPracticesUseCase from "../../modules/Practices/application/PracticeUse
 import GetPracticesByIdUseCase from "../../modules/Practices/application/PracticeUseCases/getPracticeByIdUseCase";
 import GetPracticesByUserIdUseCase from "../../modules/Practices/application/PracticeUseCases/getPracticesByUserIdUseCase";
 import UpdatePracticeUseCase from "../../modules/Practices/application/PracticeUseCases/updatePracticeUseCase";
-import PracticeRepository from "../../modules/Practices/repository/PracticeRepository";
+import { IPracticeRepository } from "../../modules/Practices/domain/IPracticeRepository";
 
 class PracticesController {
   private readonly createPracticeUseCase: CreatePracticeUseCase;
@@ -15,7 +15,7 @@ class PracticesController {
   private readonly getPracticeByIdUseCase: GetPracticesByIdUseCase;
   private readonly getPracticesByUserIdUseCase: GetPracticesByUserIdUseCase;
 
-  constructor(repository: PracticeRepository) {
+  constructor(repository: IPracticeRepository) {
     this.createPracticeUseCase = new CreatePracticeUseCase(repository);
     this.deletePracticeUseCase = new DeletePracticeUseCase(repository);
     this.getPracticeByIdUseCase = new GetPracticesByIdUseCase(repository);

@@ -1,14 +1,14 @@
 import dotenv from 'dotenv';
 import { AIAssistantPromptObject } from '../domain/AIAssistant';
+import { IAIAssistantDataBaseRepository } from './IAIAssistantDataBaseRepository';
 import { Pool } from 'pg';
 import config from '../../../config/db';
 
 dotenv.config();
 
-
 const pool = new Pool(config);
 
-export class AIAssistantDataBaseRepository {
+export class AIAssistantDataBaseRepository implements IAIAssistantDataBaseRepository {
 
     public async executeQuery(query: string, values?: any[]): Promise<any[]> {
         const client = await pool.connect();

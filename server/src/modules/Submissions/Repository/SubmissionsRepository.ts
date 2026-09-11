@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
 import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "../Domain/Submission";
+import { ISubmissionsRepository } from "../Domain/ISubmissionsRepository";
 
 interface QueryResult {
     exists: boolean;
@@ -8,7 +9,7 @@ interface QueryResult {
 
 const pool = new Pool(config);
 
-class SubmissionRepository{
+class SubmissionRepository implements ISubmissionsRepository{
     public async executeQuery(query: string, values?: any[]): Promise<any[]> {
         const client = await pool.connect();
         try {
@@ -30,7 +31,7 @@ class SubmissionRepository{
             comment: row.comment,
         }
     }
-    async CreateSubmission(Submission: SubmissionCreationObject): Promise<SubmissionCreationObject> {
+    async CreateSubmission(Submission: SubmissionCreationObject): Promise<SubmissionDataObject> {
         const query = "INSERT INTO submissions (assignmentid,userid,status,repository_link,start_date) VALUES ($1, $2, $3, $4, $5) RETURNING *";
         const values = [Submission.assignmentid, Submission.userid, Submission.status, Submission.repository_link, Submission.start_date];
         const rows = await this.executeQuery(query, values);

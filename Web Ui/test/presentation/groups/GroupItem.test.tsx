@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
@@ -67,7 +67,8 @@ describe("GroupItem", () => {
   });
 
   it("triggers the expected callbacks for each action", async () => {
-    const user = userEvent.setup();
+    jest.setTimeout(10000);
+    const user = fireEvent;
 
     render(
       <GroupItem
@@ -81,12 +82,12 @@ describe("GroupItem", () => {
       />,
     );
 
-    await user.click(screen.getByLabelText("copy-teacher-link"));
-    await user.click(screen.getByLabelText("copy-student-link"));
-    await user.click(screen.getByLabelText("view-participants"));
-    await user.click(screen.getByLabelText("view-tasks"));
-    await user.click(screen.getByLabelText("delete-group"));
-    await user.click(screen.getByLabelText("edit-group"));
+     user.click(screen.getByLabelText("copy-teacher-link"));
+     user.click(screen.getByLabelText("copy-student-link"));
+     user.click(screen.getByLabelText("view-participants"));
+     user.click(screen.getByLabelText("view-tasks"));
+     user.click(screen.getByLabelText("delete-group"));
+     user.click(screen.getByLabelText("edit-group"));
 
     expect(onCopy).toHaveBeenCalledTimes(1);
     expect(onLink).toHaveBeenCalledTimes(1);

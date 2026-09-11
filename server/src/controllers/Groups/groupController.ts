@@ -4,7 +4,7 @@ import DeleteGroupUseCase from "../../modules/Groups/application/GroupUseCases/d
 import GetGroupByIdUseCase from "../../modules/Groups/application/GroupUseCases/getGroupByIdUseCase";
 import GetGroupsUseCase from "../../modules/Groups/application/GroupUseCases/getGroupsUseCase";
 import UpdateGroupUseCase from "../../modules/Groups/application/GroupUseCases/updateGroupUseCase";
-import GroupRepository from "../../modules/Groups/repositories/GroupRepository";
+import { IGroupRepository } from "../../modules/Groups/domain/IGroupRepository";
 import CheckGroupExistsUseCase from "../../modules/Groups/application/GroupUseCases/checkGroupUseCase";
 
 class GroupsController {
@@ -15,7 +15,7 @@ class GroupsController {
   private readonly updateGroupUseCase: UpdateGroupUseCase;
   private readonly checkGroupExistsUseCase: CheckGroupExistsUseCase;
 
-  constructor(repository: GroupRepository) {
+  constructor(repository: IGroupRepository) {
     this.createGroupUseCase = new CreateGroupUseCase(repository);
     this.deleteGroupUseCase = new DeleteGroupUseCase(repository);
     this.getGroupByIdUseCase = new GetGroupByIdUseCase(repository);
@@ -58,6 +58,7 @@ class GroupsController {
           .json({ error: "Invalid groupid. Group does not exist." });
       }
     } catch (error) {
+      console.error("ERROR :", error)
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -73,6 +74,7 @@ class GroupsController {
       });
       res.status(201).json(newGroup);
     } catch (error) {
+      console.error("ERROR CREANDO GRUPO:", error)
       res.status(500).json({ error: "Server error" });
     }
   }
@@ -83,6 +85,7 @@ class GroupsController {
       await this.deleteGroupUseCase.execute(groupid);
       res.status(204).send();
     } catch (error) {
+      console.error("ERROR ELIMINANDO GRUPO:", error)
       res.status(500).json({ error: "Server error" });
     }
   }

@@ -1,11 +1,14 @@
 import express from "express";
-import FeatureFlagRepository from "../modules/FeatureFlags/repositories/FeatureFlagRepository";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { FeatureFlagRepositoryBuilder } from "../modules/FeatureFlags/infrastructure/FeatureFlagRepositoryBuilder";
 import FeatureFlagsController from "../controllers/featureFlags/featureFlagsController";
 import {
   authenticateJWT,
   authorizeRoles,
 } from "../../src/middleware/authMiddleware";
-const repository = new FeatureFlagRepository();
+
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const repository = new FeatureFlagRepositoryBuilder(connectionFactory);
 const featureFlagsController = new FeatureFlagsController(repository);
 const featureFlagsRouter = express.Router();
 

@@ -4,6 +4,17 @@ import { GroupDataObject } from '../../../../src/modules/Groups/domain/GroupInte
 import dotenv from "dotenv";
 dotenv.config();
 
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
+
 const axiosGetSpy = jest.spyOn(axios, 'get');
 const axiosPostSpy = jest.spyOn(axios, 'post');
 const axiosDeleteSpy = jest.spyOn(axios, 'delete');

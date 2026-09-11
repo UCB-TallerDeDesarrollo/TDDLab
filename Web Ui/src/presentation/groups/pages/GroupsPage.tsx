@@ -10,8 +10,9 @@ import ContentState from "../../../shared/components/ContentState";
 import SortingComponent from "../../../shared/components/SortingComponent";
 import ActionButton from "../../../shared/components/ActionButton";
 import ConfirmationDialog from "../../../shared/components/ConfirmationDialog";
+import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 
-import { GroupsList } from "../components/GroupsList";
+import { GroupsList } from "../components";
 import { useGroupsData } from "../hooks/useGroupsData";
 import { handleRedirectToTasks } from "../../../shared/helpers/navigationHandlers";
 
@@ -19,6 +20,7 @@ import CreateGroupPopup from "../components/GroupsForm";
 import EditGroupPopup from "../components/EditGroupForm";
 
 import { Group } from "../types";
+import { useSnackbarFeedback } from "../../../shared/hooks/useSnackbarFeedback";
 
 import "./GroupsPage.css";
 
@@ -40,8 +42,9 @@ function GroupsPage() {
     selectAndSync,
   } = useGroupsData();
 
+  const title = "Grupos";
+  document.title = title;
   const [createOpen, setCreateOpen] = useState(false);
-
   const [editOpen, setEditOpen] = useState(false);
   const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
   const [groupToDelete, setGroupToDelete] = useState<{
@@ -49,17 +52,34 @@ function GroupsPage() {
     index: number;
   } | null>(null);
 
+  const { snackbar, showSuccess, showError, handleClose } = useSnackbarFeedback();
+
   const handleCloseDeleteDialog = () => {
     setGroupToDelete(null);
   };
 
   const handleConfirmDelete = async () => {
-    if (!groupToDelete) {
-      return;
-    }
+    if (!groupToDelete) return;
 
-    await deleteGroupItem(groupToDelete.index);
-    setGroupToDelete(null);
+    try {
+      await deleteGroupItem(groupToDelete.index);
+      setGroupToDelete(null);
+      showSuccess("Grupo eliminado exitosamente");
+    } catch {
+      showError("Error al eliminar el grupo");
+    }
+  };
+
+  const handleCreateGroup = async (data: { name: string; description: string }) => {
+    await createGroup(data);
+    setCreateOpen(false);
+    showSuccess("Grupo creado exitosamente");
+  };
+
+  const handleUpdateGroup = async (data: { id: number; name: string; description: string }) => {
+    await updateGroup(data);
+    setEditOpen(false);
+    showSuccess("Grupo actualizado exitosamente");
   };
 
   const renderContent = () => {
@@ -122,7 +142,6 @@ function GroupsPage() {
                 prototypeStyle
                 placeholderText="Filtrar"
               />
-
               <ActionButton
                 startIcon={<AddIcon />}
                 variantStyle="primary"
@@ -133,21 +152,17 @@ function GroupsPage() {
             </>
           }
         />
-
         <FeatureSectionDivider />
-
         <FeatureListSection>
           {renderContent()}
         </FeatureListSection>
       </div>
 
-      {/* CREATE */}
       <CreateGroupPopup
         open={createOpen}
         handleClose={() => setCreateOpen(false)}
-        onCreate={async (data) => {
-          await createGroup(data);
-        }}
+        onCreate={handleCreateGroup}
+        existingGroups={groups}
       />
 
       <EditGroupPopup
@@ -163,9 +178,7 @@ function GroupsPage() {
               }
             : null
         }
-        onUpdate={async (data) => {
-          await updateGroup(data);
-        }}
+        onUpdate={handleUpdateGroup}
       />
 
       <ConfirmationDialog
@@ -180,6 +193,13 @@ function GroupsPage() {
         deleteText="Eliminar"
         onCancel={handleCloseDeleteDialog}
         onDelete={handleConfirmDelete}
+      />
+
+      <FeedbackSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleClose}
       />
     </FeatureScreenLayout>
   );

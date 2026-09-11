@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../modules/User-Authentication/domain/authStore";
 import { deletePractice, fetchPracticesByUserId } from "../services/practicesService";
 import { PracticeDataObject, ViewState } from "../types";
 
@@ -44,7 +44,7 @@ function orderPracticesArray(
 }
 
 export function usePractices(): UsePracticesReturn {
-  const [authData] = useGlobalState("authData");
+  const authData = useAuthStore((s) => s.authData);
   const navigate = useNavigate();
 
   const [practices, setPractices] = useState<PracticeDataObject[]>([]);

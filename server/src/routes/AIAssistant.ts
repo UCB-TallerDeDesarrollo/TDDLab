@@ -1,15 +1,17 @@
 import express from "express";
 import { AIAssistantRepository } from "../modules/AIAssistant/repository/AIAssistantRepositoy";
-import AIAssistantController from "../controllers/AIAssistant/AIAssistantController";
-import { AIAssistantDataBaseRepository } from "../modules/AIAssistant/repository/AiAssistantDataBaseRepository";
 import { ChatbotAssistantRepository } from "../modules/AIAssistant/repository/ChatbotAssistantRepository";
+import AIAssistantController from "../controllers/AIAssistant/AIAssistantController";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { AIAssistantDataBaseRepositoryBuilder } from "../modules/AIAssistant/infrastructure/AIAssistantDataBaseRepositoryBuilder";
 import {
   authenticateJWT,
   authorizeRoles,
 } from "../../src/middleware/authMiddleware";
 
+const connectionFactory = PostgresConnectionFactory.getInstance();
 const aiAssistantRepository = new AIAssistantRepository();
-const aiAssistantDBRepository = new AIAssistantDataBaseRepository();
+const aiAssistantDBRepository = new AIAssistantDataBaseRepositoryBuilder(connectionFactory);
 const chatbotAssistantRepository = new ChatbotAssistantRepository();
 const aiAssistantController = new AIAssistantController(
   aiAssistantRepository,
