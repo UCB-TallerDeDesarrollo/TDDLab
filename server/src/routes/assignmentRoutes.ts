@@ -1,7 +1,10 @@
 import express from "express";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { AssignmentRepositoryBuilder } from "../modules/Assignments/infrastructure/AssignmentRepositoryBuilder";
 import AssignmentController from "../controllers/assignments/assignmentController"; // Import your controller class
-import AssignmentRepository from "../modules/Assignments/repositories/AssignmentRepository";
-const repository = new AssignmentRepository(); // Create an instance of your repository
+
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const repository = new AssignmentRepositoryBuilder(connectionFactory);
 const assignmentController = new AssignmentController(repository); // Pass the repository instance to the controller
 import {
   authenticateJWT,

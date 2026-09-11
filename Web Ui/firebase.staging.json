@@ -1,0 +1,49 @@
+{
+  // "hosting": {
+  //   "target": "staging",
+  //   "public": "dist",
+  //   "ignore": [
+  //     "firebase.staging.json",
+  //     "firebase.production.json",
+  //     "**/.*",
+  //     "**/node_modules/**"
+  //   ],
+  //   "rewrites": [
+  //     {
+  //       "source": "**",
+  //       "destination": "/index.html"
+  //     }
+  //   ]
+  // },
+  "hosting": {
+      "public": "dist",
+      "ignore": [
+        "firebase.staging.json",
+        "firebase.production.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+  "emulators": {
+    "hosting": {
+      "host": "0.0.0.0",
+      "port": 5000
+    },
+    "auth": {
+      "host": "0.0.0.0",
+      "port": 9099
+    },
+    "ui": {
+      "enabled": true,
+      "host": "0.0.0.0",
+      "port": 4000
+    },
+    "singleProjectMode": true
+  }
+}

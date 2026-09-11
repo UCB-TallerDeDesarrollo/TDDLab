@@ -1,10 +1,10 @@
 import { AssignmentDataObject } from "../../domain/Assignment";
-import AssignmentRepository from "../../repositories/AssignmentRepository";
+import { IAssignmentRepository } from "../../domain/IAssignmentRepository";
 
 class GetAssignmentsByGroupidUseCase {
-  private readonly adapter: AssignmentRepository;
+  private readonly adapter: IAssignmentRepository;
 
-  constructor(adapter: AssignmentRepository) {
+  constructor(adapter: IAssignmentRepository) {
     this.adapter = adapter;
   }
 

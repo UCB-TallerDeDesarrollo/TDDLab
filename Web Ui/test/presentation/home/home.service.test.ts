@@ -11,13 +11,7 @@ describe("buildHomeViewModel", () => {
     expect(viewModel.greeting).toBe("Hola Israel, bienvenido al TDD Lab!!!");
   });
 
-  it("returns loading while auth data is unresolved", () => {
-    const viewModel = buildHomeViewModel({});
-
-    expect(viewModel.viewState).toBe("loading");
-  });
-
-  it("returns empty when there is no active email", () => {
+  it("returns empty when there is no active user data", () => {
     const viewModel = buildHomeViewModel({ email: "", userId: -1 });
 
     expect(viewModel.viewState).toBe("empty");
@@ -25,6 +19,12 @@ describe("buildHomeViewModel", () => {
 
   it("returns error when the session has no email field", () => {
     const viewModel = buildHomeViewModel({ userId: 1 });
+
+    expect(viewModel.viewState).toBe("error");
+  });
+
+  it("returns error when email is undefined", () => {
+    const viewModel = buildHomeViewModel({});
 
     expect(viewModel.viewState).toBe("error");
   });

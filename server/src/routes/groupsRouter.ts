@@ -1,12 +1,14 @@
 import express from "express";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { GroupRepositoryBuilder } from "../modules/Groups/infrastructure/GroupRepositoryBuilder";
 import GroupsController from "../controllers/Groups/groupController";
-import GroupRepository from "../modules/Groups/repositories/GroupRepository";
 import {
   authenticateJWT,
   authorizeRoles,
 } from "../../src/middleware/authMiddleware";
-const repository = new GroupRepository(); // Create an instance of your group repository
-const groupController = new GroupsController(repository); // Pass the repository instance to the group controller
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const repository = new GroupRepositoryBuilder(connectionFactory);
+const groupController = new GroupsController(repository);
 
 const groupsRouter = express.Router();
 

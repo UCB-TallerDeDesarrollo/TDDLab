@@ -4,6 +4,17 @@ import { assignmentInProgresDataMock } from "../../__mocks__/assignments/data/as
 import dotenv from 'dotenv';
 dotenv.config()
 
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
+
 const axiosGetSpy = jest.spyOn(axios, 'get');
 const axiosPostSpy = jest.spyOn(axios, 'post');
 const axiosPutSpy = jest.spyOn(axios, 'put');

@@ -1,0 +1,72 @@
+name: tddlab-dev
+
+services:
+  postgres:
+    image: docker.io/library/postgres:18-alpine3.23
+    container_name: tddlab-postgres
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_DB: tddlab_test
+      POSTGRES_USER: tdd_user
+      POSTGRES_PASSWORD: tdd_pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./sql:/docker-entrypoint-initdb.d/:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tdd_user -d tddlab_test"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - tddlab-test
+
+  firebase:
+    build:
+      context: .
+      dockerfile: Dockerfile.firebase
+    ports:
+      - "4000:4000"
+      - "5000:5000"
+      - "9099:9099"
+    env_file:
+      - .env.local
+    depends_on:
+      - postgres
+    networks:
+      - tddlab-test
+
+  server:
+    image: docker.io/oven/bun:alpine
+    container_name: tddlab-server
+    working_dir: /app
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      - PGHOST=postgres
+      - FIREBASE_AUTH_EMULATOR_HOST=firebase:9099
+    depends_on:
+      postgres:
+        condition: service_healthy
+      firebase:
+        condition: service_started
+    command: sh -c "bun install && bun run dev"
+    networks:
+      - tddlab-test
+
+volumes:
+  postgres_data:
+    name: tddlab-postgres-data
+
+networks:
+  tddlab-test:
+    name: tddlab-test-network

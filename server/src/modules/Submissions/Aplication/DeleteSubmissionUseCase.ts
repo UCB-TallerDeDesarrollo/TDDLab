@@ -1,9 +1,9 @@
-import SubmissionRepository from "../Repository/SubmissionsRepository";
+import { ISubmissionsRepository } from "../Domain/ISubmissionsRepository";
 
 class DeleteSubmission {
-  private readonly adapter: SubmissionRepository;
+  private readonly adapter: ISubmissionsRepository;
 
-  constructor(adapter: SubmissionRepository) {
+  constructor(adapter: ISubmissionsRepository) {
     this.adapter = adapter;
   }
 

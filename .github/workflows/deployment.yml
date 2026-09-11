@@ -89,9 +89,16 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
         with:
           working-directory: Web Ui
-          start: npm run dev
+          start: npm run dev -- --mode cypress
 
       - name: Stop Your Application
         working-directory: Web Ui
@@ -99,13 +106,13 @@ jobs:
 
   sonarcloud:
     name: SonarCloud
+    if: github.ref_name == 'main' || startsWith(github.ref_name, 'release/') || startsWith(github.ref_name, 'v')
     needs: [cypress-tests, jest-tests-backend, jest-tests-frontend]
     runs-on: ubuntu-latest
     environment: staging
     permissions:
       pull-requests: read # allows SonarCloud to decorate PRs with analysis results
       contents: read
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -210,7 +217,7 @@ jobs:
       name: staging
     needs: prettier
     #Ejecutar solo si es la rama staging #
-    if: github.event.ref == 'refs/heads/main'
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
 
     steps:
       - name: Checkout repo
@@ -260,7 +267,7 @@ jobs:
     needs: [deploy_firebase_staging]
     #Ejecutar solo si es la rama main
     # if: github.event.ref == 'refs/heads/main'
-
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -308,12 +315,12 @@ jobs:
       name: staging
     needs: prettier
     #Ejecutar solo si es la rama staging
-    if: github.event.ref == 'refs/heads/main'
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
     steps:
       - name: "Echo values"
         run: |
           echo $VERCEL_PROJECT_ID
-          echo $VERCEL_ORG_ID 
+          echo $VERCEL_ORG_ID
           echo $VERCEL_TOKEN
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -352,18 +359,18 @@ jobs:
       name: production
     needs: [deploy_vercel_staging]
     #Ejecutar solo si es la rama main
-
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
     #   env:
     #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
     #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-    #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}    
+    #     VERCEL_TOKEN: ${{secrets.VERCEL_TOKEN }}
 
     steps:
       - name: "Echo values"
         run: |
           echo $VERCEL_PROJECT_ID
-          echo $VERCEL_ORG_ID 
-          echo $VERCEL_TOKEN 
+          echo $VERCEL_ORG_ID
+          echo $VERCEL_TOKEN
 
       - name: Checkout repo
         uses: actions/checkout@v4

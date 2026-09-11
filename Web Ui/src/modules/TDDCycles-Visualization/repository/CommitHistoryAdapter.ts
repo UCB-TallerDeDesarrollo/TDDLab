@@ -1,6 +1,5 @@
 import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
-//import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
 import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
@@ -16,7 +15,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     //auth: 'coloca tu token github para mas requests'
     this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
   }
-  
+
 
   // function for obtain TDD_log.json
   private getTDDLogUrl(owner: string, repoName: string): string {

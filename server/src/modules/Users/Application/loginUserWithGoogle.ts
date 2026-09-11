@@ -27,8 +27,15 @@ export const loginUserWithGoogle = async (
       throw new Error("Usuario no encontrado");
     }
   } catch (error: any) {
+    console.error("Error verifying token in loginUserWithGoogle:", error);
     if (error.message === "DEBE_USAR_GOOGLE") {
       throw error;
+    }
+    if (error.message && error.message.includes("expired")) {
+      throw new Error("Token expirado");
+    }
+    if (error.message && error.message.includes("invalid")) {
+      throw new Error("Token inválido");
     }
     // Si no es el error de proveedor y el error es sobre token, relanzarlo
     if (error.message && !error.message.includes("Usuario no encontrado")) {

@@ -1,9 +1,9 @@
-import AssignmentRepository from "../../repositories/AssignmentRepository";
+import { IAssignmentRepository } from "../../domain/IAssignmentRepository";
 
 class DeleteAssignment {
-  private readonly adapter: AssignmentRepository;
+  private readonly adapter: IAssignmentRepository;
 
-  constructor(adapter: AssignmentRepository) {
+  constructor(adapter: IAssignmentRepository) {
     this.adapter = adapter;
   }
 

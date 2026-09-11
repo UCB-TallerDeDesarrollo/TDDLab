@@ -1,8 +1,9 @@
 import { Pool } from "pg"; // Import the Pool from 'pg'
 import config from "../../../config/db";
 import { User, UserCreationObect } from "../Domain/User";
+import { IUserRepository } from "../Domain/IUserRepository";
 
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   pool: Pool;
   constructor() {
     this.pool = new Pool(config);
@@ -91,7 +92,7 @@ export class UserRepository {
   async updateUser(
     id: number,
     groupid: number,
-  ): Promise<Promise<User | null>> {
+  ): Promise<User | null> {
     const query =
       "UPDATE userstable SET groupid = $2 WHERE id = $1 RETURNING *"; // Actualizado para modificar solo el ID del grupo
     const values = [id,groupid]; // Ajustado para reflejar el nuevo ID del grupo y el ID del usuario

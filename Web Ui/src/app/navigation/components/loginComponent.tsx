@@ -7,15 +7,11 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fireBaseAuthManager, OAuthProvider } from "../../../modules/User-Authentication/infrastructure/authFirebase";
+import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "../../../modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../modules/User-Authentication/domain/authStore";
 
 interface LoginComponentProps {
   compact?: boolean;
@@ -24,12 +20,13 @@ interface LoginComponentProps {
 export default function LoginComponent({
   compact = false,
 }: Readonly<LoginComponentProps>) {
-  const authData = useGlobalState("authData");
+  const authData = useAuthStore((s) => s.authData);
+  const clearSession = useAuthStore((s) => s.clearSession);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleLogin = async () => {
-    const userData = await handleSignInWithGitHub();
+    const userData = await fireBaseAuthManager.loginWithOAuth(OAuthProvider.Google);
     if (userData?.email) {
       const idToken = await userData.getIdToken();
       const loginPort = new CheckIfUserHasAccount();
@@ -40,20 +37,14 @@ export default function LoginComponent({
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleGithubSignOut();
-    setGlobalState("authData", {
-      userid: -1,
-      userProfilePic: "",
-      userEmail: "",
-      usergroupid: -1,
-      userRole: "",
-    });
+    await fireBaseAuthManager.logout();
+    clearSession();
     await removeSessionCookie();
     localStorage.clear();
     navigate("/login");
   };
 
-  const isLoggedIn = Boolean(authData[0].userEmail);
+  const isLoggedIn = Boolean(authData.userEmail);
 
   return (
     <React.Fragment>
@@ -64,10 +55,9 @@ export default function LoginComponent({
               sx={{ ml: { xs: 0, sm: 1 }, p: { xs: 0, sm: undefined }, flexShrink: 0 }}
             >
             <Avatar
-              src={authData[0].userProfilePic}
+              src={authData.userProfilePic}
               alt="Profile Picture"
               sx={{
-                // fixed desktop size to avoid shrinking between close widths
                 width: { xs: 38, sm: 42, md: 50 },
                 height: { xs: 38, sm: 42, md: 50 },
                 border: "2px solid rgba(255,255,255,0.24)",

@@ -12,18 +12,22 @@ describe("saveUserCookie", () => {
 
   it("Verificar que guarda la cookie userSession con las opciones correctas", async () => {
     const token = "fake.jwt.token";
-
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
     await saveUserCookie(token, mockRes as Response);
-
-    expect(mockRes.cookie).toHaveBeenCalledWith(
-      "userSession",
-      token,
-      {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-      }
-    );
+    try {
+      expect(mockRes.cookie).toHaveBeenCalledWith(
+        "userSession",
+        token,
+        {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          maxAge: 1000 * 60 * 60 * 24 * 30,
+        }
+      );
+    } finally {
+      process.env.NODE_ENV = originalEnv;
+    }
   });
 });

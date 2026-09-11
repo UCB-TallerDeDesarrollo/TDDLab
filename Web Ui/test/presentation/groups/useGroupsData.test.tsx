@@ -12,16 +12,19 @@ const mockDelete = jest.fn();
 const createGroupMock = jest.fn();
 const updateGroupMock = jest.fn();
 
-jest.mock("../../../src/modules/User-Authentication/domain/authStates", () => ({
-  useGlobalState: jest.fn(() => [
-    {
-      userid: 7,
-      userEmail: "docente@ucb.edu.bo",
-      userRole: "teacher",
-      usergroupid: 1,
-    },
-    setAuthDataMock,
-  ]),
+jest.mock("../../../src/modules/User-Authentication/domain/authStore", () => ({
+  useAuthStore: jest.fn((selector) => {
+    const state = {
+      authData: {
+        userid: 7,
+        userEmail: "docente@ucb.edu.bo",
+        userRole: "teacher",
+        usergroupid: 1,
+      },
+      setUserGroupid: setAuthDataMock,
+    };
+    return selector(state);
+  }),
 }));
 
 jest.mock("../../../src/presentation/groups/services", () => ({
