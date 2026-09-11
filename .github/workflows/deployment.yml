@@ -217,7 +217,7 @@ jobs:
       name: staging
     needs: prettier
     #Ejecutar solo si es la rama staging #
-    if: github.event.ref == 'refs/heads/main'
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
 
     steps:
       - name: Checkout repo
@@ -267,7 +267,7 @@ jobs:
     needs: [deploy_firebase_staging]
     #Ejecutar solo si es la rama main
     # if: github.event.ref == 'refs/heads/main'
-
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -315,7 +315,7 @@ jobs:
       name: staging
     needs: prettier
     #Ejecutar solo si es la rama staging
-    if: github.event.ref == 'refs/heads/main'
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
     steps:
       - name: "Echo values"
         run: |
@@ -359,7 +359,7 @@ jobs:
       name: production
     needs: [deploy_vercel_staging]
     #Ejecutar solo si es la rama main
-
+    if: github.event.ref == 'refs/heads/main' && github.repository == 'UCB-TallerDeDesarrollo/TDDLab'
     #   env:
     #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
     #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
