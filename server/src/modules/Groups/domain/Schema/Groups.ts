@@ -8,7 +8,7 @@ export enum GroupsFields {
 }
 
 export const GroupsSchema = new TableSchema(
-  'groups',
+  'Groups',
   {
     [GroupsFields.Id]: 'id',
     [GroupsFields.GroupName]: 'groupname',
