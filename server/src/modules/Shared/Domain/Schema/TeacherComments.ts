@@ -9,7 +9,7 @@ export enum TeacherCommentsFields {
 }
 
 export const TeacherCommentsSchema = new TableSchema(
-  'teacher_comments',
+  'TeacherComments',
   {
     [TeacherCommentsFields.Id]: 'id',
     [TeacherCommentsFields.SubmissionId]: 'submission_id',
