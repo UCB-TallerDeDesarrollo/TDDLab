@@ -1,5 +1,6 @@
 import { GetCommitTddCycle } from "../../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
 import { GetCommitsOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
+import { GetDefaultBranch } from "../../../modules/TDDCycles-Visualization/application/GetDefaultBranch";
 import { GetTDDLogs } from "../../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../../modules/TDDCycles-Visualization/application/GetUserName";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
@@ -15,24 +16,34 @@ export async function fetchTDDVisualizationData(
 ): Promise<TDDVisualizationData> {
   const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
+  const getDefaultBranchUseCase = new GetDefaultBranch(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
 
-  const [tddLogsResult, commitsResult, commitsTddCyclesResult] = await Promise.allSettled([
-    getTDDLogsUseCase.execute(repoOwner, repoName),
+  const testDataPromise = getDefaultBranchUseCase
+    .execute(repoOwner, repoName)
+    .then(async (defaultBranch) => ({
+      defaultBranch,
+      tddLogs: await getTDDLogsUseCase.execute(repoOwner, repoName, defaultBranch),
+    }));
+
+  const [testDataResult, commitsResult, commitsTddCyclesResult] = await Promise.allSettled([
+    testDataPromise,
     getCommitsOfRepoUseCase.execute(repoOwner, repoName),
     getCommitTddCycleUseCase.execute(repoOwner, repoName),
   ]);
 
   const commitsLoadError = commitsResult.status === "rejected";
   const testDataLoadError =
-    tddLogsResult.status === "rejected" || commitsTddCyclesResult.status === "rejected";
+    testDataResult.status === "rejected" || commitsTddCyclesResult.status === "rejected";
+  const testData = testDataResult.status === "fulfilled" ? testDataResult.value : null;
 
   return {
     commits: commitsResult.status === "fulfilled" ? commitsResult.value : [],
     commitsLoadError,
     commitsTddCycles:
       commitsTddCyclesResult.status === "fulfilled" ? commitsTddCyclesResult.value : [],
-    tddLogs: tddLogsResult.status === "fulfilled" ? tddLogsResult.value : [],
+    defaultBranch: testData?.defaultBranch ?? null,
+    tddLogs: testData?.tddLogs ?? [],
     testDataLoadError,
   };
 }

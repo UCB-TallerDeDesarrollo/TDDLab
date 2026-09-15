@@ -14,12 +14,28 @@ describe('CommitHistoryAdapter', () => {
     mockedAxios.get.mockClear();
   });
 
+  describe('obtainDefaultBranch', () => {
+    it('should return the repository default branch', async () => {
+      const requestSpy = jest.spyOn(adapter.octokit, 'request').mockResolvedValue({
+        status: 200,
+        data: { default_branch: 'master' },
+      } as any);
+
+      await expect(adapter.obtainDefaultBranch('test-owner', 'test-repo')).resolves.toBe('master');
+      expect(requestSpy).toHaveBeenCalledWith('GET /repos/{owner}/{repo}', {
+        owner: 'test-owner',
+        repo: 'test-repo',
+      });
+    });
+  });
+
   describe('obtainTDDLogs', () => {
-    it('should fetch and return TDD log data successfully', async () => {
+    it('should fetch and return TDD log data from the provided branch', async () => {
       // Arrange
       const owner = 'test-owner';
       const repoName = 'test-repo';
-      const expectedUrl = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+      const branch = 'master';
+      const expectedUrl = `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/script/tdd_log.json`;
 
       const mockTDDLogData: TDDLogEntry[] = [
         {
@@ -74,7 +90,7 @@ describe('CommitHistoryAdapter', () => {
       });
 
       // Act
-      const result = await adapter.obtainTDDLogs(owner, repoName);
+      const result = await adapter.obtainTDDLogs(owner, repoName, branch);
 
       // Assert
       expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl);
@@ -89,7 +105,7 @@ describe('CommitHistoryAdapter', () => {
       mockedAxios.get.mockRejectedValue(new Error('Network error'));
 
       // Act & Assert
-      await expect(adapter.obtainTDDLogs(owner, repoName)).rejects.toThrow('Network error');
+      await expect(adapter.obtainTDDLogs(owner, repoName, 'main')).rejects.toThrow('Network error');
     });
 
     it('should throw an error for non-200 status codes', async () => {
@@ -103,7 +119,7 @@ describe('CommitHistoryAdapter', () => {
       });
 
       // Act & Assert
-      await expect(adapter.obtainTDDLogs(owner, repoName)).rejects.toThrow('HTTP error! Status: 404');
+      await expect(adapter.obtainTDDLogs(owner, repoName, 'main')).rejects.toThrow('HTTP error! Status: 404');
     });
   });
 });

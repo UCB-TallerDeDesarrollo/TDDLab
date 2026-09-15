@@ -9,14 +9,14 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const { chartsState } = tddPage;
   const hasCommits = (chartsState.commitsInfo?.length ?? 0) > 0;
   const hasTddLogs = (chartsState.tddLogsInfo?.length ?? 0) > 0;
-  const showCommitsError =
-    !tddPage.loading && (chartsState.commitsLoadError || !hasCommits);
+  const isLoaded = !tddPage.loading;
+  const showCommitsError = isLoaded && (chartsState.commitsLoadError || !hasCommits);
   const showTestDataError =
-    !tddPage.loading &&
-    !showCommitsError &&
-    (chartsState.testDataLoadError || !hasTddLogs);
+    isLoaded && !showCommitsError && chartsState.testDataLoadError;
+  const showMissingTestData =
+    isLoaded && !showCommitsError && !showTestDataError && !hasTddLogs;
   const canRenderCharts =
-    !tddPage.loading && !showCommitsError && !showTestDataError && hasCommits && hasTddLogs;
+    isLoaded && hasCommits && hasTddLogs && !chartsState.commitsLoadError && !chartsState.testDataLoadError;
 
   return (
     <div className="container">
@@ -39,7 +39,13 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
 
       {showTestDataError && (
         <div className="error-message" data-testid="errorMessage">
-          Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
+          No se pudieron cargar los datos de las pruebas.
+        </div>
+      )}
+
+      {showMissingTestData && (
+        <div className="error-message" data-testid="errorMessage">
+          No se encontraron datos de pruebas en la rama principal {chartsState.defaultBranch ?? "desconocida"}. Verifica que el repositorio tenga pruebas configuradas y que hayan sido ejecutadas.
         </div>
       )}
 

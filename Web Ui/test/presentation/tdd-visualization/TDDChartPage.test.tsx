@@ -5,6 +5,7 @@ import {
   MockGithubAPI,
   MockGithubAPIEmpty,
   MockGithubAPIError,
+  MockGithubAPIMasterNoTests,
   MockGithubAPITDDLogsError,
 } from "./__mocks__/MocksCommitHistory";
 
@@ -55,15 +56,15 @@ describe("TDDChartPage", () => {
   );
 
   test.each([["admin"], ["student"]])(
-    "displays only the test data error when commits exist without TDD logs for role %s",
+    "displays the default branch when the repository has no test data for role %s",
     async (role) => {
       const { getByTestId, queryByText } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPIMasterNoTests()} role={role} teacher_id={294} graphs="graph"/>
       );
 
       await waitFor(() => {
         expect(getByTestId("errorMessage")).toHaveTextContent(
-          "No se pudieron cargar los datos de las pruebas"
+          "No se encontraron datos de pruebas en la rama principal master"
         );
       });
 

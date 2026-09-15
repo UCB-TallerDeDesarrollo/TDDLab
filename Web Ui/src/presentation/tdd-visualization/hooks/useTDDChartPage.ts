@@ -60,6 +60,7 @@ export function useTDDChartPage({
   const [metric, setMetric] = useState<string | null>(null);
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [commitsLoadError, setCommitsLoadError] = useState(false);
+  const [defaultBranch, setDefaultBranch] = useState<string | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [testDataLoadError, setTestDataLoadError] = useState(false);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
@@ -97,6 +98,7 @@ export function useTDDChartPage({
     const loadVisualizationData = async () => {
       setLoading(true);
       setCommitsLoadError(false);
+      setDefaultBranch(null);
       setTestDataLoadError(false);
 
       try {
@@ -104,6 +106,7 @@ export function useTDDChartPage({
         setCommitsInfo(visualizationData.commits);
         setCommitsLoadError(visualizationData.commitsLoadError);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
+        setDefaultBranch(visualizationData.defaultBranch);
         setTDDLogsInfo(visualizationData.tddLogs);
         setTestDataLoadError(visualizationData.testDataLoadError);
       } catch (error) {
@@ -111,6 +114,7 @@ export function useTDDChartPage({
         setCommitsInfo([]);
         setCommitsLoadError(true);
         setCommitsTddCycles([]);
+        setDefaultBranch(null);
         setTDDLogsInfo([]);
         setTestDataLoadError(true);
       } finally {
@@ -172,6 +176,7 @@ export function useTDDChartPage({
       commitsInfo,
       commitsLoadError,
       commitsTddCycles,
+      defaultBranch,
       metric,
       setMetric,
       tddLogsInfo,

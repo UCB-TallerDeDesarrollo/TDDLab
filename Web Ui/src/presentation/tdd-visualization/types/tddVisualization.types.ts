@@ -21,6 +21,7 @@ export interface TDDVisualizationData {
   commits: CommitDataObject[];
   commitsLoadError: boolean;
   commitsTddCycles: CommitCycle[];
+  defaultBranch: string | null;
   tddLogs: TDDLogEntry[];
   testDataLoadError: boolean;
 }
@@ -34,6 +35,7 @@ export interface TDDChartsState {
   commitsInfo: CommitDataObject[] | null;
   commitsLoadError: boolean;
   commitsTddCycles: CommitCycle[];
+  defaultBranch: string | null;
   metric: string | null;
   setMetric: Dispatch<SetStateAction<string | null>>;
   tddLogsInfo: TDDLogEntry[] | null;

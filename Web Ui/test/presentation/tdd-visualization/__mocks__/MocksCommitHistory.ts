@@ -31,6 +31,10 @@ export class MockGithubAPI implements CommitHistoryRepository {
     return "mockUser";
   }
 
+  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+    return "main";
+  }
+
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     return mockCommitDataArray.map(convertToCommitDataObject);
   }
@@ -40,13 +44,17 @@ export class MockGithubAPI implements CommitHistoryRepository {
     return commitCycles;
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
 }
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
+  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+    return "main";
+  }
+
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     let commits: CommitDataObject[] = [];
     return commits;
@@ -61,19 +69,29 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     return commitCycles;
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
 }
 
 export class MockGithubAPITDDLogsError extends MockGithubAPI {
-  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
     throw new Error("no TDD logs");
   }
 }
 
+export class MockGithubAPIMasterNoTests extends MockGithubAPI {
+  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+    return "master";
+  }
+}
+
 export class MockGithubAPIError implements CommitHistoryRepository {
+  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+    throw new Error("no default branch");
+  }
+
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     throw new Error("no commits");
   }
@@ -86,7 +104,7 @@ export class MockGithubAPIError implements CommitHistoryRepository {
     throw new Error("no commit cycles");
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
     throw new Error("no TDD logs");
   }
 }
