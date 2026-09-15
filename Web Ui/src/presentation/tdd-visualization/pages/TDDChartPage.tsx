@@ -2,21 +2,47 @@ import { PropagateLoader } from "react-spinners";
 import TDDCharts from "../components/TDDChart";
 import "../styles/TDDChartPageStyles.css";
 import { useTDDChartPage } from "../hooks/useTDDChartPage";
-import { CycleReportViewProps } from "../types/tddVisualization.types";
+import {
+  CycleReportViewProps,
+  TDDChartsState,
+} from "../types/tddVisualization.types";
+
+type VisualizationStatus =
+  | "loading"
+  | "commits-error"
+  | "tests-error"
+  | "missing-tests"
+  | "ready";
+
+function getVisualizationStatus(
+  loading: boolean,
+  chartsState: TDDChartsState,
+): VisualizationStatus {
+  if (loading) {
+    return "loading";
+  }
+
+  if (chartsState.commitsLoadError || !chartsState.commitsInfo?.length) {
+    return "commits-error";
+  }
+
+  if (chartsState.testDataLoadError) {
+    return "tests-error";
+  }
+
+  if (!chartsState.tddLogsInfo?.length) {
+    return "missing-tests";
+  }
+
+  return "ready";
+}
 
 function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const tddPage = useTDDChartPage(props);
   const { chartsState } = tddPage;
+  const visualizationStatus = getVisualizationStatus(tddPage.loading, chartsState);
   const hasCommits = (chartsState.commitsInfo?.length ?? 0) > 0;
-  const hasTddLogs = (chartsState.tddLogsInfo?.length ?? 0) > 0;
-  const isLoaded = !tddPage.loading;
-  const showCommitsError = isLoaded && (chartsState.commitsLoadError || !hasCommits);
-  const showTestDataError =
-    isLoaded && !showCommitsError && chartsState.testDataLoadError;
-  const showMissingTestData =
-    isLoaded && !showCommitsError && !showTestDataError && !hasTddLogs;
-  const canRenderCharts =
-    isLoaded && hasCommits && hasTddLogs && !chartsState.commitsLoadError && !chartsState.testDataLoadError;
+  const canNavigateStudents = !tddPage.loading && hasCommits && !tddPage.isStudent;
 
   return (
     <div className="container">
@@ -25,31 +51,33 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         <h1 data-testid="repoOwnerTitle">Autor: {tddPage.ownerName}</h1>
       )}
 
-      {tddPage.loading && (
+      {visualizationStatus === "loading" && (
         <div className="mainInfoContainer">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
         </div>
       )}
 
-      {showCommitsError && (
+      {visualizationStatus === "commits-error" && (
         <div className="error-message" data-testid="errorMessage">
           Hubo un problema al cargar los commits del repositorio
         </div>
       )}
 
-      {showTestDataError && (
+      {visualizationStatus === "tests-error" && (
         <div className="error-message" data-testid="errorMessage">
           No se pudieron cargar los datos de las pruebas.
         </div>
       )}
 
-      {showMissingTestData && (
+      {visualizationStatus === "missing-tests" && (
         <div className="error-message" data-testid="errorMessage">
-          No se encontraron datos de pruebas en la rama principal {chartsState.defaultBranch ?? "desconocida"}. Verifica que el repositorio tenga pruebas configuradas y que hayan sido ejecutadas.
+          No se encontraron datos de pruebas en la rama principal{" "}
+          {chartsState.defaultBranch ?? "desconocida"}. Verifica que el repositorio tenga pruebas
+          configuradas y que hayan sido ejecutadas.
         </div>
       )}
 
-      {!tddPage.loading && hasCommits && !tddPage.isStudent && (
+      {canNavigateStudents && (
         <div className="navigation-buttons">
           <button
             data-testid="previous-student"
@@ -79,7 +107,7 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {canRenderCharts && (
+      {visualizationStatus === "ready" && (
         <div className="mainInfoContainer">
           <TDDCharts
             data-testId="cycle-chart"

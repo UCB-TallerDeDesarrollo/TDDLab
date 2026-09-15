@@ -10,10 +10,8 @@ import {
 import {
   CycleReportViewProps,
   Submission,
+  TDDVisualizationData,
 } from "../types/tddVisualization.types";
-import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 function isStudent(role: string) {
   return role === "student";
@@ -27,6 +25,21 @@ function getRepoQuery(submission: Submission) {
   const [, , , repoOwner, repoName] = submission.repository_link.split("/");
   return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
 }
+
+const EMPTY_VISUALIZATION_DATA: TDDVisualizationData = {
+  commits: [],
+  commitsLoadError: false,
+  commitsTddCycles: [],
+  defaultBranch: null,
+  tddLogs: [],
+  testDataLoadError: false,
+};
+
+const VISUALIZATION_ERROR_DATA: TDDVisualizationData = {
+  ...EMPTY_VISUALIZATION_DATA,
+  commitsLoadError: true,
+  testDataLoadError: true,
+};
 
 export function useTDDChartPage({
   graphs,
@@ -58,12 +71,9 @@ export function useTDDChartPage({
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [metric, setMetric] = useState<string | null>(null);
-  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
-  const [commitsLoadError, setCommitsLoadError] = useState(false);
-  const [defaultBranch, setDefaultBranch] = useState<string | null>(null);
-  const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
-  const [testDataLoadError, setTestDataLoadError] = useState(false);
-  const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [visualizationData, setVisualizationData] = useState<TDDVisualizationData>(
+    EMPTY_VISUALIZATION_DATA,
+  );
 
   const defaultMetric = getDefaultMetric(graphs);
 
@@ -97,26 +107,14 @@ export function useTDDChartPage({
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
-      setCommitsLoadError(false);
-      setDefaultBranch(null);
-      setTestDataLoadError(false);
+      setVisualizationData(EMPTY_VISUALIZATION_DATA);
 
       try {
-        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
-        setCommitsInfo(visualizationData.commits);
-        setCommitsLoadError(visualizationData.commitsLoadError);
-        setCommitsTddCycles(visualizationData.commitsTddCycles);
-        setDefaultBranch(visualizationData.defaultBranch);
-        setTDDLogsInfo(visualizationData.tddLogs);
-        setTestDataLoadError(visualizationData.testDataLoadError);
+        const data = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        setVisualizationData(data);
       } catch (error) {
         console.error("Error obtaining data:", error);
-        setCommitsInfo([]);
-        setCommitsLoadError(true);
-        setCommitsTddCycles([]);
-        setDefaultBranch(null);
-        setTDDLogsInfo([]);
-        setTestDataLoadError(true);
+        setVisualizationData(VISUALIZATION_ERROR_DATA);
       } finally {
         setLoading(false);
       }
@@ -173,14 +171,14 @@ export function useTDDChartPage({
 
   return {
     chartsState: {
-      commitsInfo,
-      commitsLoadError,
-      commitsTddCycles,
-      defaultBranch,
+      commitsInfo: visualizationData.commits,
+      commitsLoadError: visualizationData.commitsLoadError,
+      commitsTddCycles: visualizationData.commitsTddCycles,
+      defaultBranch: visualizationData.defaultBranch,
       metric,
       setMetric,
-      tddLogsInfo,
-      testDataLoadError,
+      tddLogsInfo: visualizationData.tddLogs,
+      testDataLoadError: visualizationData.testDataLoadError,
     },
     comments,
     currentIndex,
