@@ -4,7 +4,16 @@ import { PracticeDataObject } from "../../../../src/modules/Practices/domain/Pra
 import dotenv from "dotenv";
 dotenv.config();
 
-jest.mock("axios");
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
 const API_URL = process.env.VITE_API_URL + "/practices";
 
 const repository = new PracticesRepository();

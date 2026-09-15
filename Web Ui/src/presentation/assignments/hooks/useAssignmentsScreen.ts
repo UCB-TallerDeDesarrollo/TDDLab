@@ -7,7 +7,7 @@ import AssignmentsRepository from "../../../modules/Assignments/repository/Assig
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../modules/User-Authentication/domain/authStore";
 import {
   uniqueGroupIds,
   uniqueGroupsById,
@@ -34,7 +34,7 @@ export function useAssignmentsScreen({
 }>) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [authData] = useGlobalState("authData");
+  const authData = useAuthStore((s) => s.authData);
 
   const assignmentsRepository = useMemo(() => new AssignmentsRepository(), []);
   const deleteAssignmentUseCase = useMemo(

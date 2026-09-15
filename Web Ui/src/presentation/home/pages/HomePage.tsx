@@ -15,6 +15,8 @@ const HomeContent = styled(Box)(({ theme }) => ({
 }));
 
 function HomePage() {
+  const title = "Inicio";
+  document.title = title;
   const { greeting, stateDescription, stateTitle, viewState } = useHomePage();
 
   if (viewState !== "success") {

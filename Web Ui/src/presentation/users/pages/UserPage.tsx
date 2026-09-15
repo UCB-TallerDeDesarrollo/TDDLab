@@ -31,6 +31,9 @@ function UserPage() {
     closeFeedbackDialog,
   } = useUsersPage();
 
+  const title = "Usuarios";
+  document.title = title;
+
   let usersContent = <ContentState variant="loading" title="Cargando..." />;
 
   if (error) {

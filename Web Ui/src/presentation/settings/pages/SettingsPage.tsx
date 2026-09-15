@@ -20,6 +20,9 @@ const SettingsPage: React.FC = () => {
     toggleFeatureFlag
   } = useSettings();
 
+  const title = "Configuración";
+  document.title = title;
+
   const [selectedPrompt, setSelectedPrompt] = useState<string>('tddPrompt');
 
   useEffect(() => {
@@ -39,7 +42,7 @@ const SettingsPage: React.FC = () => {
     const tdd = promptId === 'tddPrompt' ? newContent : prompts.tddPrompt;
     const refac = promptId === 'refactoringPrompt' ? newContent : prompts.refactoringPrompt;
     const evalPrompt = promptId === 'evaluateTDDPrompt' ? newContent : prompts.evaluateTDDPrompt;
-    
+
     try {
       await savePrompt(tdd, refac, evalPrompt);
     } catch (error) {

@@ -4,6 +4,7 @@ import {
   AssignmentDataObject,
   AssignmentCreationObject,
 } from "../domain/Assignment";
+import { IAssignmentRepository } from "../domain/IAssignmentRepository";
 
 interface QueryResult {
   exists: boolean;
@@ -12,7 +13,7 @@ interface QueryResult {
 
 const pool = new Pool(config);
 
-class AssignmentRepository {
+class AssignmentRepository implements IAssignmentRepository {
   public async executeQuery(query: string, values?: any[]): Promise<any[]> {
     const client = await pool.connect();
     try {

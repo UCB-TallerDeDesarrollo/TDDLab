@@ -1,27 +1,23 @@
 {
   "projects": {
-    "default": "tddlab-hosting-firebase",
-    "production": "tddlab-hosting-firebase",
-    "staging": "tddlab-staging-firebase"
+    "default": "tddlab-staging-firebase",
+    "staging": "tddlab-staging-firebase",
+    "production": "tddlab-hosting-firebase"
   },
   "targets": {
-    "tddlab-hosting-firebase": {
-      "hosting": {
-        "production": [
-          "tddlab-hosting-firebase"
-        ],
-        "staging": [
-          "tddlab-staging-firebase"
-        ]
-      }
-    },
     "tddlab-staging-firebase": {
       "hosting": {
         "staging": [
           "tddlab-staging-firebase"
         ]
       }
+    },
+    "tddlab-hosting-firebase": {
+      "hosting": {
+        "production": [
+          "tddlab-hosting-firebase"
+        ]
+      }
     }
-  },
-  "etags": {}
+  }
 }

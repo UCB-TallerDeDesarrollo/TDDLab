@@ -1,9 +1,9 @@
-import PracticeSubmissionRepository from "../Repository/PracticeSubmissionsRepository";
+import { IPracticeSubmissionRepository } from "../Domain/IPracticeSubmissionRepository";
 
 class DeletePracticeSubmission {
-  private readonly adapter: PracticeSubmissionRepository;
+  private readonly adapter: IPracticeSubmissionRepository;
 
-  constructor(adapter: PracticeSubmissionRepository) {
+  constructor(adapter: IPracticeSubmissionRepository) {
     this.adapter = adapter;
   }
 

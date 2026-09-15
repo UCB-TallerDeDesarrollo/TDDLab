@@ -1,11 +1,9 @@
-// En CreateTeacherComment.ts
-import { TeacherCommentRepository } from "../Repositories/TeacherCommentRepository";
+import { ITeacherCommentRepository } from "../Domain/ITeacherCommentRepository";
 
 export const createTeacherComment = async (
   { submission_id, teacher_id, content }: { submission_id: number; teacher_id: number; content: string },
-  repository: TeacherCommentRepository // Agregar el repositorio como segundo parámetro
+  repository: ITeacherCommentRepository
 ) => {
-  // Usa el repositorio aquí para crear el comentario
   const newComment = await repository.createTeacherComment({ submission_id, teacher_id, content });
   return newComment;
 };

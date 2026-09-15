@@ -1,10 +1,10 @@
-import PracticeSubmissionRepository from "../Repository/PracticeSubmissionsRepository";
 import { PracticeSubmissionDataObject } from "../Domain/PracticeSubmission";
+import { IPracticeSubmissionRepository } from "../Domain/IPracticeSubmissionRepository";
 
 class GetPracticeSubmissionsByPracticeIdUseCase {
-  private readonly adapter: PracticeSubmissionRepository;
+  private readonly adapter: IPracticeSubmissionRepository;
 
-  constructor(adapter: PracticeSubmissionRepository) {
+  constructor(adapter: IPracticeSubmissionRepository) {
     this.adapter = adapter;
   }
 

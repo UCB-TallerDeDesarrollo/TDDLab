@@ -6,6 +6,9 @@ import { useTDDChartPage } from "../hooks/useTDDChartPage";
 import { CycleReportViewProps } from "../types/tddVisualization.types";
 
 function TDDChartPage(props: Readonly<CycleReportViewProps>) {
+  const title = "Visualización de TDD";
+  document.title = title;
+
   const tddPage = useTDDChartPage(props);
   const { chartsState } = tddPage;
 

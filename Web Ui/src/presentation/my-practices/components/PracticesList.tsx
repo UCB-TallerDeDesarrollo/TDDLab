@@ -16,7 +16,7 @@ import CreatePracticeDialog from "./CreatePracticeDialog";
 import ConfirmationDialog from "../../../shared/components/ConfirmationDialog";
 import ValidationDialog from "../../../shared/components/ValidationDialog";
 import { usePractices } from "../hooks/usePractices";
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../modules/User-Authentication/domain/authStore";
 
 interface PracticesListProps {
   userRole: string;
@@ -24,7 +24,7 @@ interface PracticesListProps {
 }
 
 function PracticesList({ userRole, userid }: Readonly<PracticesListProps>) {
-  const [authData] = useGlobalState("authData");
+  const authData = useAuthStore((s) => s.authData);
   const handleRowHover = (_index: number | null) => undefined;
 
   const {

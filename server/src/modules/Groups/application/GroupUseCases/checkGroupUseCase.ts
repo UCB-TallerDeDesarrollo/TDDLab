@@ -1,9 +1,9 @@
-import GroupRepository from "../../repositories/GroupRepository";
+import { IGroupRepository } from "../../domain/IGroupRepository";
 
 class CheckGroupExistsUseCase {
-  private readonly groupRepository: GroupRepository;
+  private readonly groupRepository: IGroupRepository;
 
-  constructor(groupRepository: GroupRepository) {
+  constructor(groupRepository: IGroupRepository) {
     this.groupRepository = groupRepository;
   }
 

@@ -1,9 +1,9 @@
 import { SubmissionDataObject } from "../Domain/Submission";
-import SubmissionRepository from "../Repository/SubmissionsRepository";
+import { ISubmissionsRepository } from "../Domain/ISubmissionsRepository";
 
 class GetSubmissionUseCase {
-  private readonly adapter: SubmissionRepository;
-  constructor(adapter: SubmissionRepository) {
+  private readonly adapter: ISubmissionsRepository;
+  constructor(adapter: ISubmissionsRepository) {
     this.adapter = adapter;
   }
   async execute(

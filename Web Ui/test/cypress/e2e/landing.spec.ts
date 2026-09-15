@@ -12,4 +12,3 @@ describe("Landing page", () => {
     cy.location("pathname").should("eq", "/login");
   });
 });
-

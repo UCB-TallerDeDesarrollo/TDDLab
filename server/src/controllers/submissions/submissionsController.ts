@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionsRepository";
+import { ISubmissionsRepository } from "../../modules/Submissions/Domain/ISubmissionsRepository";
 import CreateSubmission from "../../modules/Submissions/Aplication/CreateSubmissionUseCase";
 import GetSubmissionsUseCase from "../../modules/Submissions/Aplication/getSubmissionsUseCase";
 import UpdateSubmission from "../../modules/Submissions/Aplication/updateSubmissionUSeCase";
@@ -15,7 +15,7 @@ class SubmissionController {
   private readonly getSubmissionUseCase: GetSubmissionUseCase;
   private readonly getSubmissionsByAssignmentIdUseCase: GetSubmissionsByAssignmentIdUseCase;
 
-  constructor(repository: SubmissionRepository) {
+  constructor(repository: ISubmissionsRepository) {
     this.createSubmissionUseCase = new CreateSubmission(repository);
     this.getSubmissionsUseCase = new GetSubmissionsUseCase(repository);
     this.getSubmissionUseCase = new GetSubmissionUseCase(repository);

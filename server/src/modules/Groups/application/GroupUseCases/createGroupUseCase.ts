@@ -1,4 +1,4 @@
-import GroupRepository from "../../repositories/GroupRepository";
+import { IGroupRepository } from "../../domain/IGroupRepository";
 interface CreateGroupDTO {
   groupName: string;
   groupDetail: string;
@@ -6,9 +6,9 @@ interface CreateGroupDTO {
 }
 
 class CreateGroupUseCase {
-  private readonly groupRepository: GroupRepository;
+  private readonly groupRepository: IGroupRepository;
 
-  constructor(groupRepository: GroupRepository) {
+  constructor(groupRepository: IGroupRepository) {
     this.groupRepository = groupRepository;
   }
 

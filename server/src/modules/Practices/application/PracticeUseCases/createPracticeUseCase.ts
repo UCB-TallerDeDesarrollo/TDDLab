@@ -1,10 +1,9 @@
-// Similar a createAssignmentUseCase.ts
 import { PracticeCreationObject } from "../../domain/Practice";
-import PracticeRepository from "../../repository/PracticeRepository";
+import { IPracticeRepository } from "../../domain/IPracticeRepository";
 
 class CreatePractice {
-  private readonly adapter: PracticeRepository;
-  constructor(adapter: PracticeRepository) {
+  private readonly adapter: IPracticeRepository;
+  constructor(adapter: IPracticeRepository) {
     this.adapter = adapter;
   }
 

@@ -6,7 +6,7 @@ import {VITE_API} from "../../../../config.ts";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-import firebase from "../../../firebaseConfig";
+import { firebase } from "../../../firebaseConfig";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount.ts";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser.ts";
 import { useNavigate } from "react-router-dom";
