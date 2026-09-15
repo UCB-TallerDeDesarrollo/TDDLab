@@ -1,4 +1,3 @@
-import React from "react";
 import { PropagateLoader } from "react-spinners";
 import TDDCharts from "../components/TDDChart";
 import "../styles/TDDChartPageStyles.css";
@@ -8,6 +7,8 @@ import { CycleReportViewProps } from "../types/tddVisualization.types";
 function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const tddPage = useTDDChartPage(props);
   const { chartsState } = tddPage;
+  const hasCommits = (chartsState.commitsInfo?.length ?? 0) > 0;
+  const hasTddLogs = (chartsState.tddLogsInfo?.length ?? 0) > 0;
 
   return (
     <div className="container">
@@ -22,65 +23,62 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && (
+      {!tddPage.loading && !hasCommits && (
         <div className="error-message" data-testid="errorMessage">
           Hubo un problema al cargar los commits del repositorio
         </div>
       )}
 
-      {!tddPage.loading &&
-        chartsState.commitsInfo?.length !== 0 &&
-        (!chartsState.tddLogsInfo || chartsState.tddLogsInfo.length === 0) && (
-          <div className="error-message" data-testid="errorMessage">
-            Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
-          </div>
-        )}
+      {!tddPage.loading && hasCommits && !hasTddLogs && (
+        <div className="error-message" data-testid="errorMessage">
+          Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
+        </div>
+      )}
 
-      {!tddPage.loading && chartsState.commitsInfo?.length !== 0 && (
-        <React.Fragment>
-          {!tddPage.isStudent && (
-            <div className="navigation-buttons">
-              <button
-                data-testid="previous-student"
-                className="nav-button"
-                onClick={tddPage.goToPreviousStudent}
-                disabled={tddPage.currentIndex === 0}
-                style={{
-                  backgroundColor: tddPage.currentIndex === 0 ? "#B0B0B0" : "#052845",
-                }}
-              >
-                Anterior
-              </button>
-              <button
-                data-testid="next-student"
-                className="nav-button"
-                onClick={tddPage.goToNextStudent}
-                disabled={tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1}
-                style={{
-                  backgroundColor:
-                    tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
-                      ? "#B0B0B0"
-                      : "#052845",
-                }}
-              >
-                Siguiente
-              </button>
-            </div>
-          )}
-          <div className="mainInfoContainer">
-            <TDDCharts
-              data-testId="cycle-chart"
-              commits={chartsState.commitsInfo}
-              tddLogs={chartsState.tddLogsInfo}
-              commitsTddCycles={chartsState.commitsTddCycles}
-              port={props.port}
-              role={props.role}
-              metric={chartsState.metric}
-              setMetric={chartsState.setMetric}
-              typegraphs={props.graphs}
-            />
-          </div>
-        </React.Fragment>
+      {!tddPage.loading && hasCommits && !tddPage.isStudent && (
+        <div className="navigation-buttons">
+          <button
+            data-testid="previous-student"
+            className="nav-button"
+            onClick={tddPage.goToPreviousStudent}
+            disabled={tddPage.currentIndex === 0}
+            style={{
+              backgroundColor: tddPage.currentIndex === 0 ? "#B0B0B0" : "#052845",
+            }}
+          >
+            Anterior
+          </button>
+          <button
+            data-testid="next-student"
+            className="nav-button"
+            onClick={tddPage.goToNextStudent}
+            disabled={tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1}
+            style={{
+              backgroundColor:
+                tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
+                  ? "#B0B0B0"
+                  : "#052845",
+            }}
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
+
+      {!tddPage.loading && hasCommits && hasTddLogs && (
+        <div className="mainInfoContainer">
+          <TDDCharts
+            data-testId="cycle-chart"
+            commits={chartsState.commitsInfo}
+            tddLogs={chartsState.tddLogsInfo}
+            commitsTddCycles={chartsState.commitsTddCycles}
+            port={props.port}
+            role={props.role}
+            metric={chartsState.metric}
+            setMetric={chartsState.setMetric}
+            typegraphs={props.graphs}
+          />
+        </div>
       )}
 
       {props.role !== "student" && (

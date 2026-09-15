@@ -36,16 +36,38 @@ describe("TDDChartPage", () => {
   );
 
   test.each([["admin"], ["student"]])(
-    "displays an error message when no data is available for role %s",
+    "displays only the commits error when commits are unavailable for role %s",
     async (role) => {
-      const { getByTestId } = render(
+      const { getByTestId, queryByText } = render(
         <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
       );
 
       await waitFor(() => {
-        const error = getByTestId("errorMessage");
-        expect(error).toBeInTheDocument();
+        expect(getByTestId("errorMessage")).toHaveTextContent(
+          "Hubo un problema al cargar los commits del repositorio"
+        );
       });
+
+      expect(queryByText(/No se pudieron cargar los datos de las pruebas/)).not.toBeInTheDocument();
+      expect(queryByText("No data available")).not.toBeInTheDocument();
+    }
+  );
+
+  test.each([["admin"], ["student"]])(
+    "displays only the test data error when commits exist without TDD logs for role %s",
+    async (role) => {
+      const { getByTestId, queryByText } = render(
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId("errorMessage")).toHaveTextContent(
+          "No se pudieron cargar los datos de las pruebas"
+        );
+      });
+
+      expect(queryByText("Hubo un problema al cargar los commits del repositorio")).not.toBeInTheDocument();
+      expect(queryByText("No data available")).not.toBeInTheDocument();
     }
   );
 
