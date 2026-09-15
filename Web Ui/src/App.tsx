@@ -10,11 +10,7 @@ import { NoteAdd } from "@mui/icons-material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 import { lazy, Suspense, useEffect } from "react";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "./modules/User-Authentication/domain/authStates";
-import { getSessionCookie } from "./modules/User-Authentication/application/getSessionCookie";
+import { useAuthStore } from "./modules/User-Authentication/domain/authStore";
 
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
@@ -45,7 +41,6 @@ const MyPracticesPage = lazy(
 );
 const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/PracticeDetail"));
 const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
-const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
 const navArrayLinks = [
   {
@@ -87,41 +82,18 @@ const navArrayLinks = [
 ];
 
 function App() {
-  const authData = useGlobalState("authData")[0];
-  const isAuthResolved = authData.userid !== undefined;
+  const authData = useAuthStore((s) => s.authData);
+  const isHydrated = useAuthStore((s) => s.isHydrated);
+  const hydrate = useAuthStore((s) => s.hydrate);
   const isAuthenticated = Boolean(authData.userEmail);
   const isRootPath = globalThis.location.pathname === "/";
   const isPublicLandingPath = globalThis.location.pathname === "/landing";
-  const hasSessionHint =
-    localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
 
   useEffect(() => {
-    getSessionCookie().then((storedSession) => {
-      const savedImage = localStorage.getItem("userProfilePic") || "";
+    hydrate();
+  }, [hydrate]);
 
-      if (storedSession) {
-        localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-        setGlobalState("authData", {
-          userid: storedSession.id,
-          userProfilePic: savedImage,
-          userEmail: storedSession.email,
-          usergroupid: storedSession.groupid,
-          userRole: storedSession.role,
-        });
-      } else {
-        localStorage.removeItem(AUTH_SESSION_HINT_KEY);
-        setGlobalState("authData", {
-          userid: -1,
-          userProfilePic: savedImage,
-          userEmail: "",
-          usergroupid: -1,
-          userRole: "",
-        });
-      }
-    });
-  }, []);
-
-  if (!isAuthResolved && !isPublicLandingPath && (!isRootPath || hasSessionHint)) {
+  if (!isHydrated && !isPublicLandingPath && !isRootPath) {
     return (
       <div
         style={{
@@ -139,7 +111,7 @@ function App() {
 
   return (
     <Router>
-      {isAuthenticated && authData.userRole !== undefined && (
+      {isAuthenticated && (
         <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
       )}
 

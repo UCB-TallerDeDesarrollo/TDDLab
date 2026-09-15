@@ -1,15 +1,15 @@
 import express from "express";
-import { DBCommitsRepository } from "../modules/TDDCycles/Repositories/DBCommitsRepository";
-import { DBJobsRepository } from "../modules/TDDCycles/Repositories/DBJobsRepository";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { DBCommitsRepositoryBuilder } from "../modules/TDDCycles/Infrastructure/DBCommitsRepositoryBuilder";
+import { DBJobsRepositoryBuilder } from "../modules/TDDCycles/Infrastructure/DBJobsRepositoryBuilder";
 import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubRepository";
 import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
 
-// Create instances of your repositories
-const dbCommitsRepository = new DBCommitsRepository();
-const dbJobsRepository = new DBJobsRepository();
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const dbCommitsRepository = new DBCommitsRepositoryBuilder(connectionFactory);
+const dbJobsRepository = new DBJobsRepositoryBuilder(connectionFactory);
 const githubRepository = new GithubRepository();
 
-// Create an instance of your controller
 const tddCyclesController = new TDDCyclesController(
   dbCommitsRepository,
   dbJobsRepository,

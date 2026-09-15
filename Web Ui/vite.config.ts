@@ -27,4 +27,25 @@ export default defineConfig({
       },
     },
   ],
+  optimizeDeps: {
+    },
+  build: {
+    target: 'es2022',     // Mejor tree-shaking con modern JS
+    minify: 'esbuild',
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'chart-libs': ['chart.js', 'react-chartjs-2'],
+          'mui-libs': ['@mui/material', '@mui/icons-material', '@mui/system']
+        }
+      }
+    }
+  },
+  resolve: {
+      alias: {
+      }
+    },
 })

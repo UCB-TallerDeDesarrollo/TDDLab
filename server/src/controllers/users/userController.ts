@@ -4,7 +4,7 @@ import { registerUserWithGoogle } from "../../modules/Users/Application/register
 import { loginUserWithGoogle } from "../../modules/Users/Application/loginUserWithGoogle";
 import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
-import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
+import { IUserRepository } from "../../modules/Users/Domain/IUserRepository";
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
 import { getUserToken } from "../../modules/Users/Application/getUserToken";
 import { saveUserCookie } from "../../modules/Users/Application/saveUserCookie";
@@ -15,9 +15,9 @@ import { User } from "../../modules/Users/Domain/User";
 import admin from "../../config/firebaseAdmin";
 
 class UserController {
-  private readonly userRepository: UserRepository;
+  private readonly userRepository: IUserRepository;
 
-  constructor(userRepository: UserRepository) {
+  constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository;
   }
   async registerUserController(req: Request, res: Response): Promise<void> {
@@ -154,6 +154,7 @@ class UserController {
       await saveUserCookie(jwtToken, res);
       res.status(200).json(user);
     } catch (error: any) {
+      console.error("Error en getUserControllerGoogle:", error);
       if (error.message === "DEBE_USAR_GOOGLE") {
         res.status(400).json({ 
           error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
@@ -173,14 +174,15 @@ class UserController {
   }
 
 
-async  logoutController (res: Response): Promise<void> {
-  res.clearCookie("userSession", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-  res.status(200).json({ message: "Sesión cerrada correctamente" });
-};
+  async logoutController (res: Response): Promise<void> {
+    const isSecure = process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging";
+    res.clearCookie("userSession", {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: isSecure ? "none" : "lax",
+    });
+    res.status(200).json({ message: "Sesión cerrada correctamente" });
+  };
 
   async getMeController(req: Request, res: Response): Promise<void> {
     try {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import PracticeSubmissionRepository from "../../modules/PracticeSubmissions/Repository/PracticeSubmissionsRepository";
+import { IPracticeSubmissionRepository } from "../../modules/PracticeSubmissions/Domain/IPracticeSubmissionRepository";
 import CreatePracticeSubmission from "../../modules/PracticeSubmissions/Application/CreatePracticeSubmissionUseCase";
 import GetPracticeSubmissionsUseCase from "../../modules/PracticeSubmissions/Application/getPracticeSubmissionsUseCase";
 import UpdatePracticeSubmission from "../../modules/PracticeSubmissions/Application/updatePracticeSubmissionUseCase";
@@ -15,7 +15,7 @@ class PracticeSubmissionController {
   private readonly getPracticeSubmissionUseCase: GetPracticeSubmissionByPracticeAndUserUseCase;
   private readonly getPracticeSubmissionsByPracticeIdUseCase: GetPracticeSubmissionsByPracticeIdUseCase;
 
-  constructor(repository: PracticeSubmissionRepository) {
+  constructor(repository: IPracticeSubmissionRepository) {
     this.createPracticeSubmissionUseCase = new CreatePracticeSubmission(repository);
     this.getPracticeSubmissionsUseCase = new GetPracticeSubmissionsUseCase(repository);
     this.getPracticeSubmissionUseCase = new GetPracticeSubmissionByPracticeAndUserUseCase(repository);

@@ -3,7 +3,16 @@ import FeatureFlagRepository from "../../../../src/modules/FeatureFlags/reposito
 import dotenv from "dotenv";
 dotenv.config();
 
-jest.mock("axios");
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    isAxiosError: jest.fn(() => false),
+  },
+}));
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const API_URL = process.env.VITE_API_URL + '/featureflags';

@@ -1,12 +1,14 @@
 import express from "express";
-import SubmissionRepository from "../modules/Submissions/Repository/SubmissionsRepository";
+import { PostgresConnectionFactory } from "../modules/Shared/Infrastructure/PostgresConnectionFactory";
+import { SubmissionsRepositoryBuilder } from "../modules/Submissions/Infrastructure/SubmissionsRepositoryBuilder";
 import SubmissionController from "../controllers/submissions/submissionsController";
 import {
   authenticateJWT,
   authorizeRoles,
 } from "../../src/middleware/authMiddleware";
 
-const repository = new SubmissionRepository();
+const connectionFactory = PostgresConnectionFactory.getInstance();
+const repository = new SubmissionsRepositoryBuilder(connectionFactory);
 const submissionController = new SubmissionController(repository);
 
 const submissionsRouter = express.Router();

@@ -7,6 +7,8 @@ import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivi
 import ContentState from "../../../shared/components/ContentState";
 
 function UsersByGroupPage() {
+  const title = "Usuarios por grupo";
+  document.title = title;
   const { users, group, loading, error } = useUsersByGroupPage();
   const headerTitle = group?.groupName ?? "Grupo";
   let usersContent = <ContentState variant="loading" title="Cargando..." />;

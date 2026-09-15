@@ -1,10 +1,10 @@
-import PracticeSubmissionRepository from "../Repository/PracticeSubmissionsRepository";
 import { PracticeSubmissionUpdateObject } from "../Domain/PracticeSubmission";
+import { IPracticeSubmissionRepository } from "../Domain/IPracticeSubmissionRepository";
 
 class UpdatePracticeSubmission {
-  private readonly repository: PracticeSubmissionRepository;
+  private readonly repository: IPracticeSubmissionRepository;
 
-  constructor(repository: PracticeSubmissionRepository) {
+  constructor(repository: IPracticeSubmissionRepository) {
     this.repository = repository;
   }
 

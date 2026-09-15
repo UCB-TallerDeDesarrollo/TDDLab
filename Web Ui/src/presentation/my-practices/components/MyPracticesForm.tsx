@@ -7,7 +7,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import ValidationDialog from "../../../shared/components/ValidationDialog";
+import { dispatchPracticeCreatedEvent } from "../services";
 
 interface CreatePracticePopupProps {
   open: boolean;
@@ -29,10 +29,6 @@ function MyPracticesForm({
   onCreate,
 }: Readonly<CreatePracticePopupProps>) {
   const [saveAttempted, setSaveAttempted] = useState(false);
-  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
-  const [validationMessage, setValidationMessage] = useState(
-    "Practica creada exitosamente",
-  );
   const [practiceData, setPracticeData] = useState({
     title: "",
     description: "",
@@ -47,12 +43,11 @@ function MyPracticesForm({
 
     try {
       await onCreate(practiceData);
-      setValidationMessage("Practica creada exitosamente");
-      setValidationDialogOpen(true);
+      dispatchPracticeCreatedEvent();
+      handleClose();
     } catch (error) {
       console.error(error);
-      setValidationMessage("Error al crear la practica");
-      setValidationDialogOpen(true);
+      alert("Error al crear la practica");
     }
   };
 
@@ -71,7 +66,6 @@ function MyPracticesForm({
   useEffect(() => {
     if (open) {
       setSaveAttempted(false);
-      setValidationDialogOpen(false);
       setPracticeData({
         title: "",
         description: "",
@@ -82,70 +76,54 @@ function MyPracticesForm({
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      {validationDialogOpen ? null : (
-        <>
-          <DialogTitle style={{ fontSize: "0.8 rem" }}>
-            Crear una Practica
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              error={saveAttempted && practiceData.title.trim() === ""}
-              autoFocus
-              margin="dense"
-              id="practice-title"
-              name="practiceTitle"
-              label="Nombre de la Practica*"
-              type="text"
-              fullWidth
-              value={practiceData.title}
-              onChange={(event) => handleInputChange(event, "title")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
-            />
-            <TextField
-              multiline
-              rows={4}
-              margin="dense"
-              id="practice-description"
-              name="practiceDescription"
-              label="Descripcion"
-              type="text"
-              fullWidth
-              value={practiceData.description}
-              onChange={(event) => handleInputChange(event, "description")}
-              InputLabelProps={{ style: { fontSize: "0.95rem" } }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleClose}
-              style={{ color: "#555", textTransform: "none" }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSaveClick}
-              color="primary"
-              style={{ textTransform: "none" }}
-              disabled={isSaving || practiceData.title.trim() === ""}
-            >
-              {isSaving ? "Creando..." : "Crear"}
-            </Button>
-          </DialogActions>
-        </>
-      )}
-      {validationDialogOpen ? (
-        <ValidationDialog
-          open={validationDialogOpen}
-          title={validationMessage}
-          closeText="Cerrar"
-          onClose={() => {
-            setValidationDialogOpen(false);
-            if (!validationMessage.toLowerCase().includes("error")) {
-              handleClose();
-            }
-          }}
+      <DialogTitle style={{ fontSize: "0.8rem" }}>
+        Crear una Practica
+      </DialogTitle>
+      <DialogContent>
+        <TextField
+          error={saveAttempted && practiceData.title.trim() === ""}
+          autoFocus
+          margin="dense"
+          id="practice-title"
+          name="practiceTitle"
+          label="Nombre de la Practica*"
+          type="text"
+          fullWidth
+          value={practiceData.title}
+          onChange={(event) => handleInputChange(event, "title")}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
         />
-      ) : null}
+        <TextField
+          multiline
+          rows={4}
+          margin="dense"
+          id="practice-description"
+          name="practiceDescription"
+          label="Descripcion"
+          type="text"
+          fullWidth
+          value={practiceData.description}
+          onChange={(event) => handleInputChange(event, "description")}
+          InputLabelProps={{ style: { fontSize: "0.95rem" } }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={handleClose}
+          style={{ color: "#555", textTransform: "none" }}
+          disabled={isSaving}
+        >
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleSaveClick}
+          color="primary"
+          style={{ textTransform: "none" }}
+          disabled={isSaving || practiceData.title.trim() === ""}
+        >
+          {isSaving ? "Creando..." : "Crear"}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

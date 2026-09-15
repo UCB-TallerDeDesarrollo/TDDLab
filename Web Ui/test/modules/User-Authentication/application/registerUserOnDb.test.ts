@@ -1,5 +1,6 @@
 import { RegisterUserOnDb } from "../../../../src/modules/User-Authentication/application/registerUserOnDb";
 import { UserOnDb } from "../../../../src/modules/User-Authentication/domain/userOnDb.interface";
+import { UserRole } from "../../../../src/modules/User-Authentication/domain/session.types";
 import AuthRepository from "../../../../src/modules/User-Authentication/repository/LoginRepository";
 
 // Mock the AuthRepository
@@ -22,7 +23,7 @@ describe("RegisterUserOnDb class", () => {
       id: 1,
       email: "test@example.com",
       groupid: 2,
-      role: "student",
+      role: UserRole.Student,
     };
 
     const mockRepository = new AuthRepository() as jest.Mocked<AuthRepository>;

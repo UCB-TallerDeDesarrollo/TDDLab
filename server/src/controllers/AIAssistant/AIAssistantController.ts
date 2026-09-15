@@ -3,7 +3,7 @@ import { AnalyzeOrRefactorCodeUseCase } from '../../modules/AIAssistant/applicat
 import { AIAssistantRepository } from '../../modules/AIAssistant/repository/AIAssistantRepositoy';
 import { GetPromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/getPromptsCodeUseCases';
 import { UpdatePromptsCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/updatePromptsCodeUseCase';
-import { AIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/AiAssistantDataBaseRepository';
+import { IAIAssistantDataBaseRepository } from '../../modules/AIAssistant/repository/IAIAssistantDataBaseRepository';
 import { AnalyzeTDDCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/analyzeTDDCodeUseCase';
 import { ChatbotCodeUseCase } from '../../modules/AIAssistant/application/AIAssistantUseCases/chatbotCodeUseCase';
 import { ChatbotAssistantRepository } from '../../modules/AIAssistant/repository/ChatbotAssistantRepository';
@@ -18,7 +18,7 @@ export default class AIAssistantController {
 
     constructor(
         repository: AIAssistantRepository,
-        repositoryDB: AIAssistantDataBaseRepository,
+        repositoryDB: IAIAssistantDataBaseRepository,
         repositoryChatBot: ChatbotAssistantRepository
     ) {
         this.analyzeOrRefactorUseCase = new AnalyzeOrRefactorCodeUseCase(repositoryChatBot);

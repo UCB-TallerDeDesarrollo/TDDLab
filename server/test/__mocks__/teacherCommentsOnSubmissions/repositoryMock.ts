@@ -1,15 +1,9 @@
 import { jest } from "@jest/globals";
-import { TeacherCommentRepository } from "../../../src/modules/TeacherCommentsOnSubmissions/Repositories/TeacherCommentRepository";
+import { ITeacherCommentRepository } from "../../../src/modules/TeacherCommentsOnSubmissions/Domain/ITeacherCommentRepository";
 
-export const getTeacherCommentRepositoryMock = (): jest.Mocked<TeacherCommentRepository> => ({
-  executeQuery: jest.fn(),
+export const getTeacherCommentRepositoryMock = (): jest.Mocked<ITeacherCommentRepository> => ({
   createTeacherComment: jest.fn(),
   getTeacherCommentsBySubmission: jest.fn(),
   isTeacher: jest.fn(),
   submissionExists: jest.fn(),
-  pool: {
-    connect: jest.fn(),
-    query: jest.fn(),
-    release: jest.fn(),
-  } as any, // Puedes ajustar esto según el uso de `pool` en tu código
 });
