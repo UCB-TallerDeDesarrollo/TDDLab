@@ -1,10 +1,11 @@
-import { render, waitFor, act } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TDDChartPage from "../../../src/presentation/tdd-visualization/pages/TDDChartPage";
 import {
   MockGithubAPI,
   MockGithubAPIEmpty,
   MockGithubAPIError,
+  MockGithubAPITDDLogsError,
 } from "./__mocks__/MocksCommitHistory";
 
 // Mock de `useNavigate` con tipo explícito
@@ -90,18 +91,36 @@ describe("TDDChartPage", () => {
     }
   );
 
-  it("tests the catch event for both, obtainJobsData and obtainCommitsData", async () => {
-    const spyConsoleError = jest.spyOn(console, "error");
-    spyConsoleError.mockImplementation(() => {});
+  it("keeps commit and test data failures separated when only test data fails", async () => {
+    const { getByTestId, queryByText } = render(
+      <TDDChartPage
+        port={new MockGithubAPITDDLogsError()}
+        role="admin"
+        teacher_id={294}
+        graphs="graph"
+      />
+    );
 
-    await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294} graphs="graph"/>);
+    await waitFor(() => {
+      expect(getByTestId("errorMessage")).toHaveTextContent(
+        "No se pudieron cargar los datos de las pruebas"
+      );
     });
 
-    expect(spyConsoleError).toHaveBeenCalledWith(
-      "Error obtaining data:",
-      expect.any(Error)
+    expect(queryByText("Hubo un problema al cargar los commits del repositorio")).not.toBeInTheDocument();
+  });
+
+  it("prioritizes the commits error when all visualization requests fail", async () => {
+    const { getByTestId, queryByText } = render(
+      <TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294} graphs="graph"/>
     );
-    spyConsoleError.mockRestore();
+
+    await waitFor(() => {
+      expect(getByTestId("errorMessage")).toHaveTextContent(
+        "Hubo un problema al cargar los commits del repositorio"
+      );
+    });
+
+    expect(queryByText(/No se pudieron cargar los datos de las pruebas/)).not.toBeInTheDocument();
   });
 });

@@ -9,6 +9,14 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const { chartsState } = tddPage;
   const hasCommits = (chartsState.commitsInfo?.length ?? 0) > 0;
   const hasTddLogs = (chartsState.tddLogsInfo?.length ?? 0) > 0;
+  const showCommitsError =
+    !tddPage.loading && (chartsState.commitsLoadError || !hasCommits);
+  const showTestDataError =
+    !tddPage.loading &&
+    !showCommitsError &&
+    (chartsState.testDataLoadError || !hasTddLogs);
+  const canRenderCharts =
+    !tddPage.loading && !showCommitsError && !showTestDataError && hasCommits && hasTddLogs;
 
   return (
     <div className="container">
@@ -23,13 +31,13 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && !hasCommits && (
+      {showCommitsError && (
         <div className="error-message" data-testid="errorMessage">
           Hubo un problema al cargar los commits del repositorio
         </div>
       )}
 
-      {!tddPage.loading && hasCommits && !hasTddLogs && (
+      {showTestDataError && (
         <div className="error-message" data-testid="errorMessage">
           Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
         </div>
@@ -65,7 +73,7 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && hasCommits && hasTddLogs && (
+      {canRenderCharts && (
         <div className="mainInfoContainer">
           <TDDCharts
             data-testId="cycle-chart"

@@ -17,16 +17,23 @@ export async function fetchTDDVisualizationData(
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
 
-  const [tddLogs, commits, commitsTddCycles] = await Promise.all([
+  const [tddLogsResult, commitsResult, commitsTddCyclesResult] = await Promise.allSettled([
     getTDDLogsUseCase.execute(repoOwner, repoName),
     getCommitsOfRepoUseCase.execute(repoOwner, repoName),
     getCommitTddCycleUseCase.execute(repoOwner, repoName),
   ]);
 
+  const commitsLoadError = commitsResult.status === "rejected";
+  const testDataLoadError =
+    tddLogsResult.status === "rejected" || commitsTddCyclesResult.status === "rejected";
+
   return {
-    commits,
-    commitsTddCycles,
-    tddLogs,
+    commits: commitsResult.status === "fulfilled" ? commitsResult.value : [],
+    commitsLoadError,
+    commitsTddCycles:
+      commitsTddCyclesResult.status === "fulfilled" ? commitsTddCyclesResult.value : [],
+    tddLogs: tddLogsResult.status === "fulfilled" ? tddLogsResult.value : [],
+    testDataLoadError,
   };
 }
 

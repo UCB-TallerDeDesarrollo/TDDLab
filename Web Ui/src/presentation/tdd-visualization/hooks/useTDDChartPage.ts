@@ -59,7 +59,9 @@ export function useTDDChartPage({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [metric, setMetric] = useState<string | null>(null);
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
+  const [commitsLoadError, setCommitsLoadError] = useState(false);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
+  const [testDataLoadError, setTestDataLoadError] = useState(false);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
 
   const defaultMetric = getDefaultMetric(graphs);
@@ -94,13 +96,23 @@ export function useTDDChartPage({
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
+      setCommitsLoadError(false);
+      setTestDataLoadError(false);
+
       try {
         const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
         setCommitsInfo(visualizationData.commits);
+        setCommitsLoadError(visualizationData.commitsLoadError);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
+        setTestDataLoadError(visualizationData.testDataLoadError);
       } catch (error) {
         console.error("Error obtaining data:", error);
+        setCommitsInfo([]);
+        setCommitsLoadError(true);
+        setCommitsTddCycles([]);
+        setTDDLogsInfo([]);
+        setTestDataLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -158,10 +170,12 @@ export function useTDDChartPage({
   return {
     chartsState: {
       commitsInfo,
+      commitsLoadError,
       commitsTddCycles,
       metric,
       setMetric,
       tddLogsInfo,
+      testDataLoadError,
     },
     comments,
     currentIndex,

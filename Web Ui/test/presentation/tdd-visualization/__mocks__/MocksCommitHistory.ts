@@ -67,6 +67,12 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
   }
 }
 
+export class MockGithubAPITDDLogsError extends MockGithubAPI {
+  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
+    throw new Error("no TDD logs");
+  }
+}
+
 export class MockGithubAPIError implements CommitHistoryRepository {
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     throw new Error("no commits");
