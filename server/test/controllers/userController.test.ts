@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import UserController from "../../src/controllers/users/userController";
 import { UserRepository } from "../../src/modules/Users/Repositories/UserRepository";
-import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
 import { decodeUserTokenFromCookie } from "../../src/modules/Users/Application/decodeUserTokenFromCookie";
 import { getUser } from "../../src/modules/Users/Application/getUser";
 
