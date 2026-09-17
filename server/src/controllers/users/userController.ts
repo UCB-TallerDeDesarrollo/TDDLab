@@ -6,13 +6,10 @@ import { getUser } from "../../modules/Users/Application/getUser";
 import { getUsers } from "../../modules/Users/Application/getUsers";
 import { UserRepository } from "../../modules/Users/Repositories/UserRepository";
 import { getUserByemail } from "../../modules/Users/Application/getUserByemailUseCase";
-import { getUserToken } from "../../modules/Users/Application/getUserToken";
 import { saveUserCookie } from "../../modules/Users/Application/saveUserCookie";
 import { decodeUserTokenFromCookie } from "../../modules/Users/Application/decodeUserTokenFromCookie";
 import { updateUserById } from "../../modules/Users/Application/updateUser";
 import { removeUser } from "../../modules/Users/Application/removeUserFromGroup";
-import { User } from "../../modules/Users/Domain/User";
-import admin from "../../config/firebaseAdmin";
 
 class UserController {
   private readonly userRepository: UserRepository;
@@ -95,50 +92,6 @@ class UserController {
       else res.status(200).json(userData);
     } catch (error) {
       res.status(500).json({ error: "Server error while fetching user" });
-    }
-  }
-
-  async getUserControllerGithub(req: Request, res: Response): Promise<void> {
-    const { idToken } = req.body;
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      const email = decoded.email;
-      const firebaseData = decoded.firebase as any;
-      const providerId = firebaseData?.sign_in_provider;
-      
-      if (!email) {
-        res.status(400).json({ error: "No se pudo obtener email de Firebase" });
-        return;
-      }
-
-      // Si el token no es de GitHub, verificar si el usuario existe
-      // Si existe, significa que está usando el proveedor equivocado
-      if (providerId && providerId !== "github.com") {
-        const userResult = await getUserByemail(email);
-        if (userResult && !("error" in userResult) && userResult !== null) {
-          res.status(400).json({ 
-            error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
-          });
-          return;
-        }
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-        return;
-      }
-
-      let user = (await getUserByemail(email || "")) as User;
-      if (!user || "error" in user || user === null) {
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-        return;
-      }
-      const token = await getUserToken(user);
-      await saveUserCookie(token, res);
-      res.status(200).json(user);
-    } catch (error: any) {
-      if (error.message && error.message.includes("Usuario no encontrado")) {
-        res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
-      } else {
-        res.status(401).json({ error: "Token inválido o expirado" });
-      }
     }
   }
 
