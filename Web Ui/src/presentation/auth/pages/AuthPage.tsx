@@ -49,24 +49,7 @@ export default function AuthPage() {
 
           {authStateContent}
 
-          <StatefulButton
-            variantStyle="secondary"
-            onClick={loginWithGitHub}
-            disabled={loading}
-            sx={{
-              width: "100%",
-              height: 44,
-              backgroundColor: "#6ABB46",
-              "&:hover": {
-                backgroundColor: "#5ca13d",
-              },
-              "&.Mui-disabled": {
-                backgroundColor: "#8fbf7a",
-              },
-            }}
-          >
-            Accedé con GitHub
-          </StatefulButton>
+
 
           <StatefulButton
             variantStyle="primary"

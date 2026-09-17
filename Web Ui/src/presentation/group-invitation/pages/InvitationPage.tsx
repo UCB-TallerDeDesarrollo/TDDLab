@@ -180,35 +180,6 @@ function InvitationPage() {
           <Grid item>
             <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
               <Button
-                onClick={invitation.handleSignUp}
-                disabled={invitation.isLoading}
-                variant="contained"
-                sx={{
-                  backgroundColor: "#24292e",
-                  color: "white",
-                  padding: "10px 20px",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  "&:hover": {
-                    backgroundColor: "#1a1e22",
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc",
-                  },
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <GitHubIcon style={{ marginRight: "8px" }} />
-                  Registrarse con GitHub
-                </div>
-              </Button>
-              <Button
                 onClick={invitation.handleSignUpWithGoogle}
                 disabled={invitation.isLoading}
                 variant="contained"
