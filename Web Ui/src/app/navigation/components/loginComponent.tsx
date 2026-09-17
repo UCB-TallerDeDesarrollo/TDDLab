@@ -6,11 +6,12 @@ import {
   MenuItem,
 } from "@mui/material";
 import React, { useState } from "react";
+import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import firebase from "../../../firebaseConfig";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
 import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import {
   setGlobalState,
@@ -40,7 +41,7 @@ export default function LoginComponent({
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleGithubSignOut();
+    await signOut(getAuth(firebase));
     setGlobalState("authData", {
       userid: -1,
       userProfilePic: "",
