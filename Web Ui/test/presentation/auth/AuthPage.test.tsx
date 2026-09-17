@@ -12,7 +12,6 @@ const mockedUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 describe("AuthPage", () => {
   beforeEach(() => {
     mockedUseAuth.mockReturnValue({
-      loginWithGitHub: jest.fn(),
       loginWithGoogle: jest.fn(),
       loading: false,
       error: null,

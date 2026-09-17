@@ -1,5 +1,4 @@
 import Button from "@mui/material/Button";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import GoogleIcon from "@mui/icons-material/Google";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
