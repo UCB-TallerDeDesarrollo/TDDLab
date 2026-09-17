@@ -1,33 +1,27 @@
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import UserController from "../../src/controllers/users/userController";
 import { UserRepository } from "../../src/modules/Users/Repositories/UserRepository";
-import admin from "firebase-admin";
-import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
-import { getUserToken } from "../../src/modules/Users/Application/getUserToken";
-import { saveUserCookie } from "../../src/modules/Users/Application/saveUserCookie";
 import { decodeUserTokenFromCookie } from "../../src/modules/Users/Application/decodeUserTokenFromCookie";
 import { getUser } from "../../src/modules/Users/Application/getUser";
 
+import request from "supertest";
+import userRoutes from "../../src/routes/userRoutes";
+import { loginUserWithGoogle } from "../../src/modules/Users/Application/loginUserWithGoogle";
+import { registerUserWithGoogle } from "../../src/modules/Users/Application/registerUserWithGoogle";
+
+jest.mock("../../src/modules/Users/Application/loginUserWithGoogle");
+jest.mock("../../src/modules/Users/Application/registerUserWithGoogle");
+
 // Crear un mock de UserRepository
 jest.mock("../../src/modules/Users/Repositories/UserRepository");
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  auth: jest.fn(),
-}));
 jest.mock("../../src/modules/Users/Application/getUser", () => ({
   getUser: jest.fn(),
 }));
 jest.mock("../../src/modules/Users/Application/decodeUserTokenFromCookie", () => ({
   decodeUserTokenFromCookie: jest.fn(),
 }));
-jest.mock("../../src/modules/Users/Application/getUserToken", () => ({
-  getUserToken: jest.fn(),
-}));
 jest.mock("../../src/modules/Users/Application/getUserByemailUseCase", () => ({
   getUserByemail: jest.fn(),
-}));
-jest.mock("../../src/modules/Users/Application/saveUserCookie", () => ({
-  saveUserCookie: jest.fn(),
 }));
 
 describe("UserController", () => {
@@ -80,99 +74,6 @@ describe("UserController", () => {
         message: "Usuario eliminado del grupo exitosamente.",
       });
     });
-  });
-
-  describe("getUserControllerGithub", () => {
-    let mockReq: any;
-    let controller: UserController;
-    let userRepositoryMock: UserRepository;
-    let mockRes: any;
-
-    beforeEach(() => {
-      mockReq = { body: { idToken: "validToken" } };
-      mockRes = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-      jest.clearAllMocks();
-      userRepositoryMock = new UserRepository() as jest.Mocked<UserRepository>;
-      controller = new UserController(userRepositoryMock);
-    });
-
-    it("Verificar el token con firebase", async () => {
-      const fakeDecoded = { email: "test@example.com" };
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
-      });
-      await controller.getUserControllerGithub(mockReq, mockRes);
-      expect(verifyIdTokenMock).toHaveBeenCalledWith("validToken");
-    });
-
-    it("Verificar que devuelve el usuario cuando el token es valido", async () => {
-      const fakeDecoded = { email: "test@example.com" };
-      const fakeUser = { id: 1, role: "admin", groupid: 10 };
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
-      });
-      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
-      await controller.getUserControllerGithub(mockReq, mockRes);
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith(fakeUser);
-    });
-
-    it("Verificar que devuelve error si no se obtiene email del token", async () => {
-      const fakeDecoded = {};
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
-      });
-      await controller.getUserControllerGithub(mockReq, mockRes);
-      expect(mockRes.status).toHaveBeenCalledWith(400);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        error: "No se pudo obtener email de Firebase",
-      });
-    });
-
-    it("Verificar que se obtiene el token generado del usuario", async () => {
-      const fakeDecoded = { email: "test@example.com" };
-      const fakeUser = { id: 1, role: "admin", groupid: 10 };
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
-      });
-      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
-      (getUserToken as jest.Mock).mockResolvedValue("fake.jwt.token");
-      await controller.getUserControllerGithub(mockReq, mockRes);
-      expect(getUserToken).toHaveBeenCalledWith(fakeUser);
-    });
-
-    it("Verificar que se guarda la cookie correctamente", async () => {
-    const fakeDecoded = { email: "test@example.com" };
-    const fakeUser = { id: 1, role: "admin", groupid: 10 };
-    const fakeToken = "fake.jwt.token";
-    const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-    (admin.auth as jest.Mock).mockReturnValue({
-      verifyIdToken: verifyIdTokenMock,
-    });
-    (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
-    (getUserToken as jest.Mock).mockResolvedValue(fakeToken);
-    await controller.getUserControllerGithub(mockReq, mockRes);
-    expect(saveUserCookie).toHaveBeenCalledWith(fakeToken, mockRes);
-  });
-
-  it("Verificar que devuelve 401 en caso de error", async () => {
-    const verifyIdTokenMock = jest.fn().mockRejectedValue(new Error("invalid"));
-    (admin.auth as jest.Mock).mockReturnValue({
-      verifyIdToken: verifyIdTokenMock,
-    });
-    await controller.getUserControllerGithub(mockReq, mockRes);
-    expect(mockRes.status).toHaveBeenCalledWith(401);
-    expect(mockRes.json).toHaveBeenCalledWith({
-      error: "Token inválido o expirado",
-    });
-  });
   });
 
   describe("getMeController", () => {
@@ -230,4 +131,59 @@ describe("UserController", () => {
     expect(jsonMock).toHaveBeenCalledWith({ error: "Token inválido o expirado" });
   });
 });
+});
+
+// Pruebas agregadas para la HU-10: eliminar el acceso con GitHub.
+const app = express();
+app.use(express.json());
+app.use("/user", userRoutes);
+
+describe("HU-10: rutas de autenticacion", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it("POST /user/github ya no existe", async () => {
+    await request(app).post("/user/github").send({ idToken: "qa-token" }).expect(404);
+    expect(loginUserWithGoogle).not.toHaveBeenCalled();
+  });
+
+  it("POST /user/google conserva la validacion de token obligatorio", async () => {
+    await request(app).post("/user/google").send({}).expect(400);
+    expect(loginUserWithGoogle).not.toHaveBeenCalled();
+  });
+
+  it("POST /user/google devuelve el usuario y establece la cookie de sesion", async () => {
+    const user = { id: 7, email: "qa@example.com", role: "student", groupid: 90 };
+    (loginUserWithGoogle as jest.Mock).mockResolvedValue({ user, jwtToken: "qa-session" });
+    const response = await request(app).post("/user/google").send({ idToken: "qa-token" }).expect(200);
+    expect(loginUserWithGoogle).toHaveBeenCalledWith("qa-token");
+    expect(response.body).toEqual(user);
+    expect(response.headers["set-cookie"]).toEqual(expect.arrayContaining([
+      expect.stringContaining("userSession=qa-session"),
+    ]));
+  });
+
+  it("POST /user/google conserva el rechazo de usuarios no registrados", async () => {
+    (loginUserWithGoogle as jest.Mock).mockRejectedValue(new Error("Usuario no encontrado"));
+    await request(app).post("/user/google").send({ idToken: "qa-token" }).expect(404);
+  });
+
+  it("POST /user/register/google conserva el registro por token, grupo y rol", async () => {
+    (registerUserWithGoogle as jest.Mock).mockResolvedValue(undefined);
+    await request(app).post("/user/register/google")
+      .send({ idToken: "qa-token", groupid: 90, role: "student" }).expect(201);
+    expect(registerUserWithGoogle).toHaveBeenCalledWith("qa-token", 90, "student");
+  });
+
+  it("POST /user/register/google rechaza datos incompletos", async () => {
+    await request(app).post("/user/register/google").send({ role: "student" }).expect(400);
+    expect(registerUserWithGoogle).not.toHaveBeenCalled();
+  });
+
+  it.each(["/me", "/users"])("GET /user%s sigue protegido sin sesion", async (path) => {
+    await request(app).get(`/user${path}`).expect(401);
+  });
+
+  it("POST /user/logout sigue protegido sin sesion", async () => {
+    await request(app).post("/user/logout").expect(401);
+  });
 });
