@@ -30,6 +30,8 @@ interface MyPracticesListProps {
   onOpenDetail: (practiceId: number) => void;
   onDeletePractice: (practiceId: number) => Promise<void>;
   onPracticeUpdated: (practice: PracticeDataObject) => Promise<void>;
+  onStartPractice: (practice: PracticeDataObject)=>Promise<void>;
+  onFinishPractice: (practice: PracticeDataObject)=>Promise<void>;
 }
 
 export default function MyPracticesList({
@@ -45,6 +47,8 @@ export default function MyPracticesList({
   onOpenDetail,
   onDeletePractice,
   onPracticeUpdated,
+  onStartPractice,
+  onFinishPractice,
 }: Readonly<MyPracticesListProps>) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -116,6 +120,8 @@ export default function MyPracticesList({
             onOpenDetail={onOpenDetail}
             onDeletePractice={handleClickDelete}
             onPracticeUpdated={onPracticeUpdated}
+            onStartPractice={onStartPractice}
+            onFinishPractice={onFinishPractice}
           />
         ))}
       </FeatureItemsLayout>

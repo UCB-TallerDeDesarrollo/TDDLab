@@ -103,6 +103,27 @@ export const useMyPracticesScreen = (userid: number, userRole: string) => {
     [selectedSorting],
   );
 
+  const startPractice = useCallback(
+  async (practice: PracticeDataObject) => {
+    await updatePractice({
+      ...practice,
+      state: "in_progress",
+    });
+  },
+  [updatePractice],
+);
+
+
+const finishPractice = useCallback(
+  async (practice: PracticeDataObject) => {
+    await updatePractice({
+      ...practice,
+      state: "finished",
+    });
+  },
+  [updatePractice],
+);
+
   const viewState: MyPracticesViewState = useMemo(() => {
     if (isLoading) {
       return "loading";
@@ -133,5 +154,7 @@ export const useMyPracticesScreen = (userid: number, userRole: string) => {
     createPractice,
     deletePractice,
     updatePractice,
+    startPractice,
+    finishPractice,
   };
 };
