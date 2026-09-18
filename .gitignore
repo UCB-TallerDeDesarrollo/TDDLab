@@ -91,3 +91,7 @@ output.zip
 
 #Configuracion local del IDE Webstorm
 .idea/
+
+#Archivos bun
+server/bun.lock
+Web Ui/bun.lock
