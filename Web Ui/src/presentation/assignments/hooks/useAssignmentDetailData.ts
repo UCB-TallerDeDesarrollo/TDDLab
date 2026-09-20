@@ -134,16 +134,6 @@ export function useAssignmentDetailData({
       if (isStudent(role)) {
         return;
       }
-
-      const getFlagUseCase = new GetFeatureFlagByName();
-
-      try {
-        const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
-        setDisableAdditionalGraphs(!(flag?.is_enabled));
-      } catch (error) {
-        console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-        setDisableAdditionalGraphs(true);
-      }
     };
 
     fetchTeacherFlags();
