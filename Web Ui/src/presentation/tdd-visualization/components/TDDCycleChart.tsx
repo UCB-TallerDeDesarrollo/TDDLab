@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { CHART_SYMBOL_VARIANT, chartSymbols } from './chartSymbols';
 
 interface TestLog {
   numPassedTests?: number;
@@ -62,7 +63,8 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const plotHeight = chartHeight - topPadding - bottomPadding;
   
   const commitSpacing = plotWidth / (processedData.length + 1);
-  const circleRadius = 15;
+  const markerSize = chartSymbols.success.size;
+  const markerRadius = markerSize / 2;
   const circleSpacing = 8;
 
   return (
@@ -138,17 +140,35 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
-                const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
+                const y = topPadding + plotHeight - (testIndex * (markerSize + circleSpacing)) - markerRadius;
+                const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
                 
                 return (
-                  <circle
-                    key={`test-${commitIndex}-${testIndex}`}
-                    cx={x}
-                    cy={y}
-                    r={circleRadius}
-                    fill={test.passed ? '#2d8a2d' : '#c72828'}
-                    opacity="0.9"
-                  />
+                  <g key={`test-${commitIndex}-${testIndex}`}>
+                    {CHART_SYMBOL_VARIANT === 'circle' && (
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r={markerRadius}
+                        fill={symbolConfig.color}
+                        opacity="0.9"
+                      />
+                    )}
+                    <text
+                      x={x}
+                      y={y}
+                      fill={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : symbolConfig.color}
+                      fontSize={symbolConfig.size}
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      stroke={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : symbolConfig.color}
+                      strokeWidth={symbolConfig.strokeWidth}
+                      paintOrder="stroke"
+                    >
+                      {symbolConfig.symbol}
+                    </text>
+                  </g>
                 );
               })}
             </g>
