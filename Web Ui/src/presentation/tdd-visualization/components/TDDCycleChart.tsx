@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CHART_SYMBOL_VARIANT, chartSymbols } from './chartSymbols';
 
 interface TestLog {
@@ -23,6 +23,12 @@ interface CommitData {
 }
 
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
+  const [hoveredTest, setHoveredTest] = useState<{
+    x: number;
+    y: number;
+    detail: string;
+  } | null>(null);
+
   const processedData = useMemo(() => {
     if (!data || data.length === 0) {
       return [];
@@ -153,6 +159,8 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
                     key={`test-${commitIndex}-${testIndex}`}
                     role="img"
                     aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
+                    onMouseEnter={() => setHoveredTest({ x, y, detail: test.detail })}
+                    onMouseLeave={() => setHoveredTest(null)}
                   >
                     <title>{test.detail}</title>
                     <circle
@@ -191,6 +199,27 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
             </g>
           );
         })}
+
+        {hoveredTest && (
+          <g role="tooltip" pointerEvents="none">
+            <rect
+              x={Math.max(10, Math.min(hoveredTest.x - 180, chartWidth - 370))}
+              y={Math.max(10, hoveredTest.y - 55)}
+              width="360"
+              height="36"
+              rx="4"
+              fill="#333"
+            />
+            <text
+              x={Math.max(20, Math.min(hoveredTest.x - 170, chartWidth - 360))}
+              y={Math.max(33, hoveredTest.y - 32)}
+              fill="#fff"
+              fontSize="12"
+            >
+              {hoveredTest.detail}
+            </text>
+          </g>
+        )}
 
         {/* X-axis labels */}
         {processedData.map((commit, index) => (

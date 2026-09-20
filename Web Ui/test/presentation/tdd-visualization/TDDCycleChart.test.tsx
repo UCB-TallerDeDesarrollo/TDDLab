@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import TDDCycleChart from '../../../src/presentation/tdd-visualization/components/TDDCycleChart';
 
 const testData = [
@@ -52,6 +52,13 @@ describe('TDDCycleChart', () => {
 
   it('conserva el detalle de ejecución en el tooltip del símbolo', () => {
     render(<TDDCycleChart data={testData} />);
+
+    const successfulExecution = screen.getByRole('img', { name: 'Ejecución exitosa' });
+    fireEvent.mouseEnter(successfulExecution);
+
+    expect(screen.getByRole('tooltip').textContent).toContain(
+      'Ejecución exitosa: 3 pruebas exitosas, 0 fallidas de 3.',
+    );
 
     const tooltips = Array.from(document.querySelectorAll('title')).map((title) => title.textContent);
 
