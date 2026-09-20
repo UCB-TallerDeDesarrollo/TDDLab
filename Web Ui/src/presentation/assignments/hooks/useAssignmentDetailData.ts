@@ -83,8 +83,6 @@ export function useAssignmentDetailData({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
-  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
-
   useEffect(() => {
     const fetchAssignment = async () => {
       const assignmentsRepository = new AssignmentsRepository();
@@ -407,7 +405,6 @@ export function useAssignmentDetailData({
     linkDialogOpen,
     isCommentDialogOpen,
     showIAButton,
-    disableAdditionalGraphs,
     isStudent: isStudent(role),
     openLinkDialog,
     closeLinkDialog,
