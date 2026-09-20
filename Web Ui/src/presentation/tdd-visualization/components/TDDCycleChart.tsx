@@ -19,7 +19,7 @@ interface TDDCycleChartProps {
 
 interface CommitData {
   commitNumber: number;
-  tests: Array<{ passed: boolean; size: number }>;
+  tests: Array<{ passed: boolean; size: number; detail: string }>;
 }
 
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
@@ -46,7 +46,12 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         
         const commit = commitMap.get(currentCommit)!;
         const passed = (log.failedTests === 0) && (log.success === true);
-        commit.tests.push({ passed, size: 1 });
+        const status = passed ? 'exitosa' : 'con fallos';
+        commit.tests.push({
+          passed,
+          size: 1,
+          detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.`,
+        });
       }
     };
     
@@ -144,7 +149,19 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
                 const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
                 
                 return (
-                  <g key={`test-${commitIndex}-${testIndex}`}>
+                  <g
+                    key={`test-${commitIndex}-${testIndex}`}
+                    role="img"
+                    aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
+                  >
+                    <title>{test.detail}</title>
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={markerRadius}
+                      fill="transparent"
+                      stroke="none"
+                    />
                     {CHART_SYMBOL_VARIANT === 'circle' && (
                       <circle
                         cx={x}
