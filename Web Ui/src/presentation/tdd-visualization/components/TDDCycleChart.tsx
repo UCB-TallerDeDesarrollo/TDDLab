@@ -202,17 +202,50 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         </text>
       </svg>
 
-      {/* Legend */}
-      <div style={styles.legend}>
-        <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#2d8a2d'}}></div>
-          <span style={styles.legendText}>Pruebas exitosas</span>
-        </div>
-        <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#c72828'}}></div>
-          <span style={styles.legendText}>Pruebas fallidas</span>
-        </div>
-      </div>
+      <section style={styles.legend} aria-label="Leyenda de resultados de ejecución">
+        <h3 style={styles.legendTitle}>Leyenda</h3>
+        <ul style={styles.legendList}>
+          {[
+            { config: chartSymbols.success, label: 'Ejecución exitosa' },
+            { config: chartSymbols.failure, label: 'Ejecución con fallos' },
+          ].map(({ config, label }) => (
+            <li key={label} style={styles.legendItem}>
+              <svg
+                width={config.size}
+                height={config.size}
+                viewBox={`0 0 ${config.size} ${config.size}`}
+                aria-hidden="true"
+                focusable="false"
+              >
+                {CHART_SYMBOL_VARIANT === 'circle' && (
+                  <circle
+                    cx={config.size / 2}
+                    cy={config.size / 2}
+                    r={config.size / 2}
+                    fill={config.color}
+                    opacity="0.9"
+                  />
+                )}
+                <text
+                  x={config.size / 2}
+                  y={config.size / 2}
+                  fill={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color}
+                  fontSize={config.size}
+                  fontWeight="bold"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  stroke={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color}
+                  strokeWidth={config.strokeWidth}
+                  paintOrder="stroke"
+                >
+                  {config.symbol}
+                </text>
+              </svg>
+              <span style={styles.legendText}>{label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* Summary */}
       <div style={styles.summary}>
@@ -250,26 +283,41 @@ const styles: Record<string, React.CSSProperties> = {
   },
   legend: {
     display: 'flex',
-    justifyContent: 'center',
-    gap: '30px',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '12px',
     marginTop: '20px',
     padding: '15px',
     backgroundColor: '#f9f9f9',
     borderRadius: '6px',
+    boxSizing: 'border-box',
+    width: '100%',
+    maxWidth: '100%',
+  },
+  legendTitle: {
+    margin: 0,
+    fontSize: '16px',
+    color: '#333',
+  },
+  legendList: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: '16px 30px',
+    padding: 0,
+    margin: 0,
+    listStyle: 'none',
+    width: '100%',
   },
   legendItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-  },
-  legendCircle: {
-    width: '20px',
-    height: '20px',
-    borderRadius: '50%',
+    minWidth: 0,
   },
   legendText: {
     fontSize: '14px',
-    color: '#666',
+    color: '#333',
   },
   summary: {
     display: 'flex',
