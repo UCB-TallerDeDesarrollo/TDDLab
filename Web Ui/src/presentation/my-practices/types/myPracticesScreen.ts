@@ -1,4 +1,4 @@
-import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
+import { PracticeDataObject, PracticeState } from "../../../modules/Practices/domain/PracticeInterface";
 
 export type MyPracticesSortOption =
   | ""
@@ -19,7 +19,7 @@ export interface PracticeListItemViewModel {
   id: number;
   title: string;
   description: string;
-  state: string;
+  state: PracticeState;
   creationDate: Date;
   userid: number | undefined;
 }

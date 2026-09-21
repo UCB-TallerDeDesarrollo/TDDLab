@@ -1,3 +1,8 @@
+export type PracticeState =
+  | "pending"
+  | "in_progress"
+  | "finished";
+  
 export interface PracticeDataObject {
   id: number;
   title: string;
