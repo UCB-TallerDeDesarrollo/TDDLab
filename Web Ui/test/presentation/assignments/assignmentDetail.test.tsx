@@ -4,6 +4,13 @@ import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/presentation/assignments/pages/AssignmentDetail";
 import { GitLinkDialog } from "../../../src/shared/components/GitHubLinkDialog";
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({ id: "1" }),
+}));
+
+const mockGetStudentSubmission = jest.fn();
+
 jest.setTimeout(10000);
 
 const mockFeatureFlagExecute = jest.fn().mockResolvedValue(null);
@@ -40,6 +47,24 @@ jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
     obtainGroupDetail: jest.fn().mockResolvedValue({ groupName: "Test Group" }),
   })),
 }));
+
+jest.mock(
+  "../../../src/modules/FeatureFlags/application/GetFeatureFlagByName",
+  () => ({
+    GetFeatureFlagByName: jest.fn().mockImplementation(() => ({
+      execute: jest.fn().mockResolvedValue({ is_enabled: false }),
+    })),
+  })
+);
+
+jest.mock(
+  "../../../src/modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid",
+  () => ({
+    GetSubmissionByUserandAssignmentId: jest.fn().mockImplementation(() => ({
+      getSubmisssionByUserandSubmissionId: mockGetStudentSubmission,
+    })),
+  })
+);
 
 jest.mock("../../../src/modules/Users/repository/UsersRepository", () => ({
   __esModule: true,
@@ -86,6 +111,11 @@ jest.mock(
 );
 
 describe("AssignmentDetail Component", () => {
+  beforeEach(() => {
+    mockGetStudentSubmission.mockReset();
+    mockGetStudentSubmission.mockResolvedValue(null);
+  });
+
   it("displays the group name", async () => {
     const { getByText } = render(
       <BrowserRouter>
@@ -100,6 +130,17 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the Estado and Enlace sections for student role", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "in progress",
+      repository_link: "https://github.com/student/repo",
+      start_date: new Date(),
+      end_date: null,
+      comment: null,
+    });
+
     const { getByText } = render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123} />
@@ -109,6 +150,10 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       const estado = getByText("Estado:");
       expect(estado).toBeInTheDocument();
+      expect(getByText("En progreso")).toHaveClass(
+        "assignment-student-status",
+        "is-progress"
+      );
     });
 
     await waitFor(() => {
@@ -135,8 +180,8 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
-    const { getByText } = render(
+  it("displays only 'Iniciar tarea' as the task action when task is pending", async () => {
+    const { getByText, queryByText } = render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123} />
       </BrowserRouter>
@@ -145,7 +190,7 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       expect(getByText("Iniciar tarea")).toBeInTheDocument();
       expect(getByText("Ver gráfica")).toBeInTheDocument();
-      expect(getByText("Finalizar tarea")).toBeInTheDocument();
+      expect(queryByText("Finalizar tarea")).not.toBeInTheDocument();
     });
   });
 
