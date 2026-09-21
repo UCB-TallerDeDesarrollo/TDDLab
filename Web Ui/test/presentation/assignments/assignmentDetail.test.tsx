@@ -191,6 +191,20 @@ describe("AssignmentDetail Component", () => {
     );
   });
 
+  it("does not display the additional graphs column for teacher deliveries", async () => {
+    render(
+      <BrowserRouter>
+        <AssignmentDetail role="teacher" userid={123} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
+      expect(screen.queryByText("Gráficas adicionales")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Ver" })).not.toBeInTheDocument();
+    });
+  });
+
   it("shows loading indicator while fetching assignment details", async () => {
     const { getByTestId } = render(
       <BrowserRouter>
