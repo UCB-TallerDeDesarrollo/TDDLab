@@ -22,6 +22,9 @@ interface CommitData {
 }
 
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
+  // Files in Vite's `public` folder are served from the site root.
+  const successIconPath = '/images/tdd-cycle-success.png';
+  const failureIconPath = '/images/tdd-cycle-failure.png';
   const processedData = useMemo(() => {
     if (!data || data.length === 0) {
       return [];
@@ -131,7 +134,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           </text>
         ))}
 
-        {/* Data points - circles stacked vertically */}
+        {/* Data points - PNG checks and crosses stacked vertically */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
           
@@ -141,13 +144,13 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
                 const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
                 
                 return (
-                  <circle
+                  <image
                     key={`test-${commitIndex}-${testIndex}`}
-                    cx={x}
-                    cy={y}
-                    r={circleRadius}
-                    fill={test.passed ? '#2d8a2d' : '#c72828'}
-                    opacity="0.9"
+                    href={test.passed ? successIconPath : failureIconPath}
+                    x={x - circleRadius}
+                    y={y - circleRadius}
+                    width={circleRadius * 2}
+                    height={circleRadius * 2}
                   />
                 );
               })}
@@ -185,11 +188,21 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       {/* Legend */}
       <div style={styles.legend}>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#2d8a2d'}}></div>
+          <img
+            src={successIconPath}
+            alt=""
+            aria-hidden="true"
+            style={styles.legendIcon}
+          />
           <span style={styles.legendText}>Pruebas exitosas</span>
         </div>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#c72828'}}></div>
+          <img
+            src={failureIconPath}
+            alt=""
+            aria-hidden="true"
+            style={styles.legendIcon}
+          />
           <span style={styles.legendText}>Pruebas fallidas</span>
         </div>
       </div>
@@ -242,10 +255,10 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '8px',
   },
-  legendCircle: {
+  legendIcon: {
     width: '20px',
     height: '20px',
-    borderRadius: '50%',
+    objectFit: 'contain',
   },
   legendText: {
     fontSize: '14px',
