@@ -83,7 +83,6 @@ export function useAssignmentDetailData({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
-  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
 
   useEffect(() => {
     const fetchAssignment = async () => {
@@ -128,26 +127,6 @@ export function useAssignmentDetailData({
 
     fetchGroup();
   }, [assignment, refreshTick]);
-
-  useEffect(() => {
-    const fetchTeacherFlags = async () => {
-      if (isStudent(role)) {
-        return;
-      }
-
-      const getFlagUseCase = new GetFeatureFlagByName();
-
-      try {
-        const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
-        setDisableAdditionalGraphs(!(flag?.is_enabled));
-      } catch (error) {
-        console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-        setDisableAdditionalGraphs(true);
-      }
-    };
-
-    fetchTeacherFlags();
-  }, [role]);
 
   useEffect(() => {
     const fetchStudentFlags = async () => {
@@ -360,9 +339,7 @@ export function useAssignmentDetailData({
 
   const redirectAdmin = (
     link: string,
-    submissionId: number,
-    path: string,
-    selectedMetric: "Dashboard" | "Complejidad"
+    submissionId: number
   ) => {
     if (!link) {
       setUiMessage("No se encontro un link para esta tarea.");
@@ -378,10 +355,10 @@ export function useAssignmentDetailData({
     }
 
     const [, user, repo] = match;
-    setSelectedMetric(selectedMetric);
+    setSelectedMetric("Dashboard");
 
     navigate({
-      pathname: path,
+      pathname: "/graph",
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
@@ -392,17 +369,13 @@ export function useAssignmentDetailData({
   };
 
   const openTeacherGraph = (row: SubmissionRowView) => {
-    redirectAdmin(row.repositoryLink, row.id, "/graph", "Dashboard");
+    redirectAdmin(row.repositoryLink, row.id);
   };
 
   const openTeacherAssistant = (row: SubmissionRowView) => {
     navigate("/asistente-ia", {
       state: { repositoryLink: row.repositoryLink },
     });
-  };
-
-  const openTeacherAdditionalGraphs = (row: SubmissionRowView) => {
-    redirectAdmin(row.repositoryLink, row.id, "/aditionalgraph", "Complejidad");
   };
 
   return {
@@ -417,7 +390,6 @@ export function useAssignmentDetailData({
     linkDialogOpen,
     isCommentDialogOpen,
     showIAButton,
-    disableAdditionalGraphs,
     isStudent: isStudent(role),
     openLinkDialog,
     closeLinkDialog,
@@ -429,7 +401,6 @@ export function useAssignmentDetailData({
     redirectStudentToAssistant,
     openTeacherGraph,
     openTeacherAssistant,
-    openTeacherAdditionalGraphs,
     studentRepositoryLink: studentSubmission?.repository_link,
     submissionRepositoryLink: submission?.repository_link,
     uiMessage,
