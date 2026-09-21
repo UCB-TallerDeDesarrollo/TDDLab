@@ -262,20 +262,6 @@ function App() {
             }
           />
 
-          <Route
-            path="/aditionalgraph"
-            element={
-              <ProtectedRouteComponent>
-                <TDDChartPage
-                  port={new CommitHistoryAdapter()}
-                  role={authData.userRole ?? ""}
-                  teacher_id={authData.userid ?? -1}
-                  graphs="aditionalgraph"
-                />
-              </ProtectedRouteComponent>
-            }
-          />
-
           <Route path="/invitation" element={<InvitationPage />} />
 
           <Route
