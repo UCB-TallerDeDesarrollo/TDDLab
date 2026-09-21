@@ -341,7 +341,7 @@ export function useAssignmentDetailData({
     link: string,
     submissionId: number,
     path: string,
-    selectedMetric: "Dashboard" | "Complejidad"
+    selectedMetric: "Dashboard"
   ) => {
     if (!link) {
       setUiMessage("No se encontro un link para esta tarea.");
