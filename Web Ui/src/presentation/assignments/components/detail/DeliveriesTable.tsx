@@ -12,10 +12,8 @@ import { SubmissionRowView, ViewState } from "../../types/assignmentDetail";
 interface DeliveriesTableProps {
   state: ViewState;
   rows: SubmissionRowView[];
-  showAdditionalGraphs: boolean;
   onOpenGraph: (row: SubmissionRowView) => void;
   onOpenAssistant: (row: SubmissionRowView) => void;
-  onOpenAdditionalGraphs: (row: SubmissionRowView) => void;
 }
 
 function getStatusClass(status: string): string {
@@ -35,10 +33,8 @@ function getStatusClass(status: string): string {
 export function DeliveriesTable({
   state: _state,
   rows,
-  showAdditionalGraphs,
   onOpenGraph,
   onOpenAssistant,
-  onOpenAdditionalGraphs,
 }: Readonly<DeliveriesTableProps>) {
   return (
     <div className="assignment-table-wrapper">
@@ -52,7 +48,6 @@ export function DeliveriesTable({
             <TableCell sx={{ width: "14%" }}>Fecha de finalización</TableCell>
             <TableCell sx={{ width: "10%" }}>Gráfica</TableCell>
             <TableCell sx={{ width: "10%" }}>Asistente IA</TableCell>
-            <TableCell sx={{ width: "10%" }}>Gráficas adicionales</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -106,16 +101,6 @@ export function DeliveriesTable({
                     }}
                   >
                     Asistente
-                  </StatefulButton>
-                </TableCell>
-                <TableCell>
-                  <StatefulButton
-                    variantStyle={hasRepository && showAdditionalGraphs ? 'primary' : 'secondary'}
-                    onClick={() => {
-                      if (hasRepository && showAdditionalGraphs) onOpenAdditionalGraphs(row);
-                    }}
-                  >
-                    Ver
                   </StatefulButton>
                 </TableCell>
               </TableRow>
