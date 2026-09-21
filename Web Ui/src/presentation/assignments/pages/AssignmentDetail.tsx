@@ -171,7 +171,6 @@ function TeacherAssignmentSection({
       {shouldShowTable ? (
         <section className="assignment-deliveries-card">
           <DeliveriesTable
-            state={deliveriesState}
             rows={deliveriesRows}
             onOpenGraph={openTeacherGraph}
             onOpenAssistant={openTeacherAssistant}
