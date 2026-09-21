@@ -6,6 +6,17 @@ import { GitLinkDialog } from "../../../src/shared/components/GitHubLinkDialog";
 
 jest.setTimeout(10000);
 
+const mockFeatureFlagExecute = jest.fn().mockResolvedValue(null);
+
+jest.mock(
+  "../../../src/modules/FeatureFlags/application/GetFeatureFlagByName",
+  () => ({
+    GetFeatureFlagByName: jest.fn().mockImplementation(() => ({
+      execute: mockFeatureFlagExecute,
+    })),
+  })
+);
+
 jest.mock(
   "../../../src/modules/Assignments/application/GetAssignmentDetail",
   () => ({
@@ -188,6 +199,36 @@ describe("AssignmentDetail Component", () => {
         ).toBeInTheDocument();
       },
       { timeout: 3000 }
+    );
+  });
+
+  it("does not display the additional graphs column for teacher deliveries", async () => {
+    render(
+      <BrowserRouter>
+        <AssignmentDetail role="teacher" userid={123} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
+      expect(screen.queryByText("Gráficas adicionales")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Ver" })).not.toBeInTheDocument();
+    });
+  });
+
+  it("does not request the additional graphs flag for teacher deliveries", async () => {
+    render(
+      <BrowserRouter>
+        <AssignmentDetail role="teacher" userid={123} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
+    });
+
+    expect(mockFeatureFlagExecute).not.toHaveBeenCalledWith(
+      "Mostrar Graficas Adicionales"
     );
   });
 
