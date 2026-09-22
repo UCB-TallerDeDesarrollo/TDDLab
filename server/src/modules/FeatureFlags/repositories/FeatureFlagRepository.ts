@@ -38,7 +38,12 @@ class FeatureFlagRepository {
   }
 
   async obtainFeatureFlags(): Promise<FeatureFlagDataObject[]> {
-    const query = "SELECT id, feature_name, is_enabled FROM feature_flags";
+    const query = `
+      SELECT id, feature_name, is_enabled
+      FROM feature_flags
+      WHERE feature_name <> 'Mostrar Graficas Adicionales'
+    `;
+
     const rows = await this.executeQuery(query);
     return rows.map((row) => this.mapRowToFeatureFlag(row));
   }

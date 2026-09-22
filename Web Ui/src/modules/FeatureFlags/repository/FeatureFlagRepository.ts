@@ -9,9 +9,13 @@ import { VITE_API } from "../../../../config";
 const API_URL = `${VITE_API}/featureflags`;
 
 class FeatureFlagRepository implements FeatureFlagRepositoryInterface {
-  async getFlags(): Promise<FeatureFlag[]> {
-    const response = await axios.get(API_URL,{withCredentials: true});
-    return response.data;
+    async getFlags(): Promise<FeatureFlag[]> {
+    const response = await axios.get(API_URL, { withCredentials: true });
+
+    return response.data.filter(
+      (flag: FeatureFlag) =>
+        flag.feature_name !== "Mostrar Graficas Adicionales"
+    );
   }
 
   async updateFlag(id: number, request: FeatureFlagUpdateRequest): Promise<FeatureFlag> {
