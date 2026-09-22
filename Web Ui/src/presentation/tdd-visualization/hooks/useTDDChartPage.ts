@@ -48,6 +48,7 @@ export function useTDDChartPage({
   );
   const [ownerName, setOwnerName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [emails, setEmails] = useState<Record<number, string>>({});
   const [feedback, setFeedback] = useState("");
@@ -89,6 +90,10 @@ export function useTDDChartPage({
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
+      setLoadError(false);
+      setCommitsInfo(null);
+      setTDDLogsInfo(null);
+      setCommitsTddCycles([]);
       try {
         const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
         setCommitsInfo(visualizationData.commits);
@@ -96,6 +101,7 @@ export function useTDDChartPage({
         setTDDLogsInfo(visualizationData.tddLogs);
       } catch (error) {
         console.error("Error obtaining data:", error);
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -169,6 +175,7 @@ export function useTDDChartPage({
     isSubmitting,
     isStudent: studentRole,
     loading,
+    loadError,
     ownerName,
     repoName,
     role,

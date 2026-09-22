@@ -22,21 +22,28 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && (
+      {!tddPage.loading && tddPage.loadError && (
+        <div className="error-message" data-testid="errorMessage">
+          No se pudieron generar las gráficas porque no se pudieron cargar los datos necesarios. TDDLab busca estos datos en la rama main; verifica que los archivos requeridos estén disponibles allí.
+        </div>
+      )}
+
+      {!tddPage.loading && !tddPage.loadError && !chartsState.commitsInfo?.length && (
         <div className="error-message" data-testid="errorMessage">
           Hubo un problema al cargar los commits del repositorio
         </div>
       )}
 
       {!tddPage.loading &&
-        chartsState.commitsInfo?.length !== 0 &&
+        !tddPage.loadError &&
+        (chartsState.commitsInfo?.length ?? 0) > 0 &&
         (!chartsState.tddLogsInfo || chartsState.tddLogsInfo.length === 0) && (
           <div className="error-message" data-testid="errorMessage">
             Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
           </div>
         )}
 
-      {!tddPage.loading && chartsState.commitsInfo?.length !== 0 && (
+      {!tddPage.loading && (
         <React.Fragment>
           {!tddPage.isStudent && (
             <div className="navigation-buttons">
@@ -67,18 +74,21 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
               </button>
             </div>
           )}
-          <div className="mainInfoContainer">
-            <TDDCharts
-              data-testId="cycle-chart"
-              commits={chartsState.commitsInfo}
-              tddLogs={chartsState.tddLogsInfo}
-              commitsTddCycles={chartsState.commitsTddCycles}
-              port={props.port}
-              role={props.role}
-              metric={chartsState.metric}
-              setMetric={chartsState.setMetric}
-            />
-          </div>
+          {!tddPage.loadError && (chartsState.commitsInfo?.length ?? 0) > 0 && (
+            <div className="mainInfoContainer">
+              <TDDCharts
+                data-testId="cycle-chart"
+                commits={chartsState.commitsInfo}
+                tddLogs={chartsState.tddLogsInfo}
+                commitsTddCycles={chartsState.commitsTddCycles}
+                port={props.port}
+                role={props.role}
+                metric={chartsState.metric}
+                setMetric={chartsState.setMetric}
+                typegraphs={props.graphs}
+              />
+            </div>
+          )}
         </React.Fragment>
       )}
 
