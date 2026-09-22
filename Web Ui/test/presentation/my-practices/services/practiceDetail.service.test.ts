@@ -13,7 +13,7 @@ describe("practiceDetail.service", () => {
     it("maps known states to display labels", () => {
       expect(getDisplayStatus("pending")).toBe("Pendiente");
       expect(getDisplayStatus("in progress")).toBe("En progreso");
-      expect(getDisplayStatus("delivered")).toBe("Enviado");
+      expect(getDisplayStatus("delivered")).toBe("Finalizada");
     });
 
     it("returns pending label when state is undefined", () => {
