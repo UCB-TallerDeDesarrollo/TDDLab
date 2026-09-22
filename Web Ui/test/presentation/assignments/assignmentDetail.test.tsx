@@ -93,7 +93,7 @@ function renderAssignmentDetail(role: "student" | "teacher", userid = 123) {
 describe("AssignmentDetail Component", () => {
   beforeEach(() => {
     mockGetStudentSubmission.mockReset();
-    mockGetStudentSubmission.mockRejectedValue(new Error("Submission not found"));
+    mockGetStudentSubmission.mockResolvedValue(null);
     mockGetFeatureFlagByName.mockReset();
     mockGetFeatureFlagByName.mockResolvedValue(null);
     mockGetTeacherSubmissions.mockReset();
@@ -165,6 +165,40 @@ describe("AssignmentDetail Component", () => {
       expect(screen.getByRole("button", { name: "Iniciar tarea" })).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: /Ver gr/i })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
+    });
+  });
+
+  it("no muestra acciones mientras se consulta la entrega del estudiante", async () => {
+    mockGetStudentSubmission.mockImplementation(
+      () => new Promise<never>(() => undefined)
+    );
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("status", { name: "Estado de la tarea: Cargando..." })
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Ver gr/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it("no muestra acciones y comunica el error si la entrega no se puede consultar", async () => {
+    mockGetStudentSubmission.mockRejectedValue(new Error("Network unavailable"));
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("status", {
+          name: "Estado de la tarea: No se pudo cargar la entrega",
+        })
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Ver gr/i })).not.toBeInTheDocument();
     });
   });
 
@@ -253,6 +287,35 @@ describe("AssignmentDetail Component", () => {
 
     const loadingIndicator = getByTestId("loading-indicator");
     expect(loadingIndicator).toBeInTheDocument();
+  });
+
+  it("recupera las acciones de una tarea en progreso al montar de nuevo la página", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "in progress",
+      repository_link: "https://github.com/student/practice",
+      start_date: new Date("2026-09-01T12:00:00Z"),
+      end_date: null,
+      comment: null,
+    });
+
+    const firstRender = renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+    });
+
+    firstRender.unmount();
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Ver gr/i })).toBeInTheDocument();
+    });
+
+    expect(mockGetStudentSubmission).toHaveBeenCalledTimes(2);
   });
 
   it("opens and closes the GitLinkDialog", async () => {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { createSearchParams, NavigateFunction } from "react-router-dom";
 import { GetAssignmentDetail } from "../../../modules/Assignments/application/GetAssignmentDetail";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -78,6 +78,8 @@ export function useAssignmentDetailData({
 
   const [studentSubmission, setStudentSubmission] =
     useState<SubmissionDataObject | null>(null);
+  const [studentSubmissionState, setStudentSubmissionState] =
+    useState<ViewState>("loading");
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
@@ -175,18 +177,31 @@ export function useAssignmentDetailData({
       }
 
       if (!assignmentid || !userid || userid === -1 || assignmentid < 0 || userid < 0) {
+        setStudentSubmissionState("error");
         return;
       }
+
+      setStudentSubmissionState("loading");
+      setStudentSubmission(null);
+      setSubmission(null);
 
       try {
         const submissionRepository = new SubmissionRepository();
         const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
         const fetchedSubmission =
           await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
+
+        if (fetchedSubmission === null) {
+          setStudentSubmissionState("empty");
+          return;
+        }
+
         setSubmission(fetchedSubmission);
         setStudentSubmission(fetchedSubmission);
+        setStudentSubmissionState("success");
       } catch (error) {
         console.error("Error verifying submission status:", error);
+        setStudentSubmissionState("error");
       }
     };
 
@@ -252,13 +267,6 @@ export function useAssignmentDetailData({
 
     fetchDeliveries();
   }, [assignmentid, role, refreshTick]);
-
-  const isTaskInProgress = submission?.status !== "in progress";
-
-  const studentStatusLabel = useMemo(
-    () => getDisplayStatus(studentSubmission?.status),
-    [studentSubmission?.status]
-  );
 
   const openLinkDialog = () => {
     setLinkDialogOpen(true);
@@ -412,8 +420,7 @@ export function useAssignmentDetailData({
     deliveriesState,
     deliveriesRows,
     studentSubmission,
-    studentStatusLabel,
-    isTaskInProgress,
+    studentSubmissionState,
     linkDialogOpen,
     isCommentDialogOpen,
     showIAButton,

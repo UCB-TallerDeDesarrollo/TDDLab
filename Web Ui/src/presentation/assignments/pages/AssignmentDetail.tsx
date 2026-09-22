@@ -197,6 +197,7 @@ function LoadedAssignmentContent({
     assignment,
     groupDetails,
     studentSubmission,
+    studentSubmissionState,
     isStudent,
   } = detailData;
 
@@ -205,7 +206,7 @@ function LoadedAssignmentContent({
   }
 
   const actionState = getStudentAssignmentActionState(
-    studentSubmission ? "success" : "empty",
+    studentSubmissionState,
     studentSubmission
   );
 
