@@ -38,8 +38,13 @@ describe('TDDCycleChart', () => {
 
     expect(screen.getByRole('img', { name: 'Ejecución exitosa' })).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Ejecución con fallos' })).toBeTruthy();
-    expect(screen.getAllByText('✓').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('✕').length).toBeGreaterThan(0);
+
+    const successfulSymbol = screen.getByRole('img', { name: 'Ejecución exitosa' });
+    const failedSymbol = screen.getByRole('img', { name: 'Ejecución con fallos' });
+    expect(successfulSymbol.querySelector('path')).toBeTruthy();
+    expect(failedSymbol.querySelector('path')).toBeTruthy();
+    expect(successfulSymbol.querySelector('path')?.getAttribute('stroke-linecap')).toBe('round');
+    expect(failedSymbol.querySelector('path')?.getAttribute('stroke-linecap')).toBe('round');
   });
 
   it('muestra una leyenda con el significado de cada símbolo', () => {

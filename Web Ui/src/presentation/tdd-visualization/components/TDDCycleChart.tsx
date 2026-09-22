@@ -22,6 +22,44 @@ interface CommitData {
   tests: Array<{ passed: boolean; size: number; detail: string }>;
 }
 
+type ChartSymbolConfig = typeof chartSymbols.success | typeof chartSymbols.failure;
+
+interface ChartSymbolMarkProps {
+  config: ChartSymbolConfig;
+  x: number;
+  y: number;
+}
+
+const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
+  const symbolColor = CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color;
+  const halfSymbolSize = config.symbolSize / 2;
+  const symbolPath = config.symbol === 'check'
+    ? `M ${x - halfSymbolSize * 0.65} ${y - halfSymbolSize * 0.05} L ${x - halfSymbolSize * 0.15} ${y + halfSymbolSize * 0.5} L ${x + halfSymbolSize * 0.7} ${y - halfSymbolSize * 0.6}`
+    : `M ${x - halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x + halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55} M ${x + halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x - halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55}`;
+
+  return (
+    <>
+      {CHART_SYMBOL_VARIANT === 'circle' && (
+        <circle
+          cx={x}
+          cy={y}
+          r={config.size / 2}
+          fill={config.color}
+          opacity="0.9"
+        />
+      )}
+      <path
+        d={symbolPath}
+        fill="none"
+        stroke={symbolColor}
+        strokeWidth={config.strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>
+  );
+};
+
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const [hoveredTest, setHoveredTest] = useState<{
     x: number;
@@ -170,29 +208,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
                       fill="transparent"
                       stroke="none"
                     />
-                    {CHART_SYMBOL_VARIANT === 'circle' && (
-                      <circle
-                        cx={x}
-                        cy={y}
-                        r={markerRadius}
-                        fill={symbolConfig.color}
-                        opacity="0.9"
-                      />
-                    )}
-                    <text
-                      x={x}
-                      y={y}
-                      fill={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : symbolConfig.color}
-                      fontSize={symbolConfig.size}
-                      fontWeight="bold"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      stroke={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : symbolConfig.color}
-                      strokeWidth={symbolConfig.strokeWidth}
-                      paintOrder="stroke"
-                    >
-                      {symbolConfig.symbol}
-                    </text>
+                    <ChartSymbolMark config={symbolConfig} x={x} y={y} />
                   </g>
                 );
               })}
@@ -263,29 +279,11 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
                 aria-hidden="true"
                 focusable="false"
               >
-                {CHART_SYMBOL_VARIANT === 'circle' && (
-                  <circle
-                    cx={config.size / 2}
-                    cy={config.size / 2}
-                    r={config.size / 2}
-                    fill={config.color}
-                    opacity="0.9"
-                  />
-                )}
-                <text
+                <ChartSymbolMark
+                  config={config}
                   x={config.size / 2}
                   y={config.size / 2}
-                  fill={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color}
-                  fontSize={config.size}
-                  fontWeight="bold"
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  stroke={CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color}
-                  strokeWidth={config.strokeWidth}
-                  paintOrder="stroke"
-                >
-                  {config.symbol}
-                </text>
+                />
               </svg>
               <span style={styles.legendText}>{label}</span>
             </li>
