@@ -100,9 +100,7 @@ const SettingsPage: React.FC = () => {
       {flags && flags.length > 0 && (
         <FeatureListSection title="Habilitación de Funcionalidades:">
           <FeatureFlags
-            flags={flags.filter(
-              (flag) => flag.feature_name !== "Mostrar Graficas Adicionales"
-            )}
+            flags={flags}
             onToggleFlag={handleToggleFlag}
             saving={savingFlag}
           />
