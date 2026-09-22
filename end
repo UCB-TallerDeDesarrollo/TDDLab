@@ -1,0 +1,65 @@
+[33mcommit 9e7d6649facdf9640bfc233fa94913d05b5c121f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mNombreTemp-TDDLabb[m[33m, [m[1;31morigin/NombreTemp-TDDLabb[m[33m)[m
+Author: Joshx567 <jose.lopez.s@ucb.edu.bo>
+Date:   Thu Sep 17 11:33:01 2026 -0400
+
+    feat: se modifica la logica y se elimino las graficas adicionales, de la vista de docente
+
+[33mcommit 0b7dedd42aa7562ea3dee9f708502aa77b460d4e[m[33m ([m[1;31morigin/eliminar-boton-github[m[33m, [m[1;32meliminar-boton-github[m[33m)[m
+Author: Joshx567 <jose.lopez.s@ucb.edu.bo>
+Date:   Thu Sep 3 08:55:10 2026 -0400
+
+    refact: eliminacion de logica de backend respecto al github y cambios en webui
+
+[33mcommit 3551890c6d3ad04ecf594781580ce3af98ec3a77[m
+Author: Joshx567 <jose.lopez.s@ucb.edu.bo>
+Date:   Wed Sep 2 17:08:17 2026 -0400
+
+    refact: se elimina el boton fisico de iniciar sesion con github dentro la pagina de login y se modifica el inicio de sesion con google
+
+[33mcommit a6d7a65c003d8179ffd34ef9e96b5958e8a08448[m
+Author: Joshx567 <jose.lopez.s@ucb.edu.bo>
+Date:   Wed Sep 2 16:51:13 2026 -0400
+
+    fix: se corrigen nombres de sesion con google
+
+[33mcommit bc841c2e68777435ae52bba39cd122e640bfcb03[m
+Author: Joshx567 <jose.lopez.s@ucb.edu.bo>
+Date:   Wed Sep 2 16:42:49 2026 -0400
+
+    fix: se corrige el cerrado de sesion con google
+
+[33mcommit 65b99fd0e8765461433ac1665331b4ceb8e3e129[m
+Author: Joshx567 <jose.lopez.s@ucb.edu.bo>
+Date:   Wed Sep 2 15:51:37 2026 -0400
+
+    refact: se elimina el acceso al github desde la interfaz UI
+
+[33mcommit 60f4c514f869f66755453ff06558e31d8ddf9b9b[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Merge: 865238e3 e69b84a7
+Author: Andrés Salvatierra <132105469+AndresSalva@users.noreply.github.com>
+Date:   Wed May 20 09:16:37 2026 -0400
+
+    Fixeando deploy
+    
+    fix(ci): corregir proyecto Firebase en deploy
+
+[33mcommit e69b84a7e90ef4d392f5fa55af39084894459804[m[33m ([m[1;31morigin/deployment-fix[m[33m)[m
+Author: AndresSalva <andres.salvatierra@ucb.edu.bo>
+Date:   Tue May 19 22:46:49 2026 -0400
+
+    corrige despliegue de firebase con proyectos explicitos
+
+[33mcommit 865238e3e3aa3097513ec41662b24f24f154c854[m
+Merge: 305575ac 5c843f75
+Author: Andrés Salvatierra <132105469+AndresSalva@users.noreply.github.com>
+Date:   Tue May 19 17:42:26 2026 -0400
+
+    resolviendo todos los code smells de sonarqube cloud
+    
+    fix(frontend): resolve sonar new code smells
+
+[33mcommit 5c843f75aeb4e59b6f43486e41a0ff7b9dc0becb[m[33m ([m[1;31morigin/main-quality-improvements[m[33m)[m
+Author: AndresSalva <andres.salvatierra@ucb.edu.bo>
+Date:   Tue May 19 14:47:43 2026 -0400
+
+    fix(frontend): resolve sonar new code smells
