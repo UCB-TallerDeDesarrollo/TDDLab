@@ -1,4 +1,4 @@
-import { render, waitFor, act } from "@testing-library/react";
+import { render, waitFor, act, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TDDChartPage from "../../../src/presentation/tdd-visualization/pages/TDDChartPage";
 import {
@@ -68,13 +68,22 @@ describe("TDDChartPage", () => {
     }
   );
 
-  it("tests the catch event for both, obtainJobsData and obtainCommitsData", async () => {
+  it("displays a clear error without duplicate messages when loading fails", async () => {
     const spyConsoleError = jest.spyOn(console, "error");
     spyConsoleError.mockImplementation(() => {});
 
     await act(async () => {
       render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294} graphs="graph"/>);
     });
+
+    const error = screen.getByTestId("errorMessage");
+    expect(error).toBeVisible();
+    expect(error).toHaveTextContent("No se pudieron generar las gráficas");
+    expect(error).toHaveTextContent("TDDLab busca estos datos en la rama main");
+    expect(screen.getAllByTestId("errorMessage")).toHaveLength(1);
+    expect(screen.queryByText(/Hubo un problema al cargar los commits/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Error: No se pudieron cargar los datos de las pruebas/)).not.toBeInTheDocument();
+    expect(screen.queryByText("No data available")).not.toBeInTheDocument();
 
     expect(spyConsoleError).toHaveBeenCalledWith(
       "Error obtaining data:",
