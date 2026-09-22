@@ -19,7 +19,7 @@ describe('CommitHistoryAdapter', () => {
       const requestSpy = jest.spyOn(adapter.octokit, 'request').mockResolvedValue({
         status: 200,
         data: { default_branch: 'master' },
-      } as any);
+      } as Awaited<ReturnType<typeof adapter.octokit.request>>);
 
       await expect(adapter.obtainDefaultBranch('test-owner', 'test-repo')).resolves.toBe('master');
       expect(requestSpy).toHaveBeenCalledWith('GET /repos/{owner}/{repo}', {

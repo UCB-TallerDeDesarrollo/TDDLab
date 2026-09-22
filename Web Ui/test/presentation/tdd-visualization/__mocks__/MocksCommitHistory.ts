@@ -31,7 +31,7 @@ export class MockGithubAPI implements CommitHistoryRepository {
     return "mockUser";
   }
 
-  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+  async obtainDefaultBranch(): Promise<string> {
     return "main";
   }
 
@@ -44,14 +44,14 @@ export class MockGithubAPI implements CommitHistoryRepository {
     return commitCycles;
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
 }
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
-  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+  async obtainDefaultBranch(): Promise<string> {
     return "main";
   }
 
@@ -69,26 +69,26 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     return commitCycles;
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
 }
 
 export class MockGithubAPITDDLogsError extends MockGithubAPI {
-  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(): Promise<TDDLogEntry[]> {
     throw new Error("no TDD logs");
   }
 }
 
 export class MockGithubAPIMasterNoTests extends MockGithubAPI {
-  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+  async obtainDefaultBranch(): Promise<string> {
     return "master";
   }
 }
 
 export class MockGithubAPIError implements CommitHistoryRepository {
-  async obtainDefaultBranch(_owner: string, _repoName: string): Promise<string> {
+  async obtainDefaultBranch(): Promise<string> {
     throw new Error("no default branch");
   }
 
@@ -104,7 +104,7 @@ export class MockGithubAPIError implements CommitHistoryRepository {
     throw new Error("no commit cycles");
   }
 
-  async obtainTDDLogs(_owner: string, _repoName: string, _branch: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
     throw new Error("no TDD logs");
   }
 }
