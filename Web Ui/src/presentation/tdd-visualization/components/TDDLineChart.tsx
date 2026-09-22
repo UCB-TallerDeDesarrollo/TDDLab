@@ -22,7 +22,6 @@ import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/r
 import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
-import TDDPie from "./Graficas-Adicionales/TDDPie";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
@@ -354,10 +353,6 @@ function TDDLineCharts({
         }) || [];
         return <TDDCycleChart data={testLogs} />;
       }
-
-
-      case "Pie":
-        return <TDDPie commits={filteredCommitsObject || []} />;     
     }
     return (
       <Line

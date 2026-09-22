@@ -22,7 +22,6 @@ jest.mock('../../../src/firebaseConfig', () => {
 
 jest.mock('../../../src/modules/User-Authentication/application/checkIfUserHasAccount.ts', () => ({
     CheckIfUserHasAccount: jest.fn().mockImplementation(() => ({
-        userHasAnAccountWithToken: jest.fn().mockResolvedValue(null),
         userHasAnAccountWithGoogleToken: jest.fn().mockResolvedValue(null),
     })),
 }));

@@ -9,7 +9,7 @@ export interface CycleReportViewProps {
   port: CommitHistoryRepository;
   role: string;
   teacher_id: number;
-  graphs: string;
+  graphs?: string;
 }
 
 export interface Submission {

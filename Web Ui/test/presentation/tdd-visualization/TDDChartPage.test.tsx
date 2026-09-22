@@ -27,7 +27,7 @@ describe("TDDChartPage", () => {
     "renders loading spinner when loading is true for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} />
       );
 
       await waitFor(() => {
@@ -41,7 +41,7 @@ describe("TDDChartPage", () => {
     "displays only the commits error when commits are unavailable for role %s",
     async (role) => {
       const { getByTestId, queryByText } = render(
-        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} />
       );
 
       await waitFor(() => {
@@ -77,7 +77,7 @@ describe("TDDChartPage", () => {
     "displays the repository name for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} />
       );
 
       await waitFor(() => {
