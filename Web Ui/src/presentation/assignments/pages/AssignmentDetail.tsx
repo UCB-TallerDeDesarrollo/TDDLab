@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import StatefulButton from "../../../shared/components/StatefulButton";
+import StartFinishActionButton from "../../../shared/components/StartFinishActionButton";
 import ContentState from "../../../shared/components/ContentState";
 import DetailPageShell from "../../../shared/components/DetailPageShell";
 import StudentDetailCard from "../../../shared/components/StudentDetailCard";
@@ -70,14 +71,12 @@ function GuardedActionButton({
 
 function StudentAssignmentSection({
   detailData,
-  hasStudentSubmission,
   hasStudentRepository,
-  canFinishTask,
+  isActionLoading,
 }: Readonly<{
   detailData: AssignmentDetailData;
-  hasStudentSubmission: boolean;
   hasStudentRepository: boolean;
-  canFinishTask: boolean;
+  isActionLoading: boolean;
 }>) {
   const {
     studentStatusLabel,
@@ -90,6 +89,12 @@ function StudentAssignmentSection({
     studentRepositoryLink,
   } = detailData;
   const canUseAssistant = Boolean(studentSubmission?.repository_link);
+  const getStatusClassName = () => {
+    if (studentSubmission?.status === "in progress") return "assignment-status--progress";
+    if (studentSubmission?.status === "pending") return "assignment-status--pending";
+    if (studentSubmission?.status === "delivered") return "assignment-status--sent";
+    return undefined;
+  };
 
   return (
     <StudentDetailCard
@@ -104,26 +109,25 @@ function StudentAssignmentSection({
           status={studentStatusLabel}
           repositoryLink={studentRepositoryLink}
           comment={studentSubmission?.comment || undefined}
+          statusClassName={getStatusClassName()}
         />
       }
       actions={
         <>
-          <GuardedActionButton
-            enabled={hasStudentSubmission === false}
-            onClick={openLinkDialog}
-          >
-            Iniciar tarea
-          </GuardedActionButton>
+          <StartFinishActionButton
+            status={studentSubmission?.status}
+            startLabel="Iniciar tarea"
+            finishLabel="Finalizar tarea"
+            onStart={openLinkDialog}
+            onFinish={openCommentDialog}
+            loading={isActionLoading}
+          />
 
           <GuardedActionButton
             enabled={hasStudentRepository}
             onClick={redirectStudentToGraph}
           >
             Ver gráfica
-          </GuardedActionButton>
-
-          <GuardedActionButton enabled={canFinishTask} onClick={openCommentDialog}>
-            Finalizar tarea
           </GuardedActionButton>
 
           {showIAButton && (
@@ -197,7 +201,6 @@ function LoadedAssignmentContent({
     assignment,
     groupDetails,
     studentSubmission,
-    isTaskInProgress,
     isStudent,
   } = detailData;
 
@@ -205,9 +208,7 @@ function LoadedAssignmentContent({
     return null;
   }
 
-  const hasStudentSubmission = Boolean(studentSubmission);
   const hasStudentRepository = Boolean(studentSubmission?.repository_link);
-  const canFinishTask = isTaskInProgress === false;
 
   return (
     <>
@@ -221,9 +222,8 @@ function LoadedAssignmentContent({
       {isStudent ? (
         <StudentAssignmentSection
           detailData={detailData}
-          hasStudentSubmission={hasStudentSubmission}
           hasStudentRepository={hasStudentRepository}
-          canFinishTask={canFinishTask}
+          isActionLoading={detailData.isActionLoading}
         />
       ) : (
         <TeacherAssignmentSection detailData={detailData} />

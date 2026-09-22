@@ -124,6 +124,24 @@
   color: #e00000;
 }
 
+.assignment-status--progress {
+  color: #c07c00;
+  font-weight: 700;
+}
+
+.assignment-status--pending {
+  color: #e00000;
+  border: 2px solid #e00000;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 700;
+}
+
+.assignment-status--sent {
+  color: #257800;
+  font-weight: 700;
+}
+
 .assignment-link-cell,
 .assignment-no-link,
 .assignment-student-link {

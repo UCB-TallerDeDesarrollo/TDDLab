@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavigateFunction } from "react-router-dom";
 import {
   fetchPracticeById,
@@ -41,6 +41,8 @@ export function usePracticeDetail({
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const actionLockRef = useRef(false);
 
   useEffect(() => {
     setPracticeState("loading");
@@ -95,48 +97,68 @@ export function usePracticeDetail({
   const closeCommentDialog = () => setIsCommentDialogOpen(false);
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!practiceid) return;
+    if (!practiceid || actionLockRef.current) return;
 
-    const startDate = new Date();
-    const start_date = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate()
-    );
+    actionLockRef.current = true;
+    setIsActionLoading(true);
+    try {
+      const startDate = new Date();
+      const start_date = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
 
-    const data: PracticeSubmissionCreationObject = {
-      practiceid,
-      userid,
-      status: "in progress",
-      repository_link: repositoryLink,
-      start_date,
-    };
+      const data: PracticeSubmissionCreationObject = {
+        practiceid,
+        userid,
+        status: "in progress",
+        repository_link: repositoryLink,
+        start_date,
+      };
 
-    await startPracticeSubmission(data);
-    closeLinkDialog();
-    refreshDetailData();
+      await startPracticeSubmission(data);
+      closeLinkDialog();
+      refreshDetailData();
+    } catch (err) {
+      console.error("Error starting practice submission:", err);
+      setUiMessage("No se pudo iniciar la práctica. Intenta nuevamente.");
+    } finally {
+      actionLockRef.current = false;
+      setIsActionLoading(false);
+    }
   };
 
   const sendComment = async (comment: string) => {
-    if (!submission) return;
+    if (!submission || actionLockRef.current) return;
 
-    const endDate = new Date();
-    const end_date = new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      endDate.getDate()
-    );
+    actionLockRef.current = true;
+    setIsActionLoading(true);
+    try {
+      const endDate = new Date();
+      const end_date = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
 
-    const data: PracticeSubmissionUpdateObject = {
-      id: submission.id,
-      status: "delivered",
-      end_date,
-      comment,
-    };
+      const data: PracticeSubmissionUpdateObject = {
+        id: submission.id,
+        status: "delivered",
+        end_date,
+        comment,
+      };
 
-    await finishPracticeSubmission(submission.id, data);
-    closeCommentDialog();
-    refreshDetailData();
+      await finishPracticeSubmission(submission.id, data);
+      closeCommentDialog();
+      refreshDetailData();
+    } catch (err) {
+      console.error("Error finishing practice submission:", err);
+      setUiMessage("No se pudo finalizar la práctica. Intenta nuevamente.");
+    } finally {
+      actionLockRef.current = false;
+      setIsActionLoading(false);
+    }
   };
 
   const redirectToGraph = () => {
@@ -159,6 +181,7 @@ export function usePracticeDetail({
     createdAt,
     statusLabel,
     isTaskInProgress,
+    isActionLoading,
     linkDialogOpen,
     isCommentDialogOpen,
     openLinkDialog,

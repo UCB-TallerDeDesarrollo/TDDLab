@@ -6,6 +6,7 @@ import ContentState from "../../../shared/components/ContentState";
 import DetailPageShell from "../../../shared/components/DetailPageShell";
 import StudentDetailCard from "../../../shared/components/StudentDetailCard";
 import StatefulButton from "../../../shared/components/StatefulButton";
+import StartFinishActionButton from "../../../shared/components/StartFinishActionButton";
 import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 import { PracticeOverviewCard } from "../components/PracticeOverviewCard";
 import { usePracticeDetail } from "../hooks/usePracticeDetail";
@@ -26,7 +27,7 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     submission,
     createdAt,
     statusLabel,
-    isTaskInProgress,
+    isActionLoading,
     linkDialogOpen,
     isCommentDialogOpen,
     openLinkDialog,
@@ -40,11 +41,14 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     closeUiMessage,
   } = usePracticeDetail({ userid, practiceid, navigate });
 
-  const hasSubmission = Boolean(submission);
   const hasRepo = Boolean(submission?.repository_link);
-  const canStart = !hasSubmission;
-  const canFinish = !isTaskInProgress && hasRepo;
   const canView = hasRepo;
+  const getStatusClassName = () => {
+    if (submission?.status === "in progress") return "practice-status--progress";
+    if (submission?.status === "pending") return "practice-status--pending";
+    if (submission?.status === "delivered") return "practice-status--sent";
+    return undefined;
+  };
 
   return (
     <>
@@ -101,32 +105,33 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                 </div>
                 <div className="practice-student-row practice-estado-row">
                   <strong>Estado:</strong>{" "}
-                  <span style={{ marginLeft: "8px" }}>{statusLabel || "Sin estado"}</span>
+                  <span
+                  className={getStatusClassName()}
+                  style={{ marginLeft: "8px" }}
+                >
+                  {statusLabel || "Sin estado"}
+                </span>
                 </div>
               </>
             }
-            actions={
-              <>
-                <StatefulButton
-                  variantStyle={canStart ? "primary" : "secondary"}
-                  onClick={() => canStart && openLinkDialog()}
-                >
-                  Iniciar práctica
-                </StatefulButton>
-                <StatefulButton
-                  variantStyle={canFinish ? "primary" : "secondary"}
-                  onClick={() => canFinish && openCommentDialog()}
-                >
-                  Finalizar práctica
-                </StatefulButton>
-                <StatefulButton
-                  variantStyle={canView ? "primary" : "secondary"}
-                  onClick={() => canView && redirectToGraph()}
-                >
-                  Ver gráfica
-                </StatefulButton>
-              </>
-            }
+              actions={
+                <>
+                  <StartFinishActionButton
+                    status={submission?.status}
+                    startLabel="Iniciar práctica"
+                    finishLabel="Finalizar práctica"
+                    onStart={openLinkDialog}
+                    onFinish={openCommentDialog}
+                    loading={isActionLoading}
+                  />
+                  <StatefulButton
+                    variantStyle={canView ? "primary" : "secondary"}
+                    onClick={() => canView && redirectToGraph()}
+                  >
+                    Ver gráfica
+                  </StatefulButton>
+                </>
+              }
           />
         </>
       )}
