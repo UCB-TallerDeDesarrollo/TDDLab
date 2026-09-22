@@ -45,7 +45,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
       setInputLink("");
       setIsLoading(true);
     }
-  }, [link, open]);
+  }, [link, open, handleLinkChange]);
 
   useEffect(() => {
     if (repo || !link) {
