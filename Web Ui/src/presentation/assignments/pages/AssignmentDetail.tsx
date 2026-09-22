@@ -13,6 +13,10 @@ import { DeliveriesTable } from "../components/detail/DeliveriesTable";
 import { StudentSubmissionSummary } from "../components/detail/StudentSubmissionSummary";
 import { TaskOverviewCard } from "../components/detail/TaskOverviewCard";
 import { useAssignmentDetailData } from "../hooks/useAssignmentDetailData";
+import {
+  getStudentAssignmentActionState,
+  type StudentAssignmentActionState,
+} from "../services/assignmentActionState";
 import "./AssignmentDetail.css";
 
 function toDisplayDate(value: Date | string | null | undefined) {
@@ -70,14 +74,10 @@ function GuardedActionButton({
 
 function StudentAssignmentSection({
   detailData,
-  hasStudentSubmission,
-  hasStudentRepository,
-  canFinishTask,
+  actionState,
 }: Readonly<{
   detailData: AssignmentDetailData;
-  hasStudentSubmission: boolean;
-  hasStudentRepository: boolean;
-  canFinishTask: boolean;
+  actionState: StudentAssignmentActionState;
 }>) {
   const {
     studentStatusLabel,
@@ -108,23 +108,23 @@ function StudentAssignmentSection({
       }
       actions={
         <>
-          <GuardedActionButton
-            enabled={hasStudentSubmission === false}
-            onClick={openLinkDialog}
-          >
-            Iniciar tarea
-          </GuardedActionButton>
+          {actionState.showStart && (
+            <StatefulButton variantStyle="primary" onClick={openLinkDialog}>
+              Iniciar tarea
+            </StatefulButton>
+          )}
 
-          <GuardedActionButton
-            enabled={hasStudentRepository}
-            onClick={redirectStudentToGraph}
-          >
+          {actionState.showFinish && (
+            <StatefulButton variantStyle="primary" onClick={openCommentDialog}>
+              Finalizar tarea
+            </StatefulButton>
+          )}
+
+          {actionState.showGraph && (
+            <StatefulButton variantStyle="primary" onClick={redirectStudentToGraph}>
             Ver gráfica
-          </GuardedActionButton>
-
-          <GuardedActionButton enabled={canFinishTask} onClick={openCommentDialog}>
-            Finalizar tarea
-          </GuardedActionButton>
+            </StatefulButton>
+          )}
 
           {showIAButton && (
             <GuardedActionButton
@@ -197,7 +197,6 @@ function LoadedAssignmentContent({
     assignment,
     groupDetails,
     studentSubmission,
-    isTaskInProgress,
     isStudent,
   } = detailData;
 
@@ -205,9 +204,10 @@ function LoadedAssignmentContent({
     return null;
   }
 
-  const hasStudentSubmission = Boolean(studentSubmission);
-  const hasStudentRepository = Boolean(studentSubmission?.repository_link);
-  const canFinishTask = isTaskInProgress === false;
+  const actionState = getStudentAssignmentActionState(
+    studentSubmission ? "success" : "empty",
+    studentSubmission
+  );
 
   return (
     <>
@@ -221,9 +221,7 @@ function LoadedAssignmentContent({
       {isStudent ? (
         <StudentAssignmentSection
           detailData={detailData}
-          hasStudentSubmission={hasStudentSubmission}
-          hasStudentRepository={hasStudentRepository}
-          canFinishTask={canFinishTask}
+          actionState={actionState}
         />
       ) : (
         <TeacherAssignmentSection detailData={detailData} />

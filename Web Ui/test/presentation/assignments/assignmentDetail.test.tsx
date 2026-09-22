@@ -158,13 +158,55 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
-    const { getByText } = renderAssignmentDetail("student");
+  it("muestra solo 'Iniciar tarea' para una tarea pendiente", async () => {
+    renderAssignmentDetail("student");
 
     await waitFor(() => {
-      expect(getByText("Iniciar tarea")).toBeInTheDocument();
-      expect(getByText("Ver gráfica")).toBeInTheDocument();
-      expect(getByText("Finalizar tarea")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Iniciar tarea" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Ver gr/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
+    });
+  });
+
+  it("muestra 'Finalizar tarea' y 'Ver gráfica' para una tarea en progreso", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "in progress",
+      repository_link: "https://github.com/student/practice",
+      start_date: new Date("2026-09-01T12:00:00Z"),
+      end_date: null,
+      comment: null,
+    });
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Ver gr/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+    });
+  });
+
+  it("muestra solo 'Ver gráfica' para una tarea enviada", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "delivered",
+      repository_link: "https://github.com/student/practice",
+      start_date: new Date("2026-09-01T12:00:00Z"),
+      end_date: new Date("2026-09-02T12:00:00Z"),
+      comment: "Entrega finalizada",
+    });
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Ver gr/i })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
     });
   });
 
