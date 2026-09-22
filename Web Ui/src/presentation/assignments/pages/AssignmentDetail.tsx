@@ -87,6 +87,7 @@ function StudentAssignmentSection({
     redirectStudentToGraph,
     redirectStudentToAssistant,
     studentRepositoryLink,
+    isSubmissionMutationPending,
   } = detailData;
   const canUseAssistant = Boolean(studentSubmission?.repository_link);
 
@@ -109,26 +110,38 @@ function StudentAssignmentSection({
       actions={
         <>
           {actionState.showStart && (
-            <StatefulButton variantStyle="primary" onClick={openLinkDialog}>
+            <StatefulButton
+              variantStyle="primary"
+              onClick={openLinkDialog}
+              disabled={isSubmissionMutationPending}
+            >
               Iniciar tarea
             </StatefulButton>
           )}
 
           {actionState.showFinish && (
-            <StatefulButton variantStyle="primary" onClick={openCommentDialog}>
+            <StatefulButton
+              variantStyle="primary"
+              onClick={openCommentDialog}
+              disabled={isSubmissionMutationPending}
+            >
               Finalizar tarea
             </StatefulButton>
           )}
 
           {actionState.showGraph && (
-            <StatefulButton variantStyle="primary" onClick={redirectStudentToGraph}>
+            <StatefulButton
+              variantStyle="primary"
+              onClick={redirectStudentToGraph}
+              disabled={isSubmissionMutationPending}
+            >
             Ver gráfica
             </StatefulButton>
           )}
 
           {showIAButton && (
             <GuardedActionButton
-              enabled={canUseAssistant}
+              enabled={canUseAssistant && !isSubmissionMutationPending}
               onClick={redirectStudentToAssistant}
             >
               Asistente IA
@@ -253,6 +266,7 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         open={detailData.linkDialogOpen}
         onClose={detailData.closeLinkDialog}
         onSend={detailData.sendGithubLink}
+        errorMessage={detailData.submissionErrorMessage}
       />
 
       <CommentDialog
@@ -260,6 +274,7 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         link={detailData.submissionRepositoryLink}
         onSend={detailData.sendComment}
         onClose={detailData.closeCommentDialog}
+        errorMessage={detailData.submissionErrorMessage}
       />
 
       <FeedbackSnackbar

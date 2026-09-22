@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createSearchParams, NavigateFunction } from "react-router-dom";
 import { GetAssignmentDetail } from "../../../modules/Assignments/application/GetAssignmentDetail";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -68,6 +68,7 @@ export function useAssignmentDetailData({
 }: Readonly<UseAssignmentDetailDataProps>) {
   const [refreshTick, setRefreshTick] = useState(0);
   const [uiMessage, setUiMessage] = useState<string | null>(null);
+  const [submissionErrorMessage, setSubmissionErrorMessage] = useState<string | null>(null);
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(null);
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
   const [assignmentState, setAssignmentState] = useState<ViewState>("loading");
@@ -84,6 +85,9 @@ export function useAssignmentDetailData({
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isSubmissionMutationPending, setIsSubmissionMutationPending] =
+    useState(false);
+  const submissionMutationInProgress = useRef(false);
   const [showIAButton, setShowIAButton] = useState(false);
   const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
 
@@ -278,6 +282,7 @@ export function useAssignmentDetailData({
 
   const closeLinkDialog = () => {
     setLinkDialogOpen(false);
+    setSubmissionErrorMessage(null);
   };
 
   const openCommentDialog = () => {
@@ -286,11 +291,28 @@ export function useAssignmentDetailData({
 
   const closeCommentDialog = () => {
     setIsCommentDialogOpen(false);
+    setSubmissionErrorMessage(null);
   };
 
-  const sendGithubLink = async (repositoryLink: string) => {
-    if (!assignmentid) {
-      return;
+  const beginSubmissionMutation = () => {
+    if (submissionMutationInProgress.current) {
+      return false;
+    }
+
+    submissionMutationInProgress.current = true;
+    setIsSubmissionMutationPending(true);
+    setSubmissionErrorMessage(null);
+    return true;
+  };
+
+  const endSubmissionMutation = () => {
+    submissionMutationInProgress.current = false;
+    setIsSubmissionMutationPending(false);
+  };
+
+  const sendGithubLink = async (repositoryLink: string): Promise<boolean> => {
+    if (!assignmentid || !beginSubmissionMutation()) {
+      return false;
     }
 
     const submissionsRepository = new SubmissionRepository();
@@ -310,14 +332,23 @@ export function useAssignmentDetailData({
       start_date,
     };
 
-    await createSubmission.createSubmission(submissionData);
-    closeLinkDialog();
-    refreshDetailData();
+    try {
+      await createSubmission.createSubmission(submissionData);
+      closeLinkDialog();
+      refreshDetailData();
+      return true;
+    } catch (error) {
+      console.error("Error starting submission:", error);
+      setSubmissionErrorMessage("No se pudo iniciar la tarea. Intenta nuevamente.");
+      return false;
+    } finally {
+      endSubmissionMutation();
+    }
   };
 
-  const sendComment = async (comment: string) => {
-    if (!submission) {
-      return;
+  const sendComment = async (comment: string): Promise<boolean> => {
+    if (!submission || !beginSubmissionMutation()) {
+      return false;
     }
 
     const submissionRepository = new SubmissionRepository();
@@ -336,9 +367,18 @@ export function useAssignmentDetailData({
       comment,
     };
 
-    await finishSubmission.finishSubmission(submission.id, submissionData);
-    closeCommentDialog();
-    refreshDetailData();
+    try {
+      await finishSubmission.finishSubmission(submission.id, submissionData);
+      closeCommentDialog();
+      refreshDetailData();
+      return true;
+    } catch (error) {
+      console.error("Error finishing submission:", error);
+      setSubmissionErrorMessage("No se pudo finalizar la tarea. Intenta nuevamente.");
+      return false;
+    } finally {
+      endSubmissionMutation();
+    }
   };
 
   const redirectStudentToGraph = () => {
@@ -423,6 +463,7 @@ export function useAssignmentDetailData({
     studentSubmissionState,
     linkDialogOpen,
     isCommentDialogOpen,
+    isSubmissionMutationPending,
     showIAButton,
     disableAdditionalGraphs,
     isStudent: isStudent(role),
@@ -439,6 +480,7 @@ export function useAssignmentDetailData({
     openTeacherAdditionalGraphs,
     studentRepositoryLink: studentSubmission?.repository_link,
     submissionRepositoryLink: submission?.repository_link,
+    submissionErrorMessage,
     uiMessage,
     closeUiMessage: () => setUiMessage(null),
   };

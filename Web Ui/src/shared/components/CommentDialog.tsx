@@ -16,8 +16,9 @@ import { Typography } from "@mui/material";
 interface CommentDialogProps {
   open: boolean;
   link?: string;
-  onSend: (comment: string, link: string) => void;
+  onSend: (comment: string, link: string) => boolean | Promise<boolean>;
   onClose: () => void;
+  errorMessage?: string | null;
 }
 
 export const CommentDialog: React.FC<CommentDialogProps> = ({
@@ -25,6 +26,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   link,
   onClose,
   onSend,
+  errorMessage,
 }) => {
   const [comment, setComment] = useState("");
   const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
@@ -32,6 +34,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const [originalLink] = useState(link);
   const [inputLink, setInputLink] = useState(link || "");
   const [isLoading, setIsLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (link) {
@@ -57,6 +60,10 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   }, [repo, isLinkLoading]);
 
   const handleCancel = () => {
+    if (sending) {
+      return;
+    }
+
     if (originalLink) {
       handleLinkChange({ target: { value: originalLink } } as React.ChangeEvent<HTMLInputElement>);
       setInputLink(originalLink);
@@ -65,11 +72,22 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     onClose();
   };
 
-  const handleSend = () => {
-    if (validLink && repo) {
-      onSend(comment, repo);
-      setEdit(false);
-      onClose();
+  const handleSend = async () => {
+    if (sending || !validLink || !repo) {
+      return;
+    }
+
+    setSending(true);
+    try {
+      const wasSent = await Promise.resolve(onSend(comment, repo));
+      if (wasSent) {
+        setEdit(false);
+        onClose();
+      }
+    } catch {
+      // El contenedor presenta el mensaje de error y el diálogo permanece abierto.
+    } finally {
+      setSending(false);
     }
   };
 
@@ -112,7 +130,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={sending ? () => undefined : onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
         {isLoading ? (
@@ -160,9 +178,15 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         />
       </DialogContent>
       <DialogActions>
+        {errorMessage && (
+          <Typography role="alert" variant="body2" color="error">
+            {errorMessage}
+          </Typography>
+        )}
         <Button
           onClick={handleCancel}
           color="primary"
+          disabled={sending}
           style={{ textTransform: "none", color: "#555" }}
         >
           Cancelar
@@ -170,10 +194,10 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         <Button
           onClick={handleSend}
           color="primary"
-          disabled={!validLink || repo === ""}
+          disabled={sending || !validLink || repo === ""}
           style={{ textTransform: "none" }}
         >
-          Enviar
+          {sending ? "Enviando..." : "Enviar"}
         </Button>
       </DialogActions>
     </Dialog>
