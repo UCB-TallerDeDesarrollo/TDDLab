@@ -186,6 +186,9 @@ describe("AssignmentDetail Component", () => {
       expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: /Ver gr/i })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("status", { name: "Estado de la tarea: En progreso" })
+      ).toHaveClass("assignment-status-chip", "is-progress");
     });
   });
 

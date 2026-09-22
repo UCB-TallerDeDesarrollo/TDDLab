@@ -80,7 +80,6 @@ function StudentAssignmentSection({
   actionState: StudentAssignmentActionState;
 }>) {
   const {
-    studentStatusLabel,
     studentSubmission,
     showIAButton,
     openLinkDialog,
@@ -101,7 +100,8 @@ function StudentAssignmentSection({
       actionsClassName="assignment-student-actions"
       details={
         <StudentSubmissionSummary
-          status={studentStatusLabel}
+          status={actionState.statusLabel}
+          statusVariant={actionState.statusVariant}
           repositoryLink={studentRepositoryLink}
           comment={studentSubmission?.comment || undefined}
         />

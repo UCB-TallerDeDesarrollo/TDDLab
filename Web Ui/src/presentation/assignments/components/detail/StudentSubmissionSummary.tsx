@@ -1,11 +1,15 @@
+import type { StudentAssignmentStatusVariant } from "../../services/assignmentActionState";
+
 interface StudentSubmissionSummaryProps {
   status: string;
+  statusVariant: StudentAssignmentStatusVariant;
   repositoryLink?: string;
   comment?: string;
 }
 
 export function StudentSubmissionSummary({
   status,
+  statusVariant,
   repositoryLink,
   comment,
 }: Readonly<StudentSubmissionSummaryProps>) {
@@ -28,7 +32,14 @@ export function StudentSubmissionSummary({
       </p>
 
       <p className="assignment-student-row">
-        <strong>Estado:</strong> {status}
+        <strong>Estado:</strong>{" "}
+        <span
+          role="status"
+          aria-label={`Estado de la tarea: ${status}`}
+          className={`assignment-status-chip assignment-student-status is-${statusVariant}`}
+        >
+          {status}
+        </span>
       </p>
 
       {comment && (
