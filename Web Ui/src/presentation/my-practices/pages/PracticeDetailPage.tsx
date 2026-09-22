@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
 import { GitLinkDialog } from "../../../shared/components/GitHubLinkDialog";
 import { CommentDialog } from "../../../shared/components/CommentDialog";
 import ContentState from "../../../shared/components/ContentState";
@@ -17,7 +16,6 @@ interface PracticeDetailPageProps {
   userid: number;
 }
 
-
 const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
   userid,
 }) => {
@@ -28,13 +26,14 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
 
   const practiceid = Number(id);
 
+
   const {
     practiceState,
     practice,
     submission,
     createdAt,
     statusLabel,
-    isTaskInProgress,
+    isPracticeInProgress,
 
     linkDialogOpen,
     isCommentDialogOpen,
@@ -62,12 +61,13 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
 
   const hasSubmission = Boolean(submission);
 
-  const hasRepo = Boolean(submission?.repository_link); 
+  const hasRepo = Boolean(
+    submission?.repository_link
+  );
 
   const canStart = !hasSubmission;
 
-  const canFinish =hasRepo && isTaskInProgress;
-
+  const canFinish = hasRepo && isPracticeInProgress;
 
   const canView = hasRepo;
 
@@ -152,9 +152,10 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
 
               actionsClassName="practice-student-actions"
 
-
               details={
+
                 <>
+
                   <div className="practice-student-row practice-enlace-row">
 
                     <strong>
@@ -162,7 +163,6 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
                     </strong>
 
                     {submission?.repository_link ? (
-
                       <a
 
                         href={submission.repository_link}
@@ -172,7 +172,6 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
                         rel="noopener noreferrer"
 
                         className="practice-link-anchor"
-
                       >
 
                         {submission.repository_link}
@@ -197,6 +196,7 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
 
                   <div className="practice-student-row practice-estado-row">
 
+
                     <strong>
                       Estado:
                     </strong>
@@ -206,14 +206,15 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
                         marginLeft: "8px"
                       }}
                     >
-
                       {statusLabel || "Sin estado"}
 
                     </span>
 
                   </div>
 
+
                 </>
+
               }
 
               actions={
@@ -272,8 +273,6 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
                     )
                   }
 
-
-
                 </>
 
               }
@@ -287,7 +286,6 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
         )}
 
       </DetailPageShell>
-
 
       <GitLinkDialog
 
@@ -323,13 +321,10 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({
 
       />
 
-
-
     </>
 
   );
 
 };
-
 
 export default PracticeDetailPage;
