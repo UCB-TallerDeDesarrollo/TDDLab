@@ -19,17 +19,12 @@ function isStudent(role: string) {
   return role === "student";
 }
 
-function getDefaultMetric(graphs: string) {
-  return graphs === "graph" ? "Dashboard" : "Complejidad";
-}
-
 function getRepoQuery(submission: Submission) {
   const [, , , repoOwner, repoName] = submission.repository_link.split("/");
   return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
 }
 
 export function useTDDChartPage({
-  graphs,
   port,
   role,
   teacher_id,
@@ -63,7 +58,7 @@ export function useTDDChartPage({
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
 
-  const defaultMetric = getDefaultMetric(graphs);
+  const defaultMetric = "Dashboard";
 
   const loadComments = async () => {
     try {
