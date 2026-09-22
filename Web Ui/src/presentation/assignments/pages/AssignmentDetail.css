@@ -53,6 +53,19 @@
   color: #000000;
 }
 
+.assignment-student-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.assignment-student-status.is-progress {
+  color: #8a5800;
+  background: #fff3d4;
+  border: 1px solid #dcae48;
+}
+
 .assignment-student-actions {
   display: flex;
   flex-wrap: wrap;

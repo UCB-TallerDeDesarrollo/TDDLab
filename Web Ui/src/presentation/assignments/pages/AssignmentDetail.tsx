@@ -108,13 +108,17 @@ function StudentAssignmentSection({
       }
       actions={
         <>
-          <GuardedActionButton
-            enabled={hasStudentSubmission === false}
-            onClick={openLinkDialog}
-          >
-            Iniciar tarea
-          </GuardedActionButton>
-
+          {hasStudentSubmission === false ? (
+            <GuardedActionButton enabled={true} onClick={openLinkDialog}>
+              Iniciar tarea
+            </GuardedActionButton>
+          ) : (
+            canFinishTask && (
+              <GuardedActionButton enabled={true} onClick={openCommentDialog}>
+                Finalizar tarea
+              </GuardedActionButton>
+            )
+          )}
           <GuardedActionButton
             enabled={hasStudentRepository}
             onClick={redirectStudentToGraph}
@@ -122,9 +126,6 @@ function StudentAssignmentSection({
             Ver gráfica
           </GuardedActionButton>
 
-          <GuardedActionButton enabled={canFinishTask} onClick={openCommentDialog}>
-            Finalizar tarea
-          </GuardedActionButton>
 
           {showIAButton && (
             <GuardedActionButton
@@ -171,7 +172,6 @@ function TeacherAssignmentSection({
       {shouldShowTable ? (
         <section className="assignment-deliveries-card">
           <DeliveriesTable
-            state={deliveriesState}
             rows={deliveriesRows}
             onOpenGraph={openTeacherGraph}
             onOpenAssistant={openTeacherAssistant}

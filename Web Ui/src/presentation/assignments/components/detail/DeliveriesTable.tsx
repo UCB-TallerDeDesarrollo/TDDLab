@@ -7,10 +7,9 @@ import {
 } from "@mui/material";
 import LinkIcon from "@mui/icons-material/Link";
 import StatefulButton from "../../../../shared/components/StatefulButton";
-import { SubmissionRowView, ViewState } from "../../types/assignmentDetail";
+import { SubmissionRowView } from "../../types/assignmentDetail";
 
 interface DeliveriesTableProps {
-  state: ViewState;
   rows: SubmissionRowView[];
   onOpenGraph: (row: SubmissionRowView) => void;
   onOpenAssistant: (row: SubmissionRowView) => void;
@@ -31,7 +30,6 @@ function getStatusClass(status: string): string {
 }
 
 export function DeliveriesTable({
-  state: _state,
   rows,
   onOpenGraph,
   onOpenAssistant,
