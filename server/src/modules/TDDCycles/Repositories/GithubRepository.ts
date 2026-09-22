@@ -304,11 +304,22 @@ export class GithubRepository implements IGithubRepository {
     return jobs;
   }
 
+  private async getDefaultBranch(owner: string, repoName: string): Promise<string> {
+    const response = await this.octokit.request("GET /repos/{owner}/{repo}", {
+      owner,
+      repo: repoName,
+    });
+
+    return response.data.default_branch;
+  }
+
   async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
     try {
+      const defaultBranch = await this.getDefaultBranch(owner, repoName);
       const encodedOwner = encodeURIComponent(owner);
       const encodedRepoName = encodeURIComponent(repoName);
-      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/main/script/commit-history.json`;
+      const encodedBranch = encodeURIComponent(defaultBranch);
+      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/${encodedBranch}/script/commit-history.json`;
 
       const response = await axios.get(url);
       
