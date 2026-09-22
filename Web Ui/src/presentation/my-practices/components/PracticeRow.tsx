@@ -180,12 +180,8 @@ export default function PracticeRow({
 
   };
 
-
-
   const statusIcon =
     getStatusIcon(practice.state);
-
-
 
   const getStatusLabel = () => {
 
@@ -205,12 +201,9 @@ export default function PracticeRow({
 
   };
 
-
-
   return (
 
     <RowContainer key={practice.id}>
-
 
       <Box>
 
@@ -218,20 +211,15 @@ export default function PracticeRow({
           {practice.title}
         </RowTitle>
 
-
         <StatusText status={practice.state}>
 
           Estado: {getStatusLabel()}
 
         </StatusText>
 
-
       </Box>
 
-
-
       <ActionsContainer>
-
 
         <AnimatedIcon
 
@@ -248,8 +236,6 @@ export default function PracticeRow({
           icon={<VisibilityIcon />}
 
         />
-
-
 
         {
           practice.state === "pending" ? (
@@ -271,8 +257,6 @@ export default function PracticeRow({
           ) : null
         }
 
-
-
         {
           practice.state === "in_progress" ? (
 
@@ -293,8 +277,6 @@ export default function PracticeRow({
           ) : null
         }
 
-
-
         {
           isEditFormOpen &&
           canManagePractices ? (
@@ -311,8 +293,6 @@ export default function PracticeRow({
 
           ) : null
         }
-
-
 
         <AnimatedIcon
 
@@ -333,8 +313,6 @@ export default function PracticeRow({
           icon={<EditIcon />}
 
         />
-
-
 
         <AnimatedIcon
 
@@ -358,8 +336,6 @@ export default function PracticeRow({
 
         />
 
-
-
         <AnimatedIcon
 
           title={
@@ -378,9 +354,7 @@ export default function PracticeRow({
 
         />
 
-
       </ActionsContainer>
-
 
     </RowContainer>
 
