@@ -1,10 +1,14 @@
 import { fireEvent, render, waitFor, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/presentation/assignments/pages/AssignmentDetail";
 import { GitLinkDialog } from "../../../src/shared/components/GitHubLinkDialog";
 
 jest.setTimeout(10000);
+
+const mockGetStudentSubmission = jest.fn();
+const mockGetFeatureFlagByName = jest.fn();
+const mockGetTeacherSubmissions = jest.fn();
 
 jest.mock(
   "../../../src/modules/Assignments/application/GetAssignmentDetail",
@@ -30,6 +34,24 @@ jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
   })),
 }));
 
+jest.mock(
+  "../../../src/modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid",
+  () => ({
+    GetSubmissionByUserandAssignmentId: jest.fn().mockImplementation(() => ({
+      getSubmisssionByUserandSubmissionId: mockGetStudentSubmission,
+    })),
+  })
+);
+
+jest.mock(
+  "../../../src/modules/FeatureFlags/application/GetFeatureFlagByName",
+  () => ({
+    GetFeatureFlagByName: jest.fn().mockImplementation(() => ({
+      execute: mockGetFeatureFlagByName,
+    })),
+  })
+);
+
 jest.mock("../../../src/modules/Users/repository/UsersRepository", () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => ({
@@ -50,37 +72,57 @@ jest.mock(
   "../../../src/modules/Submissions/Aplication/getSubmissionsByAssignmentId",
   () => ({
     GetSubmissionsByAssignmentId: jest.fn().mockImplementation(() => ({
-      getSubmissionsByAssignmentId: jest.fn().mockResolvedValue([
-        {
-          assignmentid: 1,
-          userid: 123,
-          status: "delivered",
-          repository_link: "https://github.com/student/repo1",
-          start_date: new Date(),
-          end_date: new Date(),
-          comment: "Good job",
-        },
-        {
-          assignmentid: 1,
-          userid: 124,
-          status: "in progress",
-          repository_link: "https://github.com/student/repo2",
-          start_date: new Date(),
-          end_date: null,
-          comment: null,
-        },
-      ]),
+      getSubmissionsByAssignmentId: mockGetTeacherSubmissions,
     })),
   })
 );
 
+function renderAssignmentDetail(role: "student" | "teacher", userid = 123) {
+  return render(
+    <MemoryRouter initialEntries={["/assignment/1"]}>
+      <Routes>
+        <Route
+          path="/assignment/:id"
+          element={<AssignmentDetail role={role} userid={userid} />}
+        />
+      </Routes>
+    </MemoryRouter>
+  );
+}
+
 describe("AssignmentDetail Component", () => {
+  beforeEach(() => {
+    mockGetStudentSubmission.mockReset();
+    mockGetStudentSubmission.mockRejectedValue(new Error("Submission not found"));
+    mockGetFeatureFlagByName.mockReset();
+    mockGetFeatureFlagByName.mockResolvedValue(null);
+    mockGetTeacherSubmissions.mockReset();
+    mockGetTeacherSubmissions.mockResolvedValue([
+      {
+        id: 1,
+        assignmentid: 1,
+        userid: 123,
+        status: "delivered",
+        repository_link: "https://github.com/student/repo1",
+        start_date: new Date("2026-09-01T12:00:00Z"),
+        end_date: new Date("2026-09-02T12:00:00Z"),
+        comment: "Good job",
+      },
+      {
+        id: 2,
+        assignmentid: 1,
+        userid: 124,
+        status: "in progress",
+        repository_link: "https://github.com/student/repo2",
+        start_date: new Date("2026-09-01T12:00:00Z"),
+        end_date: null,
+        comment: null,
+      },
+    ]);
+  });
+
   it("displays the group name", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+    const { getByText } = renderAssignmentDetail("student");
 
     await waitFor(() => {
       const groupName = getByText("Test Group");
@@ -89,11 +131,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the Estado and Enlace sections for student role", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+    const { getByText } = renderAssignmentDetail("student");
 
     await waitFor(() => {
       const estado = getByText("Estado:");
@@ -107,11 +145,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("does not display the Estado and Enlace sections for teacher roles", async () => {
-    const { queryByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="teacher" userid={123} />
-      </BrowserRouter>
-    );
+    const { queryByText } = renderAssignmentDetail("teacher");
 
     await waitFor(() => {
       const estado = queryByText("Estado:");
@@ -125,11 +159,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+    const { getByText } = renderAssignmentDetail("student");
 
     await waitFor(() => {
       expect(getByText("Iniciar tarea")).toBeInTheDocument();
@@ -139,11 +169,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("does not display 'Iniciar tarea', 'Ver gráfica', or 'Finalizar tarea' buttons for non-student roles", async () => {
-    const { queryByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="teacher" userid={123} />
-      </BrowserRouter>
-    );
+    const { queryByText } = renderAssignmentDetail("teacher");
 
     await waitFor(() => {
       const iniciarTareaButton = queryByText("Iniciar tarea");
@@ -157,21 +183,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the list of submissions for teacher role", async () => {
-    jest.mock('react-router-dom', () => ({
-      ...jest.requireActual('react-router-dom'),
-      useSearchParams: () => [
-        new URLSearchParams({
-          repoOwner: 'danTerra45',
-          repoName: 'parcel-jest-cars'
-        })
-      ]
-    }));
-  
-    render(
-      <BrowserRouter>
-        <AssignmentDetail role="teacher" userid={123} />
-      </BrowserRouter>
-    );
+    renderAssignmentDetail("teacher");
 
     await waitFor(
       () => {
@@ -192,11 +204,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("shows loading indicator while fetching assignment details", async () => {
-    const { getByTestId } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+    const { getByTestId } = renderAssignmentDetail("student");
 
     const loadingIndicator = getByTestId("loading-indicator");
     expect(loadingIndicator).toBeInTheDocument();
