@@ -1,5 +1,5 @@
 import SubmissionRepository from "../Repository/SubmissionsRepository";
-import { SubmissionUpdateObject } from "../Domain/Submission";
+import { SubmissionUpdateObject, SubmissionDataObject } from "../Domain/Submission";
 
 class UpdateSubmission {
   private readonly repository: SubmissionRepository;
@@ -11,7 +11,7 @@ class UpdateSubmission {
   async execute(
     submissionid: number,
     updatedSubmission: SubmissionUpdateObject
-  ): Promise<SubmissionUpdateObject | null> {
+  ): Promise<SubmissionDataObject | null> {
     try {
       const updatedSubmissionResult = await this.repository.UpdateSubmission(
         submissionid,

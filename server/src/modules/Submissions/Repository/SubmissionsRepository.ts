@@ -30,7 +30,7 @@ class SubmissionRepository{
             comment: row.comment,
         }
     }
-    async CreateSubmission(Submission: SubmissionCreationObject): Promise<SubmissionCreationObject> {
+    async CreateSubmission(Submission: SubmissionCreationObject): Promise<SubmissionDataObject> {
         const query = "INSERT INTO submissions (assignmentid,userid,status,repository_link,start_date) VALUES ($1, $2, $3, $4, $5) RETURNING *";
         const values = [Submission.assignmentid, Submission.userid, Submission.status, Submission.repository_link, Submission.start_date];
         const rows = await this.executeQuery(query, values);
@@ -42,7 +42,7 @@ class SubmissionRepository{
         return rows.map((row) => this.mapRowToSubmissions(row));
     }
 
-    async UpdateSubmission(id: number, updatedSubmission: SubmissionUpdateObject): Promise<SubmissionUpdateObject | null> {
+    async UpdateSubmission(id: number, updatedSubmission: SubmissionUpdateObject): Promise<SubmissionDataObject | null> {
         const { status, end_date, comment } = updatedSubmission;
         const query = "UPDATE submissions SET status = $1, end_date = $2, comment = $3 WHERE id = $4 RETURNING *";
         const values = [
