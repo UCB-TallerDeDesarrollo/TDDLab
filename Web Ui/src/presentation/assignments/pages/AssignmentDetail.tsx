@@ -59,6 +59,7 @@ function GuardedActionButton({
   return (
     <StatefulButton
       variantStyle={enabled ? "primary" : "secondary"}
+      disabled={!enabled}
       onClick={() => {
         if (enabled) onClick();
       }}
@@ -70,14 +71,8 @@ function GuardedActionButton({
 
 function StudentAssignmentSection({
   detailData,
-  hasStudentSubmission,
-  hasStudentRepository,
-  canFinishTask,
 }: Readonly<{
   detailData: AssignmentDetailData;
-  hasStudentSubmission: boolean;
-  hasStudentRepository: boolean;
-  canFinishTask: boolean;
 }>) {
   const {
     studentStatusLabel,
@@ -88,8 +83,28 @@ function StudentAssignmentSection({
     redirectStudentToGraph,
     redirectStudentToAssistant,
     studentRepositoryLink,
+    studentSubmissionState,
+    canStartTask,
+    canFinishTask,
+    isSavingSubmission,
+    retryStudentSubmission,
   } = detailData;
   const canUseAssistant = Boolean(studentSubmission?.repository_link);
+
+  if (studentSubmissionState === "loading") {
+    return <ContentState variant="loading" title="Cargando estado de la tarea..." />;
+  }
+
+  if (studentSubmissionState === "error") {
+    return (
+      <section role="alert">
+        <p>No se pudo cargar el estado de la tarea. Intenta nuevamente.</p>
+        <StatefulButton variantStyle="primary" onClick={retryStudentSubmission}>
+          Reintentar
+        </StatefulButton>
+      </section>
+    );
+  }
 
   return (
     <StudentDetailCard
@@ -102,28 +117,29 @@ function StudentAssignmentSection({
       details={
         <StudentSubmissionSummary
           status={studentStatusLabel}
+          statusValue={studentSubmission?.status}
           repositoryLink={studentRepositoryLink}
           comment={studentSubmission?.comment || undefined}
         />
       }
       actions={
         <>
-          <GuardedActionButton
-            enabled={hasStudentSubmission === false}
-            onClick={openLinkDialog}
-          >
-            Iniciar tarea
-          </GuardedActionButton>
+          {(canStartTask || canFinishTask) && (
+            <StatefulButton
+              className="assignment-lifecycle-action"
+              variantStyle="primary"
+              disabled={isSavingSubmission}
+              onClick={canStartTask ? openLinkDialog : openCommentDialog}
+            >
+              {canStartTask ? "Iniciar tarea" : "Finalizar tarea"}
+            </StatefulButton>
+          )}
 
           <GuardedActionButton
-            enabled={hasStudentRepository}
+            enabled={Boolean(studentRepositoryLink)}
             onClick={redirectStudentToGraph}
           >
             Ver gráfica
-          </GuardedActionButton>
-
-          <GuardedActionButton enabled={canFinishTask} onClick={openCommentDialog}>
-            Finalizar tarea
           </GuardedActionButton>
 
           {showIAButton && (
@@ -192,18 +208,12 @@ function LoadedAssignmentContent({
   const {
     assignment,
     groupDetails,
-    studentSubmission,
-    isTaskInProgress,
     isStudent,
   } = detailData;
 
   if (assignment === null || assignment === undefined) {
     return null;
   }
-
-  const hasStudentSubmission = Boolean(studentSubmission);
-  const hasStudentRepository = Boolean(studentSubmission?.repository_link);
-  const canFinishTask = isTaskInProgress === false;
 
   return (
     <>
@@ -217,9 +227,6 @@ function LoadedAssignmentContent({
       {isStudent ? (
         <StudentAssignmentSection
           detailData={detailData}
-          hasStudentSubmission={hasStudentSubmission}
-          hasStudentRepository={hasStudentRepository}
-          canFinishTask={canFinishTask}
         />
       ) : (
         <TeacherAssignmentSection detailData={detailData} />
@@ -246,18 +253,18 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         )}
       </DetailPageShell>
 
-      <GitLinkDialog
+      {detailData.linkDialogOpen && <GitLinkDialog
         open={detailData.linkDialogOpen}
         onClose={detailData.closeLinkDialog}
         onSend={detailData.sendGithubLink}
-      />
+      />}
 
-      <CommentDialog
+      {detailData.isCommentDialogOpen && <CommentDialog
         open={detailData.isCommentDialogOpen}
         link={detailData.submissionRepositoryLink}
         onSend={detailData.sendComment}
         onClose={detailData.closeCommentDialog}
-      />
+      />}
 
       <FeedbackSnackbar
         open={Boolean(detailData.uiMessage)}

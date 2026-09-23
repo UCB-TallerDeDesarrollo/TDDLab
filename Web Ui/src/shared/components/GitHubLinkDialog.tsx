@@ -4,7 +4,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { useGitHubLinkValidation } from "../hooks/useGitHubLinkValidation";
 import { useState } from "react";
 
@@ -27,14 +27,18 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   } = useGitHubLinkValidation("");
 
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
 
   const handleSend = async () => {
     // ya estoy enviando o el link no es válido → salgo
     if (sending || !validLink) return;
 
     setSending(true);
+    setSendError("");
     try {
       await Promise.resolve(onSend(link));
+    } catch {
+      setSendError("No se pudo guardar el inicio. Intenta nuevamente.");
     } finally {
       setSending(false);
     }
@@ -67,7 +71,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   };
 
   return (
-    <Dialog fullWidth={true} open={open} onClose={onClose}>
+    <Dialog fullWidth={true} open={open} onClose={sending ? undefined : onClose}>
       <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
       <DialogContent style={contentStyle}>
         <TextField
@@ -75,6 +79,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           variant="outlined"
           color={getInputColor()}
           value={link}
+          disabled={sending}
           onChange={handleInputChange}
           fullWidth
           focused
@@ -85,10 +90,12 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
             {errorMessage}
           </Typography>
         )}
+        {sendError && <Alert severity="error">{sendError}</Alert>}
       </DialogContent>
       <DialogActions>
         <Button
           onClick={onClose}
+          disabled={sending}
           color="primary"
           style={{ textTransform: "none" }}
         >

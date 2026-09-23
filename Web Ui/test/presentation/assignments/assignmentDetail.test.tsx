@@ -6,6 +6,23 @@ import { GitLinkDialog } from "../../../src/shared/components/GitHubLinkDialog";
 
 jest.setTimeout(10000);
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({ id: '1' }),
+}));
+
+jest.mock('../../../src/modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid', () => ({
+  GetSubmissionByUserandAssignmentId: jest.fn().mockImplementation(() => ({
+    getSubmisssionByUserandSubmissionId: jest.fn().mockResolvedValue(null),
+  })),
+}));
+
+jest.mock('../../../src/modules/FeatureFlags/application/GetFeatureFlagByName', () => ({
+  GetFeatureFlagByName: jest.fn().mockImplementation(() => ({
+    execute: jest.fn().mockResolvedValue({ is_enabled: false }),
+  })),
+}));
+
 jest.mock(
   "../../../src/modules/Assignments/application/GetAssignmentDetail",
   () => ({
@@ -124,7 +141,7 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
+  it("shows only the start lifecycle action when the task is pending", async () => {
     const { getByText } = render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123} />
@@ -134,7 +151,7 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       expect(getByText("Iniciar tarea")).toBeInTheDocument();
       expect(getByText("Ver gráfica")).toBeInTheDocument();
-      expect(getByText("Finalizar tarea")).toBeInTheDocument();
+      expect(screen.queryByText("Finalizar tarea")).not.toBeInTheDocument();
     });
   });
 
