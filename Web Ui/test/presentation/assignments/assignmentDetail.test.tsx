@@ -4,6 +4,37 @@ import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/presentation/assignments/pages/AssignmentDetail";
 import { GitLinkDialog } from "../../../src/shared/components/GitHubLinkDialog";
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({ id: "1" }),
+}));
+
+const mockGetStudentSubmission = jest.fn();
+
+const submissionFixtures = {
+  pending: null,
+  inProgress: {
+    id: 1,
+    assignmentid: 1,
+    userid: 123,
+    status: "in progress",
+    repository_link: "https://github.com/student/repo",
+    start_date: new Date("2026-09-10"),
+    end_date: null,
+    comment: null,
+  },
+  delivered: {
+    id: 1,
+    assignmentid: 1,
+    userid: 123,
+    status: "delivered",
+    repository_link: "https://github.com/student/repo",
+    start_date: new Date("2026-09-10"),
+    end_date: new Date("2026-09-11"),
+    comment: "Entrega finalizada",
+  },
+};
+
 jest.setTimeout(10000);
 
 jest.mock(
@@ -29,6 +60,24 @@ jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
     obtainGroupDetail: jest.fn().mockResolvedValue({ groupName: "Test Group" }),
   })),
 }));
+
+jest.mock(
+  "../../../src/modules/FeatureFlags/application/GetFeatureFlagByName",
+  () => ({
+    GetFeatureFlagByName: jest.fn().mockImplementation(() => ({
+      execute: jest.fn().mockResolvedValue({ is_enabled: false }),
+    })),
+  })
+);
+
+jest.mock(
+  "../../../src/modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid",
+  () => ({
+    GetSubmissionByUserandAssignmentId: jest.fn().mockImplementation(() => ({
+      getSubmisssionByUserandSubmissionId: mockGetStudentSubmission,
+    })),
+  })
+);
 
 jest.mock("../../../src/modules/Users/repository/UsersRepository", () => ({
   __esModule: true,
@@ -75,6 +124,11 @@ jest.mock(
 );
 
 describe("AssignmentDetail Component", () => {
+  beforeEach(() => {
+    mockGetStudentSubmission.mockReset();
+    mockGetStudentSubmission.mockResolvedValue(submissionFixtures.pending);
+  });
+
   it("displays the group name", async () => {
     const { getByText } = render(
       <BrowserRouter>
@@ -89,6 +143,8 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the Estado and Enlace sections for student role", async () => {
+    mockGetStudentSubmission.mockResolvedValue(submissionFixtures.inProgress);
+
     const { getByText } = render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123} />
@@ -98,11 +154,26 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       const estado = getByText("Estado:");
       expect(estado).toBeInTheDocument();
+      expect(getByText("En progreso")).toBeInTheDocument();
     });
 
     await waitFor(() => {
       const enlace = getByText("Enlace:");
       expect(enlace).toBeInTheDocument();
+    });
+  });
+
+  it("displays the delivered status returned by the student submission", async () => {
+    mockGetStudentSubmission.mockResolvedValue(submissionFixtures.delivered);
+
+    render(
+      <BrowserRouter>
+        <AssignmentDetail role="student" userid={123} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Enviado")).toBeInTheDocument();
     });
   });
 
