@@ -174,6 +174,9 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Enviado")).toBeInTheDocument();
+      expect(screen.queryByText("Iniciar tarea")).not.toBeInTheDocument();
+      expect(screen.queryByText("Finalizar tarea")).not.toBeInTheDocument();
+      expect(screen.getByText("Ver gráfica")).toBeInTheDocument();
     });
   });
 
@@ -195,8 +198,8 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
-    const { getByText } = render(
+  it("displays only 'Iniciar tarea' as the cycle action when task is pending", async () => {
+    const { getByText, queryByText } = render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123} />
       </BrowserRouter>
@@ -204,8 +207,26 @@ describe("AssignmentDetail Component", () => {
 
     await waitFor(() => {
       expect(getByText("Iniciar tarea")).toBeInTheDocument();
+      expect(getByText("Iniciar tarea")).toBeEnabled();
       expect(getByText("Ver gráfica")).toBeInTheDocument();
+      expect(queryByText("Finalizar tarea")).not.toBeInTheDocument();
+    });
+  });
+
+  it("displays only 'Finalizar tarea' as the cycle action when task is in progress", async () => {
+    mockGetStudentSubmission.mockResolvedValue(submissionFixtures.inProgress);
+
+    const { getByText, queryByText } = render(
+      <BrowserRouter>
+        <AssignmentDetail role="student" userid={123} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(queryByText("Iniciar tarea")).not.toBeInTheDocument();
       expect(getByText("Finalizar tarea")).toBeInTheDocument();
+      expect(getByText("Finalizar tarea")).toBeEnabled();
+      expect(getByText("Ver gráfica")).toBeInTheDocument();
     });
   });
 
