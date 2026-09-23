@@ -193,7 +193,7 @@ function LoadedAssignmentContent({
     assignment,
     groupDetails,
     studentSubmission,
-    isTaskInProgress,
+    canFinishTask,
     isStudent,
   } = detailData;
 
@@ -203,7 +203,6 @@ function LoadedAssignmentContent({
 
   const hasStudentSubmission = Boolean(studentSubmission);
   const hasStudentRepository = Boolean(studentSubmission?.repository_link);
-  const canFinishTask = isTaskInProgress === false;
 
   return (
     <>
