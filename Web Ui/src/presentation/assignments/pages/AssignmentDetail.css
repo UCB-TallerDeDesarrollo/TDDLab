@@ -124,6 +124,33 @@
   color: #e00000;
 }
 
+.assignment-student-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
+.assignment-student-status.is-pending {
+  color: #4b5563;
+  background: #f3f4f6;
+  border-color: #cbd5e1;
+}
+
+.assignment-student-status.is-progress {
+  color: #8a5800;
+  background: #fff3d4;
+  border-color: #dcae48;
+}
+
+.assignment-student-status.is-sent {
+  color: #257800;
+  background: #edf7e8;
+  border-color: #8bc47c;
+}
+
 .assignment-link-cell,
 .assignment-no-link,
 .assignment-student-link {

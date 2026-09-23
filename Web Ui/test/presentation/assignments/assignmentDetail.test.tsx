@@ -154,7 +154,11 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       const estado = getByText("Estado:");
       expect(estado).toBeInTheDocument();
-      expect(getByText("En progreso")).toBeInTheDocument();
+      expect(getByText("En progreso")).toHaveClass(
+        "assignment-status-chip",
+        "assignment-student-status",
+        "is-progress"
+      );
     });
 
     await waitFor(() => {
@@ -173,7 +177,11 @@ describe("AssignmentDetail Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Enviado")).toBeInTheDocument();
+      expect(screen.getByText("Enviado")).toHaveClass(
+        "assignment-status-chip",
+        "assignment-student-status",
+        "is-sent"
+      );
       expect(screen.queryByText("Iniciar tarea")).not.toBeInTheDocument();
       expect(screen.queryByText("Finalizar tarea")).not.toBeInTheDocument();
       expect(screen.getByText("Ver gráfica")).toBeInTheDocument();
@@ -206,6 +214,11 @@ describe("AssignmentDetail Component", () => {
     );
 
     await waitFor(() => {
+      expect(getByText("Pendiente")).toHaveClass(
+        "assignment-status-chip",
+        "assignment-student-status",
+        "is-pending"
+      );
       expect(getByText("Iniciar tarea")).toBeInTheDocument();
       expect(getByText("Iniciar tarea")).toBeEnabled();
       expect(getByText("Ver gráfica")).toBeInTheDocument();

@@ -4,6 +4,17 @@ interface StudentSubmissionSummaryProps {
   comment?: string;
 }
 
+function getStatusClass(status: string): string {
+  switch (status) {
+    case "En progreso":
+      return "is-progress";
+    case "Enviado":
+      return "is-sent";
+    default:
+      return "is-pending";
+  }
+}
+
 export function StudentSubmissionSummary({
   status,
   repositoryLink,
@@ -28,7 +39,12 @@ export function StudentSubmissionSummary({
       </p>
 
       <p className="assignment-student-row">
-        <strong>Estado:</strong> {status}
+        <strong>Estado:</strong>{" "}
+        <span
+          className={`assignment-status-chip assignment-student-status ${getStatusClass(status)}`}
+        >
+          {status}
+        </span>
       </p>
 
       {comment && (
