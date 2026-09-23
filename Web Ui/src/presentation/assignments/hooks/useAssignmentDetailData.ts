@@ -128,16 +128,6 @@ export function useAssignmentDetailData({
   }, [assignment, refreshTick]);
 
   useEffect(() => {
-    const fetchTeacherFlags = async () => {
-      if (isStudent(role)) {
-        return;
-      }
-    };
-
-    fetchTeacherFlags();
-  }, [role]);
-
-  useEffect(() => {
     const fetchStudentFlags = async () => {
       if (!isStudent(role)) {
         return;
@@ -389,10 +379,6 @@ export function useAssignmentDetailData({
     });
   };
 
-  const openTeacherAdditionalGraphs = (row: SubmissionRowView) => {
-    redirectAdmin(row.repositoryLink, row.id, "/aditionalgraph", "Complejidad");
-  };
-
   return {
     assignment,
     groupDetails,
@@ -416,7 +402,6 @@ export function useAssignmentDetailData({
     redirectStudentToAssistant,
     openTeacherGraph,
     openTeacherAssistant,
-    openTeacherAdditionalGraphs,
     studentRepositoryLink: studentSubmission?.repository_link,
     submissionRepositoryLink: submission?.repository_link,
     uiMessage,

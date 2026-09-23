@@ -14,7 +14,6 @@ interface DeliveriesTableProps {
   rows: SubmissionRowView[];
   onOpenGraph: (row: SubmissionRowView) => void;
   onOpenAssistant: (row: SubmissionRowView) => void;
-  onOpenAdditionalGraphs: (row: SubmissionRowView) => void;
 }
 
 function getStatusClass(status: string): string {
@@ -34,10 +33,8 @@ function getStatusClass(status: string): string {
 export function DeliveriesTable({
   state: _state,
   rows,
-
   onOpenGraph,
   onOpenAssistant,
-
 }: Readonly<DeliveriesTableProps>) {
   return (
     <div className="assignment-table-wrapper">
