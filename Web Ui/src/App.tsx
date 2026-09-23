@@ -19,6 +19,7 @@ import { getSessionCookie } from "./modules/User-Authentication/application/getS
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import { CircularProgress } from "@mui/material";
+import SafariStorageModal from "./shared/components/SafariStorageModal";
 
 const HomePage = lazy(() => import("./presentation/home/pages/HomePage"));
 const LandingPage = lazy(() => import("./presentation/landing/pages/LandingPage"));
@@ -86,21 +87,36 @@ const navArrayLinks = [
   },
 ];
 
-function App() {
+// Session hints are optional; blocked storage must not prevent the guide rendering.
+function readLocalStorage(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function AppContent() {
   const authData = useGlobalState("authData")[0];
   const isAuthResolved = authData.userid !== undefined;
   const isAuthenticated = Boolean(authData.userEmail);
   const isRootPath = globalThis.location.pathname === "/";
   const isPublicLandingPath = globalThis.location.pathname === "/landing";
   const hasSessionHint =
-    localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
+    readLocalStorage(AUTH_SESSION_HINT_KEY) === "active";
 
   useEffect(() => {
     getSessionCookie().then((storedSession) => {
-      const savedImage = localStorage.getItem("userProfilePic") || "";
+      const savedImage = readLocalStorage("userProfilePic") || "";
+
+      try {
+        if (storedSession) localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
+        else localStorage.removeItem(AUTH_SESSION_HINT_KEY);
+      } catch {
+        /* Session hints are optional when storage is blocked. */
+      }
 
       if (storedSession) {
-        localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
         setGlobalState("authData", {
           userid: storedSession.id,
           userProfilePic: savedImage,
@@ -109,7 +125,6 @@ function App() {
           userRole: storedSession.role,
         });
       } else {
-        localStorage.removeItem(AUTH_SESSION_HINT_KEY);
         setGlobalState("authData", {
           userid: -1,
           userProfilePic: savedImage,
@@ -286,4 +301,11 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <>
+      <SafariStorageModal />
+      <AppContent />
+    </>
+  );
+}
