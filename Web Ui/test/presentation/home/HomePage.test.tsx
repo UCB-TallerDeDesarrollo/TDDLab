@@ -5,7 +5,9 @@ import { MemoryRouter } from "react-router-dom";
 import HomePage from "../../../src/presentation/home/pages/HomePage";
 import { useAuthStore } from "../../../src/presentation/auth/store/useAuthStore";
 
-jest.mock("../../../src/presentation/auth/store/useAuthStore");
+jest.mock("../../../src/presentation/auth/store/useAuthStore", () => ({
+  useAuthStore: jest.fn(),
+}));
 
 const mockedUseAuthStore = useAuthStore as unknown as jest.Mock;
 
