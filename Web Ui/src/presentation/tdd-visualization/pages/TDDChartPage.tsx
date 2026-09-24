@@ -85,7 +85,6 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
                 role={props.role}
                 metric={chartsState.metric}
                 setMetric={chartsState.setMetric}
-                typegraphs={props.graphs}
               />
             </div>
           )}
