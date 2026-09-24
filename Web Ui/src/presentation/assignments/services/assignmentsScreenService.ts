@@ -105,3 +105,28 @@ export function buildAssignmentListItems(
     state: assignment.state,
   }));
 }
+
+export function isSafariBrowser(
+  userAgent = globalThis.navigator?.userAgent ?? "",
+  vendor = globalThis.navigator?.vendor ?? "",
+) {
+  return (
+    /Safari/i.test(userAgent) &&
+    /Apple/i.test(vendor) &&
+    !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR/i.test(userAgent)
+  );
+}
+
+export function shouldShowSafariCookieWarning({
+  groupCount,
+  isAuthenticated,
+  isLoading,
+  isSafari,
+}: {
+  groupCount: number;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  isSafari: boolean;
+}) {
+  return isSafari && isAuthenticated && !isLoading && groupCount === 0;
+}

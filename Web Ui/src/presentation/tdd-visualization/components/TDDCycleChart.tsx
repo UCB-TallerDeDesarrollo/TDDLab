@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { CHART_SYMBOL_VARIANT, chartSymbols } from './chartSymbols';
 
 interface TestLog {
   numPassedTests?: number;
@@ -18,10 +19,54 @@ interface TDDCycleChartProps {
 
 interface CommitData {
   commitNumber: number;
-  tests: Array<{ passed: boolean; size: number }>;
+  tests: Array<{ passed: boolean; size: number; detail: string }>;
 }
 
+type ChartSymbolConfig = typeof chartSymbols.success | typeof chartSymbols.failure;
+
+interface ChartSymbolMarkProps {
+  config: ChartSymbolConfig;
+  x: number;
+  y: number;
+}
+
+const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
+  const symbolColor = CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color;
+  const halfSymbolSize = config.symbolSize / 2;
+  const symbolPath = config.symbol === 'check'
+    ? `M ${x - halfSymbolSize * 0.65} ${y - halfSymbolSize * 0.05} L ${x - halfSymbolSize * 0.15} ${y + halfSymbolSize * 0.5} L ${x + halfSymbolSize * 0.7} ${y - halfSymbolSize * 0.6}`
+    : `M ${x - halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x + halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55} M ${x + halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x - halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55}`;
+
+  return (
+    <>
+      {CHART_SYMBOL_VARIANT === 'circle' && (
+        <circle
+          cx={x}
+          cy={y}
+          r={config.size / 2}
+          fill={config.color}
+          opacity="0.9"
+        />
+      )}
+      <path
+        d={symbolPath}
+        fill="none"
+        stroke={symbolColor}
+        strokeWidth={config.strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>
+  );
+};
+
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
+  const [hoveredTest, setHoveredTest] = useState<{
+    x: number;
+    y: number;
+    detail: string;
+  } | null>(null);
+
   const processedData = useMemo(() => {
     if (!data || data.length === 0) {
       return [];
@@ -45,7 +90,12 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         
         const commit = commitMap.get(currentCommit)!;
         const passed = (log.failedTests === 0) && (log.success === true);
-        commit.tests.push({ passed, size: 1 });
+        const status = passed ? 'exitosa' : 'con fallos';
+        commit.tests.push({
+          passed,
+          size: 1,
+          detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.`,
+        });
       }
     };
     
@@ -62,7 +112,8 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const plotHeight = chartHeight - topPadding - bottomPadding;
   
   const commitSpacing = plotWidth / (processedData.length + 1);
-  const circleRadius = 15;
+  const markerSize = chartSymbols.success.size;
+  const markerRadius = markerSize / 2;
   const circleSpacing = 8;
 
   return (
@@ -138,22 +189,53 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
-                const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
+                const y = topPadding + plotHeight - (testIndex * (markerSize + circleSpacing)) - markerRadius;
+                const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
                 
                 return (
-                  <circle
+                  <g
                     key={`test-${commitIndex}-${testIndex}`}
-                    cx={x}
-                    cy={y}
-                    r={circleRadius}
-                    fill={test.passed ? '#2d8a2d' : '#c72828'}
-                    opacity="0.9"
-                  />
+                    role="img"
+                    aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
+                    onMouseEnter={() => setHoveredTest({ x, y, detail: test.detail })}
+                    onMouseLeave={() => setHoveredTest(null)}
+                  >
+                    <title>{test.detail}</title>
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={markerRadius}
+                      fill="transparent"
+                      stroke="none"
+                    />
+                    <ChartSymbolMark config={symbolConfig} x={x} y={y} />
+                  </g>
                 );
               })}
             </g>
           );
         })}
+
+        {hoveredTest && (
+          <g role="tooltip" pointerEvents="none">
+            <rect
+              x={Math.max(10, Math.min(hoveredTest.x - 180, chartWidth - 370))}
+              y={Math.max(10, hoveredTest.y - 55)}
+              width="360"
+              height="36"
+              rx="4"
+              fill="#333"
+            />
+            <text
+              x={Math.max(20, Math.min(hoveredTest.x - 170, chartWidth - 360))}
+              y={Math.max(33, hoveredTest.y - 32)}
+              fill="#fff"
+              fontSize="12"
+            >
+              {hoveredTest.detail}
+            </text>
+          </g>
+        )}
 
         {/* X-axis labels */}
         {processedData.map((commit, index) => (
@@ -182,17 +264,32 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         </text>
       </svg>
 
-      {/* Legend */}
-      <div style={styles.legend}>
-        <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#2d8a2d'}}></div>
-          <span style={styles.legendText}>Pruebas exitosas</span>
-        </div>
-        <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#c72828'}}></div>
-          <span style={styles.legendText}>Pruebas fallidas</span>
-        </div>
-      </div>
+      <section style={styles.legend} aria-label="Leyenda de resultados de ejecución">
+        <h3 style={styles.legendTitle}>Leyenda</h3>
+        <ul style={styles.legendList}>
+          {[
+            { config: chartSymbols.success, label: 'Ejecución exitosa' },
+            { config: chartSymbols.failure, label: 'Ejecución con fallos' },
+          ].map(({ config, label }) => (
+            <li key={label} style={styles.legendItem}>
+              <svg
+                width={config.size}
+                height={config.size}
+                viewBox={`0 0 ${config.size} ${config.size}`}
+                aria-hidden="true"
+                focusable="false"
+              >
+                <ChartSymbolMark
+                  config={config}
+                  x={config.size / 2}
+                  y={config.size / 2}
+                />
+              </svg>
+              <span style={styles.legendText}>{label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* Summary */}
       <div style={styles.summary}>
@@ -230,26 +327,41 @@ const styles: Record<string, React.CSSProperties> = {
   },
   legend: {
     display: 'flex',
-    justifyContent: 'center',
-    gap: '30px',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '12px',
     marginTop: '20px',
     padding: '15px',
     backgroundColor: '#f9f9f9',
     borderRadius: '6px',
+    boxSizing: 'border-box',
+    width: '100%',
+    maxWidth: '100%',
+  },
+  legendTitle: {
+    margin: 0,
+    fontSize: '16px',
+    color: '#333',
+  },
+  legendList: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: '16px 30px',
+    padding: 0,
+    margin: 0,
+    listStyle: 'none',
+    width: '100%',
   },
   legendItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-  },
-  legendCircle: {
-    width: '20px',
-    height: '20px',
-    borderRadius: '50%',
+    minWidth: 0,
   },
   legendText: {
     fontSize: '14px',
-    color: '#666',
+    color: '#333',
   },
   summary: {
     display: 'flex',

@@ -86,6 +86,38 @@
   margin-left: 8px;
 }
 
+.practice-student-actions .practice-lifecycle-action {
+  min-width: 150px;
+}
+
+.practice-student-status {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 5px 10px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.practice-student-status.is-pending {
+  color: #374151;
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.practice-student-status.is-progress {
+  color: #713f12;
+  background-color: #fef3c7;
+  border-color: #b45309;
+}
+
+.practice-student-status.is-finished {
+  color: #14532d;
+  background-color: #dcfce7;
+  border-color: #15803d;
+}
+
 @media (max-width: 960px) {
   .practice-section-title {
     font-size: 22px;

@@ -12,7 +12,7 @@ export class FinishSubmission {
         ...submissionData,
         id: id,
       };
-      await this.submissionRepository.finishSubmission(
+      return await this.submissionRepository.finishSubmission(
         id,
         updatedSubmisisonData
       );
