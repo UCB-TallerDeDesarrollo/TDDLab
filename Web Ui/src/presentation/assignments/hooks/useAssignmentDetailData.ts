@@ -234,7 +234,7 @@ export function useAssignmentDetailData({
     fetchDeliveries();
   }, [assignmentid, role, refreshTick]);
 
-  const isTaskInProgress = submission?.status !== "in progress";
+  const canFinishTask = submission?.status === "in progress";
 
   const studentStatusLabel = useMemo(
     () => getDisplayStatus(studentSubmission?.status),
@@ -390,7 +390,7 @@ export function useAssignmentDetailData({
     deliveriesRows,
     studentSubmission,
     studentStatusLabel,
-    isTaskInProgress,
+    canFinishTask,
     linkDialogOpen,
     isCommentDialogOpen,
     showIAButton,
