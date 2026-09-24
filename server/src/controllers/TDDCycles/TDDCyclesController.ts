@@ -10,9 +10,7 @@ import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBComm
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
-
-
-
+import { GithubError } from "../../modules/TDDCycles/Repositories/Errors/GithubErrors";
 
 class TDDCyclesController {
   tddCyclesUseCase: GetTDDCyclesUseCase;
@@ -119,8 +117,7 @@ class TDDCyclesController {
       const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName));
       return res.status(200).json(commits);
     } catch (error) {
-      console.error("Error fetching commit history:", error);
-      return res.status(500).json({ error: "Server error" });
+      return this.handleGithubDataError(error, res);
     }
   }
 
@@ -137,12 +134,10 @@ class TDDCyclesController {
         return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
       }
 
-
       const commits = await this.getCommitCyclesUseCase.execute(String(owner), String(repoName));
       return res.status(200).json(commits);
     } catch (error) {
-      console.error("Error fetching commit cycles:", error);
-      return res.status(500).json({ error: "Server error" });
+      return this.handleGithubDataError(error, res);
     }
   }
 
@@ -294,16 +289,15 @@ class TDDCyclesController {
       let lastCommitIndex = 0;
       const commitTimelineEntries = [];
       //itero sobre todos los objetos del tdd log
-      for (let i = 0; i < tddLog.length; i++){
+      for (let i = 0; i < tddLog.length; i++) {
         const entry = tddLog[i];
         //chequeamos si el entry es un commit entry
-        if(entry.commitId){
+        if (entry.commitId) {
           actualCommitSha = entry.commitId;
           //una vez encontrado el entry commit, chequeamos todos los commits anteriores, por lo que por ahora, hacemos otro for
-          for(let j = lastCommitIndex; j < i; j++)
-          {
+          for (let j = lastCommitIndex; j < i; j++) {
             const testEntry = tddLog[j];
-            if(testEntry.numPassedTests !== undefined && testEntry.numTotalTests !== undefined && testEntry.timestamp){
+            if (testEntry.numPassedTests !== undefined && testEntry.numTotalTests !== undefined && testEntry.timestamp) {
               const color = getColor(testEntry);
               const commitTimelineEntry: ITimelineEntry = {
                 execution_id: null,
@@ -335,20 +329,23 @@ class TDDCyclesController {
             );
           }
 
-          let tdd_cycle_entry="";
+          let tdd_cycle_entry = "";
           const hasRed = commitTimelineEntries.some(entry => entry.color === "red");
           const lastIsGreen = commitTimelineEntries.length > 0 && commitTimelineEntries[commitTimelineEntries.length - 1].color === "green";
           if (hasRed && lastIsGreen) {
-            tdd_cycle_entry="RojoVerde";
+            console.log("Commits con ciclos de TDD rojo - verde");
+            tdd_cycle_entry = "RojoVerde";
           }
-          else if (!lastIsGreen){
-            tdd_cycle_entry="Rojo";
+          else if (!lastIsGreen) {
+            console.log("Commits con ultima ejecucion de pruebas rojo");
+            tdd_cycle_entry = "Rojo";
           }
-          else if(!hasRed){
-            tdd_cycle_entry="Verde";
+          else if (!hasRed) {
+            console.log(" Commits con ejecucion de pruebas de solo verde");
+            tdd_cycle_entry = "Verde";
           }
-          try{
-            await this.dbCommitsRepository.updateTddCycle(actualCommitSha,tdd_cycle_entry);
+          try {
+            await this.dbCommitsRepository.updateTddCycle(actualCommitSha, tdd_cycle_entry);
           } catch (error) {
             console.error(`Error al actualizar el commit ${actualCommitSha}: ${error}`);
           }
@@ -384,6 +381,22 @@ class TDDCyclesController {
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Error al obtener commits" });
+    }
+  }
+
+  private handleGithubDataError(error: unknown, res: Response) {
+    // Follow RFC 9457
+    if (error instanceof GithubError) {
+      return res.status(404).json({
+        code: error.code,
+        detail: error.message,
+      });
+    }
+    else {
+      return res.status(500).json({
+        codename: "INTERNAL_SERVER_ERROR",
+        detail: "Error inesperado al intentar acceder a la API de GitHub",
+      });
     }
   }
 }

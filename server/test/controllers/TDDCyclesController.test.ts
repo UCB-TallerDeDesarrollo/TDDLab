@@ -123,7 +123,7 @@ describe('TDDCyclesController', () => {
             await controller.getCommitHistory(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
+            expect(mockResponse.json).toHaveBeenCalledWith({ codename: 'INTERNAL_SERVER_ERROR', detail:"Error inesperado al intentar acceder a la API de GitHub" });
         });
     });
 
@@ -155,7 +155,7 @@ describe('TDDCyclesController', () => {
             await controller.getCommitCycles(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
+            expect(mockResponse.json).toHaveBeenCalledWith({ codename: 'INTERNAL_SERVER_ERROR', detail:"Error inesperado al intentar acceder a la API de GitHub" });
         });
     });
 });
