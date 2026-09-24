@@ -232,6 +232,31 @@ describe("AssignmentDetail Component", () => {
     screen.queryByRole("button", { name: "Asistente" })
   ).not.toBeInTheDocument();
 });
+it("keeps the AI assistant hidden when the feature flag does not exist", async () => {
+  jest
+    .spyOn(GetFeatureFlagByName.prototype, "execute")
+    .mockImplementation(async (featureName: string) => {
+      if (featureName === "Boton Asistente IA") {
+        return null;
+      }
+
+      return null;
+    });
+
+  render(
+    <BrowserRouter>
+      <AssignmentDetail role="student" userid={123} />
+    </BrowserRouter>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByText("Test Group")).toBeInTheDocument();
+  });
+
+  expect(
+    screen.queryByRole("button", { name: "Asistente IA" })
+  ).not.toBeInTheDocument();
+});
 
   it("shows loading indicator while fetching assignment details", async () => {
     const { getByTestId } = render(
