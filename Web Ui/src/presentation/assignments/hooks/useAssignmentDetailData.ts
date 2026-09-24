@@ -154,11 +154,12 @@ export function useAssignmentDetailData({
     const getFlagUseCase = new GetFeatureFlagByName();
 
     try {
-      const flag = await getFlagUseCase.execute("Boton Asistente IA");
-      setShowIAButton(flag?.is_enabled === true);
-    } catch (error) {
-      console.error("Error fetching feature flag IA_ASSISTANT:", error);
-    }
+  const flag = await getFlagUseCase.execute("Boton Asistente IA");
+  setShowIAButton(flag?.is_enabled === true);
+} catch (error) {
+  console.error("Error fetching feature flag IA_ASSISTANT:", error);
+  setShowIAButton(false);
+}
   };
 
   fetchAIAssistantFlag();
