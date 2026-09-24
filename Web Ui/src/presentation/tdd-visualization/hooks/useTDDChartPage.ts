@@ -14,6 +14,7 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { BackendApiError } from "../../../modules/TDDCycles-Visualization/repository/BackendDto";
 
 function isStudent(role: string) {
   return role === "student";
@@ -61,6 +62,7 @@ export function useTDDChartPage({
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const defaultMetric = getDefaultMetric(graphs);
 
@@ -94,13 +96,21 @@ export function useTDDChartPage({
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
         setCommitsInfo(visualizationData.commits);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
       } catch (error) {
-        console.error("Error obtaining data:", error);
+        setCommitsInfo(null);
+        if (error instanceof BackendApiError) {
+          setError(error.message);
+        } else if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError(`Error inesperado al cargar los commits del repositorio ${repoOwner}/${repoName}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -163,6 +173,7 @@ export function useTDDChartPage({
       setMetric,
       tddLogsInfo,
     },
+    error,
     comments,
     currentIndex,
     emails,
