@@ -1,4 +1,8 @@
 import React, { useMemo } from 'react';
+import {
+  getTestExecutionVisualStatus,
+  getVisualStatusStyle,
+} from './commitVisualStatus';
 
 interface TestLog {
   numPassedTests?: number;
@@ -18,6 +22,7 @@ interface TDDCycleChartProps {
 
 interface CommitData {
   commitNumber: number;
+  commitName: string;
   tests: Array<{ passed: boolean; size: number }>;
 }
 
@@ -27,29 +32,37 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       return [];
     }
     
-    const commitMap = new Map<number, CommitData>();
-    let currentCommit = 1;
+    const commitMap = new Map<number, Omit<CommitData, 'commitNumber'>>();
 
     for (const log of data){
-      if (log.commitId) {
-        currentCommit++;
+      if (!commitMap.has(log.testId)) {
+        commitMap.set(log.testId, {
+          commitName: '',
+          tests: [],
+        });
       }
-      
+
+      const commit = commitMap.get(log.testId)!;
+
+      if (log.commitId) {
+        commit.commitName = log.commitName ?? '';
+      }
+
       if (log.numPassedTests !== undefined) {
-        if (!commitMap.has(currentCommit)) {
-          commitMap.set(currentCommit, {
-            commitNumber: currentCommit,
-            tests: []
-          });
-        }
-        
-        const commit = commitMap.get(currentCommit)!;
-        const passed = (log.failedTests === 0) && (log.success === true);
+        const passed =
+          (log.numTotalTests ?? 0) > 0 &&
+          log.failedTests === 0 &&
+          log.success === true;
         commit.tests.push({ passed, size: 1 });
       }
-    };
-    
-    return Array.from(commitMap.values());
+    }
+
+    return Array.from(commitMap.values())
+      .filter(commit => commit.tests.length > 0)
+      .map((commit, index) => ({
+        ...commit,
+        commitNumber: index + 1,
+      }));
   }, [data]);
 
   const chartHeight = 400;
@@ -131,7 +144,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           </text>
         ))}
 
-        {/* Data points - circles stacked vertically */}
+        {/* Data points stacked vertically */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
           
@@ -139,16 +152,40 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
                 const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
-                
-                return (
+                const status = getTestExecutionVisualStatus(test.passed, commit.commitName);
+                const visualStyle = getVisualStatusStyle(status);
+                const accessibleLabel = `Commit ${commit.commitNumber}: ${visualStyle.label}`;
+
+                return visualStyle.pointStyle === 'triangle' ? (
+                  <polygon
+                    key={`test-${commitIndex}-${testIndex}`}
+                    points={`${x},${y - circleRadius} ${x - circleRadius},${y + circleRadius} ${x + circleRadius},${y + circleRadius}`}
+                    fill={visualStyle.backgroundColor}
+                    stroke={visualStyle.borderColor}
+                    strokeWidth={visualStyle.borderWidth}
+                    opacity="0.95"
+                    data-status={status}
+                    role="img"
+                    aria-label={accessibleLabel}
+                  >
+                    <title>{accessibleLabel}</title>
+                  </polygon>
+                ) : (
                   <circle
                     key={`test-${commitIndex}-${testIndex}`}
                     cx={x}
                     cy={y}
                     r={circleRadius}
-                    fill={test.passed ? '#2d8a2d' : '#c72828'}
-                    opacity="0.9"
-                  />
+                    fill={visualStyle.backgroundColor}
+                    stroke={visualStyle.borderColor}
+                    strokeWidth={visualStyle.borderWidth}
+                    opacity="0.95"
+                    data-status={status}
+                    role="img"
+                    aria-label={accessibleLabel}
+                  >
+                    <title>{accessibleLabel}</title>
+                  </circle>
                 );
               })}
             </g>
@@ -185,12 +222,16 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       {/* Legend */}
       <div style={styles.legend}>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#2d8a2d'}}></div>
+          <div style={{...styles.legendCircle, backgroundColor: '#137333', border: '2px solid #0B4A20'}}></div>
           <span style={styles.legendText}>Pruebas exitosas</span>
         </div>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#c72828'}}></div>
+          <div style={{...styles.legendTriangle}}></div>
           <span style={styles.legendText}>Pruebas fallidas</span>
+        </div>
+        <div style={styles.legendItem}>
+          <div style={{...styles.legendCircle, backgroundColor: '#137333', border: '4px solid #0B4F8A'}}></div>
+          <span style={styles.legendText}>Refactor exitoso</span>
         </div>
       </div>
 
@@ -246,6 +287,14 @@ const styles: Record<string, React.CSSProperties> = {
     width: '20px',
     height: '20px',
     borderRadius: '50%',
+    boxSizing: 'border-box',
+  },
+  legendTriangle: {
+    width: 0,
+    height: 0,
+    borderLeft: '11px solid transparent',
+    borderRight: '11px solid transparent',
+    borderBottom: '20px solid #B42318',
   },
   legendText: {
     fontSize: '14px',

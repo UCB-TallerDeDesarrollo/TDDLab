@@ -15,6 +15,10 @@ dotenv.config();
 export class GithubRepository implements IGithubRepository {
   octokit: Octokit;
   githubRepository: any;
+  private commitHistoryCache = new Map<
+    string,
+    { expiresAt: number; data: any[] }
+  >();
   constructor() {
     const { REACT_APP_AUTH_TOKEN } = process.env;
     this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
@@ -344,8 +348,129 @@ export class GithubRepository implements IGithubRepository {
     }
   }
 
+  private isNotFoundError(error: unknown): boolean {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      (error as { response?: { status?: number } }).response?.status === 404
+    );
+  }
+
+  private async fetchCommitHistoryFromGithubApi(
+    owner: string,
+    repoName: string
+  ): Promise<any[]> {
+    const [commitsResponse, runsResponse] = await Promise.all([
+      this.octokit.request("GET /repos/{owner}/{repo}/commits", {
+        owner,
+        repo: repoName,
+        per_page: 30,
+      }),
+      this.octokit
+        .request("GET /repos/{owner}/{repo}/actions/runs", {
+          owner,
+          repo: repoName,
+          per_page: 100,
+        })
+        .catch(() => ({ data: { workflow_runs: [] } })),
+    ]);
+
+    const conclusionsBySha = new Map<string, string>();
+    const workflowRuns = (runsResponse.data as any).workflow_runs ?? [];
+    workflowRuns.forEach((run: any) => {
+      if (run.head_sha && run.conclusion && !conclusionsBySha.has(run.head_sha)) {
+        conclusionsBySha.set(run.head_sha, run.conclusion);
+      }
+    });
+
+    const commits = commitsResponse.data as any[];
+    const detailedCommits = await Promise.all(
+      commits.map(async (summary: any) => {
+        try {
+          const response = await this.octokit.request(
+            "GET /repos/{owner}/{repo}/commits/{ref}",
+            { owner, repo: repoName, ref: summary.sha }
+          );
+          return response.data as any;
+        } catch {
+          return summary;
+        }
+      })
+    );
+
+    return detailedCommits.map((githubCommit: any) => {
+      const conclusion = conclusionsBySha.get(githubCommit.sha) ?? "unknown";
+      const date =
+        githubCommit.commit?.author?.date ??
+        githubCommit.commit?.committer?.date ??
+        new Date(0).toISOString();
+      const additions = githubCommit.stats?.additions ?? 0;
+      const deletions = githubCommit.stats?.deletions ?? 0;
+
+      return {
+        sha: githubCommit.sha,
+        stats: {
+          total: githubCommit.stats?.total ?? additions + deletions,
+          additions,
+          deletions,
+          date,
+        },
+        commit: {
+          date,
+          message: githubCommit.commit?.message ?? "Commit sin mensaje",
+          url:
+            githubCommit.html_url ??
+            `https://github.com/${owner}/${repoName}/commit/${githubCommit.sha}`,
+          comment_count: githubCommit.commit?.comment_count ?? 0,
+        },
+        coverage: 0,
+        test_count: conclusion === "success" || conclusion === "failure" ? 1 : 0,
+        conclusion,
+        tdd_cycle:
+          conclusion === "success"
+            ? "green"
+            : conclusion === "failure"
+              ? "red"
+              : "null",
+      };
+    });
+  }
+
+  private async getCommitHistorySource(
+    owner: string,
+    repoName: string
+  ): Promise<any[]> {
+    const cacheKey = `${owner}/${repoName}`;
+    const cached = this.commitHistoryCache.get(cacheKey);
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
+    let data: any[];
+    try {
+      data = await this.fetchCommitHistoryJson(owner, repoName);
+    } catch (error) {
+      if (!this.isNotFoundError(error)) {
+        throw error;
+      }
+
+      console.warn(
+        `script/commit-history.json no existe en ${cacheKey}; usando la API de GitHub como respaldo.`
+      );
+      data = await this.fetchCommitHistoryFromGithubApi(owner, repoName);
+    }
+
+    this.commitHistoryCache.set(cacheKey, {
+      data,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+    });
+    return data;
+  }
+
   async getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    const commitHistory = await this.getCommitHistorySource(owner, repoName);
     const commits: CommitHistoryData[] = commitHistory.map((commitData: any) => ({
       html_url: commitData.commit.url,
       sha: commitData.sha,
@@ -370,7 +495,7 @@ export class GithubRepository implements IGithubRepository {
   }
 
   async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    const commitHistory = await this.getCommitHistorySource(owner, repoName);
     return commitHistory.map((commitData: any) => ({
       url: commitData.commit.url,
       sha: commitData.sha,

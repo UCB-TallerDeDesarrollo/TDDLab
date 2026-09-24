@@ -45,4 +45,63 @@ describe("GithubRepository.getCommitHistoryData", () => {
     expect(result[0].commit.message).toBe("Commit 2");
     expect(result[1].commit.message).toBe("Commit 1");
   });
+
+  it("uses GitHub API data when commit-history.json does not exist", async () => {
+    githubRepository.fetchCommitHistoryJson = jest.fn().mockRejectedValue({
+      response: { status: 404 },
+    });
+    jest.spyOn(githubRepository.octokit, "request").mockImplementation(
+      (route: any) => {
+        if (route === "GET /repos/{owner}/{repo}/commits") {
+          return Promise.resolve({
+            data: [
+              {
+                sha: "fallback-sha",
+                html_url: "https://github.com/owner/repo/commit/fallback-sha",
+                commit: {
+                  author: { date: "2026-09-24T10:00:00Z" },
+                  message: "Fallback commit",
+                  comment_count: 0,
+                },
+              },
+            ],
+          } as any);
+        }
+
+        if (route === "GET /repos/{owner}/{repo}/actions/runs") {
+          return Promise.resolve({
+            data: {
+              workflow_runs: [
+                { head_sha: "fallback-sha", conclusion: "success" },
+              ],
+            },
+          } as any);
+        }
+
+        return Promise.resolve({
+          data: {
+            sha: "fallback-sha",
+            html_url: "https://github.com/owner/repo/commit/fallback-sha",
+            stats: { total: 6, additions: 4, deletions: 2 },
+            commit: {
+              author: { date: "2026-09-24T10:00:00Z" },
+              message: "Fallback commit",
+              comment_count: 0,
+            },
+          },
+        } as any);
+      }
+    );
+
+    const result = await githubRepository.getCommitHistoryData("owner", "repo");
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      sha: "fallback-sha",
+      conclusion: "success",
+      test_count: 1,
+      coverage: 0,
+      stats: { total: 6, additions: 4, deletions: 2 },
+    });
+  });
 });

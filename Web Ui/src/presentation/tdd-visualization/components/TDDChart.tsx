@@ -10,6 +10,7 @@ import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import CommitStatusLegend from "./CommitStatusLegend";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -118,6 +119,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles }
           </Select>
         </FormControl>
       </Box>
+      <CommitStatusLegend />
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
         tddLogs = {tddLogs}
