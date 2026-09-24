@@ -11,18 +11,20 @@ import { useState } from "react";
 interface GithubLinkDialogProps {
   open: boolean;
   onClose: () => void;
-  onSend: (link: string) => void | Promise<void>;
+  onSend: (link: string) => boolean | Promise<boolean>;
+  errorMessage?: string | null;
 }
 
 export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   open,
   onClose,
   onSend,
+  errorMessage,
 }) => {
   const {
     repo: link,
     validLink,
-    errorMessage,
+    errorMessage: validationErrorMessage,
     handleLinkChange,
   } = useGitHubLinkValidation("");
 
@@ -35,6 +37,8 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     setSending(true);
     try {
       await Promise.resolve(onSend(link));
+    } catch {
+      // El contenedor presenta el mensaje de error y el diálogo permanece abierto.
     } finally {
       setSending(false);
     }
@@ -67,7 +71,11 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   };
 
   return (
-    <Dialog fullWidth={true} open={open} onClose={onClose}>
+    <Dialog
+      fullWidth={true}
+      open={open}
+      onClose={sending ? () => undefined : onClose}
+    >
       <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
       <DialogContent style={contentStyle}>
         <TextField
@@ -82,6 +90,11 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         />
         {!validLink && link !== "" && (
           <Typography variant="body2" color="error">
+            {validationErrorMessage}
+          </Typography>
+        )}
+        {errorMessage && (
+          <Typography role="alert" variant="body2" color="error">
             {errorMessage}
           </Typography>
         )}
@@ -90,6 +103,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
         <Button
           onClick={onClose}
           color="primary"
+          disabled={sending}
           style={{ textTransform: "none" }}
         >
           Cerrar
@@ -100,7 +114,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           disabled={sending || !validLink || link === ""}
           style={{ textTransform: "none" }}
         >
-          Enviar
+          {sending ? "Enviando..." : "Enviar"}
         </Button>
       </DialogActions>
     </Dialog>

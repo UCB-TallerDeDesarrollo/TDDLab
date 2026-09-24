@@ -87,6 +87,17 @@ describe('getSubmissionsByAssignmentId', () => {
             expect(result).toEqual(mockSubmission);
         });
 
+        it('should return null when the submission does not exist', async () => {
+            axiosGetSpy.mockRejectedValue({
+                isAxiosError: true,
+                response: { status: 404 },
+            });
+
+            await expect(
+                mockRepository.getSubmissionbyUserandSubmissionId(25, 1)
+            ).resolves.toBeNull();
+        });
+
         it('should throw an error if getting the submission fails', async () => {
             axiosGetSpy.mockRejectedValue(new Error('Failed to get submission'));
             await expect(mockRepository.getSubmissionbyUserandSubmissionId(25, 1)).rejects.toThrowError('Failed to get submission');

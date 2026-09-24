@@ -9,7 +9,7 @@ export class GetSubmissionByUserandAssignmentId {
   async getSubmisssionByUserandSubmissionId(
     assignmentid: number,
     userid: number
-  ): Promise<SubmissionDataObject> {
+  ): Promise<SubmissionDataObject | null> {
     return await this.submissionRepository.getSubmissionbyUserandSubmissionId(
       assignmentid,
       userid

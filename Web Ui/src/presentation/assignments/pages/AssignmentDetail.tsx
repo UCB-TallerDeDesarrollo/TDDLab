@@ -13,6 +13,10 @@ import { DeliveriesTable } from "../components/detail/DeliveriesTable";
 import { StudentSubmissionSummary } from "../components/detail/StudentSubmissionSummary";
 import { TaskOverviewCard } from "../components/detail/TaskOverviewCard";
 import { useAssignmentDetailData } from "../hooks/useAssignmentDetailData";
+import {
+  getStudentAssignmentActionState,
+  type StudentAssignmentActionState,
+} from "../services/assignmentActionState";
 import "./AssignmentDetail.css";
 
 function toDisplayDate(value: Date | string | null | undefined) {
@@ -70,17 +74,12 @@ function GuardedActionButton({
 
 function StudentAssignmentSection({
   detailData,
-  hasStudentSubmission,
-  hasStudentRepository,
-  canFinishTask,
+  actionState,
 }: Readonly<{
   detailData: AssignmentDetailData;
-  hasStudentSubmission: boolean;
-  hasStudentRepository: boolean;
-  canFinishTask: boolean;
+  actionState: StudentAssignmentActionState;
 }>) {
   const {
-    studentStatusLabel,
     studentSubmission,
     showIAButton,
     openLinkDialog,
@@ -88,6 +87,7 @@ function StudentAssignmentSection({
     redirectStudentToGraph,
     redirectStudentToAssistant,
     studentRepositoryLink,
+    isSubmissionMutationPending,
   } = detailData;
   const canUseAssistant = Boolean(studentSubmission?.repository_link);
 
@@ -101,34 +101,47 @@ function StudentAssignmentSection({
       actionsClassName="assignment-student-actions"
       details={
         <StudentSubmissionSummary
-          status={studentStatusLabel}
+          status={actionState.statusLabel}
+          statusVariant={actionState.statusVariant}
           repositoryLink={studentRepositoryLink}
           comment={studentSubmission?.comment || undefined}
         />
       }
       actions={
         <>
-          <GuardedActionButton
-            enabled={hasStudentSubmission === false}
-            onClick={openLinkDialog}
-          >
-            Iniciar tarea
-          </GuardedActionButton>
+          {actionState.showStart && (
+            <StatefulButton
+              variantStyle="primary"
+              onClick={openLinkDialog}
+              disabled={isSubmissionMutationPending}
+            >
+              Iniciar tarea
+            </StatefulButton>
+          )}
 
-          <GuardedActionButton
-            enabled={hasStudentRepository}
-            onClick={redirectStudentToGraph}
-          >
+          {actionState.showFinish && (
+            <StatefulButton
+              variantStyle="primary"
+              onClick={openCommentDialog}
+              disabled={isSubmissionMutationPending}
+            >
+              Finalizar tarea
+            </StatefulButton>
+          )}
+
+          {actionState.showGraph && (
+            <StatefulButton
+              variantStyle="primary"
+              onClick={redirectStudentToGraph}
+              disabled={isSubmissionMutationPending}
+            >
             Ver gráfica
-          </GuardedActionButton>
-
-          <GuardedActionButton enabled={canFinishTask} onClick={openCommentDialog}>
-            Finalizar tarea
-          </GuardedActionButton>
+            </StatefulButton>
+          )}
 
           {showIAButton && (
             <GuardedActionButton
-              enabled={canUseAssistant}
+              enabled={canUseAssistant && !isSubmissionMutationPending}
               onClick={redirectStudentToAssistant}
             >
               Asistente IA
@@ -193,7 +206,7 @@ function LoadedAssignmentContent({
     assignment,
     groupDetails,
     studentSubmission,
-    isTaskInProgress,
+    studentSubmissionState,
     isStudent,
   } = detailData;
 
@@ -201,9 +214,10 @@ function LoadedAssignmentContent({
     return null;
   }
 
-  const hasStudentSubmission = Boolean(studentSubmission);
-  const hasStudentRepository = Boolean(studentSubmission?.repository_link);
-  const canFinishTask = isTaskInProgress === false;
+  const actionState = getStudentAssignmentActionState(
+    studentSubmissionState,
+    studentSubmission
+  );
 
   return (
     <>
@@ -217,9 +231,7 @@ function LoadedAssignmentContent({
       {isStudent ? (
         <StudentAssignmentSection
           detailData={detailData}
-          hasStudentSubmission={hasStudentSubmission}
-          hasStudentRepository={hasStudentRepository}
-          canFinishTask={canFinishTask}
+          actionState={actionState}
         />
       ) : (
         <TeacherAssignmentSection detailData={detailData} />
@@ -250,6 +262,7 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         open={detailData.linkDialogOpen}
         onClose={detailData.closeLinkDialog}
         onSend={detailData.sendGithubLink}
+        errorMessage={detailData.submissionErrorMessage}
       />
 
       <CommentDialog
@@ -257,6 +270,7 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         link={detailData.submissionRepositoryLink}
         onSend={detailData.sendComment}
         onClose={detailData.closeCommentDialog}
+        errorMessage={detailData.submissionErrorMessage}
       />
 
       <FeedbackSnackbar
