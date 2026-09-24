@@ -26,15 +26,15 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     if (!data || data.length === 0) {
       return [];
     }
-    
+
     const commitMap = new Map<number, CommitData>();
     let currentCommit = 1;
 
-    for (const log of data){
+    for (const log of data) {
       if (log.commitId) {
         currentCommit++;
       }
-      
+
       if (log.numPassedTests !== undefined) {
         if (!commitMap.has(currentCommit)) {
           commitMap.set(currentCommit, {
@@ -42,13 +42,13 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
             tests: []
           });
         }
-        
+
         const commit = commitMap.get(currentCommit)!;
         const passed = (log.failedTests === 0) && (log.success === true);
         commit.tests.push({ passed, size: 1 });
       }
     };
-    
+
     return Array.from(commitMap.values());
   }, [data]);
 
@@ -60,7 +60,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const bottomPadding = 80;
   const plotWidth = chartWidth - leftPadding - rightPadding;
   const plotHeight = chartHeight - topPadding - bottomPadding;
-  
+
   const commitSpacing = plotWidth / (processedData.length + 1);
   const circleRadius = 15;
   const circleSpacing = 8;
@@ -70,7 +70,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       <div style={styles.header}>
         <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
       </div>
-      
+
       <svg width={chartWidth} height={chartHeight} style={styles.svg}>
         {/* Grid lines */}
         {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
@@ -131,23 +131,23 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           </text>
         ))}
 
-        {/* Data points - circles stacked vertically */}
+        {/* Data points - stacked vertically icons */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
-          
+
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
                 const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
-                
+
                 return test.passed ? (
-                  <circle
+                  <image
                     key={`test-${commitIndex}-${testIndex}`}
-                    cx={x}
-                    cy={y}
-                    r={circleRadius}
-                    fill="#2d8a2d"
-                    opacity="0.9"
+                    href="/successful-test.svg"
+                    x={x - circleRadius}
+                    y={y - circleRadius}
+                    width={circleRadius * 2}
+                    height={circleRadius * 2}
                   />
                 ) : (
                   <image
@@ -194,7 +194,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       {/* Legend */}
       <div style={styles.legend}>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#2d8a2d'}}></div>
+          <img src="/successful-test.svg" alt="Pruebas exitosas" style={styles.legendIcon} />
           <span style={styles.legendText}>Pruebas exitosas</span>
         </div>
         <div style={styles.legendItem}>
