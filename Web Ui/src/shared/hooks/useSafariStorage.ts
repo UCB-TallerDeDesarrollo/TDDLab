@@ -13,7 +13,8 @@ export function hasBlockedSafariStorage(): boolean {
   if (typeof window === "undefined" || !isSafari(navigator.userAgent))
     return false;
 
-  const key = `tddlab_storage_probe_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const randomSuffix = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(36);
+  const key = `tddlab_storage_probe_${Date.now()}_${randomSuffix}`;
   let cookiesAvailable = false;
   let storageAvailable = false;
   try {

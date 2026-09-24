@@ -144,14 +144,24 @@ export class GithubRepository implements IGithubRepository {
         const coverageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
           coverageResponse.data[0].body
         );
-        const testCountMatch = /(\d+)(?=\s*tests passing)/.exec(
-          coverageResponse.data[0].body
-        );
+        const coverageBody = coverageResponse.data[0].body;
+        const testCountMarkerIndex = coverageBody.indexOf("tests passing");
         if (coverageMatch) {
           percentageMatch = String(coverageMatch[1]);
         }
-        if (testCountMatch) {
-          testCount = String(testCountMatch[1]);
+        if (testCountMarkerIndex !== -1) {
+          const textBeforeMarker = coverageBody
+            .slice(0, testCountMarkerIndex)
+            .trimEnd();
+          let testCountStart = textBeforeMarker.length;
+
+          while (testCountStart > 0) {
+            const charCode = textBeforeMarker.charCodeAt(testCountStart - 1);
+            if (charCode < 48 || charCode > 57) break;
+            testCountStart -= 1;
+          }
+
+          testCount = textBeforeMarker.slice(testCountStart);
         }
       }
       const commitInfo: CommitInformationDataObject = {
