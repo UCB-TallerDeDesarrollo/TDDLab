@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/presentation/assignments/pages/AssignmentDetail";
 import { GitLinkDialog } from "../../../src/shared/components/GitHubLinkDialog";
+import { GetFeatureFlagByName } from "../../../src/modules/FeatureFlags/application/GetFeatureFlagByName";
 
 jest.setTimeout(10000);
 
@@ -190,6 +191,47 @@ describe("AssignmentDetail Component", () => {
       { timeout: 3000 }
     );
   });
+
+  it("hides the AI assistant for teachers when the feature flag is disabled", async () => {
+  jest
+    .spyOn(GetFeatureFlagByName.prototype, "execute")
+    .mockImplementation(async (featureName: string) => {
+      if (featureName === "Boton Asistente IA") {
+        return {
+          id: 1,
+          feature_name: "Boton Asistente IA",
+          is_enabled: false,
+        };
+      }
+
+      if (featureName === "Mostrar Graficas Adicionales") {
+        return {
+          id: 2,
+          feature_name: "Mostrar Graficas Adicionales",
+          is_enabled: false,
+        };
+      }
+
+      return null;
+    });
+
+  render(
+    <BrowserRouter>
+      <AssignmentDetail role="teacher" userid={123} />
+    </BrowserRouter>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByText("Lista de entregas")).toBeInTheDocument();
+    expect(screen.getByText("student1@example.com")).toBeInTheDocument();
+  });
+
+  expect(screen.queryByText("Asistente IA")).not.toBeInTheDocument();
+
+  expect(
+    screen.queryByRole("button", { name: "Asistente" })
+  ).not.toBeInTheDocument();
+});
 
   it("shows loading indicator while fetching assignment details", async () => {
     const { getByTestId } = render(
