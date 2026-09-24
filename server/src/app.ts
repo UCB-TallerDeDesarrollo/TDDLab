@@ -13,7 +13,7 @@ import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
 import cookieParser from "cookie-parser";
-
+import "dotenv/config";
 const app = express();
 const port = 3000;
 
