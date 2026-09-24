@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Typography } from "@mui/material";
+
 import StatefulButton from "../../../shared/components/StatefulButton";
 import StartFinishActionButton from "../../../shared/components/StartFinishActionButton";
 import ContentState from "../../../shared/components/ContentState";
@@ -14,6 +15,7 @@ import { DeliveriesTable } from "../components/detail/DeliveriesTable";
 import { StudentSubmissionSummary } from "../components/detail/StudentSubmissionSummary";
 import { TaskOverviewCard } from "../components/detail/TaskOverviewCard";
 import { useAssignmentDetailData } from "../hooks/useAssignmentDetailData";
+
 import "./AssignmentDetail.css";
 
 function toDisplayDate(value: Date | string | null | undefined) {
@@ -21,7 +23,9 @@ function toDisplayDate(value: Date | string | null | undefined) {
     return "N/A";
   }
 
-  const normalized = value instanceof Date ? value.toISOString() : value.toString();
+  const normalized =
+    value instanceof Date ? value.toISOString() : value.toString();
+
   return formatDate(normalized);
 }
 
@@ -61,7 +65,9 @@ function GuardedActionButton({
     <StatefulButton
       variantStyle={enabled ? "primary" : "secondary"}
       onClick={() => {
-        if (enabled) onClick();
+        if (enabled) {
+          onClick();
+        }
       }}
     >
       {children}
@@ -88,6 +94,7 @@ function StudentAssignmentSection({
     redirectStudentToAssistant,
     studentRepositoryLink,
   } = detailData;
+
   const canUseAssistant = Boolean(studentSubmission?.repository_link);
   const getStatusClassName = () => {
     if (studentSubmission?.status === "in progress") return "assignment-status--progress";
@@ -130,6 +137,13 @@ function StudentAssignmentSection({
             Ver gráfica
           </GuardedActionButton>
 
+          <GuardedActionButton
+            enabled={canFinishTask}
+            onClick={openCommentDialog}
+          >
+            Finalizar tarea
+          </GuardedActionButton>
+
           {showIAButton && (
             <GuardedActionButton
               enabled={canUseAssistant}
@@ -144,7 +158,11 @@ function StudentAssignmentSection({
   );
 }
 
-function DeliveriesStateContent({ state }: Readonly<{ state: AssignmentDetailData["deliveriesState"] }>) {
+function DeliveriesStateContent({
+  state,
+}: Readonly<{
+  state: AssignmentDetailData["deliveriesState"];
+}>) {
   if (state === "loading") {
     return <ContentState variant="loading" title="Cargando..." />;
   }
@@ -158,28 +176,35 @@ function DeliveriesStateContent({ state }: Readonly<{ state: AssignmentDetailDat
 
 function TeacherAssignmentSection({
   detailData,
-}: Readonly<{ detailData: AssignmentDetailData }>) {
+}: Readonly<{
+  detailData: AssignmentDetailData;
+}>) {
   const {
     deliveriesState,
     deliveriesRows,
     disableAdditionalGraphs,
+    showIAButton,
     openTeacherGraph,
     openTeacherAssistant,
     openTeacherAdditionalGraphs,
   } = detailData;
-  const shouldShowTable = deliveriesState !== "loading" &&
+
+  const shouldShowTable =
+    deliveriesState !== "loading" &&
     deliveriesState !== "error" &&
     deliveriesState !== "empty";
 
   return (
     <>
       <h2 className="assignment-section-title">Lista de entregas</h2>
+
       {shouldShowTable ? (
         <section className="assignment-deliveries-card">
           <DeliveriesTable
             state={deliveriesState}
             rows={deliveriesRows}
             showAdditionalGraphs={disableAdditionalGraphs === false}
+            showAssistant={showIAButton}
             onOpenGraph={openTeacherGraph}
             onOpenAssistant={openTeacherAssistant}
             onOpenAdditionalGraphs={openTeacherAdditionalGraphs}
@@ -196,7 +221,9 @@ function TeacherAssignmentSection({
 
 function LoadedAssignmentContent({
   detailData,
-}: Readonly<{ detailData: AssignmentDetailData }>) {
+}: Readonly<{
+  detailData: AssignmentDetailData;
+}>) {
   const {
     assignment,
     groupDetails,
@@ -208,7 +235,13 @@ function LoadedAssignmentContent({
     return null;
   }
 
-  const hasStudentRepository = Boolean(studentSubmission?.repository_link);
+  const hasStudentSubmission = Boolean(studentSubmission);
+
+  const hasStudentRepository = Boolean(
+    studentSubmission?.repository_link
+  );
+
+  const canFinishTask = isTaskInProgress === false;
 
   return (
     <>
@@ -232,13 +265,28 @@ function LoadedAssignmentContent({
   );
 }
 
-function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
+function AssignmentDetail({
+  role,
+  userid,
+}: Readonly<AssignmentDetailProps>) {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const assignmentid = Number(id);
-  const detailData = useAssignmentDetailData({ role, userid, assignmentid, navigate });
-  const isLoading = detailData.assignmentState === "loading";
-  const hasError = detailData.assignmentState === "error" || !detailData.assignment;
+
+  const detailData = useAssignmentDetailData({
+    role,
+    userid,
+    assignmentid,
+    navigate,
+  });
+
+  const isLoading =
+    detailData.assignmentState === "loading";
+
+  const hasError =
+    detailData.assignmentState === "error" ||
+    !detailData.assignment;
 
   return (
     <>
