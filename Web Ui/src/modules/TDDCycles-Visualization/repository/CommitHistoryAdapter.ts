@@ -1,42 +1,25 @@
-import { Octokit } from "octokit";
-import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
-//import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
-import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
-import { CommitCycle } from "../domain/TddCycleInterface.ts";
-import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
+import axios, { AxiosInstance } from "axios";
+import { Octokit } from "octokit";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
+import { CommitCycle } from "../domain/TddCycleInterface.ts";
+import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
+import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
+import { BackendApiError, BackendErrorResponse } from "./BackendDto.ts";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
-  octokit: Octokit;
-  backAPI: string;
+  private octokit: Octokit;
+  private axiosClient: AxiosInstance;
 
   constructor() {
     this.octokit = new Octokit();
-    //auth: 'coloca tu token github para mas requests'
-    this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
+    this.axiosClient = axios.create({
+      baseURL: `${VITE_API}/TDDCycles`,
+    });
   }
-  
 
-  // function for obtain TDD_log.json
   private getTDDLogUrl(owner: string, repoName: string): string {
     return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
-  }
-
-  async obtainUserName(owner: string): Promise<string> {
-    try {
-      const response = await this.octokit.request(`GET /users/${owner}`);
-
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const userName = response.data.name;
-      return userName || owner; // Retorna el nombre o un mensaje si no está disponible
-    } catch (error) {
-      console.error("Error obtaining user name:", error);
-      throw error;
-    }
   }
 
   async obtainCommitsOfRepo(
@@ -44,53 +27,44 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     repoName: string,
   ): Promise<CommitDataObject[]> {
     try {
-      // Now request our backend endpoint which centralizes this logic
-      const url = `${this.backAPI}/commits-history`;
-      const response = await axios.get(url, { params: { owner, repoName } });
+      const response = await this.axiosClient.get<CommitDataObject[]>(
+        "/commits-history",
+        {
+          params: { owner, repoName },
+        },
+      );
 
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      // Backend already returns the mapped array, just ensure dates are Date objects on client
-      const commits: CommitDataObject[] = (response.data || []).map((c: any) => ({
-        ...c,
+      return response.data.map((commit) => ({
+        ...commit,
         commit: {
-          ...c.commit,
-          date: new Date(c.commit.date),
+          ...commit.commit,
+          date: new Date(commit.commit.date),
         },
       }));
-      return commits;
     } catch (error) {
-      console.error("Error obteniendo commits desde GitHub:", error);
-      throw error;
+      this.handleApiError(error);
     }
   }
-
 
   async obtainCommitTddCycle(
     owner: string,
     repoName: string,
   ): Promise<CommitCycle[]> {
     try {
-      const url = `${this.backAPI}/commit-cycles`;
-      const response = await axios.get(url, { params: { owner, repoName } });
+      const response = await this.axiosClient.get<CommitCycle[]>(
+        "/commit-cycles",
+        {
+          params: { owner, repoName },
+        },
+      );
 
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      // Map server shape to current UI Contract (note: UI uses property tddCycle)
-      const commits: CommitCycle[] = (response.data || []).map((item: any) => ({
+      return response.data.map((item) => ({
         url: item.url,
         sha: item.sha,
         tddCycle: item.tddCycle ?? "null",
-        coverage: item.coverage,
       }));
-      return commits;
     } catch (error) {
-      console.error("Error al obtener los ciclos TDD:", error);
-      throw error;
+      this.handleApiError(error);
     }
   }
 
@@ -102,19 +76,60 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       const tddLogUrl = this.getTDDLogUrl(owner, repoName);
       const response = await axios.get<TDDLogEntry[]>(tddLogUrl);
 
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
       return response.data;
-
     } catch (error: any) {
       if (error.response?.status === 404) {
-        console.warn("Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.");
+        console.warn(
+          "Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.",
+        );
         return [];
       }
-      console.error("Error al obtener tdd_log.json:", error);
+
+      console.error("Error al obtener tdd_log.json:");
       throw error;
     }
+  }
+
+  async obtainUserName(owner: string): Promise<string> {
+    try {
+      const response = await this.octokit.request(`GET /users/${owner}`);
+      const userName = response.data.name;
+
+      return userName || owner;
+    } catch (error) {
+      console.error(`Error al obtener el username: ${owner}`);
+      throw error;
+    }
+  }
+
+  private handleApiError(error: unknown): never {
+    if (axios.isAxiosError<BackendErrorResponse>(error)) {
+      const data = error.response?.data;
+
+      if (data?.code) {
+        throw new BackendApiError(
+          data.detail,
+          data.code,
+        );
+      }
+
+      if (!error.response) {
+        throw new BackendApiError(
+          "No se pudo conectar con la API del sistema.",
+          "NETWORK_ERROR",
+        );
+      }
+
+      throw new BackendApiError(
+        `Petición falló con código: ${error.response.status}.`,
+        `HTTP_${error.response.status}`,
+      );
+    }
+
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error("Error inesperado.");
   }
 }
