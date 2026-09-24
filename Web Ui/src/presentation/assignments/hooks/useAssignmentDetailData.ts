@@ -89,7 +89,6 @@ export function useAssignmentDetailData({
     useState(false);
   const submissionMutationInProgress = useRef(false);
   const [showIAButton, setShowIAButton] = useState(false);
-  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
 
   useEffect(() => {
     const fetchAssignment = async () => {
@@ -134,26 +133,6 @@ export function useAssignmentDetailData({
 
     fetchGroup();
   }, [assignment, refreshTick]);
-
-  useEffect(() => {
-    const fetchTeacherFlags = async () => {
-      if (isStudent(role)) {
-        return;
-      }
-
-      const getFlagUseCase = new GetFeatureFlagByName();
-
-      try {
-        const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
-        setDisableAdditionalGraphs(!(flag?.is_enabled));
-      } catch (error) {
-        console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-        setDisableAdditionalGraphs(true);
-      }
-    };
-
-    fetchTeacherFlags();
-  }, [role]);
 
   useEffect(() => {
     const fetchStudentFlags = async () => {
@@ -410,7 +389,7 @@ export function useAssignmentDetailData({
     link: string,
     submissionId: number,
     path: string,
-    selectedMetric: "Dashboard" | "Complejidad"
+    selectedMetric: "Dashboard"
   ) => {
     if (!link) {
       setUiMessage("No se encontro un link para esta tarea.");
@@ -449,10 +428,6 @@ export function useAssignmentDetailData({
     });
   };
 
-  const openTeacherAdditionalGraphs = (row: SubmissionRowView) => {
-    redirectAdmin(row.repositoryLink, row.id, "/aditionalgraph", "Complejidad");
-  };
-
   return {
     assignment,
     groupDetails,
@@ -465,7 +440,6 @@ export function useAssignmentDetailData({
     isCommentDialogOpen,
     isSubmissionMutationPending,
     showIAButton,
-    disableAdditionalGraphs,
     isStudent: isStudent(role),
     openLinkDialog,
     closeLinkDialog,
@@ -477,7 +451,6 @@ export function useAssignmentDetailData({
     redirectStudentToAssistant,
     openTeacherGraph,
     openTeacherAssistant,
-    openTeacherAdditionalGraphs,
     studentRepositoryLink: studentSubmission?.repository_link,
     submissionRepositoryLink: submission?.repository_link,
     submissionErrorMessage,
