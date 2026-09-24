@@ -124,8 +124,8 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
-    const { getByText } = render(
+  it("displays only 'Iniciar tarea' and 'Ver gráfica' for student role when task is pending", async () => {
+    const { getByText, queryByText } = render(
       <BrowserRouter>
         <AssignmentDetail role="student" userid={123} />
       </BrowserRouter>
@@ -134,7 +134,7 @@ describe("AssignmentDetail Component", () => {
     await waitFor(() => {
       expect(getByText("Iniciar tarea")).toBeInTheDocument();
       expect(getByText("Ver gráfica")).toBeInTheDocument();
-      expect(getByText("Finalizar tarea")).toBeInTheDocument();
+      expect(queryByText("Finalizar tarea")).not.toBeInTheDocument();
     });
   });
 

@@ -1,12 +1,14 @@
 import Button, { ButtonProps } from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 
 interface StatefulButtonProps extends ButtonProps {
   variantStyle?: "primary" | "secondary";
+  loading?: boolean;
 }
 
 const StyledStatefulButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "variantStyle",
+  shouldForwardProp: (prop) => prop !== "variantStyle" && prop !== "loading",
 })<StatefulButtonProps>(({ variantStyle = "secondary" }) => {
   const isPrimary = variantStyle === "primary";
   return {
@@ -51,11 +53,26 @@ const StyledStatefulButton = styled(Button, {
 function StatefulButton({
   children,
   variantStyle = "secondary",
+  loading = false,
+  disabled,
   ...props
 }: Readonly<StatefulButtonProps>) {
   return (
-    <StyledStatefulButton variantStyle={variantStyle} {...props}>
-      {children}
+    <StyledStatefulButton
+      variantStyle={variantStyle}
+      disabled={disabled ?? loading}
+      {...props}
+    >
+      {loading ? (
+        <CircularProgress
+          size={20}
+          thickness={5}
+          role="status"
+          aria-label="Cargando"
+        />
+      ) : (
+        children
+      )}
     </StyledStatefulButton>
   );
 }
