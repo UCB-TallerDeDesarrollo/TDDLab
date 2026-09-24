@@ -1,7 +1,7 @@
 import { CreatePractice } from "../../../modules/Practices/application/CreatePractice";
 import { DeletePractice } from "../../../modules/Practices/application/DeletePractice";
 import { UpdatePractice } from "../../../modules/Practices/application/UpdatePractice";
-import { PracticeDataObject } from "../../../modules/Practices/domain/PracticeInterface";
+import { PracticeDataObject, PracticeState } from "../../../modules/Practices/domain/PracticeInterface";
 import PracticesRepository from "../../../modules/Practices/repository/PracticesRepository";
 import {
   CreatePracticeInput,
@@ -77,7 +77,7 @@ export const toPracticeListItem = (
   id: practice.id,
   title: practice.title,
   description: practice.description,
-  state: practice.state,
+  state: practice.state as PracticeState,
   creationDate: practice.creation_date,
   userid: practice.userid,
 });

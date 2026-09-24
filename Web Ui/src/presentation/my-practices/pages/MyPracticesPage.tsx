@@ -30,6 +30,8 @@ export default function MyPracticesPage({
     createPractice,
     deletePractice,
     updatePractice,
+    startPractice,
+    finishPractice,
   } = useMyPracticesScreen(userid, userRole);
 
   useEffect(() => {
@@ -55,6 +57,8 @@ export default function MyPracticesPage({
         onOpenDetail={openPracticeDetail}
         onDeletePractice={deletePractice}
         onPracticeUpdated={updatePractice}
+        onStartPractice={startPractice}
+        onFinishPractice={finishPractice}
       />
       {isCreateFormOpen ? (
         <MyPracticesForm
