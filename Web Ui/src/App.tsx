@@ -110,167 +110,167 @@ function App() {
   }
 
   return (
-    <Router>
-      {isAuthenticated && user?.role && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={user.role} />
-      )}
+			<Router>
+				{isAuthenticated && user?.role && (
+					<MainMenu navArrayLinks={navArrayLinks} userRole={user.role} />
+				)}
 
-      <Suspense
-        fallback={
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-              width: "100vw",
-            }}
-          >
-            <CircularProgress />
-          </div>
-        }
-      >
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <ProtectedRouteComponent>
-                  <HomePage />
-                </ProtectedRouteComponent>
-              ) : (
-                <LandingPage />
-              )
-            }
-          />
+				<Suspense
+					fallback={
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								height: "100vh",
+								width: "100vw",
+							}}
+						>
+							<CircularProgress />
+						</div>
+					}
+				>
+					<Routes>
+						<Route
+							path="/"
+							element={
+								isAuthenticated ? (
+									<ProtectedRouteComponent>
+										<HomePage />
+									</ProtectedRouteComponent>
+								) : (
+									<LandingPage />
+								)
+							}
+						/>
 
-          <Route path="/landing" element={<LandingPage />} />
+						<Route path="/landing" element={<LandingPage />} />
 
-          <Route
-            path="/groups"
-            element={
-              <ProtectedRouteComponent>
-                <Groups />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/groups"
+							element={
+								<ProtectedRouteComponent>
+									<Groups />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/tareas"
-            element={
-              <ProtectedRouteComponent>
-                <GestionTareas
-                  userRole={user?.role ?? ""}
-                  userGroupid={user?.groupid ?? -1}
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/tareas"
+							element={
+								<ProtectedRouteComponent>
+									<GestionTareas
+										userRole={user?.role ?? ""}
+										userGroupid={Number(user?.groupid) ?? -1}
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/assignment/:id"
-            element={
-              <ProtectedRouteComponent>
-                <AssignmentDetail
-                  role={user?.role ?? ""}
-                  userid={user?.id ?? -1}
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/assignment/:id"
+							element={
+								<ProtectedRouteComponent>
+									<AssignmentDetail
+										role={user?.role ?? ""}
+										userid={Number(user?.id) ?? -1}
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route path="/login" element={<Login />} />
+						<Route path="/login" element={<Login />} />
 
-          <Route
-            path="/user"
-            element={
-              <ProtectedRouteComponent>
-                <User />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/user"
+							element={
+								<ProtectedRouteComponent>
+									<User />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/users/group/:groupid"
-            element={
-              <ProtectedRouteComponent>
-                <UsersByGroupPage />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/users/group/:groupid"
+							element={
+								<ProtectedRouteComponent>
+									<UsersByGroupPage />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/mis-practicas"
-            element={
-              <ProtectedRouteComponent>
-                <MyPracticesPage
-                  userRole={user?.role ?? ""}
-                  userid={user?.id ?? 0}
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/mis-practicas"
+							element={
+								<ProtectedRouteComponent>
+									<MyPracticesPage
+										userRole={user?.role ?? ""}
+										userid={Number(user?.id) ?? 0}
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/mis-practicas/:id"
-            element={
-              <ProtectedRouteComponent>
-                <PracticeDetail userid={user?.id ?? 0} title={""} />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/mis-practicas/:id"
+							element={
+								<ProtectedRouteComponent>
+									<PracticeDetail userid={Number(user?.id) ?? 0} title={""} />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/graph"
-            element={
-              <ProtectedRouteComponent>
-                <TDDChartPage
-                  port={new CommitHistoryAdapter()}
-                  role={user?.role ?? ""}
-                  teacher_id={user?.id ?? -1}
-                  graphs="graph"
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/graph"
+							element={
+								<ProtectedRouteComponent>
+									<TDDChartPage
+										port={new CommitHistoryAdapter()}
+										role={user?.role ?? ""}
+										teacher_id={Number(user?.id) ?? -1}
+										graphs="graph"
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/aditionalgraph"
-            element={
-              <ProtectedRouteComponent>
-                <TDDChartPage
-                  port={new CommitHistoryAdapter()}
-                  role={user?.role ?? ""}
-                  teacher_id={user?.id ?? -1}
-                  graphs="aditionalgraph"
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/aditionalgraph"
+							element={
+								<ProtectedRouteComponent>
+									<TDDChartPage
+										port={new CommitHistoryAdapter()}
+										role={user?.role ?? ""}
+										teacher_id={Number(user?.id) ?? -1}
+										graphs="aditionalgraph"
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route path="/invitation" element={<InvitationPage />} />
+						<Route path="/invitation" element={<InvitationPage />} />
 
-          <Route
-            path="/asistente-ia"
-            element={
-              <ProtectedRouteComponent>
-                <AIAssistantPage />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/asistente-ia"
+							element={
+								<ProtectedRouteComponent>
+									<AIAssistantPage />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/configuraciones"
-            element={
-              <ProtectedRouteComponent>
-                <SettingsPage />
-              </ProtectedRouteComponent>
-            }
-          />
-        </Routes>
-      </Suspense>
-    </Router>
-  );
+						<Route
+							path="/configuraciones"
+							element={
+								<ProtectedRouteComponent>
+									<SettingsPage />
+								</ProtectedRouteComponent>
+							}
+						/>
+					</Routes>
+				</Suspense>
+			</Router>
+		);
 }
 
 export default App;

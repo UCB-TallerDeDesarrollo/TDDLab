@@ -12,7 +12,7 @@ export class TeacherCommentController {
 
   public async addComment(req: Request, res: Response) {
     const { submission_id, teacher_id, content } = req.body;
-  
+
     try {
       // Verificar si el teacher_id corresponde a un profesor
       const isTeacher = await this.teacherCommentRepository.isTeacher(teacher_id);
@@ -38,7 +38,7 @@ export class TeacherCommentController {
       return res.status(500).json({ error: "Error creando el comentario" });
     }
   }
-  
+
 
   public async getComments(req: Request, res: Response) {
     const { submission_id } = req.params;
