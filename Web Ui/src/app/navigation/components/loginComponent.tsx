@@ -7,15 +7,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
-import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "../../../modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../presentation/auth/store/useAuthStore";
 
 interface LoginComponentProps {
   compact?: boolean;
@@ -24,50 +16,37 @@ interface LoginComponentProps {
 export default function LoginComponent({
   compact = false,
 }: Readonly<LoginComponentProps>) {
-  const authData = useGlobalState("authData");
+  const user = useAuthStore((state) => state.user);
+  const login = useAuthStore((state) => state.login);
+  const logout = useAuthStore((state) => state.logout);
+
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleLogin = async () => {
-    const userData = await handleSignInWithGitHub();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAccountWithToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userAccount);
-    }
+    await login();
   };
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleGithubSignOut();
-    setGlobalState("authData", {
-      userid: -1,
-      userProfilePic: "",
-      userEmail: "",
-      usergroupid: -1,
-      userRole: "",
-    });
-    await removeSessionCookie();
-    localStorage.clear();
+    await logout();
     navigate("/login");
   };
 
-  const isLoggedIn = Boolean(authData[0].userEmail);
+  const isLoggedIn = Boolean(user?.email);
 
   return (
     <React.Fragment>
       {isLoggedIn ? (
         <React.Fragment>
-            <IconButton
-              onClick={(event) => setAnchorEl(event.currentTarget)}
-              sx={{ ml: { xs: 0, sm: 1 }, p: { xs: 0, sm: undefined }, flexShrink: 0 }}
-            >
+          <IconButton
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+            sx={{ ml: { xs: 0, sm: 1 }, p: { xs: 0, sm: undefined }, flexShrink: 0 }}
+          >
             <Avatar
-              src={authData[0].userProfilePic}
+              src={user?.photoUrl || ""}
               alt="Profile Picture"
               sx={{
-                // fixed desktop size to avoid shrinking between close widths
                 width: { xs: 38, sm: 42, md: 50 },
                 height: { xs: 38, sm: 42, md: 50 },
                 border: "2px solid rgba(255,255,255,0.24)",
@@ -96,7 +75,7 @@ export default function LoginComponent({
             minWidth: compact ? "auto" : undefined,
           }}
         >
-          Iniciar sesi{"\u00f3"}n
+          Iniciar sesión
         </Button>
       )}
     </React.Fragment>

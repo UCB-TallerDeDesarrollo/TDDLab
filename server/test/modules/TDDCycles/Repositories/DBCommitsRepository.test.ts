@@ -25,7 +25,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
 });
 
 
@@ -135,10 +135,9 @@ describe("Commit Saving Commits List", () => {
         const owner = "owner";
         const repoName = "repo";
         const error = new Error("Failed to save commit");
-        
+
         jest.spyOn(commitRepository, "saveCommit").mockRejectedValueOnce(error);
 
         await expect(commitRepository.saveCommitsList(owner, repoName, [tddCycleDataObjectMock])).rejects.toThrowError(error);
     });
 });
-

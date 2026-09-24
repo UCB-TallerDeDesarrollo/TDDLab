@@ -7,16 +7,24 @@ jest.mock("../../../src/presentation/auth/hooks/useAuth", () => ({
   useAuth: jest.fn(),
 }));
 
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
+
 const mockedUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 
 describe("AuthPage", () => {
   beforeEach(() => {
     mockedUseAuth.mockReturnValue({
-      loginWithGitHub: jest.fn(),
-      loginWithGoogle: jest.fn(),
+      user: null,
+      login: jest.fn(),
+      logout: jest.fn(),
       loading: false,
       error: null,
       setError: jest.fn(),
+      isAuthenticated: false,
     });
   });
 
@@ -30,7 +38,7 @@ describe("AuthPage", () => {
     render(<AuthPage />);
 
     expect(
-      screen.getByRole("button", { name: /accedé con github/i }),
+      screen.getByRole("button", { name: /accedé con github/i })
     ).toBeInTheDocument();
   });
 
@@ -38,7 +46,7 @@ describe("AuthPage", () => {
     render(<AuthPage />);
 
     expect(
-      screen.getByRole("button", { name: /accedé con google/i }),
+      screen.getByRole("button", { name: /accedé con google/i })
     ).toBeInTheDocument();
   });
 

@@ -1,8 +1,7 @@
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import firebase from "../../../firebaseConfig";
-import { handleSignInWithGitHub } from "../../../modules/User-Authentication/application/signInWithGithub";
-import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
-import { handleGithubSignOut } from "../../../modules/User-Authentication/application/signOutWithGithub";
+import { fireBaseAuthManager } from "../../../modules/User-Authentication/infraestructure/FirebaseAuthManager";
+import { OAuthProvider } from "../../../modules/User-Authentication/domain/AuthManager";
 import { RegisterUserOnDb } from "../../../modules/User-Authentication/application/registerUserOnDb";
 import { UserOnDb } from "../../../modules/User-Authentication/domain/userOnDb.interface";
 import {
@@ -15,13 +14,8 @@ const registerUserPort = new RegisterUserOnDb();
 function resolveAuthProvider(user: User | null): InvitationAuthProvider {
   const providerId = user?.providerData?.[0]?.providerId;
 
-  if (providerId === "google.com") {
-    return "google";
-  }
-
-  if (providerId === "github.com") {
-    return "github";
-  }
+  if (providerId === "google.com") return "google";
+  if (providerId === "github.com") return "github";
 
   return null;
 }
@@ -37,17 +31,15 @@ export function subscribeToInvitationAuth(
 }
 
 export async function signInInvitationWithGithub() {
-  const user = await handleSignInWithGitHub();
-  return user ? { user, authProvider: "github" as const } : null;
+  await fireBaseAuthManager.login(OAuthProvider.GitHub);
 }
 
 export async function signInInvitationWithGoogle() {
-  const user = await handleSignInWithGoogle();
-  return user ? { user, authProvider: "google" as const } : null;
+  await fireBaseAuthManager.login(OAuthProvider.Google);
 }
 
-export function signOutInvitationSession() {
-  return handleGithubSignOut();
+export async function signOutInvitationSession() {
+  await fireBaseAuthManager.logout();
 }
 
 export function verifyInvitationPassword(password: string) {
@@ -66,9 +58,7 @@ export async function registerInvitationUser({
     return;
   }
 
-  if (!user.email) {
-    return;
-  }
+  if (!user.email) return;
 
   const userObj: UserOnDb = {
     email: user.email,

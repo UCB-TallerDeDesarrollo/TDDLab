@@ -1,77 +1,31 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
-import {
-  handleAuthResult,
-  handleSignInWithGitHub,
-  handleSignInWithGoogle,
-} from "../services/authService";
+import { OAuthProvider } from "../../../modules/User-Authentication/domain/AuthManager";
+import { useAuthStore } from "../store/useAuthStore";
 
 export const useAuth = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const authData = useGlobalState("authData");
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const error = useAuthStore((state) => state.error);
+  const setError = useAuthStore((state) => state.setError);
+  const loginStore = useAuthStore((state) => state.login);
+  const logoutStore = useAuthStore((state) => state.logout);
 
-  useEffect(() => {
-    if (authData?.[0]?.userEmail) {
-      navigate({ pathname: "/" });
-    }
-  }, [authData, navigate]);
-
-  const loginWithGitHub = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const userData = await handleSignInWithGitHub();
-      await handleAuthResult({
-        userData,
-        isGoogle: false,
-        onSuccess: () => navigate({ pathname: "/" }),
-      });
-    } catch (err: any) {
-      const errorMessage = err?.message || "Error al iniciar sesión";
-      if (errorMessage.includes("Google")) {
-        setError("Este usuario está registrado con Google. Por favor, inicia sesión con Google.");
-      } else if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
-        setError("Usuario no encontrado. Por favor, regístrate primero.");
-      } else {
-        setError(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const login = async (provider: OAuthProvider = OAuthProvider.Google) => {
+    await loginStore(provider);
   };
 
-  const loginWithGoogle = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const userData = await handleSignInWithGoogle();
-      await handleAuthResult({
-        userData,
-        isGoogle: true,
-        onSuccess: () => navigate({ pathname: "/" }),
-      });
-    } catch (err: any) {
-      const errorMessage = err?.message || "Error al iniciar sesión";
-      if (errorMessage.includes("GitHub")) {
-        setError("Este usuario está registrado con GitHub. Por favor, inicia sesión con GitHub.");
-      } else if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
-        setError("Usuario no encontrado. Por favor, regístrate primero.");
-      } else {
-        setError(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const logout = async () => {
+    await logoutStore();
   };
 
   return {
-    loginWithGitHub,
-    loginWithGoogle,
+    user,
     loading,
     error,
-    setError
+    setError,
+    login,
+    logout,
+    isAuthenticated: Boolean(user),
   };
 };
+
+export default useAuth;

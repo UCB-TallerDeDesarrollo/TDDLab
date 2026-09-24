@@ -25,7 +25,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
 });
 
 
@@ -119,5 +119,3 @@ describe("SaveJobsList", () => {
         });
     });
 });
-
-

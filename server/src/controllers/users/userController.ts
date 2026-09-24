@@ -67,8 +67,8 @@ class UserController {
         res.status(409).json({ error: "The user is already registered in that group." });
       } else if (error.message === "No tiene permisos para registrar administradores") {
         res.status(403).json({ error: "No tiene permisos para registrar administradores" });
-      } else if (error.message === "Token inválido o expirado" || 
-                 error.message === "Token expirado" || 
+      } else if (error.message === "Token inválido o expirado" ||
+                 error.message === "Token expirado" ||
                  error.message === "Token inválido") {
         res.status(401).json({ error: error.message });
       } else if (error.message === "No se pudo obtener email de Firebase") {
@@ -105,19 +105,16 @@ class UserController {
       const email = decoded.email;
       const firebaseData = decoded.firebase as any;
       const providerId = firebaseData?.sign_in_provider;
-      
+
       if (!email) {
         res.status(400).json({ error: "No se pudo obtener email de Firebase" });
         return;
       }
-
-      // Si el token no es de GitHub, verificar si el usuario existe
-      // Si existe, significa que está usando el proveedor equivocado
       if (providerId && providerId !== "github.com") {
         const userResult = await getUserByemail(email);
         if (userResult && !("error" in userResult) && userResult !== null) {
-          res.status(400).json({ 
-            error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
+          res.status(400).json({
+            error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google."
           });
           return;
         }
@@ -148,15 +145,14 @@ class UserController {
       res.status(400).json({ error: "Debes proporcionar un token válido" });
       return;
     }
-
     try {
       const { user, jwtToken } = await loginUserWithGoogle(idToken);
       await saveUserCookie(jwtToken, res);
       res.status(200).json(user);
     } catch (error: any) {
       if (error.message === "DEBE_USAR_GOOGLE") {
-        res.status(400).json({ 
-          error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google." 
+        res.status(400).json({
+          error: "Este usuario está registrado con Google. Por favor, inicia sesión con Google."
         });
       } else if (error.message === "Usuario no encontrado") {
         res.status(404).json({ error: "Usuario no encontrado. Por favor, regístrate primero." });
@@ -214,7 +210,6 @@ async  logoutController (res: Response): Promise<void> {
 
     try {
       let userData = await getUser(id);
-
       if (userData == null) {
         res.status(404).json({ message: "Usuario no encontrado" });
       } else if ("email" in userData) {

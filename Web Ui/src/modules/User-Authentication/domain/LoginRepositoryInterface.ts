@@ -1,11 +1,11 @@
 import { UserOnDb } from "./userOnDb.interface";
+import { OAuthProvider } from "./OAuthProvider";
+import { RegisterAccountDTO } from "./dto/RegisterAccountDto";
 
-interface LoginRepositoryInterface {
-  getAccountInfo(email: string): Promise<UserOnDb>;
-  getAccountInfoWithToken(token: string): Promise<UserOnDb>;
-  registerAccount(user: UserOnDb): Promise<void>;
+export interface AuthDBRepositoryInterface {
+  getAccountInfoWithToken(idToken: string, provider: OAuthProvider): Promise<UserOnDb>;
+  getAccountInfoByEmail(email: string): Promise<UserOnDb>;
+  getUserById(id: number): Promise<UserOnDb>;
+  registerAccountWithToken(dto: RegisterAccountDTO, provider: OAuthProvider): Promise<UserOnDb>;
   verifyPassword(password: string): Promise<boolean>;
-  getUserByid(id: number): Promise<UserOnDb>;
 }
-
-export default LoginRepositoryInterface;

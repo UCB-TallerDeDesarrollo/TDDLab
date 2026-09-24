@@ -10,15 +10,12 @@ import { NoteAdd } from "@mui/icons-material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 import { lazy, Suspense, useEffect } from "react";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "./modules/User-Authentication/domain/authStates";
-import { getSessionCookie } from "./modules/User-Authentication/application/getSessionCookie";
+
 
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import { CircularProgress } from "@mui/material";
+import { useAuthStore } from "./presentation/auth/store/useAuthStore";
 
 const HomePage = lazy(() => import("./presentation/home/pages/HomePage"));
 const LandingPage = lazy(() => import("./presentation/landing/pages/LandingPage"));
@@ -45,7 +42,6 @@ const MyPracticesPage = lazy(
 );
 const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/PracticeDetail"));
 const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
-const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
 const navArrayLinks = [
   {
@@ -87,41 +83,17 @@ const navArrayLinks = [
 ];
 
 function App() {
-  const authData = useGlobalState("authData")[0];
-  const isAuthResolved = authData.userid !== undefined;
-  const isAuthenticated = Boolean(authData.userEmail);
-  const isRootPath = globalThis.location.pathname === "/";
-  const isPublicLandingPath = globalThis.location.pathname === "/landing";
-  const hasSessionHint =
-    localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const initAuthListener = useAuthStore((state) => state.initAuthListener);
 
   useEffect(() => {
-    getSessionCookie().then((storedSession) => {
-      const savedImage = localStorage.getItem("userProfilePic") || "";
+    const unsubscribe = initAuthListener();
+    return () => unsubscribe();
+  }, [initAuthListener]);
 
-      if (storedSession) {
-        localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-        setGlobalState("authData", {
-          userid: storedSession.id,
-          userProfilePic: savedImage,
-          userEmail: storedSession.email,
-          usergroupid: storedSession.groupid,
-          userRole: storedSession.role,
-        });
-      } else {
-        localStorage.removeItem(AUTH_SESSION_HINT_KEY);
-        setGlobalState("authData", {
-          userid: -1,
-          userProfilePic: savedImage,
-          userEmail: "",
-          usergroupid: -1,
-          userRole: "",
-        });
-      }
-    });
-  }, []);
-
-  if (!isAuthResolved && !isPublicLandingPath && (!isRootPath || hasSessionHint)) {
+  const isAuthenticated = Boolean(user?.email);
+  if (loading) {
     return (
       <div
         style={{
@@ -139,8 +111,8 @@ function App() {
 
   return (
     <Router>
-      {isAuthenticated && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
+      {isAuthenticated && user?.role && (
+        <MainMenu navArrayLinks={navArrayLinks} userRole={user.role} />
       )}
 
       <Suspense
@@ -188,8 +160,8 @@ function App() {
             element={
               <ProtectedRouteComponent>
                 <GestionTareas
-                  userRole={authData.userRole ?? ""}
-                  userGroupid={authData.usergroupid ?? -1}
+                  userRole={user?.role ?? ""}
+                  userGroupid={user?.groupid ?? -1}
                 />
               </ProtectedRouteComponent>
             }
@@ -200,8 +172,8 @@ function App() {
             element={
               <ProtectedRouteComponent>
                 <AssignmentDetail
-                  role={authData.userRole ?? ""}
-                  userid={authData.userid ?? -1}
+                  role={user?.role ?? ""}
+                  userid={user?.id ?? -1}
                 />
               </ProtectedRouteComponent>
             }
@@ -232,8 +204,8 @@ function App() {
             element={
               <ProtectedRouteComponent>
                 <MyPracticesPage
-                  userRole={authData.userRole ?? ""}
-                  userid={authData.userid ?? 0}
+                  userRole={user?.role ?? ""}
+                  userid={user?.id ?? 0}
                 />
               </ProtectedRouteComponent>
             }
@@ -243,7 +215,7 @@ function App() {
             path="/mis-practicas/:id"
             element={
               <ProtectedRouteComponent>
-                <PracticeDetail userid={authData.userid ?? 0} title={""} />
+                <PracticeDetail userid={user?.id ?? 0} title={""} />
               </ProtectedRouteComponent>
             }
           />
@@ -254,8 +226,8 @@ function App() {
               <ProtectedRouteComponent>
                 <TDDChartPage
                   port={new CommitHistoryAdapter()}
-                  role={authData.userRole ?? ""}
-                  teacher_id={authData.userid ?? -1}
+                  role={user?.role ?? ""}
+                  teacher_id={user?.id ?? -1}
                   graphs="graph"
                 />
               </ProtectedRouteComponent>
@@ -268,8 +240,8 @@ function App() {
               <ProtectedRouteComponent>
                 <TDDChartPage
                   port={new CommitHistoryAdapter()}
-                  role={authData.userRole ?? ""}
-                  teacher_id={authData.userid ?? -1}
+                  role={user?.role ?? ""}
+                  teacher_id={user?.id ?? -1}
                   graphs="aditionalgraph"
                 />
               </ProtectedRouteComponent>

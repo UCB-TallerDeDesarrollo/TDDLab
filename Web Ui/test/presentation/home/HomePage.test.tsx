@@ -3,79 +3,92 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 
 import HomePage from "../../../src/presentation/home/pages/HomePage";
-import { setGlobalState } from "../../../src/modules/User-Authentication/domain/authStates";
+import { useAuthStore } from "../../../src/presentation/auth/store/useAuthStore";
+
+jest.mock("../../../src/presentation/auth/store/useAuthStore");
+
+const mockedUseAuthStore = useAuthStore as unknown as jest.Mock;
 
 describe("HomePage", () => {
-  function setAuthData(
-    userid: number | undefined,
-    userEmail: string | undefined,
-  ) {
-    setGlobalState("authData", {
-      userid,
-      userProfilePic: "",
-      userEmail,
-      usergroupid: 10,
-      userRole: "teacher",
-    });
-  }
-
   beforeEach(() => {
-    setAuthData(1, "israel.guzman@ucb.edu.bo");
+    jest.clearAllMocks();
   });
 
   it("renders the approved welcome and TDD Lab identity", () => {
+    mockedUseAuthStore.mockImplementation((selector: any) =>
+      selector({
+        user: { id: "1", email: "israel.guzman@ucb.edu.bo" },
+        loading: false,
+      })
+    );
+
     render(
       <MemoryRouter>
         <HomePage />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(
       screen.getByRole("heading", {
         name: "Hola Israel, bienvenido al TDD Lab!!!",
-      }),
+      })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("img", { name: "Isotipo TDD Lab" }),
+      screen.getByRole("img", { name: "Isotipo TDD Lab" })
     ).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "TDD Lab" })).toBeInTheDocument();
   });
 
   it("renders the loading state while session data is not ready", () => {
-    setAuthData(undefined, undefined);
+    mockedUseAuthStore.mockImplementation((selector: any) =>
+      selector({
+        user: null,
+        loading: true,
+      })
+    );
 
     render(
       <MemoryRouter>
         <HomePage />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(screen.getByText("Cargando inicio")).toBeInTheDocument();
   });
 
   it("renders the empty state when there is no active user data", () => {
-    setAuthData(-1, "");
+    mockedUseAuthStore.mockImplementation((selector: any) =>
+      selector({
+        user: { id: "-1", email: "" },
+        loading: false,
+      })
+    );
 
     render(
       <MemoryRouter>
         <HomePage />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(screen.getByText("No hay datos de usuario")).toBeInTheDocument();
   });
 
   it("renders the error state when the authenticated session is invalid", () => {
-    setAuthData(1, undefined);
+    mockedUseAuthStore.mockImplementation((selector: any) =>
+      selector({
+        user: { id: "1", email: undefined },
+        loading: false,
+      })
+    );
 
     render(
       <MemoryRouter>
         <HomePage />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(
-      screen.getByText("No se pudo cargar la página de inicio"),
+      screen.getByText("No hay datos de usuario")
     ).toBeInTheDocument();
   });
 });

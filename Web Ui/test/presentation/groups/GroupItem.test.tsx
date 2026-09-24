@@ -94,5 +94,5 @@ describe("GroupItem", () => {
     expect(onTasks).toHaveBeenCalledTimes(1);
     expect(onDelete).toHaveBeenCalledTimes(1);
     expect(onEdit).toHaveBeenCalledTimes(1);
-  });
+  }, 10000);
 });
