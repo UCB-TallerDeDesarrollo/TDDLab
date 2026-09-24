@@ -158,10 +158,8 @@ function TeacherAssignmentSection({
   const {
     deliveriesState,
     deliveriesRows,
-    disableAdditionalGraphs,
     openTeacherGraph,
     openTeacherAssistant,
-    openTeacherAdditionalGraphs,
   } = detailData;
   const shouldShowTable = deliveriesState !== "loading" &&
     deliveriesState !== "error" &&
@@ -175,10 +173,8 @@ function TeacherAssignmentSection({
           <DeliveriesTable
             state={deliveriesState}
             rows={deliveriesRows}
-            showAdditionalGraphs={disableAdditionalGraphs === false}
             onOpenGraph={openTeacherGraph}
             onOpenAssistant={openTeacherAssistant}
-            onOpenAdditionalGraphs={openTeacherAdditionalGraphs}
           />
         </section>
       ) : (
