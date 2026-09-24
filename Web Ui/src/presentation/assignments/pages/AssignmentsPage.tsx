@@ -10,6 +10,7 @@ import FeatureSectionDivider from "../../../shared/components/FeatureSectionDivi
 import AssignmentForm from "../components/AssignmentForm";
 import AssignmentsFilterPopover from "../components/AssignmentsFilterPopover";
 import AssignmentsList from "../components/AssignmentsList";
+import SafariCookiePermissionDialog from "../components/SafariCookiePermissionDialog";
 import { useAssignmentsScreen } from "../hooks/useAssignmentsScreen";
 import { AssignmentScreenProps } from "../types/assignmentScreen";
 
@@ -72,7 +73,21 @@ function AssignmentsPage({
       <ContentState
         variant="empty"
         title="Sin resultados"
-        description="Cuando existan tareas para el grupo seleccionado, apareceran en este listado."
+        description={
+          assignmentsScreen.showSafariCookieWarning
+            ? "Safari puede estar bloqueando permisos necesarios para cargar tus tareas."
+            : "Cuando existan tareas para el grupo seleccionado, apareceran en este listado."
+        }
+        action={
+          assignmentsScreen.showSafariCookieWarning ? (
+            <ActionButton
+              variantStyle="primary"
+              onClick={() => assignmentsScreen.setSafariCookieDialogOpen(true)}
+            >
+              Ver instrucciones
+            </ActionButton>
+          ) : undefined
+        }
       />
     );
   } else if (assignmentsScreen.isLoading === false) {
@@ -125,6 +140,11 @@ function AssignmentsPage({
           groupid={selectedGroupId}
         />
       ) : null}
+
+      <SafariCookiePermissionDialog
+        open={assignmentsScreen.safariCookieDialogOpen}
+        onClose={() => assignmentsScreen.setSafariCookieDialogOpen(false)}
+      />
     </FeatureScreenLayout>
   );
 }
