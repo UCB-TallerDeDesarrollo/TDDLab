@@ -140,14 +140,23 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
               {commit.tests.map((test, testIndex) => {
                 const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
                 
-                return (
+                return test.passed ? (
                   <circle
                     key={`test-${commitIndex}-${testIndex}`}
                     cx={x}
                     cy={y}
                     r={circleRadius}
-                    fill={test.passed ? '#2d8a2d' : '#c72828'}
+                    fill="#2d8a2d"
                     opacity="0.9"
+                  />
+                ) : (
+                  <image
+                    key={`test-${commitIndex}-${testIndex}`}
+                    href="/failed-test.svg"
+                    x={x - circleRadius}
+                    y={y - circleRadius}
+                    width={circleRadius * 2}
+                    height={circleRadius * 2}
                   />
                 );
               })}
@@ -189,7 +198,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           <span style={styles.legendText}>Pruebas exitosas</span>
         </div>
         <div style={styles.legendItem}>
-          <div style={{...styles.legendCircle, backgroundColor: '#c72828'}}></div>
+          <img src="/failed-test.svg" alt="Pruebas fallidas" style={styles.legendIcon} />
           <span style={styles.legendText}>Pruebas fallidas</span>
         </div>
       </div>
@@ -246,6 +255,10 @@ const styles: Record<string, React.CSSProperties> = {
     width: '20px',
     height: '20px',
     borderRadius: '50%',
+  },
+  legendIcon: {
+    width: '20px',
+    height: '20px',
   },
   legendText: {
     fontSize: '14px',
