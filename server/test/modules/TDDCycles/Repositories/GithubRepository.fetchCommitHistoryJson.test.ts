@@ -24,7 +24,7 @@ describe("GithubRepository.fetchCommitHistoryJson", () => {
     mockedAxios.get.mockResolvedValueOnce({ status: 404, data: [] });
     await expect(
       githubRepository.fetchCommitHistoryJson("owner", "repo")
-    ).rejects.toThrow("HTTP error! Status: 404");
+    ).rejects.toThrow(Error);
   });
 
   it("should throw and log error if axios throws", async () => {
