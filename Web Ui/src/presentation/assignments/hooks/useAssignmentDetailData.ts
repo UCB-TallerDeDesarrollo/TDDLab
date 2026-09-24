@@ -25,6 +25,8 @@ import {
 } from "../../../shared/helpers/navigationHandlers";
 import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
 
+const AI_ASSISTANT_FEATURE_FLAG = "Boton Asistente IA";
+
 function isStudent(role: string) {
   return role === "student";
 }
@@ -154,7 +156,9 @@ export function useAssignmentDetailData({
     const getFlagUseCase = new GetFeatureFlagByName();
 
     try {
-  const flag = await getFlagUseCase.execute("Boton Asistente IA");
+  const flag = await getFlagUseCase.execute(
+  AI_ASSISTANT_FEATURE_FLAG
+);
   setShowIAButton(flag?.is_enabled === true);
 } catch (error) {
   console.error("Error fetching feature flag IA_ASSISTANT:", error);
