@@ -137,13 +137,6 @@ function StudentAssignmentSection({
             Ver gráfica
           </GuardedActionButton>
 
-          <GuardedActionButton
-            enabled={canFinishTask}
-            onClick={openCommentDialog}
-          >
-            Finalizar tarea
-          </GuardedActionButton>
-
           {showIAButton && (
             <GuardedActionButton
               enabled={canUseAssistant}
@@ -235,13 +228,9 @@ function LoadedAssignmentContent({
     return null;
   }
 
-  const hasStudentSubmission = Boolean(studentSubmission);
-
   const hasStudentRepository = Boolean(
     studentSubmission?.repository_link
   );
-
-  const canFinishTask = isTaskInProgress === false;
 
   return (
     <>
