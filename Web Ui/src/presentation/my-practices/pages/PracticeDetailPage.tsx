@@ -29,6 +29,7 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     isTaskInProgress,
     linkDialogOpen,
     isCommentDialogOpen,
+    isStarting,
     openLinkDialog,
     closeLinkDialog,
     sendGithubLink,
@@ -43,8 +44,9 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
   const hasSubmission = Boolean(submission);
   const hasRepo = Boolean(submission?.repository_link);
   const canStart = !hasSubmission;
-  const canFinish = !isTaskInProgress && hasRepo;
+  const canFinish = isTaskInProgress && hasRepo;
   const canView = hasRepo;
+  const statusClassName = `practice-status practice-status-${submission?.status?.replace(" ", "-") ?? "pending"}`;
 
   return (
     <>
@@ -101,30 +103,37 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                 </div>
                 <div className="practice-student-row practice-estado-row">
                   <strong>Estado:</strong>{" "}
-                  <span style={{ marginLeft: "8px" }}>{statusLabel || "Sin estado"}</span>
+                  <span className={statusClassName}>{statusLabel || "Sin estado"}</span>
                 </div>
               </>
             }
             actions={
               <>
-                <StatefulButton
-                  variantStyle={canStart ? "primary" : "secondary"}
-                  onClick={() => canStart && openLinkDialog()}
-                >
-                  Iniciar práctica
-                </StatefulButton>
-                <StatefulButton
-                  variantStyle={canFinish ? "primary" : "secondary"}
-                  onClick={() => canFinish && openCommentDialog()}
-                >
-                  Finalizar práctica
-                </StatefulButton>
-                <StatefulButton
-                  variantStyle={canView ? "primary" : "secondary"}
-                  onClick={() => canView && redirectToGraph()}
-                >
-                  Ver gráfica
-                </StatefulButton>
+                {canStart && (
+                  <StatefulButton
+                    variantStyle="primary"
+                    disabled={isStarting}
+                    onClick={openLinkDialog}
+                  >
+                    Iniciar práctica
+                  </StatefulButton>
+                )}
+                {canFinish && (
+                  <StatefulButton
+                    variantStyle="primary"
+                    onClick={openCommentDialog}
+                  >
+                    Finalizar práctica
+                  </StatefulButton>
+                )}
+                {canView && (
+                  <StatefulButton
+                    variantStyle="secondary"
+                    onClick={redirectToGraph}
+                  >
+                    Ver gráfica
+                  </StatefulButton>
+                )}
               </>
             }
           />
