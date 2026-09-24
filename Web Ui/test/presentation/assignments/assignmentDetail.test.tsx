@@ -257,6 +257,65 @@ it("keeps the AI assistant hidden when the feature flag does not exist", async (
     screen.queryByRole("button", { name: "Asistente IA" })
   ).not.toBeInTheDocument();
 });
+it("hides the AI assistant when the feature flag request fails", async () => {
+  let assistantRequestCount = 0;
+
+  jest
+    .spyOn(GetFeatureFlagByName.prototype, "execute")
+    .mockImplementation(async (featureName: string) => {
+      if (featureName === "Mostrar Graficas Adicionales") {
+        return {
+          id: 2,
+          feature_name: "Mostrar Graficas Adicionales",
+          is_enabled: false,
+        };
+      }
+
+      if (featureName === "Boton Asistente IA") {
+        assistantRequestCount++;
+
+        if (assistantRequestCount === 1) {
+          return {
+            id: 1,
+            feature_name: "Boton Asistente IA",
+            is_enabled: true,
+          };
+        }
+
+        throw new Error("Feature flag service unavailable");
+      }
+
+      return null;
+    });
+
+  const { rerender } = render(
+    <BrowserRouter>
+      <AssignmentDetail role="student" userid={123} />
+    </BrowserRouter>
+  );
+
+  await waitFor(() => {
+    expect(
+      screen.getByRole("button", { name: "Asistente IA" })
+    ).toBeInTheDocument();
+  });
+
+  rerender(
+    <BrowserRouter>
+      <AssignmentDetail role="teacher" userid={123} />
+    </BrowserRouter>
+  );
+
+  await waitFor(() => {
+    expect(
+      screen.getByText("Lista de entregas")
+    ).toBeInTheDocument();
+  });
+
+  expect(
+    screen.queryByText("Asistente IA")
+  ).not.toBeInTheDocument();
+});
 
   it("shows loading indicator while fetching assignment details", async () => {
     const { getByTestId } = render(
