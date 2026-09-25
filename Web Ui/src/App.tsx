@@ -161,7 +161,7 @@ function App() {
 								<ProtectedRouteComponent>
 									<GestionTareas
 										userRole={user?.role ?? ""}
-										userGroupid={Number(user?.groupid) ?? -1}
+										userGroupid={Number(user?.groupid ?? -1)}
 									/>
 								</ProtectedRouteComponent>
 							}
@@ -173,7 +173,7 @@ function App() {
 								<ProtectedRouteComponent>
 									<AssignmentDetail
 										role={user?.role ?? ""}
-										userid={Number(user?.id) ?? -1}
+										userid={Number(user?.id ?? -1)}
 									/>
 								</ProtectedRouteComponent>
 							}
@@ -205,7 +205,7 @@ function App() {
 								<ProtectedRouteComponent>
 									<MyPracticesPage
 										userRole={user?.role ?? ""}
-										userid={Number(user?.id) ?? 0}
+										userid={Number(user?.id ?? 0)}
 									/>
 								</ProtectedRouteComponent>
 							}
@@ -215,7 +215,7 @@ function App() {
 							path="/mis-practicas/:id"
 							element={
 								<ProtectedRouteComponent>
-									<PracticeDetail userid={Number(user?.id) ?? 0} title={""} />
+									<PracticeDetail userid={Number(user?.id ?? 0)} title={""} />
 								</ProtectedRouteComponent>
 							}
 						/>
@@ -227,7 +227,7 @@ function App() {
 									<TDDChartPage
 										port={new CommitHistoryAdapter()}
 										role={user?.role ?? ""}
-										teacher_id={Number(user?.id) ?? -1}
+										teacher_id={Number(user?.id ?? -1)}
 										graphs="graph"
 									/>
 								</ProtectedRouteComponent>
@@ -241,7 +241,7 @@ function App() {
 									<TDDChartPage
 										port={new CommitHistoryAdapter()}
 										role={user?.role ?? ""}
-										teacher_id={Number(user?.id) ?? -1}
+										teacher_id={Number(user?.id ?? -1)}
 										graphs="aditionalgraph"
 									/>
 								</ProtectedRouteComponent>
