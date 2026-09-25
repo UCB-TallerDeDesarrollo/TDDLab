@@ -1,10 +1,16 @@
 import * as React from "react";
 import DialogContentText from "@mui/material/DialogContentText";
+import { getAuth } from "firebase/auth";
 import PopUp from "./PopUp";
 import { useNavigate } from "react-router-dom";
-import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
+import firebase from "../../../firebaseConfig";
+import { fireBaseAuthManager } from "../../../modules/User-Authentication/infraestructure/FirebaseAuthManager";
+import { OAuthProvider } from "../../../modules/User-Authentication/domain/AuthManager";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
+import AuthRepository from "../../../modules/User-Authentication/repository/LoginRepository";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
+
+const checkIfUserHasAccount = new CheckIfUserHasAccount(new AuthRepository());
 
 function CheckRegisterGroupPopUp() {
   const [open, setOpen] = React.useState(true);
@@ -12,17 +18,32 @@ function CheckRegisterGroupPopUp() {
 
   const handleClose = async () => {
     setOpen(false);
-    const userData = await handleSignInWithGoogle();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userCourse = await loginPort.userHasAnAccountWithGoogleToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userCourse, () =>
+
+    try {
+      await fireBaseAuthManager.login(OAuthProvider.Google);
+
+      const auth = getAuth(firebase);
+      const currentUser = auth.currentUser;
+
+      if (!currentUser?.email) {
+        alert("Disculpa, tu usuario no esta registrado");
+        return;
+      }
+
+      const idToken = await currentUser.getIdToken();
+      const userCourse = await checkIfUserHasAccount.execute(idToken, OAuthProvider.Google);
+
+      if (!userCourse) {
+        alert("Disculpa, tu usuario no esta registrado");
+        return;
+      }
+
+      setCookieAndGlobalStateForValidUser(currentUser, userCourse, () =>
         navigate({
           pathname: "/",
         }),
       );
-    } else {
+    } catch (error) {
       alert("Disculpa, tu usuario no esta registrado");
     }
   };
