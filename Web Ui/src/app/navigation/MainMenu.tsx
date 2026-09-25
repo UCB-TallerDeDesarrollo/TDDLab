@@ -61,7 +61,7 @@ const DesktopNav = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   gap: theme.spacing(2.5),
   flex: "1 1 0%",
-  minWidth: 0, // allow to shrink on small screens so right actions don't get pushed
+  minWidth: 0,
   overflow: "hidden",
   [theme.breakpoints.down("lg")]: {
     display: "none",
@@ -72,7 +72,7 @@ const DesktopActionArea = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
-  flexShrink: 0, // keep actions from being squeezed
+  flexShrink: 0,
   [theme.breakpoints.down("lg")]: {
     display: "none",
   },

@@ -88,3 +88,7 @@ output.zip
 
 # Dependecias generadas por husky
 /tddlabBaseProject/.husky/_
+
+#Archivos bun
+server/bun.lock
+Web Ui/bun.lock

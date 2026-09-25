@@ -19,8 +19,7 @@ router.post("/register/google", (req, res) =>
 );
 router.post("/login", (req, res) => userController.getUserController(req, res));
 router.post("/google", (req, res) =>
-  userController.getUserControllerGoogle(req, res)
-);
+  userController.getUserControllerGoogle(req, res));
 router.post(
   "/verifyPassword",
   (req, res) => userController.verifyPassword(req, res)

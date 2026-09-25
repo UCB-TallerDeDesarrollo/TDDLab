@@ -2,12 +2,14 @@ interface StudentSubmissionSummaryProps {
   status: string;
   repositoryLink?: string;
   comment?: string;
+  statusClassName?: string;
 }
 
 export function StudentSubmissionSummary({
   status,
   repositoryLink,
   comment,
+  statusClassName,
 }: Readonly<StudentSubmissionSummaryProps>) {
   return (
     <>
@@ -28,7 +30,8 @@ export function StudentSubmissionSummary({
       </p>
 
       <p className="assignment-student-row">
-        <strong>Estado:</strong> {status}
+        <strong>Estado:</strong>{" "}
+        <span className={statusClassName}>{status}</span>
       </p>
 
       {comment && (

@@ -7,7 +7,6 @@ import AssignmentsRepository from "../../../modules/Assignments/repository/Assig
 import GetGroups from "../../../modules/Groups/application/GetGroups";
 import { GroupDataObject } from "../../../modules/Groups/domain/GroupInterface";
 import GroupsRepository from "../../../modules/Groups/repository/GroupsRepository";
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
 import {
   uniqueGroupIds,
   uniqueGroupsById,
@@ -19,9 +18,8 @@ import {
   resolveStudentGroupIds,
   sortAssignments,
 } from "../services/assignmentsScreenService";
-import {
-  AssignmentSorting,
-} from "../types/assignmentScreen";
+import { AssignmentSorting } from "../types/assignmentScreen";
+import { useAuthStore } from "../../auth/store/useAuthStore";
 
 export function useAssignmentsScreen({
   userRole,
@@ -34,25 +32,25 @@ export function useAssignmentsScreen({
 }>) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [authData] = useGlobalState("authData");
+  const user = useAuthStore((state) => state.user);
 
   const assignmentsRepository = useMemo(() => new AssignmentsRepository(), []);
   const deleteAssignmentUseCase = useMemo(
     () => new DeleteAssignment(assignmentsRepository),
-    [assignmentsRepository],
+    [assignmentsRepository]
   );
   const getGroups = useMemo(() => new GetGroups(new GroupsRepository()), []);
 
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackSeverity, setFeedbackSeverity] = useState<
-    "success" | "error"
-  >("success");
+  const [feedbackSeverity, setFeedbackSeverity] = useState<"success" | "error">(
+    "success"
+  );
   const [selectedSorting, setSelectedSorting] = useState<AssignmentSorting>("");
   const [selectedGroup, setSelectedGroup] = useState(0);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(
-    null,
+    null
   );
   const [isLoading, setIsLoading] = useState(true);
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
@@ -81,7 +79,8 @@ export function useAssignmentsScreen({
         return nextAssignments;
       } catch (fetchError) {
         try {
-          const fallbackAssignments = await assignmentsRepository.getAssignments();
+          const fallbackAssignments =
+            await assignmentsRepository.getAssignments();
           setAssignments(fallbackAssignments);
           setError(null);
           setFeedbackMessage("");
@@ -95,7 +94,7 @@ export function useAssignmentsScreen({
         }
       }
     },
-    [assignmentsRepository, onGroupChange],
+    [assignmentsRepository, onGroupChange]
   );
 
   const loadUserGroups = useCallback(async () => {
@@ -109,11 +108,11 @@ export function useAssignmentsScreen({
             console.warn("Ignoring unavailable group:", groupId, groupError);
             return null;
           }
-        }),
+        })
       );
 
       return uniqueGroupsById(
-        groups.filter((group): group is GroupDataObject => Boolean(group)),
+        groups.filter((group): group is GroupDataObject => Boolean(group))
       );
     };
 
@@ -126,13 +125,15 @@ export function useAssignmentsScreen({
       }
     };
 
+    const userId = user?.id ?? -1;
+
     if (userRole === "student") {
       const resolvedGroupIds = resolveStudentGroupIds(userGroupid);
       let studentGroupIds = resolvedGroupIds;
 
       if (studentGroupIds.length === 0) {
         try {
-          studentGroupIds = await getGroups.getGroupsByUserId(authData.userid ?? -1);
+          studentGroupIds = await getGroups.getGroupsByUserId(userId);
         } catch (groupError) {
           console.warn("Ignoring unavailable student groups:", groupError);
           studentGroupIds = [];
@@ -145,9 +146,7 @@ export function useAssignmentsScreen({
     if (userRole === "teacher") {
       let teacherGroupIds: number[] = [];
       try {
-        teacherGroupIds = await getGroups.getGroupsByUserId(
-          authData.userid ?? -1,
-        );
+        teacherGroupIds = await getGroups.getGroupsByUserId(userId);
       } catch (groupError) {
         console.warn("Ignoring unavailable teacher groups:", groupError);
       }
@@ -160,14 +159,14 @@ export function useAssignmentsScreen({
     }
 
     return [];
-  }, [authData.userid, getGroups, userGroupid, userRole]);
+  }, [getGroups, user?.id, userGroupid, userRole]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
 
     try {
       const allGroups = (await loadUserGroups()).filter(
-        (group): group is GroupDataObject => Boolean(group),
+        (group): group is GroupDataObject => Boolean(group)
       );
       const uniqueGroups = uniqueGroupsById(allGroups);
       setGroupList(uniqueGroups);
@@ -231,7 +230,7 @@ export function useAssignmentsScreen({
 
     return buildAssignmentListItems(
       sortAssignments(filteredAssignments, selectedSorting),
-      groupList,
+      groupList
     );
   }, [assignments, groupList, selectedGroup, selectedSorting]);
 
@@ -264,8 +263,8 @@ export function useAssignmentsScreen({
 
       setAssignments((currentAssignments) =>
         currentAssignments.filter(
-          (assignment) => assignment.id !== selectedAssignmentId,
-        ),
+          (assignment) => assignment.id !== selectedAssignmentId
+        )
       );
       setValidationDialogOpen(true);
       setFeedbackMessage("Tarea eliminada exitosamente");
@@ -289,7 +288,7 @@ export function useAssignmentsScreen({
 
   return {
     assignments: visibleAssignments,
-    authData,
+    user,
     confirmationOpen,
     error,
     feedbackMessage,
