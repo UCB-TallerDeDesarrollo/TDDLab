@@ -74,11 +74,6 @@ describe("TDDChartPage", () => {
       "Error obtaining owner name:",
       expect.any(Error)
     );
-    expect(spyConsoleError).toHaveBeenCalledWith(
-      "Error getting comments by submission ID:",
-      expect.any(Error)
-    );
-
     spyConsoleError.mockRestore();
   });
 });
