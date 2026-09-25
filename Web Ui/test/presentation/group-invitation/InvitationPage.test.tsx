@@ -1,10 +1,12 @@
 import InvitationPage from "../../../src/presentation/group-invitation/pages/InvitationPage";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { handleSignInWithGoogle } from "../../../src/modules/User-Authentication/application/signInWithGoogle";
 import { mockUserCredential } from "../../modules/__mocks__/Auth/mockedUserCredential";
-import { RegisterUserOnDb } from "../../../src/modules/User-Authentication/application/registerUserOnDb";
 import { MemoryRouter } from "react-router-dom";
+import {
+  signInInvitationWithGithub,
+  registerInvitationUser,
+} from "../../../src/presentation/group-invitation/services/invitation.service";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -14,62 +16,53 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
-jest.mock("firebase/auth", () => ({
-  getAuth: jest.fn(),
-  onAuthStateChanged: jest.fn((_, func) => {
-    func(null);
-    return jest.fn();
-  }),
-  User: jest.fn(),
-}));
+let onAuthChangeCallback: ((user: any, provider: any) => void) | null = null;
+
 jest.mock(
-  "../../../src/modules/User-Authentication/application/signInWithGoogle",
+  "../../../src/presentation/group-invitation/services/invitation.service",
   () => ({
-    handleSignInWithGoogle: jest.fn(),
+    subscribeToInvitationAuth: jest.fn((callback) => {
+      onAuthChangeCallback = callback;
+      return jest.fn();
+    }),
+    signInInvitationWithGithub: jest.fn().mockImplementation(async () => {
+      if (onAuthChangeCallback) {
+        onAuthChangeCallback(mockUserCredential.user, "github");
+      }
+    }),
+    registerInvitationUser: jest.fn().mockResolvedValue(undefined),
+    signOutInvitationSession: jest.fn(),
+    verifyInvitationPassword: jest.fn(),
   })
 );
-jest.mock("../../../src/firebaseConfig", () => {
-  return {
-    __esModule: true,
-    default: jest.fn(),
-  };
-});
-jest.mock(
-  "../../../src/modules/User-Authentication/application/registerUserOnDb",
-  () => {
-    return {
-      RegisterUserOnDb: jest.fn().mockImplementation(() => ({
-        register: jest.fn().mockResolvedValue(undefined),
-        getAccountInfo: jest.fn().mockResolvedValue(null),
-      })),
-    };
-  }
-);
+
 describe("InvitationPage component", () => {
   beforeEach(() => {
-    const mockedUser = mockUserCredential.user;
-    (
-      handleSignInWithGoogle as jest.MockedFunction<
-        typeof handleSignInWithGoogle
-      >
-    ).mockResolvedValue(mockedUser);
+    jest.clearAllMocks();
   });
+
   it("Renders the Sign Up button and press it", async () => {
     const { getByText } = render(
       <MemoryRouter>
         <InvitationPage />
       </MemoryRouter>
     );
-    const signUpButton = getByText("Registrarse con Google");
+
+    const signUpButton = getByText("Registrarse con GitHub");
+    expect(signUpButton).toBeInTheDocument();
 
     fireEvent.click(signUpButton);
-    expect(RegisterUserOnDb).toHaveBeenCalledTimes(1);
-    expect(signUpButton).toBeInTheDocument();
-    expect(handleSignInWithGoogle).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(signInInvitationWithGithub).toHaveBeenCalledTimes(1);
+    });
     await waitFor(() => {
       const acceptButton = getByText(/Aceptar invitaci.*n al curso/);
-      fireEvent.click(acceptButton);
       expect(acceptButton).toBeInTheDocument();
+      fireEvent.click(acceptButton);
+    });
+    await waitFor(() => {
+      expect(registerInvitationUser).toHaveBeenCalled();
     });
   });
 });

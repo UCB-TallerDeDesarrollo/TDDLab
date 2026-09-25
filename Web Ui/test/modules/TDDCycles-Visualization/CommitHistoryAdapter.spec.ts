@@ -1,19 +1,19 @@
 import { CommitHistoryAdapter } from "../../../src/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import axios from "axios";
 
-// Simulamos `axios` y `Octokit`
 jest.mock("axios");
-jest.mock("octokit");
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+
 describe("CommitHistoryAdapter", () => {
   let adapter: CommitHistoryAdapter;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+    (mockedAxios.create as jest.Mock).mockReturnValue(mockedAxios);
     adapter = new CommitHistoryAdapter();
   });
 
-  //el frontend ya no se encarga de ordenarlos de forma descendente por la fecha, ya lo recibe de esa manera desde el backend
   describe("obtainCommitsOfRepo", () => {
     it("debe retornar commits ordenados por fecha descendente", async () => {
       mockedAxios.get.mockResolvedValue({
@@ -50,11 +50,9 @@ describe("CommitHistoryAdapter", () => {
 
       const commits = await adapter.obtainCommitsOfRepo("owner", "repo");
       expect(commits.length).toBe(2);
-      expect(commits[0].sha).toBe("456"); // el más reciente
+      expect(commits[0].sha).toBe("456");
     });
   });
-
-
 
   describe("obtainCommitTddCycle", () => {
     it("debe retornar los ciclos TDD con cobertura", async () => {
@@ -75,8 +73,7 @@ describe("CommitHistoryAdapter", () => {
         {
           sha: "789",
           url: "url3",
-          tddCycle: "Red-Green-Refactor",
-          coverage: 75
+          tddCycle: "Red-Green-Refactor"
         }
       ]);
     });

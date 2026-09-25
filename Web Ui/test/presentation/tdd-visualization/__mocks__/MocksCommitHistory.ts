@@ -48,8 +48,7 @@ export class MockGithubAPI implements CommitHistoryRepository {
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
-    let commits: CommitDataObject[] = [];
-    return commits;
+    throw new Error("No commits found for this repository");
   }
 
   async obtainUserName(_owner: string): Promise<string> {
@@ -57,13 +56,11 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
   }
 
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
-    let commitCycles: CommitCycle[] = [];
-    return commitCycles;
+    return [];
   }
 
   async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
-    let tddLogs: TDDLogEntry[] = [];
-    return tddLogs;
+    return [];
   }
 }
 

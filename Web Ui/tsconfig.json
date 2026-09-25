@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "esModuleInterop":true,
-    "types": ["jest","cypress"],
+    "types": ["jest","cypress", "vite-plugin-terminal"],
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],

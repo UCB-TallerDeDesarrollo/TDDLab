@@ -10,6 +10,7 @@ import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 import axios from "axios";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
+import { GithubBranchNotFoundError, GithubFileNotFoundError } from "./Errors/GithubErrors";
 
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
@@ -121,7 +122,7 @@ export class GithubRepository implements IGithubRepository {
 
       return commits;
     } catch (error) {
-      console.error("An error occurred"); 
+      console.error("An error occurred");
       throw error;
     }
   }
@@ -161,7 +162,7 @@ export class GithubRepository implements IGithubRepository {
       };
       return commitInfo;
     } catch (error) {
-      console.error("An error occurred"); 
+      console.error("An error occurred");
       throw error;
     }
   }
@@ -172,13 +173,13 @@ export class GithubRepository implements IGithubRepository {
         `GET /repos/${owner}/${repoName}/commits/${sha}/comments`
       );
       let coveragePercentage = null;
-  
+
       if (coverageResponse.data.length > 0) {
         const body = coverageResponse.data[0]?.body;
         const coverageMatch = body.match(
           /\|\s*(?:🟢|🔴|🟡)\s*\|\s*Statements\s*\|\s*([\d.]+)%\s*\|/
         );
-  
+
         if (coverageMatch) {
           coveragePercentage = coverageMatch[1];
         } else {
@@ -187,15 +188,13 @@ export class GithubRepository implements IGithubRepository {
       } else {
         console.warn(`No se encontraron comentarios para el commit ${sha}`);
       }
-  
+
       return { coveragePercentage };
     } catch (error) {
       console.error(`Error al recuperar la cobertura para commit ${sha}:`, error);
       throw error;
     }
   }
-  
-    
 
   async getCommitsInforForTDDCycle(
     owner: string,
@@ -242,6 +241,7 @@ export class GithubRepository implements IGithubRepository {
       }, ms);
     });
   }
+
   async obtainRunsOfGithubActions(owner: string, repoName: string) {
     try {
       const response: any = await Promise.race([
@@ -250,7 +250,7 @@ export class GithubRepository implements IGithubRepository {
       ]);
       return response;
     } catch (error) {
-      console.error("An error occurred"); 
+      console.error("An error occurred");
       throw error;
     }
   }
@@ -272,7 +272,7 @@ export class GithubRepository implements IGithubRepository {
       };
       return jobData;
     } catch (error) {
-      console.error("An error occurred"); 
+      console.error("An error occurred");
       throw error;
     }
   }
@@ -305,20 +305,79 @@ export class GithubRepository implements IGithubRepository {
   }
 
   async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
+    const branch = "main";
+    const filepath = "script/commit-history.json";
+    const encodedOwner = encodeURIComponent(owner);
+    const encodedRepoName = encodeURIComponent(repoName);
+    const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/${branch}/${filepath}`;
+
     try {
-      const encodedOwner = encodeURIComponent(owner);
-      const encodedRepoName = encodeURIComponent(repoName);
-      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/main/script/commit-history.json`;
-
       const response = await axios.get(url);
-      
       if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`${response.status}: ${response.statusText}`);
       }
-
       return response.data as any[];
     } catch (error) {
-      console.error("Error fetching commit-history.json from GitHub:", error);
+      await this.diagnoseCommitHistoryFetchError(owner, repoName, branch, filepath, error);
+      throw error; // If is not an expected error from GitHub API
+    }
+  }
+
+  private async diagnoseCommitHistoryFetchError(
+    owner: string,
+    repoName: string,
+    branch: string,
+    filepath: string,
+    originalError: unknown
+  ): Promise<void> {
+    const status = axios.isAxiosError(originalError)
+      ? originalError.response?.status
+      : undefined;
+
+    if (status !== 404) {
+      console.error("Error fetching commit-history.json from GitHub:", originalError);
+      return;
+    }
+
+    const branchExists = await this.branchExists(owner, repoName, branch);
+    if (!branchExists) {
+      throw new GithubBranchNotFoundError(owner, repoName, branch);
+    }
+
+    const fileExists = await this.fileExistsInBranch(owner, repoName, branch, filepath);
+    if (!fileExists) {
+      throw new GithubFileNotFoundError(owner, repoName, branch, filepath);
+    }
+
+    console.error(
+      "commit-history.json dio 404 pero la rama y el archivo existen (posible caché de raw.githubusercontent):",
+      originalError
+    );
+  }
+
+  private async branchExists(owner: string, repoName: string, branch: string): Promise<boolean> {
+    try {
+      await this.octokit.request(`GET /repos/${owner}/${repoName}/branches/${branch}`);
+      return true;
+    } catch (error: any) {
+      if (error?.status === 404) return false;
+      throw error;
+    }
+  }
+
+  private async fileExistsInBranch(
+    owner: string,
+    repoName: string,
+    branch: string,
+    path: string
+  ): Promise<boolean> {
+    try {
+      await this.octokit.request(`GET /repos/${owner}/${repoName}/contents/${path}`, {
+        ref: branch,
+      });
+      return true;
+    } catch (error: any) {
+      if (error?.status === 404) return false;
       throw error;
     }
   }

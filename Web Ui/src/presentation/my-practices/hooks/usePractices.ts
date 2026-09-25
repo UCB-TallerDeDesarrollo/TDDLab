@@ -58,7 +58,11 @@ export function usePractices(): UsePracticesReturn {
   const [createFormOpen, setCreateFormOpen] = useState(false);
 
   useEffect(() => {
-    if (!authData.userid || authData.userid === -1) return;
+    if (!authData.userid || authData.userid === -1) {
+      setPractices([]);
+      setListState("empty");
+      return;
+    }
 
     setListState("loading");
 

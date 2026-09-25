@@ -53,6 +53,24 @@
   gap: 14px;
 }
 
+.practice-status--progress {
+  color: #c07c00;
+  font-weight: 700;
+}
+
+.practice-status--pending {
+  color: #b90909e0;
+  border: 2px solid #e00000;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 700;
+}
+
+.practice-status--sent {
+  color: #257800;
+  font-weight: 700;
+}
+
 .practice-action-btn {
   text-transform: none;
   background-color: #1f74d6;

@@ -10,8 +10,16 @@ import { createResponse } from "../__mocks__/assignments/responseMoks";
 let controller: AssignmentController;
 const assignmentRepositoryMock = getAssignmentRepositoryMock();
 
+let consoleSpy: jest.SpyInstance;
+
 beforeEach(() => {
   controller = new AssignmentController(assignmentRepositoryMock);
+  consoleSpy = jest.spyOn(console, "error").mockImplementation(() => { });
+  consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
+});
+
+afterEach(() => {
+  consoleSpy.mockRestore();
 });
 
 describe("Get assignments by group ID", () => {

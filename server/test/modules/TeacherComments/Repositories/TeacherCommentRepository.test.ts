@@ -19,7 +19,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 describe("Create Teacher Comment", () => {

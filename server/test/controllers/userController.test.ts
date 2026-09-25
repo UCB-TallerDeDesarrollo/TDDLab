@@ -16,10 +16,17 @@ jest.mock("../../src/modules/Users/Application/decodeUserTokenFromCookie", () =>
 describe("UserController", () => {
   let controller: UserController;
   let userRepositoryMock: UserRepository;
+  let consoleSpy: jest.SpyInstance;
 
   beforeEach(() => {
     userRepositoryMock = new UserRepository() as jest.Mocked<UserRepository>;
     controller = new UserController(userRepositoryMock);
+    consoleSpy = jest.spyOn(console, "error").mockImplementation(() => { });
+    consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
   });
 
   describe("removeUserFromGroup", () => {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createSearchParams, NavigateFunction } from "react-router-dom";
 import { GetAssignmentDetail } from "../../../modules/Assignments/application/GetAssignmentDetail";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -24,6 +24,8 @@ import {
   setSelectedMetric,
 } from "../../../shared/helpers/navigationHandlers";
 import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
+
+const AI_ASSISTANT_FEATURE_FLAG = "Boton Asistente IA";
 
 function isStudent(role: string) {
   return role === "student";
@@ -84,6 +86,8 @@ export function useAssignmentDetailData({
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
   const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const actionLockRef = useRef(false);
 
   useEffect(() => {
     const fetchAssignment = async () => {
@@ -150,23 +154,22 @@ export function useAssignmentDetailData({
   }, [role]);
 
   useEffect(() => {
-    const fetchStudentFlags = async () => {
-      if (!isStudent(role)) {
-        return;
-      }
+  const fetchAIAssistantFlag = async () => {
+    const getFlagUseCase = new GetFeatureFlagByName();
 
-      const getFlagUseCase = new GetFeatureFlagByName();
+    try {
+  const flag = await getFlagUseCase.execute(
+  AI_ASSISTANT_FEATURE_FLAG
+);
+  setShowIAButton(flag?.is_enabled === true);
+} catch (error) {
+  console.error("Error fetching feature flag IA_ASSISTANT:", error);
+  setShowIAButton(false);
+}
+  };
 
-      try {
-        const flag = await getFlagUseCase.execute("Boton Asistente IA");
-        setShowIAButton(flag?.is_enabled ?? true);
-      } catch (error) {
-        console.error("Error fetching feature flag IA_ASSISTANT:", error);
-      }
-    };
-
-    fetchStudentFlags();
-  }, [role]);
+  fetchAIAssistantFlag();
+}, [role]);
 
   useEffect(() => {
     const fetchStudentSubmission = async () => {
@@ -281,56 +284,72 @@ export function useAssignmentDetailData({
   };
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!assignmentid) {
-      return;
+    if (!assignmentid || actionLockRef.current) return;
+
+    actionLockRef.current = true;
+    setIsActionLoading(true);
+    try {
+      const submissionsRepository = new SubmissionRepository();
+      const createSubmission = new CreateSubmission(submissionsRepository);
+      const startDate = new Date();
+      const start_date = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
+
+      const submissionData: SubmissionCreationObject = {
+        assignmentid,
+        userid,
+        status: "in progress",
+        repository_link: repositoryLink,
+        start_date,
+      };
+
+      await createSubmission.createSubmission(submissionData);
+      closeLinkDialog();
+      refreshDetailData();
+    } catch (error) {
+      console.error("Error starting task submission:", error);
+      setUiMessage("No se pudo iniciar la tarea. Intenta nuevamente.");
+    } finally {
+      actionLockRef.current = false;
+      setIsActionLoading(false);
     }
-
-    const submissionsRepository = new SubmissionRepository();
-    const createSubmission = new CreateSubmission(submissionsRepository);
-    const startDate = new Date();
-    const start_date = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate()
-    );
-
-    const submissionData: SubmissionCreationObject = {
-      assignmentid,
-      userid,
-      status: "in progress",
-      repository_link: repositoryLink,
-      start_date,
-    };
-
-    await createSubmission.createSubmission(submissionData);
-    closeLinkDialog();
-    refreshDetailData();
   };
 
   const sendComment = async (comment: string) => {
-    if (!submission) {
-      return;
+    if (!submission || actionLockRef.current) return;
+
+    actionLockRef.current = true;
+    setIsActionLoading(true);
+    try {
+      const submissionRepository = new SubmissionRepository();
+      const finishSubmission = new FinishSubmission(submissionRepository);
+      const endDate = new Date();
+      const end_date = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+
+      const submissionData: SubmissionUpdateObject = {
+        id: submission.id,
+        status: "delivered",
+        end_date,
+        comment,
+      };
+
+      await finishSubmission.finishSubmission(submission.id, submissionData);
+      closeCommentDialog();
+      refreshDetailData();
+    } catch (error) {
+      console.error("Error finishing task submission:", error);
+      setUiMessage("No se pudo finalizar la tarea. Intenta nuevamente.");
+    } finally {
+      actionLockRef.current = false;
+      setIsActionLoading(false);
     }
-
-    const submissionRepository = new SubmissionRepository();
-    const finishSubmission = new FinishSubmission(submissionRepository);
-    const endDate = new Date();
-    const end_date = new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      endDate.getDate()
-    );
-
-    const submissionData: SubmissionUpdateObject = {
-      id: submission.id,
-      status: "delivered",
-      end_date,
-      comment,
-    };
-
-    await finishSubmission.finishSubmission(submission.id, submissionData);
-    closeCommentDialog();
-    refreshDetailData();
   };
 
   const redirectStudentToGraph = () => {
@@ -414,6 +433,7 @@ export function useAssignmentDetailData({
     studentSubmission,
     studentStatusLabel,
     isTaskInProgress,
+    isActionLoading,
     linkDialogOpen,
     isCommentDialogOpen,
     showIAButton,

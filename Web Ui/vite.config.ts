@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import terminal from 'vite-plugin-terminal'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,6 +8,9 @@ export default defineConfig({
   appType: 'spa',
   plugins: [
     react(),
+    terminal({
+      console: "terminal"
+    }),
     {
       name: 'serve-spa-index-html',
       configureServer(server) {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavigateFunction } from "react-router-dom";
 import {
   fetchPracticeById,
@@ -41,8 +41,17 @@ export function usePracticeDetail({
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const actionLockRef = useRef(false);
 
+  // 1. Guardián para la práctica
   useEffect(() => {
+    if (!practiceid || Number.isNaN(practiceid)) {
+      setPractice(null);
+      setPracticeState("empty");
+      return;
+    }
+
     setPracticeState("loading");
     fetchPracticeById(practiceid)
       .then((fetched) => {
@@ -60,12 +69,21 @@ export function usePracticeDetail({
       });
   }, [practiceid, refreshTick]);
 
+  // 2. Guardián para las entregas (useEffect corregido)
   useEffect(() => {
+    if (!userid || userid <= 0 || !practiceid || Number.isNaN(practiceid)) {
+      setSubmission(null);
+      setPracticeSubmissions([]);
+      setSubmissionState("empty");
+      return;
+    }
+
     setSubmissionState("loading");
     fetchSubmissionsByPracticeId(practiceid)
       .then((fetched) => {
-        setPracticeSubmissions(fetched);
-        const selected = fetched.find((item) => item.userid === userid) || null;
+        const safeFetched = Array.isArray(fetched) ? fetched : [];
+        setPracticeSubmissions(safeFetched);
+        const selected = safeFetched.find((item) => item.userid === userid) || null;
         setSubmission(selected);
         setSubmissionState(selected ? "success" : "empty");
       })
@@ -77,15 +95,16 @@ export function usePracticeDetail({
 
   const isTaskInProgress = submission?.status !== "in progress";
 
-  const createdAt = useMemo(
-    () => toDisplayDate(practice?.creation_date),
-    [practice?.creation_date]
-  );
+  // 3. Memorizaciones defensivas para evitar que el render falle
+  const createdAt = useMemo(() => {
+    if (!practice?.creation_date) return "";
+    return toDisplayDate(practice.creation_date);
+  }, [practice?.creation_date]);
 
-  const statusLabel = useMemo(
-    () => getDisplayStatus(submission?.status),
-    [submission?.status]
-  );
+  const statusLabel = useMemo(() => {
+    if (!submission?.status) return "Sin estado";
+    return getDisplayStatus(submission.status);
+  }, [submission?.status]);
 
   const refreshDetailData = () => setRefreshTick((prev) => prev + 1);
 
@@ -95,48 +114,69 @@ export function usePracticeDetail({
   const closeCommentDialog = () => setIsCommentDialogOpen(false);
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!practiceid) return;
+    if (!practiceid || !userid) return;
+    if (!practiceid || actionLockRef.current) return;
 
-    const startDate = new Date();
-    const start_date = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate()
-    );
+    actionLockRef.current = true;
+    setIsActionLoading(true);
+    try {
+      const startDate = new Date();
+      const start_date = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
 
-    const data: PracticeSubmissionCreationObject = {
-      practiceid,
-      userid,
-      status: "in progress",
-      repository_link: repositoryLink,
-      start_date,
-    };
+      const data: PracticeSubmissionCreationObject = {
+        practiceid,
+        userid,
+        status: "in progress",
+        repository_link: repositoryLink,
+        start_date,
+      };
 
-    await startPracticeSubmission(data);
-    closeLinkDialog();
-    refreshDetailData();
+      await startPracticeSubmission(data);
+      closeLinkDialog();
+      refreshDetailData();
+    } catch (err) {
+      console.error("Error starting practice submission:", err);
+      setUiMessage("No se pudo iniciar la práctica. Intenta nuevamente.");
+    } finally {
+      actionLockRef.current = false;
+      setIsActionLoading(false);
+    }
   };
 
   const sendComment = async (comment: string) => {
-    if (!submission) return;
+    if (!submission || actionLockRef.current) return;
 
-    const endDate = new Date();
-    const end_date = new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      endDate.getDate()
-    );
+    actionLockRef.current = true;
+    setIsActionLoading(true);
+    try {
+      const endDate = new Date();
+      const end_date = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
 
-    const data: PracticeSubmissionUpdateObject = {
-      id: submission.id,
-      status: "delivered",
-      end_date,
-      comment,
-    };
+      const data: PracticeSubmissionUpdateObject = {
+        id: submission.id,
+        status: "delivered",
+        end_date,
+        comment,
+      };
 
-    await finishPracticeSubmission(submission.id, data);
-    closeCommentDialog();
-    refreshDetailData();
+      await finishPracticeSubmission(submission.id, data);
+      closeCommentDialog();
+      refreshDetailData();
+    } catch (err) {
+      console.error("Error finishing practice submission:", err);
+      setUiMessage("No se pudo finalizar la práctica. Intenta nuevamente.");
+    } finally {
+      actionLockRef.current = false;
+      setIsActionLoading(false);
+    }
   };
 
   const redirectToGraph = () => {
@@ -159,6 +199,7 @@ export function usePracticeDetail({
     createdAt,
     statusLabel,
     isTaskInProgress,
+    isActionLoading,
     linkDialogOpen,
     isCommentDialogOpen,
     openLinkDialog,

@@ -92,18 +92,15 @@ describe('CommitHistoryAdapter', () => {
       await expect(adapter.obtainTDDLogs(owner, repoName)).rejects.toThrow('Network error');
     });
 
-    it('should throw an error for non-200 status codes', async () => {
-      // Arrange
-      const owner = 'test-owner';
-      const repoName = 'test-repo';
+    it("should throw an error for non-200 status codes", async () => {
+      const httpError = new Error("HTTP error! Status: 500");
+      (httpError as any).response = { status: 500 };
 
-      mockedAxios.get.mockResolvedValue({
-        status: 404,
-        data: 'Not Found',
-      });
+      mockedAxios.get.mockRejectedValue(httpError);
 
-      // Act & Assert
-      await expect(adapter.obtainTDDLogs(owner, repoName)).rejects.toThrow('HTTP error! Status: 404');
+      await expect(adapter.obtainTDDLogs("owner", "repoName")).rejects.toThrow(
+        "HTTP error! Status: 500"
+      );
     });
   });
 });

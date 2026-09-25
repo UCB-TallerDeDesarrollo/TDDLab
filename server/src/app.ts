@@ -13,7 +13,7 @@ import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
 import cookieParser from "cookie-parser";
-
+import "dotenv/config";
 const app = express();
 const port = 3000;
 
@@ -44,10 +44,10 @@ app.use(express.json());
 
 // Enable CORS for all routes
 //app.use(cors({
-//  origin: "https://tddlab-staging-firebase.web.app/", //process.env.VITE_FRONT_URL, 
+//  origin: "https://tddlab-staging-firebase.web.app/", //process.env.VITE_FRONT_URL,
 //  credentials: true,
 //}));
-//app.use(express.json()); 
+//app.use(express.json());
 
 app.use(bodyParser.json());
 
@@ -70,5 +70,3 @@ app.use("/api/featureFlags", featureFlagsRouter);
 // Start the server
 server(app, port);
 export default app;
-
-

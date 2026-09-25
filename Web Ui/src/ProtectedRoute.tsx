@@ -1,15 +1,18 @@
-import { useGlobalState } from "./modules/User-Authentication/domain/authStates";
 import { Navigate } from "react-router-dom";
 import React, { ReactNode } from "react";
+import useAuth from "./presentation/auth/hooks/useAuth";
+
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 function ProtectedRouteComponent({ children }: Readonly<ProtectedRouteProps>) {
-  const authData = useGlobalState("authData")[0];
-
-  if (authData.userEmail === "") {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return null;
+  }
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 

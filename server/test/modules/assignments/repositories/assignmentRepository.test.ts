@@ -18,7 +18,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 function getAssignmentTestData(count: number) {
