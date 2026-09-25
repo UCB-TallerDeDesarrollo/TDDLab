@@ -19,7 +19,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 function getFeatureFlagTestData(count: number) {
@@ -130,23 +130,23 @@ describe("Create feature flag", () => {
   it("should create a feature flag successfully", async () => {
     // Mock checkDuplicateFeatureName to return false (no duplicate)
     jest.spyOn(repository, "checkDuplicateFeatureName").mockResolvedValue(false);
-    
+
     const newFeatureFlag: FeatureFlagCreationObject = {
       feature_name: "new_feature",
       is_enabled: true,
     };
-    
+
     const createdFeatureFlag = {
       id: 3,
       ...newFeatureFlag,
     };
-    
+
     clientQueryMock.mockResolvedValue({
       rows: [createdFeatureFlag],
     });
-    
+
     const result = await repository.createFeatureFlag(newFeatureFlag);
-    
+
     expect(result).toEqual(createdFeatureFlag);
     expect(clientQueryMock).toHaveBeenCalledWith(
       "INSERT INTO feature_flags (feature_name, is_enabled) VALUES ($1, $2) RETURNING *",
@@ -157,30 +157,30 @@ describe("Create feature flag", () => {
   it("should throw an error if feature name already exists", async () => {
     // Mock checkDuplicateFeatureName to return true (duplicate exists)
     jest.spyOn(repository, "checkDuplicateFeatureName").mockResolvedValue(true);
-    
+
     const newFeatureFlag: FeatureFlagCreationObject = {
       feature_name: "existing_feature",
       is_enabled: true,
     };
-    
+
     await expect(repository.createFeatureFlag(newFeatureFlag)).rejects.toThrow(
       "Feature flag with this name already exists"
     );
-    
+
     // Verify that the insert query was not called
     expect(clientQueryMock).not.toHaveBeenCalled();
   });
 
   it("should handle database errors when creating a feature flag", async () => {
     jest.spyOn(repository, "checkDuplicateFeatureName").mockResolvedValue(false);
-    
+
     const newFeatureFlag: FeatureFlagCreationObject = {
       feature_name: "new_feature",
       is_enabled: true,
     };
-    
+
     clientQueryMock.mockRejectedValue(new Error("Database error"));
-    
+
     await expect(repository.createFeatureFlag(newFeatureFlag)).rejects.toThrow();
   });
 });
@@ -191,24 +191,24 @@ describe("Update feature flag", () => {
     jest.spyOn(repository, "obtainFeatureFlagById").mockResolvedValue(featureFlagEnabledMock);
     // Mock checkDuplicateFeatureName to return false (no duplicate)
     jest.spyOn(repository, "checkDuplicateFeatureName").mockResolvedValue(false);
-    
+
     const updateData: FeatureFlagUpdateObject = {
       feature_name: "updated_feature",
       is_enabled: false,
     };
-    
+
     const updatedFeatureFlag = {
       id: 1,
       feature_name: "updated_feature",
       is_enabled: false,
     };
-    
+
     clientQueryMock.mockResolvedValue({
       rows: [updatedFeatureFlag],
     });
-    
+
     const result = await repository.updateFeatureFlag(1, updateData);
-    
+
     expect(result).toEqual(updatedFeatureFlag);
     expect(clientQueryMock).toHaveBeenCalledWith(
       "UPDATE feature_flags SET feature_name = $1, is_enabled = $2 WHERE id = $3 RETURNING *",
@@ -219,13 +219,13 @@ describe("Update feature flag", () => {
   it("should return null if feature flag does not exist", async () => {
     // Mock obtainFeatureFlagById to return null (feature flag doesn't exist)
     jest.spyOn(repository, "obtainFeatureFlagById").mockResolvedValue(null);
-    
+
     const updateData: FeatureFlagUpdateObject = {
       is_enabled: false,
     };
-    
+
     const result = await repository.updateFeatureFlag(999, updateData);
-    
+
     expect(result).toBeNull();
     // Verify that the update query was not called
     expect(clientQueryMock).not.toHaveBeenCalled();
@@ -236,15 +236,15 @@ describe("Update feature flag", () => {
     jest.spyOn(repository, "obtainFeatureFlagById").mockResolvedValue(featureFlagEnabledMock);
     // Mock checkDuplicateFeatureName to return true (duplicate exists)
     jest.spyOn(repository, "checkDuplicateFeatureName").mockResolvedValue(true);
-    
+
     const updateData: FeatureFlagUpdateObject = {
       feature_name: "existing_feature",
     };
-    
+
     await expect(repository.updateFeatureFlag(1, updateData)).rejects.toThrow(
       "Feature flag with this name already exists"
     );
-    
+
     // Verify that the update query was not called
     expect(clientQueryMock).not.toHaveBeenCalled();
   });
@@ -252,23 +252,23 @@ describe("Update feature flag", () => {
   it("should update only the is_enabled field if only that field is provided", async () => {
     // Mock obtainFeatureFlagById to return an existing feature flag
     jest.spyOn(repository, "obtainFeatureFlagById").mockResolvedValue(featureFlagEnabledMock);
-    
+
     const updateData: FeatureFlagUpdateObject = {
       is_enabled: false,
     };
-    
+
     const updatedFeatureFlag = {
       id: 1,
       feature_name: "feature_enabled",
       is_enabled: false,
     };
-    
+
     clientQueryMock.mockResolvedValue({
       rows: [updatedFeatureFlag],
     });
-    
+
     const result = await repository.updateFeatureFlag(1, updateData);
-    
+
     expect(result).toEqual(updatedFeatureFlag);
     expect(clientQueryMock).toHaveBeenCalledWith(
       "UPDATE feature_flags SET is_enabled = $1 WHERE id = $2 RETURNING *",
@@ -279,13 +279,13 @@ describe("Update feature flag", () => {
   it("should handle database errors when updating a feature flag", async () => {
     jest.spyOn(repository, "obtainFeatureFlagById").mockResolvedValue(featureFlagEnabledMock);
     jest.spyOn(repository, "checkDuplicateFeatureName").mockResolvedValue(false);
-    
+
     const updateData: FeatureFlagUpdateObject = {
       is_enabled: false,
     };
-    
+
     clientQueryMock.mockRejectedValue(new Error("Database error"));
-    
+
     await expect(repository.updateFeatureFlag(1, updateData)).rejects.toThrow();
   });
 });
@@ -295,9 +295,9 @@ describe("Delete feature flag", () => {
     clientQueryMock.mockResolvedValue({
       rows: [featureFlagEnabledMock],
     });
-    
+
     const result = await repository.deleteFeatureFlag(1);
-    
+
     expect(result).toBe(true);
     expect(clientQueryMock).toHaveBeenCalledWith(
       "DELETE FROM feature_flags WHERE id = $1 RETURNING *",
@@ -309,15 +309,15 @@ describe("Delete feature flag", () => {
     clientQueryMock.mockResolvedValue({
       rows: [],
     });
-    
+
     const result = await repository.deleteFeatureFlag(999);
-    
+
     expect(result).toBe(false);
   });
 
   it("should handle database errors when deleting a feature flag", async () => {
     clientQueryMock.mockRejectedValue(new Error("Database error"));
-    
+
     await expect(repository.deleteFeatureFlag(1)).rejects.toThrow();
   });
 });

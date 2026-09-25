@@ -26,6 +26,12 @@ export const useMyPracticesScreen = (userid: number, userRole: string) => {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
 
   const loadPractices = useCallback(async () => {
+    if (!userid || userid <= 0) {
+      setPractices([]);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 

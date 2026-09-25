@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, MouseEvent } from "react";
 import { User } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import {
@@ -10,21 +10,23 @@ import {
 } from "../services/invitation.service";
 import { InvitationRole, RotationState } from "../types/invitation.types";
 
-function getQueryParam(search: string, param: string): string | number | undefined {
+function parseQueryParam(search: string, param: string): string | number | undefined {
   const searchParams = new URLSearchParams(search);
   const value = searchParams.get(param);
 
+  if (!value) return undefined;
   if (param === "groupid") {
-    return value ? Number.parseInt(value, 10) : undefined;
+    const parsed = Number.parseInt(value, 10);
+    return Number.isNaN(parsed) ? undefined : parsed;
   }
 
-  return value ?? undefined;
+  return value;
 }
 
 export function useInvitationPage() {
   const location = useLocation();
-  const groupid = getQueryParam(location.search, "groupid");
-  const userType = getQueryParam(location.search, "type");
+  const groupid = parseQueryParam(location.search, "groupid");
+  const userType = parseQueryParam(location.search, "type");
 
   const [user, setUser] = useState<User | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
@@ -47,40 +49,45 @@ export function useInvitationPage() {
     }
   }, [userType]);
 
+  const handleSignUp = async () => {
+    setIsLoading(true);
+    try {
+      await signInInvitationWithGithub();
+    } catch (error) {
+      console.error("Error al iniciar sesión con GitHub:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSignUpWithGoogle = async () => {
     setIsLoading(true);
     try {
-      const signedInUser = await signInInvitationWithGoogle();
-      if (signedInUser) {
-        setUser(signedInUser);
-      }
+      await signInInvitationWithGoogle();
+    } catch (error) {
+      console.error("Error al iniciar sesión con Google:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleAcceptInvitation = async (role: InvitationRole) => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      if (!user?.email) {
-        return;
-      }
+      const userGroupid = typeof groupid === "number" ? groupid : 1;
 
-      const userGroupid = typeof groupid === "number" ? groupid : Number(groupid) || 1;
-
-      try {
-        await registerInvitationUser({
-          groupid: userGroupid,
-          role,
-          user,
-        });
-      } catch (error) {
-        console.error("Error al registrar invitación:", error);
-        setOpenPopup(true);
-        return;
-      }
+      await registerInvitationUser({
+        authProvider,
+        groupid: userGroupid,
+        role,
+        user,
+      });
 
       setShowPopUp(true);
+    } catch (error) {
+      console.error("Error al registrar invitación:", error);
+      setOpenPopup(true);
     } finally {
       setIsLoading(false);
     }
@@ -89,20 +96,21 @@ export function useInvitationPage() {
   const handlePassVerification = async (password: string) => {
     setIsLoading(true);
     try {
-      const result = await verifyInvitationPassword(password);
-
-      if (result === true) {
+      const isValid = await verifyInvitationPassword(password);
+      if (isValid) {
         await handleAcceptInvitation("teacher");
-        return;
+      } else {
+        setFeedbackMessage("Contraseña inválida");
       }
-
-      setFeedbackMessage("Contraseña inválida");
+    } catch (error) {
+      console.error("Error al verificar contraseña:", error);
+      setFeedbackMessage("Error al verificar contraseña");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = event;
     const { left, top, width, height } = currentTarget.getBoundingClientRect();
     const x = clientX - (left + width / 2);

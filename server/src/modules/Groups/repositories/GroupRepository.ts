@@ -49,13 +49,13 @@ class GroupRepository {
   }
 
   async checkGroupExists(groupid: number): Promise<boolean> {
-    const query = "SELECT EXISTS (SELECT 1 FROM groups WHERE id = $1)";
+    const query = "SELECT EXISTS (SELECT 1 FROM Groups WHERE id = $1)";
     const result: QueryResult[] = await this.executeQuery(query, [groupid]);
     return result[0].exists;
   }
 
   async createGroup(group: GroupCreationObject): Promise<GroupDTO> {
-    const { groupName, groupDetail, creationDate } = group; // Added groupName to the destructuring
+    const { groupName, groupDetail, creationDate } = group;
     const query =
       "INSERT INTO Groups (groupName, groupDetail,creationdate) VALUES ($1, $2, $3) RETURNING *";
     const values = [groupName, groupDetail, creationDate];
@@ -71,10 +71,10 @@ class GroupRepository {
       const deleteAssignmentsQuery = "DELETE FROM assignments WHERE groupid = $1";
       await client.query(deleteAssignmentsQuery, [id]);
 
-      const deleteGroupQuery = "DELETE FROM groups WHERE id = $1";
-      await client.query(deleteGroupQuery, [id]); 
+      const deleteGroupQuery = "DELETE FROM Groups WHERE id = $1";
+      await client.query(deleteGroupQuery, [id]);
 
-      await client.query('COMMIT'); 
+      await client.query('COMMIT');
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
@@ -87,9 +87,9 @@ class GroupRepository {
     id: number,
     updatedGroup: GroupCreationObject
   ): Promise<GroupDTO | null> {
-    const { groupName, groupDetail } = updatedGroup; // Added groupName to the destructuring
+    const { groupName, groupDetail } = updatedGroup;
     const query =
-      "UPDATE Groups SET groupName = $1, groupDetail = $2 WHERE id = $3 RETURNING *"; // Updated to include the new field
+      "UPDATE Groups SET groupName = $1, groupDetail = $2 WHERE id = $3 RETURNING *";
     const values = [groupName, groupDetail, id];
     const rows = await this.executeQuery(query, values);
     if (rows.length === 1) {

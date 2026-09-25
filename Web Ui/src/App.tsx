@@ -10,15 +10,12 @@ import { NoteAdd } from "@mui/icons-material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 import { lazy, Suspense, useEffect } from "react";
-import {
-  setGlobalState,
-  useGlobalState,
-} from "./modules/User-Authentication/domain/authStates";
-import { getSessionCookie } from "./modules/User-Authentication/application/getSessionCookie";
+
 
 import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import { CircularProgress } from "@mui/material";
+import { useAuthStore } from "./presentation/auth/store/useAuthStore";
 
 const HomePage = lazy(() => import("./presentation/home/pages/HomePage"));
 const LandingPage = lazy(() => import("./presentation/landing/pages/LandingPage"));
@@ -45,7 +42,6 @@ const MyPracticesPage = lazy(
 );
 const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/PracticeDetail"));
 const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
-const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
 const navArrayLinks = [
   {
@@ -87,41 +83,17 @@ const navArrayLinks = [
 ];
 
 function App() {
-  const authData = useGlobalState("authData")[0];
-  const isAuthResolved = authData.userid !== undefined;
-  const isAuthenticated = Boolean(authData.userEmail);
-  const isRootPath = globalThis.location.pathname === "/";
-  const isPublicLandingPath = globalThis.location.pathname === "/landing";
-  const hasSessionHint =
-    localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const initAuthListener = useAuthStore((state) => state.initAuthListener);
 
   useEffect(() => {
-    getSessionCookie().then((storedSession) => {
-      const savedImage = localStorage.getItem("userProfilePic") || "";
+    const unsubscribe = initAuthListener();
+    return () => unsubscribe();
+  }, [initAuthListener]);
 
-      if (storedSession) {
-        localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-        setGlobalState("authData", {
-          userid: storedSession.id,
-          userProfilePic: savedImage,
-          userEmail: storedSession.email,
-          usergroupid: storedSession.groupid,
-          userRole: storedSession.role,
-        });
-      } else {
-        localStorage.removeItem(AUTH_SESSION_HINT_KEY);
-        setGlobalState("authData", {
-          userid: -1,
-          userProfilePic: savedImage,
-          userEmail: "",
-          usergroupid: -1,
-          userRole: "",
-        });
-      }
-    });
-  }, []);
-
-  if (!isAuthResolved && !isPublicLandingPath && (!isRootPath || hasSessionHint)) {
+  const isAuthenticated = Boolean(user?.email);
+  if (loading) {
     return (
       <div
         style={{
@@ -138,167 +110,167 @@ function App() {
   }
 
   return (
-    <Router>
-      {isAuthenticated && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
-      )}
+			<Router>
+				{isAuthenticated && user?.role && (
+					<MainMenu navArrayLinks={navArrayLinks} userRole={user.role} />
+				)}
 
-      <Suspense
-        fallback={
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-              width: "100vw",
-            }}
-          >
-            <CircularProgress />
-          </div>
-        }
-      >
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <ProtectedRouteComponent>
-                  <HomePage />
-                </ProtectedRouteComponent>
-              ) : (
-                <LandingPage />
-              )
-            }
-          />
+				<Suspense
+					fallback={
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								height: "100vh",
+								width: "100vw",
+							}}
+						>
+							<CircularProgress />
+						</div>
+					}
+				>
+					<Routes>
+						<Route
+							path="/"
+							element={
+								isAuthenticated ? (
+									<ProtectedRouteComponent>
+										<HomePage />
+									</ProtectedRouteComponent>
+								) : (
+									<LandingPage />
+								)
+							}
+						/>
 
-          <Route path="/landing" element={<LandingPage />} />
+						<Route path="/landing" element={<LandingPage />} />
 
-          <Route
-            path="/groups"
-            element={
-              <ProtectedRouteComponent>
-                <Groups />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/groups"
+							element={
+								<ProtectedRouteComponent>
+									<Groups />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/tareas"
-            element={
-              <ProtectedRouteComponent>
-                <GestionTareas
-                  userRole={authData.userRole ?? ""}
-                  userGroupid={authData.usergroupid ?? -1}
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/tareas"
+							element={
+								<ProtectedRouteComponent>
+									<GestionTareas
+										userRole={user?.role ?? ""}
+										userGroupid={Number(user?.groupid ?? -1)}
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/assignment/:id"
-            element={
-              <ProtectedRouteComponent>
-                <AssignmentDetail
-                  role={authData.userRole ?? ""}
-                  userid={authData.userid ?? -1}
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/assignment/:id"
+							element={
+								<ProtectedRouteComponent>
+									<AssignmentDetail
+										role={user?.role ?? ""}
+										userid={Number(user?.id ?? -1)}
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route path="/login" element={<Login />} />
+						<Route path="/login" element={<Login />} />
 
-          <Route
-            path="/user"
-            element={
-              <ProtectedRouteComponent>
-                <User />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/user"
+							element={
+								<ProtectedRouteComponent>
+									<User />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/users/group/:groupid"
-            element={
-              <ProtectedRouteComponent>
-                <UsersByGroupPage />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/users/group/:groupid"
+							element={
+								<ProtectedRouteComponent>
+									<UsersByGroupPage />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/mis-practicas"
-            element={
-              <ProtectedRouteComponent>
-                <MyPracticesPage
-                  userRole={authData.userRole ?? ""}
-                  userid={authData.userid ?? 0}
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/mis-practicas"
+							element={
+								<ProtectedRouteComponent>
+									<MyPracticesPage
+										userRole={user?.role ?? ""}
+										userid={Number(user?.id ?? 0)}
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/mis-practicas/:id"
-            element={
-              <ProtectedRouteComponent>
-                <PracticeDetail userid={authData.userid ?? 0} title={""} />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/mis-practicas/:id"
+							element={
+								<ProtectedRouteComponent>
+									<PracticeDetail userid={Number(user?.id ?? 0)} title={""} />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/graph"
-            element={
-              <ProtectedRouteComponent>
-                <TDDChartPage
-                  port={new CommitHistoryAdapter()}
-                  role={authData.userRole ?? ""}
-                  teacher_id={authData.userid ?? -1}
-                  graphs="graph"
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/graph"
+							element={
+								<ProtectedRouteComponent>
+									<TDDChartPage
+										port={new CommitHistoryAdapter()}
+										role={user?.role ?? ""}
+										teacher_id={Number(user?.id ?? -1)}
+										graphs="graph"
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/aditionalgraph"
-            element={
-              <ProtectedRouteComponent>
-                <TDDChartPage
-                  port={new CommitHistoryAdapter()}
-                  role={authData.userRole ?? ""}
-                  teacher_id={authData.userid ?? -1}
-                  graphs="aditionalgraph"
-                />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/aditionalgraph"
+							element={
+								<ProtectedRouteComponent>
+									<TDDChartPage
+										port={new CommitHistoryAdapter()}
+										role={user?.role ?? ""}
+										teacher_id={Number(user?.id ?? -1)}
+										graphs="aditionalgraph"
+									/>
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route path="/invitation" element={<InvitationPage />} />
+						<Route path="/invitation" element={<InvitationPage />} />
 
-          <Route
-            path="/asistente-ia"
-            element={
-              <ProtectedRouteComponent>
-                <AIAssistantPage />
-              </ProtectedRouteComponent>
-            }
-          />
+						<Route
+							path="/asistente-ia"
+							element={
+								<ProtectedRouteComponent>
+									<AIAssistantPage />
+								</ProtectedRouteComponent>
+							}
+						/>
 
-          <Route
-            path="/configuraciones"
-            element={
-              <ProtectedRouteComponent>
-                <SettingsPage />
-              </ProtectedRouteComponent>
-            }
-          />
-        </Routes>
-      </Suspense>
-    </Router>
-  );
+						<Route
+							path="/configuraciones"
+							element={
+								<ProtectedRouteComponent>
+									<SettingsPage />
+								</ProtectedRouteComponent>
+							}
+						/>
+					</Routes>
+				</Suspense>
+			</Router>
+		);
 }
 
 export default App;

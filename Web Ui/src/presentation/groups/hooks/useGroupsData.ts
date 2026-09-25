@@ -193,7 +193,7 @@ export const useGroupsData = () => {
       id: data.id,
       groupName: data.name,
       groupDetail: data.description,
-      creationDate: existing?.creationDate ?? new Date(), 
+      creationDate: existing?.creationDate ?? new Date(),
     };
 
     await updateGroupUseCase.updateGroup(data.id, payload);
@@ -201,7 +201,7 @@ export const useGroupsData = () => {
     handleGroupUpdated({
       id: data.id,
       name: data.name,
-      description: data.description, 
+      description: data.description,
       creationDate: existing?.creationDate,
     });
   };

@@ -7,17 +7,12 @@ import {
   MockGithubAPIError,
 } from "./__mocks__/MocksCommitHistory";
 
-// Mock de `useNavigate` con tipo explícito
+// Mock persistente de `react-router-dom` con URLSearchParams
 jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
-  useSearchParams: jest.fn(() => {
-    const params = new URLSearchParams();
-    const getMock = jest.fn();
-    getMock.mockReturnValueOnce("exampleOwner"); // Setea el valor deseado
-    getMock.mockReturnValueOnce("exampleRepo"); // Setea el valor deseado
-    params.get = getMock;
-    return [params];
-  }),
+  useSearchParams: () => [
+    new URLSearchParams("owner=exampleOwner&repoName=exampleRepo&repo=exampleRepo"),
+  ],
 }));
 
 describe("TDDChartPage", () => {
@@ -69,15 +64,14 @@ describe("TDDChartPage", () => {
   );
 
   it("tests the catch event for both, obtainJobsData and obtainCommitsData", async () => {
-    const spyConsoleError = jest.spyOn(console, "error");
-    spyConsoleError.mockImplementation(() => {});
+    const spyConsoleError = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await act(async () => {
       render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294} graphs="graph"/>);
     });
 
     expect(spyConsoleError).toHaveBeenCalledWith(
-      "Error obtaining data:",
+      "Error obtaining owner name:",
       expect.any(Error)
     );
     spyConsoleError.mockRestore();

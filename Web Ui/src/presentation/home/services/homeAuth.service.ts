@@ -1,11 +1,19 @@
-import { useGlobalState } from "../../../modules/User-Authentication/domain/authStates";
+
+import { useAuthStore } from "../../auth/store/useAuthStore";
 import { HomeAuthData } from "../types/home.types";
 
 export function useHomeAuthData(): HomeAuthData {
-  const [authData] = useGlobalState("authData");
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  if (loading) {
+    return {
+      email: undefined,
+      userId: undefined,
+    };
+  }
 
   return {
-    email: authData.userEmail,
-    userId: authData.userid,
-  };
+			email: user?.email ?? "",
+			userId: Number(user?.id),
+		};
 }

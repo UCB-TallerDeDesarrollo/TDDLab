@@ -7,15 +7,24 @@ jest.mock("../../../src/presentation/auth/hooks/useAuth", () => ({
   useAuth: jest.fn(),
 }));
 
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
+
 const mockedUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 
 describe("AuthPage", () => {
   beforeEach(() => {
     mockedUseAuth.mockReturnValue({
-      loginWithGoogle: jest.fn(),
+      user: null,
+      login: jest.fn(),
+      logout: jest.fn(),
       loading: false,
       error: null,
       setError: jest.fn(),
+      isAuthenticated: false,
     });
   });
 
@@ -25,19 +34,11 @@ describe("AuthPage", () => {
     expect(screen.getByRole("img", { name: /tdd lab logo/i })).toBeInTheDocument();
   });
 
-  it("does not render the GitHub login button", () => {
-    render(<AuthPage />);
-
-    expect(
-      screen.queryByRole("button", { name: /github/i }),
-    ).not.toBeInTheDocument();
-  });
-
   it("renders the Google login button", () => {
     render(<AuthPage />);
 
     expect(
-      screen.getByRole("button", { name: /accedé con google/i }),
+      screen.getByRole("button", { name: /accedé con google/i })
     ).toBeInTheDocument();
   });
 

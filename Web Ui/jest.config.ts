@@ -7,6 +7,7 @@ export default {
     // process `*.tsx` files with `ts-jest`
   },
   moduleNameMapper: {
+    "virtual:terminal": "<rootDir>/test/shared/utils/virtualTerminalMock.ts",
     "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/test/__ mocks __/fileMock.js",
     "^.+\\.(css|less)$": "<rootDir>/CSSStub.js",
   },

@@ -11,7 +11,6 @@ export class UpdateAssignment {
     assignmentData: AssignmentDataObject
   ) {
     try {
-      // Ensure the assignment ID is included in the assignment data
       const updatedAssignmentData: AssignmentDataObject = {
         ...assignmentData,
         id: assignmentId,

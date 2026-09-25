@@ -18,7 +18,7 @@
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        jest.clearAllMocks();
     });
 
     function getGroupTestData(count: number) {

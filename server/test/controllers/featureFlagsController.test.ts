@@ -9,11 +9,15 @@ import { createResponse } from "../__mocks__/featuresFlags/responseMock";
 
 let controller: FeatureFlagsController;
 const featureFlagRepositoryMock = getFeatureFlagRepositoryMock();
-
+let consoleSpy: jest.SpyInstance;
 beforeEach(() => {
   controller = new FeatureFlagsController(
     featureFlagRepositoryMock
   );
+  consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+});
+afterEach(() => {
+  consoleSpy.mockRestore();
 });
 
 describe("Get feature flags", () => {
@@ -27,7 +31,7 @@ describe("Get feature flags", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(getFeatureFlagListMock());
   });
-  
+
   it("should respond with status 500 and error message when obtaining feature flags fails", async () => {
     const req = createRequest();
     const res = createResponse();
@@ -52,7 +56,7 @@ describe("Get feature flag by ID", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(featureFlagEnabledMock);
   });
-  
+
   it("should respond with status 404 and error message for non-existent feature flag", async () => {
     const req = createRequest("999");
     const res = createResponse();
@@ -63,7 +67,7 @@ describe("Get feature flag by ID", () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: "Feature flag no encontrado" });
   });
-  
+
   it("should respond with status 400 for invalid ID", async () => {
     const req = createRequest("invalid_id");
     const res = createResponse();
@@ -73,7 +77,7 @@ describe("Get feature flag by ID", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: "ID inválido" });
   });
-  
+
   it("should respond with status 500 and error message when getFeatureFlagById fails", async () => {
     const req = createRequest("1");
     const res = createResponse();
@@ -97,7 +101,7 @@ describe("Get feature flag by name", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(featureFlagEnabledMock);
   });
-  
+
   it("should respond with status 404 and error message for non-existent feature flag", async () => {
     const req = createRequest("non_existent_feature");
     const res = createResponse();
@@ -108,7 +112,7 @@ describe("Get feature flag by name", () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: "Feature flag no encontrado" });
   });
-  
+
   it("should respond with status 500 and error message when getFeatureFlagByName fails", async () => {
     const req = createRequest("feature_name");
     const res = createResponse();
@@ -131,7 +135,7 @@ describe("Create feature flag", () => {
       id: 3,
       ...newFeatureFlag
     };
-    
+
     const req = createRequest(undefined, newFeatureFlag);
     const res = createResponse();
     featureFlagRepositoryMock.createFeatureFlag.mockResolvedValue(createdFeatureFlag);
@@ -141,7 +145,7 @@ describe("Create feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(createdFeatureFlag);
   });
-  
+
   it("should respond with status 400 when feature name is missing", async () => {
     const req = createRequest(undefined, { is_enabled: true });
     const res = createResponse();
@@ -151,7 +155,7 @@ describe("Create feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: "Nombre del feature es requerido" });
   });
-  
+
   it("should respond with status 500 and error message when feature flag creation fails", async () => {
     const req = createRequest(undefined, { feature_name: "test", is_enabled: true });
     const res = createResponse();
@@ -175,7 +179,7 @@ describe("Delete feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalled();
   });
-  
+
   it("should respond with status 400 for invalid ID", async () => {
     const req = createRequest("invalid_id");
     const res = createResponse();
@@ -185,7 +189,7 @@ describe("Delete feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: "ID inválido" });
   });
-  
+
   it("should respond with status 500 and error message when feature flag deletion fails", async () => {
     const req = createRequest("1");
     const res = createResponse();
@@ -208,7 +212,7 @@ describe("Update feature flag", () => {
       id: 1,
       ...updateData
     };
-    
+
     const req = createRequest("1", updateData);
     const res = createResponse();
     featureFlagRepositoryMock.updateFeatureFlag.mockResolvedValue(updatedFeatureFlag);
@@ -218,7 +222,7 @@ describe("Update feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(updatedFeatureFlag);
   });
-  
+
   it("should respond with status 404 and error message when feature flag is not found", async () => {
     const req = createRequest("999", { feature_name: "updated_feature" });
     const res = createResponse();
@@ -229,7 +233,7 @@ describe("Update feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: "Feature flag no encontrado" });
   });
-  
+
   it("should respond with status 400 for invalid ID", async () => {
     const req = createRequest("invalid_id", { feature_name: "updated_feature" });
     const res = createResponse();
@@ -239,7 +243,7 @@ describe("Update feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: "ID inválido" });
   });
-  
+
   it("should respond with status 400 when no update data is provided", async () => {
     const req = createRequest("1", {});
     const res = createResponse();
@@ -249,7 +253,7 @@ describe("Update feature flag", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: "No se proporcionaron datos para actualizar" });
   });
-  
+
   it("should respond with status 500 and error message when feature flag update fails", async () => {
     const req = createRequest("1", { feature_name: "updated_feature" });
     const res = createResponse();
