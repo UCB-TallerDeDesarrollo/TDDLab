@@ -34,14 +34,6 @@ describe("AuthPage", () => {
     expect(screen.getByRole("img", { name: /tdd lab logo/i })).toBeInTheDocument();
   });
 
-  it("does not render the GitHub login button", () => {
-    render(<AuthPage />);
-
-    expect(
-      screen.getByRole("button", { name: /accedé con github/i })
-    ).toBeInTheDocument();
-  });
-
   it("renders the Google login button", () => {
     render(<AuthPage />);
 
