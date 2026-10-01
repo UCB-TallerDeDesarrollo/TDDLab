@@ -8,7 +8,7 @@ export const cookieUserData =
     "photoURL": "https://example.com/profile.jpg",
     "providerData": [
       {
-        "providerId": "github.com",
+        "providerId": "google.com",
         "uid": "123456",
         "displayName": "Usuario de Prueba",
         "email": "usuario@example.com",
@@ -25,4 +25,3 @@ export const cookieUserData =
     "lastLoginAt": "1700430802520",
     "appName": "[DEFAULT]"
   }
-  
