@@ -256,21 +256,6 @@ function App() {
                   port={new CommitHistoryAdapter()}
                   role={authData.userRole ?? ""}
                   teacher_id={authData.userid ?? -1}
-                  graphs="graph"
-                />
-              </ProtectedRouteComponent>
-            }
-          />
-
-          <Route
-            path="/aditionalgraph"
-            element={
-              <ProtectedRouteComponent>
-                <TDDChartPage
-                  port={new CommitHistoryAdapter()}
-                  role={authData.userRole ?? ""}
-                  teacher_id={authData.userid ?? -1}
-                  graphs="aditionalgraph"
                 />
               </ProtectedRouteComponent>
             }

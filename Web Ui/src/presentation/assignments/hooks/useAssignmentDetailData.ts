@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createSearchParams, NavigateFunction } from "react-router-dom";
 import { GetAssignmentDetail } from "../../../modules/Assignments/application/GetAssignmentDetail";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -68,6 +68,7 @@ export function useAssignmentDetailData({
 }: Readonly<UseAssignmentDetailDataProps>) {
   const [refreshTick, setRefreshTick] = useState(0);
   const [uiMessage, setUiMessage] = useState<string | null>(null);
+  const [submissionErrorMessage, setSubmissionErrorMessage] = useState<string | null>(null);
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(null);
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
   const [assignmentState, setAssignmentState] = useState<ViewState>("loading");
@@ -78,12 +79,16 @@ export function useAssignmentDetailData({
 
   const [studentSubmission, setStudentSubmission] =
     useState<SubmissionDataObject | null>(null);
+  const [studentSubmissionState, setStudentSubmissionState] =
+    useState<ViewState>("loading");
   const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isSubmissionMutationPending, setIsSubmissionMutationPending] =
+    useState(false);
+  const submissionMutationInProgress = useRef(false);
   const [showIAButton, setShowIAButton] = useState(false);
-  const [disableAdditionalGraphs, setDisableAdditionalGraphs] = useState(true);
 
   useEffect(() => {
     const fetchAssignment = async () => {
@@ -130,26 +135,6 @@ export function useAssignmentDetailData({
   }, [assignment, refreshTick]);
 
   useEffect(() => {
-    const fetchTeacherFlags = async () => {
-      if (isStudent(role)) {
-        return;
-      }
-
-      const getFlagUseCase = new GetFeatureFlagByName();
-
-      try {
-        const flag = await getFlagUseCase.execute("Mostrar Graficas Adicionales");
-        setDisableAdditionalGraphs(!(flag?.is_enabled));
-      } catch (error) {
-        console.error("Error al obtener el flag Mostrar Graficas Adicionales", error);
-        setDisableAdditionalGraphs(true);
-      }
-    };
-
-    fetchTeacherFlags();
-  }, [role]);
-
-  useEffect(() => {
     const fetchStudentFlags = async () => {
       if (!isStudent(role)) {
         return;
@@ -175,18 +160,31 @@ export function useAssignmentDetailData({
       }
 
       if (!assignmentid || !userid || userid === -1 || assignmentid < 0 || userid < 0) {
+        setStudentSubmissionState("error");
         return;
       }
+
+      setStudentSubmissionState("loading");
+      setStudentSubmission(null);
+      setSubmission(null);
 
       try {
         const submissionRepository = new SubmissionRepository();
         const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
         const fetchedSubmission =
           await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
+
+        if (fetchedSubmission === null) {
+          setStudentSubmissionState("empty");
+          return;
+        }
+
         setSubmission(fetchedSubmission);
         setStudentSubmission(fetchedSubmission);
+        setStudentSubmissionState("success");
       } catch (error) {
         console.error("Error verifying submission status:", error);
+        setStudentSubmissionState("error");
       }
     };
 
@@ -253,13 +251,6 @@ export function useAssignmentDetailData({
     fetchDeliveries();
   }, [assignmentid, role, refreshTick]);
 
-  const isTaskInProgress = submission?.status !== "in progress";
-
-  const studentStatusLabel = useMemo(
-    () => getDisplayStatus(studentSubmission?.status),
-    [studentSubmission?.status]
-  );
-
   const openLinkDialog = () => {
     setLinkDialogOpen(true);
   };
@@ -270,6 +261,7 @@ export function useAssignmentDetailData({
 
   const closeLinkDialog = () => {
     setLinkDialogOpen(false);
+    setSubmissionErrorMessage(null);
   };
 
   const openCommentDialog = () => {
@@ -278,11 +270,28 @@ export function useAssignmentDetailData({
 
   const closeCommentDialog = () => {
     setIsCommentDialogOpen(false);
+    setSubmissionErrorMessage(null);
   };
 
-  const sendGithubLink = async (repositoryLink: string) => {
-    if (!assignmentid) {
-      return;
+  const beginSubmissionMutation = () => {
+    if (submissionMutationInProgress.current) {
+      return false;
+    }
+
+    submissionMutationInProgress.current = true;
+    setIsSubmissionMutationPending(true);
+    setSubmissionErrorMessage(null);
+    return true;
+  };
+
+  const endSubmissionMutation = () => {
+    submissionMutationInProgress.current = false;
+    setIsSubmissionMutationPending(false);
+  };
+
+  const sendGithubLink = async (repositoryLink: string): Promise<boolean> => {
+    if (!assignmentid || !beginSubmissionMutation()) {
+      return false;
     }
 
     const submissionsRepository = new SubmissionRepository();
@@ -302,14 +311,23 @@ export function useAssignmentDetailData({
       start_date,
     };
 
-    await createSubmission.createSubmission(submissionData);
-    closeLinkDialog();
-    refreshDetailData();
+    try {
+      await createSubmission.createSubmission(submissionData);
+      closeLinkDialog();
+      refreshDetailData();
+      return true;
+    } catch (error) {
+      console.error("Error starting submission:", error);
+      setSubmissionErrorMessage("No se pudo iniciar la tarea. Intenta nuevamente.");
+      return false;
+    } finally {
+      endSubmissionMutation();
+    }
   };
 
-  const sendComment = async (comment: string) => {
-    if (!submission) {
-      return;
+  const sendComment = async (comment: string): Promise<boolean> => {
+    if (!submission || !beginSubmissionMutation()) {
+      return false;
     }
 
     const submissionRepository = new SubmissionRepository();
@@ -328,9 +346,18 @@ export function useAssignmentDetailData({
       comment,
     };
 
-    await finishSubmission.finishSubmission(submission.id, submissionData);
-    closeCommentDialog();
-    refreshDetailData();
+    try {
+      await finishSubmission.finishSubmission(submission.id, submissionData);
+      closeCommentDialog();
+      refreshDetailData();
+      return true;
+    } catch (error) {
+      console.error("Error finishing submission:", error);
+      setSubmissionErrorMessage("No se pudo finalizar la tarea. Intenta nuevamente.");
+      return false;
+    } finally {
+      endSubmissionMutation();
+    }
   };
 
   const redirectStudentToGraph = () => {
@@ -362,7 +389,7 @@ export function useAssignmentDetailData({
     link: string,
     submissionId: number,
     path: string,
-    selectedMetric: "Dashboard" | "Complejidad"
+    selectedMetric: "Dashboard"
   ) => {
     if (!link) {
       setUiMessage("No se encontro un link para esta tarea.");
@@ -401,10 +428,6 @@ export function useAssignmentDetailData({
     });
   };
 
-  const openTeacherAdditionalGraphs = (row: SubmissionRowView) => {
-    redirectAdmin(row.repositoryLink, row.id, "/aditionalgraph", "Complejidad");
-  };
-
   return {
     assignment,
     groupDetails,
@@ -412,12 +435,11 @@ export function useAssignmentDetailData({
     deliveriesState,
     deliveriesRows,
     studentSubmission,
-    studentStatusLabel,
-    isTaskInProgress,
+    studentSubmissionState,
     linkDialogOpen,
     isCommentDialogOpen,
+    isSubmissionMutationPending,
     showIAButton,
-    disableAdditionalGraphs,
     isStudent: isStudent(role),
     openLinkDialog,
     closeLinkDialog,
@@ -429,9 +451,9 @@ export function useAssignmentDetailData({
     redirectStudentToAssistant,
     openTeacherGraph,
     openTeacherAssistant,
-    openTeacherAdditionalGraphs,
     studentRepositoryLink: studentSubmission?.repository_link,
     submissionRepositoryLink: submission?.repository_link,
+    submissionErrorMessage,
     uiMessage,
     closeUiMessage: () => setUiMessage(null),
   };

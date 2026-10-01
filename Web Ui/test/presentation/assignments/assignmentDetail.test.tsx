@@ -1,10 +1,16 @@
 import { fireEvent, render, waitFor, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/presentation/assignments/pages/AssignmentDetail";
 import { GitLinkDialog } from "../../../src/shared/components/GitHubLinkDialog";
 
 jest.setTimeout(10000);
+
+const mockGetStudentSubmission = jest.fn();
+const mockGetFeatureFlagByName = jest.fn();
+const mockGetTeacherSubmissions = jest.fn();
+const mockCreateSubmission = jest.fn();
+const mockFinishSubmission = jest.fn();
 
 jest.mock(
   "../../../src/modules/Assignments/application/GetAssignmentDetail",
@@ -30,6 +36,42 @@ jest.mock("../../../src/modules/Groups/application/GetGroupDetail", () => ({
   })),
 }));
 
+jest.mock(
+  "../../../src/modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid",
+  () => ({
+    GetSubmissionByUserandAssignmentId: jest.fn().mockImplementation(() => ({
+      getSubmisssionByUserandSubmissionId: mockGetStudentSubmission,
+    })),
+  })
+);
+
+jest.mock(
+  "../../../src/modules/Submissions/Aplication/createSubmission",
+  () => ({
+    CreateSubmission: jest.fn().mockImplementation(() => ({
+      createSubmission: mockCreateSubmission,
+    })),
+  })
+);
+
+jest.mock(
+  "../../../src/modules/Submissions/Aplication/finishSubmission",
+  () => ({
+    FinishSubmission: jest.fn().mockImplementation(() => ({
+      finishSubmission: mockFinishSubmission,
+    })),
+  })
+);
+
+jest.mock(
+  "../../../src/modules/FeatureFlags/application/GetFeatureFlagByName",
+  () => ({
+    GetFeatureFlagByName: jest.fn().mockImplementation(() => ({
+      execute: mockGetFeatureFlagByName,
+    })),
+  })
+);
+
 jest.mock("../../../src/modules/Users/repository/UsersRepository", () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => ({
@@ -50,37 +92,72 @@ jest.mock(
   "../../../src/modules/Submissions/Aplication/getSubmissionsByAssignmentId",
   () => ({
     GetSubmissionsByAssignmentId: jest.fn().mockImplementation(() => ({
-      getSubmissionsByAssignmentId: jest.fn().mockResolvedValue([
-        {
-          assignmentid: 1,
-          userid: 123,
-          status: "delivered",
-          repository_link: "https://github.com/student/repo1",
-          start_date: new Date(),
-          end_date: new Date(),
-          comment: "Good job",
-        },
-        {
-          assignmentid: 1,
-          userid: 124,
-          status: "in progress",
-          repository_link: "https://github.com/student/repo2",
-          start_date: new Date(),
-          end_date: null,
-          comment: null,
-        },
-      ]),
+      getSubmissionsByAssignmentId: mockGetTeacherSubmissions,
     })),
   })
 );
 
+function renderAssignmentDetail(role: "student" | "teacher", userid = 123) {
+  return render(
+    <MemoryRouter initialEntries={["/assignment/1"]}>
+      <Routes>
+        <Route
+          path="/assignment/:id"
+          element={<AssignmentDetail role={role} userid={userid} />}
+        />
+      </Routes>
+    </MemoryRouter>
+  );
+}
+
+function createDeferred<T>() {
+  let resolvePromise: (value: T | PromiseLike<T>) => void = () => undefined;
+  let rejectPromise: (reason?: unknown) => void = () => undefined;
+  const promise = new Promise<T>((resolve, reject) => {
+    resolvePromise = resolve;
+    rejectPromise = reject;
+  });
+
+  return { promise, resolve: resolvePromise, reject: rejectPromise };
+}
+
 describe("AssignmentDetail Component", () => {
+  beforeEach(() => {
+    mockGetStudentSubmission.mockReset();
+    mockGetStudentSubmission.mockResolvedValue(null);
+    mockGetFeatureFlagByName.mockReset();
+    mockGetFeatureFlagByName.mockResolvedValue(null);
+    mockGetTeacherSubmissions.mockReset();
+    mockGetTeacherSubmissions.mockResolvedValue([
+      {
+        id: 1,
+        assignmentid: 1,
+        userid: 123,
+        status: "delivered",
+        repository_link: "https://github.com/student/repo1",
+        start_date: new Date("2026-09-01T12:00:00Z"),
+        end_date: new Date("2026-09-02T12:00:00Z"),
+        comment: "Good job",
+      },
+      {
+        id: 2,
+        assignmentid: 1,
+        userid: 124,
+        status: "in progress",
+        repository_link: "https://github.com/student/repo2",
+        start_date: new Date("2026-09-01T12:00:00Z"),
+        end_date: null,
+        comment: null,
+      },
+    ]);
+    mockCreateSubmission.mockReset();
+    mockCreateSubmission.mockResolvedValue(undefined);
+    mockFinishSubmission.mockReset();
+    mockFinishSubmission.mockResolvedValue(undefined);
+  });
+
   it("displays the group name", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+    const { getByText } = renderAssignmentDetail("student");
 
     await waitFor(() => {
       const groupName = getByText("Test Group");
@@ -89,11 +166,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the Estado and Enlace sections for student role", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+    const { getByText } = renderAssignmentDetail("student");
 
     await waitFor(() => {
       const estado = getByText("Estado:");
@@ -107,11 +180,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("does not display the Estado and Enlace sections for teacher roles", async () => {
-    const { queryByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="teacher" userid={123} />
-      </BrowserRouter>
-    );
+    const { queryByText } = renderAssignmentDetail("teacher");
 
     await waitFor(() => {
       const estado = queryByText("Estado:");
@@ -124,26 +193,97 @@ describe("AssignmentDetail Component", () => {
     });
   });
 
-  it("displays 'Iniciar tarea', 'Ver gráfica', and 'Finalizar tarea' buttons for student role when task is pending", async () => {
-    const { getByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+  it("muestra solo 'Iniciar tarea' para una tarea pendiente", async () => {
+    renderAssignmentDetail("student");
 
     await waitFor(() => {
-      expect(getByText("Iniciar tarea")).toBeInTheDocument();
-      expect(getByText("Ver gráfica")).toBeInTheDocument();
-      expect(getByText("Finalizar tarea")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Iniciar tarea" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Ver gr/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
+    });
+  });
+
+  it("no muestra acciones mientras se consulta la entrega del estudiante", async () => {
+    mockGetStudentSubmission.mockImplementation(
+      () => new Promise<never>(() => undefined)
+    );
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("status", { name: "Estado de la tarea: Cargando..." })
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Ver gr/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it("no muestra acciones y comunica el error si la entrega no se puede consultar", async () => {
+    mockGetStudentSubmission.mockRejectedValue(new Error("Network unavailable"));
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("status", {
+          name: "Estado de la tarea: No se pudo cargar la entrega",
+        })
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Ver gr/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it("muestra 'Finalizar tarea' y 'Ver gráfica' para una tarea en progreso", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "in progress",
+      repository_link: "https://github.com/student/practice",
+      start_date: new Date("2026-09-01T12:00:00Z"),
+      end_date: null,
+      comment: null,
+    });
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Ver gr/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("status", { name: "Estado de la tarea: En progreso" })
+      ).toHaveClass("assignment-status-chip", "is-progress");
+    });
+  });
+
+  it("muestra solo 'Ver gráfica' para una tarea enviada", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "delivered",
+      repository_link: "https://github.com/student/practice",
+      start_date: new Date("2026-09-01T12:00:00Z"),
+      end_date: new Date("2026-09-02T12:00:00Z"),
+      comment: "Entrega finalizada",
+    });
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "Iniciar tarea" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Ver gr/i })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Finalizar tarea" })).not.toBeInTheDocument();
     });
   });
 
   it("does not display 'Iniciar tarea', 'Ver gráfica', or 'Finalizar tarea' buttons for non-student roles", async () => {
-    const { queryByText } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="teacher" userid={123} />
-      </BrowserRouter>
-    );
+    const { queryByText } = renderAssignmentDetail("teacher");
 
     await waitFor(() => {
       const iniciarTareaButton = queryByText("Iniciar tarea");
@@ -157,21 +297,7 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("displays the list of submissions for teacher role", async () => {
-    jest.mock('react-router-dom', () => ({
-      ...jest.requireActual('react-router-dom'),
-      useSearchParams: () => [
-        new URLSearchParams({
-          repoOwner: 'danTerra45',
-          repoName: 'parcel-jest-cars'
-        })
-      ]
-    }));
-  
-    render(
-      <BrowserRouter>
-        <AssignmentDetail role="teacher" userid={123} />
-      </BrowserRouter>
-    );
+    renderAssignmentDetail("teacher");
 
     await waitFor(
       () => {
@@ -192,14 +318,131 @@ describe("AssignmentDetail Component", () => {
   });
 
   it("shows loading indicator while fetching assignment details", async () => {
-    const { getByTestId } = render(
-      <BrowserRouter>
-        <AssignmentDetail role="student" userid={123} />
-      </BrowserRouter>
-    );
+    const { getByTestId } = renderAssignmentDetail("student");
 
     const loadingIndicator = getByTestId("loading-indicator");
     expect(loadingIndicator).toBeInTheDocument();
+  });
+
+  it("recupera las acciones de una tarea en progreso al montar de nuevo la página", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "in progress",
+      repository_link: "https://github.com/student/practice",
+      start_date: new Date("2026-09-01T12:00:00Z"),
+      end_date: null,
+      comment: null,
+    });
+
+    const firstRender = renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+    });
+
+    firstRender.unmount();
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Ver gr/i })).toBeInTheDocument();
+    });
+
+    expect(mockGetStudentSubmission).toHaveBeenCalledTimes(2);
+  });
+
+  it("mantiene abierto el diálogo e informa el error si no se puede iniciar la tarea", async () => {
+    mockCreateSubmission.mockRejectedValue(new Error("Network unavailable"));
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Iniciar tarea" })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Iniciar tarea" }));
+    fireEvent.change(screen.getByRole("textbox", { name: /Enlace de Github/i }), {
+      target: { value: "https://github.com/student/practice" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(mockCreateSubmission).toHaveBeenCalledTimes(1);
+      expect(
+        screen.getByText("No se pudo iniciar la tarea. Intenta nuevamente.")
+      ).toBeInTheDocument();
+      expect(screen.getByRole("textbox", { name: /Enlace de Github/i })).toBeInTheDocument();
+    });
+  });
+
+  it("evita enviar dos veces una solicitud para iniciar la tarea", async () => {
+    const pendingCreation = createDeferred<void>();
+    mockCreateSubmission.mockReturnValue(pendingCreation.promise);
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Iniciar tarea" })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Iniciar tarea" }));
+    fireEvent.change(screen.getByRole("textbox", { name: /Enlace de Github/i }), {
+      target: { value: "https://github.com/student/practice" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(mockCreateSubmission).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole("button", { name: "Enviando..." })).toBeDisabled();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Enviando..." }));
+    expect(mockCreateSubmission).toHaveBeenCalledTimes(1);
+
+    pendingCreation.resolve();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("textbox", { name: /Enlace de Github/i })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("mantiene abierto el diálogo e informa el error si no se puede finalizar la tarea", async () => {
+    mockGetStudentSubmission.mockResolvedValue({
+      id: 1,
+      assignmentid: 1,
+      userid: 123,
+      status: "in progress",
+      repository_link: "https://github.com/student/practice",
+      start_date: new Date("2026-09-01T12:00:00Z"),
+      end_date: null,
+      comment: null,
+    });
+    mockFinishSubmission.mockRejectedValue(new Error("Network unavailable"));
+
+    renderAssignmentDetail("student");
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Finalizar tarea" })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Finalizar tarea" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(mockFinishSubmission).toHaveBeenCalledTimes(1);
+      expect(
+        screen.getByText("No se pudo finalizar la tarea. Intenta nuevamente.")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Repositorio de Github:")).toBeInTheDocument();
+    });
   });
 
   it("opens and closes the GitLinkDialog", async () => {

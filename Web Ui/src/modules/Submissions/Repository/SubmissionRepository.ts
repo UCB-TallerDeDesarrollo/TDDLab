@@ -53,7 +53,7 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
         await axios.put(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
     }
 
-    async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject> {
+    async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject | null> {
         try {
             const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`,{withCredentials: true});
             if (response.status === 200) {
@@ -63,7 +63,7 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
-                return Promise.reject(new Error("Submission not found"));
+                return null;
             }
             return Promise.reject(error instanceof Error ? error : new Error(String(error)));
         }

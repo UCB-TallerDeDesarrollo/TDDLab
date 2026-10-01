@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 
 interface UseGitHubLinkValidation {
@@ -17,7 +17,7 @@ export const useGitHubLinkValidation = (
   const [validLink, setValidLink] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const validateGitHubLink = (text: string): { isValid: boolean; error: string } => {
+  const validateGitHubLink = useCallback((text: string): { isValid: boolean; error: string } => {
     if (!text || text.trim() === "") {
       return { isValid: false, error: "El enlace no puede estar vacío." };
     }
@@ -61,7 +61,7 @@ export const useGitHubLinkValidation = (
     }
 
     return { isValid: true, error: "" };
-  };
+  }, []);
 
   useEffect(() => {
     if (initialRepo !== undefined) {
@@ -70,10 +70,10 @@ export const useGitHubLinkValidation = (
       setValidLink(isValid);
       setErrorMessage(error);
     }
-  }, [initialRepo]);
+  }, [initialRepo, validateGitHubLink]);
 
 
-  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
+  const handleLinkChange = useCallback((e: React.ChangeEvent<HTMLInputElement> | string) => {
     const newLink = typeof e === "string" ? e : e.target.value;
     setIsLoading(true);
     setRepo(newLink);
@@ -89,7 +89,7 @@ export const useGitHubLinkValidation = (
     }
 
     setIsLoading(false);
-  };
+  }, [validateGitHubLink]);
 
   return { repo, validLink, isLoading, errorMessage, handleLinkChange };
 
