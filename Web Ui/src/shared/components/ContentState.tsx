@@ -1,11 +1,9 @@
-import { ReactNode } from "react";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 
 interface ContentStateProps {
-  action?: ReactNode;
   description?: string;
   title: string;
   variant: "loading" | "empty" | "error";
@@ -50,7 +48,6 @@ const StateDescription = styled(Typography)({
 });
 
 function ContentState({
-  action,
   description,
   title,
   variant,
@@ -60,7 +57,6 @@ function ContentState({
       {variant === "loading" ? <CircularProgress /> : null}
       <StateTitle>{title}</StateTitle>
       {description ? <StateDescription>{description}</StateDescription> : null}
-      {action}
     </StateContainer>
   );
 }

@@ -15,10 +15,8 @@ import {
 import { addAssignmentUpdatedListener } from "../services/assignmentEvents";
 import {
   buildAssignmentListItems,
-  isSafariBrowser,
   resolveInitialGroupId,
   resolveStudentGroupIds,
-  shouldShowSafariCookieWarning,
   sortAssignments,
 } from "../services/assignmentsScreenService";
 import {
@@ -60,7 +58,6 @@ export function useAssignmentsScreen({
   const [assignments, setAssignments] = useState<AssignmentDataObject[]>([]);
   const [groupList, setGroupList] = useState<GroupDataObject[]>([]);
   const [error, setError] = useState<Error | null>(null);
-  const [safariCookieDialogOpen, setSafariCookieDialogOpen] = useState(false);
 
   const loadAssignmentsForGroup = useCallback(
     async (groupId: number, syncSelection = true) => {
@@ -221,23 +218,6 @@ export function useAssignmentsScreen({
     fetchData();
   }, [fetchData]);
 
-  const showSafariCookieWarning = useMemo(
-    () =>
-      shouldShowSafariCookieWarning({
-        groupCount: groupList.length,
-        isAuthenticated: Boolean(authData.userEmail),
-        isLoading,
-        isSafari: isSafariBrowser(),
-      }),
-    [authData.userEmail, groupList.length, isLoading],
-  );
-
-  useEffect(() => {
-    if (showSafariCookieWarning) {
-      setSafariCookieDialogOpen(true);
-    }
-  }, [showSafariCookieWarning]);
-
   useEffect(() => {
     return addAssignmentUpdatedListener(() => {
       loadAssignmentsForGroup(selectedGroup || 0, false);
@@ -323,13 +303,10 @@ export function useAssignmentsScreen({
     isLoading,
     selectedGroup,
     selectedSorting,
-    safariCookieDialogOpen,
     setConfirmationOpen,
     setFeedbackMessage,
-    setSafariCookieDialogOpen,
     setValidationDialogOpen,
     showCreateButton: userRole !== "student",
-    showSafariCookieWarning,
     validationDialogOpen,
   };
 }
