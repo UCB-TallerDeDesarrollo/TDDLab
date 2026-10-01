@@ -36,7 +36,7 @@ describe('HU-02: botón único de tareas', () => {
       cy.wait('@readSubmission');
       cy.contains('button', 'Iniciar tarea').should('be.visible');
       cy.contains('button', 'Finalizar tarea').should('not.exist');
-      cy.get('[role="status"]').should('contain.text', 'Pendiente')
+      cy.findByRole('status', { name: 'Estado de la tarea' }).should('contain.text', 'Pendiente')
         .and('have.css', 'background-color', 'rgb(243, 244, 246)');
       cy.get('.assignment-student-actions').children().first().should('have.text', 'Iniciar tarea');
       cy.contains('button', 'Iniciar tarea').click();
@@ -47,7 +47,7 @@ describe('HU-02: botón único de tareas', () => {
       cy.wait('@startSubmission').its('request.body.status').should('eq', 'in progress');
       cy.contains('button', 'Iniciar tarea').should('not.exist');
       cy.get('.assignment-student-actions').children().first().should('have.text', 'Finalizar tarea');
-      cy.get('[role="status"]').should('contain.text', 'En progreso')
+      cy.findByRole('status', { name: 'Estado de la tarea' }).should('contain.text', 'En progreso')
         .and('have.css', 'background-color', 'rgb(254, 243, 199)');
       cy.screenshot(`hu02-progress-${viewport.width}`, { capture: 'viewport' });
 
@@ -61,12 +61,12 @@ describe('HU-02: botón único de tareas', () => {
       cy.wait('@finishSubmission').its('request.body.status').should('eq', 'delivered');
       cy.contains('button', 'Iniciar tarea').should('not.exist');
       cy.contains('button', 'Finalizar tarea').should('not.exist');
-      cy.get('[role="status"]').should('contain.text', 'Finalizado')
+      cy.findByRole('status', { name: 'Estado de la tarea' }).should('contain.text', 'Finalizado')
         .and('have.css', 'background-color', 'rgb(220, 252, 231)');
 
       cy.reload();
       cy.wait('@readSubmission');
-      cy.get('[role="status"]').should('contain.text', 'Finalizado')
+      cy.findByRole('status', { name: 'Estado de la tarea' }).should('contain.text', 'Finalizado')
         .and('have.css', 'background-color', 'rgb(220, 252, 231)');
       cy.contains('button', 'Iniciar tarea').should('not.exist');
       cy.contains('button', 'Finalizar tarea').should('not.exist');
