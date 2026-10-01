@@ -28,7 +28,8 @@ export function StudentSubmissionSummary({
       </p>
 
       <p className="assignment-student-row">
-        <strong>Estado:</strong> {status}
+        <strong>Estado:</strong>{" "}
+        <output aria-label="Estado de la tarea">{status}</output>
       </p>
 
       {comment && (

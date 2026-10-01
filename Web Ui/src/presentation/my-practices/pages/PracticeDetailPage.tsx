@@ -101,7 +101,12 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                 </div>
                 <div className="practice-student-row practice-estado-row">
                   <strong>Estado:</strong>{" "}
-                  <span style={{ marginLeft: "8px" }}>{statusLabel || "Sin estado"}</span>
+                  <output
+                    aria-label="Estado de la práctica"
+                    style={{ marginLeft: "8px" }}
+                  >
+                    {statusLabel || "Sin estado"}
+                  </output>
                 </div>
               </>
             }
