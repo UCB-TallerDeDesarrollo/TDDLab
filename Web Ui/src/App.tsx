@@ -45,6 +45,8 @@ const MyPracticesPage = lazy(
 );
 const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/PracticeDetail"));
 const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
+const ProfilePage = lazy(() => import("./presentation/users/pages/ProfilePage"));
+
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
 const navArrayLinks = [
@@ -83,6 +85,12 @@ const navArrayLinks = [
     path: "/configuraciones",
     icon: <SettingsIcon />,
     access: ["admin", "teacher"],
+  },
+    {
+    title: "Perfil",
+    path: "/profile",
+    icon: <PersonIcon />,  
+    access: ["admin", "teacher", "student"],
   },
 ];
 
@@ -217,7 +225,14 @@ function App() {
               </ProtectedRouteComponent>
             }
           />
-
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRouteComponent>
+                <ProfilePage />
+              </ProtectedRouteComponent>
+            }
+          />
           <Route
             path="/users/group/:groupid"
             element={
