@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavigateFunction } from "react-router-dom";
 import {
   fetchPracticeById,
@@ -26,10 +26,10 @@ interface UsePracticeDetailProps {
 }
 
 export function usePracticeDetail({
-  userid,
-  practiceid,
-  navigate,
-}: Readonly<UsePracticeDetailProps>) {
+                                    userid,
+                                    practiceid,
+                                    navigate,
+                                  }: Readonly<UsePracticeDetailProps>) {
   const [refreshTick, setRefreshTick] = useState(0);
   const [uiMessage, setUiMessage] = useState<string | null>(null);
   const [practiceState, setPracticeState] = useState<ViewState>("loading");
@@ -42,66 +42,79 @@ export function usePracticeDetail({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
+  const savingSubmission = useRef(false);
+  const [isSavingSubmission, setIsSavingSubmission] = useState(false);
+
   useEffect(() => {
     setPracticeState("loading");
     fetchPracticeById(practiceid)
-      .then((fetched) => {
-        if (!fetched) {
-          setPractice(null);
-          setPracticeState("empty");
-          return;
-        }
-        setPractice(fetched);
-        setPracticeState("success");
-      })
-      .catch((err) => {
-        console.error("Error fetching practice:", err);
-        setPracticeState("error");
-      });
+        .then((fetched) => {
+          if (!fetched) {
+            setPractice(null);
+            setPracticeState("empty");
+            return;
+          }
+          setPractice(fetched);
+          setPracticeState("success");
+        })
+        .catch((err) => {
+          console.error("Error fetching practice:", err);
+          setPracticeState("error");
+        });
   }, [practiceid, refreshTick]);
 
   useEffect(() => {
     setSubmissionState("loading");
     fetchSubmissionsByPracticeId(practiceid)
-      .then((fetched) => {
-        setPracticeSubmissions(fetched);
-        const selected = fetched.find((item) => item.userid === userid) || null;
-        setSubmission(selected);
-        setSubmissionState(selected ? "success" : "empty");
-      })
-      .catch((err) => {
-        console.error("Error fetching practice submissions:", err);
-        setSubmissionState("error");
-      });
+        .then((fetched) => {
+          setPracticeSubmissions(fetched);
+          const selected = fetched.find((item) => item.userid === userid) || null;
+          setSubmission(selected);
+          setSubmissionState(selected ? "success" : "empty");
+        })
+        .catch((err) => {
+          console.error("Error fetching practice submissions:", err);
+          setSubmissionState("error");
+        });
   }, [practiceid, userid, refreshTick]);
 
   const isTaskInProgress = submission?.status !== "in progress";
+  const canStartPractice = submissionState === "empty";
+  const canFinishPractice =
+      submissionState === "success" && submission?.status === "in progress";
 
   const createdAt = useMemo(
-    () => toDisplayDate(practice?.creation_date),
-    [practice?.creation_date]
+      () => toDisplayDate(practice?.creation_date),
+      [practice?.creation_date]
   );
 
   const statusLabel = useMemo(
-    () => getDisplayStatus(submission?.status),
-    [submission?.status]
+      () =>
+          submission?.status === "delivered"
+              ? "Finalizado"
+              : getDisplayStatus(submission?.status),
+      [submission?.status]
   );
 
   const refreshDetailData = () => setRefreshTick((prev) => prev + 1);
 
-  const openLinkDialog = () => setLinkDialogOpen(true);
+  const openLinkDialog = () => {
+    if (canStartPractice && !savingSubmission.current) setLinkDialogOpen(true);
+  };
   const closeLinkDialog = () => setLinkDialogOpen(false);
-  const openCommentDialog = () => setIsCommentDialogOpen(true);
+  const openCommentDialog = () => {
+    if (canFinishPractice && !savingSubmission.current) setIsCommentDialogOpen(true);
+  };
   const closeCommentDialog = () => setIsCommentDialogOpen(false);
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!practiceid) return;
+    if (!practiceid || !canStartPractice || savingSubmission.current) return;
 
     const startDate = new Date();
     const start_date = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate()
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
     );
 
     const data: PracticeSubmissionCreationObject = {
@@ -112,19 +125,26 @@ export function usePracticeDetail({
       start_date,
     };
 
-    await startPracticeSubmission(data);
-    closeLinkDialog();
-    refreshDetailData();
+    savingSubmission.current = true;
+    setIsSavingSubmission(true);
+    try {
+      await startPracticeSubmission(data);
+      closeLinkDialog();
+      refreshDetailData();
+    } finally {
+      savingSubmission.current = false;
+      setIsSavingSubmission(false);
+    }
   };
 
   const sendComment = async (comment: string) => {
-    if (!submission) return;
+    if (!submission || !canFinishPractice || savingSubmission.current) return;
 
     const endDate = new Date();
     const end_date = new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      endDate.getDate()
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
     );
 
     const data: PracticeSubmissionUpdateObject = {
@@ -134,19 +154,26 @@ export function usePracticeDetail({
       comment,
     };
 
-    await finishPracticeSubmission(submission.id, data);
-    closeCommentDialog();
-    refreshDetailData();
+    savingSubmission.current = true;
+    setIsSavingSubmission(true);
+    try {
+      await finishPracticeSubmission(submission.id, data);
+      closeCommentDialog();
+      refreshDetailData();
+    } finally {
+      savingSubmission.current = false;
+      setIsSavingSubmission(false);
+    }
   };
 
   const redirectToGraph = () => {
     if (!submission?.repository_link) return;
     localStorage.setItem("selectedMetric", "Dashboard");
     redirectStudentToGraph(
-      submission.repository_link,
-      submission.id,
-      navigate,
-      setUiMessage
+        submission.repository_link,
+        submission.id,
+        navigate,
+        setUiMessage
     );
   };
 
@@ -159,6 +186,9 @@ export function usePracticeDetail({
     createdAt,
     statusLabel,
     isTaskInProgress,
+    canStartPractice,
+    canFinishPractice,
+    isSavingSubmission,
     linkDialogOpen,
     isCommentDialogOpen,
     openLinkDialog,

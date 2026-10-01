@@ -8,6 +8,7 @@ const USER_NOT_REGISTERED_MESSAGE =
 
 export const handleSignInWithGoogle = async () => signInWithGoogle();
 
+
 export const handleAuthResult = async ({
   userData,
   onSuccess,
