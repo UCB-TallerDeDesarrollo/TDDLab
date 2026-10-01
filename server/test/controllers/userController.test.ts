@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import UserController from "../../src/controllers/users/userController";
 import { UserRepository } from "../../src/modules/Users/Repositories/UserRepository";
-import admin from "firebase-admin";
-import { getUserByemail } from "../../src/modules/Users/Application/getUserByemailUseCase";
-import { getUserToken } from "../../src/modules/Users/Application/getUserToken";
+import { loginUserWithGoogle } from "../../src/modules/Users/Application/loginUserWithGoogle";
 import { saveUserCookie } from "../../src/modules/Users/Application/saveUserCookie";
 import { decodeUserTokenFromCookie } from "../../src/modules/Users/Application/decodeUserTokenFromCookie";
 import { getUser } from "../../src/modules/Users/Application/getUser";
@@ -20,8 +18,8 @@ jest.mock("../../src/modules/Users/Application/getUser", () => ({
 jest.mock("../../src/modules/Users/Application/decodeUserTokenFromCookie", () => ({
   decodeUserTokenFromCookie: jest.fn(),
 }));
-jest.mock("../../src/modules/Users/Application/getUserToken", () => ({
-  getUserToken: jest.fn(),
+jest.mock("../../src/modules/Users/Application/loginUserWithGoogle", () => ({
+  loginUserWithGoogle: jest.fn(),
 }));
 jest.mock("../../src/modules/Users/Application/getUserByemailUseCase", () => ({
   getUserByemail: jest.fn(),
@@ -82,97 +80,96 @@ describe("UserController", () => {
     });
   });
 
-  describe("getUserControllerGithub", () => {
-    let mockReq: any;
-    let controller: UserController;
-    let userRepositoryMock: UserRepository;
-    let mockRes: any;
+  describe("getUserControllerGoogle", () => {
+    let mockReq: Partial<Request>;
+    let mockRes: Partial<Response>;
 
     beforeEach(() => {
-      mockReq = { body: { idToken: "validToken" } };
+      jest.clearAllMocks();
+      mockReq = { body: { idToken: "validGoogleToken" } };
       mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
-      jest.clearAllMocks();
-      userRepositoryMock = new UserRepository() as jest.Mocked<UserRepository>;
-      controller = new UserController(userRepositoryMock);
     });
 
-    it("Verificar el token con firebase", async () => {
-      const fakeDecoded = { email: "test@example.com" };
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
-      });
-      await controller.getUserControllerGithub(mockReq, mockRes);
-      expect(verifyIdTokenMock).toHaveBeenCalledWith("validToken");
-    });
+    it("returns 400 when the ID token is missing", async () => {
+      mockReq.body = {};
 
-    it("Verificar que devuelve el usuario cuando el token es valido", async () => {
-      const fakeDecoded = { email: "test@example.com" };
-      const fakeUser = { id: 1, role: "admin", groupid: 10 };
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
-      });
-      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
-      await controller.getUserControllerGithub(mockReq, mockRes);
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith(fakeUser);
-    });
+      await controller.getUserControllerGoogle(
+        mockReq as Request,
+        mockRes as Response
+      );
 
-    it("Verificar que devuelve error si no se obtiene email del token", async () => {
-      const fakeDecoded = {};
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
-      });
-      await controller.getUserControllerGithub(mockReq, mockRes);
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith({
-        error: "No se pudo obtener email de Firebase",
+        error: "Debes proporcionar un token válido",
       });
     });
 
-    it("Verificar que se obtiene el token generado del usuario", async () => {
-      const fakeDecoded = { email: "test@example.com" };
-      const fakeUser = { id: 1, role: "admin", groupid: 10 };
-      const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-      (admin.auth as jest.Mock).mockReturnValue({
-        verifyIdToken: verifyIdTokenMock,
+    it("returns the user and saves the session cookie on success", async () => {
+      const user = { id: 1, role: "admin", groupid: 10 };
+      (loginUserWithGoogle as jest.Mock).mockResolvedValue({
+        user,
+        jwtToken: "session-token",
       });
-      (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
-      (getUserToken as jest.Mock).mockResolvedValue("fake.jwt.token");
-      await controller.getUserControllerGithub(mockReq, mockRes);
-      expect(getUserToken).toHaveBeenCalledWith(fakeUser);
+
+      await controller.getUserControllerGoogle(
+        mockReq as Request,
+        mockRes as Response
+      );
+
+      expect(loginUserWithGoogle).toHaveBeenCalledWith("validGoogleToken");
+      expect(saveUserCookie).toHaveBeenCalledWith("session-token", mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(user);
     });
 
-    it("Verificar que se guarda la cookie correctamente", async () => {
-    const fakeDecoded = { email: "test@example.com" };
-    const fakeUser = { id: 1, role: "admin", groupid: 10 };
-    const fakeToken = "fake.jwt.token";
-    const verifyIdTokenMock = jest.fn().mockResolvedValue(fakeDecoded);
-    (admin.auth as jest.Mock).mockReturnValue({
-      verifyIdToken: verifyIdTokenMock,
-    });
-    (getUserByemail as jest.Mock).mockResolvedValue(fakeUser);
-    (getUserToken as jest.Mock).mockResolvedValue(fakeToken);
-    await controller.getUserControllerGithub(mockReq, mockRes);
-    expect(saveUserCookie).toHaveBeenCalledWith(fakeToken, mockRes);
-  });
+    it("returns 404 when the user is not registered", async () => {
+      (loginUserWithGoogle as jest.Mock).mockRejectedValue(
+        new Error("Usuario no encontrado")
+      );
 
-  it("Verificar que devuelve 401 en caso de error", async () => {
-    const verifyIdTokenMock = jest.fn().mockRejectedValue(new Error("invalid"));
-    (admin.auth as jest.Mock).mockReturnValue({
-      verifyIdToken: verifyIdTokenMock,
+      await controller.getUserControllerGoogle(
+        mockReq as Request,
+        mockRes as Response
+      );
+
+      expect(mockRes.status).toHaveBeenCalledWith(404);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Usuario no encontrado. Por favor, regístrate primero.",
+      });
     });
-    await controller.getUserControllerGithub(mockReq, mockRes);
-    expect(mockRes.status).toHaveBeenCalledWith(401);
-    expect(mockRes.json).toHaveBeenCalledWith({
-      error: "Token inválido o expirado",
+
+    it("returns 401 when the Google token is invalid", async () => {
+      (loginUserWithGoogle as jest.Mock).mockRejectedValue(
+        new Error("Token inválido o expirado")
+      );
+
+      await controller.getUserControllerGoogle(
+        mockReq as Request,
+        mockRes as Response
+      );
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Token inválido o expirado",
+      });
     });
-  });
+
+    it("returns 500 for an unexpected login error", async () => {
+      (loginUserWithGoogle as jest.Mock).mockRejectedValue(
+        new Error("Unexpected error")
+      );
+
+      await controller.getUserControllerGoogle(
+        mockReq as Request,
+        mockRes as Response
+      );
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({ error: "Error en el servidor" });
+    });
   });
 
   describe("getMeController", () => {
