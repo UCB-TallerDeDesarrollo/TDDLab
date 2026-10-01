@@ -33,14 +33,18 @@ function getFeatureFlagTestData(count: number) {
 }
 
 describe("Obtain feature flags", () => {
-  it("should retrieve all feature flags", async () => {
+  it("should exclude the removed additional-graphs flag from the query", async () => {
     clientQueryMock.mockResolvedValue(getFeatureFlagTestData(3));
     const featureFlags = await repository.obtainFeatureFlags();
     expect(featureFlags).toHaveLength(3);
-    expect(clientQueryMock).toHaveBeenCalledWith(
-      "SELECT id, feature_name, is_enabled FROM feature_flags",
-      undefined
+
+    const [query, values] = clientQueryMock.mock.calls[0];
+    expect(query).toContain("SELECT id, feature_name, is_enabled");
+    expect(query).toContain("FROM feature_flags");
+    expect(query).toContain(
+      "WHERE feature_name <> 'Mostrar Graficas Adicionales'"
     );
+    expect(values).toBeUndefined();
   });
 
   it("should handle errors when obtaining feature flags", async () => {
