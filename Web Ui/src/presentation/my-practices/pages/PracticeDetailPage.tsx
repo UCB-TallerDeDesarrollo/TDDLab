@@ -106,13 +106,12 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                         </div>
                         <div className="practice-student-row practice-estado-row">
                           <strong>Estado:</strong>{" "}
-                          <span
-                              role="status"
+                          <output
                               aria-label="Estado de la práctica"
                               className={`practice-student-status ${getStatusClass(submission?.status)}`}
                           >
                       {statusLabel || "Sin estado"}
-                    </span>
+                    </output>
                         </div>
                       </>
                     }

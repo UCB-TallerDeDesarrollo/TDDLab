@@ -110,7 +110,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchAssignment();
+    void fetchAssignment();
   }, [assignmentid]);
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchGroup();
+    void fetchGroup();
   }, [assignment]);
 
   useEffect(() => {
@@ -151,7 +151,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchStudentFlags();
+    void fetchStudentFlags();
   }, [role]);
 
   useEffect(() => {
@@ -187,7 +187,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchStudentSubmission();
+    void fetchStudentSubmission();
     return () => { active = false; };
   }, [assignmentid, userid, role, submissionKey, submissionRetry]);
 
@@ -248,7 +248,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchDeliveries();
+    void fetchDeliveries();
   }, [assignmentid, role]);
 
   const canStartTask = studentSubmissionState === "success" && !studentSubmission;
