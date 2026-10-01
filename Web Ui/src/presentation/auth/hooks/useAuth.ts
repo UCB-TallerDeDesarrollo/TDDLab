@@ -48,8 +48,8 @@ export const useAuth = () => {
         userData,
         onSuccess: () => navigate({ pathname: "/" }),
       });
-    } catch (err: any) {
-      const errorMessage = err?.message || "Error al iniciar sesión";
+    } catch (err: unknown) {
+      const errorMessage = getAuthErrorMessage(err) || "Error al iniciar sesión";
       if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
         setError("Usuario no encontrado. Por favor, regístrate primero.");
       } else {

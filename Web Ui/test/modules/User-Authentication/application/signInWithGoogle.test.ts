@@ -41,6 +41,15 @@ describe("handleSignInWithGoogle function", () => {
     expect(result).toEqual(mockUserCredential.user);
   });
 
+  it("starts the popup immediately without awaiting other work first", async () => {
+    jest.mocked(signInWithPopup).mockResolvedValue(mockUserCredential);
+
+    const login = handleSignInWithGoogle();
+
+    expect(signInWithPopup).toHaveBeenCalledTimes(1);
+    await expect(login).resolves.toEqual(mockUserCredential.user);
+  });
+
   it("should fall back to redirect when the Google popup is blocked", async () => {
     (
       signInWithPopup as jest.MockedFunction<typeof signInWithPopup>
