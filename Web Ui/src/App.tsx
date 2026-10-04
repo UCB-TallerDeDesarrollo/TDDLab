@@ -96,19 +96,22 @@ function App() {
     localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
 
   useEffect(() => {
-    getSessionCookie().then((storedSession) => {
-      const savedImage = localStorage.getItem("userProfilePic") || "";
+    void getSessionCookie()
+      .then((storedSession) => {
+        const savedImage = localStorage.getItem("userProfilePic") || "";
 
-      if (storedSession) {
-        localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-        setGlobalState("authData", {
-          userid: storedSession.id,
-          userProfilePic: savedImage,
-          userEmail: storedSession.email,
-          usergroupid: storedSession.groupid,
-          userRole: storedSession.role,
-        });
-      } else {
+        if (storedSession) {
+          localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
+          setGlobalState("authData", {
+            userid: storedSession.id,
+            userProfilePic: savedImage,
+            userEmail: storedSession.email,
+            usergroupid: storedSession.groupid,
+            userRole: storedSession.role,
+          });
+          return;
+        }
+
         localStorage.removeItem(AUTH_SESSION_HINT_KEY);
         setGlobalState("authData", {
           userid: -1,
@@ -117,8 +120,18 @@ function App() {
           usergroupid: -1,
           userRole: "",
         });
-      }
-    });
+      })
+      .catch((error) => {
+        console.error("Error restoring the session:", error);
+        localStorage.removeItem(AUTH_SESSION_HINT_KEY);
+        setGlobalState("authData", {
+          userid: -1,
+          userProfilePic: localStorage.getItem("userProfilePic") || "",
+          userEmail: "",
+          usergroupid: -1,
+          userRole: "",
+        });
+      });
   }, []);
 
   if (!isAuthResolved && !isPublicLandingPath && (!isRootPath || hasSessionHint)) {
