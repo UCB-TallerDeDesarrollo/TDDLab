@@ -8,7 +8,7 @@ export function getDisplayStatus(status: string | undefined): string {
     case "in progress":
       return "En progreso";
     case "delivered":
-      return "Enviado";
+      return "Finalizada";
     case undefined:
       return "Pendiente";
     default:

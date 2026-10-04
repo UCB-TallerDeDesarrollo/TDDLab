@@ -41,6 +41,7 @@ export function usePracticeDetail({
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
 
   useEffect(() => {
     setPracticeState("loading");
@@ -75,7 +76,7 @@ export function usePracticeDetail({
       });
   }, [practiceid, userid, refreshTick]);
 
-  const isTaskInProgress = submission?.status !== "in progress";
+  const isTaskInProgress = submission?.status === "in progress";
 
   const createdAt = useMemo(
     () => toDisplayDate(practice?.creation_date),
@@ -95,7 +96,9 @@ export function usePracticeDetail({
   const closeCommentDialog = () => setIsCommentDialogOpen(false);
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!practiceid) return;
+    if (!practiceid || isStarting) return;
+
+    setIsStarting(true);
 
     const startDate = new Date();
     const start_date = new Date(
@@ -112,9 +115,13 @@ export function usePracticeDetail({
       start_date,
     };
 
-    await startPracticeSubmission(data);
-    closeLinkDialog();
-    refreshDetailData();
+    try {
+      await startPracticeSubmission(data);
+      closeLinkDialog();
+      refreshDetailData();
+    } finally {
+      setIsStarting(false);
+    }
   };
 
   const sendComment = async (comment: string) => {
@@ -161,6 +168,7 @@ export function usePracticeDetail({
     isTaskInProgress,
     linkDialogOpen,
     isCommentDialogOpen,
+    isStarting,
     openLinkDialog,
     closeLinkDialog,
     sendGithubLink,
