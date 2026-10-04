@@ -25,7 +25,7 @@ interface TDDCycleChartProps {
 interface CommitData {
   commitNumber: number;
   commitName?: string;
-  tests: Array<{ passed: boolean; size: number }>;
+  tests: Array<{ id: number; passed: boolean; size: number }>;
 }
 
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
@@ -58,7 +58,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         
         const commit = commitMap.get(currentCommit)!;
         const passed = (log.failedTests === 0) && (log.success === true);
-        commit.tests.push({ passed, size: 1 });
+        commit.tests.push({ id: log.testId, passed, size: 1 });
       }
     };
     
@@ -85,6 +85,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const commitSpacing = plotWidth / (processedData.length + 1);
   const circleRadius = 10;
   const circleSpacing = 5;
+  const yAxisTicks = Array.from({ length: maxTests + 1 }, (_, tick) => tick);
 
   return (
     <section className="tdd-cycle-dashboard" aria-labelledby="tdd-cycle-title">
@@ -108,13 +109,13 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         <div className="tdd-cycle-chart-card-header"><div><h3>Gráfica de dispersión TDD</h3><p>Cada punto representa una ejecución de pruebas asociada a un commit.</p></div><div className="tdd-cycle-legend"><span><CheckCircleIcon className="is-green" /> Prueba exitosa</span><span><CancelIcon className="is-red" /> Prueba fallida</span></div></div>
         <div className="tdd-cycle-chart-scroll">
         <svg className="tdd-cycle-svg" viewBox={`0 0 ${chartWidth} ${chartHeight}`} role="img" aria-label="Evolución de pruebas por commit">
-        {[...Array(maxTests + 1)].map((_, i) => (
+        {yAxisTicks.map((tick) => (
           <line
-            key={`grid-${i}`}
+            key={`grid-${tick}`}
             x1={leftPadding}
-            y1={topPadding + (plotHeight / maxTests) * i}
+            y1={topPadding + (plotHeight / maxTests) * tick}
             x2={leftPadding + plotWidth}
-            y2={topPadding + (plotHeight / maxTests) * i}
+            y2={topPadding + (plotHeight / maxTests) * tick}
             className="tdd-cycle-grid-line"
           />
         ))}
@@ -149,15 +150,15 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         </text>
 
         {/* Y-axis ticks */}
-        {[...Array(maxTests + 1)].map((_, i) => (
+        {yAxisTicks.map((tick) => (
           <text
-            key={`y-tick-${i}`}
+            key={`y-tick-${tick}`}
             x={leftPadding - 10}
-            y={topPadding + plotHeight - (plotHeight / maxTests) * i + 4}
+            y={topPadding + plotHeight - (plotHeight / maxTests) * tick + 4}
             className="tdd-cycle-axis-label"
             textAnchor="end"
           >
-            {i}
+            {tick}
           </text>
         ))}
 
@@ -166,12 +167,12 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
           
           return (
-            <g key={`commit-${commitIndex}`}>
+            <g key={`commit-${commit.commitNumber}`}>
               {commit.tests.map((test, testIndex) => {
                 const y = topPadding + plotHeight - (testIndex * (circleRadius * 2 + circleSpacing)) - circleRadius;
                 
                 return (
-                  <g key={`test-${commitIndex}-${testIndex}`}>
+                  <g key={`test-${commit.commitNumber}-${test.id}`}>
                     <circle cx={x} cy={y} r={circleRadius + 3} className="tdd-cycle-point-halo" />
                     {test.passed ? <CheckCircleIcon x={x - circleRadius} y={y - circleRadius} width={circleRadius * 2} height={circleRadius * 2} className="tdd-cycle-point is-green" /> : <CancelIcon x={x - circleRadius} y={y - circleRadius} width={circleRadius * 2} height={circleRadius * 2} className="tdd-cycle-point is-red" />}
                   </g>
@@ -184,7 +185,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         {/* X-axis labels */}
         {processedData.map((commit, index) => (
           <text
-            key={`x-label-${index}`}
+            key={`x-label-${commit.commitNumber}`}
             x={leftPadding + (index + 1) * commitSpacing}
             y={topPadding + plotHeight + 25}
             className="tdd-cycle-commit-label"

@@ -71,7 +71,7 @@ export function useTDDChartPage({
   };
 
   useEffect(() => {
-    loadComments();
+    void loadComments();
   }, [submissionIdcomments]);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export function useTDDChartPage({
       }
     };
 
-    loadOwnerName();
+    void loadOwnerName();
   }, [port, repoOwner]);
 
   useEffect(() => {
@@ -107,7 +107,7 @@ export function useTDDChartPage({
       }
     };
 
-    loadVisualizationData();
+    void loadVisualizationData();
   }, [port, repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
@@ -148,7 +148,7 @@ export function useTDDChartPage({
         content: feedback,
       });
       setFeedback("");
-      loadComments();
+      await loadComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
     } finally {

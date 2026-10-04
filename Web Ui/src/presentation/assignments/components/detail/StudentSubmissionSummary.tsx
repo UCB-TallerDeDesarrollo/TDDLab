@@ -33,13 +33,12 @@ export function StudentSubmissionSummary({
 
       <p className="assignment-student-row">
         <strong>Estado:</strong>{" "}
-        <span
-          role="status"
+        <output
           aria-label={`Estado de la tarea: ${status}`}
           className={`assignment-status-chip assignment-student-status is-${statusVariant}`}
         >
           {status}
-        </span>
+        </output>
       </p>
 
       {comment && (

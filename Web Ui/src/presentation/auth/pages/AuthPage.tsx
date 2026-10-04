@@ -25,7 +25,7 @@ export default function AuthPage() {
       }
     };
 
-    prepareAuth();
+    void prepareAuth();
   }, [setError]);
 
   let authStateContent = null;
