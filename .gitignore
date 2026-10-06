@@ -88,3 +88,6 @@ output.zip
 
 # Dependecias generadas por husky
 /tddlabBaseProject/.husky/_
+
+#Configuracion local del IDE Webstorm
+.idea/

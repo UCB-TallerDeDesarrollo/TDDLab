@@ -6,6 +6,23 @@ import {
   handleSignInWithGoogle,
 } from "../services/authService";
 
+function getAuthErrorMessage(err: unknown) {
+  if (err instanceof Error) {
+    return err.message;
+  }
+
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "message" in err &&
+    typeof err.message === "string"
+  ) {
+    return err.message;
+  }
+
+  return "Error al iniciar sesión";
+}
+
 export const useAuth = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -23,12 +40,16 @@ export const useAuth = () => {
       setLoading(true);
       setError(null);
       const userData = await handleSignInWithGoogle();
+      if (!userData) {
+        return;
+      }
+
       await handleAuthResult({
         userData,
         onSuccess: () => navigate({ pathname: "/" }),
       });
-    } catch (err: any) {
-      const errorMessage = err?.message || "Error al iniciar sesión";
+    } catch (err: unknown) {
+      const errorMessage = getAuthErrorMessage(err) || "Error al iniciar sesión";
       if (errorMessage.includes("no encontrado") || errorMessage.includes("404")) {
         setError("Usuario no encontrado. Por favor, regístrate primero.");
       } else {

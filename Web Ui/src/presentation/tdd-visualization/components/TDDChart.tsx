@@ -119,7 +119,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles }
           </Select>
         </FormControl>
       </Box>
-      <CommitStatusLegend />
+      {metricSelected === "Dashboard" && <CommitStatusLegend />}
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
         tddLogs = {tddLogs}

@@ -23,7 +23,6 @@ import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
-import { getCommitVisualDescriptor } from "./commitVisualStatus";
 
 ChartJS.register(
   CategoryScale,
@@ -55,11 +54,11 @@ function TDDLineCharts({
   role,
   commitsCycles: _
 }: LineChartProps) {
-  
+
   let dataChart: any = {};
   const chartRef = useRef<any>();
 
-  
+
 
   function getDataLabels() {
     if (filteredCommitsObject != null) {
@@ -83,18 +82,67 @@ function TDDLineCharts({
     }
   }
 
+  function containsRefactor(commitMessage: string): boolean {
+    const regex = /\brefactor(\w*)\b/i;
+    return regex.test(commitMessage);
+  }
+
   function getColorConclusion(): string[] {
   if (!filteredCommitsObject) return ["white"];
 
   return filteredCommitsObject
-    .map((commit) => getCommitVisualDescriptor(commit).backgroundColor)
+    .map(getCommitColor)
     .reverse();
   }
 
-  function getVisualDescriptors() {
-    return (filteredCommitsObject ?? []).map(getCommitVisualDescriptor).reverse();
+  function getCommitColor(commit: CommitDataObject): string {
+    if (
+    !commit || typeof commit !== "object" ||
+    !commit.commit || typeof commit.commit.message !== "string"
+    ) {
+    return "red"; // Valor por defecto en caso de datos malformados
+    }
+    const { coverage, test_count, conclusion, commit: commitInfo } = commit;
+
+    if (
+    coverage === undefined ||
+    coverage === null
+    ) return "black";
+
+    const hasNoTestsOrCoverageFailed =
+      test_count === 0 ||
+      test_count === undefined ||
+      coverage === 0 ||
+      conclusion === "failure";
+
+    if (hasNoTestsOrCoverageFailed) return "red";
+
+    const isRefactor = containsRefactor(commitInfo.message);
+    return getColorByCoverage(coverage, isRefactor);
   }
-  
+
+  const getColorByCoverage = (coverage: number, isRefactor: boolean) => {
+    let colorValue = 110;
+    let opacity;
+    const baseColor = isRefactor ? 'blue' : 'green';
+
+    if (coverage >= 90) {
+      opacity = 1;
+    } else if (coverage >= 80) {
+      opacity = 0.8;
+    } else if (coverage >= 70) {
+      opacity = 0.6;
+    } else if (coverage >= 60) {
+      opacity = 0.4;
+    } else {
+      opacity = 0.2;
+    }
+
+    return baseColor === 'green'
+      ? `rgba(0, ${colorValue}, 0, ${opacity})`
+      : `rgba(0, 100, 255, ${opacity})`;
+  };
+
   function getCommitStats(): [number[], number[], number[], Date[]] {
     if (filteredCommitsObject != null) {
       const additions = filteredCommitsObject
@@ -106,11 +154,11 @@ function TDDLineCharts({
       const total = filteredCommitsObject
         .map((commit) => commit.stats.total)
         .reverse();
-      
+
       const creation_date = filteredCommitsObject
         .map((commit) => new Date(commit.commit.date))
         .reverse();
-      
+
       return [additions, deletions, total, creation_date];
     } else {
       return [[], [], [], []];
@@ -127,7 +175,7 @@ function TDDLineCharts({
       return [];
     }
   }
-  
+
   function getTestsCount() {
     if (filteredCommitsObject != null) {
       const testCount = filteredCommitsObject
@@ -155,12 +203,6 @@ function TDDLineCharts({
         {
           label: dataLabel,
           backgroundColor: getColorConclusion(),
-          pointStyle: getVisualDescriptors().map((descriptor) => descriptor.pointStyle),
-          pointBackgroundColor: getVisualDescriptors().map((descriptor) => descriptor.backgroundColor),
-          pointBorderColor: getVisualDescriptors().map((descriptor) => descriptor.borderColor),
-          pointBorderWidth: getVisualDescriptors().map((descriptor) => descriptor.borderWidth),
-          pointRadius: 9,
-          pointHoverRadius: 12,
           data: dataChartSelected,
           links: getCommitLink(),
         },
@@ -224,17 +266,12 @@ function TDDLineCharts({
               afterBodyContent.push(
                 `Fecha: ${formatDate(getCommitStats()[3][context[0].dataIndex])}`,
               );
-              
+
               const coverageValue = getCommitCoverage()[context[0].dataIndex];
               const formattedCoverage = coverageValue !== undefined && coverageValue !== null ? `${coverageValue}%` : '0%';
               afterBodyContent.push(
                 `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
               );
-
-              const commit = (filteredCommitsObject ?? []).slice().reverse()[context[0].dataIndex];
-              if (commit) {
-                afterBodyContent.push(getCommitVisualDescriptor(commit).tooltipStatus);
-              }
 
               return afterBodyContent;
             },
@@ -244,8 +281,8 @@ function TDDLineCharts({
     };
     return optionsLineChart;
   }
-  
-  
+
+
   const onClick = (event: any) => {
     const elements = getElementAtEvent(chartRef.current, event);
     if (elements.length > 0) {
@@ -316,6 +353,7 @@ function TDDLineCharts({
         }) || [];
         return <TDDCycleChart data={testLogs} />;
       }
+
     }
     return (
       <Line
@@ -330,6 +368,6 @@ function TDDLineCharts({
   }
 
   return getLineChart();
-} 
+}
 
 export default TDDLineCharts;
