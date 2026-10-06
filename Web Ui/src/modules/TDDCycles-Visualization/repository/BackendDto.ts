@@ -14,3 +14,10 @@ export class BackendApiError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
+
+export class EmptyDataError extends BackendApiError {
+  constructor(resource: string) {
+    super(`No hay datos disponibles para: ${resource}.`, "EMPTY_DATA");
+    this.name = "EmptyDataError";
+  }
+}

@@ -1,21 +1,17 @@
 import { VITE_API } from "../../../../config.ts";
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 import { Octokit } from "octokit";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
 import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
-import { BackendApiError, BackendErrorResponse } from "./BackendDto.ts";
+import { BackendApiError, BackendErrorResponse, EmptyDataError } from "./BackendDto.ts";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
   private octokit: Octokit;
-  private axiosClient: AxiosInstance;
 
   constructor() {
     this.octokit = new Octokit();
-    this.axiosClient = axios.create({
-      baseURL: `${VITE_API}/TDDCycles`,
-    });
   }
 
   private getTDDLogUrl(owner: string, repoName: string): string {
@@ -27,14 +23,11 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     repoName: string,
   ): Promise<CommitDataObject[]> {
     try {
-      const response = await this.axiosClient.get<CommitDataObject[]>(
-        "/commits-history",
-        {
-          params: { owner, repoName },
-        },
-      );
+      const requestUrl = `${VITE_API}/TDDCycles/commits-history`;
+      const requestBody = { params: { owner, repoName } };
+      const response = await axios.get<CommitDataObject[]>(requestUrl, requestBody);
 
-      return response.data.map((commit) => ({
+      return this.assertNotEmpty(response.data, "historial de commits").map((commit) => ({
         ...commit,
         commit: {
           ...commit.commit,
@@ -51,14 +44,11 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     repoName: string,
   ): Promise<CommitCycle[]> {
     try {
-      const response = await this.axiosClient.get<CommitCycle[]>(
-        "/commit-cycles",
-        {
-          params: { owner, repoName },
-        },
-      );
+      const requestUrl = `${VITE_API}/TDDCycles/commit-cycles`;
+      const requestBody = { params: { owner, repoName } };
+      const response = await axios.get<CommitCycle[]>(requestUrl, requestBody);
 
-      return response.data.map((item) => ({
+      return this.assertNotEmpty(response.data, "TDD Cycles").map((item) => ({
         url: item.url,
         sha: item.sha,
         tddCycle: item.tddCycle ?? "null",
@@ -126,10 +116,21 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       );
     }
 
+    if (error instanceof BackendApiError) {
+      throw error;
+    }
+
     if (error instanceof Error) {
       throw error;
     }
 
     throw new Error("Error inesperado.");
+  }
+  
+  private assertNotEmpty<T>(data: T[], resource: string): T[] {
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new EmptyDataError(resource);
+    }
+    return data;
   }
 }
