@@ -17,7 +17,7 @@ export const FeatureFlags: React.FC<FeatureFlagsProps> = ({
   return (
     <Box sx={{ width: '100%', pl: 0 }}>
       <Stack spacing={1}>
-        {flags.filter((flag) => !flag.feature_name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase().endsWith('mostrar graficas adicionales')).map((flag) => (
+        {flags.filter((flag) => flag.feature_name !== 'Mostrar Graficas Adicionales').map((flag) => (
           <FormControlLabel
             key={flag.id}
             control={
