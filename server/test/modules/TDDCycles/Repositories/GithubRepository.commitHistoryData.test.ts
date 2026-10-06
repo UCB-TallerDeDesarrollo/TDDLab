@@ -38,6 +38,10 @@ describe("GithubRepository.getCommitHistoryData", () => {
     githubRepository.fetchCommitHistoryJson = jest.fn().mockResolvedValue(mockCommitHistory);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should map and sort commits by date descending", async () => {
     const result = await githubRepository.getCommitHistoryData("owner", "repo");
     expect(result[0].sha).toBe("456"); // Most recent first
@@ -104,4 +108,41 @@ describe("GithubRepository.getCommitHistoryData", () => {
       stats: { total: 6, additions: 4, deletions: 2 },
     });
   });
+
+  it.each(["getCommitHistoryData", "getCommitCyclesData"] as const)(
+    "%s keeps repository input out of the fallback warning",
+    async (method) => {
+      const owner = "owner\r\n[ERROR] injected-owner";
+      const repoName = "repo\n[ERROR] injected-repo";
+      githubRepository.fetchCommitHistoryJson = jest.fn().mockRejectedValue({
+        response: { status: 404 },
+      });
+      const request = jest
+        .spyOn(githubRepository.octokit, "request")
+        .mockImplementation(async (route) => ({
+          status: 200,
+          url: "https://api.github.com",
+          headers: {},
+          data:
+            route === "GET /repos/{owner}/{repo}/actions/runs"
+              ? { workflow_runs: [] }
+              : [],
+        }));
+      const warn = jest.spyOn(console, "warn").mockImplementation(() => undefined);
+
+      await expect(githubRepository[method](owner, repoName)).resolves.toEqual([]);
+
+      expect(warn).toHaveBeenCalledTimes(1);
+      const warning = warn.mock.calls[0].join(" ");
+      expect(warning).toContain("script/commit-history.json");
+      expect(warning).not.toMatch(/[\r\n]/);
+      expect(warning).not.toContain("injected-owner");
+      expect(warning).not.toContain("injected-repo");
+      expect(request).toHaveBeenCalledWith("GET /repos/{owner}/{repo}/commits", {
+        owner,
+        repo: repoName,
+        per_page: 30,
+      });
+    }
+  );
 });

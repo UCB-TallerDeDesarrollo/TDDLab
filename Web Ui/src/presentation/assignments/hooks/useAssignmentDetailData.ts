@@ -103,7 +103,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchAssignment();
+    void fetchAssignment();
   }, [assignmentid, refreshTick]);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchGroup();
+    void fetchGroup();
   }, [assignment, refreshTick]);
 
 
@@ -146,7 +146,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchStudentFlags();
+    void fetchStudentFlags();
   }, [role]);
 
   useEffect(() => {
@@ -171,7 +171,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchStudentSubmission();
+    void fetchStudentSubmission();
   }, [assignmentid, userid, role, refreshTick]);
 
   useEffect(() => {
@@ -231,7 +231,7 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchDeliveries();
+    void fetchDeliveries();
   }, [assignmentid, role, refreshTick]);
 
   const canFinishTask = submission?.status === "in progress";

@@ -457,7 +457,7 @@ export class GithubRepository implements IGithubRepository {
       }
 
       console.warn(
-        `script/commit-history.json no existe en ${cacheKey}; usando la API de GitHub como respaldo.`
+        "script/commit-history.json no existe; usando la API de GitHub como respaldo."
       );
       data = await this.fetchCommitHistoryFromGithubApi(owner, repoName);
     }
