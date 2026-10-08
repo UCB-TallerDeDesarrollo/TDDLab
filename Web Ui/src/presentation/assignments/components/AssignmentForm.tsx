@@ -126,9 +126,10 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
 
     try {
       const assignments = await assignmentsRepository.getAssignmentsByGroupid(assignmentData.groupid);
-      const duplicateAssignment = assignments.find(
-        (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
-      );
+      const duplicateAssignment = assignments.some(
+          (assignment) =>
+            assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
+          );
     
       if (duplicateAssignment) {
         setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
