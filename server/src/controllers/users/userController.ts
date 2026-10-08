@@ -126,14 +126,17 @@ class UserController {
   }
 
 
-async  logoutController (res: Response): Promise<void> {
-  res.clearCookie("userSession", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-  res.status(200).json({ message: "Sesión cerrada correctamente" });
-};
+logoutController(res: Response): void {
+    res.clearCookie("userSession", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+    });
+
+    res.status(200).json({
+        message: "Sesión cerrada correctamente"
+    });
+}
 
   async getMeController(req: Request, res: Response): Promise<void> {
     try {
@@ -201,7 +204,7 @@ async  logoutController (res: Response): Promise<void> {
   }
   async getUsersByGroupid(req: Request, res: Response): Promise<void> {
     const { groupid } = req.params;
-    const gid = parseInt(groupid);
+    const gid = Number.parseInt(groupid);
 
     if (Number.isNaN(gid)) {
       res.status(400).json({ error: "Debes proporcionar un groupid válido" });

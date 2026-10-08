@@ -56,7 +56,11 @@ function EditAssignmentDialog({
       setGroups(allGroups);
     };
 
-    void fetchGroups();
+    fetchGroups().catch((error: unknown) => {
+      console.error("Error al cargar los grupos:", error);
+      setErrorMessage("Error al cargar los grupos.");
+      setErrorOpen(true);
+    });
   }, []);
 
   const handleSaveChanges = async () => {

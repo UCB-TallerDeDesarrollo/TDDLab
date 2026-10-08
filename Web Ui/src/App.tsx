@@ -96,7 +96,7 @@ function App() {
     localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
 
   useEffect(() => {
-    void getSessionCookie().then((storedSession) => {
+    getSessionCookie().then((storedSession) => {
       const savedImage = localStorage.getItem("userProfilePic") || "";
 
       if (storedSession) {
@@ -118,6 +118,15 @@ function App() {
           userRole: "",
         });
       }
+    }).catch((error: unknown) => {
+      console.error("Error restoring session:", error);
+      setGlobalState("authData", {
+        userid: -1,
+        userProfilePic: "",
+        userEmail: "",
+        usergroupid: -1,
+        userRole: "",
+      });
     });
   }, []);
 

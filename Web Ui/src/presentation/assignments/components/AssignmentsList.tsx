@@ -47,7 +47,7 @@ function AssignmentsList({
           cancelText="Cancelar"
           deleteText="Eliminar"
           onCancel={() => setConfirmationOpen?.(false)}
-          onDelete={handleConfirmDelete ?? (async () => undefined)}
+          onDelete={handleConfirmDelete ?? (() => undefined)}
         />
       ) : null}
 

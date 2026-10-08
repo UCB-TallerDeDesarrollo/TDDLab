@@ -33,7 +33,7 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().catch((error: unknown) => console.error("Error loading commits:", error));
   }, []);
 
   return (
