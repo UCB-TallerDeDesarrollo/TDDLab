@@ -235,7 +235,13 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       }));
     };
 
-    if (open) void fetchGroups();
+    if (open) {
+      fetchGroups().catch((error: unknown) => {
+        console.error("Error fetching groups:", error);
+        setGroups([]);
+        setAssignmentData((prev) => ({ ...prev, groupid: 0 }));
+      });
+    }
   }, [open, auth?.userRole, auth?.userid]);
 
   return (
