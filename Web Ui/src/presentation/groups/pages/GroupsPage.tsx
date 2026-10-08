@@ -91,7 +91,7 @@ function GroupsPage() {
         onLink={copyStudentLink}
         onParticipants={(id) => {
           selectAndSync(id);
-          goToParticipants(id, navigate);
+          goToParticipants(id, navigate).catch((error: unknown) => console.error("Error loading group participants:", error));
         }}
         onTasks={(id) => handleRedirectToTasks(id, navigate)}
         onDelete={(index) => {

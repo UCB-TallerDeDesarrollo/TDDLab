@@ -83,7 +83,7 @@ export function useTDDChartPage({
   };
 
   useEffect(() => {
-    loadComments();
+    loadComments().catch((error: unknown) => console.error("Error loading comments:", error));
   }, [submissionIdcomments]);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export function useTDDChartPage({
       }
     };
 
-    loadOwnerName();
+    loadOwnerName().catch((error: unknown) => console.error("Error loading owner name:", error));
   }, [port, repoOwner]);
 
   useEffect(() => {
@@ -115,7 +115,7 @@ export function useTDDChartPage({
       }
     };
 
-    loadVisualizationData();
+    loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
   }, [port, repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
@@ -156,7 +156,7 @@ export function useTDDChartPage({
         content: feedback,
       });
       setFeedback("");
-      loadComments();
+      await loadComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
     } finally {

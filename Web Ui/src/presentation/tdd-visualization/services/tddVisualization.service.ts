@@ -68,14 +68,16 @@ export async function fetchCommentsData(submissionId: number): Promise<TDDCommen
   const comments = await commentsRepo.getCommentsBySubmissionId(submissionId);
   const emails: Record<number, string> = {};
 
-  for (const comment of comments) {
-    try {
-      const user = await usersRepository.getUserById(comment.teacher_id);
-      emails[comment.teacher_id] = user.email.toString();
-    } catch {
-      emails[comment.teacher_id] = "Correo no disponible";
-    }
-  }
+await Promise.all(
+    comments.map(async (comment) => {
+        try {
+            const user = await usersRepository.getUserById(comment.teacher_id);
+            emails[comment.teacher_id] = user.email.toString();
+        } catch {
+            emails[comment.teacher_id] = "Correo no disponible";
+        }
+    })
+);
 
   return { comments, emails };
 }
