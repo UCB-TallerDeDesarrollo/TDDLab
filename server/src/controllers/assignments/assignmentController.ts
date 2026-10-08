@@ -142,7 +142,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
 
  async deleteAssignment(req: any, res: Response): Promise<void> {
     try {
-      const assignmentId = parseInt(req.params.id, 10);
+      const assignmentId = Number.parseInt(req.params.id, 10);
 
       console.log('=== INICIANDO ELIMINACIÓN ===');
       
