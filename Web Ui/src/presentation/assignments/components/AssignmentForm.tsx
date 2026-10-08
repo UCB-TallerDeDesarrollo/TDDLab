@@ -235,7 +235,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       }));
     };
 
-    if (open) fetchGroups();
+    if (open) void fetchGroups();
   }, [open, auth?.userRole, auth?.userid]);
 
   return (
