@@ -97,10 +97,19 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       const data = error.response?.data;
 
       if (data?.code) {
-        throw new BackendApiError(
-          data.detail,
-          data.code,
-        );
+        switch (data.code) {
+          case "GITHUB_BRANCH_NOT_FOUND":
+            throw new BackendApiError(
+              "Asegurate de haber trabajado en la rama 'main'.",
+              data.code
+            );
+
+          case "GITHUB_FILE_NOT_FOUND":
+            throw new BackendApiError(
+              "Asegurate de haber utilizado el repositorio base correcto.",
+              data.code
+            );
+        }
       }
 
       if (!error.response) {
@@ -126,7 +135,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
 
     throw new Error("Error inesperado.");
   }
-  
+
   private assertNotEmpty<T>(data: T[], resource: string): T[] {
     if (!Array.isArray(data) || data.length === 0) {
       throw new EmptyDataError(resource);
