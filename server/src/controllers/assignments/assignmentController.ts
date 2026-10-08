@@ -86,7 +86,7 @@ async createAssignment(req: Request, res: Response): Promise<void> {
       groupid = Number(rawGroupId[0]);
     } else if (typeof rawGroupId === "string") {
       // quitar llaves, corchetes y comillas si vienen: '{"100"}' o '{100}'
-      const cleaned = rawGroupId.replace(/[\[\]\{\}"]/g, "");
+      const cleaned = rawGroupId.replace(/[[\]{}"]/g, "");
       groupid = Number(cleaned);
     } else {
       groupid = Number(rawGroupId);
