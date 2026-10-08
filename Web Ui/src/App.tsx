@@ -96,7 +96,7 @@ function App() {
     localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
 
   useEffect(() => {
-    getSessionCookie().then((storedSession) => {
+    void getSessionCookie().then((storedSession) => {
       const savedImage = localStorage.getItem("userProfilePic") || "";
 
       if (storedSession) {
