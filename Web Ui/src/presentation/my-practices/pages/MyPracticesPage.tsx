@@ -33,7 +33,7 @@ export default function MyPracticesPage({
   } = useMyPracticesScreen(userid, userRole);
 
   useEffect(() => {
-    loadPractices();
+    void loadPractices();
   }, [loadPractices]);
 
   return (

@@ -89,7 +89,7 @@ export const useGroupsData = () => {
       }
     };
 
-    fetchGroups();
+    void fetchGroups();
   }, [authData?.userRole, authData?.userid]);
 
   const handleGroupsOrder = (event: { target: { value: string } }) => {
