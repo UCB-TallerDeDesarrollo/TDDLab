@@ -215,12 +215,12 @@ export function useAssignmentsScreen({
   ]);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
 
   useEffect(() => {
     return addAssignmentUpdatedListener(() => {
-      loadAssignmentsForGroup(selectedGroup || 0, false);
+      void loadAssignmentsForGroup(selectedGroup || 0, false);
     });
   }, [loadAssignmentsForGroup, selectedGroup]);
 

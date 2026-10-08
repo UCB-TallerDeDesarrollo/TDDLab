@@ -56,7 +56,7 @@ function EditAssignmentDialog({
       setGroups(allGroups);
     };
 
-    fetchGroups();
+    void fetchGroups();
   }, []);
 
   const handleSaveChanges = async () => {

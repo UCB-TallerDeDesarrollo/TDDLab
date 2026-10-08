@@ -23,7 +23,7 @@ const SettingsPage: React.FC = () => {
   const [selectedPrompt, setSelectedPrompt] = useState<string>('tddPrompt');
 
   useEffect(() => {
-    loadSettings();
+    void loadSettings();
   }, [loadSettings]);
 
   const promptItems: PromptItem[] = prompts
