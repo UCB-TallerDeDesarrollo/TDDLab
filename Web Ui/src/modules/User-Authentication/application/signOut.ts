@@ -1,7 +1,7 @@
 import { getAuth, signOut } from "firebase/auth";
 import firebase from "../../../firebaseConfig";
 
-export async function handleSignOutFromGoogle() {
+export async function handleSignOut() {
   const auth = getAuth(firebase);
   try {
     await signOut(auth);

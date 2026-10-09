@@ -7,12 +7,8 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 import { removeSessionCookie } from "../../../modules/User-Authentication/application/deleteSessionCookie";
-import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
-import { handleSignInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
-import { handleSignOutFromGoogle } from "../../../modules/User-Authentication/application/signOutFromGoogle";
-
+import { handleSignOut } from "../../../modules/User-Authentication/application/signOut";
 import {
   setGlobalState,
   useGlobalState,
@@ -29,19 +25,11 @@ export default function LoginComponent({
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleLogin = async () => {
-    const userData = await handleSignInWithGoogle();
-    if (userData?.email) {
-      const idToken = await userData.getIdToken();
-      const loginPort = new CheckIfUserHasAccount();
-      const userAccount = await loginPort.userHasAnAccountWithToken(idToken);
-      setCookieAndGlobalStateForValidUser(userData, userAccount);
-    }
-  };
+  const handleLogin = () => navigate("/login");
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await handleSignOutFromGoogle();
+    await handleSignOut();
     setGlobalState("authData", {
       userid: -1,
       userProfilePic: "",

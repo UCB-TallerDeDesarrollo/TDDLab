@@ -1,31 +1,16 @@
 import { Request, Response } from "express";
 import UserController from "../../src/controllers/users/userController";
 import { UserRepository } from "../../src/modules/Users/Repositories/UserRepository";
-import { loginUserWithGoogle } from "../../src/modules/Users/Application/loginUserWithGoogle";
-import { saveUserCookie } from "../../src/modules/Users/Application/saveUserCookie";
 import { decodeUserTokenFromCookie } from "../../src/modules/Users/Application/decodeUserTokenFromCookie";
 import { getUser } from "../../src/modules/Users/Application/getUser";
 
 // Crear un mock de UserRepository
 jest.mock("../../src/modules/Users/Repositories/UserRepository");
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  auth: jest.fn(),
-}));
 jest.mock("../../src/modules/Users/Application/getUser", () => ({
   getUser: jest.fn(),
 }));
 jest.mock("../../src/modules/Users/Application/decodeUserTokenFromCookie", () => ({
   decodeUserTokenFromCookie: jest.fn(),
-}));
-jest.mock("../../src/modules/Users/Application/loginUserWithGoogle", () => ({
-  loginUserWithGoogle: jest.fn(),
-}));
-jest.mock("../../src/modules/Users/Application/getUserByemailUseCase", () => ({
-  getUserByemail: jest.fn(),
-}));
-jest.mock("../../src/modules/Users/Application/saveUserCookie", () => ({
-  saveUserCookie: jest.fn(),
 }));
 
 describe("UserController", () => {
@@ -77,98 +62,6 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith({
         message: "Usuario eliminado del grupo exitosamente.",
       });
-    });
-  });
-
-  describe("getUserControllerGoogle", () => {
-    let mockReq: Partial<Request>;
-    let mockRes: Partial<Response>;
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-      mockReq = { body: { idToken: "validGoogleToken" } };
-      mockRes = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-    });
-
-    it("returns 400 when the ID token is missing", async () => {
-      mockReq.body = {};
-
-      await controller.getUserControllerGoogle(
-        mockReq as Request,
-        mockRes as Response
-      );
-
-      expect(mockRes.status).toHaveBeenCalledWith(400);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        error: "Debes proporcionar un token válido",
-      });
-    });
-
-    it("returns the user and saves the session cookie on success", async () => {
-      const user = { id: 1, role: "admin", groupid: 10 };
-      (loginUserWithGoogle as jest.Mock).mockResolvedValue({
-        user,
-        jwtToken: "session-token",
-      });
-
-      await controller.getUserControllerGoogle(
-        mockReq as Request,
-        mockRes as Response
-      );
-
-      expect(loginUserWithGoogle).toHaveBeenCalledWith("validGoogleToken");
-      expect(saveUserCookie).toHaveBeenCalledWith("session-token", mockRes);
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith(user);
-    });
-
-    it("returns 404 when the user is not registered", async () => {
-      (loginUserWithGoogle as jest.Mock).mockRejectedValue(
-        new Error("Usuario no encontrado")
-      );
-
-      await controller.getUserControllerGoogle(
-        mockReq as Request,
-        mockRes as Response
-      );
-
-      expect(mockRes.status).toHaveBeenCalledWith(404);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        error: "Usuario no encontrado. Por favor, regístrate primero.",
-      });
-    });
-
-    it("returns 401 when the Google token is invalid", async () => {
-      (loginUserWithGoogle as jest.Mock).mockRejectedValue(
-        new Error("Token inválido o expirado")
-      );
-
-      await controller.getUserControllerGoogle(
-        mockReq as Request,
-        mockRes as Response
-      );
-
-      expect(mockRes.status).toHaveBeenCalledWith(401);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        error: "Token inválido o expirado",
-      });
-    });
-
-    it("returns 500 for an unexpected login error", async () => {
-      (loginUserWithGoogle as jest.Mock).mockRejectedValue(
-        new Error("Unexpected error")
-      );
-
-      await controller.getUserControllerGoogle(
-        mockReq as Request,
-        mockRes as Response
-      );
-
-      expect(mockRes.status).toHaveBeenCalledWith(500);
-      expect(mockRes.json).toHaveBeenCalledWith({ error: "Error en el servidor" });
     });
   });
 

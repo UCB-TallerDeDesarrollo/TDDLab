@@ -18,7 +18,6 @@ router.post("/register/google", (req, res) =>
   userController.registerUserWithGoogleController(req, res)
 );
 router.post("/login", (req, res) => userController.getUserController(req, res));
-
 router.post("/google", (req, res) =>
   userController.getUserControllerGoogle(req, res)
 );

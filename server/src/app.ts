@@ -17,11 +17,13 @@ import cookieParser from "cookie-parser";
 const app = express();
 const port = 3000;
 
-const allowedOrigins = [
-  process.env.VITE_FRONT_URL,
-  "http://localhost:5173",
-  "https://tddlab-staging-firebase.web.app",
-].filter((origin): origin is string => Boolean(origin));
+const allowedOrigins = new Set(
+    [
+        process.env.VITE_FRONT_URL,
+        "http://localhost:5173",
+        "https://tddlab-staging-firebase.web.app",
+    ].filter((origin): origin is string => Boolean(origin))
+);
 
 app.use(
   cors({
@@ -30,9 +32,9 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+if (allowedOrigins.has(origin)) {
+    return callback(null, true);
+}
 
       return callback(new Error(`CORS blocked for origin: ${origin}`));
     },

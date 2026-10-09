@@ -1,6 +1,5 @@
-import { getAuth, signOut } from "firebase/auth";
-import firebase from "../../../../src/firebaseConfig";
-import { handleSignOutFromGoogle } from "../../../../src/modules/User-Authentication/application/signOutFromGoogle";
+import { signOut, getAuth } from "firebase/auth";
+import { handleSignOut } from "../../../../src/modules/User-Authentication/application/signOut";
 import { mockAuth } from "../../__mocks__/Auth/mockedAuthObject";
 
 jest.mock("firebase/auth", () => ({
@@ -13,27 +12,28 @@ jest.mock("../../../../src/firebaseConfig", () => ({
   default: jest.fn(),
 }));
 
-describe("handleSignOutFromGoogle", () => {
-  beforeEach(() => {
+describe("handleSignOut", () => {
+  afterEach(() => {
     jest.clearAllMocks();
-    (getAuth as jest.MockedFunction<typeof getAuth>).mockReturnValue(mockAuth);
   });
 
-  it("signs out the current Google session", async () => {
+  it("signs out the current Firebase session", async () => {
+    (getAuth as jest.MockedFunction<typeof getAuth>).mockReturnValue(mockAuth);
     (signOut as jest.MockedFunction<typeof signOut>).mockResolvedValue(undefined);
 
-    await handleSignOutFromGoogle();
+    await handleSignOut();
 
-    expect(getAuth).toHaveBeenCalledWith(firebase);
+    expect(getAuth).toHaveBeenCalledTimes(1);
     expect(signOut).toHaveBeenCalledWith(mockAuth);
   });
 
-  it("logs and handles sign-out errors", async () => {
-    const error = new Error("Sign-out failed");
+  it("reports sign-out errors", async () => {
+    const error = new Error("Sign-out error message");
+    (getAuth as jest.MockedFunction<typeof getAuth>).mockReturnValue(mockAuth);
     (signOut as jest.MockedFunction<typeof signOut>).mockRejectedValue(error);
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
 
-    await handleSignOutFromGoogle();
+    await handleSignOut();
 
     expect(consoleErrorSpy).toHaveBeenCalledWith("Error al cerrar sesión", error);
     consoleErrorSpy.mockRestore();

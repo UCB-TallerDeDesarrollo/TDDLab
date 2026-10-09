@@ -8,11 +8,7 @@ import {
   subscribeToInvitationAuth,
   verifyInvitationPassword,
 } from "../services/invitation.service";
-import {
-  InvitationAuthProvider,
-  InvitationRole,
-  RotationState,
-} from "../types/invitation.types";
+import { InvitationRole, RotationState } from "../types/invitation.types";
 
 function getQueryParam(search: string, param: string): string | number | undefined {
   const searchParams = new URLSearchParams(search);
@@ -37,13 +33,11 @@ export function useInvitationPage() {
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [rotation, setRotation] = useState<RotationState>({ rotateX: 0, rotateY: 0 });
   const [isLoading, setIsLoading] = useState(false);
-  const [authProvider, setAuthProvider] = useState<InvitationAuthProvider>(null);
   const [showAdminModal, setShowAdminModal] = useState(false);
 
   useEffect(() => {
-    return subscribeToInvitationAuth((authUser, provider) => {
+    return subscribeToInvitationAuth((authUser) => {
       setUser(authUser);
-      setAuthProvider(provider);
     });
   }, []);
 
@@ -56,10 +50,9 @@ export function useInvitationPage() {
   const handleSignUpWithGoogle = async () => {
     setIsLoading(true);
     try {
-      const session = await signInInvitationWithGoogle();
-      if (session) {
-        setUser(session.user);
-        setAuthProvider(session.authProvider);
+      const signedInUser = await signInInvitationWithGoogle();
+      if (signedInUser) {
+        setUser(signedInUser);
       }
     } finally {
       setIsLoading(false);
@@ -77,7 +70,6 @@ export function useInvitationPage() {
 
       try {
         await registerInvitationUser({
-          authProvider,
           groupid: userGroupid,
           role,
           user,
@@ -127,7 +119,6 @@ export function useInvitationPage() {
   };
 
   return {
-    authProvider,
     feedbackMessage,
     handleAcceptInvitation,
     handleMouseLeave,

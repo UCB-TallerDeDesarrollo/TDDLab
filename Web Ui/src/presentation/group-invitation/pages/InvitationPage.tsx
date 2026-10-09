@@ -163,7 +163,7 @@ function InvitationPage() {
             />
           )}
           {invitation.showPopUp && (
-            <SuccessfulEnrollmentPopUp authProvider={invitation.authProvider} />
+            <SuccessfulEnrollmentPopUp />
           )}
           {invitation.openPopup && <CheckRegisterGroupPopUp />}
         </div>

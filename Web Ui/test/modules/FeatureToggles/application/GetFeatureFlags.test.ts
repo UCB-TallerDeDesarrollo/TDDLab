@@ -6,7 +6,7 @@ jest.mock("../../../../src/modules/FeatureFlags/repository/FeatureFlagRepository
 
 describe("GetFeatureFlags", () => {
   const mockFlags: FeatureFlag[] = [
-    { id: 1, feature_name: "Boton Asistente IA", is_enabled: true }
+    { id: 1, feature_name: "Boton Asistente IA", is_enabled: true },
   ];
 
   beforeEach(() => {

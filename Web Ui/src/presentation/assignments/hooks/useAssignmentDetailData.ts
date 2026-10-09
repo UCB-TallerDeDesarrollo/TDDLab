@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createSearchParams, NavigateFunction } from "react-router-dom";
 import { GetAssignmentDetail } from "../../../modules/Assignments/application/GetAssignmentDetail";
 import { AssignmentDataObject } from "../../../modules/Assignments/domain/assignmentInterfaces";
@@ -66,7 +66,7 @@ export function useAssignmentDetailData({
   assignmentid,
   navigate,
 }: Readonly<UseAssignmentDetailDataProps>) {
-  const [refreshTick, setRefreshTick] = useState(0);
+  const [submissionRetry, setSubmissionRetry] = useState(0);
   const [uiMessage, setUiMessage] = useState<string | null>(null);
   const [assignment, setAssignment] = useState<AssignmentDataObject | null>(null);
   const [groupDetails, setGroupDetails] = useState<GroupDataObject | null>(null);
@@ -78,12 +78,19 @@ export function useAssignmentDetailData({
 
   const [studentSubmission, setStudentSubmission] =
     useState<SubmissionDataObject | null>(null);
-  const [submission, setSubmission] = useState<SubmissionDataObject | null>(null);
+  const [submissionLoadState, setSubmissionLoadState] = useState<ViewState>("loading");
+  const [loadedSubmissionKey, setLoadedSubmissionKey] = useState("");
+  const submissionKey = `${role}:${userid}:${assignmentid}`;
+  const currentSubmissionKey = useRef(submissionKey);
+  currentSubmissionKey.current = submissionKey;
+  const savingSubmission = useRef(false);
+  const [isSavingSubmission, setIsSavingSubmission] = useState(false);
+  const studentSubmissionState = loadedSubmissionKey === submissionKey
+    ? submissionLoadState : "loading";
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
-
   useEffect(() => {
     const fetchAssignment = async () => {
       const assignmentsRepository = new AssignmentsRepository();
@@ -103,8 +110,8 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchAssignment();
-  }, [assignmentid, refreshTick]);
+    void fetchAssignment();
+  }, [assignmentid]);
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -125,8 +132,8 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchGroup();
-  }, [assignment, refreshTick]);
+    void fetchGroup();
+  }, [assignment]);
 
   useEffect(() => {
     const fetchStudentFlags = async () => {
@@ -144,16 +151,24 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchStudentFlags();
+    void fetchStudentFlags();
   }, [role]);
 
   useEffect(() => {
+    let active = true;
+    setLoadedSubmissionKey(submissionKey);
+    setSubmissionLoadState("loading");
+    setStudentSubmission(null);
+    setLinkDialogOpen(false);
+    setIsCommentDialogOpen(false);
+
     const fetchStudentSubmission = async () => {
       if (!isStudent(role)) {
         return;
       }
 
-      if (!assignmentid || !userid || userid === -1 || assignmentid < 0 || userid < 0) {
+      if (!Number.isInteger(assignmentid) || !Number.isInteger(userid) || assignmentid <= 0 || userid <= 0) {
+        setSubmissionLoadState("error");
         return;
       }
 
@@ -162,15 +177,19 @@ export function useAssignmentDetailData({
         const submissionData = new GetSubmissionByUserandAssignmentId(submissionRepository);
         const fetchedSubmission =
           await submissionData.getSubmisssionByUserandSubmissionId(assignmentid, userid);
-        setSubmission(fetchedSubmission);
-        setStudentSubmission(fetchedSubmission);
+        if (active) {
+          setStudentSubmission(fetchedSubmission);
+          setSubmissionLoadState("success");
+        }
       } catch (error) {
         console.error("Error verifying submission status:", error);
+        if (active) setSubmissionLoadState("error");
       }
     };
 
-    fetchStudentSubmission();
-  }, [assignmentid, userid, role, refreshTick]);
+    void fetchStudentSubmission();
+    return () => { active = false; };
+  }, [assignmentid, userid, role, submissionKey, submissionRetry]);
 
   useEffect(() => {
     const fetchDeliveries = async () => {
@@ -229,22 +248,16 @@ export function useAssignmentDetailData({
       }
     };
 
-    fetchDeliveries();
-  }, [assignmentid, role, refreshTick]);
+    void fetchDeliveries();
+  }, [assignmentid, role]);
 
-  const isTaskInProgress = submission?.status !== "in progress";
-
-  const studentStatusLabel = useMemo(
-    () => getDisplayStatus(studentSubmission?.status),
-    [studentSubmission?.status]
-  );
+  const canStartTask = studentSubmissionState === "success" && !studentSubmission;
+  const canFinishTask = studentSubmissionState === "success" && studentSubmission?.status === "in progress";
+  const studentStatusLabel = studentSubmission?.status === "delivered"
+    ? "Finalizado" : getDisplayStatus(studentSubmission?.status);
 
   const openLinkDialog = () => {
-    setLinkDialogOpen(true);
-  };
-
-  const refreshDetailData = () => {
-    setRefreshTick((prev) => prev + 1);
+    if (canStartTask && !savingSubmission.current) setLinkDialogOpen(true);
   };
 
   const closeLinkDialog = () => {
@@ -252,7 +265,7 @@ export function useAssignmentDetailData({
   };
 
   const openCommentDialog = () => {
-    setIsCommentDialogOpen(true);
+    if (canFinishTask && !savingSubmission.current) setIsCommentDialogOpen(true);
   };
 
   const closeCommentDialog = () => {
@@ -260,7 +273,7 @@ export function useAssignmentDetailData({
   };
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!assignmentid) {
+    if (!canStartTask || savingSubmission.current) {
       return;
     }
 
@@ -281,13 +294,22 @@ export function useAssignmentDetailData({
       start_date,
     };
 
-    await createSubmission.createSubmission(submissionData);
-    closeLinkDialog();
-    refreshDetailData();
+    savingSubmission.current = true;
+    setIsSavingSubmission(true);
+    try {
+      const savedSubmission = await createSubmission.createSubmission(submissionData);
+      if (currentSubmissionKey.current === submissionKey) {
+        setStudentSubmission(savedSubmission);
+        closeLinkDialog();
+      }
+    } finally {
+      savingSubmission.current = false;
+      setIsSavingSubmission(false);
+    }
   };
 
   const sendComment = async (comment: string) => {
-    if (!submission) {
+    if (!canFinishTask || !studentSubmission || savingSubmission.current) {
       return;
     }
 
@@ -301,15 +323,24 @@ export function useAssignmentDetailData({
     );
 
     const submissionData: SubmissionUpdateObject = {
-      id: submission.id,
+      id: studentSubmission.id,
       status: "delivered",
       end_date,
       comment,
     };
 
-    await finishSubmission.finishSubmission(submission.id, submissionData);
-    closeCommentDialog();
-    refreshDetailData();
+    savingSubmission.current = true;
+    setIsSavingSubmission(true);
+    try {
+      const savedSubmission = await finishSubmission.finishSubmission(studentSubmission.id, submissionData);
+      if (currentSubmissionKey.current === submissionKey) {
+        setStudentSubmission(savedSubmission);
+        closeCommentDialog();
+      }
+    } finally {
+      savingSubmission.current = false;
+      setIsSavingSubmission(false);
+    }
   };
 
   const redirectStudentToGraph = () => {
@@ -339,7 +370,9 @@ export function useAssignmentDetailData({
 
   const redirectAdmin = (
     link: string,
-    submissionId: number
+    submissionId: number,
+    path: string,
+    selectedMetric: "Dashboard" | "Complejidad"
   ) => {
     if (!link) {
       setUiMessage("No se encontro un link para esta tarea.");
@@ -355,10 +388,10 @@ export function useAssignmentDetailData({
     }
 
     const [, user, repo] = match;
-    setSelectedMetric("Dashboard");
+    setSelectedMetric(selectedMetric);
 
     navigate({
-      pathname: "/graph",
+      pathname: path,
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
@@ -369,7 +402,7 @@ export function useAssignmentDetailData({
   };
 
   const openTeacherGraph = (row: SubmissionRowView) => {
-    redirectAdmin(row.repositoryLink, row.id);
+    redirectAdmin(row.repositoryLink, row.id, "/graph", "Dashboard");
   };
 
   const openTeacherAssistant = (row: SubmissionRowView) => {
@@ -386,7 +419,11 @@ export function useAssignmentDetailData({
     deliveriesRows,
     studentSubmission,
     studentStatusLabel,
-    isTaskInProgress,
+    studentSubmissionState,
+    canStartTask,
+    canFinishTask,
+    isSavingSubmission,
+    retryStudentSubmission: () => setSubmissionRetry((value) => value + 1),
     linkDialogOpen,
     isCommentDialogOpen,
     showIAButton,
@@ -402,7 +439,7 @@ export function useAssignmentDetailData({
     openTeacherGraph,
     openTeacherAssistant,
     studentRepositoryLink: studentSubmission?.repository_link,
-    submissionRepositoryLink: submission?.repository_link,
+    submissionRepositoryLink: studentSubmission?.repository_link,
     uiMessage,
     closeUiMessage: () => setUiMessage(null),
   };
