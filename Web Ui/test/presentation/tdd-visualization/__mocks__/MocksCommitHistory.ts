@@ -2,6 +2,7 @@ import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visua
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { EmptyDataError } from "../../../../src/modules/TDDCycles-Visualization/repository/BackendDto";
 import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";
 
 // Función para convertir CommitData al formato CommitDataObject para mantener compatibilidad
@@ -48,8 +49,7 @@ export class MockGithubAPI implements CommitHistoryRepository {
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
-    let commits: CommitDataObject[] = [];
-    return commits;
+    throw new EmptyDataError("historial de commits");
   }
 
   async obtainUserName(_owner: string): Promise<string> {
@@ -57,8 +57,7 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
   }
 
   async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
-    let commitCycles: CommitCycle[] = [];
-    return commitCycles;
+    throw new EmptyDataError("TDD Cycles");
   }
 
   async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {

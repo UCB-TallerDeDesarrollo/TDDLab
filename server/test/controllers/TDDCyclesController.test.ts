@@ -40,9 +40,9 @@ describe('TDDCyclesController', () => {
             const expectedCommits = [{ id: 1 }, { id: 2 }];
             mockRequest.query = { owner: 'owner', repoName: 'repoName' };
             controller.tddCyclesUseCase.execute = jest.fn().mockResolvedValue(expectedCommits);
-    
+
             await controller.getTDDCycles(mockRequest as Request, mockResponse as Response);
-    
+
             expect(mockResponse.status).toHaveBeenCalledWith(200);
             expect(mockResponse.json).toHaveBeenCalledWith(expectedCommits);
             expect(controller.tddCyclesUseCase.execute).toHaveBeenCalledWith('owner', 'repoName');
@@ -51,9 +51,9 @@ describe('TDDCyclesController', () => {
             const error = new Error('Server error');
             mockRequest.query = { owner: 'owner', repoName: 'repoName' };
             controller.tddCyclesUseCase.execute = jest.fn().mockRejectedValue(error);
-    
+
             await controller.getTDDCycles(mockRequest as Request, mockResponse as Response);
-    
+
             expect(mockResponse.status).toHaveBeenCalledWith(500);
             expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
         });
@@ -69,9 +69,9 @@ describe('TDDCyclesController', () => {
             const expectedTestResults = [{ id: 1 }, { id: 2 }];
             mockRequest.query = { owner: 'owner', repoName: 'repoName' };
             controller.testResultsUseCase.execute = jest.fn().mockResolvedValue(expectedTestResults);
-    
+
             await controller.getTestResults(mockRequest as Request, mockResponse as Response);
-    
+
             expect(mockResponse.status).toHaveBeenCalledWith(200);
             expect(mockResponse.json).toHaveBeenCalledWith(expectedTestResults);
             expect(controller.testResultsUseCase.execute).toHaveBeenCalledWith('owner', 'repoName');
@@ -80,9 +80,9 @@ describe('TDDCyclesController', () => {
             const error = new Error('Server error');
             mockRequest.query = { owner: 'owner', repoName: 'repoName' };
             controller.testResultsUseCase.execute = jest.fn().mockRejectedValue(error);
-    
+
             await controller.getTestResults(mockRequest as Request, mockResponse as Response);
-    
+
             expect(mockResponse.status).toHaveBeenCalledWith(500);
             expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
         });
@@ -109,7 +109,7 @@ describe('TDDCyclesController', () => {
             expect(controller.getCommitHistoryUseCase.execute).toHaveBeenCalledWith('owner', 'repoName');
         });
 
-        it('should return 500 and an error message if an error is thrown', async () => {
+        it('should return 500 and error message if an unexpected error is thrown', async () => {
             const error = new Error('Server error');
             mockRequest.query = { owner: 'owner', repoName: 'repoName' };
             controller.getCommitHistoryUseCase.execute = jest.fn().mockRejectedValue(error);
@@ -117,7 +117,10 @@ describe('TDDCyclesController', () => {
             await controller.getCommitHistory(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                codename: "INTERNAL_SERVER_ERROR",
+                detail: "Error inesperado al intentar acceder a la API de GitHub",
+            });
         });
     });
 
@@ -141,7 +144,7 @@ describe('TDDCyclesController', () => {
             expect(controller.getCommitCyclesUseCase.execute).toHaveBeenCalledWith('owner', 'repoName');
         });
 
-        it('should return 500 and an error message if an error is thrown', async () => {
+        it('should return 500 and an error message if an unexpected error is thrown', async () => {
             const error = new Error('Server error');
             mockRequest.query = { owner: 'owner', repoName: 'repoName' };
             controller.getCommitCyclesUseCase.execute = jest.fn().mockRejectedValue(error);
@@ -149,7 +152,10 @@ describe('TDDCyclesController', () => {
             await controller.getCommitCycles(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Server error' });
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                codename: "INTERNAL_SERVER_ERROR",
+                detail: "Error inesperado al intentar acceder a la API de GitHub",
+            });
         });
     });
 });

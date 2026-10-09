@@ -6,8 +6,6 @@ import { CommitHistoryAdapter } from "../../../src/modules/TDDCycles-Visualizati
 
 
 describe("TDDCharts", () => {
-
-
   it("renders with default props (null data)", () => {
     render(<TDDCharts 
       commits={null}
@@ -23,5 +21,4 @@ describe("TDDCharts", () => {
 
     expect(screen.queryByTestId("graph-coverage")).not.toBeInTheDocument();
   });
-
 });
