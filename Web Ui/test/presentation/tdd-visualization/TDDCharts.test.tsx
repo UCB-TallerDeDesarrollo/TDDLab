@@ -18,7 +18,6 @@ describe("TDDCharts", () => {
 
       role={"student"}
       commitsTddCycles={null}
-      typegraphs="graph"
     />);
 
     expect(screen.queryByTestId("graph-coverage")).not.toBeInTheDocument();
