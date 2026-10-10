@@ -41,7 +41,7 @@ const StyledActionButton = styled(Button, {
     },
   },
   "&:active": {
-    transform: "scale(0.98)",
+    transform: "var(--action-button-active-transform, scale(0.98))",
   },
 }));
 
