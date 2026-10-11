@@ -23,9 +23,9 @@ function getDefaultMetric(graphs: string) {
   return graphs === "graph" ? "Dashboard" : "Complejidad";
 }
 
-function getRepoQuery(submission: Submission) {
+function getRepoQuery(submission: Submission, assignmentId: string) {
   const [, , , repoOwner, repoName] = submission.repository_link.split("/");
-  return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
+  return `repoOwner=${repoOwner}&repoName=${repoName}&assignmentId=${assignmentId}&submissionId=${submission.id}`;
 }
 
 export function useTDDChartPage({
@@ -40,9 +40,11 @@ export function useTDDChartPage({
   const isTeacherView = role !== "student";
   const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName = String(searchParams.get("repoName")) || "defaultRepo";
+  const assignmentId = String(searchParams.get("assignmentId")) || "";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
-  const fetchedSubmissions: Submission[] = isTeacherView
-    ? JSON.parse(searchParams.get("fetchedSubmissions") || "[]")
+  // Read submissions from sessionStorage instead of URL to avoid huge URLs
+  const fetchedSubmissions: Submission[] = isTeacherView && assignmentId
+    ? JSON.parse(sessionStorage.getItem(`submissions_${assignmentId}`) || "[]")
     : [];
   const submissionId = isTeacherView ? Number(searchParams.get("submissionId")) : 0;
 
@@ -114,9 +116,7 @@ export function useTDDChartPage({
       const previousIndex = currentIndex - 1;
       const previousSubmission = fetchedSubmissions[previousIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(previousSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      navigate(`?${getRepoQuery(previousSubmission, assignmentId)}`);
       setCurrentIndex(previousIndex);
     }
   };
@@ -126,9 +126,7 @@ export function useTDDChartPage({
       const nextIndex = currentIndex + 1;
       const nextSubmission = fetchedSubmissions[nextIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(nextSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      navigate(`?${getRepoQuery(nextSubmission, assignmentId)}`);
       setCurrentIndex(nextIndex);
     }
   };

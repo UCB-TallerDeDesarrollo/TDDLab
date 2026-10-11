@@ -390,12 +390,16 @@ export function useAssignmentDetailData({
     const [, user, repo] = match;
     setSelectedMetric(selectedMetric);
 
+    // Store submissions in sessionStorage keyed by assignmentId to avoid huge URLs
+    const assignmentIdKey = `submissions_${assignmentid}`;
+    sessionStorage.setItem(assignmentIdKey, JSON.stringify(submissions));
+
     navigate({
       pathname: path,
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
-        fetchedSubmissions: JSON.stringify(submissions),
+        assignmentId: assignmentid.toString(),
         submissionId: submissionId.toString(),
       }).toString(),
     });
