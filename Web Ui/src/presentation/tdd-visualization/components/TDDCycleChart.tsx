@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { CHART_SYMBOL_VARIANT, chartSymbols } from './chartSymbols';
+import React, { useMemo, useState } from "react";
+import { CHART_SYMBOL_VARIANT, chartSymbols } from "./chartSymbols";
 
 interface TestLog {
   numPassedTests?: number;
@@ -19,10 +19,16 @@ interface TDDCycleChartProps {
 
 interface CommitData {
   commitNumber: number;
-  tests: Array<{ passed: boolean; size: number; detail: string }>;
+  tests: Array<{
+    passed: boolean;
+    size: number;
+    detail: string;
+  }>;
 }
 
-type ChartSymbolConfig = typeof chartSymbols.success | typeof chartSymbols.failure;
+type ChartSymbolConfig =
+  | typeof chartSymbols.success
+  | typeof chartSymbols.failure;
 
 interface ChartSymbolMarkProps {
   config: ChartSymbolConfig;
@@ -30,16 +36,24 @@ interface ChartSymbolMarkProps {
   y: number;
 }
 
-const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
-  const symbolColor = CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color;
+const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({
+  config,
+  x,
+  y,
+}) => {
+  const symbolColor =
+    CHART_SYMBOL_VARIANT === "circle" ? "#ffffff" : config.color;
+
   const halfSymbolSize = config.symbolSize / 2;
-  const symbolPath = config.symbol === 'check'
-    ? `M ${x - halfSymbolSize * 0.65} ${y - halfSymbolSize * 0.05} L ${x - halfSymbolSize * 0.15} ${y + halfSymbolSize * 0.5} L ${x + halfSymbolSize * 0.7} ${y - halfSymbolSize * 0.6}`
-    : `M ${x - halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x + halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55} M ${x + halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x - halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55}`;
+
+  const symbolPath =
+    config.symbol === "check"
+      ? `M ${x - halfSymbolSize * 0.65} ${y - halfSymbolSize * 0.05} L ${x - halfSymbolSize * 0.15} ${y + halfSymbolSize * 0.5} L ${x + halfSymbolSize * 0.7} ${y - halfSymbolSize * 0.6}`
+      : `M ${x - halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x + halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55} M ${x + halfSymbolSize * 0.55} ${y - halfSymbolSize * 0.55} L ${x - halfSymbolSize * 0.55} ${y + halfSymbolSize * 0.55}`;
 
   return (
     <>
-      {CHART_SYMBOL_VARIANT === 'circle' && (
+      {CHART_SYMBOL_VARIANT === "circle" && (
         <circle
           cx={x}
           cy={y}
@@ -48,6 +62,7 @@ const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
           opacity="0.9"
         />
       )}
+
       <path
         d={symbolPath}
         fill="none"
@@ -71,34 +86,35 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     if (!data || data.length === 0) {
       return [];
     }
-    
+
     const commitMap = new Map<number, CommitData>();
     let currentCommit = 1;
 
-    for (const log of data){
+    for (const log of data) {
       if (log.commitId) {
         currentCommit++;
       }
-      
+
       if (log.numPassedTests !== undefined) {
         if (!commitMap.has(currentCommit)) {
           commitMap.set(currentCommit, {
             commitNumber: currentCommit,
-            tests: []
+            tests: [],
           });
         }
-        
+
         const commit = commitMap.get(currentCommit)!;
-        const passed = (log.failedTests === 0) && (log.success === true);
-        const status = passed ? 'exitosa' : 'con fallos';
+        const passed = log.failedTests === 0 && log.success === true;
+        const status = passed ? "exitosa" : "con fallos";
+
         commit.tests.push({
           passed,
           size: 1,
           detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.`,
         });
       }
-    };
-    
+    }
+
     return Array.from(commitMap.values());
   }, [data]);
 
@@ -108,9 +124,10 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const rightPadding = 60;
   const topPadding = 40;
   const bottomPadding = 80;
+
   const plotWidth = chartWidth - leftPadding - rightPadding;
   const plotHeight = chartHeight - topPadding - bottomPadding;
-  
+
   const commitSpacing = plotWidth / (processedData.length + 1);
   const markerSize = chartSymbols.success.size;
   const markerRadius = markerSize / 2;
@@ -121,10 +138,19 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       <div style={styles.header}>
         <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
       </div>
-      
+
+      {processedData.length === 0 && (
+        <p role="status">
+          No hay registros de ejecución de pruebas disponibles. Esta gráfica
+          requiere ejecuciones registradas en script/tdd_log.json; los commits
+          o resultados de GitHub Actions por sí solos no contienen este
+          historial local.
+        </p>
+      )}
+
       <svg width={chartWidth} height={chartHeight} style={styles.svg}>
-        {/* Grid lines */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+        {/* Cuadrícula */}
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
           <line
             key={`grid-${i}`}
             x1={leftPadding}
@@ -136,7 +162,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           />
         ))}
 
-        {/* Y-axis */}
+        {/* Eje Y */}
         <line
           x1={leftPadding}
           y1={topPadding}
@@ -146,7 +172,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           strokeWidth="2"
         />
 
-        {/* X-axis */}
+        {/* Eje X */}
         <line
           x1={leftPadding}
           y1={topPadding + plotHeight}
@@ -156,7 +182,6 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           strokeWidth="2"
         />
 
-        {/* Y-axis label */}
         <text
           x={20}
           y={topPadding + plotHeight / 2}
@@ -168,8 +193,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           Pruebas ejecutadas
         </text>
 
-        {/* Y-axis ticks */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
           <text
             key={`y-tick-${i}`}
             x={leftPadding - 10}
@@ -182,25 +206,39 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           </text>
         ))}
 
-        {/* Data points - circles stacked vertically */}
+        {/* Resultados de ejecución */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
-          
+
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
-                const y = topPadding + plotHeight - (testIndex * (markerSize + circleSpacing)) - markerRadius;
-                const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
-                
+                const y =
+                  topPadding +
+                  plotHeight -
+                  testIndex * (markerSize + circleSpacing) -
+                  markerRadius;
+
+                const symbolConfig = test.passed
+                  ? chartSymbols.success
+                  : chartSymbols.failure;
+
                 return (
                   <g
                     key={`test-${commitIndex}-${testIndex}`}
                     role="img"
-                    aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
-                    onMouseEnter={() => setHoveredTest({ x, y, detail: test.detail })}
+                    aria-label={
+                      test.passed
+                        ? "Ejecución exitosa"
+                        : "Ejecución con fallos"
+                    }
+                    onMouseEnter={() =>
+                      setHoveredTest({ x, y, detail: test.detail })
+                    }
                     onMouseLeave={() => setHoveredTest(null)}
                   >
                     <title>{test.detail}</title>
+
                     <circle
                       cx={x}
                       cy={y}
@@ -208,6 +246,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
                       fill="transparent"
                       stroke="none"
                     />
+
                     <ChartSymbolMark config={symbolConfig} x={x} y={y} />
                   </g>
                 );
@@ -216,18 +255,26 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           );
         })}
 
+        {/* Tooltip */}
         {hoveredTest && (
           <g role="tooltip" pointerEvents="none">
             <rect
-              x={Math.max(10, Math.min(hoveredTest.x - 180, chartWidth - 370))}
+              x={Math.max(
+                10,
+                Math.min(hoveredTest.x - 180, chartWidth - 370),
+              )}
               y={Math.max(10, hoveredTest.y - 55)}
               width="360"
               height="36"
               rx="4"
               fill="#333"
             />
+
             <text
-              x={Math.max(20, Math.min(hoveredTest.x - 170, chartWidth - 360))}
+              x={Math.max(
+                20,
+                Math.min(hoveredTest.x - 170, chartWidth - 360),
+              )}
               y={Math.max(33, hoveredTest.y - 32)}
               fill="#fff"
               fontSize="12"
@@ -237,7 +284,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           </g>
         )}
 
-        {/* X-axis labels */}
+        {/* Etiquetas de commits */}
         {processedData.map((commit, index) => (
           <text
             key={`x-label-${index}`}
@@ -252,7 +299,6 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           </text>
         ))}
 
-        {/* X-axis title */}
         <text
           x={leftPadding + plotWidth / 2}
           y={chartHeight - 15}
@@ -264,12 +310,22 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         </text>
       </svg>
 
-      <section style={styles.legend} aria-label="Leyenda de resultados de ejecución">
+      <section
+        style={styles.legend}
+        aria-label="Leyenda de resultados de ejecución"
+      >
         <h3 style={styles.legendTitle}>Leyenda</h3>
+
         <ul style={styles.legendList}>
           {[
-            { config: chartSymbols.success, label: 'Ejecución exitosa' },
-            { config: chartSymbols.failure, label: 'Ejecución con fallos' },
+            {
+              config: chartSymbols.success,
+              label: "Ejecución exitosa",
+            },
+            {
+              config: chartSymbols.failure,
+              label: "Ejecución con fallos",
+            },
           ].map(({ config, label }) => (
             <li key={label} style={styles.legendItem}>
               <svg
@@ -285,19 +341,21 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
                   y={config.size / 2}
                 />
               </svg>
+
               <span style={styles.legendText}>{label}</span>
             </li>
           ))}
         </ul>
       </section>
 
-      {/* Summary */}
       <div style={styles.summary}>
         <div style={styles.summaryItem}>
           <strong>Total de commits:</strong> {processedData.length}
         </div>
+
         <div style={styles.summaryItem}>
-          <strong>Total de ejecuciones:</strong> {data.filter(d => d.numPassedTests !== undefined).length}
+          <strong>Total de ejecuciones:</strong>{" "}
+          {data.filter((d) => d.numPassedTests !== undefined).length}
         </div>
       </div>
     </div>
@@ -306,74 +364,74 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    padding: '20px',
-    backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    maxWidth: '1300px',
-    margin: '20px auto',
+    padding: "20px",
+    backgroundColor: "#ffffff",
+    borderRadius: "8px",
+    maxWidth: "1300px",
+    margin: "20px auto",
   },
   header: {
-    marginBottom: '20px',
+    marginBottom: "20px",
   },
   title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#333',
-    margin: '0 0 10px 0',
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#333",
+    margin: "0 0 10px 0",
   },
   svg: {
-    display: 'block',
-    margin: '0 auto',
+    display: "block",
+    margin: "0 auto",
   },
   legend: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '12px',
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '6px',
-    boxSizing: 'border-box',
-    width: '100%',
-    maxWidth: '100%',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "12px",
+    marginTop: "20px",
+    padding: "15px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "6px",
+    boxSizing: "border-box",
+    width: "100%",
+    maxWidth: "100%",
   },
   legendTitle: {
     margin: 0,
-    fontSize: '16px',
-    color: '#333',
+    fontSize: "16px",
+    color: "#333",
   },
   legendList: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: '16px 30px',
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "16px 30px",
     padding: 0,
     margin: 0,
-    listStyle: 'none',
-    width: '100%',
+    listStyle: "none",
+    width: "100%",
   },
   legendItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
     minWidth: 0,
   },
   legendText: {
-    fontSize: '14px',
-    color: '#333',
+    fontSize: "14px",
+    color: "#333",
   },
   summary: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '6px',
+    display: "flex",
+    justifyContent: "space-around",
+    marginTop: "20px",
+    padding: "15px",
+    backgroundColor: "#f5f5f5",
+    borderRadius: "6px",
   },
   summaryItem: {
-    fontSize: '14px',
-    color: '#666',
+    fontSize: "14px",
+    color: "#666",
   },
 };
 
