@@ -14,6 +14,7 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { parseGithubRepositoryUrl } from "../../../shared/helpers/githubRepository";
 
 function isStudent(role: string) {
   return role === "student";
@@ -23,9 +24,10 @@ function getDefaultMetric(graphs: string) {
   return graphs === "graph" ? "Dashboard" : "Complejidad";
 }
 
-function getRepoQuery(submission: Submission) {
-  const [, , , repoOwner, repoName] = submission.repository_link.split("/");
-  return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
+function getRepoQuery(submission: Submission): string | null {
+  const repository = parseGithubRepositoryUrl(submission.repository_link);
+  if (!repository) return null;
+  return `repoOwner=${encodeURIComponent(repository.owner)}&repoName=${encodeURIComponent(repository.repoName)}&submissionId=${submission.id}`;
 }
 
 export function useTDDChartPage({
@@ -38,19 +40,28 @@ export function useTDDChartPage({
   const navigate = useNavigate();
   const studentRole = isStudent(role);
   const isTeacherView = role !== "student";
-  const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
-  const repoName = String(searchParams.get("repoName")) || "defaultRepo";
+  const queryRepoOwner = searchParams.get("repoOwner") || "";
+  const queryRepoName = searchParams.get("repoName") || "";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
   const fetchedSubmissions: Submission[] = isTeacherView
     ? JSON.parse(searchParams.get("fetchedSubmissions") || "[]")
     : [];
   const submissionId = isTeacherView ? Number(searchParams.get("submissionId")) : 0;
-
-  const [currentIndex, setCurrentIndex] = useState(
-    isTeacherView
-      ? fetchedSubmissions.findIndex((submission) => submission.id === submissionId)
-      : 0,
+  const selectedSubmission = isTeacherView
+    ? fetchedSubmissions.find((submission) => submission.id === submissionId)
+    : undefined;
+  const selectedRepository = parseGithubRepositoryUrl(selectedSubmission?.repository_link);
+  const queryRepository = parseGithubRepositoryUrl(
+    queryRepoOwner && queryRepoName
+      ? `https://github.com/${queryRepoOwner}/${queryRepoName}`
+      : "",
   );
+  const repoOwner = isTeacherView ? selectedRepository?.owner || "" : queryRepository?.owner || "";
+  const repoName = isTeacherView ? selectedRepository?.repoName || "" : queryRepository?.repoName || "";
+
+  const currentIndex = isTeacherView
+    ? fetchedSubmissions.findIndex((submission) => submission.id === submissionId)
+    : 0;
   const [ownerName, setOwnerName] = useState("");
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
@@ -61,63 +72,86 @@ export function useTDDChartPage({
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const repositoryIsValid = Boolean(
+    repoOwner && repoName,
+  );
 
   const defaultMetric = getDefaultMetric(graphs);
 
-  const loadComments = async () => {
+  const loadComments = async (isActive: () => boolean = () => true) => {
     try {
       const commentsData = await fetchCommentsData(submissionIdcomments);
-      setEmails(commentsData.emails);
-      setComments(commentsData.comments);
+      if (isActive()) {
+        setEmails(commentsData.emails);
+        setComments(commentsData.comments);
+      }
     } catch (error) {
       console.error("Error obtaining comments:", error);
     }
   };
 
   useEffect(() => {
-    loadComments().catch((error: unknown) => console.error("Error loading comments:", error));
+    let active = true;
+    setComments(null);
+    setEmails({});
+    loadComments(() => active).catch((error: unknown) => console.error("Error loading comments:", error));
+    return () => { active = false; };
   }, [submissionIdcomments]);
 
   useEffect(() => {
+    let active = true;
+    setOwnerName("");
+    if (!repositoryIsValid) return () => { active = false; };
     const loadOwnerName = async () => {
       try {
         const name = await fetchOwnerName(port, repoOwner);
-        setOwnerName(name);
+        if (active) setOwnerName(name);
       } catch (error) {
         console.error("Error obtaining owner name:", error);
       }
     };
 
     loadOwnerName().catch((error: unknown) => console.error("Error loading owner name:", error));
-  }, [port, repoOwner]);
+    return () => { active = false; };
+  }, [port, repoOwner, repositoryIsValid]);
 
   useEffect(() => {
+    let active = true;
+    setCommitsInfo(null);
+    setCommitsTddCycles([]);
+    setTDDLogsInfo(null);
+    if (!repositoryIsValid) {
+      setLoading(false);
+      return () => { active = false; };
+    }
     const loadVisualizationData = async () => {
       setLoading(true);
       try {
         const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
-        setCommitsInfo(visualizationData.commits);
-        setCommitsTddCycles(visualizationData.commitsTddCycles);
-        setTDDLogsInfo(visualizationData.tddLogs);
+        if (active) {
+          setCommitsInfo(visualizationData.commits);
+          setCommitsTddCycles(visualizationData.commitsTddCycles);
+          setTDDLogsInfo(visualizationData.tddLogs);
+        }
       } catch (error) {
         console.error("Error obtaining data:", error);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
-  }, [port, repoOwner, repoName]);
+    return () => { active = false; };
+  }, [port, repoOwner, repoName, repositoryIsValid]);
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
       const previousIndex = currentIndex - 1;
       const previousSubmission = fetchedSubmissions[previousIndex];
+      const repoQuery = getRepoQuery(previousSubmission);
+      if (!repoQuery) return;
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(previousSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
-      setCurrentIndex(previousIndex);
+      navigate(`?${repoQuery}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`);
     }
   };
 
@@ -125,11 +159,10 @@ export function useTDDChartPage({
     if (currentIndex < fetchedSubmissions.length - 1) {
       const nextIndex = currentIndex + 1;
       const nextSubmission = fetchedSubmissions[nextIndex];
+      const repoQuery = getRepoQuery(nextSubmission);
+      if (!repoQuery) return;
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(nextSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
-      setCurrentIndex(nextIndex);
+      navigate(`?${repoQuery}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`);
     }
   };
 
@@ -173,6 +206,7 @@ export function useTDDChartPage({
     handleSubmitFeedback,
     isSubmitting,
     isStudent: studentRole,
+    repositoryIsValid,
     loading,
     ownerName,
     repoName,

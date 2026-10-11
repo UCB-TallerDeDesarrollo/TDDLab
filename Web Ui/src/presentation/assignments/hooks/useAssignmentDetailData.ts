@@ -24,6 +24,7 @@ import {
   setSelectedMetric,
 } from "../../../shared/helpers/navigationHandlers";
 import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
+import { parseGithubRepositoryUrl } from "../../../shared/helpers/githubRepository";
 
 function isStudent(role: string) {
   return role === "student";
@@ -379,22 +380,18 @@ export function useAssignmentDetailData({
       return;
     }
 
-    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-    const match = regex.exec(link);
-
-    if (!match) {
+    const repository = parseGithubRepositoryUrl(link);
+    if (!repository) {
       setUiMessage("Link invalido, por favor ingrese un link valido.");
       return;
     }
-
-    const [, user, repo] = match;
     setSelectedMetric(selectedMetric);
 
     navigate({
       pathname: path,
       search: createSearchParams({
-        repoOwner: user,
-        repoName: repo,
+        repoOwner: repository.owner,
+        repoName: repository.repoName,
         fetchedSubmissions: JSON.stringify(submissions),
         submissionId: submissionId.toString(),
       }).toString(),
