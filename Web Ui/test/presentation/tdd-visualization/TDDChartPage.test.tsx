@@ -11,11 +11,16 @@ import {
 jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
   useSearchParams: jest.fn(() => {
-    const params = new URLSearchParams();
-    const getMock = jest.fn();
-    getMock.mockReturnValueOnce("exampleOwner"); // Setea el valor deseado
-    getMock.mockReturnValueOnce("exampleRepo"); // Setea el valor deseado
-    params.get = getMock;
+    const submissions = [{
+      id: 1,
+      repository_link: "https://github.com/exampleOwner/exampleRepo",
+    }];
+    const params = new URLSearchParams({
+      repoOwner: "exampleOwner",
+      repoName: "exampleRepo",
+      submissionId: "1",
+      fetchedSubmissions: JSON.stringify(submissions),
+    });
     return [params];
   }),
 }));

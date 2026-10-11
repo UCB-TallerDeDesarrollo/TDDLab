@@ -1,5 +1,6 @@
 import { createSearchParams, NavigateFunction } from "react-router-dom";
 import { formatDate } from "../../../utils/dateUtils";
+import { parseGithubRepositoryUrl } from "../../../shared/helpers/githubRepository";
 
 export function getDisplayStatus(status: string | undefined): string {
   switch (status) {
@@ -33,20 +34,16 @@ export function redirectStudentToGraph(
     return;
   }
 
-  const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-  const match = regex.exec(link);
-
-  if (!match) {
+  const repository = parseGithubRepositoryUrl(link);
+  if (!repository) {
     onError?.("Link invalido, por favor ingrese un link valido.");
     return;
   }
-
-  const [, user, repo] = match;
   navigate({
     pathname: "/graph",
     search: createSearchParams({
-      repoOwner: user,
-      repoName: repo,
+      repoOwner: repository.owner,
+      repoName: repository.repoName,
       submissionId: submissionId.toString(),
     }).toString(),
   });
