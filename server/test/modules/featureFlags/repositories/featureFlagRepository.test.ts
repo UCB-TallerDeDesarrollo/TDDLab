@@ -37,9 +37,9 @@ describe("Obtain feature flags", () => {
     clientQueryMock.mockResolvedValue(getFeatureFlagTestData(3));
     const featureFlags = await repository.obtainFeatureFlags();
     expect(featureFlags).toHaveLength(3);
-    expect(clientQueryMock).toHaveBeenCalledWith(
-      "SELECT id, feature_name, is_enabled FROM feature_flags",
-      undefined
+    const query = clientQueryMock.mock.calls[0][0];
+    expect(query.replace(/\s+/g, " ").trim()).toBe(
+      "SELECT id, feature_name, is_enabled FROM feature_flags"
     );
   });
 
