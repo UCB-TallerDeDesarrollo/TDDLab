@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { GetTimeline } from '../../application/timeline/GetTimeline';
 import { GetLastPoint } from '../../application/timeline/GetLastPoint';
 import { Timeline } from '../../domain/timeline/Timeline';
@@ -38,13 +36,6 @@ export class TimelineView implements vscode.WebviewViewProvider {
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [
-        vscode.Uri.joinPath(
-          this.context.extensionUri,
-          'src',
-          'presentation',
-          'timeline',
-          'templates'
-        ),
         vscode.Uri.joinPath(this.context.extensionUri, 'images')
       ]
     };
@@ -260,26 +251,5 @@ async showTimeline(webview: vscode.Webview): Promise<void> {
         return '';
       })
       .join('');
-  }
-  private generateHtml(
-    timeline: Array<Timeline | CommitPoint>,
-    webview: vscode.Webview
-  ): string {
-    const templatePath = path.join(
-      this.context.extensionUri.fsPath, 'src', 'presentation', 'timeline', 'templates'
-    );
-    const htmlPath = path.join(templatePath, 'TimelineViewHTML.html');
-    const cssPath = path.join(templatePath, 'TimelineViewCSS.css');
-
-    const cssUri = webview.asWebviewUri(vscode.Uri.file(cssPath));
-
-    let htmlTemplate = fs.readFileSync(htmlPath, 'utf8');
-    const timelineHtml = this.generateHtmlFragment(timeline, webview);
-
-    htmlTemplate = htmlTemplate
-      .replace('{{CSS_PATH}}', cssUri.toString())
-      .replace('{{TIMELINE_CONTENT}}', timelineHtml);
-
-    return htmlTemplate;
   }
 }
