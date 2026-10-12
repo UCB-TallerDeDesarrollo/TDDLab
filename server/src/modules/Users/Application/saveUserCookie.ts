@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-export const saveUserCookie = async (token: string, res: Response) => {
+export const saveUserCookie = (token: string, res: Response): void => {
   const isProduction = process.env.NODE_ENV === "production";
 
   res.cookie("userSession", token, {
