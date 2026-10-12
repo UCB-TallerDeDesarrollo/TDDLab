@@ -402,7 +402,7 @@ Ese error pertenecía a uno de los archivos eliminados, de modo que su desaparic
 
 ```text
 server · npm test            → 56 suites, 349 pruebas, aprobado
-Web Ui · npx jest            → 63 suites, 292 pruebas, aprobado
+Web Ui · npx jest            → 63 suites, 292 pruebas, aprobado en 13 de 14 ejecuciones
 server · tsc --noEmit        → aprobado
 Web Ui · tsc --noEmit        → aprobado
 Web Ui · knip                → sin archivos sin uso salvo fileMock.js conservado
@@ -410,6 +410,8 @@ server · knip                → sin archivos sin uso
 git diff da950be4..HEAD      → 27 borrados, 1 añadido, sin modificaciones de código
 git status --short           → vacío
 ```
+
+La ejecución de `Web Ui` que no pasó se analiza en la sección 7.5.
 
 ### 7.4 Verificaciones no ejecutadas o fallidas
 
@@ -421,8 +423,26 @@ git status --short           → vacío
 | `VSCodeExtension` · pruebas y lint | No ejecutado | `VSCodeExtension/node_modules` no existe |
 | SonarCloud | No ejecutado | Requiere `SONAR_TOKEN` y contexto de CI |
 | Knip en la raíz del repositorio | Descartado | Sin workspaces declarados, Knip trata todo el repositorio como un solo proyecto sin entry y reporta más de 300 archivos como sin uso, incluidos todos los que son claramente vivos. Ese resultado no es utilizable |
+| `Web Ui` · suite Jest | Inestable por timeouts | 13 de 14 ejecuciones pasaron 292/292; 1 ejecución tuvo 4 fallos por timeout. Se verificó que el mismo fallo ocurre en el commit base, por lo que es preexistente. Ver sección 7.5 |
 
 No se afirma que todo funcione en lo no ejecutado. Los resultados aprobados son los de la tabla 7.1.
+
+### 7.5 Verificación de la inestabilidad intermitente de las pruebas del frontend
+
+Durante las ejecuciones de regresión se observó una ejecución con **4 pruebas fallidas** sobre 292, repartidas en las suites `GroupItem.test.tsx`, `GroupsPage.test.tsx` y `UserPage.test.tsx`. El error registrado fue `Exceeded timeout of 5000 ms for a test`, es decir, agotamiento del tiempo de espera de Jest, y **no** un fallo de aserción ni un error de resolución de módulos.
+
+Ese comportamiento podía interpretarse como una regresión causada por la limpieza, por lo que se verificó de forma controlada. Se creó un worktree de Git desprendido en el commit base `da950be4`, sin ninguno de los cambios de esta tarea, se le enlazó el mismo `node_modules` y se ejecutó la suite completa cinco veces. Resultado:
+
+| Ejecución | Commit base `da950be4` | Rama de esta tarea |
+|---|---|---|
+| Trials sin fallos | 9 de 10 | 13 de 14 |
+| Trials con 4 fallos por timeout | 1 de 10 (`GroupItem`, `GroupsPage`, `UserPage`) | 1 de 14 |
+
+Los mismos cuatro casos fallaron por el mismo motivo de timeout en el commit base, sin que existiera ninguna de las eliminaciones. La inestabilidad es, por tanto, **preexistente y ajena a esta tarea**: se debe a que varias suites del proyecto tardan más de 400 segundos y al límite de 5 segundos por prueba que Jest aplica bajo carga, junto con la advertencia de worker que Jest ya emite en la línea base.
+
+Esto es relevante para el criterio de aceptación: la suite del frontend no es determinista en este entorno, y un fallo aislado por timeout no constituye por sí solo evidencia de una regresión introducida. La evidencia que sí confirma que estas eliminaciones no rompieron nada es que la compilación de tipos pasa sin errores, que no queda ninguna referencia colgante a los símbolos eliminados, que cada suite afectada pasó en las ejecuciones en que no hubo timeout, y que el único error desaparecido del lint pertenecía a un archivo eliminado.
+
+Se recomienda, como trabajo futuro independiente, estabilizar estas suites (subir `testTimeout`, corregir el teardown de manejadores asíncronos y corregir la ruta rota del `moduleNameMapper` descrita en la sección 8.3).
 
 ---
 
@@ -473,3 +493,5 @@ Todas las fuentes anteriores son publicaciones verificables. No se consultó a e
 La tarea eliminó 27 archivos genuinamente sin uso en `Web Ui`, verificados uno por uno con Knip y con `git grep` sobre todo el repositorio. En `server` no había ningún archivo muerto real: los 30 reportados eran falsos positivos por ausencia de configuración de entry, y se corrigió añadiendo `server/knip.json`, tras lo cual Knip informa cero.
 
 No se modificó la estructura del proyecto ni el patrón hexagonal. Las pruebas del backend (349) y del frontend (292) pasan igual que en la línea base, la compilación de tipos pasa en ambos proyectos y el lint no tiene ni un error nuevo. Un candidato, `fileMock.js`, se conservó con justificación por ser el destino declarado de la configuración de Jest. Los resultados no ejecutados y las limitaciones se listan explícitamente en la sección 7.4.
+
+Queda documentada en la sección 7.5 una inestabilidad preexistente de la suite del frontend: cuatro casos fallan intermitentemente por timeout, tanto en el commit base como en esta rama, sin relación con las eliminaciones. Se recomienda corregirla en una tarea independiente junto con la ruta rota del `moduleNameMapper` de Jest.
