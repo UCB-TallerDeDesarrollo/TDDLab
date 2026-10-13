@@ -1,193 +1,66 @@
 import React, { useState, useEffect } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import CancelIcon from "@mui/icons-material/Cancel";
-import InputAdornment from "@mui/material/InputAdornment";
-import { useGitHubLinkValidation } from "../hooks/useGitHubLinkValidation";
-import { Alert, Typography } from "@mui/material";
 
 interface CommentDialogProps {
   open: boolean;
   link?: string;
-  onSend: (comment: string, link: string) => void | Promise<void>;
+  onSend: (comment: string, updatedLink: string) => void; 
   onClose: () => void;
 }
 
 export const CommentDialog: React.FC<CommentDialogProps> = ({
   open,
-  link,
-  onClose,
+  link = "",
   onSend,
+  onClose,
 }) => {
   const [comment, setComment] = useState("");
-  const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
-  const [edit, setEdit] = useState(false);
-  const [originalLink] = useState(link);
-  const [inputLink, setInputLink] = useState(link || "");
-  const [isLoading, setIsLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState("");
-
+  const [currentLink, setCurrentLink] = useState(link);
   useEffect(() => {
-    if (link) {
-      setIsLoading(false);
-      setInputLink(link); // <- actualiza el input editable
-      handleLinkChange({ target: { value: link } } as React.ChangeEvent<HTMLInputElement>);
-    } else {
-      setInputLink("");
-      setIsLoading(true);
+    if (open) {
+      setCurrentLink(link || "");
+      setComment("");
     }
-  }, [link, open]);
+  }, [open, link]);
 
-  useEffect(() => {
-    if (repo || !link) {
-      setIsLoading(false);
-    }
-  }, [repo, link]);
-
-  useEffect(() => {
-    if (repo || !isLinkLoading) {
-      setIsLoading(false);
-    }
-  }, [repo, isLinkLoading]);
-
-  const handleCancel = () => {
-    if (originalLink) {
-      handleLinkChange({ target: { value: originalLink } } as React.ChangeEvent<HTMLInputElement>);
-      setInputLink(originalLink);
-    }
-    setComment("");
-    onClose();
+  const handleSend = () => {
+    onSend(comment, currentLink);
   };
 
-  const handleSend = async () => {
-    if (sending || !validLink || !repo) return;
-    setSending(true);
-    setSendError("");
-    try {
-      await onSend(comment, repo);
-      setEdit(false);
-      onClose();
-    } catch {
-      setSendError("No se pudo finalizar. Intenta nuevamente.");
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setComment(event.target.value);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLink = e.target.value;
-    setInputLink(newLink);
-    handleLinkChange({ target: { value: newLink } } as React.ChangeEvent<HTMLInputElement>);
-  };
-
-  const dialogContentStyle = {
-    fontSize: "15px",
-    backgroundColor: "transparent",
-  };
-
-  const titleStyle = {
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-  };
-
-  const renderEndAdornmentEdit = () => (
-    <InputAdornment position="end">
-      <IconButton aria-label="edit" edge="end" disabled={sending} onClick={() => setEdit(!edit)}>
-        {edit ? <CancelIcon /> : <EditIcon />}
-      </IconButton>
-    </InputAdornment>
-  );
-
-  const getInputColor = () => {
-    if (repo === "") {
-      return "primary";
-    } else if (!validLink) {
-      return "error";
-    } else {
-      return "success";
-    }
-  };
+  if (!open) return null;
 
   return (
-    <Dialog open={open} onClose={sending ? undefined : onClose}>
-      <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
-      <DialogContent>
-        {isLoading ? (
-          <Typography variant="body2" color="textSecondary">
-            Cargando...
-          </Typography>
-        ) : (
-          <TextField
-            margin="dense"
-            label="Enlace del Repositorio"
-            type="text"
-            fullWidth
-            value={edit ? inputLink : repo}
-            onChange={handleInputChange}
-            disabled={!edit || sending}
-            color={getInputColor()}
-            InputProps={{
-              endAdornment: renderEndAdornmentEdit(),
-            }}
+    <div className="dialog-overlay">
+      <div className="dialog-content">
+        <h3>Repositorio de Github:</h3>
+        <div className="input-field-container">
+          <label>Enlace del Repositorio</label>
+          <input
+            type="url"
+            value={currentLink}
+            onChange={(e) => setCurrentLink(e.target.value)}
+            placeholder="https://github.com/usuario/repositorio"
+            className="dialog-input"
           />
-        )}
-        {!validLink && inputLink !== "" && !isLoading && (
-          <Typography variant="body2" color="error">
-            Advertencia: Link inválido
-          </Typography>
-        )}
-      </DialogContent>
+        </div>
 
-      <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
-      <DialogContent>
-        <DialogContentText style={dialogContentStyle}>
-          Puedes dejar un comentario sobre tu tarea en este espacio (Opcional):
-        </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="comment"
-          label="Comentario"
-          type="text"
-          multiline
-          rows={4.5}
-          fullWidth
+        <h3>Comentario:</h3>
+        <p>Puedes dejar un comentario sobre tu tarea en este espacio (Opcional):</p>
+        <textarea
           value={comment}
-          disabled={sending}
-          onChange={handleCommentChange}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Comentario"
+          className="dialog-textarea"
         />
-        {sendError && <Alert severity="error">{sendError}</Alert>}
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleCancel}
-          disabled={sending}
-          color="primary"
-          style={{ textTransform: "none", color: "#555" }}
-        >
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleSend}
-          color="primary"
-          disabled={sending || !validLink || repo === ""}
-          style={{ textTransform: "none" }}
-        >
-          Enviar
-        </Button>
-      </DialogActions>
-    </Dialog>
+
+        <div className="dialog-actions">
+          <button type="button" onClick={onClose} className="btn-cancel">
+            Cancelar
+          </button>
+          <button type="button" onClick={handleSend} className="btn-submit">
+            Enviar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
