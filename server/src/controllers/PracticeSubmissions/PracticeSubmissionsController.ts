@@ -6,6 +6,7 @@ import UpdatePracticeSubmission from "../../modules/PracticeSubmissions/Applicat
 import DeletePracticeSubmission from "../../modules/PracticeSubmissions/Application/DeletePracticeSubmissionUseCase";
 import GetPracticeSubmissionByPracticeAndUserUseCase from "../../modules/PracticeSubmissions/Application/getPracticeSubmissionByPracticeAndUserUseCase";
 import GetPracticeSubmissionsByPracticeIdUseCase from "../../modules/PracticeSubmissions/Application/getPracticeSubmissionsByPracticeIdUseCase";
+import UpdatePracticeRepositoryLinkUseCase from "../../modules/PracticeSubmissions/Application/updatePracticeRepositoryLinkUseCase";
 
 class PracticeSubmissionController {
   private readonly createPracticeSubmissionUseCase: CreatePracticeSubmission;
@@ -14,6 +15,7 @@ class PracticeSubmissionController {
   private readonly deletePracticeSubmissionUSeCase: DeletePracticeSubmission;
   private readonly getPracticeSubmissionUseCase: GetPracticeSubmissionByPracticeAndUserUseCase;
   private readonly getPracticeSubmissionsByPracticeIdUseCase: GetPracticeSubmissionsByPracticeIdUseCase;
+  private readonly updatePracticeRepositoryLinkUseCase: UpdatePracticeRepositoryLinkUseCase;
 
   constructor(repository: PracticeSubmissionRepository) {
     this.createPracticeSubmissionUseCase = new CreatePracticeSubmission(repository);
@@ -23,6 +25,7 @@ class PracticeSubmissionController {
     this.deletePracticeSubmissionUSeCase = new DeletePracticeSubmission(repository);
     this.getPracticeSubmissionsByPracticeIdUseCase =
       new GetPracticeSubmissionsByPracticeIdUseCase(repository);
+      this.updatePracticeRepositoryLinkUseCase = new UpdatePracticeRepositoryLinkUseCase(repository);
   }
 
   async CreatePracticeSubmission(req: Request, res: Response): Promise<void> {
@@ -117,6 +120,25 @@ class PracticeSubmissionController {
       res.status(500).json({ error: "Error getSubmissionsByPracticeId" });
     }
   }
-}
+  async updateRepositoryLink(req: Request, res: Response): Promise<void> {
+    try {
+      const practiceSubmissionid = parseInt(req.params.id);
+      const { repository_link } = req.body;
 
+      const updatedPracticeSubmission = await this.updatePracticeRepositoryLinkUseCase.execute(
+        practiceSubmissionid,
+        repository_link
+      );
+
+      if (updatedPracticeSubmission) {
+        res.status(200).json(updatedPracticeSubmission);
+      } else {
+        res.status(404).json({ error: "Practice Submission not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+}
 export default PracticeSubmissionController;
+
