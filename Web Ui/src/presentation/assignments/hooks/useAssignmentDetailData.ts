@@ -370,9 +370,7 @@ export function useAssignmentDetailData({
 
   const redirectAdmin = (
     link: string,
-    submissionId: number,
-    path: string,
-    selectedMetric: "Dashboard" | "Complejidad"
+    submissionId: number
   ) => {
     if (!link) {
       setUiMessage("No se encontro un link para esta tarea.");
@@ -388,10 +386,10 @@ export function useAssignmentDetailData({
     }
 
     const [, user, repo] = match;
-    setSelectedMetric(selectedMetric);
+    setSelectedMetric("Dashboard");
 
     navigate({
-      pathname: path,
+      pathname: "/graph",
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
@@ -402,7 +400,7 @@ export function useAssignmentDetailData({
   };
 
   const openTeacherGraph = (row: SubmissionRowView) => {
-    redirectAdmin(row.repositoryLink, row.id, "/graph", "Dashboard");
+    redirectAdmin(row.repositoryLink, row.id);
   };
 
   const openTeacherAssistant = (row: SubmissionRowView) => {
