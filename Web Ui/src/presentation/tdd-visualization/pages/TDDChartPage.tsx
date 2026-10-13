@@ -47,10 +47,16 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
                 data-testid="previous-student"
                 className="nav-button"
                 onClick={tddPage.goToPreviousStudent}
-                disabled={tddPage.currentIndex === 0}
+                disabled={
+                  tddPage.fetchedSubmissions.length <= 1 ||
+                  tddPage.currentIndex <= 0
+                }
                 style={{
                   backgroundColor:
-                    tddPage.currentIndex === 0 ? "#B0B0B0" : "#052845",
+                    tddPage.fetchedSubmissions.length <= 1 ||
+                    tddPage.currentIndex <= 0
+                      ? "#B0B0B0"
+                      : "#052845",
                 }}
               >
                 Anterior
@@ -61,11 +67,13 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
                 className="nav-button"
                 onClick={tddPage.goToNextStudent}
                 disabled={
-                  tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
+                  tddPage.fetchedSubmissions.length <= 1 ||
+                  tddPage.currentIndex >= tddPage.fetchedSubmissions.length - 1
                 }
                 style={{
                   backgroundColor:
-                    tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
+                    tddPage.fetchedSubmissions.length <= 1 ||
+                    tddPage.currentIndex >= tddPage.fetchedSubmissions.length - 1
                       ? "#B0B0B0"
                       : "#052845",
                 }}
