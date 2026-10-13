@@ -10,19 +10,18 @@ import { VITE_API } from "../../../../config.ts";
 const API_URL = VITE_API + "/practiceSubmissions";
 
 class PracticeSubmissionRepository
-  implements PracticeSubmissionRepositoryInterface
-{
+  implements PracticeSubmissionRepositoryInterface {
   async createPracticeSubmission(
     practiceSubmissionData: PracticeSubmissionCreationObject
   ): Promise<void> {
-    await axios.post(API_URL, practiceSubmissionData,{withCredentials: true});
+    await axios.post(API_URL, practiceSubmissionData, { withCredentials: true });
   }
   async checkPracticeSubmissionExists(
     practiceid: number,
     userid: number
   ): Promise<{ hasStarted: boolean }> {
     try {
-      const response = await axios.get(`${API_URL}/${practiceid}/${userid}`,{withCredentials: true});
+      const response = await axios.get(`${API_URL}/${practiceid}/${userid}`, { withCredentials: true });
       if (response.status === 200) {
         return response.data;
       } else {
@@ -38,7 +37,7 @@ class PracticeSubmissionRepository
     assignmentid: number
   ): Promise<PracticeSubmissionDataObject[]> {
     try {
-      const response = await axios.get(`${API_URL}/${assignmentid}`,{withCredentials: true});
+      const response = await axios.get(`${API_URL}/${assignmentid}`, { withCredentials: true });
       if (response.status === 200) {
         return response.data;
       } else {
@@ -57,7 +56,7 @@ class PracticeSubmissionRepository
     console.log(submissionData);
     console.log(submissionid);
     console.log(`${API_URL}/${submissionid}`);
-    await axios.put(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
+    await axios.put(`${API_URL}/${submissionid}`, submissionData, { withCredentials: true });
   }
 
   async getPracticeSubmissionbyUserandSubmissionId(
@@ -65,7 +64,7 @@ class PracticeSubmissionRepository
     userid: number
   ): Promise<PracticeSubmissionDataObject> {
     try {
-      const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`,{withCredentials: true});
+      const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`, { withCredentials: true });
       if (response.status === 200) {
         return response.data;
       } else {
@@ -75,6 +74,15 @@ class PracticeSubmissionRepository
       console.error("Error getting practice submission status:", error);
       throw error;
     }
+  }
+
+  async updateRepositoryLink(submissionId: number, repositoryLink: string): Promise<PracticeSubmissionDataObject> {
+    const response = await axios.patch<PracticeSubmissionDataObject>(
+      `${API_URL}/${submissionId}/repository-link`,
+      { repository_link: repositoryLink },
+      { withCredentials: true }
+    );
+    return response.data;
   }
 }
 
