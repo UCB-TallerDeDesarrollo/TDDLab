@@ -71,3 +71,34 @@ describe('TDDCycleChart', () => {
     expect(tooltips).toContain('Ejecución con fallos: 2 pruebas exitosas, 1 fallidas de 3.');
   });
 });
+
+
+describe('TDDCycleChart sin ejecuciones registradas', () => {
+  it('explica un registro que solo contiene commits, como ventasIS', () => {
+    const { container } = render(<TDDCycleChart data={testData.filter(log => 'commitId' in log)} />);
+
+    expect(screen.getByRole('status').textContent).toContain('No hay ejecuciones de pruebas registradas');
+    expect(screen.getByRole('status').textContent).toContain('El registro contiene commits');
+    expect(container.querySelector('svg')).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Leyenda de resultados de ejecución' })).toBeNull();
+  });
+
+  it('explica un registro vacío sin afirmar que contiene commits', () => {
+    const { container } = render(<TDDCycleChart data={[]} />);
+
+    expect(screen.getByRole('status').textContent).toContain('No hay ejecuciones de pruebas registradas');
+    expect(screen.getByRole('status').textContent).not.toContain('El registro contiene commits');
+    expect(container.querySelector('svg')).toBeNull();
+  });
+
+  it('muestra una ejecución con cero pruebas aprobadas cuando llegan resultados', () => {
+    const { rerender } = render(<TDDCycleChart data={[]} />);
+    rerender(<TDDCycleChart data={[{
+      numPassedTests: 0, failedTests: 3, numTotalTests: 3,
+      timestamp: 5, success: false, testId: 5,
+    }]} />);
+
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.getByRole('img', { name: 'Ejecución con fallos' })).toBeTruthy();
+  });
+});

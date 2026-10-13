@@ -102,6 +102,30 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     return Array.from(commitMap.values());
   }, [data]);
 
+  if (processedData.length === 0) {
+    const hasCommits = data?.some(log => Boolean(log.commitId));
+
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        </div>
+        <div role="status">
+          <p><strong>No hay ejecuciones de pruebas registradas.</strong></p>
+          <p>
+            {hasCommits
+              ? 'El registro contiene commits, pero no resultados de ejecución de pruebas.'
+              : 'No hay resultados de ejecución de pruebas disponibles para esta gráfica.'}
+          </p>
+          <p>
+            Verifica que el comando de pruebas guarde sus resultados en el registro TDD
+            y que ese archivo esté publicado en la rama consultada del repositorio.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const chartHeight = 400;
   const chartWidth = 1200;
   const leftPadding = 60;
