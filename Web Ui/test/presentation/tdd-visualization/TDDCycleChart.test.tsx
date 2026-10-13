@@ -1,8 +1,49 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import TDDCycleChart from '../../../src/presentation/tdd-visualization/components/TDDCycleChart';
-import { mixedTDDLogs as testData } from './fixtures/tddLogFixtures';
+import {
+  mixedTDDLogs as testData,
+  ventasISCommitOnlyLogs,
+} from './fixtures/tddLogFixtures';
 
 describe('TDDCycleChart', () => {
+  it('explica la ausencia de ejecuciones cuando el log de ventasIS solo contiene commits', () => {
+    render(<TDDCycleChart data={ventasISCommitOnlyLogs} />);
+
+    expect(
+      screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ }),
+    ).toHaveLength(0);
+    expect(
+      screen.getByText('No hay ejecuciones de pruebas registradas'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/contiene registros de commits, pero no registros de ejecución/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/script\/tdd_log\.json/)).toBeInTheDocument();
+  });
+
+  it('representa una ejecución con todas las pruebas fallidas como una ejecución existente', () => {
+    render(
+      <TDDCycleChart
+        data={[
+          {
+            numPassedTests: 0,
+            failedTests: 3,
+            numTotalTests: 3,
+            timestamp: 5,
+            success: false,
+            testId: 4,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole('img', { name: 'Ejecución con fallos' })).toBeInTheDocument();
+    expect(
+      screen.queryByText('No hay ejecuciones de pruebas registradas'),
+    ).not.toBeInTheDocument();
+  });
+
   it('muestra el símbolo accesible según el resultado de cada ejecución', () => {
     render(<TDDCycleChart data={testData} />);
 
