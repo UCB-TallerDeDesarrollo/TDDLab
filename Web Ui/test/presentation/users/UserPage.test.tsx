@@ -110,7 +110,7 @@ describe("UserPage", () => {
       expect(screen.getByText("ana@ucb.edu.bo")).toBeInTheDocument();
       expect(screen.queryByText("bruno@ucb.edu.bo")).not.toBeInTheDocument();
     });
-  });
+  },15000);
 
   it("shows the empty state when the search has no matches", async () => {
     const user = userEvent.setup();

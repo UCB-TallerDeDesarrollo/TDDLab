@@ -395,10 +395,11 @@ export function useAssignmentDetailData({
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
-        fetchedSubmissions: JSON.stringify(submissions),
         submissionId: submissionId.toString(),
+        assignmentId: assignmentid.toString(),
       }).toString(),
-    });
+    },{state: { fetchedSubmissions: submissions } }
+    );
   };
 
   const openTeacherGraph = (row: SubmissionRowView) => {

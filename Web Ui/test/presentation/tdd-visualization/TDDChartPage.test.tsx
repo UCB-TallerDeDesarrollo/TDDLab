@@ -9,6 +9,13 @@ import {
 
 jest.mock("react-router-dom", () => ({
 	useNavigate: jest.fn(),
+	useLocation: jest.fn(() => ({
+		state: null,
+		search: "",
+		pathname: "",
+		hash: "",
+		key: "test",
+	})),
 	useSearchParams: jest.fn(() => {
 		const params = new URLSearchParams();
 		const getMock = jest.fn();
