@@ -8,6 +8,7 @@ import {
   PracticeSubmissionUpdateObject,
 } from "../types";
 import PracticeSubmissionRepository from "../../../modules/PracticeSubmissions/Repository/PracticeSubmissionRepository";
+import { UpdatePracticeRepositoryLink } from "../../../modules/PracticeSubmissions/Application/UpdatePracticeRepositoryLink";
 
 const makeRepo = () => new PracticeSubmissionRepository();
 
@@ -41,4 +42,12 @@ export async function finishPracticeSubmission(
 ): Promise<void> {
   const repo = makeRepo();
   await new FinishPracticeSubmission(repo).finishSubmission(submissionId, data);
+}
+
+export async function updatePracticeRepositoryLink(
+  submissionId: number,
+  repositoryLink: string
+): Promise<void> {
+  const repo = makeRepo();
+  await new UpdatePracticeRepositoryLink(repo).execute(submissionId, repositoryLink);
 }
