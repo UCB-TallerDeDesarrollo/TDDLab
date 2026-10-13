@@ -23,7 +23,6 @@ describe("Métricas vigentes", () => {
       port={new MockGithubAPI()}
       role="student"
       commitsTddCycles={[]}
-      typegraphs="graph"
     />);
     fireEvent.mouseDown(screen.getByRole("combobox"));
     expect(within(screen.getByRole("listbox")).getAllByRole("option").map(option => option.textContent)).toEqual([
@@ -46,7 +45,6 @@ describe("Métricas vigentes", () => {
       port={new MockGithubAPI()}
       role="teacher"
       commitsTddCycles={[]}
-      typegraphs="graph"
     />);
 
     fireEvent.mouseDown(screen.getByRole("combobox"));

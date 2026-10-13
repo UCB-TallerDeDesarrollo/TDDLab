@@ -32,7 +32,7 @@ describe("Navegación entre entregas", () => {
   ] as const)("%s conserva el repositorio y selecciona Dashboard", async (action, repo, id, index) => {
     const port = new MockGithubAPI();
     const { result } = renderHook(() => useTDDChartPage({
-      port, role: "teacher", teacher_id: 10, graphs: "graph",
+      port, role: "teacher", teacher_id: 10,
     }));
     await waitFor(() => expect(result.current.loading).toBe(false));
     localStorage.setItem("selectedMetric", "Cobertura de Código");
