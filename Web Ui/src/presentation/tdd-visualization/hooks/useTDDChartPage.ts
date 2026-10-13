@@ -14,6 +14,10 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import {
+  loadGraphSubmissions,
+  saveGraphSubmissions,
+} from "../utils/submissionNavigationState";
 
 function isStudent(role: string) {
   return role === "student";
@@ -46,10 +50,11 @@ export function useTDDChartPage({
   const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName = String(searchParams.get("repoName")) || "defaultRepo";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
+  const stateSubmissions = (
+    location.state as { fetchedSubmissions?: Submission[] } | null
+  )?.fetchedSubmissions;
   const fetchedSubmissions: Submission[] = isTeacherView
-    ? ((location.state as { fetchedSubmissions?: Submission[] } | null)
-        ?.fetchedSubmissions ??
-      JSON.parse(searchParams.get("fetchedSubmissions") || "[]"))
+    ? (stateSubmissions ?? loadGraphSubmissions())
     : [];
   const submissionId = isTeacherView ? Number(searchParams.get("submissionId")) : 0;
 
@@ -121,6 +126,7 @@ export function useTDDChartPage({
       const previousIndex = currentIndex - 1;
       const previousSubmission = fetchedSubmissions[previousIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
+      saveGraphSubmissions(fetchedSubmissions);
       navigate({
         pathname: location.pathname,
         search: `?${new URLSearchParams(getRepoParams(previousSubmission)).toString()}`,
@@ -134,6 +140,7 @@ export function useTDDChartPage({
       const nextIndex = currentIndex + 1;
       const nextSubmission = fetchedSubmissions[nextIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
+      saveGraphSubmissions(fetchedSubmissions);
       navigate({
         pathname: location.pathname,
         search: `?${new URLSearchParams(getRepoParams(nextSubmission)).toString()}`,

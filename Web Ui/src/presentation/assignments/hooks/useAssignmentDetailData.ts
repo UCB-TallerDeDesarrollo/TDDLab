@@ -24,6 +24,7 @@ import {
   setSelectedMetric,
 } from "../../../shared/helpers/navigationHandlers";
 import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
+import { saveGraphSubmissions } from "../../tdd-visualization/utils/submissionNavigationState";
 
 function isStudent(role: string) {
   return role === "student";
@@ -389,6 +390,7 @@ export function useAssignmentDetailData({
 
     const [, user, repo] = match;
     setSelectedMetric(selectedMetric);
+    saveGraphSubmissions(submissions);
 
     navigate({
       pathname: path,
