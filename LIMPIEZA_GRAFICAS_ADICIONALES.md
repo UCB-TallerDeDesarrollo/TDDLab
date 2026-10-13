@@ -8,7 +8,7 @@ Repositorio: https://github.com/UCB-TallerDeDesarrollo/TDDLab
 
 Base inspeccionada: `main`, commit `9d7353db1fa57ba65952095d1b8c4c6cc235afa0`. La consulta `git ls-remote origin refs/heads/main` confirmó el mismo hash. El árbol de trabajo estaba limpio antes de iniciar.
 
-Rama de trabajo: `codex/limpiar-graficas-adicionales`.
+Rama de trabajo: `4.0.4/limpiar_graficas_adicionales`.
 
 ## 2. Hallazgos y evidencia
 
@@ -121,13 +121,13 @@ git diff --stat main...HEAD
 git diff main...HEAD
 ```
 
-La rama esperada es `codex/limpiar-graficas-adicionales`. Los cambios quedan confirmados localmente en commits pequeños, con la identidad de Git ya configurada en el equipo. Para publicarlos, cuando el equipo haya coordinado el solapamiento:
+La rama esperada es `4.0.4/limpiar_graficas_adicionales`. Los cambios quedan confirmados localmente en commits pequeños, con la identidad de Git ya configurada en el equipo. Para publicarlos, cuando el equipo haya coordinado el solapamiento:
 
 ```powershell
-git push -u origin codex/limpiar-graficas-adicionales
+git push -u origin 4.0.4/limpiar_graficas_adicionales
 ```
 
-Luego crear un pull request en GitHub con base `main` y comparación `codex/limpiar-graficas-adicionales`. Título sugerido: **Limpiar residuos de Ver Gráficas Adicionales**. Copiar las secciones de hallazgos, pruebas y limitaciones de este documento a la descripción.
+Luego crear un pull request en GitHub con base `main` y comparación `4.0.4/limpiar_graficas_adicionales`. Título sugerido: **Limpiar residuos de Ver Gráficas Adicionales**. Copiar las secciones de hallazgos, pruebas y limitaciones de este documento a la descripción.
 
 Para repetir las comprobaciones del frontend:
 

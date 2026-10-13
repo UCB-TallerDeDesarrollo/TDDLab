@@ -1,6 +1,6 @@
 # Estado actual
 
-- Rama de trabajo: `codex/limpiar-graficas-adicionales`.
+- Rama de trabajo: `4.0.4/limpiar_graficas_adicionales`.
 - Base de la limpieza: `9d7353db1fa57ba65952095d1b8c4c6cc235afa0`, la copia local indicada por el usuario.
 - Alcance actual: incorporar el Pilar 1 de forma mínima, sin cambiar la solución de producción.
 
