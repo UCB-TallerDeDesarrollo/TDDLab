@@ -60,3 +60,51 @@ Se retiran 45 archivos. El manifiesto de la extensión, los comandos registrados
 | `Web Ui/public/config.png`, `Web Ui/public/landing/landing.jpeg`, `Web Ui/public/landing/landing.svg` | Recursos sin URLs referenciadas por código, estilos, pruebas o HTML activo. Se conservan el favicon `vite.svg`, `Logo.png`, los isotipos y los recursos utilizados por la landing. |
 
 Validación de la extensión: `npm run compile` antes y después de retirar sus archivos. Verificación de reglas de exclusión con `git check-ignore` y de diferencias con `git diff --check`.
+
+## Incremento 3 — Código huérfano del frontend
+
+Se retiran 29 archivos que no son alcanzables desde `main.tsx`, las páginas cargadas por `App.tsx`, configuraciones ni pruebas. Se comprobaron imports directos, imports dinámicos y reexports: algunos componentes antiguos se importaban entre sí, pero ningún consumidor activo llegaba a esa cadena.
+
+| Grupo | Cambios y efecto sobre el mantenimiento |
+| --- | --- |
+| Lista antigua de prácticas | Se eliminan `PracticesList`, `PracticeListItem`, `CreatePracticeDialog`, `EditPracticeDialog` y `usePractices`. La ruta `/mis-practicas` usa `MyPracticesPage`, `MyPracticesList`, `MyPracticesForm`, `EditPracticeForm` y `useMyPracticesScreen`; estos mantienen creación, edición, eliminación, ordenamiento y navegación al detalle. Así se evita mantener dos implementaciones de un mismo flujo. |
+| Wrappers y estilos de prácticas | Se eliminan `MyPracticesListLayout`, el reexport `components/detail/PracticeOverviewCard`, el alias `usePracticeDetailData`, el hook local `useGitHubLinkValidation` y `PracticeDetail.css`. La implementación activa usa directamente el layout compartido, `components/PracticeOverviewCard`, `usePracticeDetail`, el hook de `shared/` y `PracticeDetailPage.css`. Se conserva `pages/PracticeDetail.tsx` porque `App.tsx` sí lo carga. |
+| Tareas | Se eliminan `AssignmentsListLayout` y tres `index.ts` sin consumidores. Las páginas y pruebas importan directamente los componentes/hooks/servicios utilizados; se mantiene `FeatureItemsLayout`. |
+| Grupos | Se eliminan `GroupsToolbar` y el `index.ts` de componentes que lo reexportaba. `GroupsPage` usa el encabezado y los controles compartidos y conserva los formularios, la lista y los controles de ordenamiento vigentes. |
+| Usuarios | Se eliminan `UsersDivider`, `RemoveUserDialog`, `UsersFeedbackDialog` y el archivo vacío `users.types.ts`. Ninguna página o prueba los consume; las pantallas actuales conservan sus componentes compartidos de confirmación, feedback y separación. |
+| Navegación y asistente IA | Se eliminan `TDDLabLogo`, `loginComponentStyles.css` y `AIResultSection`. `MainMenu` renderiza el logo vigente y el login usa estilos MUI. `AIAssistantPage` compone `ChatPanel` y `AssistantActions`. |
+| Casos de uso y utilidades | Se eliminan cuatro wrappers sin consumidores y dos utilidades sin llamadas. Se conservan `GetTDDLogs`, los repositorios, contratos y servicios utilizados; por ejemplo, `tddVisualization.service.ts` consume `GetTDDLogs`, no `GetTDDLogUseCase`. |
+
+Inventario exacto de este incremento, relativo a `Web Ui/src/`:
+
+```text
+app/navigation/components/TDDLabLogo.tsx
+app/navigation/styles/loginComponentStyles.css
+modules/PracticeSubmissions/Application/CheckPracticeSubmissionExists.ts
+modules/TDDCycles-Visualization/application/GetTDDLogUseCase.ts
+modules/User-Authentication/application/updateGroup.ts
+modules/Users/application/updateUser.ts
+presentation/ai-assistant/components/AIResultSection.tsx
+presentation/assignments/components/AssignmentsListLayout.tsx
+presentation/assignments/components/index.ts
+presentation/assignments/hooks/index.ts
+presentation/assignments/services/index.ts
+presentation/groups/components/GroupsToolbar.tsx
+presentation/groups/components/index.ts
+presentation/my-practices/components/CreatePracticeDialog.tsx
+presentation/my-practices/components/EditPracticeDialog.tsx
+presentation/my-practices/components/MyPracticesListLayout.tsx
+presentation/my-practices/components/PracticeListItem.tsx
+presentation/my-practices/components/PracticesList.tsx
+presentation/my-practices/components/detail/PracticeOverviewCard.tsx
+presentation/my-practices/hooks/useGitHubLinkValidation.ts
+presentation/my-practices/hooks/usePracticeDetailData.ts
+presentation/my-practices/hooks/usePractices.ts
+presentation/my-practices/pages/PracticeDetail.css
+presentation/users/components/UsersDivider.tsx
+presentation/users/components/dialogs/RemoveUserDialog.tsx
+presentation/users/components/dialogs/UsersFeedbackDialog.tsx
+presentation/users/types/users.types.ts
+utils/adaptarDatos.ts
+utils/localStorageService.ts
+```
