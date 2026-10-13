@@ -108,3 +108,48 @@ presentation/users/types/users.types.ts
 utils/adaptarDatos.ts
 utils/localStorageService.ts
 ```
+
+## Resultado medido
+
+- Inventario inicial: 724 archivos versionados.
+- Archivos retirados: 74; 33 del frontend, 10 de la extensión, 24 de `public/`, tres de `cypress/` y cuatro `.DS_Store` (tres de estos últimos estaban en el servidor).
+- Contenido retirado del árbol versionado: 56.969.143 bytes, aproximadamente 54,33 MiB. Este valor corresponde a los blobs eliminados; no implica borrar su historia de Git.
+- Archivos de código/estilos/datos en `Web Ui/src/`: de 286 a 257. En la extensión: de 23 a 19. Las 124 fuentes del servidor se conservan.
+- El grafo posterior no detectó archivos `.ts`, `.tsx` o `.json` huérfanos en `src/` con las entradas y pruebas consideradas. Las únicas dos hojas CSS sin imports son las plantillas de la extensión, cuyo uso por filesystem se verificó manualmente.
+- Las 21 URLs de recursos públicos encontradas en el código del frontend siguen resolviendo a archivos de `Web Ui/public/`; también se conserva el favicon referenciado por `index.html`.
+- Ninguna prueba, manifiesto, lockfile, configuración de rutas o puntero del submódulo cambió.
+
+## Evidencias por commit
+
+| Incremento | Evidencia y resultado |
+| --- | --- |
+| Análisis | [7553d92b](https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/7553d92b): registra entradas, capas, criterios para distinguir archivos huérfanos de recursos cargados dinámicamente y el plan de trabajo incremental. |
+| Extensión y recursos | [e6086a64](https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/e6086a64): elimina 45 archivos abandonados y añade exclusiones para salidas antiguas de build y Sonar. La extensión compila antes y después; conserva comandos, vistas, iconos y plantillas utilizados. |
+| Frontend | [57944c9e](https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/57944c9e): elimina 29 archivos huérfanos, incluyendo una cadena completa de componentes de prácticas que no llegaba a ninguna ruta. Los consumidores activos no tienen imports ni reexports hacia los archivos eliminados y TypeScript valida el frontend después de la limpieza. |
+
+## Alcance de la validación inicial
+
+Las primeras ejecuciones completas de Jest se interrumpieron y no produjeron un resumen final. Sus suites marcadas `PASS` se consideran evidencia parcial, no una certificación de toda la suite. En el servidor se excluyó `build/` mediante opciones de CLI porque había compilados locales que duplicaban tests y mocks; su configuración versionada no se modificó.
+
+El primer `npm run build` del frontend, lanzado junto con otras validaciones, completó TypeScript pero terminó por falta de memoria durante Vite (`Zone Allocation failed - process out of memory`). El resultado del build posterior se registra por separado. No se alteraron configuraciones de compilación ni límites de memoria para ocultar ese fallo.
+
+## Validación final completada
+
+| Comprobación | Resultado |
+| --- | --- |
+| Frontend: `npm run build` | Exitoso, código de salida 0. TypeScript valida todas las fuentes incluidas y Vite genera `dist/`; la etapa Vite terminó en 2 min 4 s. Hay una advertencia de tamaño de chunks; no impide generar el build. |
+| Extensión: `npm run compile` | Exitoso antes y después de la eliminación, código de salida 0. Se retiraron además los `.js` y sourcemaps locales obsoletos correspondientes a las tres fuentes eliminadas para evitar que quedaran en `out/`. |
+| Jest del frontend, pruebas dirigidas | 7 suites y 31 pruebas aprobadas; ninguna falló. Se valida ordenamiento/permisos de prácticas, estados y navegación de su detalle, autenticación, navegación de landing, datos de grupos, eliminación de usuario de un grupo y adaptación de datos para visualización TDD. |
+| Recursos públicos del build | Los 22 archivos activos comprobados, incluido el favicon, coinciden por SHA-256 con sus fuentes. Los tres recursos públicos retirados del frontend ya no aparecen en `dist/`. |
+| Referencias del bundle | Se comprobaron 214 referencias a JS/CSS desde el HTML y chunks generados: cero destinos ausentes. |
+| Grafo y diferencias Git | Cero imports/reexports de archivos conservados hacia archivos eliminados; `git diff --check` sin errores; pruebas, dependencias, rutas, lockfiles y submódulo sin cambios. |
+
+Pruebas dirigidas ejecutadas desde `Web Ui/`:
+
+```powershell
+npm test -- --runInBand --forceExit --coverage=false --runTestsByPath test/presentation/my-practices/services/myPracticesScreenService.test.ts test/presentation/my-practices/services/practiceDetail.service.test.ts test/presentation/landing/useLanding.test.ts test/presentation/auth/useAuth.test.ts test/presentation/groups/useGroupsData.test.tsx test/modules/Users/removeUserFromGroup.test.ts test/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter.test.ts
+```
+
+Esta validación dirigida no certifica toda la suite Jest ni pruebas E2E de Cypress. No se ejecutó el test de ejemplo Mocha de la extensión dentro de una ventana de VS Code; su verificación final fue de compilación y referencias de recursos.
+
+Los logs locales de las ejecuciones se encuentran en `docs/cleanup-validation/`, directorio ignorado por la configuración existente del repositorio. La evidencia portable y versionada es este informe junto con los diffs de los commits.
