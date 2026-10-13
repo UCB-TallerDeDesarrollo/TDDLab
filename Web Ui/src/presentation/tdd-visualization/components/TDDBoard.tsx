@@ -9,6 +9,7 @@ import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
 import { getCommitVisualDescriptor } from "./commitVisualStatus";
+import { setSelectedMetric } from "../../../shared/helpers/navigationHandlers";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
@@ -105,8 +106,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
-    localStorage.setItem("selectedMetric", graphText);
-    window.location.reload();
+    setSelectedMetric(graphText);
   };
 
   const getChartOptions = (yAxisText: string) => {
@@ -411,7 +411,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    changeGraph("Líneas de Código Modificadas");
+                    changeGraph("Cobertura de Código");
                   }
                 }}
                 role="button"
