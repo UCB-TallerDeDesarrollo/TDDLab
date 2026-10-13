@@ -149,3 +149,21 @@ En Notion crear una página para la tarea y pegar este Markdown, o importar el a
 «El botón ya había sido eliminado, pero quedaba una ruta que activaba opciones cuyos componentes ya no existían. Primero registré la línea base y escribí una prueba que fallaba porque esa URL todavía montaba la vista. Retiré la ruta y después simplifiqué los parámetros del modo antiguo bajo pruebas de regresión. Las gráficas vigentes se conservaron. Separé los cambios en commits de pruebas, ruta, contratos, navegación y documentación.»
 
 La evidencia Red/Green se conserva en los primeros dos commits; los resultados finales y sus límites están detallados en la sección 4.
+
+## 6. Adaptación mínima al Pilar 1
+
+Por solicitud posterior se añadieron instrucciones y estado persistente al repositorio, sin modificar la limpieza de producción:
+
+| Elemento | Implementación |
+| --- | --- |
+| Mapa para agentes | [AGENTS.md](AGENTS.md) |
+| Arquitectura, convenciones y comandos | [docs/README.md](docs/README.md) |
+| Estado estructurado | [feature_list.json](feature_list.json) |
+| Continuidad fuera del chat | [progress/current.md](progress/current.md) |
+| Comprobación del entorno | [init.sh](init.sh), ejecutable con `bash init.sh` desde Git Bash; no instala ni modifica archivos. |
+| Evidencia ejecutable | Se conservan `Web Ui/test` y `server/test`; no se duplican en otra carpeta `tests`. |
+| Criterios de cierre | [CHECKPOINTS.md](CHECKPOINTS.md) |
+
+Se validaron sintaxis y ejecución del script, JSON, enlaces y reglas de exclusión de Git. No se añadieron dependencias, frameworks, agentes especializados ni otro sistema de CI. No se repitieron las pruebas de la aplicación porque esta adaptación solo agrega documentación, estado y una comprobación de entorno. Los resultados de la sección 4 corresponden a la limpieza previamente verificada.
+
+Esto cubre el Pilar 1; los archivos no constituyen por sí solos un harness completo con autorización, aislamiento o revisión independiente. La adaptación se registra en dos commits adicionales a los cinco de la limpieza original.

@@ -16,7 +16,7 @@
     {
       "id": "repositorio-pilar-1",
       "description": "Agregar contexto, criterios de cierre, estado persistente y validacion minima del entorno sin reorganizar el proyecto.",
-      "status": "in_progress",
+      "status": "done",
       "evidence": "progress/current.md"
     }
   ]

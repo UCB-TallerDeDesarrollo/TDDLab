@@ -25,7 +25,9 @@ Fuente de evidencia: [informe completo](../LIMPIEZA_GRAFICAS_ADICIONALES.md). Lo
 
 ## Adaptación del Pilar 1
 
-Se agregan `AGENTS.md`, `CHECKPOINTS.md`, `feature_list.json`, `init.sh`, `docs/README.md` y este archivo. Se conserva la evidencia ejecutable en las carpetas `test` existentes. Pendiente validar los archivos nuevos antes de marcar esta adaptación como `done`.
+Se agregan `AGENTS.md`, `CHECKPOINTS.md`, `feature_list.json`, `init.sh`, `docs/README.md` y este archivo. Se conserva la evidencia ejecutable en las carpetas `test` existentes. Adaptación verificada y marcada como `done`: sintaxis Bash y ejecución de `init.sh` aprobadas; JSON, rutas de evidencia, enlaces Markdown y `git diff --check` válidos. La regla de Git permite `docs/README.md` y conserva ignorados los demás documentos locales. No se repitieron las pruebas de la aplicación porque no cambió su código.
+
+El commit `8668bd16` registra las guías y el estado inicial de esta adaptación. El siguiente commit incorpora `init.sh` y este cierre. Consultar `git log --oneline` para el historial exacto.
 
 ## Próximos pasos de entrega
 
