@@ -91,3 +91,7 @@ output.zip
 
 #Configuracion local del IDE Webstorm
 .idea/
+# Guia compartida; el resto de docs sigue siendo local
+!/docs/
+/docs/*
+!/docs/README.md

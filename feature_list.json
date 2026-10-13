@@ -1,0 +1,23 @@
+{
+  "features": [
+    {
+      "id": "limpieza-graficas-adicionales",
+      "description": "Retirar residuos del modo adicional y conservar las graficas vigentes.",
+      "status": "done",
+      "scope": "Implementacion y verificacion local; sin push, revision independiente ni despliegue.",
+      "evidence": "LIMPIEZA_GRAFICAS_ADICIONALES.md",
+      "verification": {
+        "targeted_tests": { "passed": 48, "failed": 0, "suites": 10 },
+        "typecheck": "passed",
+        "lint": "95 errores y 6 advertencias preexistentes; ninguna incidencia nueva",
+        "full_frontend_suite": "incomplete"
+      }
+    },
+    {
+      "id": "repositorio-pilar-1",
+      "description": "Agregar contexto, criterios de cierre, estado persistente y validacion minima del entorno sin reorganizar el proyecto.",
+      "status": "in_progress",
+      "evidence": "progress/current.md"
+    }
+  ]
+}
