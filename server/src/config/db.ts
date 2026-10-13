@@ -10,6 +10,7 @@ const config = {
   user: PGUSER,
   password: PGPASSWORD,
   port: Number(PGPORT), // Convert port to a number
+  family: 4,
   ssl: {
     rejectUnauthorized: false, // Set this to false if needed for self-signed certificates
   },

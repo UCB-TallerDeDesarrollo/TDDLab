@@ -46,6 +46,39 @@ const MyPracticesPage = lazy(
 const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/PracticeDetail"));
 const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
+const AUTH_DATA_KEY = "tddlabAuthData";
+
+type AuthData = {
+  userid: number;
+  userProfilePic: string;
+  userEmail: string;
+  usergroupid: number;
+  userRole: string;
+};
+
+const getCachedAuthData = (): AuthData | null => {
+  const storedAuthData = localStorage.getItem(AUTH_DATA_KEY);
+  if (!storedAuthData) {
+    return null;
+  }
+
+  try {
+    const authData = JSON.parse(storedAuthData) as Partial<AuthData>;
+    if (
+      typeof authData.userid === "number" &&
+      typeof authData.userProfilePic === "string" &&
+      typeof authData.userEmail === "string" &&
+      typeof authData.usergroupid === "number" &&
+      typeof authData.userRole === "string"
+    ) {
+      return authData as AuthData;
+    }
+  } catch (error) {
+    console.error("Error reading cached authentication data:", error);
+  }
+
+  return null;
+};
 
 const navArrayLinks = [
   {
@@ -101,15 +134,18 @@ function App() {
 
       if (storedSession) {
         localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-        setGlobalState("authData", {
+        const restoredAuthData = {
           userid: storedSession.id,
           userProfilePic: savedImage,
           userEmail: storedSession.email,
           usergroupid: storedSession.groupid,
           userRole: storedSession.role,
-        });
+        };
+        localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(restoredAuthData));
+        setGlobalState("authData", restoredAuthData);
       } else {
         localStorage.removeItem(AUTH_SESSION_HINT_KEY);
+        localStorage.removeItem(AUTH_DATA_KEY);
         setGlobalState("authData", {
           userid: -1,
           userProfilePic: savedImage,
@@ -120,6 +156,11 @@ function App() {
       }
     }).catch((error: unknown) => {
       console.error("Error restoring session:", error);
+      const cachedAuthData = getCachedAuthData();
+      if (cachedAuthData) {
+        setGlobalState("authData", cachedAuthData);
+        return;
+      }
       setGlobalState("authData", {
         userid: -1,
         userProfilePic: "",

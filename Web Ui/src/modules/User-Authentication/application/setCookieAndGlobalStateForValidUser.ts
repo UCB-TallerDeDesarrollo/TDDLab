@@ -3,6 +3,7 @@ import { setGlobalState } from "../domain/authStates";
 import { UserOnDb } from "../domain/userOnDb.interface";
 
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
+const AUTH_DATA_KEY = "tddlabAuthData";
 
 export function setCookieAndGlobalStateForValidUser(
   userData: User,
@@ -11,13 +12,15 @@ export function setCookieAndGlobalStateForValidUser(
 ) {
   if (usergroupid && userData.photoURL && userData.email) {
     localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-    setGlobalState("authData", {
+    const authData = {
       userid: usergroupid.id,
       userProfilePic: userData.photoURL,
       userEmail: userData.email,
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,
-    });
+    };
+    localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(authData));
+    setGlobalState("authData", authData);
     positiveCallback();
   } else {
     console.log("Invalid User");

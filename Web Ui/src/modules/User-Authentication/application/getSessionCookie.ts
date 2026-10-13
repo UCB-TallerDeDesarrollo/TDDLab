@@ -56,6 +56,9 @@ export const getSessionCookie = () => {
     })
     .catch((error) => {
       console.error("Error retrieving session cookie:", error);
-      return null;
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        return null;
+      }
+      throw error;
     });
 };
