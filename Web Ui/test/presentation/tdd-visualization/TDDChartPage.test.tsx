@@ -7,6 +7,21 @@ import {
   MockGithubAPIError,
 } from "./__mocks__/MocksCommitHistory";
 
+// Esta suite verifica la página, no el renderizado de Chart.js.
+// El selector y los símbolos tienen sus propias suites.
+jest.mock("../../../src/presentation/tdd-visualization/components/TDDChart", () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-tdd-charts" />,
+}));
+
+// La carga de comentarios no debe consultar el backend durante estas pruebas.
+jest.mock("../../../src/modules/teacherCommentsOnSubmissions/repository/CommentsRepository", () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    getCommentsBySubmissionId: jest.fn().mockResolvedValue([]),
+  })),
+}));
+
 // Mock de `useNavigate` con tipo explícito
 jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),

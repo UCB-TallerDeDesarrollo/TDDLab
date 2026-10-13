@@ -1,36 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import TDDCycleChart from '../../../src/presentation/tdd-visualization/components/TDDCycleChart';
-
-const testData = [
-  {
-    commitId: 'commit-1',
-    commitName: 'Primer commit',
-    commitTimestamp: 1,
-    testId: 1,
-  },
-  {
-    numPassedTests: 3,
-    failedTests: 0,
-    numTotalTests: 3,
-    timestamp: 2,
-    success: true,
-    testId: 2,
-  },
-  {
-    commitId: 'commit-2',
-    commitName: 'Segundo commit',
-    commitTimestamp: 3,
-    testId: 3,
-  },
-  {
-    numPassedTests: 2,
-    failedTests: 1,
-    numTotalTests: 3,
-    timestamp: 4,
-    success: false,
-    testId: 4,
-  },
-];
+import { mixedTDDLogs as testData } from './fixtures/tddLogFixtures';
 
 describe('TDDCycleChart', () => {
   it('muestra el símbolo accesible según el resultado de cada ejecución', () => {
