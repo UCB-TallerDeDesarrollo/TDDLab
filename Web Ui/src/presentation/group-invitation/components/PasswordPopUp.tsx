@@ -25,7 +25,7 @@ const PasswordComponent: React.FC<PasswordComponentProps> = ({
     setPassword(e.target.value);
   };
 
-  const handleSendPassword = async () => {
+  const handleSendPassword = () => {
     onSend(password);
     onClose();
   };

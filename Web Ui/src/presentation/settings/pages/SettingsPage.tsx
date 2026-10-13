@@ -23,7 +23,7 @@ const SettingsPage: React.FC = () => {
   const [selectedPrompt, setSelectedPrompt] = useState<string>('tddPrompt');
 
   useEffect(() => {
-    loadSettings();
+    loadSettings().catch((error: unknown) => console.error("Error loading settings:", error));
   }, [loadSettings]);
 
   const promptItems: PromptItem[] = prompts

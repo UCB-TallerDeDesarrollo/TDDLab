@@ -14,6 +14,7 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { BackendApiError } from "../../../modules/TDDCycles-Visualization/repository/BackendDto";
 
 function isStudent(role: string) {
   return role === "student";
@@ -61,6 +62,7 @@ export function useTDDChartPage({
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const defaultMetric = getDefaultMetric(graphs);
 
@@ -75,7 +77,7 @@ export function useTDDChartPage({
   };
 
   useEffect(() => {
-    loadComments();
+    loadComments().catch((error: unknown) => console.error("Error loading comments:", error));
   }, [submissionIdcomments]);
 
   useEffect(() => {
@@ -88,25 +90,33 @@ export function useTDDChartPage({
       }
     };
 
-    loadOwnerName();
+    loadOwnerName().catch((error: unknown) => console.error("Error loading owner name:", error));
   }, [port, repoOwner]);
 
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
         setCommitsInfo(visualizationData.commits);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
       } catch (error) {
-        console.error("Error obtaining data:", error);
+        setCommitsInfo(null);
+        if (error instanceof BackendApiError) {
+          setError(error.message);
+        } else if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError(`Error inesperado al cargar los commits del repositorio ${repoOwner}/${repoName}`);
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    loadVisualizationData();
+    loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
   }, [port, repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
@@ -147,7 +157,7 @@ export function useTDDChartPage({
         content: feedback,
       });
       setFeedback("");
-      loadComments();
+      await loadComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
     } finally {
@@ -163,6 +173,7 @@ export function useTDDChartPage({
       setMetric,
       tddLogsInfo,
     },
+    error,
     comments,
     currentIndex,
     emails,

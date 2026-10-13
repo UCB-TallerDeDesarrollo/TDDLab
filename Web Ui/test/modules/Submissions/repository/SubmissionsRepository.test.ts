@@ -7,6 +7,39 @@ const axiosPostSpy = jest.spyOn(axios, 'post');
 const axiosGetSpy = jest.spyOn(axios, 'get');
 const mockRepository = new SubmissionRepository();
 
+describe('persisted task state', () => {
+    it('returns the saved submission, including its ID, after starting', async () => {
+        axiosPostSpy.mockResolvedValue({ status: 201, data: submissionInProgressDataMock });
+        await expect(mockRepository.createSubmission(submissionInProgressDataMock))
+            .resolves.toEqual(submissionInProgressDataMock);
+        expect(axiosPostSpy).toHaveBeenLastCalledWith(
+            expect.stringContaining('/submissions'), submissionInProgressDataMock, { withCredentials: true }
+        );
+    });
+
+    it('returns the confirmed delivered state after finishing', async () => {
+        const delivered = { ...submissionInProgressDataMock, status: 'delivered' };
+        const put = jest.spyOn(axios, 'put').mockResolvedValue({ status: 200, data: delivered });
+        await expect(mockRepository.finishSubmission(delivered.id, delivered)).resolves.toEqual(delivered);
+        expect(put).toHaveBeenLastCalledWith(
+            expect.stringContaining(`/submissions/${delivered.id}`), delivered, { withCredentials: true }
+        );
+    });
+
+    it('treats only a 404 as a task that has not started', async () => {
+        axiosGetSpy.mockRejectedValue({ isAxiosError: true, response: { status: 404 } });
+        await expect(mockRepository.getSubmissionbyUserandSubmissionId(25, 1)).resolves.toBeNull();
+    });
+
+    it.each([401, 403, 500])('preserves HTTP %s errors instead of returning a pending task', async (status) => {
+        const error = Object.assign(new Error('Cannot load saved state'), {
+            isAxiosError: true, response: { status },
+        });
+        axiosGetSpy.mockRejectedValue(error);
+        await expect(mockRepository.getSubmissionbyUserandSubmissionId(25, 1)).rejects.toBe(error);
+    });
+});
+
 describe('Create submission', () => {
     it('should create an submission successfully', async () => {
         axiosPostSpy.mockResolvedValue({ status: 201 });

@@ -7,8 +7,9 @@ const API_URL = VITE_API + "/submissions";
 
 class SubmissionRepository implements SubmissionRepositoryInterface {
 
-    async createSubmission(submissionData: SubmissionCreationObject): Promise<void> {
-        await axios.post(API_URL, submissionData,{withCredentials: true});
+    async createSubmission(submissionData: SubmissionCreationObject): Promise<SubmissionDataObject> {
+        const response = await axios.post<SubmissionDataObject>(API_URL, submissionData,{withCredentials: true});
+        return response.data;
     }
     async checkSubmissionExists(assignmentid: number, userid: number): Promise<{ hasStarted: boolean }> {
         try {
@@ -46,14 +47,12 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
         }
     }
 
-    async finishSubmission(submissionid: number, submissionData: SubmissionUpdateObject): Promise<void>{
-        console.log(submissionData);
-        console.log(submissionid);
-        console.log(`${API_URL}/${submissionid}`);
-        await axios.put(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
+    async finishSubmission(submissionid: number, submissionData: SubmissionUpdateObject): Promise<SubmissionDataObject>{
+        const response = await axios.put<SubmissionDataObject>(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
+        return response.data;
     }
 
-    async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject> {
+    async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject | null> {
         try {
             const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`,{withCredentials: true});
             if (response.status === 200) {
@@ -63,7 +62,7 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
-                return Promise.reject(new Error("Submission not found"));
+                return null;
             }
             return Promise.reject(error instanceof Error ? error : new Error(String(error)));
         }

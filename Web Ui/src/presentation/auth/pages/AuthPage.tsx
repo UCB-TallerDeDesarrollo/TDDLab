@@ -1,13 +1,35 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { getAuth } from "firebase/auth";
 import { useAuth } from "../hooks/useAuth";
 import { AuthBackground } from "../components/AuthBackground";
 import { AuthHeader } from "../components/AuthHeader";
 import FeedbackSnackbar from "../../../shared/components/FeedbackSnackbar";
 import StatefulButton from "../../../shared/components/StatefulButton";
 import ContentState from "../../../shared/components/ContentState";
+import firebase from "../../../firebaseConfig";
 
 export default function AuthPage() {
-  const { loginWithGitHub, loginWithGoogle, loading, error, setError } = useAuth();
+  const { loginWithGoogle, loading, error, setError } = useAuth();
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    const prepareAuth = async () => {
+      try {
+        // Prepare Firebase before the click so Safari can open the popup promptly.
+        await getAuth(firebase).authStateReady();
+        if (active) setAuthReady(true);
+      } catch {
+        if (active) setError("No se pudo inicializar la autenticación.");
+      }
+    };
+
+    void prepareAuth();
+    return () => { active = false; };
+  }, [setError]);
+
   let authStateContent = null;
 
   if (loading) {
@@ -50,28 +72,9 @@ export default function AuthPage() {
           {authStateContent}
 
           <StatefulButton
-            variantStyle="secondary"
-            onClick={loginWithGitHub}
-            disabled={loading}
-            sx={{
-              width: "100%",
-              height: 44,
-              backgroundColor: "#6ABB46",
-              "&:hover": {
-                backgroundColor: "#5ca13d",
-              },
-              "&.Mui-disabled": {
-                backgroundColor: "#8fbf7a",
-              },
-            }}
-          >
-            Accedé con GitHub
-          </StatefulButton>
-
-          <StatefulButton
             variantStyle="primary"
             onClick={loginWithGoogle}
-            disabled={loading}
+            disabled={loading || !authReady}
             sx={{ width: "100%", height: 44 }}
           >
             Accedé con Google

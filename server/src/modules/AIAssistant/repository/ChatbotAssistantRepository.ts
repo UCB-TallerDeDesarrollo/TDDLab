@@ -40,7 +40,7 @@ export class ChatbotAssistantRepository {
         return { prompt };
     }
 
-    private async getCommitHistoryUrl(URL: string): Promise<string> {
+    private getCommitHistoryUrl(URL: string): string {
         try {
             const match = URL.match(/github\.com\/([^/]+)\/([^/]+)/);
             if (!match || match.length < 3) {

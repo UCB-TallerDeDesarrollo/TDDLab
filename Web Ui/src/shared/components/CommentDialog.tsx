@@ -11,12 +11,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useGitHubLinkValidation } from "../hooks/useGitHubLinkValidation";
-import { Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 
 interface CommentDialogProps {
   open: boolean;
   link?: string;
-  onSend: (comment: string, link: string) => void;
+  onSend: (comment: string, link: string) => void | Promise<void>;
   onClose: () => void;
 }
 
@@ -32,6 +32,8 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   const [originalLink] = useState(link);
   const [inputLink, setInputLink] = useState(link || "");
   const [isLoading, setIsLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
 
   useEffect(() => {
     if (link) {
@@ -65,11 +67,18 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     onClose();
   };
 
-  const handleSend = () => {
-    if (validLink && repo) {
-      onSend(comment, repo);
+  const handleSend = async () => {
+    if (sending || !validLink || !repo) return;
+    setSending(true);
+    setSendError("");
+    try {
+      await onSend(comment, repo);
       setEdit(false);
       onClose();
+    } catch {
+      setSendError("No se pudo finalizar. Intenta nuevamente.");
+    } finally {
+      setSending(false);
     }
   };
 
@@ -95,7 +104,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
 
   const renderEndAdornmentEdit = () => (
     <InputAdornment position="end">
-      <IconButton aria-label="edit" edge="end" onClick={() => setEdit(!edit)}>
+      <IconButton aria-label="edit" edge="end" disabled={sending} onClick={() => setEdit(!edit)}>
         {edit ? <CancelIcon /> : <EditIcon />}
       </IconButton>
     </InputAdornment>
@@ -112,7 +121,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={sending ? undefined : onClose}>
       <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
       <DialogContent>
         {isLoading ? (
@@ -127,7 +136,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
             fullWidth
             value={edit ? inputLink : repo}
             onChange={handleInputChange}
-            disabled={!edit}
+            disabled={!edit || sending}
             color={getInputColor()}
             InputProps={{
               endAdornment: renderEndAdornmentEdit(),
@@ -156,12 +165,15 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
           rows={4.5}
           fullWidth
           value={comment}
+          disabled={sending}
           onChange={handleCommentChange}
         />
+        {sendError && <Alert severity="error">{sendError}</Alert>}
       </DialogContent>
       <DialogActions>
         <Button
           onClick={handleCancel}
+          disabled={sending}
           color="primary"
           style={{ textTransform: "none", color: "#555" }}
         >
@@ -170,7 +182,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
         <Button
           onClick={handleSend}
           color="primary"
-          disabled={!validLink || repo === ""}
+          disabled={sending || !validLink || repo === ""}
           style={{ textTransform: "none" }}
         >
           Enviar

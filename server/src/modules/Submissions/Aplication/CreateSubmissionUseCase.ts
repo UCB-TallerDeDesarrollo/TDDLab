@@ -1,5 +1,5 @@
 import SubmissionRepository from "../Repository/SubmissionsRepository";
-import { SubmissionCreationObject } from "../Domain/Submission";
+import { SubmissionCreationObject, SubmissionDataObject } from "../Domain/Submission";
 
 class CreateSubmission {
   private readonly adapter: SubmissionRepository;
@@ -10,7 +10,7 @@ class CreateSubmission {
 
   async execute(
     submission: SubmissionCreationObject
-  ): Promise<SubmissionCreationObject> {
+  ): Promise<SubmissionDataObject> {
     try {
       const assignmentExist =
         await this.adapter.assignmentidExistsForSubmission(

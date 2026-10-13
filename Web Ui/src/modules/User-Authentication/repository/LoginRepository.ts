@@ -23,26 +23,6 @@ class AuthRepository implements AuthDBRepositoryInterface {
     }
   }
 
-  async getAccountInfoWithToken(idToken: string): Promise<UserOnDb> {
-    try {
-      const response = await axios.post(API_URL + "/user/github",
-      { idToken },
-      { withCredentials: true } );
-      if (response.status === 200) {
-        return response.data;
-      } else {
-        throw new Error("Failed to get user Course");
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data?.error || "Error al obtener información del usuario";
-        throw new Error(errorMessage);
-      }
-      console.error("Error fetching user course:", error);
-      throw error;
-    }
-  }
-
   async getAccountInfoWithGoogleToken(idToken: string): Promise<UserOnDb> {
     try {
       const response = await axios.post(API_URL + "/user/google",

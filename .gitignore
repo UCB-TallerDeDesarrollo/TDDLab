@@ -89,6 +89,9 @@ output.zip
 # Dependecias generadas por husky
 /tddlabBaseProject/.husky/_
 
+#Configuracion local del IDE Webstorm
+.idea/
+
 #Archivos bun
 server/bun.lock
 Web Ui/bun.lock

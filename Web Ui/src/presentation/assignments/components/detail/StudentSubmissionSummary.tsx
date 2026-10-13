@@ -1,14 +1,23 @@
 interface StudentSubmissionSummaryProps {
   status: string;
+  statusValue?: string;
   repositoryLink?: string;
   comment?: string;
 }
 
+function getStatusClass(status: string | undefined): string {
+  if (status === "delivered") return "is-finished";
+  if (status === "in progress") return "is-progress";
+  return "is-pending";
+}
+
 export function StudentSubmissionSummary({
   status,
+  statusValue,
   repositoryLink,
   comment,
 }: Readonly<StudentSubmissionSummaryProps>) {
+  const statusClass = getStatusClass(statusValue);
   return (
     <>
       <p className="assignment-student-row">
@@ -28,7 +37,13 @@ export function StudentSubmissionSummary({
       </p>
 
       <p className="assignment-student-row">
-        <strong>Estado:</strong> {status}
+        <strong>Estado:</strong>{" "}
+        <output
+          aria-label="Estado de la tarea"
+          className={`assignment-student-status ${statusClass}`}
+        >
+          {status}
+        </output>
       </p>
 
       {comment && (

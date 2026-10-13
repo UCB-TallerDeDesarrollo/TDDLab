@@ -118,6 +118,15 @@ function App() {
           userRole: "",
         });
       }
+    }).catch((error: unknown) => {
+      console.error("Error restoring session:", error);
+      setGlobalState("authData", {
+        userid: -1,
+        userProfilePic: "",
+        userEmail: "",
+        usergroupid: -1,
+        userRole: "",
+      });
     });
   }, []);
 

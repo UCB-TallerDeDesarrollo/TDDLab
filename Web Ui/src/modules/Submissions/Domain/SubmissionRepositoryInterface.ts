@@ -1,11 +1,11 @@
 import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "./submissionInterfaces";
 
 interface SubmissionRepositoryInterface {
-    createSubmission(submissionData: SubmissionCreationObject): Promise<void>;
+    createSubmission(submissionData: SubmissionCreationObject): Promise<SubmissionDataObject>;
     checkSubmissionExists(assignmentid: number, userid: number): Promise<{ hasStarted: boolean }>;
     getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObject[]>;
-    getSubmissionbyUserandSubmissionId(assignmentid: number, userid:number): Promise<SubmissionDataObject>;
-    finishSubmission(id: number, submissionData: SubmissionUpdateObject): Promise<void>;
+    getSubmissionbyUserandSubmissionId(assignmentid: number, userid:number): Promise<SubmissionDataObject | null>;
+    finishSubmission(id: number, submissionData: SubmissionUpdateObject): Promise<SubmissionDataObject>;
 }
 
 export default SubmissionRepositoryInterface;

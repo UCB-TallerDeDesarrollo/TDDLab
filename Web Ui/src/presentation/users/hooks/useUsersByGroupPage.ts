@@ -46,7 +46,7 @@ function useUsersByGroupPage() {
       }
     };
 
-    fetchData();
+    fetchData().catch((err: unknown) => console.error("Error loading users by group:", err));
   }, [groupid]);
 
   return {
