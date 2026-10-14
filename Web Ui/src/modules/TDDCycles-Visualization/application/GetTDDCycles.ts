@@ -1,6 +1,5 @@
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
-import { CommitCycle } from "../domain/TddCycleInterface";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces";
 
 export class PortGetTDDCycles {
@@ -25,12 +24,6 @@ export class PortGetTDDCycles {
 
 
 
-  async obtainCommitTddCycle(
-    owner: string,
-    repoName: string,
-  ): Promise<CommitCycle[]> {
-    return await this.adapter.obtainCommitTddCycle(owner, repoName);
-  }
   
   // Método auxiliar para determinar el estado de un commit basado en su cobertura
   getCommitStatus(commit: CommitDataObject): { status: string; color: string } {

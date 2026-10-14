@@ -1,6 +1,5 @@
 import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { CommitData, mockCommitDataArray } from "./dataTypeMocks/commitData";
 
@@ -35,11 +34,6 @@ export class MockGithubAPI implements CommitHistoryRepository {
     return mockCommitDataArray.map(convertToCommitDataObject);
   }
 
-  async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
-    let commitCycles: CommitCycle[] = [];
-    return commitCycles;
-  }
-
   async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
@@ -56,11 +50,6 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     return "";
   }
 
-  async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
-    let commitCycles: CommitCycle[] = [];
-    return commitCycles;
-  }
-
   async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {
     let tddLogs: TDDLogEntry[] = [];
     return tddLogs;
@@ -74,10 +63,6 @@ export class MockGithubAPIError implements CommitHistoryRepository {
 
   async obtainUserName(_owner: string): Promise<string> {
     throw new Error("no username");
-  }
-
-  async obtainCommitTddCycle(_owner: string, _repoName: string): Promise<CommitCycle[]> {
-    throw new Error("no commit cycles");
   }
 
   async obtainTDDLogs(_owner: string, _repoName: string): Promise<TDDLogEntry[]> {

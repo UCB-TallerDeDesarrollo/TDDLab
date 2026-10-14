@@ -12,15 +12,10 @@ import {
   Submission,
 } from "../types/tddVisualization.types";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 function isStudent(role: string) {
   return role === "student";
-}
-
-function getDefaultMetric(graphs: string) {
-  return graphs === "graph" ? "Dashboard" : "Complejidad";
 }
 
 function getRepoQuery(submission: Submission) {
@@ -29,7 +24,6 @@ function getRepoQuery(submission: Submission) {
 }
 
 export function useTDDChartPage({
-  graphs,
   port,
   role,
   teacher_id,
@@ -60,9 +54,8 @@ export function useTDDChartPage({
   const [metric, setMetric] = useState<string | null>(null);
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
-  const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
 
-  const defaultMetric = getDefaultMetric(graphs);
+  const defaultMetric = "Dashboard";
 
   const loadComments = async () => {
     try {
@@ -97,7 +90,6 @@ export function useTDDChartPage({
       try {
         const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
         setCommitsInfo(visualizationData.commits);
-        setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
       } catch (error) {
         console.error("Error obtaining data:", error);
@@ -158,7 +150,6 @@ export function useTDDChartPage({
   return {
     chartsState: {
       commitsInfo,
-      commitsTddCycles,
       metric,
       setMetric,
       tddLogsInfo,

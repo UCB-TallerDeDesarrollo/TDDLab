@@ -1,4 +1,3 @@
-import { GetCommitTddCycle } from "../../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
 import { GetCommitsOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
 import { GetTDDLogs } from "../../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../../modules/TDDCycles-Visualization/application/GetUserName";
@@ -14,18 +13,15 @@ export async function fetchTDDVisualizationData(
   repoName: string,
 ): Promise<TDDVisualizationData> {
   const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
-  const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
 
-  const [tddLogs, commits, commitsTddCycles] = await Promise.all([
+  const [tddLogs, commits] = await Promise.all([
     getTDDLogsUseCase.execute(repoOwner, repoName),
     getCommitsOfRepoUseCase.execute(repoOwner, repoName),
-    getCommitTddCycleUseCase.execute(repoOwner, repoName),
   ]);
 
   return {
     commits,
-    commitsTddCycles,
     tddLogs,
   };
 }

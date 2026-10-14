@@ -1,5 +1,4 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
 import { useRef } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
@@ -9,7 +8,6 @@ import {
   CategoryScale,
   LinearScale,
   PointElement,
-  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -28,7 +26,6 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
-  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -43,7 +40,6 @@ interface LineChartProps {
   optionSelected: string;
   port: CommitHistoryRepository;
   role: string;
-  commitsCycles: CommitCycle[] | null;
 }
 
 function TDDLineCharts({
@@ -51,8 +47,7 @@ function TDDLineCharts({
   tddLogs,
   optionSelected,
   port,
-  role,
-  commitsCycles: _
+  role
 }: LineChartProps) {
   
   let dataChart: any = {};
