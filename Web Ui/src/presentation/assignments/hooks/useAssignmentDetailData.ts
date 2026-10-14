@@ -21,6 +21,7 @@ import UsersRepository from "../../../modules/Users/repository/UsersRepository";
 import { formatDate } from "../../../utils/dateUtils";
 import {
   handleRedirectStudent,
+  saveTeacherSubmissions,
   setSelectedMetric,
 } from "../../../shared/helpers/navigationHandlers";
 import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
@@ -389,13 +390,14 @@ export function useAssignmentDetailData({
 
     const [, user, repo] = match;
     setSelectedMetric(selectedMetric);
+    saveTeacherSubmissions(assignmentid, submissions);
 
     navigate({
       pathname: path,
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
-        fetchedSubmissions: JSON.stringify(submissions),
+        assignmentId: assignmentid.toString(),
         submissionId: submissionId.toString(),
       }).toString(),
     });
