@@ -10,6 +10,7 @@ import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import CommitStatusLegend from "./CommitStatusLegend";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -19,10 +20,9 @@ interface CycleReportViewProps {
   port: CommitHistoryRepository;
   role: string;
   commitsTddCycles: CommitCycle[] | null;
-  typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
@@ -75,8 +75,6 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
   };
 
   const options = [
-    { value: 'Complejidad', label: 'Lista de Complejidad' },
-    { value: 'Pie', label: 'Distribución de Commits' },
     { value: 'Dashboard', label: 'Dashboard' },
     { value: 'Total Número de Tests', label: 'Total Número de Tests' },
     { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
@@ -110,15 +108,9 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
           >
             {options.filter(option => {
               if (!tddLogs || tddLogs.length === 0) {
-                if (option.value === 'Dashboard' || option.value === 'Ciclo de ejecución de pruebas') {
-                  return false;
-                }
+                return option.value !== 'Dashboard' && option.value !== 'Ciclo de ejecución de pruebas';
               }
-              if (typegraphs === 'aditionalgraph') {
-                return ['Complejidad', 'Pie'].includes(option.value);
-              } else {
-                return !['Complejidad', 'Pie'].includes(option.value);
-              }
+              return true;
             }).map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
@@ -127,6 +119,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
           </Select>
         </FormControl>
       </Box>
+      {metricSelected === "Dashboard" && <CommitStatusLegend />}
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
         tddLogs = {tddLogs}

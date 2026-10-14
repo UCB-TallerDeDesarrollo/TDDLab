@@ -1,11 +1,18 @@
-import { render, waitFor, act } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TDDChartPage from "../../../src/presentation/tdd-visualization/pages/TDDChartPage";
 import {
   MockGithubAPI,
   MockGithubAPIEmpty,
   MockGithubAPIError,
+  MockGithubAPIMasterNoTests,
+  MockGithubAPITDDLogsError,
 } from "./__mocks__/MocksCommitHistory";
+
+const commitsErrorMessage =
+  'Error: Verifica que el repositorio utilice la rama "main". Actualmente, TDDLab no puede cargar los datos si la rama principal es "master"';
+const testsErrorMessage =
+  "Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.";
 
 // Mock de `useNavigate` con tipo explícito
 jest.mock("react-router-dom", () => ({
@@ -25,35 +32,76 @@ describe("TDDChartPage", () => {
     "renders loading spinner when loading is true for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage
+          port={new MockGithubAPI()}
+          role={role}
+          teacher_id={294}
+        />,
       );
 
       await waitFor(() => {
         const loadingSpinner = getByTestId("loading-spinner");
         expect(loadingSpinner).toBeInTheDocument();
       });
-    }
+    },
   );
 
   test.each([["admin"], ["student"]])(
-    "displays an error message when no data is available for role %s",
+    "displays only the commits error when commits are unavailable for role %s",
     async (role) => {
-      const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
+      const { getByTestId, queryByText } = render(
+        <TDDChartPage
+          port={new MockGithubAPIEmpty()}
+          role={role}
+          teacher_id={294}
+        />,
       );
 
       await waitFor(() => {
-        const error = getByTestId("errorMessage");
-        expect(error).toBeInTheDocument();
+        expect(getByTestId("errorMessage")).toHaveTextContent(
+          commitsErrorMessage,
+        );
       });
-    }
+
+      expect(
+        queryByText(/No se pudieron cargar los datos de las pruebas/),
+      ).not.toBeInTheDocument();
+      expect(queryByText("No data available")).not.toBeInTheDocument();
+    },
+  );
+
+  test.each([["admin"], ["student"]])(
+    "displays main's missing test data message for role %s",
+    async (role) => {
+      const { getByTestId, queryByText } = render(
+        <TDDChartPage
+          port={new MockGithubAPIMasterNoTests()}
+          role={role}
+          teacher_id={294}
+          graphs="graph"
+        />,
+      );
+
+      await waitFor(() => {
+        expect(getByTestId("errorMessage")).toHaveTextContent(
+          testsErrorMessage,
+        );
+      });
+
+      expect(queryByText(commitsErrorMessage)).not.toBeInTheDocument();
+      expect(queryByText("No data available")).not.toBeInTheDocument();
+    },
   );
 
   test.each([["admin"], ["student"]])(
     "displays the repository name for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage
+          port={new MockGithubAPI()}
+          role={role}
+          teacher_id={294}
+        />,
       );
 
       await waitFor(() => {
@@ -65,21 +113,44 @@ describe("TDDChartPage", () => {
           expect(repoOwner).toBeInTheDocument();
         }
       });
-    }
+    },
   );
 
-  it("tests the catch event for both, obtainJobsData and obtainCommitsData", async () => {
-    const spyConsoleError = jest.spyOn(console, "error");
-    spyConsoleError.mockImplementation(() => {});
+  it("keeps commit and test data failures separated when only test data fails", async () => {
+    const { getByTestId, queryByText } = render(
+      <TDDChartPage
+        port={new MockGithubAPITDDLogsError()}
+        role="admin"
+        teacher_id={294}
+        graphs="graph"
+      />,
+    );
 
-    await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294} graphs="graph"/>);
+    await waitFor(() => {
+      expect(getByTestId("errorMessage")).toHaveTextContent(testsErrorMessage);
     });
 
-    expect(spyConsoleError).toHaveBeenCalledWith(
-      "Error obtaining data:",
-      expect.any(Error)
+    expect(queryByText(commitsErrorMessage)).not.toBeInTheDocument();
+  });
+
+  it("prioritizes the commits error when all visualization requests fail", async () => {
+    const { getByTestId, queryByText } = render(
+      <TDDChartPage
+        port={new MockGithubAPIError()}
+        role="admin"
+        teacher_id={294}
+        graphs="graph"
+      />,
     );
-    spyConsoleError.mockRestore();
+
+    await waitFor(() => {
+      expect(getByTestId("errorMessage")).toHaveTextContent(
+        commitsErrorMessage,
+      );
+    });
+
+    expect(
+      queryByText(/No se pudieron cargar los datos de las pruebas/),
+    ).not.toBeInTheDocument();
   });
 });

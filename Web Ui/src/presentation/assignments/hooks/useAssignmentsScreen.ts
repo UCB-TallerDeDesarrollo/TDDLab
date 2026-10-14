@@ -215,12 +215,12 @@ export function useAssignmentsScreen({
   ]);
 
   useEffect(() => {
-    fetchData().catch((error: unknown) => console.error("Error loading assignments:", error));
+    void fetchData();
   }, [fetchData]);
 
   useEffect(() => {
     return addAssignmentUpdatedListener(() => {
-      loadAssignmentsForGroup(selectedGroup || 0, false).catch((error: unknown) => console.error("Error refreshing assignments:", error));
+      void loadAssignmentsForGroup(selectedGroup || 0, false);
     });
   }, [loadAssignmentsForGroup, selectedGroup]);
 

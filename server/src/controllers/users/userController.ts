@@ -126,17 +126,14 @@ class UserController {
   }
 
 
-logoutController(res: Response): void {
-    res.clearCookie("userSession", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-    });
-
-    res.status(200).json({
-        message: "Sesión cerrada correctamente"
-    });
-}
+logoutController (res: Response): void {
+  res.clearCookie("userSession", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  res.status(200).json({ message: "Sesión cerrada correctamente" });
+};
 
   async getMeController(req: Request, res: Response): Promise<void> {
     try {

@@ -9,7 +9,7 @@ export interface CycleReportViewProps {
   port: CommitHistoryRepository;
   role: string;
   teacher_id: number;
-  graphs: string;
+  graphs?: string;
 }
 
 export interface Submission {
@@ -19,8 +19,11 @@ export interface Submission {
 
 export interface TDDVisualizationData {
   commits: CommitDataObject[];
+  commitsLoadError: boolean;
   commitsTddCycles: CommitCycle[];
+  defaultBranch: string | null;
   tddLogs: TDDLogEntry[];
+  testDataLoadError: boolean;
 }
 
 export interface TDDCommentsData {
@@ -30,8 +33,11 @@ export interface TDDCommentsData {
 
 export interface TDDChartsState {
   commitsInfo: CommitDataObject[] | null;
+  commitsLoadError: boolean;
   commitsTddCycles: CommitCycle[];
+  defaultBranch: string | null;
   metric: string | null;
   setMetric: Dispatch<SetStateAction<string | null>>;
   tddLogsInfo: TDDLogEntry[] | null;
+  testDataLoadError: boolean;
 }

@@ -8,6 +8,7 @@ import { VITE_API } from "../../../../config";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
+import { getCommitVisualDescriptor } from "./commitVisualStatus";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
@@ -102,68 +103,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     return commitMapping ? commitMapping.tests : [];
   };
   
-  function containsRefactor(commitMessage: string): boolean {
-    const regex = /\brefactor(\w*)\b/i;
-    return regex.test(commitMessage);
-  }
-
-  // Nueva función para obtener el color basado directamente en el commit
-  const getCommitColor = (commit: CommitDataObject): string => {
-    if (
-    !commit || typeof commit !== "object" ||
-    !commit.commit || typeof commit.commit.message !== "string"
-    ) {
-    return "red";
-    }
-    
-    const { coverage, test_count, conclusion, commit: { message } } = commit;
-    
-    // Si no hay información de cobertura o tests, asumimos que el commit no pasó
-     if (
-    coverage === undefined || coverage === null
-    ) {
-      return "black";
-    }
-
-     // Casos de error: sin cobertura, sin tests o tests fallidosAdd commentMore actions
-    if (
-    test_count === undefined || test_count === 0 ||
-    conclusion === "failure"
-    ) {
-      return "red";
-    }
-    const isRefactor = containsRefactor(message);
-    // Si tiene tests y no hay errores (asumimos que en commit-history.json solo se guardan commits válidos)
-    return getColorByCoverage(coverage, isRefactor);
-  };
-  
-  const getColorByCoverage = (coverage: number, isRefactor: boolean): string => {
-    let colorValue: number;
-    let opacity: number;
-    const baseColor = isRefactor ? 'blue' : 'green';
-  
-    if (coverage >= 90) {
-      colorValue = 110;
-      opacity = 1;
-    } else if (coverage >= 80) {
-      colorValue = 110;
-      opacity = 0.8;
-    } else if (coverage >= 70) {
-      colorValue = 110;
-      opacity = 0.6;
-    } else if (coverage >= 60) {
-      colorValue = 110;
-      opacity = 0.4;
-    } else {
-      colorValue = 110;
-      opacity = 0.2;
-    }
-  
-    return baseColor === 'green'
-      ? `rgba(0, ${colorValue}, 0, ${opacity})`
-      : `rgba(0, 100, 255, ${opacity})`;
-  };
-   
   const changeGraph = (graphText: string) => {
     setGraph(graphText);
     localStorage.setItem("selectedMetric", graphText);
@@ -213,12 +152,12 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
         {
           label,
           data: [...data].reverse(),
-          backgroundColor: commits
-            .map((commit) => {
-              return getCommitColor(commit);
-            })
-            .reverse(),
-          borderColor: "rgba(0, 0, 0, 0.2)",
+          pointStyle: commits.map(getCommitVisualDescriptor).reverse().map(({ pointStyle }) => pointStyle),
+          pointBackgroundColor: commits.map(getCommitVisualDescriptor).reverse().map(({ backgroundColor }) => backgroundColor),
+          pointBorderColor: commits.map(getCommitVisualDescriptor).reverse().map(({ borderColor }) => borderColor),
+          pointBorderWidth: commits.map(getCommitVisualDescriptor).reverse().map(({ borderWidth }) => borderWidth),
+          pointRadius: 8,
+          pointHoverRadius: 11,
           links: commits.map((commit) => commit.html_url).reverse(),
         },
       ],
@@ -366,7 +305,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                   .slice()
                   .reverse()
                   .map((commit, index) => {
-                    const backgroundColor = getCommitColor(commit);
+                    const descriptor = getCommitVisualDescriptor(commit);
 
                     return {
                       label: `Commit ${index + 1}`,
@@ -377,8 +316,10 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                           r: Math.max(10, commit.stats.total / 1.5),
                         },
                       ],
-                      backgroundColor,
-                      borderColor: `rgba(0,0,0,0.2)`,
+                      backgroundColor: descriptor.backgroundColor,
+                      borderColor: descriptor.borderColor,
+                      borderWidth: descriptor.borderWidth,
+                      pointStyle: descriptor.pointStyle,
                     };
                   }),
               }}
@@ -419,6 +360,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                           `Líneas Eliminadas: ${commit.stats.deletions}`,
                           `Cobertura: ${commit.coverage}%`,
                           `Total de Tests: ${commit.test_count}`,
+                          getCommitVisualDescriptor(commit).tooltipStatus,
                         ];
                       },
                     },

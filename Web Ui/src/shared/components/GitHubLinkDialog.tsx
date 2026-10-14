@@ -113,3 +113,5 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     </Dialog>
   );
 };
+
+export default GitLinkDialog;

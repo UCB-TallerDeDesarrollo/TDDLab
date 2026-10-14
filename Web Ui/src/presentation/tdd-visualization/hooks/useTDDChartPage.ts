@@ -10,17 +10,11 @@ import {
 import {
   CycleReportViewProps,
   Submission,
+  TDDVisualizationData,
 } from "../types/tddVisualization.types";
-import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 function isStudent(role: string) {
   return role === "student";
-}
-
-function getDefaultMetric(graphs: string) {
-  return graphs === "graph" ? "Dashboard" : "Complejidad";
 }
 
 function getRepoQuery(submission: Submission) {
@@ -28,8 +22,22 @@ function getRepoQuery(submission: Submission) {
   return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
 }
 
+const EMPTY_VISUALIZATION_DATA: TDDVisualizationData = {
+  commits: [],
+  commitsLoadError: false,
+  commitsTddCycles: [],
+  defaultBranch: null,
+  tddLogs: [],
+  testDataLoadError: false,
+};
+
+const VISUALIZATION_ERROR_DATA: TDDVisualizationData = {
+  ...EMPTY_VISUALIZATION_DATA,
+  commitsLoadError: true,
+  testDataLoadError: true,
+};
+
 export function useTDDChartPage({
-  graphs,
   port,
   role,
   teacher_id,
@@ -58,11 +66,11 @@ export function useTDDChartPage({
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [metric, setMetric] = useState<string | null>(null);
-  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
-  const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
-  const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [visualizationData, setVisualizationData] = useState<TDDVisualizationData>(
+    EMPTY_VISUALIZATION_DATA,
+  );
 
-  const defaultMetric = getDefaultMetric(graphs);
+  const defaultMetric = "Dashboard";
 
   const loadComments = async () => {
     try {
@@ -75,7 +83,7 @@ export function useTDDChartPage({
   };
 
   useEffect(() => {
-    loadComments().catch((error: unknown) => console.error("Error loading comments:", error));
+    void loadComments();
   }, [submissionIdcomments]);
 
   useEffect(() => {
@@ -88,25 +96,26 @@ export function useTDDChartPage({
       }
     };
 
-    loadOwnerName().catch((error: unknown) => console.error("Error loading owner name:", error));
+    void loadOwnerName();
   }, [port, repoOwner]);
 
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
+      setVisualizationData(EMPTY_VISUALIZATION_DATA);
+
       try {
-        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
-        setCommitsInfo(visualizationData.commits);
-        setCommitsTddCycles(visualizationData.commitsTddCycles);
-        setTDDLogsInfo(visualizationData.tddLogs);
+        const data = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        setVisualizationData(data);
       } catch (error) {
         console.error("Error obtaining data:", error);
+        setVisualizationData(VISUALIZATION_ERROR_DATA);
       } finally {
         setLoading(false);
       }
     };
 
-    loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
+    void loadVisualizationData();
   }, [port, repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
@@ -147,7 +156,7 @@ export function useTDDChartPage({
         content: feedback,
       });
       setFeedback("");
-      await loadComments();
+      void loadComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
     } finally {
@@ -157,11 +166,14 @@ export function useTDDChartPage({
 
   return {
     chartsState: {
-      commitsInfo,
-      commitsTddCycles,
+      commitsInfo: visualizationData.commits,
+      commitsLoadError: visualizationData.commitsLoadError,
+      commitsTddCycles: visualizationData.commitsTddCycles,
+      defaultBranch: visualizationData.defaultBranch,
       metric,
       setMetric,
-      tddLogsInfo,
+      tddLogsInfo: visualizationData.tddLogs,
+      testDataLoadError: visualizationData.testDataLoadError,
     },
     comments,
     currentIndex,

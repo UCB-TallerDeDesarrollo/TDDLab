@@ -1,22 +1,12 @@
 import { Response } from "express";
-export const saveUserCookie = (
 
-    token: string,
+export const saveUserCookie = (token: string, res: Response): void => {
+  const isProduction = process.env.NODE_ENV === "production";
 
-    res: Response
-
-): void => {
-
-    res.cookie("userSession", token, {
-
-        httpOnly: true,
-
-        secure: true,
-
-        sameSite: "none",
-
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-
-    });
-
+  res.cookie("userSession", token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  });
 };

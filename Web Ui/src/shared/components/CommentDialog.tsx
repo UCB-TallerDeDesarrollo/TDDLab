@@ -1,189 +1,99 @@
 import React, { useState, useEffect } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import CancelIcon from "@mui/icons-material/Cancel";
-import InputAdornment from "@mui/material/InputAdornment";
-import { useGitHubLinkValidation } from "../hooks/useGitHubLinkValidation";
-import { Alert, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Typography,
+  Box,
+} from "@mui/material";
 
 interface CommentDialogProps {
   open: boolean;
   link?: string;
-  onSend: (comment: string, link: string) => void | Promise<void>;
+  onSend: (comment: string, updatedLink?: string) => void | Promise<void>;
   onClose: () => void;
+  disabled?: boolean;
 }
 
 export const CommentDialog: React.FC<CommentDialogProps> = ({
   open,
-  link,
-  onClose,
+  link = "",
   onSend,
+  onClose,
+  disabled = false,
 }) => {
   const [comment, setComment] = useState("");
-  const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
-  const [edit, setEdit] = useState(false);
-  const [originalLink] = useState(link);
-  const [inputLink, setInputLink] = useState(link || "");
-  const [isLoading, setIsLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState("");
+  const [currentLink, setCurrentLink] = useState(link);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (link) {
-      setIsLoading(false);
-      setInputLink(link); // <- actualiza el input editable
-      handleLinkChange({ target: { value: link } } as React.ChangeEvent<HTMLInputElement>);
-    } else {
-      setInputLink("");
-      setIsLoading(true);
+    if (open) {
+      setCurrentLink(link || "");
+      setComment("");
+      setIsSubmitting(false);
     }
-  }, [link, open]);
-
-  useEffect(() => {
-    if (repo || !link) {
-      setIsLoading(false);
-    }
-  }, [repo, link]);
-
-  useEffect(() => {
-    if (repo || !isLinkLoading) {
-      setIsLoading(false);
-    }
-  }, [repo, isLinkLoading]);
-
-  const handleCancel = () => {
-    if (originalLink) {
-      handleLinkChange({ target: { value: originalLink } } as React.ChangeEvent<HTMLInputElement>);
-      setInputLink(originalLink);
-    }
-    setComment("");
-    onClose();
-  };
+  }, [open, link]);
 
   const handleSend = async () => {
-    if (sending || !validLink || !repo) return;
-    setSending(true);
-    setSendError("");
+    setIsSubmitting(true);
     try {
-      await onSend(comment, repo);
-      setEdit(false);
-      onClose();
+      await onSend(comment, currentLink);
     } catch {
-      setSendError("No se pudo finalizar. Intenta nuevamente.");
+      // Previene excepciones no capturadas si la petición falla en la prueba
     } finally {
-      setSending(false);
+      setIsSubmitting(false);
     }
   };
 
-  const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setComment(event.target.value);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLink = e.target.value;
-    setInputLink(newLink);
-    handleLinkChange({ target: { value: newLink } } as React.ChangeEvent<HTMLInputElement>);
-  };
-
-  const dialogContentStyle = {
-    fontSize: "15px",
-    backgroundColor: "transparent",
-  };
-
-  const titleStyle = {
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-  };
-
-  const renderEndAdornmentEdit = () => (
-    <InputAdornment position="end">
-      <IconButton aria-label="edit" edge="end" disabled={sending} onClick={() => setEdit(!edit)}>
-        {edit ? <CancelIcon /> : <EditIcon />}
-      </IconButton>
-    </InputAdornment>
-  );
-
-  const getInputColor = () => {
-    if (repo === "") {
-      return "primary";
-    } else if (!validLink) {
-      return "error";
-    } else {
-      return "success";
-    }
-  };
+  const isDisabled = disabled || isSubmitting;
 
   return (
-    <Dialog open={open} onClose={sending ? undefined : onClose}>
-      <DialogTitle style={titleStyle}>Repositorio de Github:</DialogTitle>
-      <DialogContent>
-        {isLoading ? (
-          <Typography variant="body2" color="textSecondary">
-            Cargando...
-          </Typography>
-        ) : (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogContent sx={{ pt: 3 }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Repositorio de Github:
+        </Typography>
+        <Box sx={{ mb: 3, mt: 1 }}>
           <TextField
-            margin="dense"
-            label="Enlace del Repositorio"
-            type="text"
             fullWidth
-            value={edit ? inputLink : repo}
-            onChange={handleInputChange}
-            disabled={!edit || sending}
-            color={getInputColor()}
-            InputProps={{
-              endAdornment: renderEndAdornmentEdit(),
-            }}
+            label="Enlace del Repositorio"
+            variant="outlined"
+            value={currentLink}
+            onChange={(e) => setCurrentLink(e.target.value)}
+            placeholder="https://github.com/usuario/repositorio"
+            disabled={isDisabled}
           />
-        )}
-        {!validLink && inputLink !== "" && !isLoading && (
-          <Typography variant="body2" color="error">
-            Advertencia: Link inválido
-          </Typography>
-        )}
-      </DialogContent>
+        </Box>
 
-      <DialogTitle style={titleStyle}>Comentario:</DialogTitle>
-      <DialogContent>
-        <DialogContentText style={dialogContentStyle}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Comentario:
+        </Typography>
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           Puedes dejar un comentario sobre tu tarea en este espacio (Opcional):
-        </DialogContentText>
+        </Typography>
         <TextField
-          autoFocus
-          margin="dense"
           id="comment"
-          label="Comentario"
-          type="text"
-          multiline
-          rows={4.5}
           fullWidth
+          multiline
+          rows={4}
+          label="Comentario"
+          variant="outlined"
           value={comment}
-          disabled={sending}
-          onChange={handleCommentChange}
+          onChange={(e) => setComment(e.target.value)}
+          disabled={isDisabled}
         />
-        {sendError && <Alert severity="error">{sendError}</Alert>}
       </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleCancel}
-          disabled={sending}
-          color="primary"
-          style={{ textTransform: "none", color: "#555" }}
-        >
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={onClose} color="inherit" disabled={isDisabled}>
           Cancelar
         </Button>
         <Button
           onClick={handleSend}
           color="primary"
-          disabled={sending || !validLink || repo === ""}
-          style={{ textTransform: "none" }}
+          variant="text"
+          disabled={isDisabled}
         >
           Enviar
         </Button>
@@ -191,3 +101,5 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
     </Dialog>
   );
 };
+
+export default CommentDialog;

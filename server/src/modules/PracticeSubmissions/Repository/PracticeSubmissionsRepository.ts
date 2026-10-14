@@ -91,6 +91,15 @@ class PracticeSubmissionRepository{
         const rows = await this.executeQuery(query, values);
         return rows.map((row) => this.mapRowToPracticeSubmissions(row));
     }
+    public async UpdateRepositoryLink(id: number, repository_link: string): Promise<PracticeSubmissionDataObject | null> {
+        const query = "UPDATE practicesubmissions SET repository_link = $1 WHERE id = $2 RETURNING *";
+        const values = [repository_link, id];
+        const rows = await this.executeQuery(query, values);
+        if (rows.length === 1) {
+            return this.mapRowToPracticeSubmissions(rows[0]);
+        }
+        return null;
+    }
 }
 
 export default PracticeSubmissionRepository;

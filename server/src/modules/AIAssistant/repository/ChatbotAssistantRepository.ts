@@ -69,7 +69,7 @@ export class ChatbotAssistantRepository {
 
     private async getCommitHistory(URL: string): Promise<CommitDataObject[]> {
         try {
-            const fullUrl = await this.getCommitHistoryUrl(URL);
+            const fullUrl = this.getCommitHistoryUrl(URL);
             const response = await fetch(fullUrl);
 
             if (!response.ok) {

@@ -89,7 +89,7 @@ export const useGroupsData = () => {
       }
     };
 
-    fetchGroups().catch((error: unknown) => console.error("Error loading groups:", error));
+    void fetchGroups();
   }, [authData?.userRole, authData?.userid]);
 
   const handleGroupsOrder = (event: { target: { value: string } }) => {

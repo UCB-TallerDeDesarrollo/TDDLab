@@ -12,8 +12,9 @@ export class PortGetTDDCycles {
   async obtainTDDLogs(
     owner: string,
     repoName: string,
+    branch: string,
   ): Promise<TDDLogEntry[]>{
-    return await this.adapter.obtainTDDLogs(owner, repoName);
+    return await this.adapter.obtainTDDLogs(owner, repoName, branch);
   }
 
   async obtainCommitsOfRepo(

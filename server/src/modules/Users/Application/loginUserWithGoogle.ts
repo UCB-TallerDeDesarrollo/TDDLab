@@ -43,7 +43,7 @@ export const loginUserWithGoogle = async (
   }
 
   const user = userResult as User;
-  const jwtToken = await getUserToken(user);
+  const jwtToken = getUserToken(user);
   return { user, jwtToken };
 };
 

@@ -59,11 +59,11 @@ function useUsersPage() {
   };
 
   useEffect(() => {
-    loadInitialData().catch((error: unknown) => console.error("Error loading users:", error));
+    void loadInitialData();
   }, []);
 
   useEffect(() => {
-    runSearch(selectedGroup, searchQuery).catch((error: unknown) => console.error("Error searching users:", error));
+    void runSearch(selectedGroup, searchQuery);
   }, [selectedGroup, searchQuery]);
 
   const groupMap = groups.reduce((acc, group) => {

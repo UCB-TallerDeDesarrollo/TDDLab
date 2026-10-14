@@ -18,9 +18,8 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   }
   
 
-  // function for obtain TDD_log.json
-  private getTDDLogUrl(owner: string, repoName: string): string {
-    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+  private getTDDLogUrl(owner: string, repoName: string, branch: string): string {
+    return `https://raw.githubusercontent.com/${owner}/${repoName}/${encodeURIComponent(branch)}/script/tdd_log.json`;
   }
 
   async obtainUserName(owner: string): Promise<string> {
@@ -35,6 +34,24 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       return userName || owner; // Retorna el nombre o un mensaje si no está disponible
     } catch (error) {
       console.error("Error obtaining user name:", error);
+      throw error;
+    }
+  }
+
+  async obtainDefaultBranch(owner: string, repoName: string): Promise<string> {
+    try {
+      const response = await this.octokit.request("GET /repos/{owner}/{repo}", {
+        owner,
+        repo: repoName,
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return response.data.default_branch;
+    } catch (error) {
+      console.error("Error obtaining default branch:", error);
       throw error;
     }
   }
@@ -97,9 +114,10 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   async obtainTDDLogs(
     owner: string,
     repoName: string,
+    branch: string,
   ): Promise<TDDLogEntry[]> {
     try {
-      const tddLogUrl = this.getTDDLogUrl(owner, repoName);
+      const tddLogUrl = this.getTDDLogUrl(owner, repoName, branch);
       const response = await axios.get<TDDLogEntry[]>(tddLogUrl);
 
       if (response.status !== 200) {

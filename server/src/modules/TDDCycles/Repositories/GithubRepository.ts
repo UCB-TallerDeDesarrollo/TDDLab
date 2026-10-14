@@ -12,9 +12,20 @@ import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 
 dotenv.config();
+
+function getTddCycle(conclusion: string): "green" | "red" | "null" {
+  if (conclusion === "success") return "green";
+  if (conclusion === "failure") return "red";
+  return "null";
+}
+
 export class GithubRepository implements IGithubRepository {
   octokit: Octokit;
-  githubRepository: any;
+  readonly githubRepository: any;
+  private readonly commitHistoryCache = new Map<
+    string,
+    { expiresAt: number; data: any[] }
+  >();
   constructor() {
     const { REACT_APP_AUTH_TOKEN } = process.env;
     this.octokit = new Octokit({ auth: REACT_APP_AUTH_TOKEN });
@@ -144,14 +155,24 @@ export class GithubRepository implements IGithubRepository {
         const coverageMatch = /Statements\s*\|\s*([\d.]+)%/.exec(
           coverageResponse.data[0].body
         );
-        const testCountMatch = /(\d+)(?=\s*tests passing)/.exec(
-          coverageResponse.data[0].body
-        );
+        const coverageBody = coverageResponse.data[0].body;
+        const testCountMarkerIndex = coverageBody.indexOf("tests passing");
         if (coverageMatch) {
           percentageMatch = String(coverageMatch[1]);
         }
-        if (testCountMatch) {
-          testCount = String(testCountMatch[1]);
+        if (testCountMarkerIndex !== -1) {
+          const textBeforeMarker = coverageBody
+            .slice(0, testCountMarkerIndex)
+            .trimEnd();
+          let testCountStart = textBeforeMarker.length;
+
+          while (testCountStart > 0) {
+            const charCode = textBeforeMarker.codePointAt(testCountStart - 1) ?? 0;
+            if (charCode < 48 || charCode > 57) break;
+            testCountStart -= 1;
+          }
+
+          testCount = textBeforeMarker.slice(testCountStart);
         }
       }
       const commitInfo: CommitInformationDataObject = {
@@ -304,11 +325,22 @@ export class GithubRepository implements IGithubRepository {
     return jobs;
   }
 
+  private async getDefaultBranch(owner: string, repoName: string): Promise<string> {
+    const response = await this.octokit.request("GET /repos/{owner}/{repo}", {
+      owner,
+      repo: repoName,
+    });
+
+    return response.data.default_branch;
+  }
+
   async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
     try {
+      const defaultBranch = await this.getDefaultBranch(owner, repoName);
       const encodedOwner = encodeURIComponent(owner);
       const encodedRepoName = encodeURIComponent(repoName);
-      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/main/script/commit-history.json`;
+      const encodedBranch = encodeURIComponent(defaultBranch);
+      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/${encodedBranch}/script/commit-history.json`;
 
       const response = await axios.get(url);
       
@@ -323,8 +355,124 @@ export class GithubRepository implements IGithubRepository {
     }
   }
 
+  private isNotFoundError(error: unknown): boolean {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      (error as { response?: { status?: number } }).response?.status === 404
+    );
+  }
+
+  private async fetchCommitHistoryFromGithubApi(
+    owner: string,
+    repoName: string
+  ): Promise<any[]> {
+    const [commitsResponse, runsResponse] = await Promise.all([
+      this.octokit.request("GET /repos/{owner}/{repo}/commits", {
+        owner,
+        repo: repoName,
+        per_page: 30,
+      }),
+      this.octokit
+        .request("GET /repos/{owner}/{repo}/actions/runs", {
+          owner,
+          repo: repoName,
+          per_page: 100,
+        })
+        .catch(() => ({ data: { workflow_runs: [] } })),
+    ]);
+
+    const conclusionsBySha = new Map<string, string>();
+    const workflowRuns = (runsResponse.data as any).workflow_runs ?? [];
+    workflowRuns.forEach((run: any) => {
+      if (run.head_sha && run.conclusion && !conclusionsBySha.has(run.head_sha)) {
+        conclusionsBySha.set(run.head_sha, run.conclusion);
+      }
+    });
+
+    const commits = commitsResponse.data as any[];
+    const detailedCommits = await Promise.all(
+      commits.map(async (summary: any) => {
+        try {
+          const response = await this.octokit.request(
+            "GET /repos/{owner}/{repo}/commits/{ref}",
+            { owner, repo: repoName, ref: summary.sha }
+          );
+          return response.data as any;
+        } catch {
+          return summary;
+        }
+      })
+    );
+
+    return detailedCommits.map((githubCommit: any) => {
+      const conclusion = conclusionsBySha.get(githubCommit.sha) ?? "unknown";
+      const date =
+        githubCommit.commit?.author?.date ??
+        githubCommit.commit?.committer?.date ??
+        new Date(0).toISOString();
+      const additions = githubCommit.stats?.additions ?? 0;
+      const deletions = githubCommit.stats?.deletions ?? 0;
+
+      return {
+        sha: githubCommit.sha,
+        stats: {
+          total: githubCommit.stats?.total ?? additions + deletions,
+          additions,
+          deletions,
+          date,
+        },
+        commit: {
+          date,
+          message: githubCommit.commit?.message ?? "Commit sin mensaje",
+          url:
+            githubCommit.html_url ??
+            `https://github.com/${owner}/${repoName}/commit/${githubCommit.sha}`,
+          comment_count: githubCommit.commit?.comment_count ?? 0,
+        },
+        coverage: 0,
+        test_count: conclusion === "success" || conclusion === "failure" ? 1 : 0,
+        conclusion,
+        tdd_cycle: getTddCycle(conclusion),
+      };
+    });
+  }
+
+  private async getCommitHistorySource(
+    owner: string,
+    repoName: string
+  ): Promise<any[]> {
+    const cacheKey = `${owner}/${repoName}`;
+    const cached = this.commitHistoryCache.get(cacheKey);
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
+    let data: any[];
+    try {
+      data = await this.fetchCommitHistoryJson(owner, repoName);
+    } catch (error) {
+      if (!this.isNotFoundError(error)) {
+        throw error;
+      }
+
+      console.warn(
+        "script/commit-history.json no existe; usando la API de GitHub como respaldo."
+      );
+      data = await this.fetchCommitHistoryFromGithubApi(owner, repoName);
+    }
+
+    this.commitHistoryCache.set(cacheKey, {
+      data,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+    });
+    return data;
+  }
+
   async getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    const commitHistory = await this.getCommitHistorySource(owner, repoName);
     const commits: CommitHistoryData[] = commitHistory.map((commitData: any) => ({
       html_url: commitData.commit.url,
       sha: commitData.sha,
@@ -349,7 +497,7 @@ export class GithubRepository implements IGithubRepository {
   }
 
   async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    const commitHistory = await this.getCommitHistorySource(owner, repoName);
     return commitHistory.map((commitData: any) => ({
       url: commitData.commit.url,
       sha: commitData.sha,

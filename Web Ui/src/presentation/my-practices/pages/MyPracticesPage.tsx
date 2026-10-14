@@ -33,7 +33,7 @@ export default function MyPracticesPage({
   } = useMyPracticesScreen(userid, userRole);
 
   useEffect(() => {
-    loadPractices().catch((error: unknown) => console.error("Error loading practices:", error));
+    void loadPractices();
   }, [loadPractices]);
 
   return (
