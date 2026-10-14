@@ -93,7 +93,6 @@ async createAssignment(req: Request, res: Response): Promise<void> {
     }
 
     if (!Number.isFinite(groupid) || Number.isNaN(groupid)) {
-      //console.warn("createAssignment: invalid groupid received:", rawGroupId);
       res.status(400).json({ error: "Invalid groupid" });
       return;
     }
