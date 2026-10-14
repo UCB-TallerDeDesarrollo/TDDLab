@@ -172,6 +172,7 @@ export function usePracticeDetail({
       closeCommentDialog();
       refreshDetailData();
     } catch (error) {
+      console.error("Error al finalizar la práctica:", error);
       setUiMessage("No se pudo finalizar la práctica");
     } finally {
       savingSubmission.current = false;

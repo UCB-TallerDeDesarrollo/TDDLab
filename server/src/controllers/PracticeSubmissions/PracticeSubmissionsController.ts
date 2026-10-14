@@ -122,7 +122,7 @@ class PracticeSubmissionController {
   }
   async updateRepositoryLink(req: Request, res: Response): Promise<void> {
     try {
-      const practiceSubmissionid = parseInt(req.params.id);
+      const practiceSubmissionid = Number.parseInt(req.params.id);
       const { repository_link } = req.body;
 
       const updatedPracticeSubmission = await this.updatePracticeRepositoryLinkUseCase.execute(
@@ -136,6 +136,7 @@ class PracticeSubmissionController {
         res.status(404).json({ error: "Practice Submission not found" });
       }
     } catch (error) {
+      console.error("Error al actualizar el enlace del repositorio:", error);
       res.status(500).json({ error: "Server error" });
     }
   }

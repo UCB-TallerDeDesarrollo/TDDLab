@@ -2,7 +2,7 @@ import PracticeSubmissionRepositoryInterface from "../Domain/PracticeSubmissionR
 import { PracticeSubmissionDataObject } from "../Domain/PracticeSubmissionInterface";
 
 export class UpdatePracticeRepositoryLink {
-  private repository: PracticeSubmissionRepositoryInterface;
+  private readonly repository: PracticeSubmissionRepositoryInterface;
 
   constructor(repository: PracticeSubmissionRepositoryInterface) {
     this.repository = repository;

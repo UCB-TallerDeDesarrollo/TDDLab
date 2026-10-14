@@ -156,7 +156,7 @@ export function useTDDChartPage({
         content: feedback,
       });
       setFeedback("");
-      loadComments();
+      void loadComments();
     } catch (error) {
       console.error("Error al enviar la retroalimentación:", error);
     } finally {

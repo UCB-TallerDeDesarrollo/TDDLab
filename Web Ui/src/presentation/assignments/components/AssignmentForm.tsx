@@ -126,11 +126,11 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
 
     try {
       const assignments = await assignmentsRepository.getAssignmentsByGroupid(assignmentData.groupid);
-      const duplicateAssignment = assignments.find(
+      const hasDuplicateAssignment = assignments.some(
         (assignment) => assignment.title.toLowerCase() === assignmentData.title.toLowerCase()
       );
     
-      if (duplicateAssignment) {
+      if (hasDuplicateAssignment) {
         setValidationMessage("Error: Ya existe una tarea con el mismo nombre en este grupo");
         setValidationDialogOpen(true);
         setSave(false);
@@ -235,7 +235,7 @@ function Form({ open, handleClose, groupid }: Readonly<CreateAssignmentPopupProp
       }));
     };
 
-    if (open) fetchGroups();
+    if (open) void fetchGroups();
   }, [open, auth?.userRole, auth?.userid]);
 
   return (

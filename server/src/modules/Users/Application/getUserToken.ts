@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User } from "../Domain/User";
-export const getUserToken =  async (
+export const getUserToken = (
   user: User
 ) => { 
     return jwt.sign(

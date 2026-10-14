@@ -91,7 +91,7 @@ function GroupsPage() {
         onLink={copyStudentLink}
         onParticipants={(id) => {
           selectAndSync(id);
-          goToParticipants(id, navigate);
+          void goToParticipants(id, navigate);
         }}
         onTasks={(id) => handleRedirectToTasks(id, navigate)}
         onDelete={(index) => {

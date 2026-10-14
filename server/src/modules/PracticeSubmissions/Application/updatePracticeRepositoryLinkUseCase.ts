@@ -2,7 +2,7 @@ import PracticeSubmissionRepository from "../Repository/PracticeSubmissionsRepos
 import { PracticeSubmissionDataObject } from "../Domain/PracticeSubmission";
 
 class UpdatePracticeRepositoryLinkUseCase {
-  private repository: PracticeSubmissionRepository;
+  private readonly repository: PracticeSubmissionRepository;
 
   constructor(repository: PracticeSubmissionRepository) {
     this.repository = repository;

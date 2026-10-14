@@ -12,10 +12,17 @@ import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 
 dotenv.config();
+
+function getTddCycle(conclusion: string): "green" | "red" | "null" {
+  if (conclusion === "success") return "green";
+  if (conclusion === "failure") return "red";
+  return "null";
+}
+
 export class GithubRepository implements IGithubRepository {
   octokit: Octokit;
-  githubRepository: any;
-  private commitHistoryCache = new Map<
+  readonly githubRepository: any;
+  private readonly commitHistoryCache = new Map<
     string,
     { expiresAt: number; data: any[] }
   >();
@@ -160,7 +167,7 @@ export class GithubRepository implements IGithubRepository {
           let testCountStart = textBeforeMarker.length;
 
           while (testCountStart > 0) {
-            const charCode = textBeforeMarker.charCodeAt(testCountStart - 1);
+            const charCode = textBeforeMarker.codePointAt(testCountStart - 1) ?? 0;
             if (charCode < 48 || charCode > 57) break;
             testCountStart -= 1;
           }
@@ -427,12 +434,7 @@ export class GithubRepository implements IGithubRepository {
         coverage: 0,
         test_count: conclusion === "success" || conclusion === "failure" ? 1 : 0,
         conclusion,
-        tdd_cycle:
-          conclusion === "success"
-            ? "green"
-            : conclusion === "failure"
-              ? "red"
-              : "null",
+        tdd_cycle: getTddCycle(conclusion),
       };
     });
   }

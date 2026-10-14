@@ -304,6 +304,7 @@ export function useAssignmentDetailData({
         closeLinkDialog();
       }
     } catch (error) {
+      console.error("Error al guardar el inicio de la práctica:", error);
       setUiMessage("No se pudo guardar el inicio");
     } finally {
       savingSubmission.current = false;
@@ -341,6 +342,7 @@ export function useAssignmentDetailData({
         closeCommentDialog();
       }
     } catch (error) {
+      console.error("Error al finalizar la práctica:", error);
       setUiMessage("No se pudo finalizar");
     } finally {
       savingSubmission.current = false;

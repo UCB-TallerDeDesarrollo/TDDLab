@@ -99,10 +99,69 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
       setIsEditingLink(false);
       setLocalFeedback("URL de GitHub actualizada correctamente.");
     } catch (error) {
+      console.error("Error al actualizar la URL del repositorio:", error);
       setLocalFeedback("Error al actualizar la URL. Intenta nuevamente.");
     } finally {
       setIsSavingLink(false);
     }
+  };
+
+  const renderRepositoryLink = () => {
+    if (!submission?.repository_link) {
+      return <span style={{ marginLeft: "8px" }}>No se inicio la practica</span>;
+    }
+
+    if (isEditingLink) {
+      return (
+        <div className="practice-edit-container">
+          <input
+            type="url"
+            className="practice-edit-input"
+            value={editedLink}
+            onChange={(e) => setEditedLink(e.target.value)}
+            placeholder="https://github.com/usuario/repositorio"
+            disabled={isSavingLink}
+          />
+          <button
+            type="button"
+            className="practice-save-btn"
+            onClick={handleSaveLinkInline}
+            disabled={isSavingLink || !editedLink.trim()}
+          >
+            {isSavingLink ? "Guardando..." : "Guardar"}
+          </button>
+          <button
+            type="button"
+            className="practice-cancel-btn"
+            onClick={handleCancelEdit}
+            disabled={isSavingLink}
+          >
+            Cancelar
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <span className="practice-link-cell">
+        <a
+          href={submission.repository_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="practice-link-anchor"
+        >
+          {submission.repository_link}
+        </a>
+        <button
+          type="button"
+          className="practice-edit-btn"
+          onClick={handleStartEdit}
+          title="Editar URL de GitHub"
+        >
+          <PencilIcon />
+        </button>
+      </span>
+    );
   };
 
   return (
@@ -145,57 +204,7 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                 <>
                   <div className="practice-student-row practice-enlace-row">
                     <strong>Enlace:</strong>{" "}
-                    {submission?.repository_link ? (
-                      isEditingLink ? (
-                        <div className="practice-edit-container">
-                          <input
-                            type="url"
-                            className="practice-edit-input"
-                            value={editedLink}
-                            onChange={(e) => setEditedLink(e.target.value)}
-                            placeholder="https://github.com/usuario/repositorio"
-                            disabled={isSavingLink}
-                          />
-                          <button
-                            type="button"
-                            className="practice-save-btn"
-                            onClick={handleSaveLinkInline}
-                            disabled={isSavingLink || !editedLink.trim()}
-                          >
-                            {isSavingLink ? "Guardando..." : "Guardar"}
-                          </button>
-                          <button
-                            type="button"
-                            className="practice-cancel-btn"
-                            onClick={handleCancelEdit}
-                            disabled={isSavingLink}
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="practice-link-cell">
-                          <a
-                            href={submission.repository_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="practice-link-anchor"
-                          >
-                            {submission.repository_link}
-                          </a>
-                          <button
-                            type="button"
-                            className="practice-edit-btn"
-                            onClick={handleStartEdit}
-                            title="Editar URL de GitHub"
-                          >
-                            <PencilIcon />
-                          </button>
-                        </span>
-                      )
-                    ) : (
-                      <span style={{ marginLeft: "8px" }}>No se inicio la practica</span>
-                    )}
+                    {renderRepositoryLink()}
                   </div>
                   <div className="practice-student-row practice-estado-row">
                     <strong>Estado:</strong>{" "}
