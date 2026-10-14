@@ -11,7 +11,8 @@ interface UseGitHubLinkValidation {
 
 
 export const useGitHubLinkValidation = (
-  initialRepo: string | undefined
+  initialRepo: string | undefined,
+  repositoryOnly = false
 ): UseGitHubLinkValidation => {
   const [repo, setRepo] = useState(initialRepo ?? "");
   const [validLink, setValidLink] = useState(true);
@@ -20,6 +21,13 @@ export const useGitHubLinkValidation = (
   const validateGitHubLink = (text: string): { isValid: boolean; error: string } => {
     if (!text || text.trim() === "") {
       return { isValid: false, error: "El enlace no puede estar vacío." };
+    }
+
+    if (repositoryOnly && (
+      !/^https:\/\/github\.com\/[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\/[A-Za-z0-9_.-]+\/?$/.test(text) ||
+      /\.git\/?$/.test(text) || [".", ".."].includes(text.split("/")[4])
+    )) {
+      return { isValid: false, error: "Enlace invalido. Formato esperado: https://github.com/usuario/repositorio" };
     }
 
     try {
@@ -70,7 +78,7 @@ export const useGitHubLinkValidation = (
       setValidLink(isValid);
       setErrorMessage(error);
     }
-  }, [initialRepo]);
+  }, [initialRepo, repositoryOnly]);
 
 
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
