@@ -1,8 +1,13 @@
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+
 interface StudentSubmissionSummaryProps {
   status: string;
   statusValue?: string;
   repositoryLink?: string;
   comment?: string;
+  onEditRepositoryLink?: () => void;
+  isSavingRepositoryLink?: boolean;
 }
 
 function getStatusClass(status: string | undefined): string {
@@ -16,6 +21,8 @@ export function StudentSubmissionSummary({
   statusValue,
   repositoryLink,
   comment,
+  onEditRepositoryLink,
+  isSavingRepositoryLink = false,
 }: Readonly<StudentSubmissionSummaryProps>) {
   const statusClass = getStatusClass(statusValue);
   return (
@@ -23,14 +30,26 @@ export function StudentSubmissionSummary({
       <p className="assignment-student-row">
         <strong>Enlace:</strong>{" "}
         {repositoryLink ? (
-          <a
-            href={repositoryLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="assignment-student-link"
-          >
-            {repositoryLink}
-          </a>
+          <>
+            <a
+              href={repositoryLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="assignment-student-link"
+            >
+              {repositoryLink}
+            </a>
+            {onEditRepositoryLink && (
+              <IconButton
+                aria-label="Editar enlace del repositorio"
+                size="small"
+                disabled={isSavingRepositoryLink}
+                onClick={onEditRepositoryLink}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            )}
+          </>
         ) : (
           "Sin enlace"
         )}
