@@ -74,6 +74,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
           Puedes dejar un comentario sobre tu tarea en este espacio (Opcional):
         </Typography>
         <TextField
+          id="comment"
           fullWidth
           multiline
           rows={4}
