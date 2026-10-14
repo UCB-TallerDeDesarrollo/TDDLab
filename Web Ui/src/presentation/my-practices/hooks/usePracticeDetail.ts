@@ -158,7 +158,6 @@ export function usePracticeDetail({
     savingSubmission.current = true;
     setIsSavingSubmission(true);
     try {
-      // 1. Si el link cambió en el modal, actualizar en BD y en el estado de React de forma inmutable
       if (
         updatedLink &&
         updatedLink.trim() !== "" &&
@@ -169,12 +168,11 @@ export function usePracticeDetail({
           prev ? { ...prev, repository_link: updatedLink.trim() } : null
         );
       }
-      // 2. Finalizar la práctica
       await finishPracticeSubmission(submission.id, data);
       closeCommentDialog();
       refreshDetailData();
     } catch (error) {
-      setUiMessage("Error al actualizar el enlace o finalizar la práctica.");
+      setUiMessage("No se pudo finalizar la práctica");
     } finally {
       savingSubmission.current = false;
       setIsSavingSubmission(false);

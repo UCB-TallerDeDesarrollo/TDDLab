@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography } from "@mui/material";
+import { Portal, Typography } from "@mui/material";
 import StatefulButton from "../../../shared/components/StatefulButton";
 import ContentState from "../../../shared/components/ContentState";
 import DetailPageShell from "../../../shared/components/DetailPageShell";
@@ -253,25 +253,32 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         )}
       </DetailPageShell>
 
-      {detailData.linkDialogOpen && <GitLinkDialog
-        open={detailData.linkDialogOpen}
-        onClose={detailData.closeLinkDialog}
-        onSend={detailData.sendGithubLink}
-      />}
+      {detailData.linkDialogOpen && (
+        <GitLinkDialog
+          open={detailData.linkDialogOpen}
+          onClose={detailData.closeLinkDialog}
+          onSend={detailData.sendGithubLink}
+        />
+      )}
 
-      {detailData.isCommentDialogOpen && <CommentDialog
-        open={detailData.isCommentDialogOpen}
-        link={detailData.submissionRepositoryLink}
-        onSend={detailData.sendComment}
-        onClose={detailData.closeCommentDialog}
-      />}
+      {detailData.isCommentDialogOpen && (
+        <CommentDialog
+          open={detailData.isCommentDialogOpen}
+          link={detailData.submissionRepositoryLink}
+          onSend={detailData.sendComment}
+          onClose={detailData.closeCommentDialog}
+          disabled={detailData.isSavingSubmission}
+        />
+      )}
 
-      <FeedbackSnackbar
-        open={Boolean(detailData.uiMessage)}
-        message={detailData.uiMessage ?? ""}
-        onClose={detailData.closeUiMessage}
-        severity="warning"
-      />
+      <Portal>
+        <FeedbackSnackbar
+          open={Boolean(detailData.uiMessage)}
+          message={detailData.uiMessage ?? ""}
+          onClose={detailData.closeUiMessage}
+          severity="error"
+        />
+      </Portal>
     </>
   );
 }

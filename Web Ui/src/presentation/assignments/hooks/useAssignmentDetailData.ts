@@ -91,6 +91,7 @@ export function useAssignmentDetailData({
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
+
   useEffect(() => {
     const fetchAssignment = async () => {
       const assignmentsRepository = new AssignmentsRepository();
@@ -302,6 +303,8 @@ export function useAssignmentDetailData({
         setStudentSubmission(savedSubmission);
         closeLinkDialog();
       }
+    } catch (error) {
+      setUiMessage("No se pudo guardar el inicio");
     } finally {
       savingSubmission.current = false;
       setIsSavingSubmission(false);
@@ -337,6 +340,8 @@ export function useAssignmentDetailData({
         setStudentSubmission(savedSubmission);
         closeCommentDialog();
       }
+    } catch (error) {
+      setUiMessage("No se pudo finalizar");
     } finally {
       savingSubmission.current = false;
       setIsSavingSubmission(false);

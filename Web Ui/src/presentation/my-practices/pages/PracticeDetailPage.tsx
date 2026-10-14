@@ -22,7 +22,6 @@ function getStatusClass(status: string | undefined): string {
   return "is-pending";
 }
 
-// Ícono SVG de lápiz para editar
 const PencilIcon: React.FC = () => (
   <svg
     width="16"
@@ -68,7 +67,6 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     closeUiMessage,
   } = usePracticeDetail({ userid, practiceid, navigate });
 
-  // Estados para la edición directa de la URL
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [editedLink, setEditedLink] = useState("");
   const [isSavingLink, setIsSavingLink] = useState(false);
@@ -244,14 +242,20 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
       />
       <CommentDialog
         open={isCommentDialogOpen}
-        link={submission?.repository_link}
-        onSend={(comment, updatedLink) => sendComment(comment, updatedLink)}
+        link={submission?.repository_link ?? ""}
+        onSend={(comment, updatedLink) => sendComment(comment, updatedLink ?? "")}
         onClose={closeCommentDialog}
+        disabled={isSavingSubmission}
       />
       <FeedbackSnackbar
         open={Boolean(uiMessage || localFeedback)}
         message={uiMessage || localFeedback || ""}
-        severity={localFeedback?.includes("Error") ? "error" : "info"}
+        severity={
+          (uiMessage || localFeedback)?.toLowerCase().includes("no se pudo") ||
+          (uiMessage || localFeedback)?.toLowerCase().includes("error")
+            ? "error"
+            : "info"
+        }
         onClose={() => {
           closeUiMessage();
           setLocalFeedback(null);
