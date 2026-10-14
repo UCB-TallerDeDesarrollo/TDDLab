@@ -75,7 +75,31 @@ class PracticeSubmissionController {
   async updatePracticeSubmission(req: Request, res: Response): Promise<void> {
     try {
       const practiceSubmissionid = parseInt(req.params.id);
-      const { status, end_date, comment } = req.body;
+      const { status, end_date, comment, repository_link } = req.body;
+      if (repository_link !== undefined) {
+        const user = (req as Request & { user?: { id: number; role: string } }).user;
+        if (user?.role !== "student") {
+          res.status(403).json({ error: "Solo el estudiante puede editar su enlace." });
+          return;
+        }
+        try {
+          const saved = await this.updatePracticeSubmissionUseCase.finishWithRepositoryLink(
+            practiceSubmissionid, user.id, { status, end_date, comment, repository_link }
+          );
+          if (!saved) {
+            res.status(404).json({ error: "Entrega no encontrada o ya finalizada." });
+            return;
+          }
+          res.status(200).json(saved);
+        } catch (error) {
+          if (error instanceof TypeError) {
+            res.status(400).json({ error: error.message });
+          } else {
+            res.status(500).json({ error: "Server error" });
+          }
+        }
+        return;
+      }
       const updatedPracticeSubmission = await this.updatePracticeSubmissionUseCase.execute(
         practiceSubmissionid,
         {
@@ -91,6 +115,30 @@ class PracticeSubmissionController {
       }
     } catch (error) {
       res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async updateRepositoryLink(req: Request, res: Response): Promise<void> {
+    const user = (req as Request & { user?: { id: number; role: string } }).user;
+    if (user?.role !== "student") {
+      res.status(403).json({ error: "Solo el estudiante puede editar su enlace." });
+      return;
+    }
+    try {
+      const saved = await this.updatePracticeSubmissionUseCase.updateRepositoryLink(
+        Number(req.params.id), user.id, req.body.repository_link
+      );
+      if (!saved) {
+        res.status(404).json({ error: "Entrega no encontrada o ya finalizada." });
+        return;
+      }
+      res.status(200).json(saved);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Server error" });
+      }
     }
   }
 

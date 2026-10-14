@@ -42,7 +42,14 @@ class PracticeSubmissionRepository{
         return rows.map((row) => this.mapRowToPracticeSubmissions(row));
     }
 
-    async UpdatePracticeSubmission(id: number, updatedSubmission: PracticeSubmissionUpdateObject): Promise<PracticeSubmissionUpdateObject | null> {
+    async UpdatePracticeSubmission(id: number, updatedSubmission: PracticeSubmissionUpdateObject, userid?: number): Promise<PracticeSubmissionUpdateObject | null> {
+        if (userid !== undefined && updatedSubmission.repository_link !== undefined) {
+            const rows = await this.executeQuery(
+                "UPDATE practicesubmissions SET status = $1, end_date = $2, comment = $3, repository_link = $4 WHERE id = $5 AND userid = $6 AND status = 'in progress' RETURNING *",
+                [updatedSubmission.status, updatedSubmission.end_date, updatedSubmission.comment, updatedSubmission.repository_link, id, userid]
+            );
+            return rows.length === 1 ? this.mapRowToPracticeSubmissions(rows[0]) : null;
+        }
         const { status, end_date, comment } = updatedSubmission;
         const query = "UPDATE practicesubmissions SET status = $1, end_date = $2, comment = $3 WHERE id = $4 RETURNING *";
         const values = [
@@ -56,6 +63,14 @@ class PracticeSubmissionRepository{
             return this.mapRowToPracticeSubmissions(rows[0]);
         }
         return null;
+    }
+
+    async updateRepositoryLink(id: number, userid: number, repositoryLink: string): Promise<PracticeSubmissionDataObject | null> {
+        const rows = await this.executeQuery(
+            "UPDATE practicesubmissions SET repository_link = $1 WHERE id = $2 AND userid = $3 AND status = 'in progress' RETURNING *",
+            [repositoryLink, id, userid]
+        );
+        return rows.length === 1 ? this.mapRowToPracticeSubmissions(rows[0]) : null;
     }
 
     async deletePracticeSubmission(id: number): Promise<void> {

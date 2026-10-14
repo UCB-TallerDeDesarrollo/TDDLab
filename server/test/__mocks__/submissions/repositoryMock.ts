@@ -6,6 +6,7 @@ export function getSubmissionRepositoryMock() {
         mapRowToSubmissions: jest.fn(),
         ObtainSubmissions: jest.fn(),
         UpdateSubmission: jest.fn(),
+        updateRepositoryLink: jest.fn(),
         deleteSubmission: jest.fn(),
         assignmentidExistsForSubmission: jest.fn(),
         useridExistsForSubmission: jest.fn(),

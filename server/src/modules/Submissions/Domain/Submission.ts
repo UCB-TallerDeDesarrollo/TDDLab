@@ -19,6 +19,7 @@ export interface SubmissionDataObject{
 }
 
 export interface SubmissionUpdateObject{
+  repository_link?: string;
     status: SubmissionStatus;
     end_date: Date | null;
     comment: string | null;

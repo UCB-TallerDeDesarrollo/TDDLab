@@ -59,4 +59,11 @@ submissionsRouter.delete(
   async (req, res) => await submissionController.deleteSubmission(req, res)
 );
 
+submissionsRouter.patch(
+  "/:id/repository-link",
+  authenticateJWT,
+  authorizeRoles("student"),
+  async (req, res) => await submissionController.updateRepositoryLink(req, res)
+);
+
 export default submissionsRouter;
