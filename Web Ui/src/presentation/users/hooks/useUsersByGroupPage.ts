@@ -46,7 +46,7 @@ function useUsersByGroupPage() {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [groupid]);
 
   return {

@@ -59,11 +59,11 @@ function useUsersPage() {
   };
 
   useEffect(() => {
-    loadInitialData();
+    void loadInitialData();
   }, []);
 
   useEffect(() => {
-    runSearch(selectedGroup, searchQuery);
+    void runSearch(selectedGroup, searchQuery);
   }, [selectedGroup, searchQuery]);
 
   const groupMap = groups.reduce((acc, group) => {

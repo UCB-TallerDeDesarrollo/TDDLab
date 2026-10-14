@@ -33,7 +33,7 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
   };
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, []);
 
   return (
