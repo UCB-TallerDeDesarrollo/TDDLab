@@ -1,5 +1,5 @@
 import { act, fireEvent, render, waitFor, screen, within } from "@testing-library/react";
-import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import axios from "axios";
 import "@testing-library/jest-dom";
 import AssignmentDetail from "../../../src/presentation/assignments/pages/AssignmentDetail";
@@ -230,11 +230,16 @@ function deferred<T>() {
   return { promise, resolve };
 }
 
+function GraphDestination() {
+  return <output data-testid="graph-destination">{useLocation().search}</output>;
+}
+
 function mount(userid = 9, role = "student") {
   return render(
     <MemoryRouter initialEntries={['/assignments/7']}>
       <Link to="/assignments/8">Otra tarea</Link>
       <Routes>
+        <Route path="/graph" element={<GraphDestination />} />
         <Route path="/assignments/:id" element={<AssignmentDetail role={role} userid={userid} />} />
       </Routes>
     </MemoryRouter>
@@ -419,5 +424,165 @@ describe('single task lifecycle action', () => {
     ));
     expect(screen.getByRole('status')).toHaveTextContent('Finalizado');
     expect(screen.queryByRole('button', { name: 'Finalizar tarea' })).not.toBeInTheDocument();
+  });
+});
+
+
+describe("HU-05 student task repository editing", () => {
+  const newLink = "https://github.com/student/corrected-task";
+  let get: jest.SpyInstance;
+  let patch: jest.SpyInstance;
+  beforeEach(() => {
+    get = jest.spyOn(axios, "get").mockResolvedValue({ status: 200, data: started });
+    patch = jest.spyOn(axios, "patch").mockResolvedValue({ data: { ...started, repository_link: newLink } });
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  async function openEdit() {
+    fireEvent.click(await screen.findByRole("button", { name: "Editar enlace del repositorio" }));
+    return screen.getByRole("dialog");
+  }
+
+  it.each([started])("edits the URL without changing $status or opening the graph", async (submission) => {
+    get.mockResolvedValue({ status: 200, data: submission });
+    patch.mockResolvedValue({ data: { ...submission, repository_link: newLink } });
+    const view = mount();
+    const dialog = await openEdit();
+    expect(within(dialog).getByRole("textbox")).toHaveValue(submission.repository_link);
+    fireEvent.change(within(dialog).getByRole("textbox"), { target: { value: newLink } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Guardar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(patch).toHaveBeenCalledWith(expect.stringContaining("/submissions/42/repository-link"),
+      { repository_link: newLink }, { withCredentials: true });
+    expect(screen.getByRole("link", { name: newLink })).toHaveAttribute("href", newLink);
+    expect(screen.getByRole("status")).toHaveTextContent(submission.status === "delivered" ? "Finalizado" : "En progreso");
+    expect(screen.queryByTestId("graph-destination")).not.toBeInTheDocument();
+    view.unmount();
+    get.mockResolvedValue({ status: 200, data: { ...submission, repository_link: newLink } });
+    mount();
+    expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Ver gr/ }));
+    expect(await screen.findByTestId("graph-destination")).toHaveTextContent("repoName=corrected-task");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it.each(["", "not-a-url", "https://evil.com/github.com/user/repo", "https://github.com/user", "https://github.com/user/repo/tree/main", "https://github.com/user/repo.git"])(
+    "rejects invalid URL %s without saving", async (value) => {
+      mount();
+      const dialog = await openEdit();
+      fireEvent.change(within(dialog).getByRole("textbox"), { target: { value } });
+      expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+      expect(within(dialog).getByText(/El enlace no puede|Enlace invalido/)).toBeInTheDocument();
+      expect(patch).not.toHaveBeenCalled();
+    }
+  );
+
+  it("cancels the draft and restores the original URL when editing again", async () => {
+    mount();
+    const dialog = await openEdit();
+    fireEvent.change(within(dialog).getByRole("textbox"), { target: { value: newLink } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Cerrar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByRole("link", { name: started.repository_link })).toBeInTheDocument();
+    expect(within(await openEdit()).getByRole("textbox")).toHaveValue(started.repository_link);
+    expect(patch).not.toHaveBeenCalled();
+  });
+
+  it("keeps the original URL on save failure and permits retry", async () => {
+    patch.mockRejectedValueOnce(new Error("Network error"));
+    mount();
+    const dialog = await openEdit();
+    fireEvent.change(within(dialog).getByRole("textbox"), { target: { value: newLink } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Guardar" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("No se pudo guardar el enlace");
+    expect(screen.getByRole("link", { name: started.repository_link, hidden: true })).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: "Guardar" }));
+    expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+  });
+
+  it("prevents duplicate saves and updates the URL only after confirmation", async () => {
+    const save = deferred<{ data: typeof started }>();
+    patch.mockReturnValueOnce(save.promise);
+    mount();
+    const dialog = await openEdit();
+    fireEvent.change(within(dialog).getByRole("textbox"), { target: { value: newLink } });
+    const button = within(dialog).getByRole("button", { name: "Guardar" });
+    fireEvent.click(button);
+    fireEvent.click(button);
+    expect(button).toBeDisabled();
+    expect(within(dialog).getByRole("button", { name: "Cerrar" })).toBeDisabled();
+    expect(patch).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("link", { name: started.repository_link, hidden: true })).toBeInTheDocument();
+    await act(async () => save.resolve({ data: { ...started, repository_link: newLink } }));
+    expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+  });
+
+  it.each(["teacher", "admin"])("does not expose editing to %s", async (role) => {
+    mount(9, role);
+    await screen.findByText("student1@example.com");
+    expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+  });
+
+  it("hides editing on a finalized task, including after reloading", async () => {
+    get.mockResolvedValue({ status: 200, data: delivered });
+    const view = mount();
+    expect(await screen.findByRole("status")).toHaveTextContent("Finalizado");
+    expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+    view.unmount();
+    mount();
+    expect(await screen.findByRole("status")).toHaveTextContent("Finalizado");
+    expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+  });
+
+  it("saves the URL edited in the finish dialog together with completion", async () => {
+    const saved = { ...delivered, repository_link: newLink };
+    const put = jest.spyOn(axios, "put").mockResolvedValue({ data: saved });
+    const view = mount();
+    const dialog = await openFinish();
+    fireEvent.click(within(dialog).getByRole("button", { name: "edit" }));
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Enlace del Repositorio" }), { target: { value: newLink } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Enviar" }));
+    expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Finalizado");
+    expect(put).toHaveBeenCalledWith(expect.stringContaining("/submissions/42"),
+      expect.objectContaining({ status: "delivered", comment: "Listo", repository_link: newLink }), { withCredentials: true });
+    expect(patch).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+    view.unmount();
+    get.mockResolvedValue({ status: 200, data: saved });
+    mount();
+    expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+  });
+
+  it.each(["", "https://evil.com/github.com/user/repo"])("blocks finalization with invalid edited URL %s", async (value) => {
+    const put = jest.spyOn(axios, "put");
+    mount();
+    const dialog = await openFinish();
+    fireEvent.click(within(dialog).getByRole("button", { name: "edit" }));
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Enlace del Repositorio" }), { target: { value } });
+    expect(within(dialog).getByRole("button", { name: "Enviar" })).toBeDisabled();
+    expect(within(dialog).getByText(/Advertencia/)).toBeInTheDocument();
+    expect(put).not.toHaveBeenCalled();
+  });
+
+  it("keeps the original URL and status when saving completion with an edited link fails", async () => {
+    jest.spyOn(axios, "put").mockRejectedValue(new Error("Network error"));
+    mount();
+    const dialog = await openFinish();
+    fireEvent.click(within(dialog).getByRole("button", { name: "edit" }));
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Enlace del Repositorio" }), { target: { value: newLink } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Enviar" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("No se pudo finalizar");
+    expect(screen.getByRole("status", { hidden: true })).toHaveTextContent("En progreso");
+    expect(screen.getByRole("link", { name: started.repository_link, hidden: true })).toBeInTheDocument();
+    expect(within(dialog).getByRole("textbox", { name: "Enlace del Repositorio" })).toHaveValue(newLink);
+  });
+
+  it("does not expose editing before starting a task", async () => {
+    get.mockRejectedValue(notStarted);
+    mount();
+    await screen.findByRole("button", { name: "Iniciar tarea" });
+    expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
   });
 });

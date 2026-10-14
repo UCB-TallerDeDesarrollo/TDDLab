@@ -1,3 +1,4 @@
+import PracticeSubmissionRepository from "../../../../src/modules/PracticeSubmissions/Repository/PracticeSubmissionRepository";
 import axios from "axios";
 import SubmissionRepository from "../../../../src/modules/Submissions/Repository/SubmissionRepository";
 import { submissionInProgressDataMock } from "../../__mocks__/submissions/data/submissionDataMock";
@@ -136,5 +137,27 @@ describe('getSubmissionsByAssignmentId', () => {
           
             await expect(mockRepository.getSubmissionbyUserandSubmissionId(25, 1)).rejects.toThrowError('Failed to get submission');
         });
+    });
+});
+
+
+describe.each(["task", "practice"])("HU-05 %s repository transport", (kind) => {
+    afterEach(() => jest.restoreAllMocks());
+    it("sends only the edited URL with session credentials and returns the saved submission", async () => {
+        const repository = kind === "task" ? new SubmissionRepository() : new PracticeSubmissionRepository();
+        const repository_link = "https://github.com/student/new";
+        const saved = { ...submissionInProgressDataMock, repository_link };
+        const patch = jest.spyOn(axios, "patch").mockResolvedValue({ data: saved });
+        await expect(repository.updateRepositoryLink(42, repository_link)).resolves.toEqual(saved);
+        expect(patch).toHaveBeenCalledWith(
+            expect.stringContaining(`/${kind === "task" ? "submissions" : "practiceSubmissions"}/42/repository-link`),
+            { repository_link }, { withCredentials: true }
+        );
+    });
+    it("propagates save errors instead of returning an unsaved URL", async () => {
+        const repository = kind === "task" ? new SubmissionRepository() : new PracticeSubmissionRepository();
+        const error = new Error("Save failed");
+        jest.spyOn(axios, "patch").mockRejectedValue(error);
+        await expect(repository.updateRepositoryLink(42, "https://github.com/student/new")).rejects.toBe(error);
     });
 });
