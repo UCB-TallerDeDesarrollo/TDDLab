@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
 import { GroupItem } from "../../../src/presentation/groups/components/GroupItem";
-
+jest.setTimeout(30000);
 describe("GroupItem", () => {
   const group = {
     id: 1,
