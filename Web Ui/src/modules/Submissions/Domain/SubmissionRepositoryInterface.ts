@@ -1,6 +1,7 @@
 import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "./submissionInterfaces";
 
 interface SubmissionRepositoryInterface {
+  updateRepositoryLink(id: number, repositoryLink: string): Promise<SubmissionDataObject>;
     createSubmission(submissionData: SubmissionCreationObject): Promise<SubmissionDataObject>;
     checkSubmissionExists(assignmentid: number, userid: number): Promise<{ hasStarted: boolean }>;
     getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObject[]>;

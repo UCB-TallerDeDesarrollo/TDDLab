@@ -6,6 +6,10 @@ export class FinishPracticeSubmission {
     private readonly practiceSubmissionRepository: PracticeSubmissionRepositoryInterface
   ) {}
 
+  async updateRepositoryLink(id: number, repositoryLink: string) {
+    return this.practiceSubmissionRepository.updateRepositoryLink(id, repositoryLink);
+  }
+
   async finishSubmission(
     id: number,
     practiceSubmissionData: PracticeSubmissionUpdateObject

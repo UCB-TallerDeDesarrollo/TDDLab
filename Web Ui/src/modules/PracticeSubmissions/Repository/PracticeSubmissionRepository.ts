@@ -12,6 +12,13 @@ const API_URL = VITE_API + "/practiceSubmissions";
 class PracticeSubmissionRepository
   implements PracticeSubmissionRepositoryInterface
 {
+  async updateRepositoryLink(id: number, repositoryLink: string): Promise<PracticeSubmissionDataObject> {
+    const response = await axios.patch<PracticeSubmissionDataObject>(
+      `${API_URL}/${id}/repository-link`, { repository_link: repositoryLink }, { withCredentials: true }
+    );
+    return response.data;
+  }
+
   async createPracticeSubmission(
     practiceSubmissionData: PracticeSubmissionCreationObject
   ): Promise<void> {

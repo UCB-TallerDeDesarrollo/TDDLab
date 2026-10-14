@@ -35,6 +35,13 @@ export async function startPracticeSubmission(
   await new CreatePracticeSubmission(repo).createPracticeSubmission(data);
 }
 
+export async function updatePracticeRepositoryLink(
+  submissionId: number,
+  repositoryLink: string
+): Promise<PracticeSubmissionDataObject> {
+  return new FinishPracticeSubmission(makeRepo()).updateRepositoryLink(submissionId, repositoryLink);
+}
+
 export async function finishPracticeSubmission(
   submissionId: number,
   data: PracticeSubmissionUpdateObject
