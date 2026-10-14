@@ -8,7 +8,7 @@ import {
 
 describe('TDDCycleChart', () => {
   it('explica la ausencia de ejecuciones cuando el log de ventasIS solo contiene commits', () => {
-    render(<TDDCycleChart data={ventasISCommitOnlyLogs} />);
+    const { container } = render(<TDDCycleChart data={ventasISCommitOnlyLogs} />);
 
     expect(
       screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ }),
@@ -20,6 +20,43 @@ describe('TDDCycleChart', () => {
       screen.getByText(/contiene registros de commits, pero no registros de ejecución/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/script\/tdd_log\.json/)).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'No hay ejecuciones de pruebas registradas',
+    );
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
+  });
+
+  it('explica un log vacío sin afirmar que contiene commits', () => {
+    const { container } = render(<TDDCycleChart data={[]} />);
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'No hay ejecuciones de pruebas registradas',
+    );
+    expect(screen.getByText(/no contiene registros para esta gráfica/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/contiene registros de commits, pero no registros de ejecución/i),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText(/script\/tdd_log\.json/)).toBeInTheDocument();
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
+  });
+
+  it('actualiza el estado vacío cuando cambian los registros recibidos', () => {
+    const { rerender } = render(<TDDCycleChart data={ventasISCommitOnlyLogs} />);
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+
+    rerender(<TDDCycleChart data={testData} />);
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Ejecución exitosa' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Ejecución con fallos' })).toBeInTheDocument();
+
+    rerender(<TDDCycleChart data={[]} />);
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(
+      screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ }),
+    ).toHaveLength(0);
   });
 
   it('representa una ejecución con todas las pruebas fallidas como una ejecución existente', () => {
