@@ -119,6 +119,8 @@ function StudentAssignmentSection({
           status={studentStatusLabel}
           statusValue={studentSubmission?.status}
           repositoryLink={studentRepositoryLink}
+          onEditLink={detailData.canEditRepository ? detailData.openEditLinkDialog : undefined}
+          isSaving={isSavingSubmission}
           comment={studentSubmission?.comment || undefined}
         />
       }
@@ -255,6 +257,8 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
 
       {detailData.linkDialogOpen && <GitLinkDialog
         open={detailData.linkDialogOpen}
+        editing={detailData.editingRepository}
+        initialLink={detailData.editingRepository ? detailData.studentRepositoryLink : ""}
         onClose={detailData.closeLinkDialog}
         onSend={detailData.sendGithubLink}
       />}

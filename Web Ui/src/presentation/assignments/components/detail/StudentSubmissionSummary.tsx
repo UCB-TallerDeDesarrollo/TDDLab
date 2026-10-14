@@ -1,4 +1,9 @@
+import { IconButton, Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+
 interface StudentSubmissionSummaryProps {
+  onEditLink?: () => void;
+  isSaving?: boolean;
   status: string;
   statusValue?: string;
   repositoryLink?: string;
@@ -16,6 +21,8 @@ export function StudentSubmissionSummary({
   statusValue,
   repositoryLink,
   comment,
+  onEditLink,
+  isSaving = false,
 }: Readonly<StudentSubmissionSummaryProps>) {
   const statusClass = getStatusClass(statusValue);
   return (
@@ -33,6 +40,15 @@ export function StudentSubmissionSummary({
           </a>
         ) : (
           "Sin enlace"
+        )}
+        {onEditLink && (
+          <Tooltip title="Editar enlace">
+            <span>
+              <IconButton aria-label="Editar enlace del repositorio" size="small" onClick={onEditLink} disabled={isSaving}>
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
         )}
       </p>
 
