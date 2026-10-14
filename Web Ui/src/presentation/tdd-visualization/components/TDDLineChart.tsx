@@ -326,33 +326,8 @@ function TDDLineCharts({
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
 
-      case "Ciclo de ejecución de pruebas": {
-        console.log(tddLogs)
-        // Convert TDDLogEntry[] to TestLog[] format and handle null case
-        const testLogs = tddLogs?.map(log => {
-          // TDDLogEntry is a union type, so we need to handle both TestExecutionLog and CommitLog
-          if ('numPassedTests' in log) {
-            // This is a TestExecutionLog
-            return {
-              numPassedTests: log.numPassedTests,
-              failedTests: log.failedTests,
-              numTotalTests: log.numTotalTests,
-              timestamp: log.timestamp,
-              success: log.success,
-              testId: log.testId
-            };
-          } else {
-            // This is a CommitLog
-            return {
-              commitId: log.commitId,
-              commitName: log.commitName,
-              commitTimestamp: log.commitTimestamp,
-              testId: log.testId
-            };
-          }
-        }) || [];
-        return <TDDCycleChart data={testLogs} />;
-      }
+      case "Ciclo de ejecución de pruebas":
+        return <TDDCycleChart data={tddLogs ?? []} />;
    
     }
     return (

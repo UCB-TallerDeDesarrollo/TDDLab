@@ -37,6 +37,20 @@ jest.mock("react-router-dom", () => ({
 
 describe("TDDChartPage", () => {
   test.each([["admin"], ["student"]])(
+    "mantiene las gráficas sin atribuir la ausencia del log a falta de pruebas para %s",
+    async (role) => {
+      // El puerto devuelve métricas de commits y un log vacío.
+      const { findByTestId, queryByTestId, queryByText } = render(
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph" />
+      );
+
+      expect(await findByTestId("mock-tdd-charts")).toBeInTheDocument();
+      expect(queryByTestId("errorMessage")).not.toBeInTheDocument();
+      expect(queryByText(/no hayas ejecutado ninguna prueba/i)).not.toBeInTheDocument();
+    }
+  );
+
+  test.each([["admin"], ["student"]])(
     "renders loading spinner when loading is true for role %s",
     async (role) => {
       const { getByTestId } = render(
