@@ -1,3 +1,4 @@
+import { handleStudentSubmissionUpdate } from "./submissionUpdateHandler";
 import { Request, Response } from "express";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionsRepository";
 import CreateSubmission from "../../modules/Submissions/Aplication/CreateSubmissionUseCase";
@@ -76,27 +77,11 @@ class SubmissionController {
       const submissionid = parseInt(req.params.id);
       const { status, end_date, comment, repository_link } = req.body;
       if (repository_link !== undefined) {
-        const user = (req as Request & { user?: { id: number; role: string } }).user;
-        if (user?.role !== "student") {
-          res.status(403).json({ error: "Solo el estudiante puede editar su enlace." });
-          return;
-        }
-        try {
-          const saved = await this.updateSubmissionUseCase.finishWithRepositoryLink(
-            submissionid, user.id, { status, end_date, comment, repository_link }
-          );
-          if (!saved) {
-            res.status(404).json({ error: "Entrega no encontrada o ya finalizada." });
-            return;
-          }
-          res.status(200).json(saved);
-        } catch (error) {
-          if (error instanceof TypeError) {
-            res.status(400).json({ error: error.message });
-          } else {
-            res.status(500).json({ error: "Server error" });
-          }
-        }
+        await handleStudentSubmissionUpdate(req, res, (userid) =>
+          this.updateSubmissionUseCase.finishWithRepositoryLink(
+            submissionid, userid, { status, end_date, comment, repository_link }
+          )
+        );
         return;
       }
       const updatedSubmission = await this.updateSubmissionUseCase.execute(
@@ -118,27 +103,9 @@ class SubmissionController {
   }
 
   async updateRepositoryLink(req: Request, res: Response): Promise<void> {
-    const user = (req as Request & { user?: { id: number; role: string } }).user;
-    if (user?.role !== "student") {
-      res.status(403).json({ error: "Solo el estudiante puede editar su enlace." });
-      return;
-    }
-    try {
-      const saved = await this.updateSubmissionUseCase.updateRepositoryLink(
-        Number(req.params.id), user.id, req.body.repository_link
-      );
-      if (!saved) {
-        res.status(404).json({ error: "Entrega no encontrada o ya finalizada." });
-        return;
-      }
-      res.status(200).json(saved);
-    } catch (error) {
-      if (error instanceof TypeError) {
-        res.status(400).json({ error: error.message });
-      } else {
-        res.status(500).json({ error: "Server error" });
-      }
-    }
+    await handleStudentSubmissionUpdate(req, res, (userid) =>
+      this.updateSubmissionUseCase.updateRepositoryLink(Number(req.params.id), userid, req.body.repository_link)
+    );
   }
 
   async deleteSubmission(req: Request, res: Response): Promise<void> {

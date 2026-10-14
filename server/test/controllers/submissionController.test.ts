@@ -369,6 +369,31 @@ describe.each(["task", "practice"])("HU-05 %s repository editing", (kind) => {
         expect(query).not.toHaveBeenCalled();
     });
 
+    it("forbids finalizing an edited repository as a teacher", async () => {
+        const { controller, query } = setup();
+        const req = Object.assign(createRequest("42", {
+            status: "delivered", end_date: saved.end_date, comment: saved.comment, repository_link: newLink,
+        }), { user: { id: 9, role: "teacher" } });
+        const response = createResponse();
+        if (kind === "task") await (controller as SubmissionController).updateSubmission(req, response);
+        else await (controller as PracticeSubmissionController).updatePracticeSubmission(req, response);
+        expect(response.status).toHaveBeenCalledWith(403);
+        expect(query).not.toHaveBeenCalled();
+    });
+
+    it("preserves the save error response when finalization with a new link fails", async () => {
+        const { controller, query } = setup();
+        query.mockRejectedValue(new Error("Database error"));
+        const req = Object.assign(createRequest("42", {
+            status: "delivered", end_date: saved.end_date, comment: saved.comment, repository_link: newLink,
+        }), { user: { id: 9, role: "student" } });
+        const response = createResponse();
+        if (kind === "task") await (controller as SubmissionController).updateSubmission(req, response);
+        else await (controller as PracticeSubmissionController).updatePracticeSubmission(req, response);
+        expect(response.status).toHaveBeenCalledWith(500);
+        expect(response.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
+
     it("rejects malformed IDs before querying", async () => {
         const { controller, query } = setup();
         const response = createResponse();

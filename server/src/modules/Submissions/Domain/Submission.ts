@@ -24,3 +24,15 @@ export interface SubmissionUpdateObject{
     end_date: Date | null;
     comment: string | null;
 }
+
+export function validateSubmissionRepositoryLink(id: number, userid: number, repositoryLink: unknown): asserts repositoryLink is string {
+  if (!Number.isInteger(id) || id <= 0 || !Number.isInteger(userid) || userid <= 0) {
+    throw new TypeError("Identificador invalido.");
+  }
+  if (typeof repositoryLink !== "string" ||
+      !/^https:\/\/github\.com\/[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\/[A-Za-z0-9_.-]+\/?$/.test(repositoryLink) ||
+      /\.git\/?$/.test(repositoryLink) ||
+      [".", ".."].includes(repositoryLink.split("/")[4])) {
+    throw new TypeError("Enlace invalido. Formato esperado: https://github.com/usuario/repositorio");
+  }
+}

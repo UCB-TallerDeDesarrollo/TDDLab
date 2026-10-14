@@ -1,3 +1,4 @@
+import { validateSubmissionRepositoryLink } from "../../Submissions/Domain/Submission";
 import PracticeSubmissionRepository from "../Repository/PracticeSubmissionsRepository";
 import { PracticeSubmissionUpdateObject, PracticeSubmissionDataObject } from "../Domain/PracticeSubmission";
 
@@ -9,24 +10,12 @@ class UpdatePracticeSubmission {
   }
 
   async updateRepositoryLink(id: number, userid: number, repositoryLink: string): Promise<PracticeSubmissionDataObject | null> {
-    this.validateRepositoryLink(id, userid, repositoryLink);
+    validateSubmissionRepositoryLink(id, userid, repositoryLink);
     return this.repository.updateRepositoryLink(id, userid, repositoryLink);
   }
 
-  private validateRepositoryLink(id: number, userid: number, repositoryLink: string): void {
-    if (!Number.isInteger(id) || id <= 0 || !Number.isInteger(userid) || userid <= 0) {
-      throw new TypeError("Identificador invalido.");
-    }
-    if (typeof repositoryLink !== "string" ||
-        !/^https:\/\/github\.com\/[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\/[A-Za-z0-9_.-]+\/?$/.test(repositoryLink) ||
-        /\.git\/?$/.test(repositoryLink) ||
-        [".", ".."].includes(repositoryLink.split("/")[4])) {
-      throw new TypeError("Enlace invalido. Formato esperado: https://github.com/usuario/repositorio");
-    }
-  }
-
   async finishWithRepositoryLink(id: number, userid: number, data: PracticeSubmissionUpdateObject) {
-    this.validateRepositoryLink(id, userid, data.repository_link as string);
+    validateSubmissionRepositoryLink(id, userid, data.repository_link);
     if (data.status !== "delivered") throw new TypeError("La entrega debe finalizarse.");
     return this.repository.UpdatePracticeSubmission(id, data, userid);
   }
