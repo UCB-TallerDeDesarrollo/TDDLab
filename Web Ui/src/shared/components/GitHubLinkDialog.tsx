@@ -12,19 +12,21 @@ interface GithubLinkDialogProps {
   open: boolean;
   onClose: () => void;
   onSend: (link: string) => void | Promise<void>;
+  initialLink?: string;
 }
 
 export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   open,
   onClose,
   onSend,
+  initialLink,
 }) => {
   const {
     repo: link,
     validLink,
     errorMessage,
     handleLinkChange,
-  } = useGitHubLinkValidation("");
+  } = useGitHubLinkValidation(initialLink);
 
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
@@ -85,7 +87,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           focused
           style={textFieldStyle}
         />
-        {!validLink && link !== "" && (
+        {!validLink && (
           <Typography variant="body2" color="error">
             {errorMessage}
           </Typography>

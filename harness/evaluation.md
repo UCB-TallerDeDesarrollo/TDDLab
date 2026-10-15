@@ -348,3 +348,90 @@ revisar los resultados y documentar los ajustes.
 
 No debe declararse exitoso el harness únicamente
 por disponer de archivos de instrucciones.
+
+## 16. Registro formal de ejecución de la prueba piloto HU-08
+
+Este registro completa y prevalece sobre los campos `[PENDIENTE]` de la
+plantilla anterior para la prueba piloto descrita a continuación.
+
+### 16.1 Identificación
+
+| Campo | Resultado |
+| --- | --- |
+| Historia piloto | HU-05: validación de enlace de repositorio GitHub |
+| Agente seleccionado | OpenAI Codex |
+| Rama utilizada | `Cachuchines/HU8-pilot` |
+| Componente | `Web Ui/`, presentación compartida y pruebas relacionadas |
+| Fecha de registro | 2026-10-15 |
+
+El objetivo fue validar enlaces de repositorio en el diálogo de GitHub,
+manteniendo `initialLink?: string`. La revisión humana precisó que el único
+formato aceptable era `https://github.com/<owner>/<repo>` y que debían
+rechazarse enlaces vacíos, malformados, sin HTTPS, de otro dominio, con
+credenciales, puertos, parámetros, fragmentos o segmentos adicionales.
+
+### 16.2 Fase de análisis
+
+El agente confirmó la rama `Cachuchines/HU8-pilot`, revisó el estado de Git y
+detectó cambios sin confirmar en el diálogo, el hook de validación y la prueba
+de asignación. Los preservó; no cambió de rama ni descartó cambios. También
+consultó `AGENTS.md`, arquitectura, workflow, convenciones, implementación,
+pruebas y `package.json` de la UI.
+
+Identificó correctamente `GitLinkDialog`, `useGitHubLinkValidation` y la prueba
+de detalle de asignación, y anunció un cambio limitado al hook compartido con
+pruebas de borde. El análisis delimitó correctamente la presentación, aunque
+la condición de URL canónica exacta se hizo explícita tras la revisión humana.
+
+### 16.3 Iteraciones
+
+**Primera implementación.** Añadió soporte de `initialLink`, mejoró la
+comprobación de dominio y cubrió URL vacía, malformada y de dominio distinto.
+El resultado de 20 pruebas aprobadas fue reportado por el agente.
+
+**Revisión humana independiente.** Detectó que la primera implementación aún
+aceptaba URLs con credenciales, puertos y rutas adicionales. Esta detección
+motivó una segunda iteración limitada.
+
+**Segunda iteración.** Restringió la validación al formato exacto
+`https://github.com/<owner>/<repo>` y añadió pruebas de credenciales, puerto,
+parámetros, fragmento, ruta adicional, slash final y HTTP. Se mantuvo el
+contrato opcional `initialLink`; no se modificaron backend, navegación,
+persistencia ni configuración. La segunda iteración terminó con 27 pruebas
+aprobadas.
+
+### 16.4 Resultados y procedencia de la evidencia
+
+| Procedencia | Verificación | Resultado | Observación |
+| --- | --- | --- | --- |
+| Reportado por el agente | Batería de primera iteración | 20 aprobadas | No existe una ejecución independiente registrada de esta batería. |
+| Ejecutado por el agente | `jest --runInBand --runTestsByPath test/presentation/assignments/assignmentDetail.test.tsx` | 27 aprobadas | Una suite aprobada; cubre la segunda iteración. |
+| Ejecutado por el agente | `tsc --noEmit` | Aprobada | Sin errores de TypeScript. |
+| Ejecutado por el agente | `npm run lint` | Aprobada | ESLint terminó sin diagnósticos. |
+| Ejecutado por el agente | `git diff --check` | Aprobada | Sin errores; solo advertencias de conversión LF a CRLF. |
+| Ejecutado por el agente | `npm run build` | Fallida | `tsc` finalizó antes del fallo; Vite/esbuild no pudo leer un directorio padre por permisos y terminó con panic. |
+| Independiente humana | Revisión de primera iteración | Brechas detectadas | Confirmó la aceptación indebida de credenciales, puertos y rutas adicionales. |
+
+No se ejecutaron pruebas Cypress porque el alcance fue la validación unitaria
+del diálogo. El primer intento RED de la segunda iteración no emitió informe de
+Jest; la ejecución dirigida posterior confirmó las 27 pruebas aprobadas.
+
+### 16.5 Aprendizajes, limitaciones y conclusión
+
+El harness orientó adecuadamente la inspección inicial, el alcance, las
+autorizaciones y el informe final. Sin embargo, la cobertura inicial no expresó
+el requisito de URL canónica; la revisión humana fue necesaria para identificar
+casos límite decisivos. La segunda iteración corrigió la brecha sin ampliar la
+arquitectura ni el alcance.
+
+Limitaciones: las 20 pruebas de la primera iteración permanecen como resultado
+reportado, no como verificación independiente; PowerShell bloqueó inicialmente
+`npm.ps1` y se usó `npm.cmd` sin alterar la política; la compilación completa
+no quedó validada por el error de permisos de Vite/esbuild, aunque TypeScript
+aprobó por separado.
+
+**Conclusión: evaluación completada con limitaciones de entorno.** OpenAI
+Codex siguió el harness para analizar el repositorio, limitar el cambio,
+respetar autorizaciones y documentar resultados. La revisión humana aportó una
+segunda iteración con 27 pruebas aprobadas. No se declara validación completa
+del build hasta resolver los permisos del entorno de Vite/esbuild.

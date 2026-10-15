@@ -214,6 +214,65 @@ describe("AssignmentDetail Component", () => {
       expect(handleSend).toHaveBeenCalledWith("https://github.com/test/repo");
     });
   });
+
+  it("shows an initial GitHub URL and sends its edited value", async () => {
+    const handleSend = jest.fn();
+
+    render(
+      <GitLinkDialog
+        open={true}
+        onClose={jest.fn()}
+        onSend={handleSend}
+        initialLink="https://github.com/test/current-repo"
+      />
+    );
+
+    const input = screen.getByRole("textbox", { name: /Enlace de Github/i });
+    expect(input).toHaveValue("https://github.com/test/current-repo");
+
+    fireEvent.change(input, { target: { value: "https://github.com/test/updated-repo" } });
+    fireEvent.click(screen.getByRole("button", { name: /Enviar/i }));
+
+    await waitFor(() => {
+      expect(handleSend).toHaveBeenCalledWith("https://github.com/test/updated-repo");
+    });
+  });
+
+  it("rejects empty, malformed, and non-GitHub domain URLs", async () => {
+    render(<GitLinkDialog open={true} onClose={jest.fn()} onSend={jest.fn()} />);
+
+    const input = screen.getByRole("textbox", { name: /Enlace de Github/i });
+    const sendButton = screen.getByRole("button", { name: /Enviar/i });
+
+    expect(sendButton).toBeDisabled();
+    expect(await screen.findByText("El enlace no puede estar vacío.")).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "https://evilgithub.com/user/repo" } });
+    expect(sendButton).toBeDisabled();
+    expect(screen.getByText("El enlace debe pertenecer a GitHub.")).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "not-a-url" } });
+    expect(sendButton).toBeDisabled();
+    expect(screen.getByText("Enlace inválido. Formato esperado: https://github.com/usuario/repositorio")).toBeInTheDocument();
+  });
+
+  it.each([
+    "https://user:password@github.com/owner/repo",
+    "https://github.com:8443/owner/repo",
+    "https://github.com/owner/repo?ref=main",
+    "https://github.com/owner/repo#readme",
+    "https://github.com/owner/repo/issues",
+    "https://github.com/owner/repo/",
+    "http://github.com/owner/repo",
+  ])("rejects a non-canonical GitHub repository URL: %s", (invalidUrl) => {
+    render(<GitLinkDialog open={true} onClose={jest.fn()} onSend={jest.fn()} />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: /Enlace de Github/i }), {
+      target: { value: invalidUrl },
+    });
+
+    expect(screen.getByRole("button", { name: /Enviar/i })).toBeDisabled();
+  });
 });
 
 const started = {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+const CANONICAL_GITHUB_REPOSITORY_URL = /^https:\/\/github\.com\/[^\/?#:@\s]+\/[^\/?#:@\s]+$/;
 
 interface UseGitHubLinkValidation {
   repo: string;
@@ -26,11 +27,18 @@ export const useGitHubLinkValidation = (
       const url = new URL(text);
       const pathParts = url.pathname.split('/').filter(part => part.length > 0);
 
-      if (!text.includes("github.com")) {
+      if (url.protocol !== "https:" || url.hostname !== "github.com") {
         return { isValid: false, error: "El enlace debe pertenecer a GitHub." };
       }
 
-      if (text.endsWith(".git")) {
+      if (!CANONICAL_GITHUB_REPOSITORY_URL.test(text)) {
+        return {
+          isValid: false,
+          error: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio"
+        };
+      }
+
+      if (url.pathname.endsWith(".git")) {
         return { isValid: false, error: "El enlace no debe finalizar con '.git'." };
       }
 
@@ -50,26 +58,22 @@ export const useGitHubLinkValidation = (
         };
       }
 
-    } catch (error) {
-      if (error instanceof TypeError) {
-        return {
-          isValid: false,
-          error: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio"
-        };
-      }
-      throw new Error(`Error validando enlace GitHub: ${error instanceof Error ? error.message : String(error)}`);
+    } catch {
+      return {
+        isValid: false,
+        error: "Enlace inválido. Formato esperado: https://github.com/usuario/repositorio"
+      };
     }
 
     return { isValid: true, error: "" };
   };
 
   useEffect(() => {
-    if (initialRepo !== undefined) {
-      setRepo(initialRepo);
-      const { isValid, error } = validateGitHubLink(initialRepo);
-      setValidLink(isValid);
-      setErrorMessage(error);
-    }
+    const initialLink = initialRepo ?? "";
+    setRepo(initialLink);
+    const { isValid, error } = validateGitHubLink(initialLink);
+    setValidLink(isValid);
+    setErrorMessage(error);
   }, [initialRepo]);
 
 
