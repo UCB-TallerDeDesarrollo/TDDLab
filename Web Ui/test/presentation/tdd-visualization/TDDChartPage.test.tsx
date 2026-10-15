@@ -7,6 +7,21 @@ import {
   MockGithubAPIError,
 } from "./__mocks__/MocksCommitHistory";
 
+// Esta suite verifica la página, no el renderizado de Chart.js.
+// El selector y los símbolos tienen sus propias suites.
+jest.mock("../../../src/presentation/tdd-visualization/components/TDDChart", () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-tdd-charts" />,
+}));
+
+// La carga de comentarios no debe consultar el backend durante estas pruebas.
+jest.mock("../../../src/modules/teacherCommentsOnSubmissions/repository/CommentsRepository", () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    getCommentsBySubmissionId: jest.fn().mockResolvedValue([]),
+  })),
+}));
+
 // Mock de `useNavigate` con tipo explícito
 jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
@@ -26,10 +41,24 @@ jest.mock("react-router-dom", () => ({
 
 describe("TDDChartPage", () => {
   test.each([["admin"], ["student"]])(
+    "mantiene las gráficas sin atribuir la ausencia del log a falta de pruebas para %s",
+    async (role) => {
+      // El puerto devuelve métricas de commits y un log vacío.
+      const { findByTestId, queryByTestId, queryByText } = render(
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} />
+      );
+
+      expect(await findByTestId("mock-tdd-charts")).toBeInTheDocument();
+      expect(queryByTestId("errorMessage")).not.toBeInTheDocument();
+      expect(queryByText(/no hayas ejecutado ninguna prueba/i)).not.toBeInTheDocument();
+    }
+  );
+
+  test.each([["admin"], ["student"]])(
     "renders loading spinner when loading is true for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -43,7 +72,7 @@ describe("TDDChartPage", () => {
     "displays an error message when no data is available for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -57,7 +86,7 @@ describe("TDDChartPage", () => {
     "displays the repository name for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -77,7 +106,7 @@ describe("TDDChartPage", () => {
     spyConsoleError.mockImplementation(() => {});
 
     await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294} graphs="graph"/>);
+      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294}/>);
     });
 
     expect(spyConsoleError).toHaveBeenCalledWith(

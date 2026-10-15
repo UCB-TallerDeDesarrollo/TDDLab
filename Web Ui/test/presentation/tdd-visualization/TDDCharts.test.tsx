@@ -4,6 +4,11 @@ import TDDCharts from "../../../src/presentation/tdd-visualization/components/TD
 import "@testing-library/jest-dom";
 import { CommitHistoryAdapter } from "../../../src/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 
+// El selector se prueba independientemente del renderizado de Chart.js.
+jest.mock("../../../src/presentation/tdd-visualization/components/TDDLineChart", () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-tdd-line-charts" />,
+}));
 
 describe("TDDCharts", () => {
 
@@ -18,7 +23,6 @@ describe("TDDCharts", () => {
 
       role={"student"}
       commitsTddCycles={null}
-      typegraphs="graph"
     />);
 
     expect(screen.queryByTestId("graph-coverage")).not.toBeInTheDocument();

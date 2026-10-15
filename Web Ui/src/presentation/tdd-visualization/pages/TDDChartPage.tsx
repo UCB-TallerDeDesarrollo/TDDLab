@@ -29,16 +29,6 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading &&
-        !!chartsState.commitsInfo?.length &&
-        (!chartsState.tddLogsInfo || chartsState.tddLogsInfo.length === 0) && (
-          <div className="error-message" data-testid="errorMessage">
-            Error: No se pudieron cargar los datos de las pruebas, es posible que estes
-            utilizando una versión anterior del repositorio base, o no hayas ejecutado
-            ninguna prueba.
-          </div>
-        )}
-
       {!tddPage.loading && !!chartsState.commitsInfo?.length && (
         <React.Fragment>
           {!tddPage.isStudent && (
@@ -85,7 +75,6 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
               role={props.role}
               metric={chartsState.metric}
               setMetric={chartsState.setMetric}
-              typegraphs={props.graphs}
             />
           </div>
         </React.Fragment>

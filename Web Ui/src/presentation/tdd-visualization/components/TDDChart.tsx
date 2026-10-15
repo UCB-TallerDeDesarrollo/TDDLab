@@ -19,19 +19,29 @@ interface CycleReportViewProps {
   port: CommitHistoryRepository;
   role: string;
   commitsTddCycles: CommitCycle[] | null;
-  typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+const options = [
+  { value: 'Dashboard', label: 'Dashboard' },
+  { value: 'Total Número de Tests', label: 'Total Número de Tests' },
+  { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
+  { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
+  { value: 'Lista', label: 'Lista de Commits' },
+  { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
+];
+
+function getStoredMetric() {
+  const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
+  return options.some((option) => option.value === storedMetric) ? storedMetric : "Dashboard";
+}
+
+function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const [metricSelected, setMetricSelected] = useState(() => {
-    const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-    return initialMetric;
-  });
+  const [metricSelected, setMetricSelected] = useState(getStoredMetric);
 
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
+      const storedMetric = getStoredMetric();
       setMetricSelected(storedMetric);
       setMetric(storedMetric);
     };
@@ -74,17 +84,6 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     window.dispatchEvent(storageEvent);
   };
 
-  const options = [
-    { value: 'Complejidad', label: 'Lista de Complejidad' },
-    { value: 'Pie', label: 'Distribución de Commits' },
-    { value: 'Dashboard', label: 'Dashboard' },
-    { value: 'Total Número de Tests', label: 'Total Número de Tests' },
-    { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
-    { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
-    { value: 'Lista', label: 'Lista de Commits' },
-    { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
-  ];
-
   return (
     <div className="lineChartContainer">
       <Box>
@@ -108,18 +107,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
               }
             }}
           >
-            {options.filter(option => {
-              if (!tddLogs || tddLogs.length === 0) {
-                if (option.value === 'Dashboard' || option.value === 'Ciclo de ejecución de pruebas') {
-                  return false;
-                }
-              }
-              if (typegraphs === 'aditionalgraph') {
-                return ['Complejidad', 'Pie'].includes(option.value);
-              } else {
-                return !['Complejidad', 'Pie'].includes(option.value);
-              }
-            }).map((option) => (
+            {options.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
