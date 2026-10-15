@@ -102,6 +102,30 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     return Array.from(commitMap.values());
   }, [data]);
 
+  if (processedData.length === 0) {
+    const hasCommitRecords = data.some(log => Boolean(log.commitId));
+
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        </div>
+        <div role="status" style={styles.emptyState}>
+          <h3 style={styles.emptyStateTitle}>No hay ejecuciones de pruebas registradas</h3>
+          <p>
+            {hasCommitRecords
+              ? 'El log contiene registros de commits, pero no registros de ejecución de pruebas.'
+              : 'El log no contiene registros para esta gráfica.'}
+          </p>
+          <p>
+            Para visualizar las ejecuciones, registra y publica sus resultados en{' '}
+            <code>script/tdd_log.json</code> del repositorio.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const chartHeight = 400;
   const chartWidth = 1200;
   const leftPadding = 60;
@@ -320,6 +344,19 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     color: '#333',
     margin: '0 0 10px 0',
+  },
+  emptyState: {
+    padding: '20px',
+    color: '#333',
+    backgroundColor: '#f5f8fc',
+    border: '1px solid #b8cde0',
+    borderRadius: '6px',
+    lineHeight: 1.5,
+    overflowWrap: 'anywhere',
+  },
+  emptyStateTitle: {
+    margin: 0,
+    fontSize: '18px',
   },
   svg: {
     display: 'block',
