@@ -86,6 +86,7 @@ function StudentAssignmentSection({
     studentSubmissionState,
     canStartTask,
     canFinishTask,
+    canEditRepository,
     isSavingSubmission,
     retryStudentSubmission,
   } = detailData;
@@ -115,12 +116,16 @@ function StudentAssignmentSection({
       detailsClassName="assignment-student-details"
       actionsClassName="assignment-student-actions"
       details={
-        <StudentSubmissionSummary
-          status={studentStatusLabel}
-          statusValue={studentSubmission?.status}
-          repositoryLink={studentRepositoryLink}
-          comment={studentSubmission?.comment || undefined}
-        />
+        <>
+          <StudentSubmissionSummary
+            status={studentStatusLabel}
+            statusValue={studentSubmission?.status}
+            repositoryLink={studentRepositoryLink}
+            comment={studentSubmission?.comment || undefined}
+            canEditRepository={canEditRepository}
+            onEditRepository={detailData.openRepositoryEditDialog}
+          />
+        </>
       }
       actions={
         <>
@@ -257,6 +262,8 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         open={detailData.linkDialogOpen}
         onClose={detailData.closeLinkDialog}
         onSend={detailData.sendGithubLink}
+        initialLink={detailData.canEditRepository ? detailData.studentRepositoryLink : ""}
+        submitLabel={detailData.canEditRepository ? "Guardar" : "Enviar"}
       />}
 
       {detailData.isCommentDialogOpen && <CommentDialog

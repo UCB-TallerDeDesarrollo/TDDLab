@@ -168,6 +168,18 @@
   color: #4785c4;
 }
 
+.assignment-student-link-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+
+.assignment-student-link-cell .MuiIconButton-root {
+  padding: 2px;
+  color: #777777;
+}
+
 .assignment-no-link {
   color: #e00000;
 }
