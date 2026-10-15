@@ -107,14 +107,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles }
               }
             }}
           >
-            {options.filter(option => {
-              if (!tddLogs || tddLogs.length === 0) {
-                if (option.value === 'Dashboard' || option.value === 'Ciclo de ejecución de pruebas') {
-                  return false;
-                }
-              }
-              return true;
-            }).map((option) => (
+            {options.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
