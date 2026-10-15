@@ -24,6 +24,7 @@ import {
   setSelectedMetric,
 } from "../../../shared/helpers/navigationHandlers";
 import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
+import { parseGithubRepositoryUrl } from "../../../shared/helpers/githubRepository";
 
 function isStudent(role: string) {
   return role === "student";
@@ -89,6 +90,7 @@ export function useAssignmentDetailData({
     ? submissionLoadState : "loading";
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [editingRepositoryLink, setEditingRepositoryLink] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
   useEffect(() => {
@@ -257,7 +259,16 @@ export function useAssignmentDetailData({
     ? "Finalizado" : getDisplayStatus(studentSubmission?.status);
 
   const openLinkDialog = () => {
-    if (canStartTask && !savingSubmission.current) setLinkDialogOpen(true);
+    if (canStartTask && !savingSubmission.current) {
+      setEditingRepositoryLink(false);
+      setLinkDialogOpen(true);
+    }
+  };
+  const openEditLinkDialog = () => {
+    if (studentSubmission && !savingSubmission.current) {
+      setEditingRepositoryLink(true);
+      setLinkDialogOpen(true);
+    }
   };
 
   const closeLinkDialog = () => {
@@ -273,11 +284,30 @@ export function useAssignmentDetailData({
   };
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!canStartTask || savingSubmission.current) {
+    if (savingSubmission.current || (!canStartTask && !(editingRepositoryLink && studentSubmission))) {
       return;
     }
 
     const submissionsRepository = new SubmissionRepository();
+    if (editingRepositoryLink && studentSubmission) {
+      savingSubmission.current = true;
+      setIsSavingSubmission(true);
+      try {
+        const savedSubmission = await submissionsRepository.updateRepositoryLink(
+          studentSubmission.id,
+          repositoryLink
+        );
+        if (savedSubmission.repository_link !== repositoryLink) {
+          throw new Error("El servidor no confirmó el cambio del enlace.");
+        }
+        setStudentSubmission(savedSubmission);
+        closeLinkDialog();
+      } finally {
+        savingSubmission.current = false;
+        setIsSavingSubmission(false);
+      }
+      return;
+    }
     const createSubmission = new CreateSubmission(submissionsRepository);
     const startDate = new Date();
     const start_date = new Date(
@@ -379,22 +409,18 @@ export function useAssignmentDetailData({
       return;
     }
 
-    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-    const match = regex.exec(link);
-
-    if (!match) {
+    const repository = parseGithubRepositoryUrl(link);
+    if (!repository) {
       setUiMessage("Link invalido, por favor ingrese un link valido.");
       return;
     }
-
-    const [, user, repo] = match;
     setSelectedMetric(selectedMetric);
 
     navigate({
       pathname: path,
       search: createSearchParams({
-        repoOwner: user,
-        repoName: repo,
+        repoOwner: repository.owner,
+        repoName: repository.repoName,
         fetchedSubmissions: JSON.stringify(submissions),
         submissionId: submissionId.toString(),
       }).toString(),
@@ -425,10 +451,12 @@ export function useAssignmentDetailData({
     isSavingSubmission,
     retryStudentSubmission: () => setSubmissionRetry((value) => value + 1),
     linkDialogOpen,
+    editingRepositoryLink,
     isCommentDialogOpen,
     showIAButton,
     isStudent: isStudent(role),
     openLinkDialog,
+    openEditLinkDialog,
     closeLinkDialog,
     sendGithubLink,
     openCommentDialog,

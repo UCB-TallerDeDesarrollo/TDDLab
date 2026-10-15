@@ -53,11 +53,25 @@ class PracticeSubmissionRepository
   async finishPracticeSubmission(
     submissionid: number,
     submissionData: PracticeSubmissionUpdateObject
-  ): Promise<void> {
-    console.log(submissionData);
-    console.log(submissionid);
-    console.log(`${API_URL}/${submissionid}`);
-    await axios.put(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
+  ): Promise<PracticeSubmissionDataObject> {
+    const response = await axios.put<PracticeSubmissionDataObject>(
+      API_URL + "/" + submissionid,
+      submissionData,
+      { withCredentials: true }
+    );
+    return response.data;
+  }
+
+  async updateRepositoryLink(
+    submissionid: number,
+    repositoryLink: string
+  ): Promise<PracticeSubmissionDataObject> {
+    const response = await axios.patch<PracticeSubmissionDataObject>(
+      API_URL + "/" + submissionid + "/repository-link",
+      { repository_link: repositoryLink },
+      { withCredentials: true }
+    );
+    return response.data;
   }
 
   async getPracticeSubmissionbyUserandSubmissionId(

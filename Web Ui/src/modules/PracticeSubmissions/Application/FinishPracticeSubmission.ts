@@ -15,7 +15,7 @@ export class FinishPracticeSubmission {
         ...practiceSubmissionData,
         id: id,
       };
-      await this.practiceSubmissionRepository.finishPracticeSubmission(
+      return await this.practiceSubmissionRepository.finishPracticeSubmission(
         id,
         updatedPracticeSubmisisonData
       );

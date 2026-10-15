@@ -79,6 +79,7 @@ function StudentAssignmentSection({
     studentSubmission,
     showIAButton,
     openLinkDialog,
+    openEditLinkDialog,
     openCommentDialog,
     redirectStudentToGraph,
     redirectStudentToAssistant,
@@ -132,6 +133,12 @@ function StudentAssignmentSection({
               onClick={canStartTask ? openLinkDialog : openCommentDialog}
             >
               {canStartTask ? "Iniciar tarea" : "Finalizar tarea"}
+            </StatefulButton>
+          )}
+
+          {studentSubmission && (
+            <StatefulButton variantStyle="secondary" disabled={isSavingSubmission} onClick={openEditLinkDialog}>
+              Cambiar enlace
             </StatefulButton>
           )}
 
@@ -257,6 +264,8 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         open={detailData.linkDialogOpen}
         onClose={detailData.closeLinkDialog}
         onSend={detailData.sendGithubLink}
+        initialLink={detailData.editingRepositoryLink ? detailData.studentRepositoryLink : undefined}
+        title={detailData.editingRepositoryLink ? "Cambiar enlace de Github" : "Link de Github"}
       />}
 
       {detailData.isCommentDialogOpen && <CommentDialog

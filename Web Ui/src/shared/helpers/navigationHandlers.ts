@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { NavigateFunction, createSearchParams } from "react-router-dom";
+import { parseGithubRepositoryUrl } from "./githubRepository";
 
 export const createDialogHandlers = (setDialogState: Dispatch<SetStateAction<boolean>>) => {
   const openDialog = () => setDialogState(true);
@@ -25,26 +26,24 @@ export const handleRedirectStudent = (
   navigate: NavigateFunction,
   onError?: (message: string) => void
 ) => {
-  if (link) {
-    const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-    const match = regex.exec(link);
-
-    if (match) {
-      const [, user, repo] = match;
-      navigate({
-        pathname: "/graph",
-        search: createSearchParams({
-          repoOwner: user,
-          repoName: repo,
-          submissionId: id.toString(),
-        }).toString(),
-      });
-    } else {
+  const repository = parseGithubRepositoryUrl(link);
+  if (!repository) {
+    if (link) {
       onError?.("Link invalido, por favor ingrese un link valido.");
+    } else {
+      onError?.("No se encontro un link para esta tarea.");
     }
-  } else {
-    onError?.("No se encontro un link para esta tarea.");
+    return;
   }
+
+  navigate({
+    pathname: "/graph",
+    search: createSearchParams({
+      repoOwner: repository.owner,
+      repoName: repository.repoName,
+      submissionId: id.toString(),
+    }).toString(),
+  });
 };
 
 export const handleRedirectToTasks = (groupId: number, navigate: NavigateFunction) => {

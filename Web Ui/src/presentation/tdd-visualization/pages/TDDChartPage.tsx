@@ -24,8 +24,9 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
 
       {!tddPage.loading && !chartsState.commitsInfo?.length && (
         <div className="error-message" data-testid="errorMessage">
-          Error: Verifica que el repositorio utilice la rama "main". Actualmente,
-          TDDLab no puede cargar los datos si la rama principal es "master"
+          {tddPage.repositoryIsValid
+            ? 'Error: Verifica que el repositorio utilice la rama "main". Actualmente, TDDLab no puede cargar los datos si la rama principal es "master"'
+            : "Error: La entrega seleccionada no tiene un enlace de repositorio GitHub válido."}
         </div>
       )}
 

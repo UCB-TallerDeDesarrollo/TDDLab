@@ -5,6 +5,7 @@ import {
   fetchSubmissionsByPracticeId,
   startPracticeSubmission,
   finishPracticeSubmission,
+  updatePracticeSubmissionRepositoryLink,
 } from "../services";
 import {
   PracticeDataObject,
@@ -40,6 +41,7 @@ export function usePracticeDetail({
   const [practiceSubmissions, setPracticeSubmissions] = useState<PracticeSubmissionDataObject[]>([]);
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [editingRepositoryLink, setEditingRepositoryLink] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
   const savingSubmission = useRef(false);
@@ -99,7 +101,16 @@ export function usePracticeDetail({
   const refreshDetailData = () => setRefreshTick((prev) => prev + 1);
 
   const openLinkDialog = () => {
-    if (canStartPractice && !savingSubmission.current) setLinkDialogOpen(true);
+    if (canStartPractice && !savingSubmission.current) {
+      setEditingRepositoryLink(false);
+      setLinkDialogOpen(true);
+    }
+  };
+  const openEditLinkDialog = () => {
+    if (submission && !savingSubmission.current) {
+      setEditingRepositoryLink(true);
+      setLinkDialogOpen(true);
+    }
   };
   const closeLinkDialog = () => setLinkDialogOpen(false);
   const openCommentDialog = () => {
@@ -108,7 +119,27 @@ export function usePracticeDetail({
   const closeCommentDialog = () => setIsCommentDialogOpen(false);
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!practiceid || !canStartPractice || savingSubmission.current) return;
+    if (!practiceid || savingSubmission.current || (!canStartPractice && !(editingRepositoryLink && submission))) return;
+
+    if (editingRepositoryLink && submission) {
+      savingSubmission.current = true;
+      setIsSavingSubmission(true);
+      try {
+        const savedSubmission = await updatePracticeSubmissionRepositoryLink(
+          submission.id,
+          repositoryLink
+        );
+        if (savedSubmission.repository_link !== repositoryLink) {
+          throw new Error("El servidor no confirmó el cambio del enlace.");
+        }
+        setSubmission(savedSubmission);
+        closeLinkDialog();
+      } finally {
+        savingSubmission.current = false;
+        setIsSavingSubmission(false);
+      }
+      return;
+    }
 
     const startDate = new Date();
     const start_date = new Date(
@@ -190,8 +221,10 @@ export function usePracticeDetail({
     canFinishPractice,
     isSavingSubmission,
     linkDialogOpen,
+    editingRepositoryLink,
     isCommentDialogOpen,
     openLinkDialog,
+    openEditLinkDialog,
     closeLinkDialog,
     sendGithubLink,
     openCommentDialog,
