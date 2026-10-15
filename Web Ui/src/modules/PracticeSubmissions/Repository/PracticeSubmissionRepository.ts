@@ -60,6 +60,15 @@ class PracticeSubmissionRepository
     await axios.put(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
   }
 
+  async updateRepositoryLink(
+    submissionid: number,
+    repositoryLink: string
+  ): Promise<void> {
+    await axios.put(`${API_URL}/${submissionid}`, {
+      repository_link: repositoryLink,
+    }, { withCredentials: true });
+  }
+
   async getPracticeSubmissionbyUserandSubmissionId(
     assignmentid: number,
     userid: number
