@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { parseGithubRepositoryUrl } from "../../../shared/helpers/githubRepository";
 
 interface UseGitHubLinkValidation {
   repo: string;
@@ -23,50 +24,15 @@ export const useGitHubLinkValidation = (
   const validateGitHubLink = (
     text: string
   ): { isValid: boolean; error: string } => {
-    if (!text || text.trim() === "") {
+    if (!text.trim()) {
       return { isValid: false, error: "El enlace no puede estar vacio." };
     }
 
-    try {
-      const url = new URL(text);
-      const pathParts = url.pathname.split("/").filter((part) => part.length > 0);
-
-      if (!text.includes("github.com")) {
-        return { isValid: false, error: "El enlace debe pertenecer a GitHub." };
-      }
-
-      if (text.endsWith(".git")) {
-        return { isValid: false, error: "El enlace no debe finalizar con '.git'." };
-      }
-
-      if (pathParts.length < 2) {
-        return {
-          isValid: false,
-          error:
-            "El enlace debe contener un nombre de usuario y un nombre de repositorio (github.com/usuario/repositorio).",
-        };
-      }
-
-      const [username, repoName] = pathParts;
-
-      if (!username || !repoName) {
-        return {
-          isValid: false,
-          error:
-            "El enlace debe contener un nombre de usuario y un nombre de repositorio validos.",
-        };
-      }
-    } catch (error) {
-      if (error instanceof TypeError) {
-        return {
-          isValid: false,
-          error:
-            "Enlace invalido. Formato esperado: https://github.com/usuario/repositorio",
-        };
-      }
-      throw new Error(
-        `Error validando enlace GitHub: ${error instanceof Error ? error.message : String(error)}`
-      );
+    if (!parseGithubRepositoryUrl(text)) {
+      return {
+        isValid: false,
+        error: "Enlace invalido. Formato esperado: https://github.com/usuario/repositorio",
+      };
     }
 
     return { isValid: true, error: "" };

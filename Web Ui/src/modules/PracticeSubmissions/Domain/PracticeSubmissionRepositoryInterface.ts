@@ -22,7 +22,7 @@ interface PracticeSubmissionRepositoryInterface {
   finishPracticeSubmission(
     id: number,
     practuceSubmissionData: PracticeSubmissionUpdateObject
-  ): Promise<void>;
+  ): Promise<PracticeSubmissionDataObject>;
 }
 
 export default PracticeSubmissionRepositoryInterface;

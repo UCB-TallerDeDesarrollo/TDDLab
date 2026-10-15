@@ -35,10 +35,17 @@ export async function startPracticeSubmission(
   await new CreatePracticeSubmission(repo).createPracticeSubmission(data);
 }
 
+export async function updatePracticeSubmissionRepositoryLink(
+  submissionId: number,
+  repositoryLink: string
+): Promise<PracticeSubmissionDataObject> {
+  return makeRepo().updateRepositoryLink(submissionId, repositoryLink);
+}
+
 export async function finishPracticeSubmission(
   submissionId: number,
   data: PracticeSubmissionUpdateObject
-): Promise<void> {
+): Promise<PracticeSubmissionDataObject> {
   const repo = makeRepo();
-  await new FinishPracticeSubmission(repo).finishSubmission(submissionId, data);
+  return new FinishPracticeSubmission(repo).finishSubmission(submissionId, data);
 }

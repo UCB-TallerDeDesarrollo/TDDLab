@@ -12,19 +12,23 @@ interface GithubLinkDialogProps {
   open: boolean;
   onClose: () => void;
   onSend: (link: string) => void | Promise<void>;
+  initialLink?: string;
+  title?: string;
 }
 
 export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   open,
   onClose,
   onSend,
+  initialLink = "",
+  title = "Link de Github",
 }) => {
   const {
     repo: link,
     validLink,
     errorMessage,
     handleLinkChange,
-  } = useGitHubLinkValidation("");
+  } = useGitHubLinkValidation(initialLink);
 
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
@@ -38,7 +42,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     try {
       await Promise.resolve(onSend(link));
     } catch {
-      setSendError("No se pudo guardar el inicio. Intenta nuevamente.");
+      setSendError("No se pudo guardar el enlace. Intenta nuevamente.");
     } finally {
       setSending(false);
     }
@@ -72,7 +76,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
 
   return (
     <Dialog fullWidth={true} open={open} onClose={sending ? undefined : onClose}>
-      <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
+      <DialogTitle style={dialogTitleStyle}>{title}</DialogTitle>
       <DialogContent style={contentStyle}>
         <TextField
           label="Enlace de Github"

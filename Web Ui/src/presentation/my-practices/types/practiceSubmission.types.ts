@@ -22,4 +22,5 @@ export interface PracticeSubmissionUpdateObject {
   status: string;
   end_date: Date | null;
   comment: string | null;
+  repository_link?: string;
 }

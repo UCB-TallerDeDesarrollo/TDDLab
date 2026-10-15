@@ -70,11 +70,12 @@ export function useTDDChartPage({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [metric, setMetric] = useState<string | null>(null);
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
+  const [loadedRepositoryKey, setLoadedRepositoryKey] = useState("");
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
-  const repositoryIsValid = Boolean(
-    repoOwner && repoName,
-  );
+  const repositoryIsValid = Boolean(repoOwner && repoName);
+  const repositoryKey = repositoryIsValid ? repoOwner + "/" + repoName : "";
+  const hasCurrentRepositoryData = repositoryIsValid && loadedRepositoryKey === repositoryKey;
 
   const defaultMetric = getDefaultMetric(graphs);
 
@@ -121,6 +122,7 @@ export function useTDDChartPage({
     setCommitsTddCycles([]);
     setTDDLogsInfo(null);
     if (!repositoryIsValid) {
+      setLoadedRepositoryKey("");
       setLoading(false);
       return () => { active = false; };
     }
@@ -136,13 +138,16 @@ export function useTDDChartPage({
       } catch (error) {
         console.error("Error obtaining data:", error);
       } finally {
-        if (active) setLoading(false);
+        if (active) {
+          setLoadedRepositoryKey(repositoryKey);
+          setLoading(false);
+        }
       }
     };
 
     loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
     return () => { active = false; };
-  }, [port, repoOwner, repoName, repositoryIsValid]);
+  }, [port, repoOwner, repoName, repositoryIsValid, repositoryKey]);
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
@@ -190,11 +195,11 @@ export function useTDDChartPage({
 
   return {
     chartsState: {
-      commitsInfo,
-      commitsTddCycles,
+      commitsInfo: hasCurrentRepositoryData ? commitsInfo : null,
+      commitsTddCycles: hasCurrentRepositoryData ? commitsTddCycles : [],
       metric,
       setMetric,
-      tddLogsInfo,
+      tddLogsInfo: hasCurrentRepositoryData ? tddLogsInfo : null,
     },
     comments,
     currentIndex,
@@ -207,7 +212,7 @@ export function useTDDChartPage({
     isSubmitting,
     isStudent: studentRole,
     repositoryIsValid,
-    loading,
+    loading: loading || (repositoryIsValid && !hasCurrentRepositoryData),
     ownerName,
     repoName,
     role,

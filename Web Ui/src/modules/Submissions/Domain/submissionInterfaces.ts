@@ -22,4 +22,5 @@ export interface SubmissionUpdateObject {
   status: string;
   end_date: Date;
   comment: string;
+  repository_link?: string;
 }

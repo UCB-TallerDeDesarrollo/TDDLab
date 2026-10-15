@@ -52,6 +52,15 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
         return response.data;
     }
 
+    async updateRepositoryLink(submissionid: number, repositoryLink: string): Promise<SubmissionDataObject> {
+        const response = await axios.patch<SubmissionDataObject>(
+            API_URL + "/" + submissionid + "/repository-link",
+            { repository_link: repositoryLink },
+            { withCredentials: true }
+        );
+        return response.data;
+    }
+
     async getSubmissionbyUserandSubmissionId(assignmentid: number, userid: number): Promise<SubmissionDataObject | null> {
         try {
             const response = await axios.get(`${API_URL}/${assignmentid}/${userid}`,{withCredentials: true});

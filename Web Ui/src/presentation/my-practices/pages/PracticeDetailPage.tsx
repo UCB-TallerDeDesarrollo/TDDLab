@@ -36,8 +36,10 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     canFinishPractice,
     isSavingSubmission,
     linkDialogOpen,
+    editingRepositoryLink,
     isCommentDialogOpen,
     openLinkDialog,
+    openEditLinkDialog,
     closeLinkDialog,
     sendGithubLink,
     openCommentDialog,
@@ -127,6 +129,11 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                               {canStartPractice ? "Iniciar práctica" : "Finalizar práctica"}
                             </StatefulButton>
                         )}
+                        {submission && (
+                            <StatefulButton variantStyle="secondary" disabled={isSavingSubmission} onClick={openEditLinkDialog}>
+                              Cambiar enlace
+                            </StatefulButton>
+                        )}
                         <StatefulButton
                             variantStyle={canView ? "primary" : "secondary"}
                             disabled={!canView}
@@ -140,11 +147,13 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
               </>
           )}
         </DetailPageShell>
-        <GitLinkDialog
+        {linkDialogOpen && <GitLinkDialog
             open={linkDialogOpen}
             onClose={closeLinkDialog}
             onSend={sendGithubLink}
-        />
+            initialLink={editingRepositoryLink ? submission?.repository_link : undefined}
+            title={editingRepositoryLink ? "Cambiar enlace de Github" : "Link de Github"}
+        />}
         <CommentDialog
             open={isCommentDialogOpen}
             link={submission?.repository_link}
