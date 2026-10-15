@@ -51,6 +51,14 @@ submissionsRouter.put(
   async (req, res) => await submissionController.updateSubmission(req, res)
 );
 
+// Update only the repository link of the authenticated student's submission.
+submissionsRouter.patch(
+  "/:id/repository-link",
+  authenticateJWT,
+  authorizeRoles("student"),
+  async (req, res) => await submissionController.updateSubmissionRepositoryLink(req, res)
+);
+
 // Delete a submissiom by ID
 submissionsRouter.delete(
   "/:id",

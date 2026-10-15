@@ -1,6 +1,11 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "../Domain/Submission";
+import {
+    SubmissionCreationObject,
+    SubmissionDataObject,
+    SubmissionRepositoryLinkUpdateObject,
+    SubmissionUpdateObject,
+} from "../Domain/Submission";
 
 interface QueryResult {
     exists: boolean;
@@ -51,6 +56,20 @@ class SubmissionRepository{
             comment,
             id
         ];
+        const rows = await this.executeQuery(query, values);
+        if (rows.length === 1) {
+            return this.mapRowToSubmissions(rows[0]);
+        }
+        return null;
+    }
+
+    async UpdateSubmissionRepositoryLink(
+        id: number,
+        userid: number,
+        updatedSubmission: SubmissionRepositoryLinkUpdateObject
+    ): Promise<SubmissionDataObject | null> {
+        const query = "UPDATE submissions SET repository_link = $1 WHERE id = $2 AND userid = $3 RETURNING *";
+        const values = [updatedSubmission.repository_link, id, userid];
         const rows = await this.executeQuery(query, values);
         if (rows.length === 1) {
             return this.mapRowToSubmissions(rows[0]);

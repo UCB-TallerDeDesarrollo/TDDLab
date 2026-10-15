@@ -259,15 +259,25 @@ async function openFinish() {
   return dialog;
 }
 
+async function openRepositoryLinkEdit() {
+  fireEvent.click(await screen.findByRole('button', { name: 'Editar enlace del repositorio' }));
+  const dialog = screen.getByRole('dialog');
+  expect(within(dialog).getByRole('textbox', { name: 'Enlace de Github' }))
+    .toHaveValue(started.repository_link);
+  return dialog;
+}
+
 describe('single task lifecycle action', () => {
   let get: jest.SpyInstance;
   let post: jest.SpyInstance;
   let put: jest.SpyInstance;
+  let patch: jest.SpyInstance;
 
   beforeEach(() => {
     get = jest.spyOn(axios, 'get').mockRejectedValue(notStarted);
     post = jest.spyOn(axios, 'post').mockResolvedValue({ status: 201, data: started });
     put = jest.spyOn(axios, 'put').mockResolvedValue({ status: 200, data: delivered });
+    patch = jest.spyOn(axios, 'patch').mockResolvedValue({ status: 200, data: started });
   });
   afterEach(() => jest.restoreAllMocks());
 
@@ -396,6 +406,115 @@ describe('single task lifecycle action', () => {
     expect(await screen.findByRole('button', { name: 'Finalizar tarea' })).toBeEnabled();
     expect(screen.getByRole('status')).toHaveClass('is-progress');
     expect(put).not.toHaveBeenCalled();
+  });
+
+  it('shows repository-link editing only when a submission exists', async () => {
+    const withoutSubmission = mount();
+    expect(
+      screen.queryByRole('button', { name: 'Editar enlace del repositorio' })
+    ).not.toBeInTheDocument();
+    withoutSubmission.unmount();
+
+    get.mockResolvedValue({ status: 200, data: started });
+    mount();
+    expect(
+      await screen.findByRole('button', { name: 'Editar enlace del repositorio' })
+    ).toBeInTheDocument();
+  });
+
+  it('opens the repository-link editor with the current link', async () => {
+    get.mockResolvedValue({ status: 200, data: started });
+    mount();
+
+    const dialog = await openRepositoryLinkEdit();
+    expect(within(dialog).getByRole('heading', { name: 'Editar enlace del repositorio' }))
+      .toBeInTheDocument();
+  });
+
+  it('saves a valid replacement once, displays it immediately, and preserves task status', async () => {
+    const newLink = 'https://github.com/student/updated-task';
+    const updated = { ...started, repository_link: newLink };
+    const update = deferred<{ status: number; data: typeof started }>();
+    get.mockResolvedValue({ status: 200, data: started });
+    patch.mockReturnValueOnce(update.promise);
+    mount();
+
+    const dialog = await openRepositoryLinkEdit();
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Enlace de Github' }), {
+      target: { value: newLink },
+    });
+    const save = within(dialog).getByRole('button', { name: 'Guardar' });
+    fireEvent.click(save);
+    fireEvent.click(save);
+
+    expect(save).toBeDisabled();
+    expect(patch).toHaveBeenCalledTimes(1);
+    expect(patch).toHaveBeenCalledWith(
+      expect.stringContaining('/submissions/42/repository-link'),
+      { repository_link: newLink },
+      { withCredentials: true }
+    );
+    expect(screen.getByRole('status', { hidden: true })).toHaveTextContent('En progreso');
+    expect(put).not.toHaveBeenCalled();
+
+    await act(async () => {
+      update.resolve({ status: 200, data: updated });
+    });
+
+    expect(await screen.findByRole('link', { name: newLink })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('En progreso');
+    expect(screen.getByRole('button', { name: 'Finalizar tarea' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Ver gráfica' })).toBeEnabled();
+  });
+
+  it('keeps the previous link and task state when updating the repository link fails', async () => {
+    const oldLink = started.repository_link;
+    get.mockResolvedValue({ status: 200, data: started });
+    patch.mockRejectedValueOnce(new Error('Network error'));
+    mount();
+
+    const dialog = await openRepositoryLinkEdit();
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Enlace de Github' }), {
+      target: { value: 'https://github.com/student/updated-task' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No se pudo actualizar el enlace del repositorio'
+    );
+    expect(screen.getByRole('link', { name: oldLink, hidden: true })).toBeInTheDocument();
+    expect(screen.getByRole('status', { hidden: true })).toHaveTextContent('En progreso');
+  });
+
+  it('does not send a request when repository-link editing is canceled', async () => {
+    get.mockResolvedValue({ status: 200, data: started });
+    mount();
+
+    const dialog = await openRepositoryLinkEdit();
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Enlace de Github' }), {
+      target: { value: 'https://github.com/student/updated-task' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cerrar' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: started.repository_link })).toBeInTheDocument();
+    expect(patch).not.toHaveBeenCalled();
+  });
+
+  it('does not allow an invalid GitHub link to be saved', async () => {
+    get.mockResolvedValue({ status: 200, data: started });
+    mount();
+
+    const dialog = await openRepositoryLinkEdit();
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Enlace de Github' }), {
+      target: { value: 'https://example.com/not-github' },
+    });
+
+    expect(within(dialog).getByRole('button', { name: 'Guardar' })).toBeDisabled();
+    expect(within(dialog).getByText('El enlace debe pertenecer a GitHub.'))
+      .toBeInTheDocument();
+    expect(patch).not.toHaveBeenCalled();
+    expect(screen.getByRole('status', { hidden: true })).toHaveTextContent('En progreso');
   });
 
   it('does not query or start a task for an invalid user', async () => {
