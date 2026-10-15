@@ -253,11 +253,19 @@ export function useAssignmentDetailData({
 
   const canStartTask = studentSubmissionState === "success" && !studentSubmission;
   const canFinishTask = studentSubmissionState === "success" && studentSubmission?.status === "in progress";
+  const canEditRepository = Boolean(studentSubmission?.repository_link) &&
+    studentSubmission?.status !== "delivered" &&
+    Boolean(assignment?.end_date) &&
+    Boolean(assignment && new Date(assignment.end_date).getTime() >= new Date().setHours(0, 0, 0, 0));
   const studentStatusLabel = studentSubmission?.status === "delivered"
     ? "Finalizado" : getDisplayStatus(studentSubmission?.status);
 
   const openLinkDialog = () => {
     if (canStartTask && !savingSubmission.current) setLinkDialogOpen(true);
+  };
+
+  const openRepositoryEditDialog = () => {
+    if (canEditRepository && !savingSubmission.current) setLinkDialogOpen(true);
   };
 
   const closeLinkDialog = () => {
@@ -273,6 +281,26 @@ export function useAssignmentDetailData({
   };
 
   const sendGithubLink = async (repositoryLink: string) => {
+    if (!canStartTask && studentSubmission && canEditRepository) {
+      const submissionsRepository = new SubmissionRepository();
+      savingSubmission.current = true;
+      setIsSavingSubmission(true);
+      try {
+        const savedSubmission = await submissionsRepository.updateRepositoryLink(
+          studentSubmission.id,
+          repositoryLink
+        );
+        if (currentSubmissionKey.current === submissionKey) {
+          setStudentSubmission(savedSubmission);
+          closeLinkDialog();
+        }
+      } finally {
+        savingSubmission.current = false;
+        setIsSavingSubmission(false);
+      }
+      return;
+    }
+
     if (!canStartTask || savingSubmission.current) {
       return;
     }
@@ -429,6 +457,8 @@ export function useAssignmentDetailData({
     showIAButton,
     isStudent: isStudent(role),
     openLinkDialog,
+    openRepositoryEditDialog,
+    canEditRepository,
     closeLinkDialog,
     sendGithubLink,
     openCommentDialog,
