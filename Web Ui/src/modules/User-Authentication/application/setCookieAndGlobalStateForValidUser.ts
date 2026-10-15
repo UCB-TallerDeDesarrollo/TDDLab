@@ -3,7 +3,6 @@ import { setGlobalState } from "../domain/authStates";
 import { UserOnDb } from "../domain/userOnDb.interface";
 
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
-const AUTH_DATA_KEY = "tddlabAuthData";
 
 export function setCookieAndGlobalStateForValidUser(
   userData: User,
@@ -19,7 +18,6 @@ export function setCookieAndGlobalStateForValidUser(
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,
     };
-    localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(authData));
     setGlobalState("authData", authData);
     positiveCallback();
   } else {

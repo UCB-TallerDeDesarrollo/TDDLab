@@ -39,11 +39,7 @@ function SuccessfulEnrollmentPopUp() {
             pathname: "/",
           }),
         );
-        
-        if (currentUser.photoURL) {
-          localStorage.setItem("userProfilePic", currentUser.photoURL);
-        }
-        
+
         window.location.href = "/";
       } else {
         alert("Disculpa, tu usuario no esta registrado");

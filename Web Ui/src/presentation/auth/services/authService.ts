@@ -28,7 +28,6 @@ export const handleAuthResult = async ({
   if (!userCourse) {
     throw new Error(USER_NOT_REGISTERED_MESSAGE);
   }
-
   setCookieAndGlobalStateForValidUser(userData, userCourse, onSuccess);
-  localStorage.setItem("userProfilePic", userData.photoURL || "");
+  setCookieAndGlobalStateForValidUser(userData, userCourse, onSuccess);
 };
