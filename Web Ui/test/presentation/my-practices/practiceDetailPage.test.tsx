@@ -7,6 +7,7 @@ import {
     fetchSubmissionsByPracticeId,
     finishPracticeSubmission,
     startPracticeSubmission,
+    updatePracticeSubmissionLink,
 } from "../../../src/presentation/my-practices/services";
 
 jest.mock("../../../src/presentation/my-practices/services", () => ({
@@ -15,6 +16,7 @@ jest.mock("../../../src/presentation/my-practices/services", () => ({
     fetchSubmissionsByPracticeId: jest.fn(),
     startPracticeSubmission: jest.fn(),
     finishPracticeSubmission: jest.fn(),
+    updatePracticeSubmissionLink: jest.fn(),
 }));
 
 jest.setTimeout(10000);
@@ -23,6 +25,7 @@ const fetchPracticeMock = fetchPracticeById as jest.Mock;
 const fetchSubmissionsMock = fetchSubmissionsByPracticeId as jest.Mock;
 const startPracticeMock = startPracticeSubmission as jest.Mock;
 const finishPracticeMock = finishPracticeSubmission as jest.Mock;
+const updateLinkMock = updatePracticeSubmissionLink as jest.Mock;
 
 const STUDENT_ID = 9;
 const PRACTICE_ID = 538;
@@ -108,9 +111,44 @@ describe("PracticeDetailPage - single lifecycle action (HU-03)", () => {
         fetchSubmissionsMock.mockResolvedValue([]);
         startPracticeMock.mockResolvedValue(undefined);
         finishPracticeMock.mockResolvedValue(undefined);
+        updateLinkMock.mockResolvedValue(undefined);
     });
 
     afterEach(() => jest.restoreAllMocks());
+
+    it("permite editar el enlace mientras la practica sigue en progreso", async () => {
+        fetchSubmissionsMock.mockResolvedValue([started]);
+        mount();
+
+        const editButton = await screen.findByRole("button", {
+            name: "Editar enlace del repositorio",
+        });
+        fireEvent.click(editButton);
+        const dialog = await screen.findByRole("dialog");
+        const input = within(dialog).getByRole("textbox", { name: "Enlace de Github" });
+        expect(input).toHaveValue(started.repository_link);
+        fireEvent.change(input, {
+            target: { value: "https://github.com/student/updated-repository" },
+        });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+        await waitFor(() =>
+            expect(updateLinkMock).toHaveBeenCalledWith(
+                started.id,
+                "https://github.com/student/updated-repository"
+            )
+        );
+    });
+
+    it("oculta la edicion cuando la practica ya fue finalizada", async () => {
+        fetchSubmissionsMock.mockResolvedValue([delivered]);
+        mount();
+
+        await screen.findByRole("button", { name: "Ver gráfica" });
+        expect(
+            screen.queryByRole("button", { name: "Editar enlace del repositorio" })
+        ).not.toBeInTheDocument();
+    });
 
     // CA1
     it("shows only Iniciar práctica with a Pendiente badge for a practice not started", async () => {
