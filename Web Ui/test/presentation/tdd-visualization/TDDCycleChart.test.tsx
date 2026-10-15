@@ -36,38 +36,116 @@ describe('TDDCycleChart', () => {
   it('muestra el símbolo accesible según el resultado de cada ejecución', () => {
     render(<TDDCycleChart data={testData} />);
 
-    expect(screen.getByRole('img', { name: 'Ejecución exitosa' })).toBeTruthy();
-    expect(screen.getByRole('img', { name: 'Ejecución con fallos' })).toBeTruthy();
+    const successfulSymbol = screen.getByRole('img', {
+      name: 'Ejecución exitosa',
+    });
 
-    const successfulSymbol = screen.getByRole('img', { name: 'Ejecución exitosa' });
-    const failedSymbol = screen.getByRole('img', { name: 'Ejecución con fallos' });
-    expect(successfulSymbol.querySelector('path')).toBeTruthy();
-    expect(failedSymbol.querySelector('path')).toBeTruthy();
-    expect(successfulSymbol.querySelector('path')?.getAttribute('stroke-linecap')).toBe('round');
-    expect(failedSymbol.querySelector('path')?.getAttribute('stroke-linecap')).toBe('round');
+    const failedSymbol = screen.getByRole('img', {
+      name: 'Ejecución con fallos',
+    });
+
+    expect(successfulSymbol).toBeTruthy();
+    expect(failedSymbol).toBeTruthy();
+
+    expect(
+      successfulSymbol.querySelector('path'),
+    ).toBeTruthy();
+
+    expect(
+      failedSymbol.querySelector('path'),
+    ).toBeTruthy();
+
+    expect(
+      successfulSymbol
+        .querySelector('path')
+        ?.getAttribute('stroke-linecap'),
+    ).toBe('round');
+
+    expect(
+      failedSymbol
+        .querySelector('path')
+        ?.getAttribute('stroke-linecap'),
+    ).toBe('round');
   });
 
   it('muestra una leyenda con el significado de cada símbolo', () => {
     render(<TDDCycleChart data={testData} />);
 
-    expect(screen.getByRole('region', { name: 'Leyenda de resultados de ejecución' })).toBeTruthy();
-    expect(screen.getByText('Ejecución exitosa')).toBeTruthy();
-    expect(screen.getByText('Ejecución con fallos')).toBeTruthy();
+    expect(
+      screen.getByRole('region', {
+        name: 'Leyenda de resultados de ejecución',
+      }),
+    ).toBeTruthy();
+
+    expect(
+      screen.getByText('Ejecución exitosa'),
+    ).toBeTruthy();
+
+    expect(
+      screen.getByText('Ejecución con fallos'),
+    ).toBeTruthy();
   });
 
   it('conserva el detalle de ejecución en el tooltip del símbolo', () => {
     render(<TDDCycleChart data={testData} />);
 
-    const successfulExecution = screen.getByRole('img', { name: 'Ejecución exitosa' });
+    const successfulExecution = screen.getByRole('img', {
+      name: 'Ejecución exitosa',
+    });
+
     fireEvent.mouseEnter(successfulExecution);
 
-    expect(screen.getByRole('tooltip').textContent).toContain(
+    expect(
+      screen.getByRole('tooltip').textContent,
+    ).toContain(
       'Ejecución exitosa: 3 pruebas exitosas, 0 fallidas de 3.',
     );
 
-    const tooltips = Array.from(document.querySelectorAll('title')).map((title) => title.textContent);
+    const tooltips = Array.from(
+      document.querySelectorAll('title'),
+    ).map((title) => title.textContent);
 
-    expect(tooltips).toContain('Ejecución exitosa: 3 pruebas exitosas, 0 fallidas de 3.');
-    expect(tooltips).toContain('Ejecución con fallos: 2 pruebas exitosas, 1 fallidas de 3.');
+    expect(tooltips).toContain(
+      'Ejecución exitosa: 3 pruebas exitosas, 0 fallidas de 3.',
+    );
+
+    expect(tooltips).toContain(
+      'Ejecución con fallos: 2 pruebas exitosas, 1 fallidas de 3.',
+    );
+
+    fireEvent.mouseLeave(successfulExecution);
+
+    expect(screen.queryByRole('tooltip')).toBeNull();
+  });
+
+  it('muestra un mensaje cuando no hay registros', () => {
+    render(<TDDCycleChart data={[]} />);
+
+    expect(
+      screen.getByRole('status').textContent,
+    ).toContain(
+      'No hay registros de ejecución de pruebas disponibles.',
+    );
+
+    expect(screen.queryByRole('img')).toBeNull();
+  });
+
+  it('muestra un mensaje cuando solo existen commits sin ejecuciones', () => {
+    render(<TDDCycleChart data={[testData[0]]} />);
+
+    expect(
+      screen.getByRole('status').textContent,
+    ).toContain(
+      'No hay registros de ejecución de pruebas disponibles.',
+    );
+
+    expect(screen.queryByRole('img')).toBeNull();
+  });
+
+  it('muestra las ejecuciones disponibles sin el mensaje de ausencia', () => {
+    render(<TDDCycleChart data={testData} />);
+
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.getAllByRole('img')).toHaveLength(2);
   });
 });
