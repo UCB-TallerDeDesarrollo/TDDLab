@@ -23,6 +23,7 @@ interface PracticeSubmissionRepositoryInterface {
     id: number,
     practuceSubmissionData: PracticeSubmissionUpdateObject
   ): Promise<void>;
+  updateRepositoryLink(id: number, repositoryLink: string): Promise<void>;
 }
 
 export default PracticeSubmissionRepositoryInterface;

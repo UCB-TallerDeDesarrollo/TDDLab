@@ -6,6 +6,7 @@ interface SubmissionRepositoryInterface {
     getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObject[]>;
     getSubmissionbyUserandSubmissionId(assignmentid: number, userid:number): Promise<SubmissionDataObject | null>;
     finishSubmission(id: number, submissionData: SubmissionUpdateObject): Promise<SubmissionDataObject>;
+    updateRepositoryLink?(id: number, repositoryLink: string): Promise<SubmissionDataObject>;
 }
 
 export default SubmissionRepositoryInterface;
