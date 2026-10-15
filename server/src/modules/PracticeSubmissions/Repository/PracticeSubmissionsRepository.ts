@@ -58,6 +58,19 @@ class PracticeSubmissionRepository{
         return null;
     }
 
+    UpdateRepositoryLink?: (id: number, repositoryLink: string) => Promise<PracticeSubmissionDataObject | null> = async (id, repositoryLink) => {
+        const query = `UPDATE practicesubmissions ps
+            SET repository_link = $1
+            FROM practices p
+            WHERE ps.id = $2
+              AND p.id = ps.practiceid
+              AND ps.status <> 'delivered'
+              AND p.state <> 'delivered'
+            RETURNING ps.*`;
+        const rows = await this.executeQuery(query, [repositoryLink, id]);
+        return rows.length === 1 ? this.mapRowToPracticeSubmissions(rows[0]) : null;
+    };
+
     async deletePracticeSubmission(id: number): Promise<void> {
         const query = "DELETE FROM practicesubmissions WHERE id = $1";
         const values = [id];

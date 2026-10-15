@@ -23,6 +23,15 @@ class UpdatePracticeSubmission {
       throw error;
     }
   }
+
+  async updateRepositoryLink(
+    practiceSubmissionid: number,
+    repositoryLink: string
+  ) {
+    return this.repository.UpdateRepositoryLink
+      ? this.repository.UpdateRepositoryLink(practiceSubmissionid, repositoryLink)
+      : null;
+  }
 }
 
 export default UpdatePracticeSubmission;

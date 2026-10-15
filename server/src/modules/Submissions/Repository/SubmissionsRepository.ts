@@ -58,6 +58,19 @@ class SubmissionRepository{
         return null;
     }
 
+    UpdateRepositoryLink?: (id: number, repositoryLink: string) => Promise<SubmissionDataObject | null> = async (id, repositoryLink) => {
+        const query = `UPDATE submissions s
+            SET repository_link = $1
+            FROM assignments a
+            WHERE s.id = $2
+              AND a.id = s.assignmentid
+              AND s.status <> 'delivered'
+              AND a.end_date::date >= CURRENT_DATE
+            RETURNING s.*`;
+        const rows = await this.executeQuery(query, [repositoryLink, id]);
+        return rows.length === 1 ? this.mapRowToSubmissions(rows[0]) : null;
+    };
+
     async deleteSubmission(id: number): Promise<void> {
         const query = "DELETE FROM submissions WHERE id = $1";
         const values = [id];
