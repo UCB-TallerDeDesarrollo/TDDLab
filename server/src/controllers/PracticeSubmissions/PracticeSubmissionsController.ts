@@ -75,6 +75,22 @@ class PracticeSubmissionController {
   async updatePracticeSubmission(req: Request, res: Response): Promise<void> {
     try {
       const practiceSubmissionid = parseInt(req.params.id);
+      if (
+        typeof req.body.repository_link === "string" &&
+        Object.keys(req.body).every((key) => key === "repository_link")
+      ) {
+        const updatedRepositoryLink =
+          await this.updatePracticeSubmissionUseCase.updateRepositoryLink(
+            practiceSubmissionid,
+            req.body.repository_link
+          );
+        if (updatedRepositoryLink) {
+          res.status(200).json(updatedRepositoryLink);
+        } else {
+          res.status(403).json({ error: "Repository link cannot be updated" });
+        }
+        return;
+      }
       const { status, end_date, comment } = req.body;
       const updatedPracticeSubmission = await this.updatePracticeSubmissionUseCase.execute(
         practiceSubmissionid,
