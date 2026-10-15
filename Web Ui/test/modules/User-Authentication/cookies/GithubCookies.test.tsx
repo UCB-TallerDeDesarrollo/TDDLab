@@ -84,14 +84,13 @@ describe("getSessionCookie", () => {
     expect(result).toBeNull();
   });
 
-  it("logs an error if retrieving the session cookie fails", async () => {
+  it("throws if retrieving the session cookie fails due to a network error", async () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
 
     (axios.get as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
-    const result = await getSessionCookie();
+    await expect(getSessionCookie()).rejects.toThrow("Test error");
 
-    expect(result).toBeNull();
     expect(console.error).toHaveBeenCalledWith(
       "Error retrieving session cookie:",
       expect.any(Error)

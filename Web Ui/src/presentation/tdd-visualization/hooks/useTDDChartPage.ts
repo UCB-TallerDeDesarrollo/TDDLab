@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { CommentDataObject } from "../../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import {
   createTeacherComment,
@@ -14,14 +14,22 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import {
+  loadGraphSubmissions,
+  saveGraphSubmissions,
+} from "../utils/submissionNavigationState";
 
 function isStudent(role: string) {
   return role === "student";
 }
 
-function getRepoQuery(submission: Submission) {
+function getRepoParams(submission: Submission) {
   const [, , , repoOwner, repoName] = submission.repository_link.split("/");
-  return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
+  return {
+    repoOwner,
+    repoName,
+    submissionId: submission.id.toString(),
+  };
 }
 
 export function useTDDChartPage({
@@ -30,14 +38,18 @@ export function useTDDChartPage({
   teacher_id,
 }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const studentRole = isStudent(role);
   const isTeacherView = role !== "student";
   const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName = String(searchParams.get("repoName")) || "defaultRepo";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
+  const stateSubmissions = (
+    location.state as { fetchedSubmissions?: Submission[] } | null
+  )?.fetchedSubmissions;
   const fetchedSubmissions: Submission[] = isTeacherView
-    ? JSON.parse(searchParams.get("fetchedSubmissions") || "[]")
+    ? (stateSubmissions ?? loadGraphSubmissions())
     : [];
   const submissionId = isTeacherView ? Number(searchParams.get("submissionId")) : 0;
 
@@ -109,9 +121,11 @@ export function useTDDChartPage({
       const previousIndex = currentIndex - 1;
       const previousSubmission = fetchedSubmissions[previousIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(previousSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      saveGraphSubmissions(fetchedSubmissions);
+      navigate({
+        pathname: location.pathname,
+        search: `?${new URLSearchParams(getRepoParams(previousSubmission)).toString()}`,
+      }, { state: { fetchedSubmissions } });
       setCurrentIndex(previousIndex);
     }
   };
@@ -121,9 +135,11 @@ export function useTDDChartPage({
       const nextIndex = currentIndex + 1;
       const nextSubmission = fetchedSubmissions[nextIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(nextSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      saveGraphSubmissions(fetchedSubmissions);
+      navigate({
+        pathname: location.pathname,
+        search: `?${new URLSearchParams(getRepoParams(nextSubmission)).toString()}`,
+      }, { state: { fetchedSubmissions } });
       setCurrentIndex(nextIndex);
     }
   };

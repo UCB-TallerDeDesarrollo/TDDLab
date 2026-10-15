@@ -97,22 +97,21 @@ function App() {
 
   useEffect(() => {
     getSessionCookie().then((storedSession) => {
-      const savedImage = localStorage.getItem("userProfilePic") || "";
-
       if (storedSession) {
         localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-        setGlobalState("authData", {
+        const restoredAuthData = {
           userid: storedSession.id,
-          userProfilePic: savedImage,
+          userProfilePic: "",
           userEmail: storedSession.email,
           usergroupid: storedSession.groupid,
           userRole: storedSession.role,
-        });
+        };
+        setGlobalState("authData", restoredAuthData);
       } else {
         localStorage.removeItem(AUTH_SESSION_HINT_KEY);
         setGlobalState("authData", {
           userid: -1,
-          userProfilePic: savedImage,
+          userProfilePic: "",
           userEmail: "",
           usergroupid: -1,
           userRole: "",

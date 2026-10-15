@@ -25,6 +25,10 @@ jest.mock("../../../src/modules/teacherCommentsOnSubmissions/repository/Comments
 // Mock de `useNavigate` con tipo explícito
 jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
+  useLocation: jest.fn(() => ({
+    pathname: "/graph",
+    state: null,
+  })),
   useSearchParams: jest.fn(() => {
     const params = new URLSearchParams();
     const getMock = jest.fn();

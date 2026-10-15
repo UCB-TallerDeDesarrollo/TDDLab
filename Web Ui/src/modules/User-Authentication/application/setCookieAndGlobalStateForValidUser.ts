@@ -11,13 +11,14 @@ export function setCookieAndGlobalStateForValidUser(
 ) {
   if (usergroupid && userData.photoURL && userData.email) {
     localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-    setGlobalState("authData", {
+    const authData = {
       userid: usergroupid.id,
       userProfilePic: userData.photoURL,
       userEmail: userData.email,
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,
-    });
+    };
+    setGlobalState("authData", authData);
     positiveCallback();
   } else {
     console.log("Invalid User");
