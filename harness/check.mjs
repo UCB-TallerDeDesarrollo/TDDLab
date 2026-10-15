@@ -1,4 +1,8 @@
 import { execSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = fileURLToPath(new URL("..", import.meta.url));
 
 // 1. Componente que queremos revisar.
 const component = process.argv[2];
@@ -46,7 +50,7 @@ let testResult = "NO CONFIGURADO";
 if (selected.test) {
   try {
     execSync(selected.test, {
-      cwd: selected.folder,
+      cwd: path.join(projectRoot, selected.folder),
       stdio: "ignore",
     });
 
@@ -62,6 +66,7 @@ let modifiedFiles = "Ninguno.";
 try {
   const result = execSync("git status --short", {
     encoding: "utf8",
+      cwd: projectRoot,
   }).trim();
 
   if (result) {
