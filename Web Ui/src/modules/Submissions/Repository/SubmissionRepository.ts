@@ -7,6 +7,13 @@ const API_URL = VITE_API + "/submissions";
 
 class SubmissionRepository implements SubmissionRepositoryInterface {
 
+  async updateRepositoryLink(id: number, repositoryLink: string): Promise<SubmissionDataObject> {
+    const response = await axios.patch<SubmissionDataObject>(
+      `${API_URL}/${id}/repository-link`, { repository_link: repositoryLink }, { withCredentials: true }
+    );
+    return response.data;
+  }
+
     async createSubmission(submissionData: SubmissionCreationObject): Promise<SubmissionDataObject> {
         const response = await axios.post<SubmissionDataObject>(API_URL, submissionData,{withCredentials: true});
         return response.data;

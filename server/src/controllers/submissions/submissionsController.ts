@@ -1,3 +1,4 @@
+import { handleStudentSubmissionUpdate } from "./submissionUpdateHandler";
 import { Request, Response } from "express";
 import SubmissionRepository from "../../modules/Submissions/Repository/SubmissionsRepository";
 import CreateSubmission from "../../modules/Submissions/Aplication/CreateSubmissionUseCase";
@@ -74,7 +75,15 @@ class SubmissionController {
   async updateSubmission(req: Request, res: Response): Promise<void> {
     try {
       const submissionid = parseInt(req.params.id);
-      const { status, end_date, comment } = req.body;
+      const { status, end_date, comment, repository_link } = req.body;
+      if (repository_link !== undefined) {
+        await handleStudentSubmissionUpdate(req, res, (userid) =>
+          this.updateSubmissionUseCase.finishWithRepositoryLink(
+            submissionid, userid, { status, end_date, comment, repository_link }
+          )
+        );
+        return;
+      }
       const updatedSubmission = await this.updateSubmissionUseCase.execute(
         submissionid,
         {
@@ -91,6 +100,12 @@ class SubmissionController {
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }
+  }
+
+  async updateRepositoryLink(req: Request, res: Response): Promise<void> {
+    await handleStudentSubmissionUpdate(req, res, (userid) =>
+      this.updateSubmissionUseCase.updateRepositoryLink(Number(req.params.id), userid, req.body.repository_link)
+    );
   }
 
   async deleteSubmission(req: Request, res: Response): Promise<void> {

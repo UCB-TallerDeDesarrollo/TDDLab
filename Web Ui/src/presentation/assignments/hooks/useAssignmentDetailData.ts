@@ -89,6 +89,7 @@ export function useAssignmentDetailData({
     ? submissionLoadState : "loading";
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [editingRepository, setEditingRepository] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
   useEffect(() => {
@@ -160,6 +161,7 @@ export function useAssignmentDetailData({
     setSubmissionLoadState("loading");
     setStudentSubmission(null);
     setLinkDialogOpen(false);
+    setEditingRepository(false);
     setIsCommentDialogOpen(false);
 
     const fetchStudentSubmission = async () => {
@@ -257,11 +259,23 @@ export function useAssignmentDetailData({
     ? "Finalizado" : getDisplayStatus(studentSubmission?.status);
 
   const openLinkDialog = () => {
-    if (canStartTask && !savingSubmission.current) setLinkDialogOpen(true);
+    if (canStartTask && !savingSubmission.current) {
+      setEditingRepository(false);
+      setLinkDialogOpen(true);
+    }
+  };
+
+  const canEditRepository = isStudent(role) && canFinishTask;
+  const openEditLinkDialog = () => {
+    if (canEditRepository && !savingSubmission.current) {
+      setEditingRepository(true);
+      setLinkDialogOpen(true);
+    }
   };
 
   const closeLinkDialog = () => {
     setLinkDialogOpen(false);
+    setEditingRepository(false);
   };
 
   const openCommentDialog = () => {
@@ -273,7 +287,26 @@ export function useAssignmentDetailData({
   };
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!canStartTask || savingSubmission.current) {
+    if (savingSubmission.current) return;
+    if (editingRepository) {
+      if (!canEditRepository || !studentSubmission) return;
+      savingSubmission.current = true;
+      setIsSavingSubmission(true);
+      try {
+        const saved = await new FinishSubmission(new SubmissionRepository()).updateRepositoryLink(
+          studentSubmission.id, repositoryLink
+        );
+        if (currentSubmissionKey.current === submissionKey) {
+          setStudentSubmission(saved);
+          closeLinkDialog();
+        }
+      } finally {
+        savingSubmission.current = false;
+        setIsSavingSubmission(false);
+      }
+      return;
+    }
+    if (!canStartTask) {
       return;
     }
 
@@ -308,7 +341,7 @@ export function useAssignmentDetailData({
     }
   };
 
-  const sendComment = async (comment: string) => {
+  const sendComment = async (comment: string, repositoryLink = studentSubmission?.repository_link) => {
     if (!canFinishTask || !studentSubmission || savingSubmission.current) {
       return;
     }
@@ -327,6 +360,7 @@ export function useAssignmentDetailData({
       status: "delivered",
       end_date,
       comment,
+      ...(repositoryLink !== studentSubmission.repository_link ? { repository_link: repositoryLink } : {}),
     };
 
     savingSubmission.current = true;
@@ -425,6 +459,9 @@ export function useAssignmentDetailData({
     isSavingSubmission,
     retryStudentSubmission: () => setSubmissionRetry((value) => value + 1),
     linkDialogOpen,
+    editingRepository,
+    canEditRepository,
+    openEditLinkDialog,
     isCommentDialogOpen,
     showIAButton,
     isStudent: isStudent(role),

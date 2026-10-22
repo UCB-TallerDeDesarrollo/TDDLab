@@ -18,6 +18,7 @@ export interface SubmissionCreationObject {
 }
 
 export interface SubmissionUpdateObject {
+  repository_link?: string;
   id?: number;
   status: string;
   end_date: Date;

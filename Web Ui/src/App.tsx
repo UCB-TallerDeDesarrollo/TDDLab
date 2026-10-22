@@ -252,7 +252,7 @@ function App() {
             path="/mis-practicas/:id"
             element={
               <ProtectedRouteComponent>
-                <PracticeDetail userid={authData.userid ?? 0} title={""} />
+                <PracticeDetail userid={authData.userid ?? 0} role={authData.userRole ?? ""} title={""} />
               </ProtectedRouteComponent>
             }
           />

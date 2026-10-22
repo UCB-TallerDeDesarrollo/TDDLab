@@ -1,3 +1,4 @@
+import { handleStudentSubmissionUpdate } from "../submissions/submissionUpdateHandler";
 import { Request, Response } from "express";
 import PracticeSubmissionRepository from "../../modules/PracticeSubmissions/Repository/PracticeSubmissionsRepository";
 import CreatePracticeSubmission from "../../modules/PracticeSubmissions/Application/CreatePracticeSubmissionUseCase";
@@ -75,7 +76,15 @@ class PracticeSubmissionController {
   async updatePracticeSubmission(req: Request, res: Response): Promise<void> {
     try {
       const practiceSubmissionid = parseInt(req.params.id);
-      const { status, end_date, comment } = req.body;
+      const { status, end_date, comment, repository_link } = req.body;
+      if (repository_link !== undefined) {
+        await handleStudentSubmissionUpdate(req, res, (userid) =>
+          this.updatePracticeSubmissionUseCase.finishWithRepositoryLink(
+            practiceSubmissionid, userid, { status, end_date, comment, repository_link }
+          )
+        );
+        return;
+      }
       const updatedPracticeSubmission = await this.updatePracticeSubmissionUseCase.execute(
         practiceSubmissionid,
         {
@@ -92,6 +101,12 @@ class PracticeSubmissionController {
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }
+  }
+
+  async updateRepositoryLink(req: Request, res: Response): Promise<void> {
+    await handleStudentSubmissionUpdate(req, res, (userid) =>
+      this.updatePracticeSubmissionUseCase.updateRepositoryLink(Number(req.params.id), userid, req.body.repository_link)
+    );
   }
 
   async deletePracticeSubmission(req: Request, res: Response): Promise<void> {

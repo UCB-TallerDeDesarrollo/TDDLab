@@ -27,15 +27,18 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   onSend,
 }) => {
   const [comment, setComment] = useState("");
-  const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link);
+  const { repo, validLink, handleLinkChange, isLoading: isLinkLoading } = useGitHubLinkValidation(link, true);
   const [edit, setEdit] = useState(false);
-  const [originalLink] = useState(link);
+
   const [inputLink, setInputLink] = useState(link || "");
   const [isLoading, setIsLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
 
   useEffect(() => {
+    setEdit(false);
+    setComment("");
+    setSendError("");
     if (link) {
       setIsLoading(false);
       setInputLink(link); // <- actualiza el input editable
@@ -59,9 +62,9 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
   }, [repo, isLinkLoading]);
 
   const handleCancel = () => {
-    if (originalLink) {
-      handleLinkChange({ target: { value: originalLink } } as React.ChangeEvent<HTMLInputElement>);
-      setInputLink(originalLink);
+    if (link) {
+      handleLinkChange(link);
+      setInputLink(link);
     }
     setComment("");
     onClose();
@@ -143,7 +146,7 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({
             }}
           />
         )}
-        {!validLink && inputLink !== "" && !isLoading && (
+        {!validLink && !isLoading && (
           <Typography variant="body2" color="error">
             Advertencia: Link inválido
           </Typography>

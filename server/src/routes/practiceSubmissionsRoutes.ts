@@ -67,4 +67,11 @@ practiceSubmissionsRouter.delete(
     await practiceSubmissionController.deletePracticeSubmission(req, res)
 );
 
+practiceSubmissionsRouter.patch(
+  "/:id/repository-link",
+  authenticateJWT,
+  authorizeRoles("student"),
+  async (req, res) => await practiceSubmissionController.updateRepositoryLink(req, res)
+);
+
 export default practiceSubmissionsRouter;

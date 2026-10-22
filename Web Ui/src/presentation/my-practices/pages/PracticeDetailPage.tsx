@@ -1,4 +1,6 @@
 import React from "react";
+import { IconButton, Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate, useParams } from "react-router-dom";
 import { GitLinkDialog } from "../../../shared/components/GitHubLinkDialog";
 import { CommentDialog } from "../../../shared/components/CommentDialog";
@@ -12,6 +14,7 @@ import { usePracticeDetail } from "../hooks/usePracticeDetail";
 import "./PracticeDetailPage.css";
 
 interface PracticeDetailPageProps {
+  role: string;
   userid: number;
 }
 
@@ -21,7 +24,7 @@ function getStatusClass(status: string | undefined): string {
   return "is-pending";
 }
 
-const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
+const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid, role }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const practiceid = Number(id);
@@ -36,6 +39,9 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     canFinishPractice,
     isSavingSubmission,
     linkDialogOpen,
+    editingRepository,
+    canEditRepository,
+    openEditLinkDialog,
     isCommentDialogOpen,
     openLinkDialog,
     closeLinkDialog,
@@ -46,7 +52,7 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     redirectToGraph,
     uiMessage,
     closeUiMessage,
-  } = usePracticeDetail({ userid, practiceid, navigate });
+  } = usePracticeDetail({ role, userid, practiceid, navigate });
 
   const canView = Boolean(submission?.repository_link);
   const showLifecycleAction = canStartPractice || canFinishPractice;
@@ -103,6 +109,15 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                           ) : (
                               <span style={{ marginLeft: "8px" }}>No se inicio la practica</span>
                           )}
+                          {canEditRepository && (
+                              <Tooltip title="Editar enlace">
+                                <span>
+                                  <IconButton aria-label="Editar enlace del repositorio" size="small" onClick={openEditLinkDialog} disabled={isSavingSubmission}>
+                                    <EditIcon fontSize="small" />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
+                          )}
                         </div>
                         <div className="practice-student-row practice-estado-row">
                           <strong>Estado:</strong>{" "}
@@ -140,15 +155,17 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
               </>
           )}
         </DetailPageShell>
-        <GitLinkDialog
+        {linkDialogOpen && <GitLinkDialog
             open={linkDialogOpen}
+            editing={editingRepository}
+            initialLink={editingRepository ? submission?.repository_link : ""}
             onClose={closeLinkDialog}
             onSend={sendGithubLink}
-        />
+        />}
         <CommentDialog
             open={isCommentDialogOpen}
             link={submission?.repository_link}
-            onSend={(comment) => sendComment(comment)}
+            onSend={sendComment}
             onClose={closeCommentDialog}
         />
         <FeedbackSnackbar

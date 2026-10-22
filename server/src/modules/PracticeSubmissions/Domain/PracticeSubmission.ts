@@ -19,6 +19,7 @@ export interface PracticeSubmissionDataObject {
 }
 
 export interface PracticeSubmissionUpdateObject {
+  repository_link?: string;
   status: PracticeSubmissionStatus;
   end_date: Date | null;
   comment: string | null;

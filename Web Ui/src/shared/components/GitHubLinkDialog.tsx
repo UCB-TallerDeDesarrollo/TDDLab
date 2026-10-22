@@ -10,12 +10,16 @@ import { useState } from "react";
 
 interface GithubLinkDialogProps {
   open: boolean;
+  initialLink?: string;
+  editing?: boolean;
   onClose: () => void;
   onSend: (link: string) => void | Promise<void>;
 }
 
 export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   open,
+  initialLink = "",
+  editing = false,
   onClose,
   onSend,
 }) => {
@@ -24,7 +28,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     validLink,
     errorMessage,
     handleLinkChange,
-  } = useGitHubLinkValidation("");
+  } = useGitHubLinkValidation(initialLink, editing);
 
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
@@ -38,7 +42,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
     try {
       await Promise.resolve(onSend(link));
     } catch {
-      setSendError("No se pudo guardar el inicio. Intenta nuevamente.");
+      setSendError(editing ? "No se pudo guardar el enlace. Intenta nuevamente." : "No se pudo guardar el inicio. Intenta nuevamente.");
     } finally {
       setSending(false);
     }
@@ -72,7 +76,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
 
   return (
     <Dialog fullWidth={true} open={open} onClose={sending ? undefined : onClose}>
-      <DialogTitle style={dialogTitleStyle}>Link de Github</DialogTitle>
+      <DialogTitle style={dialogTitleStyle}>{editing ? "Editar enlace de GitHub" : "Link de Github"}</DialogTitle>
       <DialogContent style={contentStyle}>
         <TextField
           label="Enlace de Github"
@@ -85,7 +89,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           focused
           style={textFieldStyle}
         />
-        {!validLink && link !== "" && (
+        {!validLink && (editing || link !== "") && (
           <Typography variant="body2" color="error">
             {errorMessage}
           </Typography>
@@ -107,7 +111,7 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
           disabled={sending || !validLink || link === ""}
           style={{ textTransform: "none" }}
         >
-          Enviar
+          {editing ? "Guardar" : "Enviar"}
         </Button>
       </DialogActions>
     </Dialog>

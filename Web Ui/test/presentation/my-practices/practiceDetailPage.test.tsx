@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import "@testing-library/jest-dom";
 import PracticeDetailPage from "../../../src/presentation/my-practices/pages/PracticeDetailPage";
 import {
@@ -7,6 +7,7 @@ import {
     fetchSubmissionsByPracticeId,
     finishPracticeSubmission,
     startPracticeSubmission,
+    updatePracticeRepositoryLink,
 } from "../../../src/presentation/my-practices/services";
 
 jest.mock("../../../src/presentation/my-practices/services", () => ({
@@ -15,6 +16,7 @@ jest.mock("../../../src/presentation/my-practices/services", () => ({
     fetchSubmissionsByPracticeId: jest.fn(),
     startPracticeSubmission: jest.fn(),
     finishPracticeSubmission: jest.fn(),
+    updatePracticeRepositoryLink: jest.fn(),
 }));
 
 jest.setTimeout(10000);
@@ -62,13 +64,18 @@ function deferred<T>() {
     return { promise, resolve };
 }
 
-function mount() {
+function GraphDestination() {
+  return <output data-testid="graph-destination">{useLocation().search}</output>;
+}
+
+function mount(role = "student") {
     return render(
         <MemoryRouter initialEntries={[`/mis-practicas/${PRACTICE_ID}`]}>
             <Routes>
+                <Route path="/graph" element={<GraphDestination />} />
                 <Route
                     path="/mis-practicas/:id"
-                    element={<PracticeDetailPage userid={STUDENT_ID} />}
+                    element={<PracticeDetailPage userid={STUDENT_ID} role={role} />}
                 />
             </Routes>
         </MemoryRouter>
@@ -241,5 +248,116 @@ describe("PracticeDetailPage - single lifecycle action (HU-03)", () => {
             )
         );
         expect(screen.queryByRole("button", { name: LIFECYCLE_ACTION })).not.toBeInTheDocument();
+    });
+});
+
+describe("HU-05 student practice repository editing", () => {
+    const updateMock = updatePracticeRepositoryLink as jest.Mock;
+    const newLink = "https://github.com/student/corrected-practice";
+    beforeEach(() => {
+        jest.resetAllMocks();
+        fetchPracticeMock.mockResolvedValue(practice);
+        fetchSubmissionsMock.mockResolvedValue([started]);
+        updateMock.mockResolvedValue({ ...started, repository_link: newLink });
+    });
+    afterEach(() => jest.restoreAllMocks());
+    async function openEdit() {
+        fireEvent.click(await screen.findByRole("button", { name: "Editar enlace del repositorio" }));
+        return screen.getByRole("dialog");
+    }
+
+    it.each([started])("edits and restores the repository of a $status practice", async (submission) => {
+        fetchSubmissionsMock.mockResolvedValue([submission]);
+        updateMock.mockResolvedValue({ ...submission, repository_link: newLink });
+        const view = mount();
+        const dialog = await openEdit();
+        expect(within(dialog).getByRole("textbox")).toHaveValue(submission.repository_link);
+        fireEvent.change(within(dialog).getByRole("textbox"), { target: { value: newLink } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Guardar" }));
+        expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+        expect(updateMock).toHaveBeenCalledWith(submission.id, newLink);
+        expect(startPracticeMock).not.toHaveBeenCalled();
+        expect(finishPracticeMock).not.toHaveBeenCalled();
+        expect(getStatus()).toHaveTextContent(submission.status === "delivered" ? "Finalizado" : "En progreso");
+        expect(screen.queryByTestId("graph-destination")).not.toBeInTheDocument();
+        view.unmount();
+        fetchSubmissionsMock.mockResolvedValue([{ ...submission, repository_link: newLink }]);
+        mount();
+        expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("button", { name: /Ver gr/ }));
+        expect(await screen.findByTestId("graph-destination")).toHaveTextContent("repoName=corrected-practice");
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it.each(["", "not-a-url", "https://evil.com/github.com/user/repo"])("rejects invalid URL %s", async (value) => {
+        mount();
+        const dialog = await openEdit();
+        fireEvent.change(within(dialog).getByRole("textbox"), { target: { value } });
+        expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+        expect(within(dialog).getByText(/El enlace no puede|Enlace invalido/)).toBeInTheDocument();
+        expect(updateMock).not.toHaveBeenCalled();
+    });
+
+    it("keeps the original URL on failure and permits retry", async () => {
+        updateMock.mockRejectedValueOnce(new Error("Network error"));
+        mount();
+        const dialog = await openEdit();
+        fireEvent.change(within(dialog).getByRole("textbox"), { target: { value: newLink } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Guardar" }));
+        expect(await within(dialog).findByRole("alert")).toHaveTextContent("No se pudo guardar el enlace");
+        expect(screen.getByRole("link", { name: started.repository_link, hidden: true })).toBeInTheDocument();
+        fireEvent.click(within(dialog).getByRole("button", { name: "Guardar" }));
+        expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+    });
+
+    it("cancels and restores the original draft when reopened", async () => {
+        mount();
+        const dialog = await openEdit();
+        fireEvent.change(within(dialog).getByRole("textbox"), { target: { value: newLink } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Cerrar" }));
+        await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+        expect(within(await openEdit()).getByRole("textbox")).toHaveValue(started.repository_link);
+        expect(updateMock).not.toHaveBeenCalled();
+    });
+
+    it.each(["teacher", "admin", ""])("hides the edit action for role %s", async (role) => {
+        mount(role);
+        await screen.findByRole("link", { name: started.repository_link });
+        expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+    });
+
+    it("hides editing on finalized practices", async () => {
+        fetchSubmissionsMock.mockResolvedValue([delivered]);
+        mount();
+        await waitFor(() => expect(getStatus()).toHaveTextContent("Finalizado"));
+        expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+    });
+
+    it("saves an edited URL and the comment while finalizing the practice", async () => {
+        const saved = { ...delivered, repository_link: newLink };
+        fetchSubmissionsMock.mockResolvedValueOnce([started]).mockResolvedValue([saved]);
+        finishPracticeMock.mockResolvedValue(undefined);
+        const view = mount();
+        const dialog = await openFinish();
+        fireEvent.click(within(dialog).getByRole("button", { name: "edit" }));
+        fireEvent.change(within(dialog).getByRole("textbox", { name: "Enlace del Repositorio" }), { target: { value: newLink } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Enviar" }));
+        expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+        expect(finishPracticeMock).toHaveBeenCalledWith(started.id,
+            expect.objectContaining({ status: "delivered", comment: "Listo", repository_link: newLink }));
+        expect(updateMock).not.toHaveBeenCalled();
+        expect(getStatus()).toHaveTextContent("Finalizado");
+        expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+        view.unmount();
+        mount();
+        expect(await screen.findByRole("link", { name: newLink })).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
+    });
+
+    it("hides editing before starting a practice", async () => {
+        fetchSubmissionsMock.mockResolvedValue([]);
+        mount();
+        await screen.findByRole("button", { name: /Iniciar/ });
+        expect(screen.queryByRole("button", { name: "Editar enlace del repositorio" })).not.toBeInTheDocument();
     });
 });

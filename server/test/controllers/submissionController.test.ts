@@ -1,6 +1,8 @@
 import { Request } from 'express';
 import { Pool } from 'pg';
 import SubmissionRepository from '../../src/modules/Submissions/Repository/SubmissionsRepository';
+import PracticeSubmissionController from "../../src/controllers/PracticeSubmissions/PracticeSubmissionsController";
+import PracticeSubmissionRepository from "../../src/modules/PracticeSubmissions/Repository/PracticeSubmissionsRepository";
 import SubmissionController from "../../src/controllers/submissions/submissionsController";
 import { getSubmissionRepositoryMock } from "../__mocks__/submissions/repositoryMock";
 import { getSubmissionListMock, SubmissionInProgresDataMock } from "../__mocks__/submissions/dataTypeMocks/submissionData";
@@ -114,7 +116,7 @@ describe("Get Submission By Assignment and User", ()=>{
 
 describe("Update Assignment", () => {
     it("should respond with a status 200 and updated assignment when update is successful", async () => {
-      const req = createRequest("existing_id", SubmissionInProgresDataMock);
+      const req = createRequest("existing_id", { status: SubmissionInProgresDataMock.status, end_date: SubmissionInProgresDataMock.end_date, comment: SubmissionInProgresDataMock.comment });
       const res = createResponse();
       submissionRepositoryMock.UpdateSubmission.mockResolvedValue(
         SubmissionInProgresDataMock
@@ -124,7 +126,7 @@ describe("Update Assignment", () => {
       expect(res.json).toHaveBeenCalledWith(SubmissionInProgresDataMock);
     });
     it("should respond with a 404 status and error message when assignment is not found", async () => {
-      const req = createRequest("non_existing_id", SubmissionInProgresDataMock);
+      const req = createRequest("non_existing_id", { status: SubmissionInProgresDataMock.status, end_date: SubmissionInProgresDataMock.end_date, comment: SubmissionInProgresDataMock.comment });
       const res = createResponse();
       submissionRepositoryMock.UpdateSubmission.mockResolvedValue(null);
       await controller.updateSubmission(req, res);
@@ -132,7 +134,7 @@ describe("Update Assignment", () => {
       expect(res.json).toHaveBeenCalledWith({ error: "Submission not found" });
     });
     it("should respond with a 500 status and error message when update fails", async () => {
-      const req = createRequest("existing_id", SubmissionInProgresDataMock);
+      const req = createRequest("existing_id", { status: SubmissionInProgresDataMock.status, end_date: SubmissionInProgresDataMock.end_date, comment: SubmissionInProgresDataMock.comment });
       const res = createResponse();
       submissionRepositoryMock.UpdateSubmission.mockRejectedValue(new Error());
       await controller.updateSubmission(req, res);
@@ -229,7 +231,7 @@ describe('persisted assignment lifecycle', () => {
 
     query.mockResolvedValueOnce({ rows: [delivered] });
     const finishResponse = createResponse();
-    await controller.updateSubmission(request(delivered, { id: '42' }), finishResponse);
+    await controller.updateSubmission(request({ status: delivered.status, end_date: delivered.end_date, comment: delivered.comment }, { id: '42' }), finishResponse);
     expect(finishResponse.status).toHaveBeenCalledWith(200);
     expect(finishResponse.json).toHaveBeenCalledWith(delivered);
     expect(query).toHaveBeenLastCalledWith(expect.stringContaining('UPDATE submissions'),
@@ -245,7 +247,7 @@ describe('persisted assignment lifecycle', () => {
   it('does not confirm completion when saving fails', async () => {
     query.mockRejectedValueOnce(new Error('Database unavailable'));
     const response = createResponse();
-    await controller.updateSubmission(request(delivered, { id: '42' }), response);
+    await controller.updateSubmission(request({ status: delivered.status, end_date: delivered.end_date, comment: delivered.comment }, { id: '42' }), response);
     expect(response.status).toHaveBeenCalledWith(500);
     expect(response.json).toHaveBeenCalledWith({ error: 'Server error' });
     expect(release).toHaveBeenCalledTimes(1);
@@ -257,4 +259,146 @@ describe('persisted assignment lifecycle', () => {
     await controller.getSubmissionByAssignmentAndUser(readRequest(), response);
     expect(response.status).toHaveBeenCalledWith(500);
   });
+});
+
+
+describe.each(["task", "practice"])("HU-05 %s repository editing", (kind) => {
+    const newLink = "https://github.com/student/corrected";
+    const saved = {
+        id: 42, ...(kind === "task" ? { assignmentid: 7 } : { practiceid: 538 }), userid: 9, status: "in progress",
+        repository_link: newLink, start_date: "2026-09-23", end_date: "2026-09-24", comment: "Listo",
+    };
+    function setup() {
+        const repository = kind === "task" ? new SubmissionRepository() : new PracticeSubmissionRepository();
+        const query = jest.spyOn(repository, "executeQuery").mockResolvedValue([saved]);
+        const controller = kind === "task"
+            ? new SubmissionController(repository as SubmissionRepository)
+            : new PracticeSubmissionController(repository as PracticeSubmissionRepository);
+        return { query, controller };
+    }
+    function request(link: unknown = newLink, role = "student", id = "42") {
+        return Object.assign(createRequest(id, { repository_link: link }), { user: { id: 9, role } });
+    }
+    afterEach(() => jest.restoreAllMocks());
+
+    it("updates only the owner's repository and returns the saved dates, status and comment", async () => {
+        const { controller, query } = setup();
+        const response = createResponse();
+        await controller.updateRepositoryLink(request(), response);
+        expect(response.status).toHaveBeenCalledWith(200);
+        expect(response.json).toHaveBeenCalledWith(expect.objectContaining(saved));
+        expect(query).toHaveBeenCalledWith(
+            `UPDATE ${kind === "task" ? "submissions" : "practicesubmissions"} SET repository_link = $1 WHERE id = $2 AND userid = $3 AND status = 'in progress' RETURNING *`,
+            [newLink, 42, 9]
+        );
+    });
+
+    it.each(["", null, 123, "not-a-url", "https://evil.com/github.com/user/repo", "https://github.com/user", "https://github.com/user/repo.git", "https://github.com/user/repo/tree/main"])(
+        "rejects invalid URL %s before querying the database", async (link) => {
+            const { controller, query } = setup();
+            const response = createResponse();
+            await controller.updateRepositoryLink(request(link), response);
+            expect(response.status).toHaveBeenCalledWith(400);
+            expect(query).not.toHaveBeenCalled();
+        }
+    );
+
+    it.each(["teacher", "admin", ""])("forbids repository editing for %s", async (role) => {
+        const { controller, query } = setup();
+        const response = createResponse();
+        await controller.updateRepositoryLink(request(newLink, role), response);
+        expect(response.status).toHaveBeenCalledWith(403);
+        expect(query).not.toHaveBeenCalled();
+    });
+
+    it("does not allow updating another student's submission", async () => {
+        const { controller, query } = setup();
+        query.mockResolvedValue([]);
+        const response = createResponse();
+        await controller.updateRepositoryLink(request(), response);
+        expect(response.status).toHaveBeenCalledWith(404);
+        expect(query).toHaveBeenCalledWith(expect.stringContaining("AND userid = $3"), [newLink, 42, 9]);
+    });
+
+    it("returns a save error when the database fails", async () => {
+        const { controller, query } = setup();
+        query.mockRejectedValue(new Error("Database error"));
+        const response = createResponse();
+        await controller.updateRepositoryLink(request(), response);
+        expect(response.status).toHaveBeenCalledWith(500);
+    });
+
+    it("saves the edited URL atomically with finalization and blocks later edits", async () => {
+        const { controller, query } = setup();
+        const finalized = { ...saved, status: "delivered" };
+        query.mockResolvedValueOnce([finalized]).mockResolvedValue([]);
+        const req = Object.assign(createRequest("42", {
+            status: "delivered", end_date: saved.end_date, comment: saved.comment, repository_link: newLink,
+        }), { user: { id: 9, role: "student" } });
+        const response = createResponse();
+        if (kind === "task") {
+            await (controller as SubmissionController).updateSubmission(req, response);
+        } else {
+            await (controller as PracticeSubmissionController).updatePracticeSubmission(req, response);
+        }
+        expect(response.status).toHaveBeenCalledWith(200);
+        expect(response.json).toHaveBeenCalledWith(finalized);
+        expect(query).toHaveBeenCalledWith(
+            `UPDATE ${kind === "task" ? "submissions" : "practicesubmissions"} SET status = $1, end_date = $2, comment = $3, repository_link = $4 WHERE id = $5 AND userid = $6 AND status = 'in progress' RETURNING *`,
+            ["delivered", saved.end_date, saved.comment, newLink, 42, 9]
+        );
+        const laterResponse = createResponse();
+        await controller.updateRepositoryLink(request(), laterResponse);
+        expect(laterResponse.status).toHaveBeenCalledWith(404);
+        expect(query).toHaveBeenLastCalledWith(expect.stringContaining("AND status = 'in progress'"), [newLink, 42, 9]);
+        const repeated = createResponse();
+        if (kind === "task") await (controller as SubmissionController).updateSubmission(req, repeated);
+        else await (controller as PracticeSubmissionController).updatePracticeSubmission(req, repeated);
+        expect(repeated.status).toHaveBeenCalledWith(404);
+    });
+
+    it("rejects invalid repository changes during finalization without updating", async () => {
+        const { controller, query } = setup();
+        const req = Object.assign(createRequest("42", {
+            status: "delivered", end_date: saved.end_date, comment: saved.comment, repository_link: "https://evil.com/user/repo",
+        }), { user: { id: 9, role: "student" } });
+        const response = createResponse();
+        if (kind === "task") await (controller as SubmissionController).updateSubmission(req, response);
+        else await (controller as PracticeSubmissionController).updatePracticeSubmission(req, response);
+        expect(response.status).toHaveBeenCalledWith(400);
+        expect(query).not.toHaveBeenCalled();
+    });
+
+    it("forbids finalizing an edited repository as a teacher", async () => {
+        const { controller, query } = setup();
+        const req = Object.assign(createRequest("42", {
+            status: "delivered", end_date: saved.end_date, comment: saved.comment, repository_link: newLink,
+        }), { user: { id: 9, role: "teacher" } });
+        const response = createResponse();
+        if (kind === "task") await (controller as SubmissionController).updateSubmission(req, response);
+        else await (controller as PracticeSubmissionController).updatePracticeSubmission(req, response);
+        expect(response.status).toHaveBeenCalledWith(403);
+        expect(query).not.toHaveBeenCalled();
+    });
+
+    it("preserves the save error response when finalization with a new link fails", async () => {
+        const { controller, query } = setup();
+        query.mockRejectedValue(new Error("Database error"));
+        const req = Object.assign(createRequest("42", {
+            status: "delivered", end_date: saved.end_date, comment: saved.comment, repository_link: newLink,
+        }), { user: { id: 9, role: "student" } });
+        const response = createResponse();
+        if (kind === "task") await (controller as SubmissionController).updateSubmission(req, response);
+        else await (controller as PracticeSubmissionController).updatePracticeSubmission(req, response);
+        expect(response.status).toHaveBeenCalledWith(500);
+        expect(response.json).toHaveBeenCalledWith({ error: "Server error" });
+    });
+
+    it("rejects malformed IDs before querying", async () => {
+        const { controller, query } = setup();
+        const response = createResponse();
+        await controller.updateRepositoryLink(request(newLink, "student", "42-invalid"), response);
+        expect(response.status).toHaveBeenCalledWith(400);
+        expect(query).not.toHaveBeenCalled();
+    });
 });

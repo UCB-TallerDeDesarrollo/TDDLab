@@ -5,6 +5,7 @@ import {
   fetchSubmissionsByPracticeId,
   startPracticeSubmission,
   finishPracticeSubmission,
+  updatePracticeRepositoryLink,
 } from "../services";
 import {
   PracticeDataObject,
@@ -20,12 +21,14 @@ import {
 } from "../services/practiceDetail.service";
 
 interface UsePracticeDetailProps {
+  role: string;
   userid: number;
   practiceid: number;
   navigate: NavigateFunction;
 }
 
 export function usePracticeDetail({
+                                    role,
                                     userid,
                                     practiceid,
                                     navigate,
@@ -40,6 +43,15 @@ export function usePracticeDetail({
   const [practiceSubmissions, setPracticeSubmissions] = useState<PracticeSubmissionDataObject[]>([]);
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [editingRepository, setEditingRepository] = useState(false);
+  const submissionKey = `${role}:${userid}:${practiceid}`;
+  const currentSubmissionKey = useRef(submissionKey);
+  currentSubmissionKey.current = submissionKey;
+
+  useEffect(() => {
+    setLinkDialogOpen(false);
+    setEditingRepository(false);
+  }, [submissionKey]);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
   const savingSubmission = useRef(false);
@@ -99,16 +111,48 @@ export function usePracticeDetail({
   const refreshDetailData = () => setRefreshTick((prev) => prev + 1);
 
   const openLinkDialog = () => {
-    if (canStartPractice && !savingSubmission.current) setLinkDialogOpen(true);
+    if (canStartPractice && !savingSubmission.current) {
+      setEditingRepository(false);
+      setLinkDialogOpen(true);
+    }
   };
-  const closeLinkDialog = () => setLinkDialogOpen(false);
+  const canEditRepository = role === "student" && canFinishPractice &&
+      submission?.practiceid === practiceid && submission.userid === userid;
+  const openEditLinkDialog = () => {
+    if (canEditRepository && !savingSubmission.current) {
+      setEditingRepository(true);
+      setLinkDialogOpen(true);
+    }
+  };
+  const closeLinkDialog = () => {
+    setLinkDialogOpen(false);
+    setEditingRepository(false);
+  };
   const openCommentDialog = () => {
     if (canFinishPractice && !savingSubmission.current) setIsCommentDialogOpen(true);
   };
   const closeCommentDialog = () => setIsCommentDialogOpen(false);
 
   const sendGithubLink = async (repositoryLink: string) => {
-    if (!practiceid || !canStartPractice || savingSubmission.current) return;
+    if (!practiceid || savingSubmission.current) return;
+    if (editingRepository) {
+      if (!canEditRepository || !submission) return;
+      savingSubmission.current = true;
+      setIsSavingSubmission(true);
+      try {
+        const saved = await updatePracticeRepositoryLink(submission.id, repositoryLink);
+        if (currentSubmissionKey.current === submissionKey) {
+          setSubmission(saved);
+          setPracticeSubmissions((items) => items.map((item) => item.id === saved.id ? saved : item));
+          closeLinkDialog();
+        }
+      } finally {
+        savingSubmission.current = false;
+        setIsSavingSubmission(false);
+      }
+      return;
+    }
+    if (!canStartPractice) return;
 
     const startDate = new Date();
     const start_date = new Date(
@@ -137,7 +181,7 @@ export function usePracticeDetail({
     }
   };
 
-  const sendComment = async (comment: string) => {
+  const sendComment = async (comment: string, repositoryLink = submission?.repository_link) => {
     if (!submission || !canFinishPractice || savingSubmission.current) return;
 
     const endDate = new Date();
@@ -152,6 +196,7 @@ export function usePracticeDetail({
       status: "delivered",
       end_date,
       comment,
+      ...(repositoryLink !== submission.repository_link ? { repository_link: repositoryLink } : {}),
     };
 
     savingSubmission.current = true;
@@ -190,6 +235,9 @@ export function usePracticeDetail({
     canFinishPractice,
     isSavingSubmission,
     linkDialogOpen,
+    editingRepository,
+    canEditRepository,
+    openEditLinkDialog,
     isCommentDialogOpen,
     openLinkDialog,
     closeLinkDialog,

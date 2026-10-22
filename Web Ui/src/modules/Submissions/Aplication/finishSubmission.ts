@@ -6,6 +6,10 @@ export class FinishSubmission {
     private readonly submissionRepository: SubmissionRepositoryInterface
   ) {}
 
+  async updateRepositoryLink(id: number, repositoryLink: string) {
+    return this.submissionRepository.updateRepositoryLink(id, repositoryLink);
+  }
+
   async finishSubmission(id: number, submissionData: SubmissionUpdateObject) {
     try {
       const updatedSubmisisonData: SubmissionUpdateObject = {

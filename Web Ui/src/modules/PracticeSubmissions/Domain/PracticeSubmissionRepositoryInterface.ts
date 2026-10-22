@@ -5,6 +5,7 @@ import {
 } from "./PracticeSubmissionInterface";
 
 interface PracticeSubmissionRepositoryInterface {
+  updateRepositoryLink(id: number, repositoryLink: string): Promise<PracticeSubmissionDataObject>;
   createPracticeSubmission(
     practiceSubmissionData: PracticeSubmissionCreationObject
   ): Promise<void>;
