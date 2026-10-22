@@ -390,12 +390,21 @@ export function useAssignmentDetailData({
     const [, user, repo] = match;
     setSelectedMetric(selectedMetric);
 
+    const teacherSubmissions = submissions.map((sub) => ({
+      id: sub.id,
+      repository_link: sub.repository_link,
+    }));
+    try {
+      sessionStorage.setItem("teacherSubmissions", JSON.stringify(teacherSubmissions));
+    } catch (error) {
+      console.error("Error saving teacherSubmissions to sessionStorage:", error);
+    }
+
     navigate({
       pathname: path,
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
-        fetchedSubmissions: JSON.stringify(submissions),
         submissionId: submissionId.toString(),
       }).toString(),
     });

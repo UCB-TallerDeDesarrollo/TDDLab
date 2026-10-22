@@ -54,11 +54,11 @@ function TDDLineCharts({
   role,
   commitsCycles: _
 }: LineChartProps) {
-  
+
   let dataChart: any = {};
   const chartRef = useRef<any>();
 
-  
+
 
   function getDataLabels() {
     if (filteredCommitsObject != null) {
@@ -105,14 +105,14 @@ function TDDLineCharts({
     const { coverage, test_count, conclusion, commit: commitInfo } = commit;
 
     if (
-    coverage === undefined || 
+    coverage === undefined ||
     coverage === null
     ) return "black";
 
-    const hasNoTestsOrCoverageFailed = 
-      test_count === 0 || 
-      test_count === undefined || 
-      coverage === 0 || 
+    const hasNoTestsOrCoverageFailed =
+      test_count === 0 ||
+      test_count === undefined ||
+      coverage === 0 ||
       conclusion === "failure";
 
     if (hasNoTestsOrCoverageFailed) return "red";
@@ -125,7 +125,7 @@ function TDDLineCharts({
     let colorValue = 110;
     let opacity;
     const baseColor = isRefactor ? 'blue' : 'green';
-  
+
     if (coverage >= 90) {
       opacity = 1;
     } else if (coverage >= 80) {
@@ -137,12 +137,12 @@ function TDDLineCharts({
     } else {
       opacity = 0.2;
     }
-  
+
     return baseColor === 'green'
       ? `rgba(0, ${colorValue}, 0, ${opacity})`
       : `rgba(0, 100, 255, ${opacity})`;
   };
-  
+
   function getCommitStats(): [number[], number[], number[], Date[]] {
     if (filteredCommitsObject != null) {
       const additions = filteredCommitsObject
@@ -154,11 +154,11 @@ function TDDLineCharts({
       const total = filteredCommitsObject
         .map((commit) => commit.stats.total)
         .reverse();
-      
+
       const creation_date = filteredCommitsObject
         .map((commit) => new Date(commit.commit.date))
         .reverse();
-      
+
       return [additions, deletions, total, creation_date];
     } else {
       return [[], [], [], []];
@@ -175,7 +175,7 @@ function TDDLineCharts({
       return [];
     }
   }
-  
+
   function getTestsCount() {
     if (filteredCommitsObject != null) {
       const testCount = filteredCommitsObject
@@ -266,7 +266,7 @@ function TDDLineCharts({
               afterBodyContent.push(
                 `Fecha: ${formatDate(getCommitStats()[3][context[0].dataIndex])}`,
               );
-              
+
               const coverageValue = getCommitCoverage()[context[0].dataIndex];
               const formattedCoverage = coverageValue !== undefined && coverageValue !== null ? `${coverageValue}%` : '0%';
               afterBodyContent.push(
@@ -281,8 +281,8 @@ function TDDLineCharts({
     };
     return optionsLineChart;
   }
-  
-  
+
+
   const onClick = (event: any) => {
     const elements = getElementAtEvent(chartRef.current, event);
     if (elements.length > 0) {
@@ -353,7 +353,7 @@ function TDDLineCharts({
         }) || [];
         return <TDDCycleChart data={testLogs} />;
       }
-   
+
     }
     return (
       <Line
@@ -368,6 +368,6 @@ function TDDLineCharts({
   }
 
   return getLineChart();
-} 
+}
 
 export default TDDLineCharts;

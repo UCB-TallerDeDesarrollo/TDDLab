@@ -71,7 +71,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     if (!data || data.length === 0) {
       return [];
     }
-    
+
     const commitMap = new Map<number, CommitData>();
     let currentCommit = 1;
 
@@ -79,7 +79,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       if (log.commitId) {
         currentCommit++;
       }
-      
+
       if (log.numPassedTests !== undefined) {
         if (!commitMap.has(currentCommit)) {
           commitMap.set(currentCommit, {
@@ -87,7 +87,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
             tests: []
           });
         }
-        
+
         const commit = commitMap.get(currentCommit)!;
         const passed = (log.failedTests === 0) && (log.success === true);
         const status = passed ? 'exitosa' : 'con fallos';
@@ -98,7 +98,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         });
       }
     };
-    
+
     return Array.from(commitMap.values());
   }, [data]);
 
@@ -110,7 +110,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const bottomPadding = 80;
   const plotWidth = chartWidth - leftPadding - rightPadding;
   const plotHeight = chartHeight - topPadding - bottomPadding;
-  
+
   const commitSpacing = plotWidth / (processedData.length + 1);
   const markerSize = chartSymbols.success.size;
   const markerRadius = markerSize / 2;
@@ -121,7 +121,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       <div style={styles.header}>
         <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
       </div>
-      
+
       <svg width={chartWidth} height={chartHeight} style={styles.svg}>
         {/* Grid lines */}
         {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
@@ -185,13 +185,13 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         {/* Data points - circles stacked vertically */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
-          
+
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
                 const y = topPadding + plotHeight - (testIndex * (markerSize + circleSpacing)) - markerRadius;
                 const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
-                
+
                 return (
                   <g
                     key={`test-${commitIndex}-${testIndex}`}

@@ -41,11 +41,11 @@ export function DeliveriesTable({
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: "22%" }}>Correo</TableCell>
-            <TableCell sx={{ width: "12%" }}>Estado</TableCell>
-            <TableCell sx={{ width: "8%" }}>Enlace</TableCell>
-            <TableCell sx={{ width: "14%" }}>Fecha de inicio</TableCell>
-            <TableCell sx={{ width: "14%" }}>Fecha de finalización</TableCell>
+            <TableCell sx={{ width: "25%" }}>Correo</TableCell>
+            <TableCell sx={{ width: "15%" }}>Estado</TableCell>
+            <TableCell sx={{ width: "10%" }}>Enlace</TableCell>
+            <TableCell sx={{ width: "15%" }}>Fecha de inicio</TableCell>
+            <TableCell sx={{ width: "15%" }}>Fecha de finalización</TableCell>
             <TableCell sx={{ width: "10%" }}>Gráfica</TableCell>
             <TableCell sx={{ width: "10%" }}>Asistente IA</TableCell>
           </TableRow>

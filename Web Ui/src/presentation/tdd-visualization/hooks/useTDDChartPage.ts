@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CommentDataObject } from "../../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import {
@@ -10,17 +10,11 @@ import {
 import {
   CycleReportViewProps,
   Submission,
+  TDDVisualizationData,
 } from "../types/tddVisualization.types";
-import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 function isStudent(role: string) {
   return role === "student";
-}
-
-function getDefaultMetric(graphs: string) {
-  return graphs === "graph" ? "Dashboard" : "Complejidad";
 }
 
 function getRepoQuery(submission: Submission) {
@@ -28,8 +22,22 @@ function getRepoQuery(submission: Submission) {
   return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
 }
 
+const EMPTY_VISUALIZATION_DATA: TDDVisualizationData = {
+  commits: [],
+  commitsLoadError: false,
+  commitsTddCycles: [],
+  defaultBranch: null,
+  tddLogs: [],
+  testDataLoadError: false,
+};
+
+const VISUALIZATION_ERROR_DATA: TDDVisualizationData = {
+  ...EMPTY_VISUALIZATION_DATA,
+  commitsLoadError: true,
+  testDataLoadError: true,
+};
+
 export function useTDDChartPage({
-  graphs,
   port,
   role,
   teacher_id,
@@ -41,9 +49,40 @@ export function useTDDChartPage({
   const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName = String(searchParams.get("repoName")) || "defaultRepo";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
-  const fetchedSubmissions: Submission[] = isTeacherView
-    ? JSON.parse(searchParams.get("fetchedSubmissions") || "[]")
-    : [];
+  const fetchedSubmissions: Submission[] = useMemo(() => {
+    if (!isTeacherView) {
+      return [];
+    }
+
+    try {
+      const stored = sessionStorage.getItem("teacherSubmissions");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.error("Error reading teacherSubmissions from sessionStorage:", error);
+    }
+
+    const paramSubmissions = searchParams.get("fetchedSubmissions");
+    if (paramSubmissions) {
+      try {
+        const parsed = JSON.parse(paramSubmissions);
+        if (Array.isArray(parsed)) {
+          return parsed.map((item: Record<string, unknown>) => ({
+            id: Number(item.id),
+            repository_link: String(item.repository_link || ""),
+          }));
+        }
+      } catch (error) {
+        console.error("Error parsing fetchedSubmissions param:", error);
+      }
+    }
+
+    return [];
+  }, [isTeacherView, searchParams]);
   const submissionId = isTeacherView ? Number(searchParams.get("submissionId")) : 0;
 
   const [currentIndex, setCurrentIndex] = useState(
@@ -51,6 +90,17 @@ export function useTDDChartPage({
       ? fetchedSubmissions.findIndex((submission) => submission.id === submissionId)
       : 0,
   );
+
+  const prevSubmissionIdRef = useRef(submissionId);
+  useEffect(() => {
+    if (isTeacherView && fetchedSubmissions.length > 0 && prevSubmissionIdRef.current !== submissionId) {
+      prevSubmissionIdRef.current = submissionId;
+      const index = fetchedSubmissions.findIndex((submission) => submission.id === submissionId);
+      if (index !== -1) {
+        setCurrentIndex(index);
+      }
+    }
+  }, [isTeacherView, fetchedSubmissions, submissionId]);
   const [ownerName, setOwnerName] = useState("");
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
@@ -58,11 +108,11 @@ export function useTDDChartPage({
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [metric, setMetric] = useState<string | null>(null);
-  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
-  const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
-  const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [visualizationData, setVisualizationData] = useState<TDDVisualizationData>(
+    EMPTY_VISUALIZATION_DATA,
+  );
 
-  const defaultMetric = getDefaultMetric(graphs);
+  const defaultMetric = "Dashboard";
 
   const loadComments = async () => {
     try {
@@ -94,13 +144,14 @@ export function useTDDChartPage({
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
+      setVisualizationData(EMPTY_VISUALIZATION_DATA);
+
       try {
-        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
-        setCommitsInfo(visualizationData.commits);
-        setCommitsTddCycles(visualizationData.commitsTddCycles);
-        setTDDLogsInfo(visualizationData.tddLogs);
+        const data = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        setVisualizationData(data);
       } catch (error) {
         console.error("Error obtaining data:", error);
+        setVisualizationData(VISUALIZATION_ERROR_DATA);
       } finally {
         setLoading(false);
       }
@@ -114,9 +165,7 @@ export function useTDDChartPage({
       const previousIndex = currentIndex - 1;
       const previousSubmission = fetchedSubmissions[previousIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(previousSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      navigate(`?${getRepoQuery(previousSubmission)}`);
       setCurrentIndex(previousIndex);
     }
   };
@@ -126,9 +175,7 @@ export function useTDDChartPage({
       const nextIndex = currentIndex + 1;
       const nextSubmission = fetchedSubmissions[nextIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(nextSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      navigate(`?${getRepoQuery(nextSubmission)}`);
       setCurrentIndex(nextIndex);
     }
   };
@@ -157,11 +204,14 @@ export function useTDDChartPage({
 
   return {
     chartsState: {
-      commitsInfo,
-      commitsTddCycles,
+      commitsInfo: visualizationData.commits,
+      commitsLoadError: visualizationData.commitsLoadError,
+      commitsTddCycles: visualizationData.commitsTddCycles,
+      defaultBranch: visualizationData.defaultBranch,
       metric,
       setMetric,
-      tddLogsInfo,
+      tddLogsInfo: visualizationData.tddLogs,
+      testDataLoadError: visualizationData.testDataLoadError,
     },
     comments,
     currentIndex,
