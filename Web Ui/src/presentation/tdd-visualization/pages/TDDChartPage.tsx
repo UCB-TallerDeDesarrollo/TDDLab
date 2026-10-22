@@ -80,12 +80,10 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
               data-testId="cycle-chart"
               commits={chartsState.commitsInfo}
               tddLogs={chartsState.tddLogsInfo}
-              commitsTddCycles={chartsState.commitsTddCycles}
               port={props.port}
               role={props.role}
               metric={chartsState.metric}
               setMetric={chartsState.setMetric}
-              typegraphs={props.graphs}
             />
           </div>
         </React.Fragment>

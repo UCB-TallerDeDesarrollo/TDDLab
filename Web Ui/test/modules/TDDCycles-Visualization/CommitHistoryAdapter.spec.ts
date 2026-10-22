@@ -53,32 +53,4 @@ describe("CommitHistoryAdapter", () => {
       expect(commits[0].sha).toBe("456"); // el más reciente
     });
   });
-
-
-
-  describe("obtainCommitTddCycle", () => {
-    it("debe retornar los ciclos TDD con cobertura", async () => {
-      mockedAxios.get.mockResolvedValue({
-        status: 200,
-        data: [
-          {
-            sha: "789",
-            url: "url3",
-            tddCycle: "Red-Green-Refactor",
-            coverage: 75
-          }
-        ]
-      });
-
-      const cycles = await adapter.obtainCommitTddCycle("owner", "repo");
-      expect(cycles).toEqual([
-        {
-          sha: "789",
-          url: "url3",
-          tddCycle: "Red-Green-Refactor",
-          coverage: 75
-        }
-      ]);
-    });
-  });
 });

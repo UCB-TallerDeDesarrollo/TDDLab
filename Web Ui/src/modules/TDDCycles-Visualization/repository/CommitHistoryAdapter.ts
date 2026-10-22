@@ -2,7 +2,6 @@ import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
 //import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
-import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
@@ -67,32 +66,6 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     }
   }
 
-
-  async obtainCommitTddCycle(
-    owner: string,
-    repoName: string,
-  ): Promise<CommitCycle[]> {
-    try {
-      const url = `${this.backAPI}/commit-cycles`;
-      const response = await axios.get(url, { params: { owner, repoName } });
-
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      // Map server shape to current UI Contract (note: UI uses property tddCycle)
-      const commits: CommitCycle[] = (response.data || []).map((item: any) => ({
-        url: item.url,
-        sha: item.sha,
-        tddCycle: item.tddCycle ?? "null",
-        coverage: item.coverage,
-      }));
-      return commits;
-    } catch (error) {
-      console.error("Error al obtener los ciclos TDD:", error);
-      throw error;
-    }
-  }
 
   async obtainTDDLogs(
     owner: string,

@@ -522,7 +522,6 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             tddLogs={tddLogs}
             optionSelected={graph}
 
-            commitsCycles= {null}
           />
         </>
 

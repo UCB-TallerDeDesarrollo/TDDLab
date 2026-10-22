@@ -1,5 +1,8 @@
-import { render, waitFor, act } from "@testing-library/react";
+import { render, renderHook, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { useTDDChartPage } from "../../../src/presentation/tdd-visualization/hooks/useTDDChartPage";
+import { fetchTDDVisualizationData } from "../../../src/presentation/tdd-visualization/services/tddVisualization.service";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import TDDChartPage from "../../../src/presentation/tdd-visualization/pages/TDDChartPage";
 import {
   MockGithubAPI,
@@ -25,7 +28,7 @@ describe("TDDChartPage", () => {
     "renders loading spinner when loading is true for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -39,7 +42,7 @@ describe("TDDChartPage", () => {
     "displays an error message when no data is available for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -53,7 +56,7 @@ describe("TDDChartPage", () => {
     "displays the repository name for role %s",
     async (role) => {
       const { getByTestId } = render(
-        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294} graphs="graph"/>
+        <TDDChartPage port={new MockGithubAPI()} role={role} teacher_id={294}/>
       );
 
       await waitFor(() => {
@@ -73,7 +76,7 @@ describe("TDDChartPage", () => {
     spyConsoleError.mockImplementation(() => {});
 
     await act(async () => {
-      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294} graphs="graph"/>);
+      render(<TDDChartPage port={new MockGithubAPIError()} role="admin" teacher_id={294}/>);
     });
 
     expect(spyConsoleError).toHaveBeenCalledWith(
@@ -81,5 +84,45 @@ describe("TDDChartPage", () => {
       expect.any(Error)
     );
     spyConsoleError.mockRestore();
+  });
+});
+
+describe("HU-06 visualization data", () => {
+  it("loads the current graph without requesting the unused commit-cycle distribution", async () => {
+    const retiredRequest = jest.fn().mockRejectedValue(new Error("Retired data is unavailable"));
+    const port = {
+      obtainUserName: jest.fn().mockResolvedValue("Student"),
+      obtainCommitsOfRepo: jest.fn().mockResolvedValue([]),
+      obtainTDDLogs: jest.fn().mockResolvedValue([]),
+      obtainCommitTddCycle: retiredRequest,
+    };
+    await expect(fetchTDDVisualizationData(port, "student", "practice"))
+      .resolves.toEqual({ commits: [], tddLogs: [] });
+    expect(port.obtainCommitsOfRepo).toHaveBeenCalledWith("student", "practice");
+    expect(port.obtainTDDLogs).toHaveBeenCalledWith("student", "practice");
+    expect(retiredRequest).not.toHaveBeenCalled();
+  });
+
+  it("keeps teacher navigation on Dashboard and the selected student's repository", async () => {
+    const navigate = jest.fn();
+    (useNavigate as jest.Mock).mockReturnValue(navigate);
+    const submissions = [
+      { id: 1, repository_link: "https://github.com/first/task" },
+      { id: 2, repository_link: "https://github.com/second/task" },
+    ];
+    (useSearchParams as jest.Mock).mockReturnValue([new URLSearchParams({
+      repoOwner: "first", repoName: "task", submissionId: "1", fetchedSubmissions: JSON.stringify(submissions),
+    })]);
+    const port = new MockGithubAPI();
+    const { result } = renderHook(() => useTDDChartPage({ port, role: "teacher", teacher_id: 294 }));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    localStorage.setItem("selectedMetric", "Lista");
+    act(() => result.current.goToNextStudent());
+    expect(localStorage.getItem("selectedMetric")).toBe("Dashboard");
+    expect(navigate).toHaveBeenCalledWith(expect.stringContaining("repoOwner=second&repoName=task&submissionId=2"));
+    expect(result.current.currentIndex).toBe(1);
+    act(() => result.current.goToPreviousStudent());
+    expect(navigate).toHaveBeenLastCalledWith(expect.stringContaining("repoOwner=first&repoName=task&submissionId=1"));
+    expect(result.current.currentIndex).toBe(0);
   });
 });
