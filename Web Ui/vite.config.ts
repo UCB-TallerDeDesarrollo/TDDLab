@@ -5,6 +5,22 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/',
   appType: 'spa',
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: { '.test.js': 'empty', '.test.ts': 'empty', '.test.tsx': 'empty' },
+    },
+  },
+  server: {
+    watch: {
+      ignored: [
+        '**/node_modules/**'
+        ,'**/.git/**'
+        , '**/dist/**'
+        ,'**/test/**'
+        ,'**/tests/**'
+      ]
+    }
+  },
   plugins: [
     react(),
     {
