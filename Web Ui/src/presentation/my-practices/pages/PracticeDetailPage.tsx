@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 import { GitLinkDialog } from "../../../shared/components/GitHubLinkDialog";
 import { CommentDialog } from "../../../shared/components/CommentDialog";
 import ContentState from "../../../shared/components/ContentState";
@@ -38,6 +40,8 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
     linkDialogOpen,
     isCommentDialogOpen,
     openLinkDialog,
+    openRepositoryEditDialog,
+    canEditRepository,
     closeLinkDialog,
     sendGithubLink,
     openCommentDialog,
@@ -92,14 +96,25 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
                         <div className="practice-student-row practice-enlace-row">
                           <strong>Enlace:</strong>{" "}
                           {submission?.repository_link ? (
-                              <a
-                                  href={submission.repository_link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="practice-link-anchor"
-                              >
-                                {submission.repository_link}
-                              </a>
+                              <span className="practice-link-cell">
+                                <a
+                                    href={submission.repository_link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="practice-link-anchor"
+                                >
+                                  {submission.repository_link}
+                                </a>
+                                {canEditRepository && (
+                                    <IconButton
+                                        aria-label="Editar enlace del repositorio"
+                                        size="small"
+                                        onClick={openRepositoryEditDialog}
+                                    >
+                                      <EditIcon fontSize="small" />
+                                    </IconButton>
+                                )}
+                              </span>
                           ) : (
                               <span style={{ marginLeft: "8px" }}>No se inicio la practica</span>
                           )}
@@ -144,6 +159,8 @@ const PracticeDetailPage: React.FC<PracticeDetailPageProps> = ({ userid }) => {
             open={linkDialogOpen}
             onClose={closeLinkDialog}
             onSend={sendGithubLink}
+            initialLink={canEditRepository ? submission?.repository_link : ""}
+            submitLabel={canEditRepository ? "Guardar" : "Enviar"}
         />
         <CommentDialog
             open={isCommentDialogOpen}

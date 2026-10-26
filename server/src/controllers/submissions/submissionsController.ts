@@ -74,6 +74,22 @@ class SubmissionController {
   async updateSubmission(req: Request, res: Response): Promise<void> {
     try {
       const submissionid = parseInt(req.params.id);
+      if (
+        typeof req.body.repository_link === "string" &&
+        Object.keys(req.body).every((key) => key === "repository_link")
+      ) {
+        const updatedRepositoryLink =
+          await this.updateSubmissionUseCase.updateRepositoryLink(
+            submissionid,
+            req.body.repository_link
+          );
+        if (updatedRepositoryLink) {
+          res.status(200).json(updatedRepositoryLink);
+        } else {
+          res.status(403).json({ error: "Repository link cannot be updated" });
+        }
+        return;
+      }
       const { status, end_date, comment } = req.body;
       const updatedSubmission = await this.updateSubmissionUseCase.execute(
         submissionid,

@@ -23,6 +23,15 @@ class UpdateSubmission {
       throw error;
     }
   }
+
+  async updateRepositoryLink(
+    submissionid: number,
+    repositoryLink: string
+  ): Promise<SubmissionDataObject | null> {
+    return this.repository.UpdateRepositoryLink
+      ? this.repository.UpdateRepositoryLink(submissionid, repositoryLink)
+      : null;
+  }
 }
 
 export default UpdateSubmission;

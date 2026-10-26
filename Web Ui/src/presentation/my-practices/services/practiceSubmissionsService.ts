@@ -42,3 +42,11 @@ export async function finishPracticeSubmission(
   const repo = makeRepo();
   await new FinishPracticeSubmission(repo).finishSubmission(submissionId, data);
 }
+
+export async function updatePracticeSubmissionLink(
+  submissionId: number,
+  repositoryLink: string
+): Promise<void> {
+  const repo = makeRepo();
+  await repo.updateRepositoryLink(submissionId, repositoryLink);
+}
