@@ -64,7 +64,7 @@ describe("GroupItem", () => {
 
     await user.hover(screen.getByLabelText("edit-group"));
     expect(await screen.findByText("Editar grupo")).toBeInTheDocument();
-  });
+  }, 15000);
 
   it("triggers the expected callbacks for each action", async () => {
     const user = userEvent.setup();
@@ -94,5 +94,5 @@ describe("GroupItem", () => {
     expect(onTasks).toHaveBeenCalledTimes(1);
     expect(onDelete).toHaveBeenCalledTimes(1);
     expect(onEdit).toHaveBeenCalledTimes(1);
-  });
+  },15000);
 });

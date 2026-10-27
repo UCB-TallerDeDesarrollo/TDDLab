@@ -22,24 +22,13 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && (
+      {!tddPage.loading && tddPage.error && (
         <div className="error-message" data-testid="errorMessage">
-          Error: Verifica que el repositorio utilice la rama "main". Actualmente,
-          TDDLab no puede cargar los datos si la rama principal es "master"
+          {tddPage.error}
         </div>
       )}
 
-      {!tddPage.loading &&
-        !!chartsState.commitsInfo?.length &&
-        (!chartsState.tddLogsInfo || chartsState.tddLogsInfo.length === 0) && (
-          <div className="error-message" data-testid="errorMessage">
-            Error: No se pudieron cargar los datos de las pruebas, es posible que estes
-            utilizando una versión anterior del repositorio base, o no hayas ejecutado
-            ninguna prueba.
-          </div>
-        )}
-
-      {!tddPage.loading && !!chartsState.commitsInfo?.length && (
+      {!tddPage.loading && chartsState.commitsInfo?.length !== 0 && (
         <React.Fragment>
           {!tddPage.isStudent && (
             <div className="navigation-buttons">
