@@ -84,7 +84,6 @@ Rutas destacadas:
 - `/invitation`: invitaciones de grupo.
 - `/asistente-ia`: asistente IA.
 - `/graph`: visualizacion TDD principal.
-- `/aditionalgraph`: visualizacion TDD adicional.
 
 ## Reglas para nuevas pantallas
 

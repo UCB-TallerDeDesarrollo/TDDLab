@@ -21,6 +21,27 @@ describe("FeatureFlagRepository", () => {
   });
 
   describe("getAllFlags", () => {
+    it("oculta solo el interruptor retirado sin modificar los demás ni la respuesta original", async () => {
+      const removed = { id: 2, feature_name: "Mostrar Graficas Adicionales", is_enabled: false };
+      const other = { id: 3, feature_name: "Otra función", is_enabled: false };
+      const data = [sampleFlag, removed, other];
+      mockedAxios.get.mockResolvedValue({ status: 200, data });
+      expect(await repo.getFlags()).toEqual([sampleFlag, other]);
+      expect(data).toEqual([sampleFlag, removed, other]);
+    });
+
+    it("retorna una lista vacía cuando solo existe el interruptor retirado", async () => {
+      mockedAxios.get.mockResolvedValue({ data: [{ id: 2, feature_name: "Mostrar Graficas Adicionales", is_enabled: true }] });
+      expect(await repo.getFlags()).toEqual([]);
+    });
+
+    it("conserva una respuesta vacía y propaga errores de red", async () => {
+      mockedAxios.get.mockResolvedValueOnce({ data: [] });
+      expect(await repo.getFlags()).toEqual([]);
+      mockedAxios.get.mockRejectedValueOnce(new Error("Network error"));
+      await expect(repo.getFlags()).rejects.toThrow("Network error");
+    });
+
     it("debería retornar todos los feature flags", async () => {
       mockedAxios.get.mockResolvedValue({ status: 200, data: [sampleFlag] });
 
