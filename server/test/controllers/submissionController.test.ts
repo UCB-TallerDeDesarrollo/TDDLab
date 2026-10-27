@@ -6,6 +6,13 @@ import { getSubmissionRepositoryMock } from "../__mocks__/submissions/repository
 import { getSubmissionListMock, SubmissionInProgresDataMock } from "../__mocks__/submissions/dataTypeMocks/submissionData";
 import { createRequest } from "../__mocks__/submissions/requestMock";
 import { createResponse } from "../__mocks__/submissions/responseMock";
+import GitHubRepositoryValidator from '../../src/modules/Submissions/Repository/GitHubRepositoryValidator';
+
+jest.mock('../../src/modules/Submissions/Repository/GitHubRepositoryValidator', () => {
+  return jest.fn().mockImplementation(() => ({
+    repositoryExists: jest.fn().mockResolvedValue(true),
+  }));
+});
 
 let controller: SubmissionController;
 const submissionRepositoryMock = getSubmissionRepositoryMock();
@@ -139,6 +146,7 @@ describe("Update Assignment", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
+    
   });
   
 describe("Get Submissions By Assignment Id", () => {
@@ -180,7 +188,6 @@ describe("Get Submissions By Assignment Id", () => {
   });
 });
 
-// Exercise the controller, use cases and SQL repository together. Only PostgreSQL is mocked.
 describe('persisted assignment lifecycle', () => {
   const query = jest.fn();
   const release = jest.fn();
@@ -198,6 +205,11 @@ describe('persisted assignment lifecycle', () => {
   beforeEach(() => {
     query.mockReset();
     release.mockClear();
+
+    (GitHubRepositoryValidator as jest.Mock).mockImplementation(() => ({
+      repositoryExists: jest.fn().mockResolvedValue(true),
+    }));
+
     jest.spyOn(Pool.prototype, 'connect').mockImplementation(() =>
       Promise.resolve({ query, release }) as any
     );
@@ -281,6 +293,30 @@ describe('persisted assignment lifecycle', () => {
       assignmentid: started.assignmentid,
       userid: started.userid,
     });
+  });
+
+  it('returns 400 when the GitHub repository does not exist', async () => {
+    (GitHubRepositoryValidator as jest.Mock).mockImplementation(() => ({
+      repositoryExists: jest.fn().mockResolvedValue(false),
+    }));
+
+    controller = new SubmissionController(new SubmissionRepository());
+
+    const response = createResponse();
+
+    await controller.updateSubmissionRepositoryLink(
+      request(
+        { repository_link: 'https://github.com/student/non-existing-repo' },
+        { id: '42' }
+      ),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(400);
+    expect(response.json).toHaveBeenCalledWith({
+      error: 'El repositorio de GitHub no existe o no es accesible.',
+    });
+    expect(query).not.toHaveBeenCalled();
   });
 
   it('does not update a submission when it does not belong to the authenticated student', async () => {

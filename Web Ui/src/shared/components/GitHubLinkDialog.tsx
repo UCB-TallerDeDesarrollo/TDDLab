@@ -34,18 +34,20 @@ export const GitLinkDialog: React.FC<GithubLinkDialogProps> = ({
   const [sendError, setSendError] = useState("");
 
   const handleSend = async () => {
-    // ya estoy enviando o el link no es válido → salgo
     if (sending || !validLink) return;
 
     setSending(true);
     setSendError("");
     try {
       await Promise.resolve(onSend(link));
-    } catch {
+    } catch (error: any) {
+      const backendMessage = error?.response?.data?.error;
+
       setSendError(
-        mode === "edit"
-          ? "No se pudo actualizar el enlace del repositorio. Intenta nuevamente."
-          : "No se pudo guardar el inicio. Intenta nuevamente."
+        backendMessage ||
+          (mode === "edit"
+            ? "No se pudo actualizar el enlace del repositorio. Intenta nuevamente."
+            : "No se pudo guardar el inicio. Intenta nuevamente.")
       );
     } finally {
       setSending(false);

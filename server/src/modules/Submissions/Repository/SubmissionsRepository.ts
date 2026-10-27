@@ -1,11 +1,6 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import {
-    SubmissionCreationObject,
-    SubmissionDataObject,
-    SubmissionRepositoryLinkUpdateObject,
-    SubmissionUpdateObject,
-} from "../Domain/Submission";
+import {SubmissionCreationObject,SubmissionDataObject,SubmissionRepositoryLinkUpdateObject,SubmissionUpdateObject,} from "../Domain/Submission";
 
 interface QueryResult {
     exists: boolean;

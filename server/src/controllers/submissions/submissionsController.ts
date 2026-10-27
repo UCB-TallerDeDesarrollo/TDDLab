@@ -123,7 +123,14 @@ class SubmissionController {
       } else {
         res.status(404).json({ error: "Submission not found" });
       }
-    } catch (error) {
+     } catch (error) {
+      if (error instanceof Error && error.message === "GITHUB_REPOSITORY_NOT_FOUND") {
+        res.status(400).json({
+          error: "El repositorio de GitHub no existe o no es accesible.",
+        });
+        return;
+      }
+
       res.status(500).json({ error: "Server error" });
     }
   }

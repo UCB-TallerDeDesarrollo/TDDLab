@@ -1,9 +1,4 @@
-import {
-    SubmissionCreationObject,
-    SubmissionDataObject,
-    SubmissionRepositoryLinkUpdateObject,
-    SubmissionUpdateObject,
-} from "./submissionInterfaces";
+import {SubmissionCreationObject,SubmissionDataObject,SubmissionRepositoryLinkUpdateObject,SubmissionUpdateObject,} from "./submissionInterfaces";
 
 interface SubmissionRepositoryInterface {
     createSubmission(submissionData: SubmissionCreationObject): Promise<SubmissionDataObject>;

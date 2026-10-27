@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-    SubmissionCreationObject,
-    SubmissionDataObject,
-    SubmissionRepositoryLinkUpdateObject,
-    SubmissionUpdateObject,
-} from "../Domain/submissionInterfaces";
+import {SubmissionCreationObject,SubmissionDataObject,SubmissionRepositoryLinkUpdateObject,SubmissionUpdateObject,} from "../Domain/submissionInterfaces";
 import SubmissionRepositoryInterface from "../Domain/SubmissionRepositoryInterface";
 import {VITE_API} from "../../../../config.ts";
 

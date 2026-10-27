@@ -1,4 +1,5 @@
 import SubmissionRepository from "../Repository/SubmissionsRepository";
+import GitHubRepositoryValidator from "../Repository/GitHubRepositoryValidator";
 import {
   SubmissionDataObject,
   SubmissionRepositoryLinkUpdateObject,
@@ -6,9 +7,11 @@ import {
 
 class UpdateSubmissionRepositoryLinkUseCase {
   private readonly repository: SubmissionRepository;
+  private readonly githubRepositoryValidator: GitHubRepositoryValidator;
 
   constructor(repository: SubmissionRepository) {
     this.repository = repository;
+    this.githubRepositoryValidator = new GitHubRepositoryValidator();
   }
 
   async execute(
@@ -17,6 +20,16 @@ class UpdateSubmissionRepositoryLinkUseCase {
     updatedSubmission: SubmissionRepositoryLinkUpdateObject
   ): Promise<SubmissionDataObject | null> {
     try {
+      const url = new URL(updatedSubmission.repository_link);
+      const pathParts = url.pathname.split("/").filter((part) => part.length > 0);
+      const [owner, repoName] = pathParts;
+
+      const repositoryExists = await this.githubRepositoryValidator.repositoryExists(owner, repoName);
+
+      if (!repositoryExists) {
+        throw new Error("GITHUB_REPOSITORY_NOT_FOUND");
+      }
+
       return await this.repository.UpdateSubmissionRepositoryLink(
         submissionid,
         userid,

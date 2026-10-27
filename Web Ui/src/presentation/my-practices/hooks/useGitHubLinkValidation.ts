@@ -31,7 +31,7 @@ export const useGitHubLinkValidation = (
       const url = new URL(text);
       const pathParts = url.pathname.split("/").filter((part) => part.length > 0);
 
-      if (!text.includes("github.com")) {
+      if (url.hostname !== "github.com" && url.hostname !== "www.github.com") {
         return { isValid: false, error: "El enlace debe pertenecer a GitHub." };
       }
 
@@ -39,7 +39,7 @@ export const useGitHubLinkValidation = (
         return { isValid: false, error: "El enlace no debe finalizar con '.git'." };
       }
 
-      if (pathParts.length < 2) {
+      if (pathParts.length !== 2) {
         return {
           isValid: false,
           error:
