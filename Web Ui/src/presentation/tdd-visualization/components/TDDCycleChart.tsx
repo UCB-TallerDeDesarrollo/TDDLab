@@ -30,6 +30,9 @@ interface ChartSymbolMarkProps {
   y: number;
 }
 
+const CHART_TITLE = 'Ciclo de Ejecución de Pruebas TDD';
+const EMPTY_STATE_MESSAGE = 'Este repositorio no tiene ejecución de pruebas registradas.';
+
 const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
   const symbolColor = CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color;
   const halfSymbolSize = config.symbolSize / 2;
@@ -71,7 +74,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     if (!data || data.length === 0) {
       return [];
     }
-    
+
     const commitMap = new Map<number, CommitData>();
     let currentCommit = 1;
 
@@ -79,7 +82,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       if (log.commitId) {
         currentCommit++;
       }
-      
+
       if (log.numPassedTests !== undefined) {
         if (!commitMap.has(currentCommit)) {
           commitMap.set(currentCommit, {
@@ -87,7 +90,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
             tests: []
           });
         }
-        
+
         const commit = commitMap.get(currentCommit)!;
         const passed = (log.failedTests === 0) && (log.success === true);
         const status = passed ? 'exitosa' : 'con fallos';
@@ -98,9 +101,28 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         });
       }
     };
-    
+
     return Array.from(commitMap.values());
   }, [data]);
+
+  const hasTestExecutions = processedData.length > 0;
+
+  if (!hasTestExecutions) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>{CHART_TITLE}</h2>
+        </div>
+        <div
+          role="status"
+          style={styles.emptyState}
+          data-testid="tdd-cycle-chart-empty"
+        >
+          {EMPTY_STATE_MESSAGE}
+        </div>
+      </div>
+    );
+  }
 
   const chartHeight = 400;
   const chartWidth = 1200;
@@ -110,7 +132,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const bottomPadding = 80;
   const plotWidth = chartWidth - leftPadding - rightPadding;
   const plotHeight = chartHeight - topPadding - bottomPadding;
-  
+
   const commitSpacing = plotWidth / (processedData.length + 1);
   const markerSize = chartSymbols.success.size;
   const markerRadius = markerSize / 2;
@@ -119,9 +141,9 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        <h2 style={styles.title}>{CHART_TITLE}</h2>
       </div>
-      
+
       <svg width={chartWidth} height={chartHeight} style={styles.svg}>
         {/* Grid lines */}
         {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
@@ -185,13 +207,13 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         {/* Data points - circles stacked vertically */}
         {processedData.map((commit, commitIndex) => {
           const x = leftPadding + (commitIndex + 1) * commitSpacing;
-          
+
           return (
             <g key={`commit-${commitIndex}`}>
               {commit.tests.map((test, testIndex) => {
                 const y = topPadding + plotHeight - (testIndex * (markerSize + circleSpacing)) - markerRadius;
                 const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
-                
+
                 return (
                   <g
                     key={`test-${commitIndex}-${testIndex}`}
@@ -324,6 +346,14 @@ const styles: Record<string, React.CSSProperties> = {
   svg: {
     display: 'block',
     margin: '0 auto',
+  },
+  emptyState: {
+    padding: '40px 20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '6px',
+    textAlign: 'center',
+    fontSize: '16px',
+    color: '#666',
   },
   legend: {
     display: 'flex',
