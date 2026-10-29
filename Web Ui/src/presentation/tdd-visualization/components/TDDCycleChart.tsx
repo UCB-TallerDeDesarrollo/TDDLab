@@ -103,24 +103,13 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   }, [data]);
 
   if (processedData.length === 0) {
-    const hasCommitRecords = data.some(log => Boolean(log.commitId));
-
     return (
       <div style={styles.container}>
         <div style={styles.header}>
           <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
         </div>
         <div role="status" style={styles.emptyState}>
-          <h3 style={styles.emptyStateTitle}>No hay ejecuciones de pruebas registradas</h3>
-          <p>
-            {hasCommitRecords
-              ? 'El log contiene registros de commits, pero no registros de ejecución de pruebas.'
-              : 'El log no contiene registros para esta gráfica.'}
-          </p>
-          <p>
-            Para visualizar las ejecuciones, registra y publica sus resultados en{' '}
-            <code>script/tdd_log.json</code> del repositorio.
-          </p>
+          <h3 style={styles.emptyStateTitle}>No se tiene ejecución de pruebas</h3>
         </div>
       </div>
     );

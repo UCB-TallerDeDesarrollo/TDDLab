@@ -7,36 +7,26 @@ import {
 } from './fixtures/tddLogFixtures';
 
 describe('TDDCycleChart', () => {
-  it('explica la ausencia de ejecuciones cuando el log de ventasIS solo contiene commits', () => {
+  it('muestra un aviso sencillo sin detalles internos cuando ventasIS solo contiene commits', () => {
     const { container } = render(<TDDCycleChart data={ventasISCommitOnlyLogs} />);
 
     expect(
       screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ }),
     ).toHaveLength(0);
-    expect(
-      screen.getByText('No hay ejecuciones de pruebas registradas'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/contiene registros de commits, pero no registros de ejecución/i),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/script\/tdd_log\.json/)).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'No hay ejecuciones de pruebas registradas',
-    );
+    expect(screen.getByRole('heading', { level: 3, name: 'No se tiene ejecución de pruebas' })).toBeInTheDocument();
+    const notice = screen.getByRole('status');
+    expect(notice).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
+    expect(notice).not.toHaveTextContent(/\blog\b|tdd_log\.json|script\/|commits/i);
     expect(container.querySelector('svg')).not.toBeInTheDocument();
   });
 
-  it('explica un log vacío sin afirmar que contiene commits', () => {
+  it('muestra el mismo aviso sencillo cuando no hay registros', () => {
     const { container } = render(<TDDCycleChart data={[]} />);
 
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'No hay ejecuciones de pruebas registradas',
-    );
-    expect(screen.getByText(/no contiene registros para esta gráfica/i)).toBeInTheDocument();
-    expect(
-      screen.queryByText(/contiene registros de commits, pero no registros de ejecución/i),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText(/script\/tdd_log\.json/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'No se tiene ejecución de pruebas' })).toBeInTheDocument();
+    const notice = screen.getByRole('status');
+    expect(notice).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
+    expect(notice).not.toHaveTextContent(/\blog\b|tdd_log\.json|script\/|commits/i);
     expect(container.querySelector('svg')).not.toBeInTheDocument();
   });
 
@@ -76,9 +66,7 @@ describe('TDDCycleChart', () => {
     );
 
     expect(screen.getByRole('img', { name: 'Ejecución con fallos' })).toBeInTheDocument();
-    expect(
-      screen.queryByText('No hay ejecuciones de pruebas registradas'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('muestra el símbolo accesible según el resultado de cada ejecución', () => {

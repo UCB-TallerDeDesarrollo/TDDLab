@@ -67,7 +67,8 @@ describe('Integración de la visualización TDD', () => {
     ({ logs }) => {
       const { setMetric } = renderCharts(logs);
 
-      expect(screen.getByRole('status')).toHaveTextContent('No hay ejecuciones de pruebas registradas');
+      expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
+      expect(screen.getByRole('status')).not.toHaveTextContent(/\blog\b|tdd_log\.json|script\//i);
       expect(screen.getByRole('heading', { name: 'Métricas de Commits con Cobertura de Código' })).toBeInTheDocument();
       const metricCharts = screen.getAllByTestId('commit-metric-chart');
       expect(metricCharts).toHaveLength(4);
@@ -78,7 +79,7 @@ describe('Integración de la visualización TDD', () => {
       expect(menu.getByRole('option', { name: 'Dashboard' })).toBeInTheDocument();
       fireEvent.click(menu.getByRole('option', { name: 'Ciclo de ejecución de pruebas' }));
 
-      expect(screen.getByRole('status')).toHaveTextContent('No hay ejecuciones de pruebas registradas');
+      expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
       expect(screen.queryAllByTestId('commit-metric-chart')).toHaveLength(0);
       expect(setMetric).toHaveBeenCalledWith('Ciclo de ejecución de pruebas');
       expect(localStorage.getItem('selectedMetric')).toBe('Ciclo de ejecución de pruebas');
@@ -96,7 +97,8 @@ describe('Integración de la visualización TDD', () => {
       renderCharts(logs);
 
       expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
-      expect(screen.getByRole('status')).toHaveTextContent('No hay ejecuciones de pruebas registradas');
+      expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
+      expect(screen.getByRole('status')).not.toHaveTextContent(/\blog\b|tdd_log\.json|script\//i);
       expect(screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ })).toHaveLength(0);
       const menu = openMetricMenu();
       expect(menu.getByRole('option', { name: 'Dashboard' })).toBeInTheDocument();
@@ -126,11 +128,11 @@ describe('Integración de la visualización TDD', () => {
     expect(screen.getAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ })).toHaveLength(2);
 
     rerender(<TDDCharts {...props} tddLogs={ventasISCommitOnlyLogs} />);
-    expect(screen.getByRole('status')).toHaveTextContent('contiene registros de commits, pero no registros de ejecución');
+    expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
     expect(screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ })).toHaveLength(0);
 
     rerender(<TDDCharts {...props} tddLogs={null} />);
-    expect(screen.getByRole('status')).toHaveTextContent('El log no contiene registros para esta gráfica.');
+    expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
     expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
   });
 });
