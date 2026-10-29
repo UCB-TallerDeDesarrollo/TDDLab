@@ -6,6 +6,13 @@ import { getSubmissionRepositoryMock } from "../__mocks__/submissions/repository
 import { getSubmissionListMock, SubmissionInProgresDataMock } from "../__mocks__/submissions/dataTypeMocks/submissionData";
 import { createRequest } from "../__mocks__/submissions/requestMock";
 import { createResponse } from "../__mocks__/submissions/responseMock";
+import GitHubRepositoryValidator from '../../src/modules/Submissions/Repository/GitHubRepositoryValidator';
+
+jest.mock('../../src/modules/Submissions/Repository/GitHubRepositoryValidator', () => {
+  return jest.fn().mockImplementation(() => ({
+    repositoryExists: jest.fn().mockResolvedValue(true),
+  }));
+});
 
 let controller: SubmissionController;
 const submissionRepositoryMock = getSubmissionRepositoryMock();
@@ -139,6 +146,7 @@ describe("Update Assignment", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: "Server error" });
     });
+    
   });
   
 describe("Get Submissions By Assignment Id", () => {
@@ -180,7 +188,6 @@ describe("Get Submissions By Assignment Id", () => {
   });
 });
 
-// Exercise the controller, use cases and SQL repository together. Only PostgreSQL is mocked.
 describe('persisted assignment lifecycle', () => {
   const query = jest.fn();
   const release = jest.fn();
@@ -191,12 +198,18 @@ describe('persisted assignment lifecycle', () => {
     start_date: '2026-09-23', end_date: null, comment: null,
   };
   const delivered = { ...started, status: 'delivered', end_date: '2026-09-24', comment: 'Listo' };
-  const request = (body = {}, params = {}) => ({ body, params } as Request);
+  const request = (body = {}, params = {}, user = { id: 9, role: 'student' }) =>
+    ({ body, params, user } as unknown as Request);
   const readRequest = () => request({}, { assignmentid: '7', userid: '9' });
 
   beforeEach(() => {
     query.mockReset();
     release.mockClear();
+
+    (GitHubRepositoryValidator as jest.Mock).mockImplementation(() => ({
+      repositoryExists: jest.fn().mockResolvedValue(true),
+    }));
+
     jest.spyOn(Pool.prototype, 'connect').mockImplementation(() =>
       Promise.resolve({ query, release }) as any
     );
@@ -249,6 +262,91 @@ describe('persisted assignment lifecycle', () => {
     expect(response.status).toHaveBeenCalledWith(500);
     expect(response.json).toHaveBeenCalledWith({ error: 'Server error' });
     expect(release).toHaveBeenCalledTimes(1);
+  });
+
+  it('updates only the repository link for the authenticated owner', async () => {
+    const updated = {
+      ...started,
+      repository_link: 'https://github.com/student/updated-task',
+    };
+    query.mockResolvedValueOnce({ rows: [updated] });
+    const response = createResponse();
+    await controller.updateSubmissionRepositoryLink(
+      request(
+        { repository_link: updated.repository_link, status: 'delivered', comment: 'ignored' },
+        { id: '42' }
+      ),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(updated);
+    expect(query).toHaveBeenCalledWith(
+      expect.stringContaining('UPDATE submissions SET repository_link = $1 WHERE id = $2 AND userid = $3'),
+      [updated.repository_link, 42, 9]
+    );
+    expect(updated).toMatchObject({
+      status: started.status,
+      start_date: started.start_date,
+      end_date: started.end_date,
+      comment: started.comment,
+      assignmentid: started.assignmentid,
+      userid: started.userid,
+    });
+  });
+
+  it('returns 400 when the GitHub repository does not exist', async () => {
+    (GitHubRepositoryValidator as jest.Mock).mockImplementation(() => ({
+      repositoryExists: jest.fn().mockResolvedValue(false),
+    }));
+
+    controller = new SubmissionController(new SubmissionRepository());
+
+    const response = createResponse();
+
+    await controller.updateSubmissionRepositoryLink(
+      request(
+        { repository_link: 'https://github.com/student/non-existing-repo' },
+        { id: '42' }
+      ),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(400);
+    expect(response.json).toHaveBeenCalledWith({
+      error: 'El repositorio de GitHub no existe o no es accesible.',
+    });
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('does not update a submission when it does not belong to the authenticated student', async () => {
+    query.mockResolvedValueOnce({ rows: [] });
+    const response = createResponse();
+    await controller.updateSubmissionRepositoryLink(
+      request(
+        { repository_link: 'https://github.com/student/another-task' },
+        { id: '42' },
+        { id: 88, role: 'student' }
+      ),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(query).toHaveBeenCalledWith(
+      expect.stringContaining('WHERE id = $2 AND userid = $3'),
+      ['https://github.com/student/another-task', 42, 88]
+    );
+  });
+
+  it('returns 404 when the submission to edit does not exist', async () => {
+    query.mockResolvedValueOnce({ rows: [] });
+    const response = createResponse();
+    await controller.updateSubmissionRepositoryLink(
+      request({ repository_link: 'https://github.com/student/updated-task' }, { id: '404' }),
+      response
+    );
+
+    expect(response.status).toHaveBeenCalledWith(404);
   });
 
   it('distinguishes a read failure from a task that has not started', async () => {
