@@ -6,6 +6,7 @@ import UpdateSubmission from "../../modules/Submissions/Aplication/updateSubmiss
 import DeleteSubmission from "../../modules/Submissions/Aplication/DeleteSubmissionUseCase";
 import GetSubmissionUseCase from "../../modules/Submissions/Aplication/getSubmissionUseCase";
 import GetSubmissionsByAssignmentIdUseCase from "../../modules/Submissions/Aplication/getSubmissionsByAssignmentIdUseCase";
+import UpdateSubmissionRepositoryLinkUseCase from "../../modules/Submissions/Aplication/updateSubmissionRepositoryLinkUseCase";
 
 class SubmissionController {
   private readonly createSubmissionUseCase: CreateSubmission;
@@ -14,6 +15,7 @@ class SubmissionController {
   private readonly deleteSubmissionUSeCase: DeleteSubmission;
   private readonly getSubmissionUseCase: GetSubmissionUseCase;
   private readonly getSubmissionsByAssignmentIdUseCase: GetSubmissionsByAssignmentIdUseCase;
+  private readonly updateSubmissionRepositoryLinkUseCase: UpdateSubmissionRepositoryLinkUseCase;
 
   constructor(repository: SubmissionRepository) {
     this.createSubmissionUseCase = new CreateSubmission(repository);
@@ -23,6 +25,8 @@ class SubmissionController {
     this.deleteSubmissionUSeCase = new DeleteSubmission(repository);
     this.getSubmissionsByAssignmentIdUseCase =
       new GetSubmissionsByAssignmentIdUseCase(repository);
+    this.updateSubmissionRepositoryLinkUseCase =
+      new UpdateSubmissionRepositoryLinkUseCase(repository);
   }
 
   async CreateSubmission(req: Request, res: Response): Promise<void> {
@@ -89,6 +93,44 @@ class SubmissionController {
         res.status(404).json({ error: "Submission not found" });
       }
     } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async updateSubmissionRepositoryLink(req: Request, res: Response): Promise<void> {
+    try {
+      const submissionid = parseInt(req.params.id, 10);
+      const authenticatedUserId = (req as any).user?.id;
+      const { repository_link } = req.body;
+
+      if (!Number.isInteger(authenticatedUserId)) {
+        res.status(403).json({ error: "No autorizado" });
+        return;
+      }
+      if (typeof repository_link !== "string" || repository_link.trim() === "") {
+        res.status(400).json({ error: "Invalid repository_link" });
+        return;
+      }
+
+      const updatedSubmission =
+        await this.updateSubmissionRepositoryLinkUseCase.execute(
+          submissionid,
+          authenticatedUserId,
+          { repository_link }
+        );
+      if (updatedSubmission) {
+        res.status(200).json(updatedSubmission);
+      } else {
+        res.status(404).json({ error: "Submission not found" });
+      }
+     } catch (error) {
+      if (error instanceof Error && error.message === "GITHUB_REPOSITORY_NOT_FOUND") {
+        res.status(400).json({
+          error: "El repositorio de GitHub no existe o no es accesible.",
+        });
+        return;
+      }
+
       res.status(500).json({ error: "Server error" });
     }
   }

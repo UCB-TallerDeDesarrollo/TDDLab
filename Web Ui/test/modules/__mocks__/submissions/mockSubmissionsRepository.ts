@@ -12,4 +12,5 @@ export class MockSubmissionRepository implements SubmissionRepositoryInterface {
   getSubmissionsByAssignmentId = jest.fn();
   getSubmissionbyUserandSubmissionId = jest.fn();
   finishSubmission = jest.fn();
+  updateRepositoryLink = jest.fn();
 }

@@ -1,4 +1,4 @@
-import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "./submissionInterfaces";
+import {SubmissionCreationObject,SubmissionDataObject,SubmissionRepositoryLinkUpdateObject,SubmissionUpdateObject,} from "./submissionInterfaces";
 
 interface SubmissionRepositoryInterface {
     createSubmission(submissionData: SubmissionCreationObject): Promise<SubmissionDataObject>;
@@ -6,6 +6,7 @@ interface SubmissionRepositoryInterface {
     getSubmissionsByAssignmentId(assignmentid: number): Promise<SubmissionDataObject[]>;
     getSubmissionbyUserandSubmissionId(assignmentid: number, userid:number): Promise<SubmissionDataObject | null>;
     finishSubmission(id: number, submissionData: SubmissionUpdateObject): Promise<SubmissionDataObject>;
+    updateRepositoryLink(id: number, submissionData: SubmissionRepositoryLinkUpdateObject): Promise<SubmissionDataObject>;
 }
 
 export default SubmissionRepositoryInterface;

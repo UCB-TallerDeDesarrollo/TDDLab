@@ -79,6 +79,7 @@ function StudentAssignmentSection({
     studentSubmission,
     showIAButton,
     openLinkDialog,
+    openRepositoryLinkDialog,
     openCommentDialog,
     redirectStudentToGraph,
     redirectStudentToAssistant,
@@ -120,6 +121,8 @@ function StudentAssignmentSection({
           statusValue={studentSubmission?.status}
           repositoryLink={studentRepositoryLink}
           comment={studentSubmission?.comment || undefined}
+          onEditRepositoryLink={studentSubmission ? openRepositoryLinkDialog : undefined}
+          isSavingRepositoryLink={isSavingSubmission}
         />
       }
       actions={
@@ -257,6 +260,14 @@ function AssignmentDetail({ role, userid }: Readonly<AssignmentDetailProps>) {
         open={detailData.linkDialogOpen}
         onClose={detailData.closeLinkDialog}
         onSend={detailData.sendGithubLink}
+      />}
+
+      {detailData.repositoryLinkDialogOpen && <GitLinkDialog
+        open={detailData.repositoryLinkDialogOpen}
+        onClose={detailData.closeRepositoryLinkDialog}
+        onSend={detailData.updateRepositoryLink}
+        initialLink={detailData.studentRepositoryLink}
+        mode="edit"
       />}
 
       {detailData.isCommentDialogOpen && <CommentDialog
