@@ -1,0 +1,54 @@
+body {
+  background: #1e1e1e;
+  color: #eee;
+  font-family: monospace;
+  margin: 0;
+  padding: 10px;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #cccccc;
+}
+
+/* 🔥 Fuerza timeline horizontal SIEMPRE */
+#timeline-content {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  gap: 6px !important;
+  padding: 4px 0 !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Scrollbar */
+#timeline-content::-webkit-scrollbar {
+  height: 6px;
+}
+#timeline-content::-webkit-scrollbar-track {
+  background: #222;
+}
+#timeline-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+/* Dot */
+.timeline-dot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
