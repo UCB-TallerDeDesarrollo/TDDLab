@@ -102,6 +102,19 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     return Array.from(commitMap.values());
   }, [data]);
 
+  if (processedData.length === 0) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
+        </div>
+        <div role="status" style={styles.emptyState}>
+          <h3 style={styles.emptyStateTitle}>No se tiene ejecución de pruebas</h3>
+        </div>
+      </div>
+    );
+  }
+
   const chartHeight = 400;
   const chartWidth = 1200;
   const leftPadding = 60;
@@ -320,6 +333,19 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     color: '#333',
     margin: '0 0 10px 0',
+  },
+  emptyState: {
+    padding: '20px',
+    color: '#333',
+    backgroundColor: '#f5f8fc',
+    border: '1px solid #b8cde0',
+    borderRadius: '6px',
+    lineHeight: 1.5,
+    overflowWrap: 'anywhere',
+  },
+  emptyStateTitle: {
+    margin: 0,
+    fontSize: '18px',
   },
   svg: {
     display: 'block',
