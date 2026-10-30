@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  readTeacherSubmissions,
+} from "../../../shared/helpers/navigationHandlers";
 import { CommentDataObject } from "../../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import {
   createTeacherComment,
@@ -23,9 +26,19 @@ function getDefaultMetric(graphs: string) {
   return graphs === "graph" ? "Dashboard" : "Complejidad";
 }
 
-function getRepoQuery(submission: Submission) {
+function getRepoQuery(submission: Submission, assignmentId?: number) {
   const [, , , repoOwner, repoName] = submission.repository_link.split("/");
-  return `repoOwner=${repoOwner}&repoName=${repoName}&submissionId=${submission.id}`;
+  const params = new URLSearchParams({
+    repoOwner,
+    repoName,
+    submissionId: submission.id.toString(),
+  });
+
+  if (assignmentId && assignmentId > 0) {
+    params.set("assignmentId", assignmentId.toString());
+  }
+
+  return params.toString();
 }
 
 export function useTDDChartPage({
@@ -41,8 +54,9 @@ export function useTDDChartPage({
   const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName = String(searchParams.get("repoName")) || "defaultRepo";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
+  const assignmentId = Number.parseInt(searchParams.get("assignmentId") || "0");
   const fetchedSubmissions: Submission[] = isTeacherView
-    ? JSON.parse(searchParams.get("fetchedSubmissions") || "[]")
+    ? readTeacherSubmissions(assignmentId)
     : [];
   const submissionId = isTeacherView ? Number(searchParams.get("submissionId")) : 0;
 
@@ -114,9 +128,7 @@ export function useTDDChartPage({
       const previousIndex = currentIndex - 1;
       const previousSubmission = fetchedSubmissions[previousIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(previousSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      navigate(`?${getRepoQuery(previousSubmission, assignmentId)}`);
       setCurrentIndex(previousIndex);
     }
   };
@@ -126,9 +138,7 @@ export function useTDDChartPage({
       const nextIndex = currentIndex + 1;
       const nextSubmission = fetchedSubmissions[nextIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(
-        `?${getRepoQuery(nextSubmission)}&fetchedSubmissions=${encodeURIComponent(JSON.stringify(fetchedSubmissions))}`,
-      );
+      navigate(`?${getRepoQuery(nextSubmission, assignmentId)}`);
       setCurrentIndex(nextIndex);
     }
   };

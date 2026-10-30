@@ -23,3 +23,7 @@ export interface SubmissionUpdateObject {
   end_date: Date;
   comment: string;
 }
+
+export interface SubmissionRepositoryLinkUpdateObject {
+  repository_link: string;
+}

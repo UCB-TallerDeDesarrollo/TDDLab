@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SubmissionCreationObject, SubmissionDataObject, SubmissionUpdateObject } from "../Domain/submissionInterfaces";
+import {SubmissionCreationObject,SubmissionDataObject,SubmissionRepositoryLinkUpdateObject,SubmissionUpdateObject,} from "../Domain/submissionInterfaces";
 import SubmissionRepositoryInterface from "../Domain/SubmissionRepositoryInterface";
 import {VITE_API} from "../../../../config.ts";
 
@@ -49,6 +49,11 @@ class SubmissionRepository implements SubmissionRepositoryInterface {
 
     async finishSubmission(submissionid: number, submissionData: SubmissionUpdateObject): Promise<SubmissionDataObject>{
         const response = await axios.put<SubmissionDataObject>(`${API_URL}/${submissionid}`, submissionData,{withCredentials: true});
+        return response.data;
+    }
+
+    async updateRepositoryLink(submissionid: number, submissionData: SubmissionRepositoryLinkUpdateObject): Promise<SubmissionDataObject> {
+        const response = await axios.patch<SubmissionDataObject>(`${API_URL}/${submissionid}/repository-link`, submissionData,{withCredentials: true});
         return response.data;
     }
 

@@ -4,6 +4,7 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { CommentDataObject } from "../../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
+import type { TeacherSubmission } from "../../../shared/types/teacherSubmission";
 
 export interface CycleReportViewProps {
   port: CommitHistoryRepository;
@@ -12,10 +13,7 @@ export interface CycleReportViewProps {
   graphs: string;
 }
 
-export interface Submission {
-  id: number;
-  repository_link: string;
-}
+export type Submission = TeacherSubmission;
 
 export interface TDDVisualizationData {
   commits: CommitDataObject[];

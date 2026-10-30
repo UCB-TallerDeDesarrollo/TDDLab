@@ -11,9 +11,11 @@ import { CreateSubmission } from "../../../modules/Submissions/Aplication/create
 import { FinishSubmission } from "../../../modules/Submissions/Aplication/finishSubmission";
 import { GetSubmissionByUserandAssignmentId } from "../../../modules/Submissions/Aplication/getSubmissionByUseridandSubmissionid";
 import { GetSubmissionsByAssignmentId } from "../../../modules/Submissions/Aplication/getSubmissionsByAssignmentId";
+import { UpdateSubmissionRepositoryLink } from "../../../modules/Submissions/Aplication/updateSubmissionRepositoryLink";
 import {
   SubmissionCreationObject,
   SubmissionDataObject,
+  SubmissionRepositoryLinkUpdateObject,
   SubmissionUpdateObject,
 } from "../../../modules/Submissions/Domain/submissionInterfaces";
 import SubmissionRepository from "../../../modules/Submissions/Repository/SubmissionRepository";
@@ -21,6 +23,7 @@ import UsersRepository from "../../../modules/Users/repository/UsersRepository";
 import { formatDate } from "../../../utils/dateUtils";
 import {
   handleRedirectStudent,
+  saveTeacherSubmissions,
   setSelectedMetric,
 } from "../../../shared/helpers/navigationHandlers";
 import { SubmissionRowView, ViewState } from "../types/assignmentDetail";
@@ -89,6 +92,7 @@ export function useAssignmentDetailData({
     ? submissionLoadState : "loading";
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [repositoryLinkDialogOpen, setRepositoryLinkDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [showIAButton, setShowIAButton] = useState(false);
   useEffect(() => {
@@ -160,6 +164,7 @@ export function useAssignmentDetailData({
     setSubmissionLoadState("loading");
     setStudentSubmission(null);
     setLinkDialogOpen(false);
+    setRepositoryLinkDialogOpen(false);
     setIsCommentDialogOpen(false);
 
     const fetchStudentSubmission = async () => {
@@ -264,6 +269,16 @@ export function useAssignmentDetailData({
     setLinkDialogOpen(false);
   };
 
+  const openRepositoryLinkDialog = () => {
+    if (studentSubmission && !savingSubmission.current) {
+      setRepositoryLinkDialogOpen(true);
+    }
+  };
+
+  const closeRepositoryLinkDialog = () => {
+    setRepositoryLinkDialogOpen(false);
+  };
+
   const openCommentDialog = () => {
     if (canFinishTask && !savingSubmission.current) setIsCommentDialogOpen(true);
   };
@@ -343,6 +358,34 @@ export function useAssignmentDetailData({
     }
   };
 
+  const updateRepositoryLink = async (repositoryLink: string) => {
+    if (!studentSubmission || savingSubmission.current) {
+      return;
+    }
+
+    const submissionRepository = new SubmissionRepository();
+    const updateSubmission = new UpdateSubmissionRepositoryLink(submissionRepository);
+    const submissionData: SubmissionRepositoryLinkUpdateObject = {
+      repository_link: repositoryLink,
+    };
+
+    savingSubmission.current = true;
+    setIsSavingSubmission(true);
+    try {
+      const savedSubmission = await updateSubmission.updateRepositoryLink(
+        studentSubmission.id,
+        submissionData
+      );
+      if (currentSubmissionKey.current === submissionKey) {
+        setStudentSubmission(savedSubmission);
+        closeRepositoryLinkDialog();
+      }
+    } finally {
+      savingSubmission.current = false;
+      setIsSavingSubmission(false);
+    }
+  };
+
   const redirectStudentToGraph = () => {
     if (!studentSubmission?.repository_link) {
       return;
@@ -389,13 +432,14 @@ export function useAssignmentDetailData({
 
     const [, user, repo] = match;
     setSelectedMetric(selectedMetric);
+    saveTeacherSubmissions(assignmentid, submissions);
 
     navigate({
       pathname: path,
       search: createSearchParams({
         repoOwner: user,
         repoName: repo,
-        fetchedSubmissions: JSON.stringify(submissions),
+        assignmentId: assignmentid.toString(),
         submissionId: submissionId.toString(),
       }).toString(),
     });
@@ -425,12 +469,16 @@ export function useAssignmentDetailData({
     isSavingSubmission,
     retryStudentSubmission: () => setSubmissionRetry((value) => value + 1),
     linkDialogOpen,
+    repositoryLinkDialogOpen,
     isCommentDialogOpen,
     showIAButton,
     isStudent: isStudent(role),
     openLinkDialog,
     closeLinkDialog,
     sendGithubLink,
+    openRepositoryLinkDialog,
+    closeRepositoryLinkDialog,
+    updateRepositoryLink,
     openCommentDialog,
     closeCommentDialog,
     sendComment,
