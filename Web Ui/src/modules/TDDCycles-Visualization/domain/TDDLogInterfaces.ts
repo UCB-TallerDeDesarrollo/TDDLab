@@ -8,11 +8,22 @@ export interface TestExecutionLog {
   testId: number;
 }
 
+export interface GitGraphCommit {
+  sha: string;
+  parents: string[];
+  subject: string;
+  timestamp?: number;
+  body?: string;
+  recordedBranches?: string[];
+  historyBranch?: string;
+}
+
 // Representa un commit en el log
 export interface CommitLog {
   commitId: string;
   commitName: string;
   commitTimestamp: number;
+  gitGraph?: GitGraphCommit[];
   testId: number;
 }
 

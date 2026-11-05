@@ -13,7 +13,7 @@ interface CommitTimelineDialogProps {
   handleCloseModal: () => void;
   selectedCommit: any;
   commitTimelineData: any[];
-  commits: any[];
+  commitNumber?: number;
 }
 
 const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
@@ -21,7 +21,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
   handleCloseModal,
   selectedCommit,
   commitTimelineData,
-  commits,
+  commitNumber,
 }) => {
 
   // Preparar los datos para la visualización
@@ -61,9 +61,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
         id="commit-details-dialog"
         style={{ textAlign: "center", fontSize: "2em", fontWeight: "bold" }}
       >
-        {`Timeline del commit ${
-          commits.length - commits.findIndex((commit) => commit.sha === selectedCommit?.sha)
-        } `}
+        {commitNumber ? `Timeline del commit ${commitNumber}` : "Timeline del commit"}
       </DialogTitle>
       <DialogContent>
         {selectedCommit?.sha && (

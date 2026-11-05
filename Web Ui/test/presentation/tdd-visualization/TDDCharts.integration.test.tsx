@@ -17,7 +17,7 @@ jest.mock('react-chartjs-2', () => {
   return { Bubble: ChartStub, Line: ChartStub, getElementAtEvent: jest.fn(() => []) };
 });
 
-// No se navega a la lista en estos casos. Se evita cargar sus iconos y detalles.
+// La lista tiene sus propias pruebas. Aquí comprobamos la navegación entre métricas.
 jest.mock('../../../src/presentation/tdd-visualization/components/TDDList', () => ({
   __esModule: true,
   default: () => null,
@@ -97,6 +97,7 @@ describe('Integración de la visualización TDD', () => {
       renderCharts(logs);
 
       expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
+      expect(screen.queryByRole('button', { name: 'Ver bifurcaciones' })).toBeNull();
       expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
       expect(screen.getByRole('status')).not.toHaveTextContent(/\blog\b|tdd_log\.json|script\//i);
       expect(screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ })).toHaveLength(0);
@@ -120,6 +121,43 @@ describe('Integración de la visualización TDD', () => {
     fireEvent.click(openMetricMenu().getByRole('option', { name: 'Porcentaje de Cobertura de Código' }));
     expect(screen.getByTestId('commit-metric-chart')).toHaveTextContent('"data":[91]');
     expect(screen.queryByRole('heading', { name: 'Ciclo de Ejecución de Pruebas TDD' })).not.toBeInTheDocument();
+  });
+
+  it('uses the history number on the Dashboard when a preceding commit has no metrics', () => {
+    renderCharts([{
+      commitId: 'commit-1', commitName: 'Cálculo', commitTimestamp: 2, testId: 0,
+      gitGraph: [
+        { sha: 'commit-1', parents: ['root'], subject: 'Cálculo' },
+        { sha: 'root', parents: [], subject: 'Inicio' },
+      ],
+    }]);
+
+    const [dashboard] = screen.getAllByTestId('commit-metric-chart');
+    const { datasets } = JSON.parse(dashboard.textContent ?? '{}');
+    expect(datasets).toHaveLength(1);
+    expect(datasets[0]).toMatchObject({ label: 'Commit 2', data: [{ x: 2, y: 3 }] });
+  });
+
+  it('abre las bifurcaciones y permite regresar mediante el selector de métricas', () => {
+    localStorage.setItem('selectedMetric', 'Ciclo de ejecución de pruebas');
+    renderCharts([
+      ...mixedTDDLogs,
+      {
+        commitId: 'commit-3',
+        commitName: 'Integración',
+        commitTimestamp: 5,
+        testId: 5,
+        gitGraph: [{ sha: 'commit-3', parents: ['commit-1', 'commit-2'], subject: 'Integración' }],
+      },
+    ]);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ver bifurcaciones' }));
+    expect(screen.getByRole('combobox')).toHaveTextContent('Lista de Commits');
+
+    expect(screen.queryByRole('button', { name: 'Volver al ciclo de pruebas' })).toBeNull();
+    fireEvent.click(openMetricMenu().getByRole('option', { name: 'Ciclo de ejecución de pruebas' }));
+    expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
+    expect(screen.getByRole('img', { name: 'Ejecución con fallos' })).toBeInTheDocument();
   });
 
   it('actualiza la vista del ciclo al recibir logs de otro repositorio', () => {

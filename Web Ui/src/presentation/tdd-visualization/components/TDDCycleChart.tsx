@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CHART_SYMBOL_VARIANT, chartSymbols } from './chartSymbols';
 
 interface TestLog {
@@ -61,6 +61,8 @@ const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
 };
 
 const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
+  const plotRef = useRef<HTMLDivElement>(null);
+  const [availableWidth, setAvailableWidth] = useState(0);
   const [hoveredTest, setHoveredTest] = useState<{
     x: number;
     y: number;
@@ -102,7 +104,21 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     return Array.from(commitMap.values());
   }, [data]);
 
-  if (processedData.length === 0) {
+  const hasExecutions = processedData.length > 0;
+  useEffect(() => {
+    const plot = plotRef.current;
+    if (!plot) return;
+
+    const updateWidth = () => setAvailableWidth(plot.clientWidth);
+    updateWidth();
+    if (typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(plot);
+    return () => observer.disconnect();
+  }, [hasExecutions]);
+
+  if (!hasExecutions) {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
@@ -115,19 +131,28 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     );
   }
 
-  const chartHeight = 400;
-  const chartWidth = 1200;
-  const leftPadding = 60;
-  const rightPadding = 60;
+  const leftPadding = 52;
+  const rightPadding = 20;
   const topPadding = 40;
   const bottomPadding = 80;
-  const plotWidth = chartWidth - leftPadding - rightPadding;
-  const plotHeight = chartHeight - topPadding - bottomPadding;
-  
-  const commitSpacing = plotWidth / (processedData.length + 1);
   const markerSize = chartSymbols.success.size;
   const markerRadius = markerSize / 2;
-  const circleSpacing = 8;
+  const markerSpacing = markerSize + 8;
+  const mostExecutions = processedData.reduce((count, commit) => Math.max(count, commit.tests.length), 7);
+  const tickStep = Math.ceil(mostExecutions / 7);
+  const tickCount = Math.ceil(mostExecutions / tickStep);
+  const yTicks = Array.from({ length: tickCount + 1 }, (_, i) => i * tickStep);
+  const maxTick = tickCount * tickStep;
+  const plotHeight = maxTick * markerSpacing;
+  const chartHeight = plotHeight + topPadding + bottomPadding;
+
+  const viewportWidth = availableWidth || 760;
+  const minPlotWidth = (processedData.length + 1) * 56;
+  const chartWidth = Math.max(viewportWidth, minPlotWidth + leftPadding + rightPadding);
+  const plotWidth = chartWidth - leftPadding - rightPadding;
+  const commitSpacing = plotWidth / (processedData.length + 1);
+  const tooltipWidth = Math.min(360, viewportWidth - 16);
+  const scrollLeft = plotRef.current?.scrollLeft ?? 0;
 
   return (
     <div style={styles.container}>
@@ -135,147 +160,152 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
       </div>
       
-      <svg width={chartWidth} height={chartHeight} style={styles.svg}>
-        {/* Grid lines */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
-          <line
-            key={`grid-${i}`}
-            x1={leftPadding}
-            y1={topPadding + (plotHeight / 7) * i}
-            x2={leftPadding + plotWidth}
-            y2={topPadding + (plotHeight / 7) * i}
-            stroke="#e0e0e0"
-            strokeWidth="1"
-          />
-        ))}
-
-        {/* Y-axis */}
-        <line
-          x1={leftPadding}
-          y1={topPadding}
-          x2={leftPadding}
-          y2={topPadding + plotHeight}
-          stroke="#333"
-          strokeWidth="2"
-        />
-
-        {/* X-axis */}
-        <line
-          x1={leftPadding}
-          y1={topPadding + plotHeight}
-          x2={leftPadding + plotWidth}
-          y2={topPadding + plotHeight}
-          stroke="#333"
-          strokeWidth="2"
-        />
-
-        {/* Y-axis label */}
-        <text
-          x={20}
-          y={topPadding + plotHeight / 2}
-          fill="#666"
-          fontSize="14"
-          textAnchor="middle"
-          transform={`rotate(-90, 20, ${topPadding + plotHeight / 2})`}
-        >
-          Pruebas ejecutadas
-        </text>
-
-        {/* Y-axis ticks */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
-          <text
-            key={`y-tick-${i}`}
-            x={leftPadding - 10}
-            y={topPadding + plotHeight - (plotHeight / 7) * i + 5}
-            fill="#666"
-            fontSize="12"
-            textAnchor="end"
-          >
-            {i}
-          </text>
-        ))}
-
-        {/* Data points - circles stacked vertically */}
-        {processedData.map((commit, commitIndex) => {
-          const x = leftPadding + (commitIndex + 1) * commitSpacing;
-          
-          return (
-            <g key={`commit-${commitIndex}`}>
-              {commit.tests.map((test, testIndex) => {
-                const y = topPadding + plotHeight - (testIndex * (markerSize + circleSpacing)) - markerRadius;
-                const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
-                
-                return (
-                  <g
-                    key={`test-${commitIndex}-${testIndex}`}
-                    role="img"
-                    aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
-                    onMouseEnter={() => setHoveredTest({ x, y, detail: test.detail })}
-                    onMouseLeave={() => setHoveredTest(null)}
-                  >
-                    <title>{test.detail}</title>
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={markerRadius}
-                      fill="transparent"
-                      stroke="none"
-                    />
-                    <ChartSymbolMark config={symbolConfig} x={x} y={y} />
-                  </g>
-                );
-              })}
-            </g>
-          );
-        })}
-
-        {hoveredTest && (
-          <g role="tooltip" pointerEvents="none">
-            <rect
-              x={Math.max(10, Math.min(hoveredTest.x - 180, chartWidth - 370))}
-              y={Math.max(10, hoveredTest.y - 55)}
-              width="360"
-              height="36"
-              rx="4"
-              fill="#333"
+      <div
+        ref={plotRef}
+        className="tdd-cycle-plot"
+        style={styles.plot}
+        onScroll={() => setHoveredTest(null)}
+      >
+        <svg width={chartWidth} height={chartHeight} style={styles.svg}>
+          {/* Grid lines */}
+          {yTicks.map(i => (
+            <line
+              key={`grid-${i}`}
+              x1={leftPadding}
+              y1={topPadding + plotHeight - i * markerSpacing}
+              x2={leftPadding + plotWidth}
+              y2={topPadding + plotHeight - i * markerSpacing}
+              stroke="#e0e0e0"
+              strokeWidth="1"
             />
-            <text
-              x={Math.max(20, Math.min(hoveredTest.x - 170, chartWidth - 360))}
-              y={Math.max(33, hoveredTest.y - 32)}
-              fill="#fff"
-              fontSize="12"
-            >
-              {hoveredTest.detail}
-            </text>
-          </g>
-        )}
+          ))}
 
-        {/* X-axis labels */}
-        {processedData.map((commit, index) => (
+          {/* Y-axis */}
+          <line
+            x1={leftPadding}
+            y1={topPadding}
+            x2={leftPadding}
+            y2={topPadding + plotHeight}
+            stroke="#333"
+            strokeWidth="2"
+          />
+
+          {/* X-axis */}
+          <line
+            x1={leftPadding}
+            y1={topPadding + plotHeight}
+            x2={leftPadding + plotWidth}
+            y2={topPadding + plotHeight}
+            stroke="#333"
+            strokeWidth="2"
+          />
+
+          {/* Y-axis label */}
           <text
-            key={`x-label-${index}`}
-            x={leftPadding + (index + 1) * commitSpacing}
-            y={topPadding + plotHeight + 25}
+            x={20}
+            y={topPadding + plotHeight / 2}
             fill="#666"
-            fontSize="12"
+            fontSize="14"
             textAnchor="middle"
-            transform={`rotate(-45, ${leftPadding + (index + 1) * commitSpacing}, ${topPadding + plotHeight + 25})`}
+            transform={`rotate(-90, 20, ${topPadding + plotHeight / 2})`}
           >
-            Commit {commit.commitNumber}
+            Pruebas ejecutadas
           </text>
-        ))}
 
-        {/* X-axis title */}
-        <text
-          x={leftPadding + plotWidth / 2}
-          y={chartHeight - 15}
-          fill="#666"
-          fontSize="14"
-          textAnchor="middle"
-        >
-          Commits
-        </text>
-      </svg>
+          {/* Y-axis ticks */}
+          {yTicks.map(i => (
+            <text
+              key={`y-tick-${i}`}
+              x={leftPadding - 10}
+              y={topPadding + plotHeight - i * markerSpacing + 5}
+              fill="#666"
+              fontSize="12"
+              textAnchor="end"
+            >
+              {i}
+            </text>
+          ))}
+
+          {/* Data points - circles stacked vertically */}
+          {processedData.map((commit, commitIndex) => {
+            const x = leftPadding + (commitIndex + 1) * commitSpacing;
+
+            return (
+              <g key={`commit-${commitIndex}`}>
+                {commit.tests.map((test, testIndex) => {
+                  const y = topPadding + plotHeight - (testIndex * markerSpacing) - markerRadius;
+                  const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
+
+                  return (
+                    <g
+                      key={`test-${commitIndex}-${testIndex}`}
+                      role="img"
+                      aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
+                      tabIndex={0}
+                      onMouseEnter={() => setHoveredTest({ x, y, detail: test.detail })}
+                      onMouseLeave={() => setHoveredTest(null)}
+                      onFocus={() => setHoveredTest({ x, y, detail: test.detail })}
+                      onBlur={() => setHoveredTest(null)}
+                      onClick={() => setHoveredTest({ x, y, detail: test.detail })}
+                    >
+                      <title>{test.detail}</title>
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r={markerRadius}
+                        fill="transparent"
+                        stroke="none"
+                      />
+                      <ChartSymbolMark config={symbolConfig} x={x} y={y} />
+                    </g>
+                  );
+                })}
+              </g>
+            );
+          })}
+
+          {/* X-axis labels */}
+          {processedData.map((commit, index) => (
+            <text
+              key={`x-label-${index}`}
+              x={leftPadding + (index + 1) * commitSpacing}
+              y={topPadding + plotHeight + 25}
+              fill="#666"
+              fontSize="12"
+              textAnchor="middle"
+              transform={`rotate(-45, ${leftPadding + (index + 1) * commitSpacing}, ${topPadding + plotHeight + 25})`}
+            >
+              Commit {commit.commitNumber}
+            </text>
+          ))}
+
+          {/* X-axis title */}
+          <text
+            x={leftPadding + plotWidth / 2}
+            y={chartHeight - 15}
+            fill="#666"
+            fontSize="14"
+            textAnchor="middle"
+          >
+            Commits
+          </text>
+        </svg>
+        {hoveredTest && (
+          <div
+            role="tooltip"
+            style={{
+              ...styles.tooltip,
+              width: tooltipWidth,
+              left: Math.max(scrollLeft + 8, Math.min(
+                hoveredTest.x - tooltipWidth / 2, scrollLeft + viewportWidth - tooltipWidth - 8,
+              )),
+              top: Math.max(6, hoveredTest.y - 65),
+            }}
+          >
+            {hoveredTest.detail}
+          </div>
+        )}
+      </div>
 
       <section style={styles.legend} aria-label="Leyenda de resultados de ejecución">
         <h3 style={styles.legendTitle}>Leyenda</h3>
@@ -319,7 +349,9 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    padding: '20px',
+    padding: 'clamp(12px, 2vw, 20px)',
+    boxSizing: 'border-box',
+    width: '100%',
     backgroundColor: '#ffffff',
     borderRadius: '8px',
     maxWidth: '1300px',
@@ -347,9 +379,23 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 0,
     fontSize: '18px',
   },
+  plot: {
+    position: 'relative',
+    overflowX: 'auto',
+  },
   svg: {
     display: 'block',
-    margin: '0 auto',
+  },
+  tooltip: {
+    position: 'absolute',
+    pointerEvents: 'none',
+    boxSizing: 'border-box',
+    padding: '8px 10px',
+    borderRadius: '4px',
+    backgroundColor: '#333',
+    color: '#fff',
+    fontSize: '12px',
+    overflowWrap: 'anywhere',
   },
   legend: {
     display: 'flex',
@@ -392,6 +438,8 @@ const styles: Record<string, React.CSSProperties> = {
   summary: {
     display: 'flex',
     justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    gap: '8px',
     marginTop: '20px',
     padding: '15px',
     backgroundColor: '#f5f5f5',

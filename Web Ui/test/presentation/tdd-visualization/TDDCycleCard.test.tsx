@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import TDDCycleCard from '../../../src/presentation/tdd-visualization/components/TDDCycleCard';
 import { mockCommitData } from './__mocks__/dataTypeMocks/commitData';
 import { convertToCommitDataObject } from './__mocks__/MocksCommitHistory'; 
@@ -9,9 +9,26 @@ describe('CycleCard component', () => {
 
   it('renders the commit message', () => {
     const { getByText } = render(<TDDCycleCard commit={commitDataObject} />);
-    const commitMessageElement = getByText('Commit: Commit Mock commit message');
+    const commitMessageElement = getByText('Commit Mock commit message');
 
     expect(commitMessageElement).toBeInTheDocument();
+  });
+
+  it('shows a commit title and a collapsible body', () => {
+    render(<TDDCycleCard commit={{
+      ...commitDataObject,
+      commit: { ...commitDataObject.commit, message: 'Ajustar cobertura\n\nIncluye casos sin ejecuciones.' },
+    }} />);
+
+    expect(screen.getByText('Ajustar cobertura')).toBeInTheDocument();
+    const toggle = screen.getByRole('button', { name: 'Mostrar mensaje del commit' });
+    const body = screen.getByText('Incluye casos sin ejecuciones.');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(body).not.toBeVisible();
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAccessibleName('Ocultar mensaje del commit');
+    expect(body).toBeVisible();
   });
 
   it('renders the commit stats', () => {
@@ -28,6 +45,18 @@ describe('CycleCard component', () => {
     expect(deletionsText).toBeInTheDocument();
     expect(coverageText).toBeInTheDocument();
     expect(testCount).toBeInTheDocument();
+  });
+
+  it.each([
+    [1, 'success', 'Exitoso'],
+    [1, 'failure', 'Fallido'],
+    [0, 'neutral', 'Sin resultado'],
+  ])('shows %i tests and %s as a passive %s status', (test_count, conclusion, label) => {
+    render(<TDDCycleCard commit={{ ...commitDataObject, test_count, conclusion }} />);
+
+    expect(screen.getByText(label)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: label })).toBeNull();
+    expect(screen.getByRole('link', { name: 'Ver commit' })).toBeInTheDocument();
   });
 
   it('redirects to the GitHub commit page when the "Ver commit" button is clicked', () => {

@@ -1,5 +1,6 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { useState, useEffect } from "react";
+import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -9,7 +10,7 @@ import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { CommitLog, TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -43,28 +44,17 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     };
   }, [setMetric]);
 
-  const filteredCommitsObject = (() => {
-    if (commits != null) {
-      const filteredCommitsObject = commits.map((commit) => {
-        // Si commit.stats.total es mayor que maxLinesInGraph, ajustamos a 50
-        if (commit.stats.total > maxLinesInGraph) {
-          commit.stats.total = 50;
-        }
-        // Devolvemos el commit (modificado o no) para que esté en el array
-        return commit;
-      });
-
-      return filteredCommitsObject;
-    }
-    return commits;
-  })();
+  const filteredCommitsObject = commits?.map((commit) =>
+    commit.stats.total > maxLinesInGraph
+      ? { ...commit, stats: { ...commit.stats, total: 50 } }
+      : commit
+  ) ?? null;
 
   if (!commits) {
     return <div>No data available</div>;
   }
 
-  const handleSelectChange = (event: SelectChangeEvent) => {
-    const newMetric = event.target.value;
+  const selectMetric = (newMetric: string) => {
     setMetricSelected(newMetric);
     setMetric(newMetric);
 
@@ -73,6 +63,13 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     const storageEvent = new Event("storage");
     window.dispatchEvent(storageEvent);
   };
+
+  const gitGraph = tddLogs?.find((log): log is CommitLog =>
+    "commitId" in log && Array.isArray(log.gitGraph) && log.gitGraph.length > 0
+  )?.gitGraph;
+  const cycleMetric = "Ciclo de ejecución de pruebas";
+  const showingCycle = metricSelected === cycleMetric;
+  const showingHistory = metricSelected === "Lista";
 
   const options = [
     { value: 'Complejidad', label: 'Lista de Complejidad' },
@@ -86,14 +83,16 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
   ];
 
   return (
-    <div className="lineChartContainer">
+    <div className={showingCycle || showingHistory || metricSelected === "Dashboard"
+      ? "lineChartContainer lineChartContainer--responsive"
+      : "lineChartContainer"}>
       <Box>
         <FormControl fullWidth>
           <InputLabel id="simple-select-label">Métricas</InputLabel>
           <Select
             labelId="select-label"
             id="simple-select"
-            onChange={handleSelectChange}
+            onChange={(event: SelectChangeEvent) => selectMetric(event.target.value)}
             value={metricSelected}
             data-testid="select-graph-type"
             label="Métricas"
@@ -122,13 +121,24 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
           </Select>
         </FormControl>
       </Box>
+      {gitGraph && typegraphs !== "aditionalgraph" && showingCycle && (
+        <Button
+          variant="outlined"
+          size="small"
+          sx={{ alignSelf: "flex-start", mt: 1.5, textTransform: "none" }}
+          onClick={() => selectMetric("Lista")}
+        >
+          Ver bifurcaciones
+        </Button>
+      )}
       <TDDLineCharts
-        filteredCommitsObject={filteredCommitsObject}
+        filteredCommitsObject={showingHistory ? commits : filteredCommitsObject}
         tddLogs = {tddLogs}
         optionSelected={metricSelected}
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}
+        gitGraph={gitGraph}
       />
     </div>
   );
