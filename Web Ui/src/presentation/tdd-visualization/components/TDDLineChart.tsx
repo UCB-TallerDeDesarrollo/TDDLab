@@ -17,12 +17,12 @@ import {
   LineController,
   LineElement,
 } from "chart.js";
+import { getCommitNumbers } from "../../../modules/TDDCycles-Visualization/domain/commitNumbers";
 import TDDList from "./TDDList";
-import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { GitGraphCommit, TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 ChartJS.register(
   CategoryScale,
@@ -44,31 +44,32 @@ interface LineChartProps {
   port: CommitHistoryRepository;
   role: string;
   commitsCycles: CommitCycle[] | null;
+  gitGraph?: GitGraphCommit[];
 }
 
 function TDDLineCharts({
-  filteredCommitsObject,
+  filteredCommitsObject: commits,
   tddLogs,
   optionSelected,
   port,
   role,
-  commitsCycles: _
+  commitsCycles: _,
+  gitGraph
 }: LineChartProps) {
   
+  const commitNumbers = getCommitNumbers(commits ?? [], gitGraph);
+  const filteredCommitsObject = commits && [...commits].sort((a, b) =>
+    (commitNumbers.get(b.sha) ?? 0) - (commitNumbers.get(a.sha) ?? 0)
+  );
   let dataChart: any = {};
   const chartRef = useRef<any>();
 
   
 
   function getDataLabels() {
-    if (filteredCommitsObject != null) {
-      const commitsArray = filteredCommitsObject.map(
-        (commit) => `Commit ${filteredCommitsObject.indexOf(commit) + 1}`
-      );
-      return commitsArray;
-    } else {
-      return [];
-    }
+    return (filteredCommitsObject ?? []).slice().reverse().map((commit) =>
+      `Commit ${commitNumbers.get(commit.sha)}`
+    );
   }
 
   function getCommitName() {
@@ -322,9 +323,9 @@ function TDDLineCharts({
         dataTestid = "graph-testCount";
         break;
       case "Lista":
-        return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
+        return <TDDList commitsInfo={commits ?? []} gitGraph={gitGraph} />;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
+          return <TDDBoard commits={filteredCommitsObject || []} commitNumbers={commitNumbers} gitGraph={gitGraph} tddLogs={tddLogs || []} port={port} role={role} />;
 
       case "Ciclo de ejecución de pruebas":
         return <TDDCycleChart data={tddLogs ?? []} />;

@@ -1,59 +1,29 @@
-import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { PropagateLoader } from "react-spinners";
-import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { GetCommitsOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
+import type { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import type { GitGraphCommit } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleList from "./TDDCycleList";
 
 interface CycleReportViewProps {
-  port: CommitHistoryRepository;
+  commitsInfo: CommitDataObject[];
+  gitGraph?: GitGraphCommit[];
 }
 
-function TDDList({ port }: Readonly<CycleReportViewProps>) {
+function TDDList({ commitsInfo, gitGraph }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
-  const repoOwner: string = String(searchParams.get("repoOwner"));
-  const repoName: string = String(searchParams.get("repoName"));
-  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
-
-  const fetchData = async () => {
-    try {
-      console.log("Fetching commit information...");
-      const commits: CommitDataObject[] = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
-      setCommitsInfo(commits);
-      console.log("Página TDDList: ", commits);
-    } catch (error) {
-      console.error("Error obtaining data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData().catch((error: unknown) => console.error("Error loading commits:", error));
-  }, []);
+  const repoOwner = searchParams.get("repoOwner") ?? "";
+  const repoName = searchParams.get("repoName") ?? "";
+  const repoUrl = repoOwner && repoName
+    ? `https://github.com/${encodeURIComponent(repoOwner)}/${encodeURIComponent(repoName)}`
+    : undefined;
 
   return (
     <div style={{ marginTop: "30px" }}>
-      {loading ? (
-        <div className="mainInfoContainer">
-          <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
+      {commitsInfo.length === 0 && !gitGraph?.length ? (
+        <div className="error-message" data-testid="errorMessage">
+          No se pudo cargar la información
         </div>
       ) : (
-        <>
-          {commitsInfo.length === 0 ? (
-            <div className="error-message" data-testid="errorMessage">
-              No se pudo cargar la información
-            </div>
-          ) : (
-            <div style={{ width: "100%" }}>
-              <TDDCycleList commitsInfo={commitsInfo} />
-            </div>
-          )}
-        </>
+        <TDDCycleList commitsInfo={commitsInfo} gitGraph={gitGraph} repoUrl={repoUrl} />
       )}
     </div>
   );
