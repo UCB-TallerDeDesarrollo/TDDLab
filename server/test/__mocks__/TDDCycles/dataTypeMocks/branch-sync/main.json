@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "mode": "incremental",
+  "repository": {
+    "provider": "github",
+    "owner": "equipo-tddlab",
+    "name": "ejemplo-sprint4"
+  },
+  "branch": {
+    "name": "main",
+    "headSha": "1111111111111111111111111111111111111111",
+    "expectedHeadVersion": 0
+  },
+  "commits": [
+    {
+      "sha": "1111111111111111111111111111111111111111",
+      "parentShas": [],
+      "message": "Crear implementación inicial",
+      "committedAt": "2026-11-13T14:01:00.000Z",
+      "stats": {
+        "additions": 10,
+        "deletions": 0,
+        "total": 10
+      },
+      "metrics": {
+        "executionEventId": "00000000-0000-4000-8000-000000000001",
+        "numPassedTests": 2,
+        "failedTests": 0,
+        "numTotalTests": 2,
+        "coveragePercentage": 80,
+        "conclusion": "success"
+      }
+    }
+  ],
+  "branchCommitShas": [
+    "1111111111111111111111111111111111111111"
+  ],
+  "executions": [
+    {
+      "eventId": "00000000-0000-4000-8000-000000000001",
+      "branchAtCapture": "main",
+      "headShaAtExecution": null,
+      "associatedCommitSha": "1111111111111111111111111111111111111111",
+      "timestamp": 1794578400000,
+      "numPassedTests": 2,
+      "failedTests": 0,
+      "numTotalTests": 2,
+      "coveragePercentage": 80,
+      "success": true,
+      "testId": 0
+    }
+  ]
+}

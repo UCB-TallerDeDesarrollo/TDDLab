@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "mode": "incremental",
+  "repository": {
+    "provider": "github",
+    "owner": "equipo-tddlab",
+    "name": "ejemplo-sprint4"
+  },
+  "branch": {
+    "name": "main",
+    "headSha": "4444444444444444444444444444444444444444",
+    "expectedHeadVersion": 1
+  },
+  "commits": [
+    {
+      "sha": "1111111111111111111111111111111111111111",
+      "parentShas": [],
+      "message": "Crear implementación inicial",
+      "committedAt": "2026-11-13T14:01:00.000Z",
+      "stats": {
+        "additions": 10,
+        "deletions": 0,
+        "total": 10
+      },
+      "metrics": {
+        "executionEventId": "00000000-0000-4000-8000-000000000001",
+        "numPassedTests": 2,
+        "failedTests": 0,
+        "numTotalTests": 2,
+        "coveragePercentage": 80,
+        "conclusion": "success"
+      }
+    },
+    {
+      "sha": "2222222222222222222222222222222222222222",
+      "parentShas": [
+        "1111111111111111111111111111111111111111"
+      ],
+      "message": "Agregar escenario de rama-a",
+      "committedAt": "2026-11-13T14:11:00.000Z",
+      "stats": {
+        "additions": 3,
+        "deletions": 1,
+        "total": 4
+      },
+      "metrics": {
+        "executionEventId": "00000000-0000-4000-8000-000000000002",
+        "numPassedTests": 2,
+        "failedTests": 1,
+        "numTotalTests": 3,
+        "coveragePercentage": 75,
+        "conclusion": "failure"
+      }
+    },
+    {
+      "sha": "3333333333333333333333333333333333333333",
+      "parentShas": [
+        "1111111111111111111111111111111111111111"
+      ],
+      "message": "Agregar escenario de rama-b",
+      "committedAt": "2026-11-13T14:21:00.000Z",
+      "stats": {
+        "additions": 2,
+        "deletions": 0,
+        "total": 2
+      },
+      "metrics": {
+        "executionEventId": "00000000-0000-4000-8000-000000000003",
+        "numPassedTests": 4,
+        "failedTests": 0,
+        "numTotalTests": 4,
+        "coveragePercentage": 90,
+        "conclusion": "success"
+      }
+    },
+    {
+      "sha": "4444444444444444444444444444444444444444",
+      "parentShas": [
+        "2222222222222222222222222222222222222222",
+        "3333333333333333333333333333333333333333"
+      ],
+      "message": "Merge rama-b into main",
+      "committedAt": "2026-11-13T14:30:00.000Z",
+      "stats": {
+        "additions": 2,
+        "deletions": 0,
+        "total": 2
+      },
+      "metrics": null
+    }
+  ],
+  "branchCommitShas": [
+    "1111111111111111111111111111111111111111",
+    "2222222222222222222222222222222222222222",
+    "3333333333333333333333333333333333333333",
+    "4444444444444444444444444444444444444444"
+  ],
+  "executions": [
+    {
+      "eventId": "00000000-0000-4000-8000-000000000001",
+      "branchAtCapture": "main",
+      "headShaAtExecution": null,
+      "associatedCommitSha": "1111111111111111111111111111111111111111",
+      "timestamp": 1794578400000,
+      "numPassedTests": 2,
+      "failedTests": 0,
+      "numTotalTests": 2,
+      "coveragePercentage": 80,
+      "success": true,
+      "testId": 0
+    },
+    {
+      "eventId": "00000000-0000-4000-8000-000000000002",
+      "branchAtCapture": "rama-a",
+      "headShaAtExecution": "1111111111111111111111111111111111111111",
+      "associatedCommitSha": "2222222222222222222222222222222222222222",
+      "timestamp": 1794579000000,
+      "numPassedTests": 2,
+      "failedTests": 1,
+      "numTotalTests": 3,
+      "coveragePercentage": 75,
+      "success": false,
+      "testId": 1
+    },
+    {
+      "eventId": "00000000-0000-4000-8000-000000000003",
+      "branchAtCapture": "rama-b",
+      "headShaAtExecution": "1111111111111111111111111111111111111111",
+      "associatedCommitSha": "3333333333333333333333333333333333333333",
+      "timestamp": 1794579600000,
+      "numPassedTests": 4,
+      "failedTests": 0,
+      "numTotalTests": 4,
+      "coveragePercentage": 90,
+      "success": true,
+      "testId": 1
+    }
+  ]
+}
