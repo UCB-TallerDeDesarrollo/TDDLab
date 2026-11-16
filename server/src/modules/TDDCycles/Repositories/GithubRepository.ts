@@ -7,9 +7,10 @@ import {
 import dotenv from "dotenv";
 import { JobDataObject } from "../Domain/JobDataObject";
 import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
-import axios from "axios";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
+import { TDDLogEntry } from "../Domain/TDDLogEntry";
+import { parseTDDLogs } from "../Domain/parseTDDLogs";
 
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
@@ -304,21 +305,40 @@ export class GithubRepository implements IGithubRepository {
     return jobs;
   }
 
+  private async readJsonFile(owner: string, repoName: string, fileName: string): Promise<unknown> {
+    const response = await this.octokit.request("GET /repos/{owner}/{repo}/contents/{path}", {
+      owner,
+      repo: repoName,
+      path: `script/${fileName}`,
+      headers: { accept: "application/vnd.github.raw+json" },
+    });
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data: unknown = response.data;
+    return typeof data === "string" ? JSON.parse(data) : data;
+  }
+
   async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
     try {
-      const encodedOwner = encodeURIComponent(owner);
-      const encodedRepoName = encodeURIComponent(repoName);
-      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/main/script/commit-history.json`;
-
-      const response = await axios.get(url);
-      
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      const data = await this.readJsonFile(owner, repoName, "commit-history.json");
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid commit-history.json: expected an array");
       }
-
-      return response.data as any[];
+      return data;
     } catch (error) {
       console.error("Error fetching commit-history.json from GitHub:", error);
+      throw error;
+    }
+  }
+
+  async getTDDLogs(owner: string, repoName: string): Promise<TDDLogEntry[]> {
+    try {
+      return parseTDDLogs(await this.readJsonFile(owner, repoName, "tdd_log.json"));
+    } catch (error) {
+      if (error instanceof Error && "status" in error && error.status === 404) {
+        return [];
+      }
       throw error;
     }
   }

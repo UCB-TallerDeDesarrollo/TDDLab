@@ -6,10 +6,11 @@ import { GetTDDCyclesUseCase } from "../../modules/TDDCycles/Application/getTDDC
 import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLogUseCase";
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
-import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
+import { GetTDDLogsUseCase } from "../../modules/TDDCycles/Application/getTDDLogsUseCase";
+import { ITDDVisualizationRepository } from "../../modules/TDDCycles/Domain/ITDDVisualizationRepository";
 
 
 
@@ -23,11 +24,13 @@ class TDDCyclesController {
   getCommitExecutions: GetCommitTimeLineUseCase;
   getCommitHistoryUseCase: GetCommitHistoryUseCase;
   getCommitCyclesUseCase: GetCommitCyclesUseCase;
+  getTDDLogsUseCase: GetTDDLogsUseCase;
 
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
-    githubRepository: IGithubRepository
+    githubRepository: IGithubRepository,
+    visualizationRepository: ITDDVisualizationRepository = githubRepository
   ) {
     this.tddCyclesUseCase = new GetTDDCyclesUseCase(
       dbCommitsRepository,
@@ -43,9 +46,10 @@ class TDDCyclesController {
     this.getCommitExecutions = new GetCommitTimeLineUseCase(
       dbJobsRepository,
     );
-    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository);
-    this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
-    this.dbCommitsRepository = new DBCommitsRepository();
+    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(visualizationRepository);
+    this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(visualizationRepository);
+    this.getTDDLogsUseCase = new GetTDDLogsUseCase(visualizationRepository);
+    this.dbCommitsRepository = dbCommitsRepository;
     this.dbJobsRepository = dbJobsRepository;
   }
   //NO SE USA
@@ -142,6 +146,20 @@ class TDDCyclesController {
       return res.status(200).json(commits);
     } catch (error) {
       console.error("Error fetching commit cycles:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getTDDLogs(req: Request, res: Response) {
+    const { owner, repoName } = req.query;
+    if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+      return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+    }
+    try {
+      const logs = await this.getTDDLogsUseCase.execute(owner, repoName);
+      return res.status(200).json(logs);
+    } catch (error) {
+      console.error("Error fetching TDD logs:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }

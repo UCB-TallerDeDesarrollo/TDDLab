@@ -1,19 +1,10 @@
-import { IGithubRepository } from "../Domain/IGithubRepository";
+import { ITDDVisualizationRepository } from "../Domain/ITDDVisualizationRepository";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
 
 export class GetCommitCyclesUseCase {
-  private readonly githubRepository: IGithubRepository;
-
-  constructor(githubRepository: IGithubRepository) {
-    this.githubRepository = githubRepository;
-  }
+  constructor(private readonly repository: ITDDVisualizationRepository) {}
 
   async execute(owner: string, repoName: string): Promise<CommitCycleData[]> {
-    try {
-      return await this.githubRepository.getCommitCyclesData(owner, repoName);
-    } catch (error) {
-      console.error(`Error executing GetCommitCyclesUseCase: ${error}`);
-      throw error;
-    }
+    return this.repository.getCommitCyclesData(owner, repoName);
   }
 }

@@ -2,10 +2,9 @@ import { TDDCycleDataObject } from "./TDDCycleDataObject";
 import { CommitDataObject, CommitInformationDataObject } from "./CommitDataObject";
 import { JobDataObject } from "./JobDataObject";
 
-import { CommitCycleData } from "./ICommitCycleData";
-import { CommitHistoryData } from "./ICommitHistoryData";
+import { ITDDVisualizationRepository } from "./ITDDVisualizationRepository";
 
-export interface IGithubRepository {
+export interface IGithubRepository extends ITDDVisualizationRepository {
     getCommits(owner: string, repoName: string): Promise<CommitDataObject[]>;
     getCommitInfoForTDDCycle(owner: string, repoName: string, sha: string): Promise<CommitInformationDataObject>;
     timeout(ms: number): Promise<void>;
@@ -16,6 +15,4 @@ export interface IGithubRepository {
     getCommitsInforForTDDCycle(owner: string, repoName: string, commits: CommitDataObject[]): Promise<TDDCycleDataObject[]>;
     fetchCoverageDataForCommit(owner: string, repoName: string, sha: string): Promise<any>;
     fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]>;
-    getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]>;
-    getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]>;
 }
