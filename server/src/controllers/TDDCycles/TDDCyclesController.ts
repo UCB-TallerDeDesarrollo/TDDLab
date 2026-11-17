@@ -10,6 +10,7 @@ import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBComm
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
+import type { ITDDHistoryRepository } from "../../modules/TDDCycles/Domain/ITDDHistoryRepository";
 
 
 
@@ -27,7 +28,8 @@ class TDDCyclesController {
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
-    githubRepository: IGithubRepository
+    githubRepository: IGithubRepository,
+    historyRepository?: ITDDHistoryRepository
   ) {
     this.tddCyclesUseCase = new GetTDDCyclesUseCase(
       dbCommitsRepository,
@@ -43,7 +45,7 @@ class TDDCyclesController {
     this.getCommitExecutions = new GetCommitTimeLineUseCase(
       dbJobsRepository,
     );
-    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository);
+    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository, historyRepository);
     this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
     this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
@@ -81,6 +83,23 @@ class TDDCyclesController {
       );
       return res.status(200).json(testResults);
     } catch (error) {
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getBranchHistory(req: Request, res: Response) {
+    const { owner, repoName, branch } = req.query;
+    if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName) ||
+        typeof branch !== "string" || branch.trim().length === 0 || branch !== branch.trim()) {
+      return res.status(400).json({ error: "Bad request, invalid owner, repoName or branch" });
+    }
+    try {
+      const history = await this.getCommitHistoryUseCase.executeBranchHistory(owner, repoName, branch);
+      if (history === undefined) return res.status(503).json({ error: "Branch history is not enabled" });
+      if (history === null) return res.status(404).json({ error: "Repository or branch not found" });
+      return res.status(200).json(history);
+    } catch (error) {
+      console.error("Error fetching branch history:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }
