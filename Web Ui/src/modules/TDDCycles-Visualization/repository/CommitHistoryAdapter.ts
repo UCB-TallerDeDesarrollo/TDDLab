@@ -6,8 +6,15 @@ import { CommitCycle } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
+import type { BranchHistory, BranchHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
 
-export class CommitHistoryAdapter implements CommitHistoryRepository {
+type BranchHistoryResponse = Omit<BranchHistory, "commits"> & {
+  commits: (Omit<BranchHistory["commits"][number], "committedAt"> & {
+    committedAt: string | null;
+  })[];
+};
+
+export class CommitHistoryAdapter implements CommitHistoryRepository, BranchHistoryRepository {
   octokit: Octokit;
   backAPI: string;
 
@@ -17,6 +24,33 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
   }
   
+
+  async obtainBranchHistory(owner: string, repoName: string, branch: string): Promise<BranchHistory> {
+    if (!branch.trim() || branch !== branch.trim()) throw new Error("Invalid branch");
+    const response = await axios.get<BranchHistoryResponse>(`${this.backAPI}/branch-view`, {
+      params: { owner, repoName, branch },
+    });
+    if (response.status !== 200) throw new Error(`HTTP error! Status: ${response.status}`);
+    const data = response.data;
+    if (data?.repository?.provider !== "github" || data.repository.owner !== owner ||
+        data.repository.name !== repoName || data.branch !== branch ||
+        !Array.isArray(data.commits) || !Array.isArray(data.executions)) {
+      throw new Error("Invalid branch history response");
+    }
+    return {
+      repository: { ...data.repository },
+      branch: data.branch,
+      commits: data.commits.map(commit => {
+        if (commit.committedAt !== null && typeof commit.committedAt !== "string") {
+          throw new Error("Invalid commit date");
+        }
+        const date = commit.committedAt === null ? null : new Date(commit.committedAt);
+        if (date !== null && Number.isNaN(date.getTime())) throw new Error("Invalid commit date");
+        return { ...commit, committedAt: date };
+      }),
+      executions: data.executions.map(execution => ({ ...execution })),
+    };
+  }
 
   // function for obtain TDD_log.json
   private getTDDLogUrl(owner: string, repoName: string): string {
