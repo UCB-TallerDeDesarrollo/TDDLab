@@ -133,6 +133,19 @@
   margin: 20px 0 30px;
 }
 
+.tdd-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tdd-dashboard-header h2 {
+  margin: 0;
+}
+
 .tdd-dashboard-overview {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

@@ -1,7 +1,7 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
-import { useRef } from "react";
+import { useRef, useMemo, useState } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
 
 import {
@@ -23,6 +23,8 @@ import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
 import { GitGraphCommit, TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { getCommitBranches } from "./TDDCommitLanes";
+import "../styles/TDDCommitHistory.css";
 
 ChartJS.register(
   CategoryScale,
@@ -58,6 +60,16 @@ function TDDLineCharts({
 }: LineChartProps) {
   
   const commitNumbers = getCommitNumbers(commits ?? [], gitGraph);
+  const [selectedBranch, setSelectedBranch] = useState<string>('');
+  const branches = useMemo(
+    () => [...new Set(gitGraph?.flatMap(getCommitBranches))].sort((a, b) => a.localeCompare(b)),
+    [gitGraph]
+  );
+  const branch = branches.includes(selectedBranch) ? selectedBranch : '';
+  const commitBranchMap = useMemo(
+    () => new Map(gitGraph?.map((c) => [c.sha, getCommitBranches(c)])),
+    [gitGraph]
+  );
   const filteredCommitsObject = commits && [...commits].sort((a, b) =>
     (commitNumbers.get(b.sha) ?? 0) - (commitNumbers.get(a.sha) ?? 0)
   );
@@ -89,11 +101,15 @@ function TDDLineCharts({
   }
 
   function getColorConclusion(): string[] {
-  if (!filteredCommitsObject) return ["white"];
+    if (!filteredCommitsObject) return ["white"];
 
-  return filteredCommitsObject
-    .map(getCommitColor)
-    .reverse();
+    return filteredCommitsObject
+      .map((commit) => {
+        const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+        const isBranchActive = branch ? commitBranches.includes(branch) : true;
+        return isBranchActive ? getCommitColor(commit) : "rgba(200, 200, 200, 0.2)";
+      })
+      .reverse();
   }
 
   function getCommitColor(commit: CommitDataObject): string {
@@ -198,12 +214,26 @@ function TDDLineCharts({
   }
 
   function getDataChart(dataChartSelected: any, dataLabel: string) {
+    const reversedCommits = (filteredCommitsObject ?? []).slice().reverse();
     dataChart = {
       labels: getDataLabels(),
       datasets: [
         {
           label: dataLabel,
           backgroundColor: getColorConclusion(),
+          borderColor: "rgba(0, 0, 0, 0.2)",
+          pointBorderColor: reversedCommits.map((commit) => {
+            const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+            return branch && commitBranches.includes(branch) ? "#378de5" : "rgba(0, 0, 0, 0.2)";
+          }),
+          pointBorderWidth: reversedCommits.map((commit) => {
+            const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+            return branch && commitBranches.includes(branch) ? 3 : 1;
+          }),
+          pointRadius: reversedCommits.map((commit) => {
+            const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+            return branch && commitBranches.includes(branch) ? 15 : 12;
+          }),
           data: dataChartSelected,
           links: getCommitLink(),
         },
@@ -274,6 +304,12 @@ function TDDLineCharts({
                 `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
               );
 
+              const commit = (filteredCommitsObject ?? []).slice().reverse()[context[0].dataIndex];
+              const commitBranches = commit ? commitBranchMap.get(commit.sha) : undefined;
+              if (commitBranches?.length) {
+                afterBodyContent.push(`Rama: ${commitBranches.join(", ")}`);
+              }
+
               return afterBodyContent;
             },
           },
@@ -332,14 +368,27 @@ function TDDLineCharts({
    
     }
     return (
-      <Line
-        height="100"
-        data={dataChart}
-        options={optionsChart}
-        onClick={onClick}
-        ref={chartRef}
-        data-testid={dataTestid}
-      />
+      <>
+        {branches.length > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+            <label className="commit-branch-filter">
+              Resaltar rama
+              <select value={branch} onChange={(event) => setSelectedBranch(event.target.value)}>
+                <option value="">Todas</option>
+                {branches.map((name) => <option key={name} value={name}>{name}</option>)}
+              </select>
+            </label>
+          </div>
+        )}
+        <Line
+          height="100"
+          data={dataChart}
+          options={optionsChart}
+          onClick={onClick}
+          ref={chartRef}
+          data-testid={dataTestid}
+        />
+      </>
     );
   }
 

@@ -173,4 +173,38 @@ describe('Integración de la visualización TDD', () => {
     expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
     expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
   });
+
+  it('permite resaltar ramas en el Dashboard y en las vistas de métricas individuales', () => {
+    renderCharts([{
+      commitId: 'commit-1',
+      commitName: 'feat: cálculo',
+      commitTimestamp: 1,
+      testId: 0,
+      gitGraph: [
+        { sha: 'commit-1', parents: ['root'], subject: 'feat: cálculo', historyBranch: 'main' },
+        { sha: 'commit-feat', parents: ['root'], subject: 'feat: experimental', recordedBranches: ['feature-exp'] },
+        { sha: 'root', parents: [], subject: 'chore: init', historyBranch: 'main' },
+      ],
+    }]);
+
+    expect(screen.getByLabelText('Resaltar rama')).toBeInTheDocument();
+    const branchSelect = screen.getByLabelText('Resaltar rama') as HTMLSelectElement;
+    expect(within(branchSelect).getByRole('option', { name: 'Todas' })).toBeInTheDocument();
+    expect(within(branchSelect).getByRole('option', { name: 'feature-exp' })).toBeInTheDocument();
+    expect(within(branchSelect).getByRole('option', { name: 'main' })).toBeInTheDocument();
+
+    fireEvent.change(branchSelect, { target: { value: 'feature-exp' } });
+    expect(branchSelect.value).toBe('feature-exp');
+
+    const [dashboard] = screen.getAllByTestId('commit-metric-chart');
+    const { datasets } = JSON.parse(dashboard.textContent ?? '{}');
+    expect(datasets[0].backgroundColor).toBe('rgba(200, 200, 200, 0.2)');
+
+    fireEvent.change(branchSelect, { target: { value: 'main' } });
+    const [dashboardMain] = screen.getAllByTestId('commit-metric-chart');
+    const { datasets: datasetsMain } = JSON.parse(dashboardMain.textContent ?? '{}');
+    expect(datasetsMain[0].backgroundColor).toContain('rgba(0, 110, 0');
+    expect(datasetsMain[0].borderColor).toBe('#378de5');
+    expect(datasetsMain[0].borderWidth).toBe(3);
+  });
 });

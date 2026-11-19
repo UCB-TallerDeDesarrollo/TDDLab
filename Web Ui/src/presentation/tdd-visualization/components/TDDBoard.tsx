@@ -7,6 +7,8 @@ import TDDLineCharts from "./TDDLineChart";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { GitGraphCommit, TDDLogEntry, TestExecutionLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
+import { getCommitBranches } from "./TDDCommitLanes";
+import "../styles/TDDCommitHistory.css";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[];
@@ -45,6 +47,16 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   port,
 }) => {
   const testsByCommit = useMemo(() => indexTestsByCommit(tddLogs), [tddLogs]);
+  const [selectedBranch, setSelectedBranch] = useState<string>('');
+  const branches = useMemo(
+    () => [...new Set(gitGraph?.flatMap(getCommitBranches))].sort((a, b) => a.localeCompare(b)),
+    [gitGraph]
+  );
+  const branch = branches.includes(selectedBranch) ? selectedBranch : '';
+  const commitBranchMap = useMemo(
+    () => new Map(gitGraph?.map((c) => [c.sha, getCommitBranches(c)])),
+    [gitGraph]
+  );
   const [openModal, setOpenModal] = useState(false);
   const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
   const [commitTimelineData, setCommitTimelineData] = useState<TestExecutionLog[]>([]);
@@ -157,6 +169,16 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
         legend: {
           display: true,
         },
+        tooltip: {
+          callbacks: {
+            afterBody: (context: any) => {
+              const commit = chronologicalCommits[context[0]?.dataIndex];
+              if (!commit) return [];
+              const commitBranches = commitBranchMap.get(commit.sha);
+              return commitBranches?.length ? [`Rama: ${commitBranches.join(", ")}`] : [];
+            },
+          },
+        },
       },
     };
   };
@@ -168,12 +190,28 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
         {
           label,
           data: [...data].reverse(),
-          backgroundColor: commits
+          backgroundColor: chronologicalCommits
             .map((commit) => {
-              return getCommitColor(commit);
-            })
-            .reverse(),
+              const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+              const isBranchActive = branch ? commitBranches.includes(branch) : true;
+              return isBranchActive ? getCommitColor(commit) : "rgba(200, 200, 200, 0.2)";
+            }),
           borderColor: "rgba(0, 0, 0, 0.2)",
+          pointBorderColor: chronologicalCommits
+            .map((commit) => {
+              const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+              return branch && commitBranches.includes(branch) ? "#378de5" : "rgba(0, 0, 0, 0.2)";
+            }),
+          pointBorderWidth: chronologicalCommits
+            .map((commit) => {
+              const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+              return branch && commitBranches.includes(branch) ? 3 : 1;
+            }),
+          pointRadius: chronologicalCommits
+            .map((commit) => {
+              const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+              return branch && commitBranches.includes(branch) ? 10 : 8;
+            }),
           links: commits.map((commit) => commit.html_url).reverse(),
         },
       ],
@@ -202,7 +240,18 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     <>
       {!graph ? (
         <section className="tdd-dashboard">
-          <h2>Métricas de Commits con Cobertura de Código</h2>
+          <div className="tdd-dashboard-header">
+            <h2>Métricas de Commits con Cobertura de Código</h2>
+            {branches.length > 1 && (
+              <label className="commit-branch-filter">
+                Resaltar rama
+                <select value={branch} onChange={(event) => setSelectedBranch(event.target.value)}>
+                  <option value="">Todas</option>
+                  {branches.map((name) => <option key={name} value={name}>{name}</option>)}
+                </select>
+              </label>
+            )}
+          </div>
           <div className="tdd-dashboard-overview">
             <div className="tdd-dashboard-chart">
               <Bubble
@@ -211,7 +260,9 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 data={{
                   datasets: chronologicalCommits.map((commit, index) => {
                       const number = commitNumbers.get(commit.sha) ?? index + 1;
-                      const backgroundColor = getCommitColor(commit);
+                      const commitBranches = commitBranchMap.get(commit.sha) ?? [];
+                      const isBranchActive = branch ? commitBranches.includes(branch) : true;
+                      const baseColor = getCommitColor(commit);
 
                       return {
                         label: `Commit ${number}`,
@@ -222,8 +273,11 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                             r: Math.max(10, commit.stats.total / 1.5),
                           },
                         ],
-                        backgroundColor,
-                        borderColor: `rgba(0,0,0,0.2)`,
+                        backgroundColor: isBranchActive ? baseColor : "rgba(200, 200, 200, 0.2)",
+                        borderColor: branch && commitBranches.includes(branch)
+                          ? "#378de5"
+                          : `rgba(0,0,0,0.2)`,
+                        borderWidth: branch && commitBranches.includes(branch) ? 3 : 1,
                       };
                     }),
                 }}
@@ -251,8 +305,13 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                         label: (tooltipItem: any) => {
                           const commit = chronologicalCommits[tooltipItem.datasetIndex];
                           const commitNumber = commitNumbers.get(commit.sha);
+                          const commitBranches = commitBranchMap.get(commit.sha);
+                          const branchLine = commitBranches?.length
+                            ? [`Rama: ${commitBranches.join(", ")}`]
+                            : [];
                           return [
                             `Commit ${commitNumber}: ${commit.commit.message}`,
+                            ...branchLine,
                             `Líneas Modificadas: ${commit.stats.additions}`,
                             `Líneas Eliminadas: ${commit.stats.deletions}`,
                             `Cobertura: ${commit.coverage}%`,
@@ -281,6 +340,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             selectedCommit={selectedCommit}
             commitTimelineData={commitTimelineData}
             commitNumber={selectedCommit ? commitNumbers.get(selectedCommit.sha) : undefined}
+            branch={selectedCommit ? commitBranchMap.get(selectedCommit.sha)?.join(", ") : undefined}
           />
           <div className="tdd-dashboard-metrics">
             <div

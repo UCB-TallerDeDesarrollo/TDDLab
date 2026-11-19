@@ -14,6 +14,7 @@ interface CommitTimelineDialogProps {
   selectedCommit: any;
   commitTimelineData: any[];
   commitNumber?: number;
+  branch?: string;
 }
 
 const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
@@ -22,6 +23,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
   selectedCommit,
   commitTimelineData,
   commitNumber,
+  branch,
 }) => {
 
   // Preparar los datos para la visualización
@@ -70,11 +72,28 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
               style={{
                 fontFamily: "monospace",
                 fontSize: "1.25em",
-                marginBottom: "10px",
+                marginBottom: branch ? "4px" : "10px",
               }}
             >
               ({selectedCommit.sha})
             </div>
+            {branch && (
+              <div
+                style={{
+                  display: "inline-block",
+                  padding: "2px 8px",
+                  borderRadius: "4px",
+                  backgroundColor: "#f0f7ff",
+                  border: "1px solid #378de5",
+                  color: "#092d4a",
+                  fontSize: "0.85em",
+                  fontWeight: "bold",
+                  marginBottom: "8px",
+                }}
+              >
+                Rama: {branch}
+              </div>
+            )}
           </div>
         )}
         {timelineData.length > 0 ? (
