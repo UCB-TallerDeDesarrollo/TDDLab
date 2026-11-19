@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
+import { getCommitHistoryRepository } from "./modules/TDDCycles-Visualization/repository/getCommitHistoryRepository";
 import MainMenu from "./app/navigation/MainMenu";
 
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -262,7 +262,7 @@ function App() {
             element={
               <ProtectedRouteComponent>
                 <TDDChartPage
-                  port={new CommitHistoryAdapter()}
+                  port={getCommitHistoryRepository()}
                   role={authData.userRole ?? ""}
                   teacher_id={authData.userid ?? -1}
                   graphs="graph"
@@ -276,7 +276,7 @@ function App() {
             element={
               <ProtectedRouteComponent>
                 <TDDChartPage
-                  port={new CommitHistoryAdapter()}
+                  port={getCommitHistoryRepository()}
                   role={authData.userRole ?? ""}
                   teacher_id={authData.userid ?? -1}
                   graphs="aditionalgraph"

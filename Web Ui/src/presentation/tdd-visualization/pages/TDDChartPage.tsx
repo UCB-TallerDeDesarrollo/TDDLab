@@ -71,7 +71,7 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
               commits={chartsState.commitsInfo}
               tddLogs={chartsState.tddLogsInfo}
               commitsTddCycles={chartsState.commitsTddCycles}
-              port={props.port}
+              port={tddPage.activePort}
               role={props.role}
               metric={chartsState.metric}
               setMetric={chartsState.setMetric}

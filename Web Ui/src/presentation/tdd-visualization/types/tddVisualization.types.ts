@@ -7,7 +7,7 @@ import { CommentDataObject } from "../../../modules/teacherCommentsOnSubmissions
 import type { TeacherSubmission } from "../../../shared/types/teacherSubmission";
 
 export interface CycleReportViewProps {
-  port: CommitHistoryRepository;
+  port?: CommitHistoryRepository;
   role: string;
   teacher_id: number;
   graphs: string;

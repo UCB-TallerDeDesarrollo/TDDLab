@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   readTeacherSubmissions,
@@ -17,6 +17,8 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { FakeCommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/repository/FakeCommitHistoryRepository";
+import { getCommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/repository/getCommitHistoryRepository";
 
 function isStudent(role: string) {
   return role === "student";
@@ -51,8 +53,41 @@ export function useTDDChartPage({
   const navigate = useNavigate();
   const studentRole = isStudent(role);
   const isTeacherView = role !== "student";
-  const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
-  const repoName = String(searchParams.get("repoName")) || "defaultRepo";
+  const rawOwner = searchParams.get("repoOwner");
+  const rawRepo = searchParams.get("repoName");
+  const isTestEnv = process.env.NODE_ENV === "test";
+  const isQueryFake = searchParams.get("fake") === "true";
+  const forceFakeByQuery = !isTestEnv && isQueryFake;
+
+  const activePort = useMemo(() => {
+    if (forceFakeByQuery) {
+      return new FakeCommitHistoryRepository();
+    }
+    if (port) {
+      return port;
+    }
+    if (isQueryFake) {
+      return new FakeCommitHistoryRepository();
+    }
+    return getCommitHistoryRepository();
+  }, [forceFakeByQuery, isQueryFake, port]);
+
+  const isFakeMode =
+    activePort instanceof FakeCommitHistoryRepository ||
+    isQueryFake;
+
+  const repoOwner =
+    rawOwner && rawOwner !== "null"
+      ? rawOwner
+      : isFakeMode
+      ? "tddlab-demo"
+      : "defaultOwner";
+  const repoName =
+    rawRepo && rawRepo !== "null"
+      ? rawRepo
+      : isFakeMode
+      ? "branches"
+      : "defaultRepo";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
   const assignmentId = Number.parseInt(searchParams.get("assignmentId") || "0");
   const fetchedSubmissions: Submission[] = isTeacherView
@@ -95,21 +130,22 @@ export function useTDDChartPage({
   useEffect(() => {
     const loadOwnerName = async () => {
       try {
-        const name = await fetchOwnerName(port, repoOwner);
-        setOwnerName(name);
+        const name = await fetchOwnerName(activePort, repoOwner);
+        setOwnerName(name || repoOwner);
       } catch (error) {
         console.error("Error obtaining owner name:", error);
+        setOwnerName(repoOwner);
       }
     };
 
     loadOwnerName().catch((error: unknown) => console.error("Error loading owner name:", error));
-  }, [port, repoOwner]);
+  }, [activePort, repoOwner]);
 
   useEffect(() => {
     const loadVisualizationData = async () => {
       setLoading(true);
       try {
-        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        const visualizationData = await fetchTDDVisualizationData(activePort, repoOwner, repoName);
         setCommitsInfo(visualizationData.commits);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
@@ -121,7 +157,7 @@ export function useTDDChartPage({
     };
 
     loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
-  }, [port, repoOwner, repoName]);
+  }, [activePort, repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
@@ -183,6 +219,7 @@ export function useTDDChartPage({
     handleSubmitFeedback,
     isSubmitting,
     isStudent: studentRole,
+    activePort,
     loading,
     ownerName,
     repoName,
