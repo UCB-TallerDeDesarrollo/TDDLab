@@ -12,6 +12,13 @@ jest.mock("../../src/modules/TDDCycles/Repositories/DBCommitsRepository", () => 
 jest.mock("../../src/modules/TDDCycles/Repositories/DBJobsRepository", () => ({
   DBJobsRepository: jest.fn().mockImplementation(() => ({})),
 }));
+jest.mock("../../src/modules/TDDCycles/Repositories/VisualizeTDDRepository", () => ({
+  VisualizeTDDRepository: jest.fn().mockImplementation(() => ({
+    getCommitHistoryData: jest.fn(),
+    getCommitCyclesData: jest.fn(),
+    getTDDLogs: jest.fn(),
+  })),
+}));
 jest.mock("../../src/modules/TDDCycles/Repositories/GithubRepository", () => ({
   GithubRepository: jest.fn().mockImplementation(() => ({
     getCommitHistoryData: mockHistory,
@@ -21,11 +28,17 @@ jest.mock("../../src/modules/TDDCycles/Repositories/GithubRepository", () => ({
 }));
 
 function createApp(mode?: string) {
-  const previous = process.env.TDD_USE_FAKE_REPOSITORY;
+  const previousFake = process.env.TDD_USE_FAKE_REPOSITORY;
+  const previousSource = process.env.TDD_DATA_SOURCE;
   if (mode === undefined) {
     delete process.env.TDD_USE_FAKE_REPOSITORY;
+    delete process.env.TDD_DATA_SOURCE;
+  } else if (mode === "true") {
+    process.env.TDD_USE_FAKE_REPOSITORY = "true";
+    process.env.TDD_DATA_SOURCE = "fake";
   } else {
-    process.env.TDD_USE_FAKE_REPOSITORY = mode;
+    process.env.TDD_USE_FAKE_REPOSITORY = "false";
+    process.env.TDD_DATA_SOURCE = "github";
   }
   const app = express();
   try {
@@ -34,11 +47,10 @@ function createApp(mode?: string) {
       app.use("/api/TDDCycles", routes.default);
     });
   } finally {
-    if (previous === undefined) {
-      delete process.env.TDD_USE_FAKE_REPOSITORY;
-    } else {
-      process.env.TDD_USE_FAKE_REPOSITORY = previous;
-    }
+    if (previousFake === undefined) delete process.env.TDD_USE_FAKE_REPOSITORY;
+    else process.env.TDD_USE_FAKE_REPOSITORY = previousFake;
+    if (previousSource === undefined) delete process.env.TDD_DATA_SOURCE;
+    else process.env.TDD_DATA_SOURCE = previousSource;
   }
   return app;
 }

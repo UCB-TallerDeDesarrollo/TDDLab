@@ -1,0 +1,28 @@
+import { VisualizeTDDRepository } from "../../../../src/modules/TDDCycles/Repositories/VisualizeTDDRepository";
+
+describe("VisualizeTDDRepository with Neon DB (Real Repository: ChristopherQuiroz/Totalizador-de-Venta)", () => {
+  const repository = new VisualizeTDDRepository();
+  const owner = "ChristopherQuiroz";
+  const repoName = "Totalizador-de-Venta";
+
+  it("fetches commit history data from Neon DB", async () => {
+    const history = await repository.getCommitHistoryData(owner, repoName);
+    expect(history.length).toBeGreaterThan(0);
+    expect(history[0]).toHaveProperty("sha");
+    expect(history[0]).toHaveProperty("commit");
+    expect(history[0]).toHaveProperty("stats");
+  });
+
+  it("fetches commit cycles data from Neon DB", async () => {
+    const cycles = await repository.getCommitCyclesData(owner, repoName);
+    expect(cycles.length).toBeGreaterThan(0);
+    expect(cycles[0]).toHaveProperty("sha");
+    expect(cycles[0]).toHaveProperty("url");
+    expect(cycles[0]).toHaveProperty("tddCycle");
+  });
+
+  it("fetches TDD logs data from Neon DB", async () => {
+    const logs = await repository.getTDDLogs(owner, repoName);
+    expect(logs.length).toBeGreaterThan(0);
+  });
+});
