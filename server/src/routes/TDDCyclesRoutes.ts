@@ -1,4 +1,5 @@
 import express from "express";
+import TDDIngestionRouter from "./TDDIngestionRoutes";
 import { DBCommitsRepository } from "../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { DBJobsRepository } from "../modules/TDDCycles/Repositories/DBJobsRepository";
 import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubRepository";
@@ -18,6 +19,7 @@ const tddCyclesController = new TDDCyclesController(
 
 // Create a new router to handle the TDDCycles routes
 const TDDCyclesRouter = express.Router();
+TDDCyclesRouter.use("/events", TDDIngestionRouter);
 
 // Get all commits from a repository in Github (TDD Cycles)
 TDDCyclesRouter.get(
