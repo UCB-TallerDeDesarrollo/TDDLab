@@ -21,16 +21,20 @@ describe("GithubRepository.getCommitCyclesData", () => {
     ]);
   });
 
-  it("should map cycles and coverage correctly", async () => {
+    it("should map cycles and coverage correctly", async () => {
     const result = await githubRepository.getCommitCyclesData("owner", "repo");
     expect(result).toEqual([
       {
+        repository_slug: "owner/repo",
+        branch: "main",
         sha: "789",
         url: "url3",
         tddCycle: "Red-Green-Refactor",
         coverage: 75,
       },
       {
+        repository_slug: "owner/repo",
+        branch: "main",
         sha: "456",
         url: "url2",
         tddCycle: "null",

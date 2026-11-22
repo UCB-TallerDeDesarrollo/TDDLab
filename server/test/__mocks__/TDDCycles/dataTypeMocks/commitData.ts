@@ -38,6 +38,8 @@ export const commitsFromGithub: CommitDataObject[] = [{
 }];
 
 export const tddCycleDataObjectMock: TDDCycleDataObject = {
+    repository_slug: "user/repo",
+    branch: "main",
     html_url: 'https://github.com/user/repo/commit/abc123',
     stats: {
         total: 100,
@@ -52,7 +54,9 @@ export const tddCycleDataObjectMock: TDDCycleDataObject = {
     },
     sha: 'abc123',
     coverage: '80%',
-    test_count: '50'
+    test_count: '50',
+    test_passed: 0,
+    test_failed: 0
 };
 
 export const unsavedCommits: CommitDataObject[] = commitsFromGithub;

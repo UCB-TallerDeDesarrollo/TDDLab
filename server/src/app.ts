@@ -12,6 +12,7 @@ import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
+import branchRouter from "./routes/branchRoutes";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -68,6 +69,8 @@ app.use("/api/AIAssistant", aiAssistantRouter);
 
 
 app.use("/api/featureFlags", featureFlagsRouter);
+
+app.use("/api/TDDCycles/branches", branchRouter);
 
 // Start the server
 server(app, port);

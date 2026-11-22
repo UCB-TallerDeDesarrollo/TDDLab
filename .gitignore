@@ -91,3 +91,5 @@ output.zip
 
 #Configuracion local del IDE Webstorm
 .idea/
+
+**/bun.lock
