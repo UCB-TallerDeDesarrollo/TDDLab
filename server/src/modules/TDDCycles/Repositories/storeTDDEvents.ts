@@ -13,6 +13,25 @@ interface StoredExecution {
 
 type CommitLogMetadata = Pick<TDDCommitEvent, "sha" | "message" | "parents" | "timestamp" | "branch">;
 
+function inSequence<T>(items: T[], operation: (item: T) => Promise<void>): Promise<void> {
+  // A single transaction must finish each write before starting its dependent writes.
+  return items.reduce((pending, item) => pending.then(() => operation(item)), Promise.resolve());
+}
+
+function getCommitOutcome(last: StoredExecution, runs: StoredExecution[]) {
+  if (last.num_total_tests === 0) return { conclusion: "neutral", cycle: null };
+  if (!last.success) return { conclusion: "failure", cycle: "Rojo" };
+  return { conclusion: "success", cycle: runs.some(run => !run.success) ? "RojoVerde" : "Verde" };
+}
+
+function getBranchContext(runs: StoredExecution[], branch: string | undefined) {
+  const branches = [...new Set(runs.flatMap(run => run.branch ? [run.branch] : []))]
+    .sort((left, right) => left.localeCompare(right));
+  if (branches.length) return { recordedBranches: branches };
+  if (branch) return { historyBranch: branch };
+  return {};
+}
+
 async function storeExecution(client: TDDDatabaseClient, batch: TDDEventBatch, run: TDDExecutionEvent) {
   const result = await client.query(`
     INSERT INTO tdd_logs
@@ -68,9 +87,8 @@ async function storeCommit(client: TDDDatabaseClient, batch: TDDEventBatch, comm
       SELECT sha, message, parents, EXTRACT(EPOCH FROM commit_date) * 1000 AS timestamp
       FROM commitstable WHERE lower(owner) = $1 AND lower(reponame) = $2 AND sha = ANY($3::text[])
     `, [batch.owner, batch.repoName, commit.rewrite.from]);
-    for (const source of sources.rows) {
-      await refreshCommit(client, batch, { ...source, timestamp: Number(source.timestamp) });
-    }
+    await inSequence(sources.rows, source =>
+      refreshCommit(client, batch, { ...source, timestamp: Number(source.timestamp) }));
   }
 }
 
@@ -82,9 +100,7 @@ async function refreshCommit(client: TDDDatabaseClient, batch: TDDEventBatch, co
   `, [batch.owner, batch.repoName, commit.sha]);
   const last = runs.rows.at(-1);
   if (last) {
-    const conclusion = last.num_total_tests === 0 ? "neutral" : last.success ? "success" : "failure";
-    const cycle = last.num_total_tests === 0 ? null
-      : !last.success ? "Rojo" : runs.rows.some((run) => !run.success) ? "RojoVerde" : "Verde";
+    const { conclusion, cycle } = getCommitOutcome(last, runs.rows);
     await client.query(`
       UPDATE commitstable SET coverage = $4, test_count = $5, conclusion = $6, tdd_cycle = $7
       WHERE lower(owner) = $1 AND lower(reponame) = $2 AND sha = $3
@@ -99,12 +115,12 @@ async function refreshCommit(client: TDDDatabaseClient, batch: TDDEventBatch, co
     `, [batch.owner, batch.repoName, commit.sha]);
   }
 
-  const branches = [...new Set(runs.rows.flatMap((run) => run.branch ? [run.branch] : []))].sort();
   const [subject, ...body] = commit.message.split("\n");
+  const messageBody = body.join("\n").trim();
   const graph = [{
     sha: commit.sha, parents: commit.parents, subject, timestamp: commit.timestamp,
-    ...(body.join("\n").trim() ? { body: body.join("\n").trim() } : {}),
-    ...(branches.length ? { recordedBranches: branches } : commit.branch ? { historyBranch: commit.branch } : {}),
+    ...(messageBody ? { body: messageBody } : {}),
+    ...getBranchContext(runs.rows, commit.branch),
   }];
   await client.query(`
     INSERT INTO tdd_logs (owner, reponame, type, event_id, commit_sha, commit_name, timestamp, branch, git_graph)
@@ -118,6 +134,6 @@ async function refreshCommit(client: TDDDatabaseClient, batch: TDDEventBatch, co
 export async function storeTDDEvents(client: TDDDatabaseClient, batch: TDDEventBatch) {
   // Serializing one repository keeps concurrent clones from assigning an execution twice.
   await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))", [`${batch.owner}/${batch.repoName}`]);
-  for (const run of batch.executions) await storeExecution(client, batch, run);
-  for (const commit of batch.commits) await storeCommit(client, batch, commit);
+  await inSequence(batch.executions, run => storeExecution(client, batch, run));
+  await inSequence(batch.commits, commit => storeCommit(client, batch, commit));
 }

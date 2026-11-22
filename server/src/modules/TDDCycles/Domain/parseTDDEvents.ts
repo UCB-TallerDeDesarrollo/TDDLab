@@ -76,7 +76,8 @@ export function parseTDDEvents(value: unknown): TDDEventBatch {
       parents: commit.parents.map(parent => parent.toLowerCase()),
       executionIds: commit.executionIds.map(id => id.toLowerCase()),
       ...(commit.rewrite ? { rewrite: {
-        id: commit.rewrite.id.toLowerCase(), from: commit.rewrite.from.map(source => source.toLowerCase()).sort(),
+        id: commit.rewrite.id.toLowerCase(),
+        from: commit.rewrite.from.map(source => source.toLowerCase()).sort((left, right) => left.localeCompare(right)),
       } } : {}),
     })),
   };
