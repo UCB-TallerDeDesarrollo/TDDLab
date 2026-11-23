@@ -144,9 +144,19 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
     let client;
     try {
       client = await this.pool.connect();
-      const query =
-        "SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2";
-      const values = [owner, repo];
+      const query = `
+        SELECT execution.id, commit.sha, $1 AS owner, $2 AS reponame,
+          CASE
+            WHEN execution.total_count = 0 THEN 'skipped'
+            WHEN execution.success THEN 'success'
+            ELSE 'failure'
+          END AS conclusion
+        FROM repository
+        JOIN test_execution execution ON execution.repository_id = repository.id
+        LEFT JOIN "commit" commit ON commit.id = execution.observed_commit_id
+        WHERE repository.locator = $3
+        ORDER BY execution.started_at DESC`;
+      const values = [owner, repo, `${owner}/${repo}`];
       const result = await client.query(query, values);
       return result.rows;
     } catch (error) {
@@ -161,9 +171,10 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
     let client;
     try {
       client = await this.pool.connect();
-      const query =
-        "SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3";
-      const values = [owner, repo, jobId];
+      const query = `SELECT 1 FROM test_execution execution
+        JOIN repository ON repository.id = execution.repository_id
+        WHERE repository.locator = $1 AND execution.id::text = $2`;
+      const values = [`${owner}/${repo}`, String(jobId)];
       const result = await client.query(query, values);
       return result.rows.length > 0;
     } catch (error) {
@@ -177,9 +188,8 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
   async repositoryExists(owner: string, repoName: string): Promise<boolean> {
     const client = await this.pool.connect();
     try {
-      const query =
-        "SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2";
-      const values = [owner, repoName];
+      const query = "SELECT COUNT(*) FROM repository WHERE locator = $1";
+      const values = [`${owner}/${repoName}`];
       const result = await client.query(query, values);
       return result.rows[0].count > 0;
     } catch (error) {
@@ -207,17 +217,37 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
     repoName: string,
     jobs: Record<string, JobDataObject>
   ) {
-    let jobsFormatted: TestResultDataObject[] = Object.values(jobs).map(
-      (job) => ({
-        id: job.jobs[0].run_id,
-        sha: job.jobs[0].head_sha,
-        owner: owner,
-        reponame: repoName,
-        conclusion: job.jobs[0].conclusion,
-      })
-    );
-
-    await Promise.all(jobsFormatted.map((job) => this.saveJob(job)));
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      const project = await client.query(
+        "INSERT INTO project (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id",
+        [owner]
+      );
+      const repository = await client.query(
+        "INSERT INTO repository (project_id, provider, locator) VALUES ($1, 'github', $2) ON CONFLICT (project_id, provider, locator) DO UPDATE SET locator = EXCLUDED.locator RETURNING id",
+        [project.rows[0].id, `${owner}/${repoName}`]
+      );
+      for (const job of Object.values(jobs)) {
+        const run = job.jobs[0];
+        if (!run) continue;
+        const commit = await client.query(
+          "INSERT INTO \"commit\" (repository_id, sha) VALUES ($1, $2) ON CONFLICT (repository_id, sha) DO UPDATE SET sha = EXCLUDED.sha RETURNING id",
+          [repository.rows[0].id, run.head_sha]
+        );
+        const success = run.conclusion === "success";
+        await client.query(
+          "INSERT INTO test_execution (repository_id, observed_commit_id, started_at, passed_count, failed_count, total_count, success) VALUES ($1, $2, now(), $3, $4, $5, $6)",
+          [repository.rows[0].id, commit.rows[0].id, success ? 1 : 0, success ? 0 : 1, 1, success]
+        );
+      }
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async executionExists(commit_sha: string, timestamp: Date): Promise<boolean> {
