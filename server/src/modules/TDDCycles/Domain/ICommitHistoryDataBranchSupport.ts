@@ -1,3 +1,5 @@
+import { TestExecutionDataBranchSupport } from "./ITestExecutionDataBranchSupport";
+
 export interface CommitHistoryDataBranchSupport {
   html_url: string;
   sha: string;
@@ -19,4 +21,5 @@ export interface CommitHistoryDataBranchSupport {
   branches: string[];
   primary_branch: string;
   parents: string[];
+  test_executions?: TestExecutionDataBranchSupport[];
 }

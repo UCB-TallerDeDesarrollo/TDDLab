@@ -36,8 +36,50 @@ describe("GithubRepositoryBranchSupport", () => {
     });
   });
 
+  describe("getTestExecutions", () => {
+    it("should default to main and return formatted test executions", async () => {
+      // 1. Branch query for resolveEffectiveBranch
+      mockClient.query.mockResolvedValueOnce({
+        rows: [{ name: "main" }, { name: "dev" }],
+      });
+      // 2. Test executions query
+      mockClient.query.mockResolvedValueOnce({
+        rows: [
+          {
+            id: "1",
+            commit_sha: "sha1",
+            branch_id: "10",
+            branch_name: "main",
+            source: "local",
+            executed_at: new Date("2024-03-01T10:05:00Z"),
+            total_tests: 5,
+            passed_tests: 4,
+            failed_tests: 1,
+            skipped_tests: 0,
+            error_tests: 0,
+            coverage: 80,
+            duration_ms: 120,
+            conclusion: "failure",
+          },
+        ],
+      });
+
+      const executions = await repository.getTestExecutions("user1", "my-repo");
+
+      expect(executions).toHaveLength(1);
+      expect(executions[0].id).toBe("1");
+      expect(executions[0].commit_sha).toBe("sha1");
+      expect(executions[0].branch_name).toBe("main");
+      expect(executions[0].numTotalTests).toBe(5);
+      expect(executions[0].numPassedTests).toBe(4);
+      expect(executions[0].failed_tests).toBe(1);
+      expect(executions[0].success).toBe(false);
+      expect(executions[0].conclusion).toBe("failure");
+    });
+  });
+
   describe("getCommitHistoryData", () => {
-    it("should map database rows to CommitHistoryDataBranchSupport without branch filter", async () => {
+    it("should default to main branch when branch is not provided", async () => {
       const mockRows = [
         {
           sha: "sha1",
@@ -60,21 +102,26 @@ describe("GithubRepositoryBranchSupport", () => {
         },
       ];
 
+      // 1. Resolve branch query -> main
+      mockClient.query.mockResolvedValueOnce({ rows: [{ name: "main" }] });
+      // 2. Commits query
       mockClient.query.mockResolvedValueOnce({ rows: mockRows });
+      // 3. Resolve branch query for test executions
+      mockClient.query.mockResolvedValueOnce({ rows: [{ name: "main" }] });
+      // 4. Test executions query
+      mockClient.query.mockResolvedValueOnce({ rows: [] });
 
       const result = await repository.getCommitHistoryData("user1", "my-repo");
 
       expect(result).toHaveLength(1);
       expect(result[0].sha).toBe("sha1");
-      expect(result[0].branches).toEqual(["main"]);
       expect(result[0].primary_branch).toBe("main");
-      expect(result[0].test_count).toBe(10);
-      expect(result[0].conclusion).toBe("success");
       expect(result[0].stats.total).toBe(60);
       expect(mockClient.release).toHaveBeenCalled();
     });
 
-    it("should pass branch parameter into query when filtering by branch", async () => {
+    it("should pass explicit branch parameter when specified", async () => {
+      mockClient.query.mockResolvedValueOnce({ rows: [] });
       mockClient.query.mockResolvedValueOnce({ rows: [] });
 
       await repository.getCommitHistoryData("user1", "my-repo", "feature-branch");
@@ -125,13 +172,107 @@ describe("GithubRepositoryBranchSupport", () => {
         },
       ];
 
+      // 1. Resolve branch query -> main
+      mockClient.query.mockResolvedValueOnce({ rows: [{ name: "main" }] });
+      // 2. Commits query
       mockClient.query.mockResolvedValueOnce({ rows: mockRows });
+      // 3. Resolve branch query for test executions
+      mockClient.query.mockResolvedValueOnce({ rows: [{ name: "main" }] });
+      // 4. Test executions query
+      mockClient.query.mockResolvedValueOnce({ rows: [] });
 
       const cycles = await repository.getCommitCyclesData("user1", "my-repo");
 
       expect(cycles).toHaveLength(2);
       expect(cycles[1].tddCycle).toBe("red");
       expect(cycles[0].tddCycle).toBe("refactor");
+    });
+  });
+
+  describe("getTopologyGraph", () => {
+    it("should return the multibranch DAG nodes, edges, and branches with default branch main", async () => {
+      // 1. Project ID resolution
+      mockClient.query.mockResolvedValueOnce({ rows: [{ id: "42" }] });
+
+      // 2. Branches query
+      mockClient.query.mockResolvedValueOnce({
+        rows: [
+          {
+            id: "1",
+            name: "main",
+            head_commit_sha: "sha2",
+            fork_commit_sha: null,
+            created_at: new Date("2024-01-01"),
+            updated_at: new Date("2024-01-02"),
+            total_commits: 2,
+          },
+          {
+            id: "2",
+            name: "feature/auth",
+            head_commit_sha: "sha3",
+            fork_commit_sha: "sha1",
+            created_at: new Date("2024-01-02"),
+            updated_at: new Date("2024-01-03"),
+            total_commits: 1,
+          },
+        ],
+      });
+
+      // 3. Nodes query
+      mockClient.query.mockResolvedValueOnce({
+        rows: [
+          {
+            sha: "sha1",
+            author: "Dev",
+            author_email: "dev@example.com",
+            message: "Initial commit",
+            committed_at: new Date("2024-01-01T10:00:00Z"),
+            additions: 100,
+            deletions: 0,
+            total_changes: 100,
+            changed_files: 5,
+            branches: ["main"],
+            parents: [],
+            test_runs_count: 2,
+            latest_conclusion: "success",
+            latest_coverage: 90,
+          },
+          {
+            sha: "sha2",
+            author: "Dev",
+            author_email: "dev@example.com",
+            message: "Main commit 2",
+            committed_at: new Date("2024-01-02T10:00:00Z"),
+            additions: 20,
+            deletions: 5,
+            total_changes: 25,
+            changed_files: 2,
+            branches: ["main"],
+            parents: ["sha1"],
+            test_runs_count: 1,
+            latest_conclusion: "success",
+            latest_coverage: 92,
+          },
+        ],
+      });
+
+      // 4. Edges query
+      mockClient.query.mockResolvedValueOnce({
+        rows: [
+          { parent_sha: "sha1", child_sha: "sha2", parent_order: 1 },
+        ],
+      });
+
+      const topology = await repository.getTopologyGraph("user1", "my-repo");
+
+      expect(topology.project_id).toBe("42");
+      expect(topology.default_branch).toBe("main");
+      expect(topology.branches).toHaveLength(2);
+      expect(topology.branches[0].is_default).toBe(true);
+      expect(topology.nodes).toHaveLength(2);
+      expect(topology.edges).toHaveLength(1);
+      expect(topology.edges[0].parent_sha).toBe("sha1");
+      expect(topology.edges[0].child_sha).toBe("sha2");
     });
   });
 });

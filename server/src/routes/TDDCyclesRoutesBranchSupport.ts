@@ -22,4 +22,14 @@ TDDCyclesRoutesBranchSupport.get(
   async (req, res) => await controller.getBranches(req, res)
 );
 
+TDDCyclesRoutesBranchSupport.get(
+  "/test-executions",
+  async (req, res) => await controller.getTestExecutions(req, res)
+);
+
+TDDCyclesRoutesBranchSupport.get(
+  "/topology",
+  async (req, res) => await controller.getTopologyGraph(req, res)
+);
+
 export default TDDCyclesRoutesBranchSupport;

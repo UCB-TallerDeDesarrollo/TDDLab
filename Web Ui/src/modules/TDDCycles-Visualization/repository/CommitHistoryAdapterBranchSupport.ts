@@ -2,6 +2,8 @@ import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { CommitDataObjectBranchSupport } from "../domain/githubCommitInterfacesBranchSupport";
 import { CommitCycleBranchSupport } from "../domain/TddCycleInterfaceBranchSupport";
+import { TestExecutionDataBranchSupport } from "../domain/ITestExecutionDataBranchSupport";
+import { TopologyGraphResponseBranchSupport } from "../domain/ITopologyGraphBranchSupport";
 import { CommitHistoryRepositoryBranchSupport } from "../domain/CommitHistoryRepositoryInterfaceBranchSupport";
 
 export class CommitHistoryAdapterBranchSupport implements CommitHistoryRepositoryBranchSupport {
@@ -32,6 +34,10 @@ export class CommitHistoryAdapterBranchSupport implements CommitHistoryRepositor
           ...c.commit,
           date: new Date(c.commit.date),
         },
+        test_executions: (c.test_executions || []).map((te: any) => ({
+          ...te,
+          executed_at: new Date(te.executed_at),
+        })),
       }));
     } catch (error) {
       console.error("Error fetching commits with branch support:", error);
@@ -78,6 +84,65 @@ export class CommitHistoryAdapterBranchSupport implements CommitHistoryRepositor
       return response.data || [];
     } catch (error) {
       console.error("Error fetching project branches with branch support:", error);
+      throw error;
+    }
+  }
+
+  async obtainTestExecutions(
+    owner: string,
+    repoName: string,
+    branch?: string,
+    commitSha?: string
+  ): Promise<TestExecutionDataBranchSupport[]> {
+    try {
+      const url = `${this.backAPI}/test-executions`;
+      const response = await axios.get(url, {
+        params: { owner, repoName, branch, commitSha },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return (response.data || []).map((te: any) => ({
+        ...te,
+        executed_at: new Date(te.executed_at),
+      }));
+    } catch (error) {
+      console.error("Error fetching test executions with branch support:", error);
+      throw error;
+    }
+  }
+
+  async obtainTopologyGraph(
+    owner: string,
+    repoName: string
+  ): Promise<TopologyGraphResponseBranchSupport> {
+    try {
+      const url = `${this.backAPI}/topology`;
+      const response = await axios.get(url, {
+        params: { owner, repoName },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = response.data;
+      return {
+        ...data,
+        branches: (data.branches || []).map((b: any) => ({
+          ...b,
+          created_at: new Date(b.created_at),
+          updated_at: new Date(b.updated_at),
+        })),
+        nodes: (data.nodes || []).map((n: any) => ({
+          ...n,
+          committed_at: new Date(n.committed_at),
+        })),
+      };
+    } catch (error) {
+      console.error("Error fetching topology graph with branch support:", error);
       throw error;
     }
   }

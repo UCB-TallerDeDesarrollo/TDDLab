@@ -2,17 +2,23 @@ import { Request, Response } from "express";
 import { GetCommitHistoryBranchSupportUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryBranchSupportUseCase";
 import { GetCommitCyclesBranchSupportUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesBranchSupportUseCase";
 import { GetProjectBranchesBranchSupportUseCase } from "../../modules/TDDCycles/Application/getProjectBranchesBranchSupportUseCase";
+import { GetTestExecutionsBranchSupportUseCase } from "../../modules/TDDCycles/Application/getTestExecutionsBranchSupportUseCase";
+import { GetTopologyGraphBranchSupportUseCase } from "../../modules/TDDCycles/Application/getTopologyGraphBranchSupportUseCase";
 import { IGithubRepositoryBranchSupport } from "../../modules/TDDCycles/Domain/IGithubRepositoryBranchSupport";
 
 export class TDDCyclesControllerBranchSupport {
   private readonly getCommitHistoryUseCase: GetCommitHistoryBranchSupportUseCase;
   private readonly getCommitCyclesUseCase: GetCommitCyclesBranchSupportUseCase;
   private readonly getProjectBranchesUseCase: GetProjectBranchesBranchSupportUseCase;
+  private readonly getTestExecutionsUseCase: GetTestExecutionsBranchSupportUseCase;
+  private readonly getTopologyGraphUseCase: GetTopologyGraphBranchSupportUseCase;
 
   constructor(repository: IGithubRepositoryBranchSupport) {
     this.getCommitHistoryUseCase = new GetCommitHistoryBranchSupportUseCase(repository);
     this.getCommitCyclesUseCase = new GetCommitCyclesBranchSupportUseCase(repository);
     this.getProjectBranchesUseCase = new GetProjectBranchesBranchSupportUseCase(repository);
+    this.getTestExecutionsUseCase = new GetTestExecutionsBranchSupportUseCase(repository);
+    this.getTopologyGraphUseCase = new GetTopologyGraphBranchSupportUseCase(repository);
   }
 
   isValidGithubSegment(value: unknown): value is string {
@@ -109,6 +115,65 @@ export class TDDCyclesControllerBranchSupport {
       return res.status(200).json(branches);
     } catch (error) {
       console.error("Error fetching branches with branch support:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getTestExecutions(req: Request, res: Response) {
+    try {
+      const { owner, repoName, branch, commitSha } = req.query;
+
+      if (!owner || !repoName) {
+        return res.status(400).json({
+          error: "Bad request, missing owner or repoName",
+        });
+      }
+
+      if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+        return res.status(400).json({
+          error: "Bad request, invalid owner or repoName",
+        });
+      }
+
+      const branchName = typeof branch === "string" && branch.trim().length > 0 ? branch.trim() : undefined;
+      const sha = typeof commitSha === "string" && commitSha.trim().length > 0 ? commitSha.trim() : undefined;
+
+      const executions = await this.getTestExecutionsUseCase.execute(
+        String(owner),
+        String(repoName),
+        branchName,
+        sha
+      );
+      return res.status(200).json(executions);
+    } catch (error) {
+      console.error("Error fetching test executions with branch support:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getTopologyGraph(req: Request, res: Response) {
+    try {
+      const { owner, repoName } = req.query;
+
+      if (!owner || !repoName) {
+        return res.status(400).json({
+          error: "Bad request, missing owner or repoName",
+        });
+      }
+
+      if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+        return res.status(400).json({
+          error: "Bad request, invalid owner or repoName",
+        });
+      }
+
+      const topology = await this.getTopologyGraphUseCase.execute(
+        String(owner),
+        String(repoName)
+      );
+      return res.status(200).json(topology);
+    } catch (error) {
+      console.error("Error fetching topology graph with branch support:", error);
       return res.status(500).json({ error: "Server error" });
     }
   }
