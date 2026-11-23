@@ -1,60 +1,58 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { PropagateLoader } from "react-spinners";
-import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { GetCommitsOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
+import type {
+  CommitDataObject,
+} from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+
 import TDDCycleList from "./TDDCycleList";
 
-interface CycleReportViewProps {
-  port: CommitHistoryRepository;
+// =====================================================
+// PROPIEDADES
+// =====================================================
+
+interface TDDListProps {
+  commits: CommitDataObject[];
 }
 
-function TDDList({ port }: Readonly<CycleReportViewProps>) {
-  const [searchParams] = useSearchParams();
-  const repoOwner: string = String(searchParams.get("repoOwner"));
-  const repoName: string = String(searchParams.get("repoName"));
-  const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[]>([]);
-  const [loading, setLoading] = useState(true);
+// =====================================================
+// COMPONENTE
+// =====================================================
 
-  const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
-
-  const fetchData = async () => {
-    try {
-      console.log("Fetching commit information...");
-      const commits: CommitDataObject[] = await getCommitsOfRepoUseCase.execute(repoOwner, repoName);
-      setCommitsInfo(commits);
-      console.log("Página TDDList: ", commits);
-    } catch (error) {
-      console.error("Error obtaining data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData().catch((error: unknown) => console.error("Error loading commits:", error));
-  }, []);
+function TDDList({
+  commits,
+}: Readonly<TDDListProps>) {
 
   return (
-    <div style={{ marginTop: "30px" }}>
-      {loading ? (
-        <div className="mainInfoContainer">
-          <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
+    <div
+      style={{
+        marginTop: "30px",
+        width: "100%",
+      }}
+      data-testid="tdd-commit-list"
+    >
+
+      {commits.length === 0 ? (
+
+        <div
+          className="error-message"
+          data-testid="errorMessage"
+        >
+          No se encontraron commits para
+          la rama seleccionada.
         </div>
+
       ) : (
-        <>
-          {commitsInfo.length === 0 ? (
-            <div className="error-message" data-testid="errorMessage">
-              No se pudo cargar la información
-            </div>
-          ) : (
-            <div style={{ width: "100%" }}>
-              <TDDCycleList commitsInfo={commitsInfo} />
-            </div>
-          )}
-        </>
+
+        <div
+          style={{
+            width: "100%",
+          }}
+        >
+          <TDDCycleList
+            commitsInfo={commits}
+          />
+        </div>
+
       )}
+
     </div>
   );
 }

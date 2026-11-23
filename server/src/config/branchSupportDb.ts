@@ -12,12 +12,13 @@ let poolConfig: PoolConfig;
 if (connectionString) {
   poolConfig = {
     connectionString,
+    connectionTimeoutMillis: 3000,
     ssl: {
       rejectUnauthorized: false,
     },
   };
 } else {
-  poolConfig = { ...defaultConfig };
+  poolConfig = { ...defaultConfig, connectionTimeoutMillis: 3000 };
 }
 
 export const branchSupportPool = new Pool(poolConfig);

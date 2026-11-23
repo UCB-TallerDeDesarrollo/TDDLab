@@ -1,4 +1,5 @@
-import { Pool } from "pg";
+import { githubPublicFallback } from "./GithubPublicFallbackBranchSupport";
+import { Pool, PoolClient } from "pg";
 import { branchSupportPool } from "../../../config/branchSupportDb";
 import { CommitHistoryDataBranchSupport } from "../Domain/ICommitHistoryDataBranchSupport";
 import { CommitCycleDataBranchSupport } from "../Domain/ICommitCycleDataBranchSupport";
@@ -70,13 +71,18 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
         AND b.deleted_at IS NULL
       ORDER BY b.name ASC;
     `;
-    const client = await this.pool.connect();
+    let client: PoolClient | undefined;
     try {
+      client = await this.pool.connect();
       const res = await client.query(query, [owner, repoName]);
-      return res.rows.map((row: { name: string }) => row.name);
+      const branches = res.rows.map((row: { name: string }) => row.name);
+      if (branches.length > 0) return branches;
+    } catch (error) {
+      console.warn("BranchSupport DB branches unavailable; trying GitHub:", error);
     } finally {
-      client.release();
+      client?.release();
     }
+    return githubPublicFallback.branches(owner, repoName);
   }
 
   async getTestExecutions(
@@ -124,8 +130,9 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
 
     query += ` ORDER BY te.executed_at ASC;`;
 
-    const client = await this.pool.connect();
+    let client: PoolClient | undefined;
     try {
+      client = await this.pool.connect();
       const res = await client.query(query, values);
       return res.rows.map((row: any) => {
         const total = Number(row.total_tests || 0);
@@ -156,8 +163,12 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
           testId: Number(row.id),
         };
       });
+    } catch (error) {
+      // GitHub REST commits alone do not contain test execution records.
+      console.warn("BranchSupport test executions unavailable:", error);
+      return [];
     } finally {
-      client.release();
+      client?.release();
     }
   }
 
@@ -224,13 +235,21 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
       ORDER BY c.committed_at DESC;
     `;
 
-    const client = await this.pool.connect();
     let rows: any[] = [];
     try {
-      const res = await client.query(query, values);
-      rows = res.rows;
-    } finally {
-      client.release();
+      const client = await this.pool.connect();
+      try {
+        const res = await client.query(query, values);
+        rows = res.rows;
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      console.warn("BranchSupport DB commits unavailable; trying GitHub:", error);
+      return githubPublicFallback.history(owner, repoName, branch);
+    }
+    if (rows.length === 0) {
+      return githubPublicFallback.history(owner, repoName, branch);
     }
 
     let testExecutions: TestExecutionDataBranchSupport[] = [];
@@ -272,7 +291,7 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
         },
         coverage: row.coverage !== null && row.coverage !== undefined ? Number(row.coverage) : null,
         test_count: Number(row.total_tests || 0),
-        conclusion: row.conclusion || (Number(row.failed_tests) > 0 ? "failure" : "success"),
+        conclusion: row.conclusion || (row.total_tests == null ? "unknown" : Number(row.failed_tests) > 0 ? "failure" : "success"),
         branches,
         primary_branch: primaryBranch,
         parents,
@@ -295,9 +314,13 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
     for (const item of chronological) {
       let cycle = "unknown";
       const isRefactor = /\brefactor(\w*)\b/i.test(item.commit.message);
-      const isFailure = item.conclusion === "failure" || item.test_count === 0;
+      const noTestData = item.conclusion === "unknown" ||
+        (item.test_count === 0 && item.coverage === null);
+      const isFailure = item.conclusion === "failure";
 
-      if (isFailure) {
+      if (noTestData) {
+        cycle = "unknown";
+      } else if (isFailure) {
         cycle = "red";
         previousHadFailures = true;
       } else {
@@ -327,11 +350,12 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
     owner: string,
     repoName: string
   ): Promise<TopologyGraphResponseBranchSupport> {
-    const client = await this.pool.connect();
+    let client: PoolClient | undefined;
     try {
+      client = await this.pool.connect();
       const projectId = await this.resolveProjectId(client, owner, repoName);
       if (!projectId) {
-        throw new Error(`Project not found for owner: ${owner}, repo: ${repoName}`);
+        return githubPublicFallback.topology(owner, repoName);
       }
 
       // 1. Branches summary
@@ -417,15 +441,21 @@ export class GithubRepositoryBranchSupport implements IGithubRepositoryBranchSup
         parent_order: Number(e.parent_order),
       }));
 
+      if (nodes.length === 0) {
+        return githubPublicFallback.topology(owner, repoName);
+      }
       return {
         project_id: projectId,
-        default_branch: "main",
+        default_branch: branches.find((item) => item.is_default)?.name ?? branches[0]?.name ?? "main",
         branches,
         nodes,
         edges,
       };
+    } catch (error) {
+      console.warn("BranchSupport DB topology unavailable; trying GitHub:", error);
+      return githubPublicFallback.topology(owner, repoName);
     } finally {
-      client.release();
+      client?.release();
     }
   }
 }

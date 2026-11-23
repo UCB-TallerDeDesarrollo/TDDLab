@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
+import { CommitHistoryAdapterBranchSupport } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapterBranchSupport";
+import { createBranchAwareRepository } from "./presentation/tdd-visualization/services/branchVisualization.service";
 import MainMenu from "./app/navigation/MainMenu";
 
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -20,31 +22,54 @@ import "./App.css";
 import ProtectedRouteComponent from "./ProtectedRoute";
 import { CircularProgress } from "@mui/material";
 
+// Adaptadores de las implementaciones original y BranchSupport.
+const originalCommitRepository = new CommitHistoryAdapter();
+const branchSupportRepository = new CommitHistoryAdapterBranchSupport();
+
+// Puerto compatible con los componentes gráficos actuales.
+// Los commits y ciclos TDD se obtienen mediante BranchSupport.
+// Los nombres de usuarios y logs mantienen su implementación original.
+const tddVisualizationPort = createBranchAwareRepository(
+  originalCommitRepository,
+  branchSupportRepository
+);
+
 const HomePage = lazy(() => import("./presentation/home/pages/HomePage"));
 const LandingPage = lazy(() => import("./presentation/landing/pages/LandingPage"));
 const Groups = lazy(() => import("./presentation/groups/pages/GroupsPage"));
 const User = lazy(() => import("./presentation/users/pages/UserPage"));
 const UsersByGroupPage = lazy(
-  () => import("./presentation/users/pages/UserBygroupPage"),
+  () => import("./presentation/users/pages/UserBygroupPage")
 );
-const SettingsPage = lazy(() => import("./presentation/settings/pages/SettingsPage"));
+const SettingsPage = lazy(
+  () => import("./presentation/settings/pages/SettingsPage")
+);
 
-const GestionTareas = lazy(() => import("./presentation/assignments/pages/AssignmentsPage"));
+const GestionTareas = lazy(
+  () => import("./presentation/assignments/pages/AssignmentsPage")
+);
 const AssignmentDetail = lazy(
-  () => import("./presentation/assignments/pages/AssignmentDetail"),
+  () => import("./presentation/assignments/pages/AssignmentDetail")
 );
 const TDDChartPage = lazy(
-  () => import("./presentation/tdd-visualization/pages/TDDChartPage"),
+  () => import("./presentation/tdd-visualization/pages/TDDChartPage")
 );
-const Login = lazy(() => import("./presentation/auth/pages/AuthPage"));
+const Login = lazy(
+  () => import("./presentation/auth/pages/AuthPage")
+);
 const InvitationPage = lazy(
-  () => import("./presentation/group-invitation/pages/InvitationPage"),
+  () => import("./presentation/group-invitation/pages/InvitationPage")
 );
 const MyPracticesPage = lazy(
-  () => import("./presentation/my-practices/pages/MyPracticesPage"),
+  () => import("./presentation/my-practices/pages/MyPracticesPage")
 );
-const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/PracticeDetail"));
-const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
+const PracticeDetail = lazy(
+  () => import("./presentation/my-practices/pages/PracticeDetail")
+);
+const AIAssistantPage = lazy(
+  () => import("./presentation/ai-assistant/pages/AIAssistantPage")
+);
+
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
 const navArrayLinks = [
@@ -88,49 +113,66 @@ const navArrayLinks = [
 
 function App() {
   const authData = useGlobalState("authData")[0];
+
   const isAuthResolved = authData.userid !== undefined;
   const isAuthenticated = Boolean(authData.userEmail);
+
   const isRootPath = globalThis.location.pathname === "/";
-  const isPublicLandingPath = globalThis.location.pathname === "/landing";
+  const isPublicLandingPath =
+    globalThis.location.pathname === "/landing";
+
   const hasSessionHint =
     localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
 
   useEffect(() => {
-    getSessionCookie().then((storedSession) => {
-      const savedImage = localStorage.getItem("userProfilePic") || "";
+    getSessionCookie()
+      .then((storedSession) => {
+        const savedImage =
+          localStorage.getItem("userProfilePic") || "";
 
-      if (storedSession) {
-        localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
-        setGlobalState("authData", {
-          userid: storedSession.id,
-          userProfilePic: savedImage,
-          userEmail: storedSession.email,
-          usergroupid: storedSession.groupid,
-          userRole: storedSession.role,
-        });
-      } else {
-        localStorage.removeItem(AUTH_SESSION_HINT_KEY);
+        if (storedSession) {
+          localStorage.setItem(
+            AUTH_SESSION_HINT_KEY,
+            "active"
+          );
+
+          setGlobalState("authData", {
+            userid: storedSession.id,
+            userProfilePic: savedImage,
+            userEmail: storedSession.email,
+            usergroupid: storedSession.groupid,
+            userRole: storedSession.role,
+          });
+        } else {
+          localStorage.removeItem(AUTH_SESSION_HINT_KEY);
+
+          setGlobalState("authData", {
+            userid: -1,
+            userProfilePic: savedImage,
+            userEmail: "",
+            usergroupid: -1,
+            userRole: "",
+          });
+        }
+      })
+      .catch((error: unknown) => {
+        console.error("Error restoring session:", error);
+
         setGlobalState("authData", {
           userid: -1,
-          userProfilePic: savedImage,
+          userProfilePic: "",
           userEmail: "",
           usergroupid: -1,
           userRole: "",
         });
-      }
-    }).catch((error: unknown) => {
-      console.error("Error restoring session:", error);
-      setGlobalState("authData", {
-        userid: -1,
-        userProfilePic: "",
-        userEmail: "",
-        usergroupid: -1,
-        userRole: "",
       });
-    });
   }, []);
 
-  if (!isAuthResolved && !isPublicLandingPath && (!isRootPath || hasSessionHint)) {
+  if (
+    !isAuthResolved &&
+    !isPublicLandingPath &&
+    (!isRootPath || hasSessionHint)
+  ) {
     return (
       <div
         style={{
@@ -148,9 +190,13 @@ function App() {
 
   return (
     <Router>
-      {isAuthenticated && authData.userRole !== undefined && (
-        <MainMenu navArrayLinks={navArrayLinks} userRole={authData.userRole} />
-      )}
+      {isAuthenticated &&
+        authData.userRole !== undefined && (
+          <MainMenu
+            navArrayLinks={navArrayLinks}
+            userRole={authData.userRole}
+          />
+        )}
 
       <Suspense
         fallback={
@@ -181,7 +227,10 @@ function App() {
             }
           />
 
-          <Route path="/landing" element={<LandingPage />} />
+          <Route
+            path="/landing"
+            element={<LandingPage />}
+          />
 
           <Route
             path="/groups"
@@ -216,7 +265,10 @@ function App() {
             }
           />
 
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={<Login />}
+          />
 
           <Route
             path="/user"
@@ -252,17 +304,21 @@ function App() {
             path="/mis-practicas/:id"
             element={
               <ProtectedRouteComponent>
-                <PracticeDetail userid={authData.userid ?? 0} title={""} />
+                <PracticeDetail
+                  userid={authData.userid ?? 0}
+                  title={""}
+                />
               </ProtectedRouteComponent>
             }
           />
 
+          {/* Gráficas principales con BranchSupport */}
           <Route
             path="/graph"
             element={
               <ProtectedRouteComponent>
                 <TDDChartPage
-                  port={new CommitHistoryAdapter()}
+                  port={tddVisualizationPort}
                   role={authData.userRole ?? ""}
                   teacher_id={authData.userid ?? -1}
                   graphs="graph"
@@ -271,12 +327,13 @@ function App() {
             }
           />
 
+          {/* Gráficas adicionales con BranchSupport */}
           <Route
             path="/aditionalgraph"
             element={
               <ProtectedRouteComponent>
                 <TDDChartPage
-                  port={new CommitHistoryAdapter()}
+                  port={tddVisualizationPort}
                   role={authData.userRole ?? ""}
                   teacher_id={authData.userid ?? -1}
                   graphs="aditionalgraph"
@@ -285,7 +342,10 @@ function App() {
             }
           />
 
-          <Route path="/invitation" element={<InvitationPage />} />
+          <Route
+            path="/invitation"
+            element={<InvitationPage />}
+          />
 
           <Route
             path="/asistente-ia"
@@ -304,6 +364,7 @@ function App() {
               </ProtectedRouteComponent>
             }
           />
+
         </Routes>
       </Suspense>
     </Router>
