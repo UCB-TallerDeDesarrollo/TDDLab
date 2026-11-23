@@ -202,3 +202,19 @@ node ./node_modules/typescript/bin/tsc --noEmit --incremental false --pretty fal
 Las pruebas HTTP utilizan el repositorio funcional en memoria y comprueban separadamente la composición con PostgreSQL mediante sustituciones de prueba. No prueban conectividad real con Neon. Para verificar la persistencia real se necesita una base aislada, la migración aplicada y `TDD_TEST_DATABASE_URL` para la suite de integración existente.
 
 Las consultas para gráficas, el despliegue, el aprovisionamiento automatizado de tokens y la política de actualización de HEAD siguen siendo entregas independientes. La implementación de este receptor no modifica los scripts ni el frontend.
+
+## Entrega de credenciales a un usuario de TDDLab
+
+`POST /api/TDDCycles/sync/credentials` recibe `{"repository":{"provider":"github","owner":"equipo-tddlab","name":"ejemplo-sprint4"}}` como JSON. El cliente de vinculación debe enviar la cookie de sesión `userSession`.
+
+En el backend, configurar `TDD_SYNC_URL` con la URL completa de `/api/TDDCycles/sync` y añadir `"userIds":[23]` a la entrada correspondiente de `TDD_SYNC_CREDENTIALS`, usando los IDs internos de los usuarios autorizados. Cada entrada existente sin `userIds` sigue funcionando para sincronizar y queda fuera de la entrega por sesión. Si hay varias entradas autorizadas para el mismo usuario y repositorio, se entrega la primera.
+
+El endpoint devuelve `TDD_SYNC_URL` y `TDD_SYNC_TOKEN` con `Cache-Control: no-store`. Devuelve `401` si la sesión es inválida y `403` si el usuario no tiene asignada esa credencial. La URL configurada requiere HTTPS, con excepción de HTTP en localhost.
+
+El cliente de vinculación debe guardar la respuesta fuera de Git para que el proyecto base la cargue cuando ejecute las pruebas. El servidor conserva la URL de PostgreSQL y las credenciales de Neon.
+
+### Configuración del despliegue
+
+En los entornos `staging` y `production` de GitHub Actions, asignar `TDD_DATABASE_URL` y `TDD_SYNC_CREDENTIALS` como secretos del entorno. Asignar `TDD_SYNC_URL` como variable del entorno con la URL pública completa del endpoint `/api/TDDCycles/sync` del backend correspondiente. Incluir los IDs internos autorizados en `userIds` para cada credencial que deba entregarse.
+
+El workflow pasa estos valores como variables de ejecución al proyecto de Vercel correspondiente. También se pueden configurar directamente en Vercel. Los valores definidos en GitHub Actions se aplican al despliegue, y los que se dejan vacíos se omiten para conservar la configuración administrada en Vercel.

@@ -1,5 +1,6 @@
 import express from "express";
 import request from "supertest";
+import jwt from "jsonwebtoken";
 import type { Pool } from "pg";
 import { createTDDHistorySyncRouter } from "../../src/routes/TDDHistorySyncRoutes";
 import * as tddDb from "../../src/config/tddDb";
@@ -28,6 +29,52 @@ function setup(configuration: string | undefined = credentials) {
   );
   return { app, repository, save };
 }
+
+describe("POST /api/TDDCycles/sync/credentials", () => {
+  const sessionSecret = "test-session-signing-secret";
+  const syncUrl = "https://tddlab.example/api/TDDCycles/sync";
+  const path = "/api/TDDCycles/sync/credentials";
+  const repository = mainSyncMock.repository;
+
+  beforeEach(() => {
+    jest.replaceProperty(process, "env", {
+      ...process.env, JWT_SECRET: sessionSecret, TDD_SYNC_URL: syncUrl,
+    });
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  function session(id: number): string {
+    return "userSession=" + jwt.sign({ id, role: "student" }, sessionSecret, { expiresIn: "5m" });
+  }
+
+  it("delivers only an explicitly assigned repository token and can use it to sync", async () => {
+    const { app } = setup(JSON.stringify([{ token, repository, userIds: [23] }]));
+    const response = await request(app).post(path).set("Cookie", session(23))
+      .send({ repository }).expect("Cache-Control", "no-store").expect(200);
+    expect(response.body).toEqual({ TDD_SYNC_URL: syncUrl, TDD_SYNC_TOKEN: token });
+    await request(app).post("/api/TDDCycles/sync")
+      .auth(response.body.TDD_SYNC_TOKEN, { type: "bearer" }).send(mainSyncMock).expect(200);
+  });
+
+  it("requires a valid session and denies unassigned users, repositories and legacy credentials", async () => {
+    const { app } = setup(JSON.stringify([{ token, repository, userIds: [23] }]));
+    await request(app).post(path).send({ repository }).expect(401);
+    await request(app).post(path).set("Cookie", "userSession=invalid").send({ repository }).expect(401);
+    await request(app).post(path).set("Cookie", session(24)).send({ repository }).expect(403);
+    await request(app).post(path).set("Cookie", session(23))
+      .send({ repository: { ...repository, name: "another-repo" } }).expect(403);
+    await request(setup().app).post(path).set("Cookie", session(23)).send({ repository }).expect(403);
+  });
+
+  it("rejects insecure endpoint configuration without returning the token", async () => {
+    process.env.TDD_SYNC_URL = "http://tddlab.example/api/TDDCycles/sync";
+    const { app } = setup(JSON.stringify([{ token, repository, userIds: [23] }]));
+    const response = await request(app).post(path).set("Cookie", session(23))
+      .send({ repository }).expect(503);
+    expect(response.body).not.toHaveProperty("TDD_SYNC_TOKEN");
+  });
+});
 
 describe("POST /api/TDDCycles/sync", () => {
   afterEach(() => jest.restoreAllMocks());

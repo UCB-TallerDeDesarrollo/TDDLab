@@ -1,8 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import type { ErrorRequestHandler } from "express";
 import { getTddPool } from "../config/tddDb";
 import { BranchSyncController } from "../controllers/TDDCycles/BranchSyncController";
+import { provisionBranchSync } from "../controllers/TDDCycles/BranchSyncProvisioningController";
 import { SyncBranchHistoryUseCase } from "../modules/TDDCycles/Application/SyncBranchHistoryUseCase";
 import type { ITDDHistoryRepository } from "../modules/TDDCycles/Domain/ITDDHistoryRepository";
 import {
@@ -36,6 +38,13 @@ export function createTDDHistorySyncRouter(options: SyncRouterOptions = {}) {
     options.credentials ?? (() => process.env.TDD_SYNC_CREDENTIALS);
   const controller = new BranchSyncController(
     new SyncBranchHistoryUseCase(options.repository ?? postgres),
+  );
+
+  router.post(
+    "/sync/credentials",
+    cookieParser(),
+    express.json({ limit: "4kb" }),
+    provisionBranchSync(configuration),
   );
 
   router.post(
@@ -79,13 +88,15 @@ export function createTDDHistorySyncRouter(options: SyncRouterOptions = {}) {
     },
   );
 
-  const handleParserError: ErrorRequestHandler = (error, _req, res, next) => {
+  const handleParserError: ErrorRequestHandler = (error, req, res, next) => {
     if (error?.type === "entity.too.large") {
       res
         .status(413)
         .json({
           code: "PAYLOAD_TOO_LARGE",
-          message: "El lote supera el límite de 2 MiB",
+          message: req.path === "/sync/credentials"
+            ? "La solicitud supera el límite de 4 KiB"
+            : "El lote supera el límite de 2 MiB",
         });
     } else if (error?.type === "entity.parse.failed") {
       res
