@@ -236,6 +236,8 @@ export const commitInformationMock: CommitInformationDataObject = {
 };
 
 export const tddCycleDataObject: TDDCycleDataObject = {
+    repository_slug: "owner/repoName",
+    branch: "main",
     commit: {
         comment_count: 0,
         date: new Date(),
@@ -251,4 +253,6 @@ export const tddCycleDataObject: TDDCycleDataObject = {
         total: 10,
     },
     test_count: "10",
+    test_passed: 0,
+    test_failed: 0,
 };

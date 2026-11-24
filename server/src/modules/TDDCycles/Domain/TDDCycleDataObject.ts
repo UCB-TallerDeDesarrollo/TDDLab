@@ -1,12 +1,18 @@
 export interface TDDCycleDataObject {
+  repository_slug: string;
+  branch: string;
+  parent_sha?: string;
   html_url: string;
-  stats: Stats;
+  stats: CommitHistoryStats;
   commit: Commit;
   sha: string;
   coverage: string;
   test_count: string;
+  author?: string;
+  test_passed: number;
+  test_failed: number;
 }
-export interface Stats {
+export interface CommitHistoryStats {
   total: number;
   additions: number;
   deletions: number;

@@ -92,5 +92,8 @@ output.zip
 #Configuracion local del IDE Webstorm
 .idea/
 
-#Agentes
+# Agentes
 .agents/
+
+# Bun Packet Manager
+**/bun.lock
