@@ -4,11 +4,41 @@ import { TestResultDataObject } from "../Domain/TestResultDataObject";
 import { IDBJobsRepository } from "../Domain/IDBJobsRepository";
 import { JobDataObject } from "../Domain/JobDataObject";
 import { ITimelineEntry } from "../Domain/ITimelineCommit";
+import { ITestResultRegistrationRepository, RegistrationOutcome, TestResultRegistration } from "../Domain/ITestResultRegistrationRepository";
 
-export class DBJobsRepository implements IDBJobsRepository {
+export class DBJobsRepository implements IDBJobsRepository, ITestResultRegistrationRepository {
   pool: Pool;
-  constructor() {
-    this.pool = new Pool(config);
+  constructor(pool: Pool = new Pool(config)) {
+    this.pool = pool;
+  }
+
+  /**
+   * Persists a registration atomically.  The unique index introduced by the
+   * migration is the concurrency boundary: two requests cannot create the
+   * same owner/repository/SHA tuple.
+   */
+  async register(result: TestResultRegistration): Promise<RegistrationOutcome> {
+    const client = await this.pool.connect();
+    try {
+      const inserted = await client.query(
+        `INSERT INTO jobstable (sha, owner, reponame, conclusion)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (owner, reponame, sha) DO NOTHING
+         RETURNING id`,
+        [result.sha, result.owner, result.reponame, result.conclusion]
+      );
+      if (inserted.rows.length > 0) return "created";
+
+      const existing = await client.query(
+        `SELECT conclusion FROM jobstable
+         WHERE sha = $1 AND owner = $2 AND reponame = $3`,
+        [result.sha, result.owner, result.reponame]
+      );
+      if (existing.rows[0]?.conclusion === result.conclusion) return "duplicate";
+      return "conflict";
+    } finally {
+      client.release();
+    }
   }
 
   async findJobByCommit(sha: string, owner: string, repoName: string): Promise<any | null> {
@@ -140,23 +170,15 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
       }
     }
   }
-  async getJobs(owner: string, repo: string) {
+  async getJobs(owner: string, repo: string): Promise<TestResultDataObject[]> {
     let client;
     try {
       client = await this.pool.connect();
-      const query = `
-        SELECT execution.id, commit.sha, $1 AS owner, $2 AS reponame,
-          CASE
-            WHEN execution.total_count = 0 THEN 'skipped'
-            WHEN execution.success THEN 'success'
-            ELSE 'failure'
-          END AS conclusion
-        FROM repository
-        JOIN test_execution execution ON execution.repository_id = repository.id
-        LEFT JOIN "commit" commit ON commit.id = execution.observed_commit_id
-        WHERE repository.locator = $3
-        ORDER BY execution.started_at DESC`;
-      const values = [owner, repo, `${owner}/${repo}`];
+      const query = `SELECT id, sha, owner, reponame, conclusion
+        FROM jobstable
+        WHERE owner = $1 AND reponame = $2
+        ORDER BY id ASC`;
+      const values = [owner, repo];
       const result = await client.query(query, values);
       return result.rows;
     } catch (error) {
@@ -217,6 +239,11 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
     repoName: string,
     jobs: Record<string, JobDataObject>
   ) {
+    // A read after a manual registration may have no GitHub workflow runs to
+    // synchronize. Avoid opening a transaction (and creating empty metadata)
+    // when there is nothing to persist.
+    if (Object.keys(jobs).length === 0) return;
+
     const client = await this.pool.connect();
     try {
       await client.query("BEGIN");

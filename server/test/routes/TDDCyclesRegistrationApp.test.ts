@@ -18,18 +18,18 @@ describe("Integración de registro en la aplicación", () => {
     expect(dependencies.registrationRepository).toBe(dependencies.dbJobsRepository);
   });
 
-  it("la fábrica real declara la ausencia del adaptador de registro", () => {
+  it("la fábrica real comparte el adaptador PostgreSQL entre lectura y registro", () => {
     delete process.env.TDD_JOBS_REPOSITORY;
     const dependencies = createTDDCyclesDependencies();
-    expect(dependencies.registrationRepository).toBeNull();
+    expect(dependencies.registrationRepository).toBe(dependencies.dbJobsRepository);
   });
 
-  it("la aplicación en modo real devuelve 503 sin adaptador de registro", async () => {
+  it("la aplicación en modo real devuelve un error controlado si PostgreSQL no está disponible", async () => {
     delete process.env.TDD_JOBS_REPOSITORY;
     const app = (require("../../src/app") as typeof import("../../src/app")).default;
     const response = await request(app).post("/api/TDDCycles/jobs").send({ sha: "abc123", owner: "demo", reponame: "tests", conclusion: "success" });
-    expect(response.status).toBe(503);
-    expect(response.body).toEqual({ error: "Registration repository unavailable" });
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: "Internal server error" });
   }, 30000);
 
   it("la aplicación real monta el POST, comparte el falso y maneja JSON malformado", async () => {

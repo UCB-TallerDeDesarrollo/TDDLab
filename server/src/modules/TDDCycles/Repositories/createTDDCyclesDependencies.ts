@@ -12,5 +12,6 @@ export function createTDDCyclesDependencies(): { dbJobsRepository: IDBJobsReposi
     return { dbJobsRepository, githubRepository: new FakeGithubRepository(), registrationRepository: dbJobsRepository };
   }
 
-  return { dbJobsRepository: new DBJobsRepository(), githubRepository: new GithubRepository(), registrationRepository: null };
+  const dbJobsRepository = new DBJobsRepository();
+  return { dbJobsRepository, githubRepository: new GithubRepository(), registrationRepository: dbJobsRepository };
 }
