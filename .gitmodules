@@ -1,4 +1,4 @@
 [submodule "VSCodeExtension/resources/TDDLabBaseProject"]
 	path = VSCodeExtension/resources/TDDLabBaseProject
-	url = https://github.com/UCB-TallerDeDesarrollo/TDDLabBaseProject.git
+	url = https://github.com/Jpriveram/TDDLabScriptTests.git
 	branch = main

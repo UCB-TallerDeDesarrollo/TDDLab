@@ -5,6 +5,7 @@ import server from "./config/server";
 import router from "./routes/userRoutes";
 import assignmentsRouter from "./routes/assignmentRoutes";
 import TDDCyclesRouter from "./routes/TDDCyclesRoutes";
+import { createTDDHistorySyncRouter } from "./routes/TDDHistorySyncRoutes";
 import groupsRouter from "./routes/groupsRouter";
 import submissionsRouter from "./routes/submissionRoutes";
 import teacherCommentsOnSubmissionRouter from "./routes/teacherCommentsOnSubmissionsRoutes";
@@ -42,6 +43,8 @@ if (allowedOrigins.has(origin)) {
   })
 );
 
+// La sincronizacion valida su propio token y limite JSON.
+app.use("/api/TDDCycles", createTDDHistorySyncRouter());
 app.use(express.json());
 
 // Enable CORS for all routes
