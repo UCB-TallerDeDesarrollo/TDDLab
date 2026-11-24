@@ -5,13 +5,14 @@ import { createTDDCyclesDependencies } from "../modules/TDDCycles/Repositories/c
 
 // Create instances of your repositories
 const dbCommitsRepository = new DBCommitsRepository();
-const { dbJobsRepository, githubRepository } = createTDDCyclesDependencies();
+const { dbJobsRepository, githubRepository, registrationRepository } = createTDDCyclesDependencies();
 
 // Create an instance of your controller
 const tddCyclesController = new TDDCyclesController(
   dbCommitsRepository,
   dbJobsRepository,
-  githubRepository
+  githubRepository,
+  registrationRepository
 );
 
 // Create a new router to handle the TDDCycles routes
@@ -27,6 +28,11 @@ TDDCyclesRouter.get(
 TDDCyclesRouter.get(
   "/jobs",
   async (req, res) => await tddCyclesController.getTestResults(req, res)
+);
+
+TDDCyclesRouter.post(
+  "/jobs",
+  async (req, res) => await tddCyclesController.registerTestResult(req, res)
 );
 
 TDDCyclesRouter.post(

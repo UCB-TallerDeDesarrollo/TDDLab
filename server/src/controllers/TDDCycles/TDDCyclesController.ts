@@ -10,11 +10,15 @@ import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBComm
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
+import { ITestResultRegistrationRepository } from "../../modules/TDDCycles/Domain/ITestResultRegistrationRepository";
+import { RegisterTestResultUseCase } from "../../modules/TDDCycles/Application/registerTestResultUseCase";
+import { TestResultValidationError } from "../../modules/TDDCycles/Application/TestResultValidationError";
 
 
 
 
 class TDDCyclesController {
+  private readonly registerTestResultUseCase: RegisterTestResultUseCase | null;
   tddCyclesUseCase: GetTDDCyclesUseCase;
   testResultsUseCase: GetTestResultsUseCase;
   submitTDDLogToDB: PostTDDLogUseCase;
@@ -27,8 +31,10 @@ class TDDCyclesController {
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
-    githubRepository: IGithubRepository
+    githubRepository: IGithubRepository,
+    registrationRepository: ITestResultRegistrationRepository | null = null
   ) {
+    this.registerTestResultUseCase = registrationRepository ? new RegisterTestResultUseCase(registrationRepository) : null;
     this.tddCyclesUseCase = new GetTDDCyclesUseCase(
       dbCommitsRepository,
       githubRepository
@@ -47,6 +53,21 @@ class TDDCyclesController {
     this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
     this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
+  }
+  async registerTestResult(req: Request, res: Response) {
+    if (!this.registerTestResultUseCase) {
+      return res.status(503).json({ error: "Registration repository unavailable" });
+    }
+    try {
+      const status = await this.registerTestResultUseCase.execute(req.body);
+      const httpStatus = status === "created" ? 201 : status === "duplicate" ? 200 : 409;
+      return res.status(httpStatus).json({ status });
+    } catch (error) {
+      if (error instanceof TestResultValidationError) {
+        return res.status(400).json({ error: error.message, field: error.field });
+      }
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
   //NO SE USA
   async getTDDCycles(req: Request, res: Response) {

@@ -13,6 +13,7 @@ import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
 import cookieParser from "cookie-parser";
+import { tddCyclesJsonErrorHandler } from "./middleware/tddCyclesJsonErrorHandler";
 
 const app = express();
 const port = 3000;
@@ -68,6 +69,7 @@ app.use("/api/AIAssistant", aiAssistantRouter);
 
 
 app.use("/api/featureFlags", featureFlagsRouter);
+app.use(tddCyclesJsonErrorHandler);
 
 // Start the server
 server(app, port);
