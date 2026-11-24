@@ -7,6 +7,7 @@ import {
   saveTeacherSubmissions,
 } from "../../../src/shared/helpers/navigationHandlers";
 import { useTDDChartPage } from "../../../src/presentation/tdd-visualization/hooks/useTDDChartPage";
+import { fetchTDDVisualizationData } from "../../../src/presentation/tdd-visualization/services/tddVisualization.service";
 import { Submission } from "../../../src/presentation/tdd-visualization/types/tddVisualization.types";
 
 jest.mock("../../../src/presentation/tdd-visualization/services/tddVisualization.service", () => ({
@@ -46,6 +47,7 @@ function ChartNavigationHarness() {
     <div>
       <output data-testid="current-index">{page.currentIndex}</output>
       <output data-testid="current-query">{location.search}</output>
+      <output data-testid="first-commit-sha">{page.chartsState.commitsInfo?.[0]?.sha ?? ""}</output>
       <button onClick={page.goToPreviousStudent}>Previous student</button>
       <button onClick={page.goToNextStudent}>Next student</button>
     </div>
@@ -102,6 +104,51 @@ describe("useTDDChartPage teacher navigation", () => {
       expect(screen.getByTestId("current-query")).toHaveTextContent(
         "submissionId=10",
       );
+    });
+  });
+
+  it("ignores stale visualization responses when navigating quickly to another student", async () => {
+    const mockedFetch = fetchTDDVisualizationData as jest.Mock;
+    let resolveFirst: ((value: unknown) => void) | undefined;
+    mockedFetch
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveFirst = resolve;
+          }),
+      )
+      .mockResolvedValueOnce({
+        commits: [{ sha: "second-sha" }],
+        commitsTddCycles: [],
+        tddLogs: [],
+      });
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          "/graph?repoOwner=student&repoName=first-repo&assignmentId=7&submissionId=10",
+        ]}
+      >
+        <Routes>
+          <Route path="/graph" element={<ChartNavigationHarness />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Next student" }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("first-commit-sha")).toHaveTextContent("second-sha");
+    });
+
+    resolveFirst?.({
+      commits: [{ sha: "stale-first-sha" }],
+      commitsTddCycles: [],
+      tddLogs: [],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("first-commit-sha")).toHaveTextContent("second-sha");
     });
   });
 });

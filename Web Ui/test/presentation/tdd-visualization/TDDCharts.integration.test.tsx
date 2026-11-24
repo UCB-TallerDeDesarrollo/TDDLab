@@ -174,37 +174,217 @@ describe('Integración de la visualización TDD', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
   });
 
-  it('permite resaltar ramas en el Dashboard y en las vistas de métricas individuales', () => {
-    renderCharts([{
-      commitId: 'commit-1',
-      commitName: 'feat: cálculo',
-      commitTimestamp: 1,
-      testId: 0,
-      gitGraph: [
-        { sha: 'commit-1', parents: ['root'], subject: 'feat: cálculo', historyBranch: 'main' },
-        { sha: 'commit-feat', parents: ['root'], subject: 'feat: experimental', recordedBranches: ['feature-exp'] },
-        { sha: 'root', parents: [], subject: 'chore: init', historyBranch: 'main' },
-      ],
-    }]);
+  it('arranca con 1 rama por defecto, previsualiza al pasar el cursor en el dropdown y mantiene el foco al navegar', () => {
+    const multiBranchCommits: CommitDataObject[] = [
+      {
+        ...commits[0],
+        sha: 'commit-main',
+        coverage: 91,
+        test_count: 3,
+        conclusion: 'success',
+        commit: { ...commits[0].commit, message: 'feat: base' },
+      },
+      {
+        ...commits[0],
+        sha: 'commit-desc',
+        coverage: 82,
+        test_count: 2,
+        conclusion: 'success',
+        commit: { ...commits[0].commit, message: 'feat: descuento' },
+      },
+      {
+        ...commits[0],
+        sha: 'commit-red',
+        coverage: null,
+        test_count: 1,
+        conclusion: 'failure',
+        commit: { ...commits[0].commit, message: 'test: redondeo fallido' },
+      },
+    ];
 
-    expect(screen.getByLabelText('Resaltar rama')).toBeInTheDocument();
-    const branchSelect = screen.getByLabelText('Resaltar rama') as HTMLSelectElement;
-    expect(within(branchSelect).getByRole('option', { name: 'Todas' })).toBeInTheDocument();
-    expect(within(branchSelect).getByRole('option', { name: 'feature-exp' })).toBeInTheDocument();
-    expect(within(branchSelect).getByRole('option', { name: 'main' })).toBeInTheDocument();
+    render(
+      <TDDCharts
+        commits={multiBranchCommits}
+        tddLogs={[
+          { numPassedTests: 0, failedTests: 1, numTotalTests: 1, timestamp: 1, success: false, testId: 10 },
+          { commitId: 'commit-red', commitName: 'test: redondeo fallido', commitTimestamp: 2, testId: 10 },
+          { numPassedTests: 2, failedTests: 0, numTotalTests: 2, timestamp: 3, success: true, testId: 11 },
+          { commitId: 'commit-desc', commitName: 'feat: descuento', commitTimestamp: 4, testId: 11 },
+          {
+            commitId: 'commit-main',
+            commitName: 'feat: base',
+            commitTimestamp: 5,
+            testId: 12,
+            gitGraph: [
+              { sha: 'merge', parents: ['commit-desc', 'commit-red'], subject: 'merge: integrar', historyBranch: 'main' },
+              { sha: 'commit-desc', parents: ['commit-main'], subject: 'feat: descuento', recordedBranches: ['feature/descuentos'] },
+              { sha: 'commit-red', parents: ['commit-main'], subject: 'test: redondeo fallido', recordedBranches: ['feature/redondeo'] },
+              { sha: 'commit-main', parents: ['root'], subject: 'feat: base', historyBranch: 'main' },
+              { sha: 'root', parents: [], subject: 'chore: init', historyBranch: 'main' },
+            ],
+          },
+        ]}
+        metric={null}
+        setMetric={jest.fn()}
+        port={new MockGithubAPI()}
+        role="student"
+        commitsTddCycles={null}
+        typegraphs="graph"
+      />,
+    );
 
-    fireEvent.change(branchSelect, { target: { value: 'feature-exp' } });
-    expect(branchSelect.value).toBe('feature-exp');
+    // Leyenda limpia: Exitoso, Fallido, sin Refactor redundante.
+    const bubbleLegend = screen.getByLabelText('Leyenda de colores de commits');
+    expect(within(bubbleLegend).getByText('Exitoso')).toBeInTheDocument();
+    expect(within(bubbleLegend).getByText('Fallido')).toBeInTheDocument();
+    expect(within(bubbleLegend).queryByText('Refactor')).not.toBeInTheDocument();
 
-    const [dashboard] = screen.getAllByTestId('commit-metric-chart');
-    const { datasets } = JSON.parse(dashboard.textContent ?? '{}');
-    expect(datasets[0].backgroundColor).toBe('rgba(200, 200, 200, 0.2)');
+    const branchRegion = screen.getByRole('region', { name: 'Control de ramas' });
+    const trigger = within(branchRegion).getByRole('button', { name: 'Seleccionar ramas' });
+    expect(trigger).toHaveTextContent('main');
 
-    fireEvent.change(branchSelect, { target: { value: 'main' } });
-    const [dashboardMain] = screen.getAllByTestId('commit-metric-chart');
-    const { datasets: datasetsMain } = JSON.parse(dashboardMain.textContent ?? '{}');
-    expect(datasetsMain[0].backgroundColor).toContain('rgba(0, 110, 0');
-    expect(datasetsMain[0].borderColor).toBe('#378de5');
-    expect(datasetsMain[0].borderWidth).toBe(3);
+    const getBubbleDatasets = () =>
+      JSON.parse(screen.getAllByTestId('commit-metric-chart')[0].textContent ?? '{}').datasets;
+
+    // Arranca con 1 rama por defecto (main) activa y las demás atenuadas.
+    let datasets = getBubbleDatasets();
+    expect(datasets).toHaveLength(3);
+    expect(datasets.find((d: any) => d.label === 'Commit 2').backgroundColor).toContain('rgba(0, 110, 0');
+    expect(datasets.find((d: any) => d.label === 'Commit 2').borderWidth).toBe(3);
+    expect(datasets.find((d: any) => d.label === 'Commit 3').backgroundColor).toBe('rgba(148, 163, 184, 0.28)');
+    expect(datasets.find((d: any) => d.label === 'Commit 4').backgroundColor).toBe('rgba(148, 163, 184, 0.28)');
+
+    // El riel de topología muestra commits estructurales (root y merge) sin inventar puntos en la burbuja.
+    const rail = screen.getByRole('region', { name: 'Recorrido de ramas y merges' });
+    expect(rail.querySelector('[data-rail-commit="root"]')).toHaveAttribute('data-rail-active', 'true');
+    expect(rail.querySelector('[data-rail-commit="merge"]')).toHaveAttribute('data-rail-active', 'true');
+    expect(rail.querySelector('[data-rail-commit="commit-desc"]')).toHaveAttribute('data-rail-active', 'false');
+    expect(document.querySelector('[data-cycle-commit="commit-desc"]')).toHaveAttribute('data-cycle-active', 'false');
+
+    // Abrir dropdown y probar vista previa en vivo al pasar el cursor.
+    fireEvent.click(trigger);
+    const menu = within(branchRegion).getByRole('menu', { name: 'Ramas disponibles' });
+    const allItem = within(menu).getByRole('menuitemcheckbox', { name: /Todas las ramas/ });
+    const mainItem = within(menu).getByRole('menuitemcheckbox', { name: 'Rama main' });
+    const descItem = within(menu).getByRole('menuitemcheckbox', { name: 'Rama feature/descuentos' });
+    const redItem = within(menu).getByRole('menuitemcheckbox', { name: 'Rama feature/redondeo' });
+
+    expect(mainItem).toHaveAttribute('aria-checked', 'true');
+    expect(descItem).toHaveAttribute('aria-checked', 'false');
+
+    fireEvent.mouseEnter(descItem);
+    expect(screen.getByText(/Vista previa:/)).toHaveTextContent('feature/descuentos');
+    expect(document.querySelector('[data-cycle-commit="commit-desc"]')).toHaveAttribute('data-cycle-active', 'true');
+    expect(rail.querySelector('[data-rail-commit="root"]')).toHaveAttribute('data-rail-active', 'false');
+
+    // Al salir del menú sin hacer clic, vuelve a la selección fijada (main).
+    fireEvent.mouseLeave(menu);
+    expect(screen.queryByText(/Vista previa:/)).not.toBeInTheDocument();
+    expect(document.querySelector('[data-cycle-commit="commit-desc"]')).toHaveAttribute('data-cycle-active', 'false');
+    expect(rail.querySelector('[data-rail-commit="root"]')).toHaveAttribute('data-rail-active', 'true');
+
+    // Clic en feature/descuentos suma esa rama sin apagar main.
+    fireEvent.click(descItem);
+    expect(mainItem).toHaveAttribute('aria-checked', 'true');
+    expect(descItem).toHaveAttribute('aria-checked', 'true');
+    expect(redItem).toHaveAttribute('aria-checked', 'false');
+    expect(document.querySelector('[data-cycle-commit="commit-desc"]')).toHaveAttribute('data-cycle-active', 'true');
+
+    // Clic en Todas las ramas activa todas y conserva coverage: null como null en la mini gráfica de cobertura.
+    fireEvent.click(allItem);
+    expect(allItem).toHaveAttribute('aria-checked', 'true');
+    datasets = getBubbleDatasets();
+    expect(datasets.every((d: any) => d.backgroundColor !== 'rgba(148, 163, 184, 0.28)')).toBe(true);
+    const failedDataset = datasets.find((d: any) => d.data[0].y === 1);
+    expect(failedDataset.backgroundColor).toBe('red');
+
+    const coverageMiniChart = JSON.parse(screen.getAllByTestId('commit-metric-chart')[2].textContent ?? '{}');
+    expect(coverageMiniChart.datasets[0].data).toContain(null);
+
+    // Desde Todas, clic en feature/redondeo aísla esa rama y se preserva al abrir la gráfica de cobertura sin reload.
+    fireEvent.click(redItem);
+    expect(redItem).toHaveAttribute('aria-checked', 'true');
+    expect(mainItem).toHaveAttribute('aria-checked', 'false');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir gráfica de Cobertura de Código' }));
+    const singleCoverage = JSON.parse(screen.getByTestId('commit-metric-chart').textContent ?? '{}');
+    expect(singleCoverage.datasets[0].data).toContain(null);
+    expect(screen.getByRole('button', { name: 'Seleccionar ramas' })).toHaveTextContent('feature/redondeo');
+  });
+
+  it('elige la rama más reciente por defecto cuando el repositorio no tiene main', () => {
+    render(
+      <TDDCharts
+        commits={[
+          { ...commits[0], sha: 'c-a' },
+          { ...commits[0], sha: 'c-b' },
+        ]}
+        tddLogs={[
+          {
+            commitId: 'c-b',
+            commitName: 'feat: pago',
+            commitTimestamp: 2,
+            testId: 1,
+            gitGraph: [
+              { sha: 'c-b', parents: ['c-a'], subject: 'feat: pago', recordedBranches: ['feature/pagos'] },
+              { sha: 'c-a', parents: [], subject: 'feat: carrito', recordedBranches: ['feature/carrito'] },
+            ],
+          },
+        ]}
+        metric={null}
+        setMetric={jest.fn()}
+        port={new MockGithubAPI()}
+        role="student"
+        commitsTddCycles={null}
+        typegraphs="graph"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Seleccionar ramas' });
+    expect(trigger).toHaveTextContent('feature/pagos');
+    fireEvent.click(trigger);
+    expect(screen.queryByRole('menuitemcheckbox', { name: 'Rama main' })).not.toBeInTheDocument();
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Rama feature/pagos' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Rama feature/carrito' })).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('elige por defecto una rama con métricas cuando main solo tiene commits de contexto', () => {
+    render(
+      <TDDCharts
+        commits={[
+          { ...commits[0], sha: 'c-desc-2' },
+          { ...commits[0], sha: 'c-red' },
+          { ...commits[0], sha: 'c-desc-1' },
+        ]}
+        tddLogs={[
+          {
+            commitId: 'c-desc-1',
+            commitName: 'test: descuento',
+            commitTimestamp: 1,
+            testId: 0,
+            gitGraph: [
+              { sha: 'merge', parents: ['c-desc-2', 'c-red'], subject: 'merge: integrar', historyBranch: 'main' },
+              { sha: 'c-desc-2', parents: ['c-desc-1'], subject: 'fix: descuento', recordedBranches: ['descuentos'] },
+              { sha: 'c-red', parents: ['root'], subject: 'feat: redondeo', recordedBranches: ['redondeo'] },
+              { sha: 'c-desc-1', parents: ['root'], subject: 'test: descuento', recordedBranches: ['descuentos'] },
+              { sha: 'root', parents: [], subject: 'chore: init', historyBranch: 'main' },
+            ],
+          },
+        ]}
+        metric={null}
+        setMetric={jest.fn()}
+        port={new MockGithubAPI()}
+        role="student"
+        commitsTddCycles={null}
+        typegraphs="graph"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Seleccionar ramas' });
+    expect(trigger).toHaveTextContent('descuentos');
+    fireEvent.click(trigger);
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Rama main' })).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Rama descuentos' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Rama redondeo' })).toHaveAttribute('aria-checked', 'false');
   });
 });

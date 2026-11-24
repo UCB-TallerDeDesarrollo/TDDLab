@@ -1,11 +1,16 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
-import { useRef, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
 
 import {
   Chart as ChartJS,
+  type Chart,
+  type ChartData,
+  type ChartOptions,
+  type ScriptableLineSegmentContext,
+  type TooltipItem,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -23,7 +28,21 @@ import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
 import { GitGraphCommit, TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
-import { getCommitBranches } from "./TDDCommitLanes";
+import BranchFocusBar from "./BranchFocusBar";
+import {
+  type BranchMetadata,
+  type BranchSelection,
+  buildBranchMetadata,
+  DIMMED_BORDER_COLOR,
+  DIMMED_FILL_COLOR,
+  formatCoverageLabel,
+  getCommitBranchAccentColor,
+  getCommitColor,
+  getSharedActiveBranch,
+  isCommitInActiveBranches,
+  resolveActiveBranches,
+  toggleBranchSelection,
+} from "./branchVisualization";
 import "../styles/TDDCommitHistory.css";
 
 ChartJS.register(
@@ -41,12 +60,21 @@ ChartJS.register(
 
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
-  tddLogs: TDDLogEntry [] | null;
+  tddLogs: TDDLogEntry[] | null;
   optionSelected: string;
   port: CommitHistoryRepository;
   role: string;
   commitsCycles: CommitCycle[] | null;
   gitGraph?: GitGraphCommit[];
+  branchMeta?: BranchMetadata;
+  selectedBranches?: ReadonlySet<string> | null;
+  activeBranches?: ReadonlySet<string> | null;
+  previewBranch?: string | "all" | null;
+  onToggleBranch?: (branch: string) => void;
+  onSelectAllBranches?: () => void;
+  onPreviewBranch?: (branch: string | "all" | null) => void;
+  onSelectMetric?: (metric: string) => void;
+  logsError?: boolean;
 }
 
 function TDDLineCharts({
@@ -55,198 +83,209 @@ function TDDLineCharts({
   optionSelected,
   port,
   role,
-  commitsCycles: _,
-  gitGraph
+  gitGraph,
+  branchMeta: externalBranchMeta,
+  selectedBranches: externalSelectedBranches,
+  activeBranches: externalActiveBranches,
+  previewBranch: externalPreviewBranch,
+  onToggleBranch: externalToggleBranch,
+  onSelectAllBranches: externalSelectAllBranches,
+  onPreviewBranch: externalOnPreviewBranch,
+  onSelectMetric,
+  logsError = false,
 }: LineChartProps) {
-  
-  const commitNumbers = getCommitNumbers(commits ?? [], gitGraph);
-  const [selectedBranch, setSelectedBranch] = useState<string>('');
-  const branches = useMemo(
-    () => [...new Set(gitGraph?.flatMap(getCommitBranches))].sort((a, b) => a.localeCompare(b)),
-    [gitGraph]
+  const commitNumbers = useMemo(() => getCommitNumbers(commits ?? [], gitGraph), [commits, gitGraph]);
+  const measuredShas = useMemo(
+    () => new Set((commits ?? []).map((commit) => commit.sha)),
+    [commits],
   );
-  const branch = branches.includes(selectedBranch) ? selectedBranch : '';
-  const commitBranchMap = useMemo(
-    () => new Map(gitGraph?.map((c) => [c.sha, getCommitBranches(c)])),
-    [gitGraph]
+  const fallbackBranchMeta = useMemo(
+    () => buildBranchMetadata(gitGraph, measuredShas),
+    [gitGraph, measuredShas],
   );
-  const filteredCommitsObject = commits && [...commits].sort((a, b) =>
-    (commitNumbers.get(b.sha) ?? 0) - (commitNumbers.get(a.sha) ?? 0)
-  );
-  let dataChart: any = {};
-  const chartRef = useRef<any>();
+  const branchMeta = externalBranchMeta ?? fallbackBranchMeta;
 
-  
+  const [localSelection, setLocalSelection] = useState<BranchSelection>("auto");
+  const [localPreview, setLocalPreview] = useState<string | "all" | null>(null);
+  useEffect(() => {
+    setLocalSelection("auto");
+    setLocalPreview(null);
+  }, [branchMeta.branchesKey]);
+
+  const selectedBranches =
+    externalSelectedBranches !== undefined
+      ? externalSelectedBranches
+      : resolveActiveBranches(localSelection, branchMeta);
+
+  const previewBranch =
+    externalPreviewBranch !== undefined ? externalPreviewBranch : localPreview;
+
+  const activeBranches = useMemo<ReadonlySet<string> | null>(() => {
+    if (externalActiveBranches !== undefined) return externalActiveBranches;
+    if (previewBranch === "all") return null;
+    if (previewBranch && branchMeta.branchColorMap.has(previewBranch)) {
+      return new Set([previewBranch]);
+    }
+    return selectedBranches;
+  }, [externalActiveBranches, previewBranch, branchMeta, selectedBranches]);
+
+  const handleToggleBranch =
+    externalToggleBranch ??
+    ((branch: string) =>
+      setLocalSelection((prev) => toggleBranchSelection(prev, branch, branchMeta)));
+
+  const handleSelectAllBranches =
+    externalSelectAllBranches ?? (() => setLocalSelection("all"));
+
+  const handlePreviewBranch = externalOnPreviewBranch ?? setLocalPreview;
+
+  const filteredCommitsObject = useMemo(
+    () =>
+      commits &&
+      [...commits].sort(
+        (a, b) => (commitNumbers.get(b.sha) ?? 0) - (commitNumbers.get(a.sha) ?? 0),
+      ),
+    [commits, commitNumbers],
+  );
+  const chronologicalCommits = useMemo(
+    () => (filteredCommitsObject ?? []).slice().reverse(),
+    [filteredCommitsObject],
+  );
+
+  const chartRef = useRef<Chart<"line", Array<number | null>>>();
 
   function getDataLabels() {
-    return (filteredCommitsObject ?? []).slice().reverse().map((commit) =>
-      `Commit ${commitNumbers.get(commit.sha)}`
+    return chronologicalCommits.map(
+      (commit, index) => `Commit ${commitNumbers.get(commit.sha) ?? index + 1}`,
     );
   }
 
   function getCommitName() {
-    if (filteredCommitsObject != null) {
-      const commitsArray = filteredCommitsObject.map(
-        (commit) => commit.commit.message
-      );
-      return commitsArray.reverse();
-    } else {
-      return [];
-    }
-  }
-
-  function containsRefactor(commitMessage: string): boolean {
-    const regex = /\brefactor(\w*)\b/i;
-    return regex.test(commitMessage);
+    return chronologicalCommits.map((commit) => commit.commit.message);
   }
 
   function getColorConclusion(): string[] {
     if (!filteredCommitsObject) return ["white"];
 
-    return filteredCommitsObject
-      .map((commit) => {
-        const commitBranches = commitBranchMap.get(commit.sha) ?? [];
-        const isBranchActive = branch ? commitBranches.includes(branch) : true;
-        return isBranchActive ? getCommitColor(commit) : "rgba(200, 200, 200, 0.2)";
-      })
-      .reverse();
+    return chronologicalCommits.map((commit) => {
+      const isBranchActive = isCommitInActiveBranches(commit.sha, branchMeta, activeBranches);
+      return isBranchActive ? getCommitColor(commit) : DIMMED_FILL_COLOR;
+    });
   }
 
-  function getCommitColor(commit: CommitDataObject): string {
-    if (
-    !commit || typeof commit !== "object" ||
-    !commit.commit || typeof commit.commit.message !== "string"
-    ) {
-    return "red"; // Valor por defecto en caso de datos malformados
-    }
-    const { coverage, test_count, conclusion, commit: commitInfo } = commit;
-
-    if (
-    coverage === undefined || 
-    coverage === null
-    ) return "black";
-
-    const hasNoTestsOrCoverageFailed = 
-      test_count === 0 || 
-      test_count === undefined || 
-      coverage === 0 || 
-      conclusion === "failure";
-
-    if (hasNoTestsOrCoverageFailed) return "red";
-
-    const isRefactor = containsRefactor(commitInfo.message);
-    return getColorByCoverage(coverage, isRefactor);
-  }
-
-  const getColorByCoverage = (coverage: number, isRefactor: boolean) => {
-    let colorValue = 110;
-    let opacity;
-    const baseColor = isRefactor ? 'blue' : 'green';
-  
-    if (coverage >= 90) {
-      opacity = 1;
-    } else if (coverage >= 80) {
-      opacity = 0.8;
-    } else if (coverage >= 70) {
-      opacity = 0.6;
-    } else if (coverage >= 60) {
-      opacity = 0.4;
-    } else {
-      opacity = 0.2;
-    }
-  
-    return baseColor === 'green'
-      ? `rgba(0, ${colorValue}, 0, ${opacity})`
-      : `rgba(0, 100, 255, ${opacity})`;
-  };
-  
   function getCommitStats(): [number[], number[], number[], Date[]] {
     if (filteredCommitsObject != null) {
-      const additions = filteredCommitsObject
-        .map((commit) => commit.stats.additions)
-        .reverse();
-      const deletions = filteredCommitsObject
-        .map((commit) => commit.stats.deletions)
-        .reverse();
-      const total = filteredCommitsObject
-        .map((commit) => commit.stats.total)
-        .reverse();
-      
-      const creation_date = filteredCommitsObject
-        .map((commit) => new Date(commit.commit.date))
-        .reverse();
-      
+      const additions = chronologicalCommits.map((commit) => commit.stats.additions);
+      const deletions = chronologicalCommits.map((commit) => commit.stats.deletions);
+      const total = chronologicalCommits.map((commit) => commit.stats.total);
+      const creation_date = chronologicalCommits.map((commit) => new Date(commit.commit.date));
+
       return [additions, deletions, total, creation_date];
-    } else {
-      return [[], [], [], []];
     }
+    return [[], [], [], []];
   }
 
-  function getCommitCoverage() {
+  function getCommitCoverage(): Array<number | null> {
     if (filteredCommitsObject != null) {
-      const coverage = filteredCommitsObject
-        .map((commit) => (commit.coverage != null && commit.coverage !== 0 ? commit.coverage : 0))
-        .reverse();
-      return coverage;
-    } else {
-      return [];
+      return chronologicalCommits.map((commit) => commit.coverage ?? null);
     }
+    return [];
   }
-  
+
   function getTestsCount() {
     if (filteredCommitsObject != null) {
-      const testCount = filteredCommitsObject
-        .map((commit) => commit.test_count)
-        .reverse();
-      return testCount;
-    } else {
-      return [];
+      return chronologicalCommits.map((commit) => commit.test_count);
     }
+    return [];
   }
 
   function getCommitLink() {
     if (filteredCommitsObject != null) {
-      const urls = filteredCommitsObject.map((commit) => commit.html_url);
-      return urls.reverse();
-    } else {
-      return [];
+      return chronologicalCommits.map((commit) => commit.html_url);
     }
+    return [];
   }
 
-  function getDataChart(dataChartSelected: any, dataLabel: string) {
-    const reversedCommits = (filteredCommitsObject ?? []).slice().reverse();
-    dataChart = {
+  function getDataChart(
+    dataChartSelected: Array<number | null>,
+    dataLabel: string,
+  ): ChartData<"line", Array<number | null>> {
+    return {
       labels: getDataLabels(),
       datasets: [
         {
           label: dataLabel,
-          backgroundColor: getColorConclusion(),
+          spanGaps: false,
+          backgroundColor: "rgba(0, 110, 0, 0.85)",
+          pointBackgroundColor: getColorConclusion(),
           borderColor: "rgba(0, 0, 0, 0.2)",
-          pointBorderColor: reversedCommits.map((commit) => {
-            const commitBranches = commitBranchMap.get(commit.sha) ?? [];
-            return branch && commitBranches.includes(branch) ? "#378de5" : "rgba(0, 0, 0, 0.2)";
+          pointBorderColor: chronologicalCommits.map((commit) => {
+            const isBranchActive = isCommitInActiveBranches(commit.sha, branchMeta, activeBranches);
+            if (!isBranchActive) return DIMMED_BORDER_COLOR;
+            const accent = getCommitBranchAccentColor(commit.sha, branchMeta, activeBranches);
+            if (activeBranches !== null && accent) return accent;
+            if (branchMeta.branches.length > 1 && accent) return accent;
+            return "rgba(0, 0, 0, 0.2)";
           }),
-          pointBorderWidth: reversedCommits.map((commit) => {
-            const commitBranches = commitBranchMap.get(commit.sha) ?? [];
-            return branch && commitBranches.includes(branch) ? 3 : 1;
+          pointBorderWidth: chronologicalCommits.map((commit) => {
+            const isBranchActive = isCommitInActiveBranches(commit.sha, branchMeta, activeBranches);
+            if (!isBranchActive) return 1;
+            const accent = getCommitBranchAccentColor(commit.sha, branchMeta, activeBranches);
+            if (activeBranches !== null && accent) return 3;
+            if (branchMeta.branches.length > 1 && accent) return 2;
+            return 1;
           }),
-          pointRadius: reversedCommits.map((commit) => {
-            const commitBranches = commitBranchMap.get(commit.sha) ?? [];
-            return branch && commitBranches.includes(branch) ? 15 : 12;
+          pointRadius: chronologicalCommits.map((commit) => {
+            const isBranchActive = isCommitInActiveBranches(commit.sha, branchMeta, activeBranches);
+            if (!isBranchActive) return 9;
+            return activeBranches !== null ? 14 : 12;
           }),
+          pointHoverRadius: 15,
+          segment: {
+            borderColor: (ctx: ScriptableLineSegmentContext) => {
+              const from = chronologicalCommits[ctx.p0DataIndex];
+              const to = chronologicalCommits[ctx.p1DataIndex];
+              if (!from || !to) return "rgba(0, 0, 0, 0.2)";
+              const fromActive = isCommitInActiveBranches(from.sha, branchMeta, activeBranches);
+              const toActive = isCommitInActiveBranches(to.sha, branchMeta, activeBranches);
+              if (!fromActive || !toActive) return "rgba(180, 180, 180, 0.2)";
+              if (branchMeta.branches.length > 1) {
+                const shared = getSharedActiveBranch(
+                  from.sha,
+                  to.sha,
+                  branchMeta,
+                  activeBranches,
+                );
+                if (shared) return branchMeta.branchColorMap.get(shared) ?? "rgba(5, 40, 69, 0.45)";
+                return "rgba(130, 145, 160, 0.35)";
+              }
+              return "rgba(0, 0, 0, 0.2)";
+            },
+            borderDash: (ctx: ScriptableLineSegmentContext) => {
+              const from = chronologicalCommits[ctx.p0DataIndex];
+              const to = chronologicalCommits[ctx.p1DataIndex];
+              if (!from || !to) return undefined;
+              const fromActive = isCommitInActiveBranches(from.sha, branchMeta, activeBranches);
+              const toActive = isCommitInActiveBranches(to.sha, branchMeta, activeBranches);
+              if (!fromActive || !toActive) return [5, 5];
+              if (
+                branchMeta.branches.length > 1 &&
+                !getSharedActiveBranch(from.sha, to.sha, branchMeta, activeBranches)
+              ) {
+                return [5, 5];
+              }
+              return undefined;
+            },
+          },
           data: dataChartSelected,
-          links: getCommitLink(),
         },
       ],
     };
-    return dataChart;
   }
 
-  function getOptionsChart(axisText: string) {
-    const optionsLineChart = {
+  function getOptionsChart(axisText: string): ChartOptions<"line"> {
+    const optionsLineChart: ChartOptions<"line"> = {
       responsive: true,
-      pointRadius: 12,
-      pointHoverRadius: 15,
       scales: {
         x: {
           title: {
@@ -272,40 +311,26 @@ function TDDLineCharts({
       plugins: {
         tooltip: {
           callbacks: {
-            title: function (context: any) {
+            title: function (context: TooltipItem<"line">[]) {
               return `${getDataLabels()[context[0].dataIndex]}: ${
                 getCommitName()[context[0].dataIndex]
               }`;
             },
-            afterBody: function (context: any) {
-              const afterBodyContent: any = [];
-              afterBodyContent.push(
-                `Líneas de Código Añadido: ${
-                  getCommitStats()[0][context[0].dataIndex]
-                }`
-              );
+            afterBody: function (context: TooltipItem<"line">[]) {
+              const index = context[0].dataIndex;
+              const stats = getCommitStats();
+              const commit = chronologicalCommits[index];
+              const afterBodyContent: string[] = [
+                `Líneas de Código Añadido: ${stats[0][index]}`,
+                `Líneas de Código Eliminado: ${stats[1][index]}`,
+                `Total de Cambios: ${stats[2][index]}`,
+                `Fecha: ${formatDate(stats[3][index])}`,
+                `Cobertura: ${formatCoverageLabel(commit?.coverage)}`,
+              ];
 
-              afterBodyContent.push(
-                `Líneas de Código Eliminado: ${
-                  getCommitStats()[1][context[0].dataIndex]
-                }`
-              );
-              afterBodyContent.push(
-                `Total de Cambios: ${getCommitStats()[2][context[0].dataIndex]}`
-              );
-
-              afterBodyContent.push(
-                `Fecha: ${formatDate(getCommitStats()[3][context[0].dataIndex])}`,
-              );
-              
-              const coverageValue = getCommitCoverage()[context[0].dataIndex];
-              const formattedCoverage = coverageValue !== undefined && coverageValue !== null ? `${coverageValue}%` : '0%';
-              afterBodyContent.push(
-                `Cobertura: ${coverageValue === 0 ? '0%' : formattedCoverage}`,
-              );
-
-              const commit = (filteredCommitsObject ?? []).slice().reverse()[context[0].dataIndex];
-              const commitBranches = commit ? commitBranchMap.get(commit.sha) : undefined;
+              const commitBranches = commit
+                ? branchMeta.commitBranchMap.get(commit.sha)
+                : undefined;
               if (commitBranches?.length) {
                 afterBodyContent.push(`Rama: ${commitBranches.join(", ")}`);
               }
@@ -318,27 +343,26 @@ function TDDLineCharts({
     };
     return optionsLineChart;
   }
-  
-  
-  const onClick = (event: any) => {
+
+  const onClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!chartRef.current) return;
     const elements = getElementAtEvent(chartRef.current, event);
     if (elements.length > 0) {
-      const dataSetIndexNum = elements[0].datasetIndex;
       const dataPoint = elements[0].index;
-      window.open(
-        dataChart.datasets[dataSetIndexNum].links[dataPoint],
-        "_blank"
-      );
+      const link = getCommitLink()[dataPoint];
+      if (link) {
+        window.open(link, "_blank");
+      }
     }
   };
 
   function getLineChart() {
-    let dataChart: any = null;
-    let optionsChart: any = null;
-    let dataTestid: string = "";
+    let chartData: ChartData<"line", Array<number | null>> | null = null;
+    let optionsChart: ChartOptions<"line"> | undefined;
+    let dataTestid = "";
     switch (optionSelected) {
       case "Cobertura de Código":
-        dataChart = getDataChart(
+        chartData = getDataChart(
           getCommitCoverage(),
           "Porcentaje de Cobertura de Código"
         );
@@ -346,7 +370,7 @@ function TDDLineCharts({
         dataTestid = "graph-coverage";
         break;
       case "Líneas de Código Modificadas":
-        dataChart = getDataChart(
+        chartData = getDataChart(
           getCommitStats()[2],
           "Total de Líneas de Código Modificadas"
         );
@@ -354,45 +378,85 @@ function TDDLineCharts({
         dataTestid = "graph-linesModified";
         break;
       case "Total Número de Tests":
-        dataChart = getDataChart(getTestsCount(), "Total Número de Tests");
+        chartData = getDataChart(getTestsCount(), "Total Número de Tests");
         optionsChart = getOptionsChart("Número de Tests");
         dataTestid = "graph-testCount";
         break;
       case "Lista":
         return <TDDList commitsInfo={commits ?? []} gitGraph={gitGraph} />;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} commitNumbers={commitNumbers} gitGraph={gitGraph} tddLogs={tddLogs || []} port={port} role={role} />;
-
+        return (
+          <TDDBoard
+            commits={filteredCommitsObject || []}
+            commitNumbers={commitNumbers}
+            gitGraph={gitGraph}
+            tddLogs={tddLogs || []}
+            port={port}
+            role={role}
+            branchMeta={branchMeta}
+            selectedBranches={selectedBranches}
+            activeBranches={activeBranches}
+            previewBranch={previewBranch}
+            onToggleBranch={handleToggleBranch}
+            onSelectAllBranches={handleSelectAllBranches}
+            onPreviewBranch={handlePreviewBranch}
+            onSelectMetric={onSelectMetric}
+            logsError={logsError}
+          />
+        );
       case "Ciclo de ejecución de pruebas":
-        return <TDDCycleChart data={tddLogs ?? []} />;
-   
+        return (
+          <>
+            <div className="tdd-single-view-branch-bar">
+              <BranchFocusBar
+                meta={branchMeta}
+                selectedBranches={selectedBranches}
+                previewBranch={previewBranch}
+                onToggleBranch={handleToggleBranch}
+                onSelectAll={handleSelectAllBranches}
+                onPreviewBranch={handlePreviewBranch}
+                onViewHistory={onSelectMetric ? () => onSelectMetric("Lista") : undefined}
+              />
+            </div>
+            <TDDCycleChart
+              data={tddLogs ?? []}
+              commitNumbers={commitNumbers}
+              gitGraph={gitGraph}
+              branchMeta={branchMeta}
+              activeBranches={activeBranches}
+              logsError={logsError}
+            />
+          </>
+        );
     }
     return (
       <>
-        {branches.length > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-            <label className="commit-branch-filter">
-              Resaltar rama
-              <select value={branch} onChange={(event) => setSelectedBranch(event.target.value)}>
-                <option value="">Todas</option>
-                {branches.map((name) => <option key={name} value={name}>{name}</option>)}
-              </select>
-            </label>
-          </div>
+        <div className="tdd-single-view-branch-bar">
+          <BranchFocusBar
+            meta={branchMeta}
+            selectedBranches={selectedBranches}
+            previewBranch={previewBranch}
+            onToggleBranch={handleToggleBranch}
+            onSelectAll={handleSelectAllBranches}
+            onPreviewBranch={handlePreviewBranch}
+            onViewHistory={onSelectMetric ? () => onSelectMetric("Lista") : undefined}
+          />
+        </div>
+        {chartData && (
+          <Line
+            height="100"
+            data={chartData}
+            options={optionsChart}
+            onClick={onClick}
+            ref={chartRef}
+            data-testid={dataTestid}
+          />
         )}
-        <Line
-          height="100"
-          data={dataChart}
-          options={optionsChart}
-          onClick={onClick}
-          ref={chartRef}
-          data-testid={dataTestid}
-        />
       </>
     );
   }
 
   return getLineChart();
-} 
+}
 
 export default TDDLineCharts;

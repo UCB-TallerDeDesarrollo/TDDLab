@@ -88,5 +88,17 @@ describe("FakeCommitHistoryRepository", () => {
       const logs2 = await repository.obtainTDDLogs("owner", "repo");
       expect((logs2[0] as TestExecutionLog).numTotalTests).toBe(1);
     });
+
+    it("provides the richer 4-branch showcase dataset for branches-demo", async () => {
+      const commits = await repository.obtainCommitsOfRepo("tddlab-demo", "branches-demo");
+      const logs = await repository.obtainTDDLogs("tddlab-demo", "branches-demo");
+      const graphMarker = logs.find(
+        (entry): entry is CommitLog => "gitGraph" in entry && Boolean(entry.gitGraph),
+      );
+
+      expect(commits).toHaveLength(10);
+      expect(commits.some((commit) => commit.coverage === null)).toBe(true);
+      expect(graphMarker?.gitGraph).toHaveLength(12);
+    });
   });
 });

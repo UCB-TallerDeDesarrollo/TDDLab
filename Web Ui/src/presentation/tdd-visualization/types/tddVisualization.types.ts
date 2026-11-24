@@ -19,6 +19,7 @@ export interface TDDVisualizationData {
   commits: CommitDataObject[];
   commitsTddCycles: CommitCycle[];
   tddLogs: TDDLogEntry[];
+  tddLogsError?: boolean;
 }
 
 export interface TDDCommentsData {
@@ -32,4 +33,6 @@ export interface TDDChartsState {
   metric: string | null;
   setMetric: Dispatch<SetStateAction<string | null>>;
   tddLogsInfo: TDDLogEntry[] | null;
+  tddLogsError: boolean;
+  loadError: boolean;
 }

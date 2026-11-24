@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CHART_SYMBOL_VARIANT, chartSymbols } from './chartSymbols';
+import type { GitGraphCommit } from '../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces';
+import {
+  type BranchMetadata,
+  buildBranchMetadata,
+  getCommitBranchAccentColor,
+  isCommitInActiveBranches,
+} from './branchVisualization';
 
 interface TestLog {
   numPassedTests?: number;
@@ -15,10 +22,20 @@ interface TestLog {
 
 interface TDDCycleChartProps {
   data: TestLog[];
+  commitNumbers?: ReadonlyMap<string, number>;
+  gitGraph?: GitGraphCommit[];
+  branchMeta?: BranchMetadata;
+  activeBranches?: ReadonlySet<string> | null;
+  logsError?: boolean;
 }
 
 interface CommitData {
+  key: string;
+  sha?: string;
   commitNumber: number;
+  isActive: boolean;
+  accentColor?: string;
+  branches: string[];
   tests: Array<{ passed: boolean; size: number; detail: string }>;
 }
 
@@ -60,7 +77,14 @@ const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
   );
 };
 
-const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
+const TDDCycleChart: React.FC<TDDCycleChartProps> = ({
+  data = [],
+  commitNumbers,
+  gitGraph,
+  branchMeta: externalBranchMeta,
+  activeBranches = null,
+  logsError = false,
+}) => {
   const plotRef = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState(0);
   const [hoveredTest, setHoveredTest] = useState<{
@@ -69,27 +93,103 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
     detail: string;
   } | null>(null);
 
+  const fallbackBranchMeta = useMemo(() => buildBranchMetadata(gitGraph), [gitGraph]);
+  const branchMeta = externalBranchMeta ?? fallbackBranchMeta;
+
   const processedData = useMemo(() => {
     if (!data || data.length === 0) {
       return [];
     }
-    
+
+    const commitIdsByTestId = new Map<number, string[]>();
+    for (const log of data) {
+      if (log.commitId && Number.isSafeInteger(log.testId)) {
+        const list = commitIdsByTestId.get(log.testId) ?? [];
+        list.push(log.commitId);
+        commitIdsByTestId.set(log.testId, list);
+      }
+    }
+
+    const uniqueCommitByTestId = new Map<number, string>();
+    for (const [testId, shas] of commitIdsByTestId.entries()) {
+      if (shas.length === 1 && shas[0] && shas[0] !== 'HEAD') {
+        uniqueCommitByTestId.set(testId, shas[0]);
+      }
+    }
+
+    const hasLinkedExecutions = data.some(
+      (log) => log.numPassedTests !== undefined && uniqueCommitByTestId.has(log.testId),
+    );
+
+    if (hasLinkedExecutions) {
+      const bySha = new Map<string, CommitData>();
+      const fallbackOrder = new Map<string, number>();
+      let nextFallbackNumber = 1;
+
+      for (const log of data) {
+        if (log.numPassedTests === undefined) continue;
+        const sha = uniqueCommitByTestId.get(log.testId);
+        const key = sha ?? `unlinked-${log.testId}`;
+        if (!bySha.has(key)) {
+          let number = sha ? commitNumbers?.get(sha) : undefined;
+          if (number === undefined) {
+            if (!fallbackOrder.has(key)) {
+              fallbackOrder.set(key, nextFallbackNumber++);
+            }
+            number = fallbackOrder.get(key)!;
+          }
+          const commitBranches = sha ? (branchMeta.commitBranchMap.get(sha) ?? []) : [];
+          const isActive = sha
+            ? isCommitInActiveBranches(sha, branchMeta, activeBranches)
+            : activeBranches === null;
+          const accentColor = sha
+            ? getCommitBranchAccentColor(sha, branchMeta, activeBranches)
+            : undefined;
+
+          bySha.set(key, {
+            key,
+            sha,
+            commitNumber: number,
+            isActive,
+            accentColor,
+            branches: commitBranches,
+            tests: [],
+          });
+        }
+
+        const entry = bySha.get(key)!;
+        const passed = (log.failedTests === 0) && (log.success === true);
+        const status = passed ? 'exitosa' : 'con fallos';
+        const branchSuffix = entry.branches.length > 0 ? ` Rama: ${entry.branches.join(', ')}.` : '';
+        entry.tests.push({
+          passed,
+          size: 1,
+          detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.${branchSuffix}`,
+        });
+      }
+
+      return Array.from(bySha.values()).sort((a, b) => a.commitNumber - b.commitNumber);
+    }
+
     const commitMap = new Map<number, CommitData>();
     let currentCommit = 1;
 
-    for (const log of data){
+    for (const log of data) {
       if (log.commitId) {
         currentCommit++;
       }
-      
+
       if (log.numPassedTests !== undefined) {
         if (!commitMap.has(currentCommit)) {
           commitMap.set(currentCommit, {
+            key: `seq-${currentCommit}`,
             commitNumber: currentCommit,
-            tests: []
+            isActive: true,
+            branches: [],
+            tests: [],
           });
         }
-        
+
         const commit = commitMap.get(currentCommit)!;
         const passed = (log.failedTests === 0) && (log.success === true);
         const status = passed ? 'exitosa' : 'con fallos';
@@ -99,10 +199,10 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.`,
         });
       }
-    };
-    
+    }
+
     return Array.from(commitMap.values());
-  }, [data]);
+  }, [data, commitNumbers, branchMeta, activeBranches]);
 
   const hasExecutions = processedData.length > 0;
   useEffect(() => {
@@ -124,9 +224,15 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
         <div style={styles.header}>
           <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
         </div>
-        <div role="status" style={styles.emptyState}>
-          <h3 style={styles.emptyStateTitle}>No se tiene ejecución de pruebas</h3>
-        </div>
+        {logsError ? (
+          <div role="alert" style={styles.errorState}>
+            <h3 style={styles.emptyStateTitle}>No se pudieron cargar las ejecuciones de pruebas</h3>
+          </div>
+        ) : (
+          <div role="status" style={styles.emptyState}>
+            <h3 style={styles.emptyStateTitle}>No se tiene ejecución de pruebas</h3>
+          </div>
+        )}
       </div>
     );
   }
@@ -134,7 +240,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
   const leftPadding = 52;
   const rightPadding = 20;
   const topPadding = 40;
-  const bottomPadding = 80;
+  const bottomPadding = 84;
   const markerSize = chartSymbols.success.size;
   const markerRadius = markerSize / 2;
   const markerSpacing = markerSize + 8;
@@ -159,7 +265,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
       <div style={styles.header}>
         <h2 style={styles.title}>Ciclo de Ejecución de Pruebas TDD</h2>
       </div>
-      
+
       <div
         ref={plotRef}
         className="tdd-cycle-plot"
@@ -231,14 +337,19 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
             const x = leftPadding + (commitIndex + 1) * commitSpacing;
 
             return (
-              <g key={`commit-${commitIndex}`}>
+              <g
+                key={commit.key}
+                data-cycle-commit={commit.sha}
+                data-cycle-active={commit.isActive ? 'true' : 'false'}
+                opacity={commit.isActive ? 1 : 0.22}
+              >
                 {commit.tests.map((test, testIndex) => {
                   const y = topPadding + plotHeight - (testIndex * markerSpacing) - markerRadius;
                   const symbolConfig = test.passed ? chartSymbols.success : chartSymbols.failure;
 
                   return (
                     <g
-                      key={`test-${commitIndex}-${testIndex}`}
+                      key={`test-${commit.key}-${testIndex}`}
                       role="img"
                       aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
                       tabIndex={0}
@@ -265,19 +376,32 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({ data = [] }) => {
           })}
 
           {/* X-axis labels */}
-          {processedData.map((commit, index) => (
-            <text
-              key={`x-label-${index}`}
-              x={leftPadding + (index + 1) * commitSpacing}
-              y={topPadding + plotHeight + 25}
-              fill="#666"
-              fontSize="12"
-              textAnchor="middle"
-              transform={`rotate(-45, ${leftPadding + (index + 1) * commitSpacing}, ${topPadding + plotHeight + 25})`}
-            >
-              Commit {commit.commitNumber}
-            </text>
-          ))}
+          {processedData.map((commit, index) => {
+            const x = leftPadding + (index + 1) * commitSpacing;
+            return (
+              <g key={`x-label-${commit.key}`} opacity={commit.isActive ? 1 : 0.35}>
+                {branchMeta.branches.length > 1 && commit.accentColor && (
+                  <circle
+                    cx={x}
+                    cy={topPadding + plotHeight + 8}
+                    r={3.5}
+                    fill={commit.accentColor}
+                  />
+                )}
+                <text
+                  x={x}
+                  y={topPadding + plotHeight + 28}
+                  fill="#666"
+                  fontSize="12"
+                  fontWeight={commit.isActive && activeBranches !== null ? 600 : 400}
+                  textAnchor="middle"
+                  transform={`rotate(-45, ${x}, ${topPadding + plotHeight + 28})`}
+                >
+                  Commit {commit.commitNumber}
+                </text>
+              </g>
+            );
+          })}
 
           {/* X-axis title */}
           <text
@@ -371,6 +495,15 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#333',
     backgroundColor: '#f5f8fc',
     border: '1px solid #b8cde0',
+    borderRadius: '6px',
+    lineHeight: 1.5,
+    overflowWrap: 'anywhere',
+  },
+  errorState: {
+    padding: '20px',
+    color: '#7f1d1d',
+    backgroundColor: '#fef2f2',
+    border: '1px solid #fecaca',
     borderRadius: '6px',
     lineHeight: 1.5,
     overflowWrap: 'anywhere',

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   readTeacherSubmissions,
@@ -110,10 +110,12 @@ export function useTDDChartPage({
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [tddLogsError, setTDDLogsError] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   const defaultMetric = getDefaultMetric(graphs);
 
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     try {
       const commentsData = await fetchCommentsData(submissionIdcomments);
       setEmails(commentsData.emails);
@@ -121,42 +123,62 @@ export function useTDDChartPage({
     } catch (error) {
       console.error("Error obtaining comments:", error);
     }
-  };
-
-  useEffect(() => {
-    loadComments().catch((error: unknown) => console.error("Error loading comments:", error));
   }, [submissionIdcomments]);
 
   useEffect(() => {
+    loadComments().catch((error: unknown) => console.error("Error loading comments:", error));
+  }, [loadComments]);
+
+  useEffect(() => {
+    let active = true;
     const loadOwnerName = async () => {
       try {
         const name = await fetchOwnerName(activePort, repoOwner);
-        setOwnerName(name || repoOwner);
+        if (active) setOwnerName(name || repoOwner);
       } catch (error) {
         console.error("Error obtaining owner name:", error);
-        setOwnerName(repoOwner);
+        if (active) setOwnerName(repoOwner);
       }
     };
 
     loadOwnerName().catch((error: unknown) => console.error("Error loading owner name:", error));
+    return () => {
+      active = false;
+    };
   }, [activePort, repoOwner]);
 
   useEffect(() => {
+    let active = true;
     const loadVisualizationData = async () => {
       setLoading(true);
+      setLoadError(false);
+      setTDDLogsError(false);
+      setCommitsInfo(null);
+      setTDDLogsInfo(null);
+      setCommitsTddCycles([]);
       try {
         const visualizationData = await fetchTDDVisualizationData(activePort, repoOwner, repoName);
+        if (!active) return;
         setCommitsInfo(visualizationData.commits);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
+        setTDDLogsError(Boolean(visualizationData.tddLogsError));
       } catch (error) {
         console.error("Error obtaining data:", error);
+        if (active) {
+          setLoadError(true);
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     };
 
     loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
+    return () => {
+      active = false;
+    };
   }, [activePort, repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
@@ -208,6 +230,8 @@ export function useTDDChartPage({
       metric,
       setMetric,
       tddLogsInfo,
+      tddLogsError,
+      loadError,
     },
     comments,
     currentIndex,

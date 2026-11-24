@@ -4,10 +4,13 @@ import TDDCharts from "../components/TDDChart";
 import "../styles/TDDChartPageStyles.css";
 import { useTDDChartPage } from "../hooks/useTDDChartPage";
 import { CycleReportViewProps } from "../types/tddVisualization.types";
+import { getCommitGraph } from "../../../modules/TDDCycles-Visualization/domain/getCommitGraph";
 
 function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const tddPage = useTDDChartPage(props);
   const { chartsState } = tddPage;
+  const hasContextGraph = Boolean(getCommitGraph(chartsState.tddLogsInfo)?.length);
+  const hasVisualizationData = Boolean(chartsState.commitsInfo?.length || hasContextGraph);
 
   return (
     <div className="container">
@@ -22,14 +25,15 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && (
+      {!tddPage.loading && !hasVisualizationData && (
         <div className="error-message" data-testid="errorMessage">
-          Error: Verifica que el repositorio utilice la rama "main". Actualmente,
-          TDDLab no puede cargar los datos si la rama principal es "master"
+          {chartsState.loadError
+            ? "Error: No se pudo cargar la información del repositorio. Intenta nuevamente más tarde."
+            : "No se encontraron commits ni métricas registradas para este repositorio."}
         </div>
       )}
 
-      {!tddPage.loading && !!chartsState.commitsInfo?.length && (
+      {!tddPage.loading && hasVisualizationData && (
         <React.Fragment>
           {!tddPage.isStudent && (
             <div className="navigation-buttons">
@@ -76,6 +80,7 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
               metric={chartsState.metric}
               setMetric={chartsState.setMetric}
               typegraphs={props.graphs}
+              logsError={chartsState.tddLogsError}
             />
           </div>
         </React.Fragment>

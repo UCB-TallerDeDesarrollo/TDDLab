@@ -106,4 +106,38 @@ describe('TDDCycleChart', () => {
     expect(tooltips).toContain('Ejecución exitosa: 3 pruebas exitosas, 0 fallidas de 3.');
     expect(tooltips).toContain('Ejecución con fallos: 2 pruebas exitosas, 1 fallidas de 3.');
   });
+
+  it('alinea commits por SHA/commitNumbers aunque lleguen desordenados y atenúa ramas fuera de foco', () => {
+    const { container } = render(
+      <TDDCycleChart
+        data={[
+          { numPassedTests: 2, failedTests: 0, numTotalTests: 2, timestamp: 20, success: true, testId: 2 },
+          { commitId: 'sha-4', commitName: 'fix: descuento', commitTimestamp: 21, testId: 2 },
+          { numPassedTests: 0, failedTests: 1, numTotalTests: 1, timestamp: 10, success: false, testId: 1 },
+          { commitId: 'sha-2', commitName: 'test: descuento', commitTimestamp: 11, testId: 1 },
+        ]}
+        commitNumbers={new Map([['sha-2', 2], ['sha-4', 4]])}
+        gitGraph={[
+          { sha: 'sha-4', parents: ['sha-2'], subject: 'fix: descuento', recordedBranches: ['descuentos'] },
+          { sha: 'sha-2', parents: ['root'], subject: 'test: descuento', recordedBranches: ['redondeo'] },
+          { sha: 'root', parents: [], subject: 'init', historyBranch: 'main' },
+        ]}
+        activeBranches={new Set(['descuentos'])}
+      />,
+    );
+
+    const xLabels = Array.from(container.querySelectorAll('text'))
+      .map((node) => node.textContent)
+      .filter((text) => text?.startsWith('Commit '));
+    expect(xLabels).toEqual(['Commit 2', 'Commit 4']);
+    expect(container.querySelector('[data-cycle-commit="sha-2"]')).toHaveAttribute('data-cycle-active', 'false');
+    expect(container.querySelector('[data-cycle-commit="sha-4"]')).toHaveAttribute('data-cycle-active', 'true');
+  });
+
+  it('distingue un error de carga de logs de la ausencia real de ejecuciones', () => {
+    render(<TDDCycleChart data={[]} logsError />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('No se pudieron cargar las ejecuciones de pruebas');
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
 });

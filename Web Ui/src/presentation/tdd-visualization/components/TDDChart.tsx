@@ -1,5 +1,5 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
@@ -12,6 +12,12 @@ import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualizatio
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { getCommitGraph } from "../../../modules/TDDCycles-Visualization/domain/getCommitGraph";
+import {
+  type BranchSelection,
+  buildBranchMetadata,
+  resolveActiveBranches,
+  toggleBranchSelection,
+} from "./branchVisualization";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -22,9 +28,19 @@ interface CycleReportViewProps {
   role: string;
   commitsTddCycles: CommitCycle[] | null;
   typegraphs: string;
+  logsError?: boolean;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({
+  commits,
+  tddLogs,
+  setMetric,
+  port,
+  role,
+  commitsTddCycles,
+  typegraphs,
+  logsError = false,
+}: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
@@ -44,6 +60,44 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
       window.removeEventListener("storage", handleStorageChange);
     };
   }, [setMetric]);
+
+  const gitGraph = useMemo(() => getCommitGraph(tddLogs), [tddLogs]);
+  const measuredShas = useMemo(
+    () => new Set((commits ?? []).map((commit) => commit.sha)),
+    [commits],
+  );
+  const branchMeta = useMemo(
+    () => buildBranchMetadata(gitGraph, measuredShas),
+    [gitGraph, measuredShas],
+  );
+  const [branchSelection, setBranchSelection] = useState<BranchSelection>("auto");
+  const [previewBranch, setPreviewBranch] = useState<string | "all" | null>(null);
+
+  useEffect(() => {
+    setBranchSelection("auto");
+    setPreviewBranch(null);
+  }, [branchMeta.branchesKey]);
+
+  const selectedBranches = useMemo(
+    () => resolveActiveBranches(branchSelection, branchMeta),
+    [branchSelection, branchMeta],
+  );
+
+  const activeBranches = useMemo<ReadonlySet<string> | null>(() => {
+    if (previewBranch === "all") return null;
+    if (previewBranch && branchMeta.branchColorMap.has(previewBranch)) {
+      return new Set([previewBranch]);
+    }
+    return selectedBranches;
+  }, [previewBranch, branchMeta, selectedBranches]);
+
+  const handleToggleBranch = (branch: string) => {
+    setBranchSelection((prev) => toggleBranchSelection(prev, branch, branchMeta));
+  };
+
+  const handleSelectAllBranches = () => {
+    setBranchSelection("all");
+  };
 
   const filteredCommitsObject = commits?.map((commit) =>
     commit.stats.total > maxLinesInGraph
@@ -65,7 +119,6 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     window.dispatchEvent(storageEvent);
   };
 
-  const gitGraph = getCommitGraph(tddLogs);
   const cycleMetric = "Ciclo de ejecución de pruebas";
   const showingCycle = metricSelected === cycleMetric;
   const showingHistory = metricSelected === "Lista";
@@ -132,12 +185,21 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
       )}
       <TDDLineCharts
         filteredCommitsObject={showingHistory ? commits : filteredCommitsObject}
-        tddLogs = {tddLogs}
+        tddLogs={tddLogs}
         optionSelected={metricSelected}
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}
         gitGraph={gitGraph}
+        branchMeta={branchMeta}
+        selectedBranches={selectedBranches}
+        activeBranches={activeBranches}
+        previewBranch={previewBranch}
+        onToggleBranch={handleToggleBranch}
+        onSelectAllBranches={handleSelectAllBranches}
+        onPreviewBranch={setPreviewBranch}
+        onSelectMetric={selectMetric}
+        logsError={logsError}
       />
     </div>
   );
