@@ -1,3 +1,5 @@
+import { VITE_TDD_USE_FAKE } from "../config";
+import { FakeCommitHistoryRepository } from "./modules/TDDCycles-Visualization/repository/FakeCommitHistoryRepository";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import MainMenu from "./app/navigation/MainMenu";
@@ -85,6 +87,10 @@ const navArrayLinks = [
     access: ["admin", "teacher"],
   },
 ];
+
+const commitHistoryRepository = VITE_TDD_USE_FAKE
+  ? new FakeCommitHistoryRepository()
+  : new CommitHistoryAdapter();
 
 function App() {
   const authData = useGlobalState("authData")[0];
@@ -262,7 +268,7 @@ function App() {
             element={
               <ProtectedRouteComponent>
                 <TDDChartPage
-                  port={new CommitHistoryAdapter()}
+                  port={commitHistoryRepository}
                   role={authData.userRole ?? ""}
                   teacher_id={authData.userid ?? -1}
                   graphs="graph"
@@ -276,7 +282,7 @@ function App() {
             element={
               <ProtectedRouteComponent>
                 <TDDChartPage
-                  port={new CommitHistoryAdapter()}
+                  port={commitHistoryRepository}
                   role={authData.userRole ?? ""}
                   teacher_id={authData.userid ?? -1}
                   graphs="aditionalgraph"

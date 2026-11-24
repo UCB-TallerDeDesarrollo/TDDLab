@@ -1,4 +1,5 @@
 import express from "express";
+import axios from "axios";
 import { DBCommitsRepository } from "../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { DBJobsRepository } from "../modules/TDDCycles/Repositories/DBJobsRepository";
 import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubRepository";
@@ -57,5 +58,28 @@ TDDCyclesRouter.get(
   "/commit-cycles",
   async (req, res) => await tddCyclesController.getCommitCycles(req, res)
 );
+
+TDDCyclesRouter.get("/test-log", async (req, res) => {
+  const { owner, repoName } = req.query;
+  if (typeof owner !== "string" || !/^[\w-]+$/.test(owner) ||
+      typeof repoName !== "string" || !/^[\w.-]+$/.test(repoName) ||
+      repoName === "." || repoName === "..") {
+    return res.status(400).json({ error: "Invalid owner or repoName" });
+  }
+
+  try {
+    const url = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+    const { data } = await axios.get<unknown>(url, { timeout: 5000 });
+    if (!Array.isArray(data)) {
+      return res.status(502).json({ error: "Invalid TDD test log" });
+    }
+    return res.json(data);
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return res.json([]);
+    }
+    return res.status(502).json({ error: "Could not load the TDD test log" });
+  }
+});
 
 export default TDDCyclesRouter;
