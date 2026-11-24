@@ -1,8 +1,7 @@
 import { Octokit } from "octokit";
-import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
-//import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
+import { CommitHistoryDTO } from "../domain/githubCommitInterfaces.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
-import { CommitCycle } from "../domain/TddCycleInterface.ts";
+import { CommitCycleDTO } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
@@ -16,9 +15,10 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     //auth: 'coloca tu token github para mas requests'
     this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
   }
-  
 
-  // function for obtain TDD_log.json
+  /**
+   * @deprecated esta funcion se eliminara cuando se haga la migracion a la nueva implementacion
+   */
   private getTDDLogUrl(owner: string, repoName: string): string {
     return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
   }
@@ -42,7 +42,7 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   async obtainCommitsOfRepo(
     owner: string,
     repoName: string,
-  ): Promise<CommitDataObject[]> {
+  ): Promise<CommitHistoryDTO[]> {
     try {
       // Now request our backend endpoint which centralizes this logic
       const url = `${this.backAPI}/commits-history`;
@@ -53,13 +53,15 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       }
 
       // Backend already returns the mapped array, just ensure dates are Date objects on client
-      const commits: CommitDataObject[] = (response.data || []).map((c: any) => ({
-        ...c,
-        commit: {
-          ...c.commit,
-          date: new Date(c.commit.date),
-        },
-      }));
+      const commits: CommitHistoryDTO[] = (response.data || []).map(
+        (c: any) => ({
+          ...c,
+          commit: {
+            ...c.commit,
+            date: new Date(c.commit.date),
+          },
+        }),
+      );
       return commits;
     } catch (error) {
       console.error("Error obteniendo commits desde GitHub:", error);
@@ -67,11 +69,10 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     }
   }
 
-
   async obtainCommitTddCycle(
     owner: string,
     repoName: string,
-  ): Promise<CommitCycle[]> {
+  ): Promise<CommitCycleDTO[]> {
     try {
       const url = `${this.backAPI}/commit-cycles`;
       const response = await axios.get(url, { params: { owner, repoName } });
@@ -81,12 +82,14 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       }
 
       // Map server shape to current UI Contract (note: UI uses property tddCycle)
-      const commits: CommitCycle[] = (response.data || []).map((item: any) => ({
-        url: item.url,
-        sha: item.sha,
-        tddCycle: item.tddCycle ?? "null",
-        coverage: item.coverage,
-      }));
+      const commits: CommitCycleDTO[] = (response.data || []).map(
+        (item: any) => ({
+          url: item.url,
+          sha: item.sha,
+          tddCycle: item.tddCycle ?? "null",
+          coverage: item.coverage,
+        }),
+      );
       return commits;
     } catch (error) {
       console.error("Error al obtener los ciclos TDD:", error);
@@ -94,10 +97,10 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     }
   }
 
-  async obtainTDDLogs(
-    owner: string,
-    repoName: string,
-  ): Promise<TDDLogEntry[]> {
+  /**
+   * @deprecated esta funcion se eliminara debido a la migracion junto a getTDDLogUrl
+   */
+  async obtainTDDLogs(owner: string, repoName: string): Promise<TDDLogEntry[]> {
     try {
       const tddLogUrl = this.getTDDLogUrl(owner, repoName);
       const response = await axios.get<TDDLogEntry[]>(tddLogUrl);
@@ -107,10 +110,11 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
       }
 
       return response.data;
-
     } catch (error: any) {
       if (error.response?.status === 404) {
-        console.warn("Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.");
+        console.warn(
+          "Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.",
+        );
         return [];
       }
       console.error("Error al obtener tdd_log.json:", error);
