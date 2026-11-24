@@ -53,6 +53,7 @@ export function useTDDChartPage({
   );
   const [ownerName, setOwnerName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [visualizationError, setVisualizationError] = useState(false);
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [emails, setEmails] = useState<Record<number, string>>({});
   const [feedback, setFeedback] = useState("");
@@ -92,21 +93,29 @@ export function useTDDChartPage({
   }, [port, repoOwner]);
 
   useEffect(() => {
+    let active = true;
     const loadVisualizationData = async () => {
       setLoading(true);
+      setVisualizationError(false);
       try {
         const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        if (!active) return;
         setCommitsInfo(visualizationData.commits);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
       } catch (error) {
-        console.error("Error obtaining data:", error);
+        if (active) {
+          setVisualizationError(true);
+          setCommitsInfo(null);
+          console.error("Error obtaining data:", error);
+        }
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
-    loadVisualizationData();
+    void loadVisualizationData();
+    return () => { active = false; };
   }, [port, repoOwner, repoName]);
 
   const goToPreviousStudent = () => {
@@ -178,5 +187,6 @@ export function useTDDChartPage({
     repoName,
     role,
     setFeedback,
+    visualizationError,
   };
 }

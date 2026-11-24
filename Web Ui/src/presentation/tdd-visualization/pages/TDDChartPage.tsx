@@ -24,19 +24,21 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
 
       {!tddPage.loading && !chartsState.commitsInfo?.length && (
         <div className="error-message" data-testid="errorMessage">
-          Hubo un problema al cargar los commits del repositorio
+          {tddPage.visualizationError
+            ? "No se pudieron cargar los datos TDD desde el servidor."
+            : "Hubo un problema al cargar los commits del repositorio"}
         </div>
       )}
 
       {!tddPage.loading &&
-        chartsState.commitsInfo?.length !== 0 &&
+        !!chartsState.commitsInfo?.length &&
         (!chartsState.tddLogsInfo || chartsState.tddLogsInfo.length === 0) && (
           <div className="error-message" data-testid="errorMessage">
             Error: No se pudieron cargar los datos de las pruebas, es posible que estes utilizando una versión anterior del repositorio base, o no hayas ejecutado ninguna prueba.
           </div>
         )}
 
-      {!tddPage.loading && chartsState.commitsInfo?.length !== 0 && (
+      {!tddPage.loading && !!chartsState.commitsInfo?.length && (
         <React.Fragment>
           {!tddPage.isStudent && (
             <div className="navigation-buttons">

@@ -18,7 +18,6 @@ import {
   LineElement,
 } from "chart.js";
 import TDDList from "./TDDList";
-import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import TDDBoard from "./TDDBoard";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDCycleChart from "./TDDCycleChart";
@@ -323,7 +322,7 @@ function TDDLineCharts({
         dataTestid = "graph-testCount";
         break;
       case "Lista":
-        return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
+        return <TDDList port={port}></TDDList>;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
 
