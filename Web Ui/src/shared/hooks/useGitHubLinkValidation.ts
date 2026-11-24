@@ -10,17 +10,10 @@ interface UseGitHubLinkValidation {
 }
 
 
-export const useGitHubLinkValidation = (
-  initialRepo: string | undefined
-): UseGitHubLinkValidation => {
-  const [repo, setRepo] = useState(initialRepo ?? "");
-  const [validLink, setValidLink] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const validateGitHubLink = (text: string): { isValid: boolean; error: string } => {
-    if (!text || text.trim() === "") {
-      return { isValid: false, error: "El enlace no puede estar vacío." };
-    }
+const validateGitHubLink = (text: string): { isValid: boolean; error: string } => {
+  if (!text || text.trim() === "") {
+    return { isValid: false, error: "El enlace no puede estar vacío." };
+  }
 
     try {
       const url = new URL(text);
@@ -60,8 +53,16 @@ export const useGitHubLinkValidation = (
       throw new Error(`Error validando enlace GitHub: ${error instanceof Error ? error.message : String(error)}`);
     }
 
-    return { isValid: true, error: "" };
-  };
+  return { isValid: true, error: "" };
+};
+
+export const useGitHubLinkValidation = (
+  initialRepo: string | undefined
+): UseGitHubLinkValidation => {
+  const [repo, setRepo] = useState(initialRepo ?? "");
+  const [validLink, setValidLink] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (initialRepo !== undefined) {

@@ -1,7 +1,6 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
-import { useRef } from "react";
+import { useRef, type MouseEvent } from "react";
 import { formatDate } from '../../../modules/TDDCycles-Visualization/application/GetTDDCycles';
 
 import {
@@ -16,13 +15,15 @@ import {
   Filler,
   LineController,
   LineElement,
+  type ChartData,
+  type ChartDataset,
+  type ChartOptions,
+  type TooltipItem,
 } from "chart.js";
 import TDDList from "./TDDList";
 import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
-import TDDBoard from "./TDDBoard";
-import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import TDDCycleChart from "./TDDCycleChart";
-import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { TDDDashboard } from "./dashboard/TDDDashboard";
+import type { TDDDashboardViewState } from "../types/tddVisualization.types";
 
 ChartJS.register(
   CategoryScale,
@@ -39,24 +40,26 @@ ChartJS.register(
 
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
-  tddLogs: TDDLogEntry [] | null;
   optionSelected: string;
-  port: CommitHistoryRepository;
-  role: string;
-  commitsCycles: CommitCycle[] | null;
+  dashboardState: TDDDashboardViewState;
+}
+
+interface CommitLineDataset extends ChartDataset<"line", number[]> {
+  links: string[];
+}
+
+interface CommitLineChartData extends ChartData<"line", number[], string> {
+  datasets: CommitLineDataset[];
 }
 
 function TDDLineCharts({
   filteredCommitsObject,
-  tddLogs,
   optionSelected,
-  port,
-  role,
-  commitsCycles: _
+  dashboardState,
 }: LineChartProps) {
   
-  let dataChart: any = {};
-  const chartRef = useRef<any>();
+  let dataChart: CommitLineChartData | null = null;
+  const chartRef = useRef<ChartJS<"line">>(null);
 
   
 
@@ -122,7 +125,7 @@ function TDDLineCharts({
   }
 
   const getColorByCoverage = (coverage: number, isRefactor: boolean) => {
-    let colorValue = 110;
+    const colorValue = 110;
     let opacity;
     const baseColor = isRefactor ? 'blue' : 'green';
   
@@ -196,7 +199,7 @@ function TDDLineCharts({
     }
   }
 
-  function getDataChart(dataChartSelected: any, dataLabel: string) {
+  function getDataChart(dataChartSelected: number[], dataLabel: string) {
     dataChart = {
       labels: getDataLabels(),
       datasets: [
@@ -211,7 +214,7 @@ function TDDLineCharts({
     return dataChart;
   }
 
-  function getOptionsChart(axisText: string) {
+  function getOptionsChart(axisText: string): ChartOptions<"line"> {
     const optionsLineChart = {
       responsive: true,
       pointRadius: 12,
@@ -241,13 +244,13 @@ function TDDLineCharts({
       plugins: {
         tooltip: {
           callbacks: {
-            title: function (context: any) {
+            title: function (context: TooltipItem<"line">[]) {
               return `${getDataLabels()[context[0].dataIndex]}: ${
                 getCommitName()[context[0].dataIndex]
               }`;
             },
-            afterBody: function (context: any) {
-              const afterBodyContent: any = [];
+            afterBody: function (context: TooltipItem<"line">[]) {
+              const afterBodyContent: string[] = [];
               afterBodyContent.push(
                 `Líneas de Código Añadido: ${
                   getCommitStats()[0][context[0].dataIndex]
@@ -283,9 +286,12 @@ function TDDLineCharts({
   }
   
   
-  const onClick = (event: any) => {
-    const elements = getElementAtEvent(chartRef.current, event);
-    if (elements.length > 0) {
+  const onClick = (event: MouseEvent<HTMLCanvasElement>) => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const elements = getElementAtEvent(chart, event);
+    if (elements.length > 0 && dataChart) {
       const dataSetIndexNum = elements[0].datasetIndex;
       const dataPoint = elements[0].index;
       window.open(
@@ -296,8 +302,8 @@ function TDDLineCharts({
   };
 
   function getLineChart() {
-    let dataChart: any = null;
-    let optionsChart: any = null;
+    let dataChart: CommitLineChartData | null = null;
+    let optionsChart: ChartOptions<"line"> | null = null;
     let dataTestid: string = "";
     switch (optionSelected) {
       case "Cobertura de Código":
@@ -324,17 +330,13 @@ function TDDLineCharts({
       case "Lista":
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
       case "Dashboard":
-          return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
-
-      case "Ciclo de ejecución de pruebas":
-        return <TDDCycleChart data={tddLogs ?? []} />;
-   
+        return <TDDDashboard state={dashboardState} />;
     }
     return (
       <Line
         height="100"
-        data={dataChart}
-        options={optionsChart}
+        data={dataChart!}
+        options={optionsChart!}
         onClick={onClick}
         ref={chartRef}
         data-testid={dataTestid}

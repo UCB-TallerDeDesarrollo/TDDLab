@@ -58,3 +58,15 @@ export const mixedTDDLogs: TDDLogEntry[] = [
     testId: 4,
   },
 ];
+
+// Orden del prototipo: las ejecuciones aparecen antes del commit que las cierra.
+export const dashboardTDDLogs: TDDLogEntry[] = [
+  { numPassedTests: 2, failedTests: 1, numTotalTests: 3, timestamp: 10, success: false, testId: 101 },
+  { numPassedTests: 3, failedTests: 0, numTotalTests: 3, timestamp: 20, success: true, testId: 102 },
+  { commitId: "sha-main-1", commitName: "primer commit", commitTimestamp: 30, testId: 102 },
+  { numPassedTests: 4, failedTests: 1, numTotalTests: 5, timestamp: 40, success: false, testId: 103 },
+  { numPassedTests: 5, failedTests: 0, numTotalTests: 5, timestamp: 50, success: true, testId: 104 },
+  { commitId: "sha-main-2", commitName: "segundo commit", commitTimestamp: 60, testId: 104 },
+  { numPassedTests: 6, failedTests: 0, numTotalTests: 6, timestamp: 70, success: true, testId: 201 },
+  { commitId: "sha-login", commitName: "login", commitTimestamp: 80, testId: 201 },
+];

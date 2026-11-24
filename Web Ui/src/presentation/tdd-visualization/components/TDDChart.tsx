@@ -10,6 +10,13 @@ import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { useTDDDashboard } from "../hooks/useTDDDashboard";
+
+const LEGACY_METRICS = new Set(["Ciclo de ejecución de pruebas"]);
+
+function normalizeMetric(metric: string): string {
+  return LEGACY_METRICS.has(metric) ? "Dashboard" : metric;
+}
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -22,18 +29,20 @@ interface CycleReportViewProps {
   typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, setMetric, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
+  const dashboardState = useTDDDashboard(commits, commitsTddCycles, tddLogs);
   const [metricSelected, setMetricSelected] = useState(() => {
     const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-    return initialMetric;
+    return normalizeMetric(initialMetric);
   });
 
   useEffect(() => {
     const handleStorageChange = () => {
       const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-      setMetricSelected(storedMetric);
-      setMetric(storedMetric);
+      const metric = normalizeMetric(storedMetric);
+      setMetricSelected(metric);
+      setMetric(metric);
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -43,21 +52,17 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     };
   }, [setMetric]);
 
-  const filteredCommitsObject = (() => {
-    if (commits != null) {
-      const filteredCommitsObject = commits.map((commit) => {
-        // Si commit.stats.total es mayor que maxLinesInGraph, ajustamos a 50
-        if (commit.stats.total > maxLinesInGraph) {
-          commit.stats.total = 50;
-        }
-        // Devolvemos el commit (modificado o no) para que esté en el array
-        return commit;
-      });
-
-      return filteredCommitsObject;
-    }
-    return commits;
-  })();
+  // Las métricas siguen limitando el total de líneas, pero sin mutar los commits
+  // originales que consume el dashboard.
+  const filteredCommitsObject = commits?.map((commit) => ({
+    ...commit,
+    commit: { ...commit.commit },
+    stats: {
+      ...commit.stats,
+      total:
+        commit.stats.total > maxLinesInGraph ? 50 : commit.stats.total,
+    },
+  })) ?? null;
 
   if (!commits) {
     return <div>No data available</div>;
@@ -82,7 +87,6 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
     { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
     { value: 'Lista', label: 'Lista de Commits' },
-    { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
   ];
 
   return (
@@ -124,11 +128,8 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
       </Box>
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
-        tddLogs = {tddLogs}
         optionSelected={metricSelected}
-        port={port}
-        role={role}
-        commitsCycles={commitsTddCycles}
+        dashboardState={dashboardState}
       />
     </div>
   );

@@ -14,8 +14,9 @@ describe("GetFeatureFlags", () => {
   });
 
   it("debería retornar todos los feature flags", async () => {
-    // @ts-ignore
-    FeatureFlagRepository.prototype.getFlags = jest.fn().mockResolvedValue(mockFlags);
+    jest
+      .spyOn(FeatureFlagRepository.prototype, "getFlags")
+      .mockResolvedValue(mockFlags);
 
     const useCase = new GetFeatureFlags();
     const result = await useCase.execute();

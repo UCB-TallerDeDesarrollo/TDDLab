@@ -19,8 +19,6 @@ const AUTHORS = {
   validation: "maria-dev",
 };
 
-const BRANCHES = ["main", "feature/login", "feature/profile", "fix/validation"];
-
 const createTest = (
   testId: number,
   timestamp: number,
@@ -264,18 +262,10 @@ const COMMIT_CYCLES: CommitCycleDTO[] = [
 ];
 
 export class MockCommitHistoryRepository implements CommitHistoryRepository {
-  private validateRepository(owner: string, repoName: string): void {
-    if (owner !== MOCK_OWNER || repoName !== MOCK_REPOSITORY) {
-      throw new Error(`Mock repository not found: ${owner}/${repoName}`);
-    }
-  }
-
   async obtainCommitsOfRepo(
     owner: string,
     repoName: string,
   ): Promise<CommitHistoryDTO[]> {
-    this.validateRepository(owner, repoName);
-
     return [...COMMIT_HISTORY]
       .sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime())
       .map((commit) => ({
@@ -289,7 +279,6 @@ export class MockCommitHistoryRepository implements CommitHistoryRepository {
     if (owner !== MOCK_OWNER) {
       throw new Error(`Mock user not found: ${owner}`);
     }
-
     return MOCK_OWNER;
   }
 
@@ -297,14 +286,10 @@ export class MockCommitHistoryRepository implements CommitHistoryRepository {
     owner: string,
     repoName: string,
   ): Promise<CommitCycleDTO[]> {
-    this.validateRepository(owner, repoName);
-
     return COMMIT_CYCLES.map((cycle) => ({ ...cycle }));
   }
 
   async obtainTDDLogs(owner: string, repoName: string): Promise<TDDLogEntry[]> {
-    this.validateRepository(owner, repoName);
-
     return TDD_LOGS.map((entry) => ({ ...entry }));
   }
 }

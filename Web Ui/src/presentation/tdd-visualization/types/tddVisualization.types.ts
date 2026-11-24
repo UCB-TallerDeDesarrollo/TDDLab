@@ -33,3 +33,56 @@ export interface TDDChartsState {
   setMetric: Dispatch<SetStateAction<string | null>>;
   tddLogsInfo: TDDLogEntry[] | null;
 }
+
+export interface TDDExecutionView {
+  testId: number;
+  timestamp: number;
+  passed: boolean;
+  passedTests: number;
+  failedTests: number;
+  totalTests: number;
+  detail: string;
+}
+
+export interface TDDCommitView {
+  sha: string;
+  parentSha?: string;
+  author?: string;
+  htmlUrl?: string;
+  message: string;
+  timestamp: number;
+  coverage: number;
+  tddCycle: string | null;
+  executions: TDDExecutionView[];
+}
+
+export interface TDDBranchView {
+  name: string;
+  color: string;
+  commits: TDDCommitView[];
+  executionCount: number;
+}
+
+export interface TDDChartPoint {
+  sha: string;
+  commitNumber: number;
+  message: string;
+  tests: TDDExecutionView[];
+}
+
+export interface TDDChartSummary {
+  totalCommits: number;
+  totalExecutions: number;
+  totalPassed: number;
+  totalFailed: number;
+}
+
+export interface TDDDashboardViewState {
+  branches: TDDBranchView[];
+  selectedBranch: TDDBranchView | null;
+  selectedBranchName: string | null;
+  selectBranch: (branchName: string) => void;
+  chartData: TDDChartPoint[];
+  summary: TDDChartSummary;
+  hasExecutions: boolean;
+}
