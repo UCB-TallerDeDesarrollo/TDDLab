@@ -1,4 +1,4 @@
-get// In getUsersByGroupId.ts
+// In getUsersByGroupId.ts
 
 import { UserDataObject } from "../domain/UsersInterface";
 import UsersRepositoryInterface from "../domain/UsersRepositoryInterface";
