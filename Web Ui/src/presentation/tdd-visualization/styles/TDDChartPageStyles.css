@@ -59,3 +59,10 @@
   width: 40% !important;
   height: 10rem;
 }
+
+.empty-message {
+  padding: 1rem;
+  margin: 10px 0;
+  color: #333;
+  text-align: center;
+}
