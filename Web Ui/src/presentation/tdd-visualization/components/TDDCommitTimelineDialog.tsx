@@ -1,3 +1,5 @@
+import { testResult } from "../../../modules/TDDCycles-Visualization/application/commitExecutions";
+import { TDDCommitLink } from "./TDDCommitMeta";
 import React from "react";
 import {
   Dialog,
@@ -26,7 +28,7 @@ interface TimelinePoint {
   x: number;
   y: number;
   r: number;
-  isPassed: boolean;
+  isPassed: boolean | undefined;
   numTests?: number;
   passedTests?: number;
   failedTests?: number;
@@ -65,11 +67,11 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
       y: 1,
       r: 15,
       // Si el dato viene del tdd_log.json:
-      isPassed: item.success ?? (item.color === "green"),
+      isPassed: item.success ?? (item.color === "green" ? true : item.color === "red" ? false : testResult(item) === "failure" ? false : undefined),
       numTests: item.numTotalTests ?? item.number_of_tests,
       passedTests: item.numPassedTests ?? item.passed_tests,
       failedTests: item.failedTests,
-      date: item.timestamp ? new Date(item.timestamp) : item.execution_timestamp,
+      date: item.timestamp != null ? new Date(item.timestamp) : item.execution_timestamp,
     }));
   };
 
@@ -106,7 +108,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                 marginBottom: branchList.length > 0 ? "8px" : "10px",
               }}
             >
-              ({selectedCommit.sha})
+              <code title={selectedCommit.sha}>{selectedCommit.sha.slice(0, 7)}</code>
             </div>
             {branchList.length > 0 && (
               <div
@@ -167,10 +169,10 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                       label: "Ejecuciones de Tests",
                       data: timelineData,
                       backgroundColor: timelineData.map((item) =>
-                        item.isPassed ? "#28A745" : "#D73A49"
+                        item.isPassed === undefined ? "#627384" : item.isPassed ? "#28A745" : "#D73A49"
                       ),
                       borderColor: timelineData.map((item) =>
-                        item.isPassed ? "#28A745" : "#D73A49"
+                        item.isPassed === undefined ? "#627384" : item.isPassed ? "#28A745" : "#D73A49"
                       ),
                       borderWidth: 2,
                     },
@@ -225,8 +227,8 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                             `Ejecución ${context.dataIndex + 1}`,
                             `Total Tests: ${dataPoint.numTests}`,
                             `Tests Pasados: ${dataPoint.passedTests}`,
-                            `Tests Fallidos: ${dataPoint.failedTests || 0}`,
-                            `Estado: ${dataPoint.isPassed ? "✓ Exitoso" : "✗ Fallido"}`,
+                            `Tests Fallidos: ${dataPoint.failedTests ?? "Sin datos"}`,
+                            `Estado: ${dataPoint.isPassed === undefined ? "Sin resultado" : dataPoint.isPassed ? "✓ Exitoso" : "✗ Fallido"}`,
                             `Fecha: ${formatDate(dataPoint.date)}`,
                             `Hora: ${formatTime(dataPoint.date)}`,
                           ];
@@ -258,17 +260,7 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
         <Button onClick={handleCloseModal} color="primary">
           Cerrar
         </Button>
-        <Button
-          onClick={() => {
-            if (selectedCommit?.html_url) {
-              window.open(selectedCommit.html_url, "_blank");
-            }
-          }}
-          color="primary"
-          variant="contained"
-        >
-          Ir al Commit en GitHub
-        </Button>
+        {selectedCommit?.html_url && <TDDCommitLink href={selectedCommit.html_url} />}
       </DialogActions>
     </Dialog>
   );

@@ -26,14 +26,14 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
       )}
 
       {!tddPage.loading && !hasVisualizationData && (
-        <div className="error-message" data-testid="errorMessage">
+        <div className="error-message" data-testid={chartsState.loadError ? "errorMessage" : "emptyMessage"} role={chartsState.loadError ? "alert" : "status"}>
           {chartsState.loadError
             ? "Error: No se pudo cargar la información del repositorio. Intenta nuevamente más tarde."
             : "No se encontraron commits ni métricas registradas para este repositorio."}
         </div>
       )}
 
-      {!tddPage.loading && hasVisualizationData && (
+      {!tddPage.loading && (
         <React.Fragment>
           {!tddPage.isStudent && (
             <div className="navigation-buttons">
@@ -41,10 +41,10 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
                 data-testid="previous-student"
                 className="nav-button"
                 onClick={tddPage.goToPreviousStudent}
-                disabled={tddPage.currentIndex === 0}
+                disabled={tddPage.currentIndex <= 0}
                 style={{
                   backgroundColor:
-                    tddPage.currentIndex === 0 ? "#B0B0B0" : "#052845",
+                    tddPage.currentIndex <= 0 ? "#B0B0B0" : "#052845",
                 }}
               >
                 Anterior
@@ -55,11 +55,11 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
                 className="nav-button"
                 onClick={tddPage.goToNextStudent}
                 disabled={
-                  tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
+                  tddPage.currentIndex >= tddPage.fetchedSubmissions.length - 1
                 }
                 style={{
                   backgroundColor:
-                    tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
+                    tddPage.currentIndex >= tddPage.fetchedSubmissions.length - 1
                       ? "#B0B0B0"
                       : "#052845",
                 }}
@@ -69,9 +69,10 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
             </div>
           )}
 
-          <div className="mainInfoContainer">
+          {hasVisualizationData && <div className="mainInfoContainer">
+            {chartsState.loadError && <p role="alert">No se pudieron cargar las métricas de commits.</p>}
+            {tddPage.cyclesError && <p role="alert">No se pudieron cargar las métricas de ciclos TDD.</p>}
             <TDDCharts
-              data-testId="cycle-chart"
               commits={chartsState.commitsInfo}
               tddLogs={chartsState.tddLogsInfo}
               commitsTddCycles={chartsState.commitsTddCycles}
@@ -82,7 +83,7 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
               typegraphs={props.graphs}
               logsError={chartsState.tddLogsError}
             />
-          </div>
+          </div>}
         </React.Fragment>
       )}
 

@@ -65,15 +65,14 @@ describe("TDDChartPage", () => {
   );
 
   test.each([["admin"], ["student"]])(
-    "displays an error message when no data is available for role %s",
+    "displays an empty state when no data is available for role %s",
     async (role) => {
       const { getByTestId } = render(
         <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
       );
 
       await waitFor(() => {
-        const error = getByTestId("errorMessage");
-        expect(error).toBeInTheDocument();
+        expect(getByTestId("emptyMessage")).toBeInTheDocument();
       });
     }
   );

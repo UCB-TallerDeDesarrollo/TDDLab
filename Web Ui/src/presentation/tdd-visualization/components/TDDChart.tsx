@@ -41,15 +41,15 @@ function TDDCharts({
   typegraphs,
   logsError = false,
 }: Readonly<CycleReportViewProps>) {
-  const maxLinesInGraph = 100;
-  const [metricSelected, setMetricSelected] = useState(() => {
-    const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
+  const defaultMetric = typegraphs === "aditionalgraph" ? "Complejidad" : "Dashboard";
+  const [storedMetric, setMetricSelected] = useState(() => {
+    const initialMetric = localStorage.getItem("selectedMetric") ?? defaultMetric;
     return initialMetric;
   });
 
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
+      const storedMetric = localStorage.getItem("selectedMetric") ?? defaultMetric;
       setMetricSelected(storedMetric);
       setMetric(storedMetric);
     };
@@ -59,7 +59,7 @@ function TDDCharts({
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [setMetric]);
+  }, [defaultMetric, setMetric]);
 
   const gitGraph = useMemo(() => getCommitGraph(tddLogs), [tddLogs]);
   const measuredShas = useMemo(
@@ -99,12 +99,6 @@ function TDDCharts({
     setBranchSelection("all");
   };
 
-  const filteredCommitsObject = commits?.map((commit) =>
-    commit.stats.total > maxLinesInGraph
-      ? { ...commit, stats: { ...commit.stats, total: 50 } }
-      : commit
-  ) ?? null;
-
   if (!commits) {
     return <div>No data available</div>;
   }
@@ -120,6 +114,8 @@ function TDDCharts({
   };
 
   const cycleMetric = "Ciclo de ejecución de pruebas";
+  const additional = ["Complejidad", "Pie"].includes(storedMetric);
+  const metricSelected = additional === (typegraphs === "aditionalgraph") ? storedMetric : defaultMetric;
   const showingCycle = metricSelected === cycleMetric;
   const showingHistory = metricSelected === "Lista";
 
@@ -142,7 +138,7 @@ function TDDCharts({
         <FormControl fullWidth>
           <InputLabel id="simple-select-label">Métricas</InputLabel>
           <Select
-            labelId="select-label"
+            labelId="simple-select-label"
             id="simple-select"
             onChange={(event: SelectChangeEvent) => selectMetric(event.target.value)}
             value={metricSelected}
@@ -184,7 +180,7 @@ function TDDCharts({
         </Button>
       )}
       <TDDLineCharts
-        filteredCommitsObject={showingHistory ? commits : filteredCommitsObject}
+        filteredCommitsObject={commits}
         tddLogs={tddLogs}
         optionSelected={metricSelected}
         port={port}
@@ -199,7 +195,7 @@ function TDDCharts({
         onSelectAllBranches={handleSelectAllBranches}
         onPreviewBranch={setPreviewBranch}
         onSelectMetric={selectMetric}
-        logsError={logsError}
+        logsError={logsError || tddLogs === null}
       />
     </div>
   );

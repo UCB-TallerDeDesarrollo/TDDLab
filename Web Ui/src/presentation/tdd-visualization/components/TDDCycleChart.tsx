@@ -1,3 +1,4 @@
+import { indexCommitShas, testResult } from "../../../modules/TDDCycles-Visualization/application/commitExecutions";
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CHART_SYMBOL_VARIANT, chartSymbols } from './chartSymbols';
 import type { GitGraphCommit } from '../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces';
@@ -36,7 +37,7 @@ interface CommitData {
   isActive: boolean;
   accentColor?: string;
   branches: string[];
-  tests: Array<{ passed: boolean; size: number; detail: string }>;
+  tests: Array<{ passed: boolean | undefined; size: number; detail: string }>;
 }
 
 type ChartSymbolConfig = typeof chartSymbols.success | typeof chartSymbols.failure;
@@ -101,107 +102,56 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({
       return [];
     }
 
-    const commitIdsByTestId = new Map<number, string[]>();
+    const uniqueCommitByTestId = indexCommitShas(data);
+
+    const bySha = new Map<string, CommitData>();
+    const fallbackOrder = new Map<string, number>();
+    let nextFallbackNumber = 1;
+
     for (const log of data) {
-      if (log.commitId && Number.isSafeInteger(log.testId)) {
-        const list = commitIdsByTestId.get(log.testId) ?? [];
-        list.push(log.commitId);
-        commitIdsByTestId.set(log.testId, list);
-      }
-    }
-
-    const uniqueCommitByTestId = new Map<number, string>();
-    for (const [testId, shas] of commitIdsByTestId.entries()) {
-      if (shas.length === 1 && shas[0] && shas[0] !== 'HEAD') {
-        uniqueCommitByTestId.set(testId, shas[0]);
-      }
-    }
-
-    const hasLinkedExecutions = data.some(
-      (log) => log.numPassedTests !== undefined && uniqueCommitByTestId.has(log.testId),
-    );
-
-    if (hasLinkedExecutions) {
-      const bySha = new Map<string, CommitData>();
-      const fallbackOrder = new Map<string, number>();
-      let nextFallbackNumber = 1;
-
-      for (const log of data) {
-        if (log.numPassedTests === undefined) continue;
-        const sha = uniqueCommitByTestId.get(log.testId);
-        const key = sha ?? `unlinked-${log.testId}`;
-        if (!bySha.has(key)) {
-          let number = sha ? commitNumbers?.get(sha) : undefined;
-          if (number === undefined) {
-            if (!fallbackOrder.has(key)) {
-              fallbackOrder.set(key, nextFallbackNumber++);
-            }
-            number = fallbackOrder.get(key)!;
+      if (log.numPassedTests === undefined) continue;
+      const sha = uniqueCommitByTestId.get(log.testId);
+      const key = sha ?? `unlinked-${log.testId}`;
+      if (!bySha.has(key)) {
+        let number = sha ? commitNumbers?.get(sha) : undefined;
+        if (number === undefined) {
+          if (!fallbackOrder.has(key)) {
+            fallbackOrder.set(key, nextFallbackNumber++);
           }
-          const commitBranches = sha ? (branchMeta.commitBranchMap.get(sha) ?? []) : [];
-          const isActive = sha
-            ? isCommitInActiveBranches(sha, branchMeta, activeBranches)
-            : activeBranches === null;
-          const accentColor = sha
-            ? getCommitBranchAccentColor(sha, branchMeta, activeBranches)
-            : undefined;
-
-          bySha.set(key, {
-            key,
-            sha,
-            commitNumber: number,
-            isActive,
-            accentColor,
-            branches: commitBranches,
-            tests: [],
-          });
+          number = fallbackOrder.get(key)!;
         }
+        const commitBranches = sha ? (branchMeta.commitBranchMap.get(sha) ?? []) : [];
+        const isActive = sha
+          ? isCommitInActiveBranches(sha, branchMeta, activeBranches)
+          : activeBranches === null;
+        const accentColor = sha
+          ? getCommitBranchAccentColor(sha, branchMeta, activeBranches)
+          : undefined;
 
-        const entry = bySha.get(key)!;
-        const passed = (log.failedTests === 0) && (log.success === true);
-        const status = passed ? 'exitosa' : 'con fallos';
-        const branchSuffix = entry.branches.length > 0 ? ` Rama: ${entry.branches.join(', ')}.` : '';
-        entry.tests.push({
-          passed,
-          size: 1,
-          detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.${branchSuffix}`,
+        bySha.set(key, {
+          key,
+          sha,
+          commitNumber: number,
+          isActive,
+          accentColor,
+          branches: commitBranches,
+          tests: [],
         });
       }
 
-      return Array.from(bySha.values()).sort((a, b) => a.commitNumber - b.commitNumber);
+      const entry = bySha.get(key)!;
+      const result = testResult(log);
+      const passed = result === "unknown" ? undefined : result === "success";
+      const status = passed === undefined ? 'sin resultado' : passed ? 'exitosa' : 'con fallos';
+      const branchSuffix = entry.branches.length > 0 ? ` Rama: ${entry.branches.join(', ')}.` : '';
+      entry.tests.push({
+        passed,
+        size: 1,
+        detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.${branchSuffix}`,
+      });
     }
 
-    const commitMap = new Map<number, CommitData>();
-    let currentCommit = 1;
-
-    for (const log of data) {
-      if (log.commitId) {
-        currentCommit++;
-      }
-
-      if (log.numPassedTests !== undefined) {
-        if (!commitMap.has(currentCommit)) {
-          commitMap.set(currentCommit, {
-            key: `seq-${currentCommit}`,
-            commitNumber: currentCommit,
-            isActive: true,
-            branches: [],
-            tests: [],
-          });
-        }
-
-        const commit = commitMap.get(currentCommit)!;
-        const passed = (log.failedTests === 0) && (log.success === true);
-        const status = passed ? 'exitosa' : 'con fallos';
-        commit.tests.push({
-          passed,
-          size: 1,
-          detail: `Ejecución ${status}: ${log.numPassedTests} pruebas exitosas, ${log.failedTests} fallidas de ${log.numTotalTests}.`,
-        });
-      }
-    }
-
-    return Array.from(commitMap.values());
+    return Array.from(bySha.values()).sort((a, b) => a.commitNumber - b.commitNumber);
   }, [data, commitNumbers, branchMeta, activeBranches]);
 
   const hasExecutions = processedData.length > 0;
@@ -351,7 +301,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({
                     <g
                       key={`test-${commit.key}-${testIndex}`}
                       role="img"
-                      aria-label={test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
+                      aria-label={test.passed === undefined ? 'Ejecución sin resultado' : test.passed ? 'Ejecución exitosa' : 'Ejecución con fallos'}
                       tabIndex={0}
                       onMouseEnter={() => setHoveredTest({ x, y, detail: test.detail })}
                       onMouseLeave={() => setHoveredTest(null)}
@@ -367,7 +317,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({
                         fill="transparent"
                         stroke="none"
                       />
-                      <ChartSymbolMark config={symbolConfig} x={x} y={y} />
+                      {test.passed === undefined ? <circle cx={x} cy={y} r={5} fill="#627384" /> : <ChartSymbolMark config={symbolConfig} x={x} y={y} />}
                     </g>
                   );
                 })}
@@ -397,7 +347,7 @@ const TDDCycleChart: React.FC<TDDCycleChartProps> = ({
                   textAnchor="middle"
                   transform={`rotate(-45, ${x}, ${topPadding + plotHeight + 28})`}
                 >
-                  Commit {commit.commitNumber}
+                  {commit.sha ? "Commit " + commit.commitNumber : "Sin vínculo"}
                 </text>
               </g>
             );

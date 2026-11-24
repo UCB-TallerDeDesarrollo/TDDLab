@@ -1,3 +1,5 @@
+import { FakeCommitHistoryRepository } from "../../../src/modules/TDDCycles-Visualization/repository/FakeCommitHistoryRepository";
+import { fetchTDDVisualizationData } from "../../../src/presentation/tdd-visualization/services/tddVisualization.service";
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TDDCharts from '../../../src/presentation/tdd-visualization/components/TDDChart';
@@ -56,8 +58,53 @@ describe('Integración de la visualización TDD', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
+  it('muestra ejecuciones y topología al cargar el adaptador fake inyectado', async () => {
+    const port = new FakeCommitHistoryRepository();
+    const data = await fetchTDDVisualizationData(port, 'tddlab-demo', 'branches');
+    render(<TDDCharts commits={data.commits} tddLogs={data.tddLogs} metric={null} setMetric={jest.fn()}
+      port={port} role="student" commitsTddCycles={data.commitsTddCycles} typegraphs="graph" />);
+    const timeline = within(screen.getByRole('region', { name: 'Línea de tiempo de commits' }));
+    expect(timeline.getByRole('button', { name: /Ver historial de ramas/ })).toBeInTheDocument();
+    expect(timeline.getAllByRole('button', { name: /exitosa/ }).length).toBeGreaterThan(0);
+    expect(timeline.getAllByRole('button', { name: /fallida/ }).length).toBeGreaterThan(0);
+  });
+
+  it('mantiene las métricas si falla la fuente de ejecuciones', () => {
+    renderCharts(null);
+    expect(screen.getByRole('alert')).toHaveTextContent('No se pudieron cargar las ejecuciones');
+    expect(screen.getAllByTestId('commit-metric-chart')).toHaveLength(4);
+  });
+
+  it('ordena por fecha, conserva los valores originales y abre el detalle del SHA elegido', () => {
+    const earlier = Object.freeze({
+      ...commits[0], sha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      stats: Object.freeze({ total: 180, additions: 180, deletions: 0 }),
+      commit: { ...commits[0].commit, date: new Date('2025-01-01'), message: 'Primer cambio' },
+      coverage: 0, test_count: 0,
+    });
+    const later = commits[0];
+    const source = [later, earlier];
+    Object.freeze(source);
+    const logs: TDDLogEntry[] = [
+      { commitId: earlier.sha, commitName: 'Primer cambio', commitTimestamp: 1, testId: 0 },
+      { timestamp: 0, numPassedTests: 0, numTotalTests: 1, failedTests: 1, success: false, testId: 0 },
+    ];
+    render(<TDDCharts commits={source} tddLogs={logs} metric={null} setMetric={jest.fn()}
+      port={new MockGithubAPI()} role="student" commitsTddCycles={null} typegraphs="graph" />);
+    const timeline = within(screen.getByRole('region', { name: 'Línea de tiempo de commits' }));
+    const [first, second] = timeline.getAllByRole('button');
+    expect(first).toHaveTextContent('aaaaaaa');
+    expect(first).toHaveTextContent('Cobertura: 0%');
+    expect(first).toHaveTextContent('1 fallida(s)');
+    expect(second).toHaveTextContent('Sin ejecución vinculada');
+    expect(screen.getAllByTestId('commit-metric-chart').some(chart => chart.textContent?.includes('"data":[180,2]'))).toBe(true);
+    fireEvent.click(first);
+    expect(within(screen.getByRole('dialog')).getByTitle(earlier.sha)).toBeInTheDocument();
+    expect(source[0]).toBe(later);
+    expect(earlier.stats.total).toBe(180);
+  });
+
   const logsWithoutExecutions: Array<{ name: string; logs: TDDLogEntry[] | null }> = [
-    { name: 'log no disponible', logs: null },
     { name: 'log vacío', logs: [] },
     { name: 'solo commits de ventasIS', logs: ventasISCommitOnlyLogs },
   ];
@@ -170,7 +217,7 @@ describe('Integración de la visualización TDD', () => {
     expect(screen.queryAllByRole('img', { name: /Ejecución (exitosa|con fallos)/ })).toHaveLength(0);
 
     rerender(<TDDCharts {...props} tddLogs={null} />);
-    expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
+    expect(screen.getByRole('alert')).toHaveTextContent('No se pudieron cargar las ejecuciones de pruebas');
     expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
   });
 

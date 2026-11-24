@@ -1,3 +1,4 @@
+import { isCommitUrl } from "./isCommitUrl";
 import { useId, useState, type ReactNode } from 'react';
 import { Card, CardContent, IconButton, Typography } from '@mui/material';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
@@ -32,6 +33,7 @@ export function TDDCommitDate({ date }: Readonly<{ date?: Date | number | string
 }
 
 export function TDDCommitLink({ href }: Readonly<{ href: string }>) {
+  if (!isCommitUrl(href)) return null;
   return (
     <a className="commit-card-link" href={href} target="_blank" rel="noopener noreferrer">
       Ver commit

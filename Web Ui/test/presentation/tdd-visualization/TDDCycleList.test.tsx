@@ -44,6 +44,8 @@ describe("TDDCycleList Component", () => {
     expect(within(merge).getByText('#5')).toBeInTheDocument();
     const measuredRow = history.querySelector('[data-commit="left"]') as HTMLElement;
     expect(within(measuredRow).getByText('#4')).toBeInTheDocument();
+    expect(measuredRow).toHaveAttribute('data-secondary-branch', 'true');
+    expect(history.querySelector('[data-commit="root"]')).not.toHaveAttribute('data-secondary-branch');
 
     fireEvent.change(screen.getByRole('combobox', { name: 'Resaltar rama' }), { target: { value: 'descuentos' } });
     expect(measuredRow).toHaveAttribute('data-branch-highlighted', 'true');

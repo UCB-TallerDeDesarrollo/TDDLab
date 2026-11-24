@@ -174,3 +174,46 @@
   background: #f0f7ff;
   border-color: #378de5;
 }
+
+.tdd-dashboard-timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: .5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tdd-dashboard-timeline button {
+  display: grid;
+  gap: .25rem;
+  width: 100%;
+  height: 100%;
+  padding: .75rem;
+  border: 1px solid #c8d6e2;
+  border-inline-start: 4px solid #627384;
+  border-radius: .375rem;
+  color: #092d4a;
+  background: #fff;
+  text-align: start;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.tdd-dashboard-timeline button[data-result="success"] { border-inline-start-color: #167348; }
+.tdd-dashboard-timeline button[data-result="failure"] { border-inline-start-color: #b42336; }
+
+.tdd-dashboard-timeline button:hover,
+.tdd-dashboard-timeline button:focus-visible,
+.tdd-dashboard-timeline button[aria-pressed="true"] {
+  outline: 2px solid #378de5;
+  outline-offset: -2px;
+  background: #f0f7ff;
+}
+
+.tdd-commit-history-row[data-secondary-branch="true"] .tdd-commit-lanes {
+  opacity: .55;
+}
+
+.tdd-commit-history-row[data-secondary-branch="true"]:is(:hover, :focus-within, [data-branch-highlighted="true"]) .tdd-commit-lanes {
+  opacity: 1;
+}

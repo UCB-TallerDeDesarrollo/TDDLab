@@ -36,6 +36,7 @@ function TDDCycleList({ commitsInfo, gitGraph, repoUrl }: Readonly<CycleReportVi
 
   const history = gitGraph?.length ? layoutCommits(gitGraph) : undefined;
   const branches = [...new Set(gitGraph?.flatMap(getCommitBranches))].sort((a, b) => a.localeCompare(b));
+  const mainBranch = gitGraph?.find(commit => commit.historyBranch)?.historyBranch;
   const branch = branches.includes(selectedBranch) ? selectedBranch : '';
   const commitBySha = new Map(commitsInfo.map((commit) => [commit.sha, commit]));
   const topologyShas = new Set(gitGraph?.map(({ sha }) => sha));
@@ -84,6 +85,7 @@ function TDDCycleList({ commitsInfo, gitGraph, repoUrl }: Readonly<CycleReportVi
           {historyRows.map((row) => {
             const { sha, subject, parents, timestamp, body } = row.commit;
             const commit = commitBySha.get(sha);
+            const rowBranches = getCommitBranches(row.commit);
             const details = (
               <>
                 {parents.length > 1 && <strong>Merge</strong>}
@@ -94,7 +96,9 @@ function TDDCycleList({ commitsInfo, gitGraph, repoUrl }: Readonly<CycleReportVi
               <li key={sha} className="tdd-commit-history-row" style={{
                 gridTemplateColumns: `${history.width}px minmax(0, 1fr)`,
                 minWidth: `calc(${history.width}px + var(--commit-history-card-min))`,
-              }} data-commit={sha} data-branch-highlighted={branch && getCommitBranches(row.commit).includes(branch) ? 'true' : undefined}>
+              }} data-commit={sha}
+                data-secondary-branch={mainBranch && rowBranches.length > 0 && !rowBranches.includes(mainBranch) ? "true" : undefined}
+                data-branch-highlighted={branch && rowBranches.includes(branch) ? 'true' : undefined}>
                 <TDDCommitLanes row={row} width={history.width} reverse={ascending} />
                 {commit ? <TDDCycleCard commit={commit} history={details} timestamp={timestamp} commitNumber={commitNumbers.get(sha)} /> : (
                   <div className="cycleCardWrapper tdd-history-unmeasured-row">

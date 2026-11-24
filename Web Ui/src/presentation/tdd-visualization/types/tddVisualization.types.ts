@@ -20,6 +20,8 @@ export interface TDDVisualizationData {
   commitsTddCycles: CommitCycle[];
   tddLogs: TDDLogEntry[];
   tddLogsError?: boolean;
+  commitsError?: boolean;
+  cyclesError?: boolean;
 }
 
 export interface TDDCommentsData {

@@ -17,7 +17,6 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
-import { FakeCommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/repository/FakeCommitHistoryRepository";
 import { getCommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/repository/getCommitHistoryRepository";
 
 function isStudent(role: string) {
@@ -55,39 +54,10 @@ export function useTDDChartPage({
   const isTeacherView = role !== "student";
   const rawOwner = searchParams.get("repoOwner");
   const rawRepo = searchParams.get("repoName");
-  const isTestEnv = process.env.NODE_ENV === "test";
   const isQueryFake = searchParams.get("fake") === "true";
-  const forceFakeByQuery = !isTestEnv && isQueryFake;
-
-  const activePort = useMemo(() => {
-    if (forceFakeByQuery) {
-      return new FakeCommitHistoryRepository();
-    }
-    if (port) {
-      return port;
-    }
-    if (isQueryFake) {
-      return new FakeCommitHistoryRepository();
-    }
-    return getCommitHistoryRepository();
-  }, [forceFakeByQuery, isQueryFake, port]);
-
-  const isFakeMode =
-    activePort instanceof FakeCommitHistoryRepository ||
-    isQueryFake;
-
-  const repoOwner =
-    rawOwner && rawOwner !== "null"
-      ? rawOwner
-      : isFakeMode
-      ? "tddlab-demo"
-      : "defaultOwner";
-  const repoName =
-    rawRepo && rawRepo !== "null"
-      ? rawRepo
-      : isFakeMode
-      ? "branches"
-      : "defaultRepo";
+  const activePort = useMemo(() => port ?? getCommitHistoryRepository(isQueryFake), [port, isQueryFake]);
+  const repoOwner = rawOwner && rawOwner !== "null" ? rawOwner : "defaultOwner";
+  const repoName = rawRepo && rawRepo !== "null" ? rawRepo : "defaultRepo";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
   const assignmentId = Number.parseInt(searchParams.get("assignmentId") || "0");
   const fetchedSubmissions: Submission[] = isTeacherView
@@ -101,7 +71,8 @@ export function useTDDChartPage({
       : 0,
   );
   const [ownerName, setOwnerName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loadedRepo, setLoadedRepo] = useState<{ port: typeof activePort; owner: string; repo: string }>();
+  const loading = loadedRepo?.port !== activePort || loadedRepo.owner !== repoOwner || loadedRepo.repo !== repoName;
   const [comments, setComments] = useState<CommentDataObject[] | null>(null);
   const [emails, setEmails] = useState<Record<number, string>>({});
   const [feedback, setFeedback] = useState("");
@@ -112,6 +83,7 @@ export function useTDDChartPage({
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
   const [tddLogsError, setTDDLogsError] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [cyclesError, setCyclesError] = useState(false);
 
   const defaultMetric = getDefaultMetric(graphs);
 
@@ -150,7 +122,7 @@ export function useTDDChartPage({
   useEffect(() => {
     let active = true;
     const loadVisualizationData = async () => {
-      setLoading(true);
+      setCyclesError(false);
       setLoadError(false);
       setTDDLogsError(false);
       setCommitsInfo(null);
@@ -163,6 +135,8 @@ export function useTDDChartPage({
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
         setTDDLogsError(Boolean(visualizationData.tddLogsError));
+        setLoadError(Boolean(visualizationData.commitsError));
+        setCyclesError(Boolean(visualizationData.cyclesError));
       } catch (error) {
         console.error("Error obtaining data:", error);
         if (active) {
@@ -170,7 +144,7 @@ export function useTDDChartPage({
         }
       } finally {
         if (active) {
-          setLoading(false);
+          setLoadedRepo({ port: activePort, owner: repoOwner, repo: repoName });
         }
       }
     };
@@ -245,6 +219,7 @@ export function useTDDChartPage({
     isStudent: studentRole,
     activePort,
     loading,
+    cyclesError,
     ownerName,
     repoName,
     role,

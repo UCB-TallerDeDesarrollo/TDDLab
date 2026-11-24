@@ -1,3 +1,5 @@
+import { formatDate } from "../../../modules/TDDCycles-Visualization/application/GetTDDCycles";
+import { indexTestsByCommit, testResult } from "../../../modules/TDDCycles-Visualization/application/commitExecutions";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Bubble, getElementAtEvent, Line } from "react-chartjs-2";
 import type {
@@ -31,7 +33,6 @@ import {
   getCommitBranchAccentColor,
   getCommitColor,
   getSharedActiveBranch,
-  indexTestsByCommit,
   isCommitInActiveBranches,
   resolveActiveBranches,
   toggleBranchSelection,
@@ -122,8 +123,8 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   const chartRefModifiedLines = useRef<Chart<"line", Array<number | null>>>();
   const chartRefTestCount = useRef<Chart<"line", Array<number | null>>>();
   const [graph, setGraph] = useState<string>("");
-  const chronologicalCommits = useMemo(() => commits.slice().reverse(), [commits]);
-  const testCounts = commits.map((commit) => commit.test_count);
+  const chronologicalCommits = useMemo(() => [...new Map(commits.map(commit => [commit.sha, commit])).values()].sort((a, b) => new Date(a.commit.date).getTime() - new Date(b.commit.date).getTime() || a.sha.localeCompare(b.sha)), [commits]);
+  const testCounts = chronologicalCommits.map((commit) => commit.test_count);
   const maxTest = Math.max(0, ...testCounts);
   const yAxisMax = Math.max(4, maxTest + Math.max(2, Math.ceil(maxTest * 0.3)));
   const commitXNumbers = useMemo(
@@ -279,7 +280,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       datasets: [
         {
           label,
-          data: [...data].reverse(),
+          data,
           spanGaps: false,
           backgroundColor: "rgba(0, 110, 0, 0.85)",
           pointBackgroundColor: chronologicalCommits.map((commit) => {
@@ -582,7 +583,44 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             onToggleBranch={handleToggleBranch}
             onPreviewBranch={handlePreviewBranch}
           />
-          <CommitTimelineDialog
+      <section aria-label="Línea de tiempo de commits">
+          <h3>Línea de tiempo de commits</h3>
+          {!chronologicalCommits.length && <p>No hay commits con métricas registradas.</p>}
+          <ol className="tdd-dashboard-timeline">
+            {chronologicalCommits.map(commit => {
+              const results = (testsByCommit.get(commit.sha) ?? []).map(testResult);
+              const successes = results.filter(result => result === "success").length;
+              const failures = results.filter(result => result === "failure").length;
+              const unknown = results.length - successes - failures;
+              const counts = [
+                successes && successes + " exitosa(s)",
+                failures && failures + " fallida(s)",
+                unknown && unknown + " sin resultado",
+              ].filter(Boolean).join(" · ");
+              return (
+                <li key={commit.sha}>
+                  <button
+                    type="button"
+                    aria-pressed={selectedCommit?.sha === commit.sha}
+                    onClick={() => openCommitModal(commit)}
+                    data-result={failures ? "failure" : successes ? "success" : "unknown"}
+                    title={commit.commit.message}
+                  >
+                    <code title={commit.sha}>{commit.sha.slice(0, 7)}</code>
+                    <span>{commit.commit.message.split(/\r?\n/)[0]}</span>
+                    <small>{formatDate(new Date(commit.commit.date))}</small>
+                    <small>Tests: {commit.test_count ?? "Sin datos"} · Cobertura: {commit.coverage == null ? "Sin datos" : commit.coverage + "%"} · Líneas: {commit.stats.total ?? "Sin datos"}</small>
+                    <small>{counts || (logsError ? "Ejecuciones no disponibles" : "Sin ejecución vinculada")}</small>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+          {!!gitGraph?.length && (
+            <button type="button" onClick={() => changeGraph("Lista")}>Ver historial de ramas</button>
+          )}
+        </section>
+            <CommitTimelineDialog
             open={openModal}
             handleCloseModal={handleCloseModal}
             selectedCommit={selectedCommit}
@@ -605,7 +643,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <Line
                 data={getLineChartData(
                   "Total Número de Tests",
-                  commits.map((commit) => commit.test_count),
+                  chronologicalCommits.map((commit) => commit.test_count),
                 )}
                 options={getChartOptions("Número de Tests")}
                 ref={chartRefTestCount}
@@ -623,7 +661,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <Line
                 data={getLineChartData(
                   "Porcentaje de Cobertura de Código",
-                  commits.map((commit) => commit.coverage ?? null),
+                  chronologicalCommits.map((commit) => commit.coverage ?? null),
                 )}
                 options={getChartOptions("Cobertura de Código", true)}
                 ref={chartRefCoverage}
@@ -641,7 +679,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               <Line
                 data={getLineChartData(
                   "Total de Líneas de Código Modificadas",
-                  commits.map((commit) => commit.stats.total),
+                  chronologicalCommits.map((commit) => commit.stats.total),
                 )}
                 options={getChartOptions("Líneas de Código Modificadas")}
                 ref={chartRefModifiedLines}

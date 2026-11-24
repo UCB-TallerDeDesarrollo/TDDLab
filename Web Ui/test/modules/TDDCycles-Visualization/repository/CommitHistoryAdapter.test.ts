@@ -81,6 +81,11 @@ describe('CommitHistoryAdapter', () => {
       expect(result).toEqual(mockTDDLogData);
     });
 
+    it('preserves a successful empty result', async () => {
+      mockedAxios.get.mockResolvedValue({ status: 200, data: [] });
+      await expect(adapter.obtainTDDLogs('owner', 'repo')).resolves.toEqual([]);
+    });
+
     it('should throw an error if the network request fails', async () => {
       // Arrange
       const owner = 'test-owner';

@@ -1,8 +1,6 @@
 import type { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import type {
   GitGraphCommit,
-  TDDLogEntry,
-  TestExecutionLog,
 } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { getCommitBranches } from "./TDDCommitLanes";
 
@@ -249,11 +247,11 @@ export function getCommitColor(commit: CommitDataObject): string {
   }
 
   if (coverage === undefined || coverage === null) {
-    return "black";
+    return "#64748b";
   }
 
-  if (test_count === undefined || test_count === 0) {
-    return conclusion === "neutral" ? "#64748b" : "red";
+  if (conclusion !== "success" || test_count == null) {
+    return "#64748b";
   }
 
   return getColorByCoverage(coverage, containsRefactor(message));
@@ -261,25 +259,6 @@ export function getCommitColor(commit: CommitDataObject): string {
 
 export function formatCoverageLabel(coverage: number | null | undefined): string {
   return coverage === null || coverage === undefined ? "Sin datos" : `${coverage}%`;
-}
-
-export function indexTestsByCommit(logs: TDDLogEntry[]): Map<string, TestExecutionLog[]> {
-  const cycles = new Map<number, { commits: string[]; tests: TestExecutionLog[] }>();
-  for (const log of logs) {
-    if (!Number.isSafeInteger(log.testId)) continue;
-    const cycle = cycles.get(log.testId) ?? { commits: [], tests: [] };
-    if ("commitId" in log) cycle.commits.push(log.commitId);
-    else cycle.tests.push(log);
-    cycles.set(log.testId, cycle);
-  }
-
-  const byCommit = new Map<string, TestExecutionLog[]>();
-  for (const { commits, tests } of cycles.values()) {
-    const [sha] = commits;
-    if (commits.length !== 1 || !sha || sha === "HEAD") continue;
-    byCommit.set(sha, [...(byCommit.get(sha) ?? []), ...tests]);
-  }
-  return byCommit;
 }
 
 export interface MeasuredTrajectoryEdge {

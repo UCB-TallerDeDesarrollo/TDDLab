@@ -1,3 +1,4 @@
+import { isCommitUrl } from "./isCommitUrl";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { getElementAtEvent, Line } from "react-chartjs-2";
@@ -350,8 +351,8 @@ function TDDLineCharts({
     if (elements.length > 0) {
       const dataPoint = elements[0].index;
       const link = getCommitLink()[dataPoint];
-      if (link) {
-        window.open(link, "_blank");
+      if (link && isCommitUrl(link)) {
+        window.open(link, "_blank", "noopener,noreferrer");
       }
     }
   };

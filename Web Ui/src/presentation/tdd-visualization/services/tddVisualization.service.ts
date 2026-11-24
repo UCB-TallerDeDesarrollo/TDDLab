@@ -33,6 +33,8 @@ export async function fetchTDDVisualizationData(
       commitsTddCyclesResult.status === "fulfilled" ? commitsTddCyclesResult.value : [],
     tddLogs: tddLogsResult.status === "fulfilled" ? tddLogsResult.value : [],
     tddLogsError: tddLogsResult.status === "rejected",
+    commitsError: commitsResult.status === "rejected",
+    cyclesError: commitsTddCyclesResult.status === "rejected",
   };
 }
 
