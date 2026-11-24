@@ -1,6 +1,8 @@
 import { VisualizeTDDRepository } from "../../../../src/modules/TDDCycles/Repositories/VisualizeTDDRepository";
 
-describe("VisualizeTDDRepository with Neon DB (Real Repository: ChristopherQuiroz/Totalizador-de-Venta)", () => {
+const hasDbConfig = Boolean(process.env.PGHOST);
+
+(hasDbConfig ? describe : describe.skip)("VisualizeTDDRepository with Neon DB (Real Repository: ChristopherQuiroz/Totalizador-de-Venta)", () => {
   const repository = new VisualizeTDDRepository();
   const owner = "ChristopherQuiroz";
   const repoName = "Totalizador-de-Venta";
