@@ -43,7 +43,10 @@ describe("Get jobs", () => {
         clientJobQueryMock.mockResolvedValueOnce({ rows: [{ id: 1 }] });
         const jobs = await jobRepository.getJobs('owner', 'repo');
         expect(poolJobConnectMock).toBeCalledTimes(1);
-        expect(clientJobQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2', ['owner', 'repo']);
+        expect(clientJobQueryMock).toBeCalledWith(
+            expect.stringContaining('SELECT id, sha, owner, reponame, conclusion'),
+            ['owner', 'repo']
+        );
         expect(jobs).toEqual([{ id: 1 }]);
     });
     testErrorHandling(() => jobRepository.getJobs('owner', 'repo'));
@@ -54,7 +57,10 @@ describe("JobExists", () => {
         clientJobQueryMock.mockResolvedValueOnce({ rows: [{ exists: true }] });
         const exists = await jobRepository.jobExists('owner', 'repo', 1);
         expect(poolJobConnectMock).toBeCalledTimes(1);
-        expect(clientJobQueryMock).toBeCalledWith('SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ['owner', 'repo', 1]);
+        expect(clientJobQueryMock).toBeCalledWith(
+            expect.stringContaining('SELECT 1 FROM test_execution execution'),
+            ['owner/repo', '1']
+        );
         expect(exists).toEqual(true);
     });
     testErrorHandling(() => jobRepository.jobExists('owner', 'repo', 1));
@@ -65,8 +71,10 @@ describe("RepositoryExists", () => {
         clientJobQueryMock.mockResolvedValueOnce({ rows: [{ count: "1" }] });
         const exists = await jobRepository.repositoryExists('owner', 'repo');
         expect(poolJobConnectMock).toBeCalledTimes(1);
-        const repositoryExistsQuery = 'SELECT COUNT(*) FROM jobsTable WHERE owner = $1 AND reponame = $2';
-        expect(clientJobQueryMock).toBeCalledWith(repositoryExistsQuery, ['owner', 'repo']);
+        expect(clientJobQueryMock).toBeCalledWith(
+            'SELECT COUNT(*) FROM repository WHERE locator = $1',
+            ['owner/repo']
+        );
         expect(exists).toEqual(true);
     });
     testErrorHandling(() => jobRepository.repositoryExists('owner', 'repo'));
@@ -84,9 +92,9 @@ describe("GetJobsNotSaved", () => {
         const result = await jobRepository.getJobsNotSaved("owner", "repoName", commitsWithActions);
 
         expect(poolJobConnectMock).toBeCalledTimes(3);
-        expect(clientJobQueryMock).toHaveBeenNthCalledWith(1, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ["owner", "repoName", commitsWithActions[0][1]]);
-        expect(clientJobQueryMock).toHaveBeenNthCalledWith(2, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ["owner", "repoName", commitsWithActions[1][1]]);
-        expect(clientJobQueryMock).toHaveBeenNthCalledWith(3, 'SELECT * FROM jobsTable WHERE owner = $1 AND reponame = $2 AND id=$3', ["owner", "repoName", commitsWithActions[2][1]]);
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(1, expect.stringContaining('SELECT 1 FROM test_execution execution'), ["owner/repoName", "1"]);
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(2, expect.stringContaining('SELECT 1 FROM test_execution execution'), ["owner/repoName", "2"]);
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(3, expect.stringContaining('SELECT 1 FROM test_execution execution'), ["owner/repoName", "3"]);
         expect(result).toEqual(jobsNotSaved);
     });
     it("should stop checking for jobs if a job already exists", async () => {
@@ -105,18 +113,22 @@ describe("GetJobsNotSaved", () => {
 
 describe("SaveJobsList", () => {
     it("should save a list of jobs", async () => {
-        const saveJobSpy = jest.spyOn(jobRepository, 'saveJob');
+        clientJobQueryMock
+            .mockResolvedValueOnce({})
+            .mockResolvedValueOnce({ rows: [{ id: 'project-id' }] })
+            .mockResolvedValueOnce({ rows: [{ id: 'repository-id' }] })
+            .mockResolvedValueOnce({ rows: [{ id: 'commit-id' }] })
+            .mockResolvedValueOnce({})
+            .mockResolvedValueOnce({});
 
         await jobRepository.saveJobsList("owner", "repo", jobsFormatted);
 
-        expect(saveJobSpy).toHaveBeenCalledTimes(1);
-        expect(saveJobSpy).toHaveBeenNthCalledWith(1, {
-            id: 123,
-            sha: "abc123",
-            owner: "owner",
-            reponame: "repo",
-            conclusion: "success"
-        });
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(1, "BEGIN");
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(2, expect.stringContaining("INSERT INTO project"), ["owner"]);
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(3, expect.stringContaining("INSERT INTO repository"), ["project-id", "owner/repo"]);
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(4, expect.stringContaining('INSERT INTO "commit"'), ["repository-id", "abc123"]);
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(5, expect.stringContaining("INSERT INTO test_execution"), ["repository-id", "commit-id", 1, 0, 1, true]);
+        expect(clientJobQueryMock).toHaveBeenNthCalledWith(6, "COMMIT");
     });
 });
 
