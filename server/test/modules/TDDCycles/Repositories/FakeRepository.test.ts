@@ -1,7 +1,7 @@
 import { CommitLog, TestExecutionLog } from "../../../../src/modules/TDDCycles/Domain/TDDLogEntry";
 import { parseTDDLogs } from "../../../../src/modules/TDDCycles/Domain/parseTDDLogs";
 import { FakeRepository } from "../../../../src/modules/TDDCycles/Repositories/FakeRepository";
-import { fakeTDDRepository } from "../../../../src/modules/TDDCycles/Repositories/fakeTDDData";
+import { fakeRichTDDRepository, fakeTDDRepository } from "../../../../src/modules/TDDCycles/Repositories/fakeTDDData";
 
 describe("FakeRepository", () => {
   const { owner, repoName } = fakeTDDRepository;
@@ -74,5 +74,20 @@ describe("FakeRepository", () => {
     expect(nextCommits[0].commit.message).not.toBe("modified");
     expect(nextCommits[0].commit.date.getUTCFullYear()).toBe(2026);
     expect(await repository.getTDDLogs(owner, repoName)).toEqual(await new FakeRepository().getTDDLogs(owner, repoName));
+  });
+
+  it("provides a richer multi-branch showcase repository under tddlab-demo/branches-demo", async () => {
+    const { owner: demoOwner, repoName: demoRepo } = fakeRichTDDRepository;
+    const commits = await repository.getCommitHistoryData(demoOwner, demoRepo);
+    const cycles = await repository.getCommitCyclesData(demoOwner, demoRepo);
+    const logs = parseTDDLogs(await repository.getTDDLogs(demoOwner, demoRepo));
+    const graphMarker = logs.find((entry): entry is CommitLog => "commitId" in entry && entry.gitGraph !== undefined);
+
+    expect(commits).toHaveLength(10);
+    expect(cycles).toHaveLength(10);
+    expect(graphMarker?.gitGraph).toHaveLength(12);
+    expect(graphMarker?.gitGraph?.flatMap(({ recordedBranches }) => recordedBranches ?? [])).toEqual(
+      expect.arrayContaining(["feature/descuentos", "feature/redondeo", "feature/cupones"]),
+    );
   });
 });

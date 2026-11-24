@@ -1,22 +1,33 @@
 import { ITDDVisualizationRepository } from "../Domain/ITDDVisualizationRepository";
-import { createFakeTDDData, fakeTDDRepository } from "./fakeTDDData";
+import {
+  createFakeTDDData,
+  createRichFakeTDDData,
+  fakeRichTDDRepository,
+  fakeTDDRepository,
+} from "./fakeTDDData";
 
 export class FakeRepository implements ITDDVisualizationRepository {
-  private readonly data = createFakeTDDData();
+  private readonly datasets = new Map([
+    [`${fakeTDDRepository.owner}/${fakeTDDRepository.repoName}`, createFakeTDDData()],
+    [`${fakeRichTDDRepository.owner}/${fakeRichTDDRepository.repoName}`, createRichFakeTDDData()],
+  ]);
 
-  private matches(owner: string, repoName: string) {
-    return owner === fakeTDDRepository.owner && repoName === fakeTDDRepository.repoName;
+  private getDataset(owner: string, repoName: string) {
+    return this.datasets.get(`${owner}/${repoName}`);
   }
 
   async getCommitHistoryData(owner: string, repoName: string) {
-    return this.matches(owner, repoName) ? structuredClone(this.data.commits) : [];
+    const dataset = this.getDataset(owner, repoName);
+    return dataset ? structuredClone(dataset.commits) : [];
   }
 
   async getCommitCyclesData(owner: string, repoName: string) {
-    return this.matches(owner, repoName) ? structuredClone(this.data.cycles) : [];
+    const dataset = this.getDataset(owner, repoName);
+    return dataset ? structuredClone(dataset.cycles) : [];
   }
 
   async getTDDLogs(owner: string, repoName: string) {
-    return this.matches(owner, repoName) ? structuredClone(this.data.logs) : [];
+    const dataset = this.getDataset(owner, repoName);
+    return dataset ? structuredClone(dataset.logs) : [];
   }
 }
