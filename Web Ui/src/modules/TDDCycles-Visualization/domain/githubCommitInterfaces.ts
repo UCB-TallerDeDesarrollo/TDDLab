@@ -3,7 +3,7 @@ export interface CommitDataObject {
   stats: Stats;
   commit: Commit;
   sha: string;
-  coverage: number;
+  coverage: number | null;
   test_count: number;
   conclusion: string;
 }

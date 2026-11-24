@@ -48,6 +48,22 @@ describe('CycleCard component', () => {
   });
 
   it.each([
+    { coverage: 0, text: '0%' },
+    { coverage: null, text: 'Sin datos' },
+  ])('shows coverage $coverage as $text', ({ coverage, text }) => {
+    render(<TDDCycleCard commit={{ ...commitDataObject, coverage }} />);
+
+    expect(screen.getByText('Cobertura:').parentElement).toHaveTextContent(`Cobertura: ${text}`);
+  });
+
+  it('preserves a recorded count of zero tests', () => {
+    render(<TDDCycleCard commit={{ ...commitDataObject, test_count: 0, conclusion: 'neutral' }} />);
+
+    expect(screen.getByText('Número de Tests:').parentElement).toHaveTextContent('Número de Tests: 0');
+    expect(screen.getByText('Sin resultado')).toBeInTheDocument();
+  });
+
+  it.each([
     [1, 'success', 'Exitoso'],
     [1, 'failure', 'Fallido'],
     [0, 'neutral', 'Sin resultado'],

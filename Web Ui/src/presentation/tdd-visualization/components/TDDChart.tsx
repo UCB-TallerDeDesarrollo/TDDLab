@@ -10,7 +10,8 @@ import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-import { CommitLog, TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { getCommitGraph } from "../../../modules/TDDCycles-Visualization/domain/getCommitGraph";
 
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
@@ -64,9 +65,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     window.dispatchEvent(storageEvent);
   };
 
-  const gitGraph = tddLogs?.find((log): log is CommitLog =>
-    "commitId" in log && Array.isArray(log.gitGraph) && log.gitGraph.length > 0
-  )?.gitGraph;
+  const gitGraph = getCommitGraph(tddLogs);
   const cycleMetric = "Ciclo de ejecución de pruebas";
   const showingCycle = metricSelected === cycleMetric;
   const showingHistory = metricSelected === "Lista";

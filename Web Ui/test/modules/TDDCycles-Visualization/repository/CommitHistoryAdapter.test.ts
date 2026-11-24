@@ -19,7 +19,7 @@ describe('CommitHistoryAdapter', () => {
       // Arrange
       const owner = 'test-owner';
       const repoName = 'test-repo';
-      const expectedUrl = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+      const expectedUrl = `${adapter.backAPI}/tdd-logs`;
 
       const mockTDDLogData: TDDLogEntry[] = [
         {
@@ -77,7 +77,7 @@ describe('CommitHistoryAdapter', () => {
       const result = await adapter.obtainTDDLogs(owner, repoName);
 
       // Assert
-      expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl);
+      expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl, { params: { owner, repoName } });
       expect(result).toEqual(mockTDDLogData);
     });
 
@@ -90,6 +90,25 @@ describe('CommitHistoryAdapter', () => {
 
       // Act & Assert
       await expect(adapter.obtainTDDLogs(owner, repoName)).rejects.toThrow('Network error');
+    });
+
+    it('preserves an empty log returned by the API', async () => {
+      mockedAxios.get.mockResolvedValue({ status: 200, data: [] });
+
+      await expect(adapter.obtainTDDLogs('example', 'exercise')).resolves.toEqual([]);
+    });
+
+    it('does not hide a missing API endpoint as an empty log', async () => {
+      const failure = Object.assign(new Error('Endpoint not found'), { response: { status: 404 } });
+      mockedAxios.get.mockRejectedValue(failure);
+
+      await expect(adapter.obtainTDDLogs('example', 'exercise')).rejects.toBe(failure);
+    });
+
+    it('rejects a response that is not a log array', async () => {
+      mockedAxios.get.mockResolvedValue({ status: 200, data: '<html>Wrong API URL</html>' });
+
+      await expect(adapter.obtainTDDLogs('example', 'exercise')).rejects.toThrow('Invalid TDD logs response');
     });
 
     it('should throw an error for non-200 status codes', async () => {

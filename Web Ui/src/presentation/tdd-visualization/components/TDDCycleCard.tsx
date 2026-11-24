@@ -19,12 +19,8 @@ const results = {
 
 function TDDCycleCard({ commit, history, timestamp, commitNumber }: Readonly<CycleReportViewProps>) {
   function getCommitStats() {
-    const coverageText = commit.coverage
-      ? `${commit.coverage}%`
-      : "Sin cobertura";
-    const testCountText = commit.test_count
-      ? `${commit.test_count}`
-      : "Sin tests";
+    const coverageText = commit.coverage == null ? "Sin datos" : `${commit.coverage}%`;
+    const testCountText = `${commit.test_count}`;
 
     return (
       <div className="commit-stats">
