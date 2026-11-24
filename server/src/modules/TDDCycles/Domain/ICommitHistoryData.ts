@@ -1,6 +1,12 @@
+import { MergeInfo } from "./IMergeInfo";
+
 export interface CommitHistoryData {
+  repository_slug:string;
+  branch: string;
   html_url: string;
   sha: string;
+  parent_sha?: string;
+  author?: string;
   stats: {
     total: number;
     additions: number;
@@ -16,4 +22,5 @@ export interface CommitHistoryData {
   coverage: number;
   test_count: number;
   conclusion: string;
+  merge?: MergeInfo
 }

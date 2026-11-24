@@ -18,4 +18,5 @@ export interface IGithubRepository {
     fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]>;
     getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]>;
     getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]>;
+    checkNewGenFile(owner: string, repoName: string): Promise<boolean>;
 }

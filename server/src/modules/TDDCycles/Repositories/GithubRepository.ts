@@ -209,8 +209,11 @@ export class GithubRepository implements IGithubRepository {
         )
       );
 
+      const repositorySlug = `${owner}/${repoName}`;
       const commitsData: TDDCycleDataObject[] = commitsFromSha.map(
         ({ html_url, stats, commit, sha, coveragePercentage, test_count }) => ({
+          repository_slug: repositorySlug,
+          branch: "main",
           html_url,
           stats: {
             total: stats.total,
@@ -226,6 +229,8 @@ export class GithubRepository implements IGithubRepository {
           sha,
           coverage: coveragePercentage,
           test_count: test_count,
+          test_passed: 0,
+          test_failed: 0,
         })
       );
 
@@ -325,36 +330,65 @@ export class GithubRepository implements IGithubRepository {
 
   async getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]> {
     const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
-    const commits: CommitHistoryData[] = commitHistory.map((commitData: any) => ({
-      html_url: commitData.commit.url,
-      sha: commitData.sha,
-      stats: {
-        total: commitData.stats.total,
-        additions: commitData.stats.additions,
-        deletions: commitData.stats.deletions,
-        date: commitData.stats.date,
-      },
-      commit: {
-        date: new Date(commitData.commit.date),
-        message: commitData.commit.message,
-        url: commitData.commit.url,
-        comment_count: commitData.commit.comment_count,
-      },
-      coverage: commitData.coverage,
-      test_count: commitData.test_count,
-      conclusion: commitData.conclusion,
-    }));
+    const repositorySlug = `${owner}/${repoName}`;
+    const commits: CommitHistoryData[] = commitHistory.map((commitData: any) => {
+      const parents = commitData.parents || [];
+      const mergeInfo = parents.length > 0
+        ? { source_branch: "main", target_branch: "main", is_fast_forward: false }
+        : undefined;
+      return {
+        repository_slug: repositorySlug,
+        branch: "main",
+        html_url: commitData.commit.url,
+        sha: commitData.sha,
+        parent_sha: parents.length > 0 ? parents[0].sha : undefined,
+        author: commitData.commit?.author?.name ?? commitData.author?.login,
+        stats: {
+          total: commitData.stats.total,
+          additions: commitData.stats.additions,
+          deletions: commitData.stats.deletions,
+          date: commitData.stats.date,
+        },
+        commit: {
+          date: new Date(commitData.commit.date),
+          message: commitData.commit.message,
+          url: commitData.commit.url,
+          comment_count: commitData.commit.comment_count,
+        },
+        coverage: commitData.coverage,
+        test_count: commitData.test_count,
+        conclusion: commitData.conclusion,
+        merge: mergeInfo,
+      };
+    });
     commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
     return commits;
   }
 
   async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {
     const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    const repositorySlug = `${owner}/${repoName}`;
     return commitHistory.map((commitData: any) => ({
+      repository_slug: repositorySlug,
+      branch: "main",
       url: commitData.commit.url,
       sha: commitData.sha,
       tddCycle: commitData.tdd_cycle ?? "null",
       coverage: commitData.coverage,
     }));
+  }
+
+  async checkNewGenFile(owner: string, repoName: string): Promise<boolean> {
+    try {
+      const response = await this.octokit.request(
+        `GET /repos/${owner}/${repoName}/contents/.new_gen`
+      );
+      return response.status === 200;
+    } catch (error: any) {
+      if (error.status === 404) {
+        return false;
+      }
+      throw error;
+    }
   }
 }

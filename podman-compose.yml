@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: docker.io/postgres:16-alpine
+    container_name: tddlab-postgres
+    environment:
+      POSTGRES_USER: tddlab
+      POSTGRES_PASSWORD: tddlab
+      POSTGRES_DB: tddlab
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./ModeloDatos/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tddlab -d tddlab"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.podman
+    container_name: tddlab-server
+    ports:
+      - "3000:3000"
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: tddlab
+      PGUSER: tddlab
+      PGPASSWORD: tddlab
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["sh", "-c", "npx ts-node-dev src/app.ts"]
+
+volumes:
+  pgdata:
