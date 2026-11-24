@@ -5,10 +5,13 @@ import type { ErrorRequestHandler } from "express";
 import { getTddPool } from "../config/tddDb";
 import { BranchSyncController } from "../controllers/TDDCycles/BranchSyncController";
 import { provisionBranchSync } from "../controllers/TDDCycles/BranchSyncProvisioningController";
+import { provisionBranchSyncCli } from "../controllers/TDDCycles/BranchSyncCliProvisioningController";
+import { parseBranchSyncRepository } from "../modules/TDDCycles/Application/normalizeBranchSyncData";
 import { SyncBranchHistoryUseCase } from "../modules/TDDCycles/Application/SyncBranchHistoryUseCase";
 import type { ITDDHistoryRepository } from "../modules/TDDCycles/Domain/ITDDHistoryRepository";
 import {
   authenticateBranchSyncToken,
+  authenticateDerivedBranchSyncToken,
   BranchSyncConfigurationError,
 } from "../modules/TDDCycles/Infrastructure/BranchSyncCredentials";
 import { PostgresTDDHistoryRepository } from "../modules/TDDCycles/Repositories/PostgresTDDHistoryRepository";
@@ -30,12 +33,13 @@ const postgres: Pick<ITDDHistoryRepository, "saveBatch"> = {
   },
 };
 
-/** Mount before the legacy global JSON parser so only this route has a 2 MiB limit. */
 export function createTDDHistorySyncRouter(options: SyncRouterOptions = {}) {
   if (!options.credentials) dotenv.config();
+
   const router = express.Router();
   const configuration =
     options.credentials ?? (() => process.env.TDD_SYNC_CREDENTIALS);
+
   const controller = new BranchSyncController(
     new SyncBranchHistoryUseCase(options.repository ?? postgres),
   );
@@ -48,6 +52,50 @@ export function createTDDHistorySyncRouter(options: SyncRouterOptions = {}) {
   );
 
   router.post(
+    "/sync/credentials/cli",
+    express.json({ limit: "4kb" }),
+    provisionBranchSyncCli,
+  );
+
+  router.post(
+    "/sync/cli",
+    express.json({ limit: "2mb" }),
+    async (req, res) => {
+      try {
+        const repository = parseBranchSyncRepository(req.body?.repository);
+
+        if (
+          !authenticateDerivedBranchSyncToken(
+            req.get("authorization"),
+            repository,
+          )
+        ) {
+          res.set("WWW-Authenticate", "Bearer").status(401).json({
+            code: "UNAUTHORIZED",
+            message: "Se requiere un token de sincronización TDD válido",
+          });
+          return;
+        }
+
+        await controller.sync(req, res, repository);
+      } catch (error) {
+        if (error instanceof BranchSyncConfigurationError) {
+          res.status(503).json({
+            code: "SYNC_UNAVAILABLE",
+            message: "La sincronización CLI TDD no está configurada",
+          });
+          return;
+        }
+
+        res.status(401).json({
+          code: "UNAUTHORIZED",
+          message: "No se pudo autenticar la sincronización TDD",
+        });
+      }
+    },
+  );
+
+  router.post(
     "/sync",
     (req, res, next) => {
       try {
@@ -55,6 +103,7 @@ export function createTDDHistorySyncRouter(options: SyncRouterOptions = {}) {
           req.get("authorization"),
           configuration,
         );
+
         if (!repository) {
           res.set("WWW-Authenticate", "Bearer").status(401).json({
             code: "UNAUTHORIZED",
@@ -62,24 +111,23 @@ export function createTDDHistorySyncRouter(options: SyncRouterOptions = {}) {
           });
           return;
         }
+
         res.locals.tddSyncRepository = repository;
+
         if (!req.is("application/json")) {
-          res
-            .status(415)
-            .json({
-              code: "JSON_REQUIRED",
-              message: "Se requiere Content-Type application/json",
-            });
+          res.status(415).json({
+            code: "JSON_REQUIRED",
+            message: "Se requiere Content-Type application/json",
+          });
           return;
         }
+
         next();
       } catch {
-        res
-          .status(503)
-          .json({
-            code: "SYNC_UNAVAILABLE",
-            message: "La sincronización TDD no está configurada",
-          });
+        res.status(503).json({
+          code: "SYNC_UNAVAILABLE",
+          message: "La sincronización TDD no está configurada",
+        });
       }
     },
     express.json({ limit: "2mb" }),
@@ -90,25 +138,22 @@ export function createTDDHistorySyncRouter(options: SyncRouterOptions = {}) {
 
   const handleParserError: ErrorRequestHandler = (error, req, res, next) => {
     if (error?.type === "entity.too.large") {
-      res
-        .status(413)
-        .json({
-          code: "PAYLOAD_TOO_LARGE",
-          message: req.path === "/sync/credentials"
-            ? "La solicitud supera el límite de 4 KiB"
-            : "El lote supera el límite de 2 MiB",
-        });
+      res.status(413).json({
+        code: "PAYLOAD_TOO_LARGE",
+        message: req.path.includes("/credentials")
+          ? "La solicitud supera el límite de 4 KiB"
+          : "El lote supera el límite de 2 MiB",
+      });
     } else if (error?.type === "entity.parse.failed") {
-      res
-        .status(400)
-        .json({
-          code: "INVALID_JSON",
-          message: "El cuerpo no contiene JSON válido",
-        });
+      res.status(400).json({
+        code: "INVALID_JSON",
+        message: "El cuerpo no contiene JSON válido",
+      });
     } else {
       next(error);
     }
   };
+
   router.use(handleParserError);
   return router;
 }
