@@ -23,6 +23,17 @@ jest.mock('../../../src/presentation/tdd-visualization/components/TDDList', () =
   default: () => null,
 }));
 
+// Las gráficas restauradas se aíslan: sus propios tests cubren su render.
+jest.mock('../../../src/presentation/tdd-visualization/components/TDDBoard', () => ({
+  __esModule: true,
+  default: () => <div data-testid="tdd-board" />,
+}));
+
+jest.mock('../../../src/presentation/tdd-visualization/components/TDDCycleChart', () => ({
+  __esModule: true,
+  default: () => <div data-testid="tdd-cycle-chart" />,
+}));
+
 function makeCommit(
   sha: string,
   branch: string,
@@ -61,8 +72,13 @@ function renderCharts(tddLogs: TDDLogEntry[] | null) {
 }
 
 function openMetricMenu() {
-  fireEvent.mouseDown(screen.getByRole('combobox'));
+  const metricSelect = within(screen.getByTestId('select-graph-type')).getByRole('combobox');
+  fireEvent.mouseDown(metricSelect);
   return within(screen.getByRole('listbox'));
+}
+
+function selectMetric(name: string) {
+  fireEvent.click(openMetricMenu().getByRole('option', { name }));
 }
 
 function expectDashboardShell() {
@@ -77,6 +93,26 @@ describe('Integración de la visualización TDD', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
+  it('muestra el dashboard clásico por defecto y conserva todas las opciones', () => {
+    renderCharts(dashboardTDDLogs);
+
+    expect(screen.getByTestId('tdd-board')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toHaveTextContent('Dashboard clásico');
+
+    const menu = openMetricMenu();
+    expect(menu.getByRole('option', { name: 'Dashboard clásico', selected: true })).toBeInTheDocument();
+    expect(menu.getByRole('option', { name: 'Ciclo de ejecución de pruebas' })).toBeInTheDocument();
+    expect(menu.getByRole('option', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(menu.getByRole('option', { name: 'Total Número de Tests' })).toBeInTheDocument();
+    expect(menu.getByRole('option', { name: 'Porcentaje de Cobertura de Código' })).toBeInTheDocument();
+    expect(menu.getByRole('option', { name: 'Líneas de Código Modificadas' })).toBeInTheDocument();
+    expect(menu.getByRole('option', { name: 'Lista de Commits' })).toBeInTheDocument();
+
+    fireEvent.click(menu.getByRole('option', { name: 'Dashboard' }));
+    expectDashboardShell();
+    expect(screen.queryByTestId('tdd-board')).not.toBeInTheDocument();
+  });
+
   const logsWithoutExecutions: Array<{ name: string; logs: TDDLogEntry[] | null }> = [
     { name: 'log no disponible', logs: null },
     { name: 'log vacío', logs: [] },
@@ -87,7 +123,9 @@ describe('Integración de la visualización TDD', () => {
     'muestra el dashboard sin ejecuciones y conserva las métricas con $name',
     ({ logs }) => {
       const { setMetric } = renderCharts(logs);
+      expect(screen.getByTestId('tdd-board')).toBeInTheDocument();
 
+      selectMetric('Dashboard');
       expectDashboardShell();
       expect(screen.getAllByRole('button', { name: /feature\/login/ })[0]).toBeInTheDocument();
       expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
@@ -95,42 +133,46 @@ describe('Integración de la visualización TDD', () => {
       expect(screen.queryAllByTestId('commit-metric-chart')).toHaveLength(0);
       expect(screen.queryAllByRole('img', { name: /^Ejecución (exitosa|con fallos):/ })).toHaveLength(0);
 
-      const menu = openMetricMenu();
-      expect(menu.getByRole('option', { name: 'Dashboard' })).toBeInTheDocument();
-      expect(menu.queryByRole('option', { name: 'Ciclo de ejecución de pruebas' })).not.toBeInTheDocument();
-
-      fireEvent.click(
-        menu.getByRole('option', { name: 'Porcentaje de Cobertura de Código' }),
-      );
+      selectMetric('Porcentaje de Cobertura de Código');
       expect(setMetric).toHaveBeenCalledWith('Cobertura de Código');
       expect(localStorage.getItem('selectedMetric')).toBe('Cobertura de Código');
       expect(screen.getByTestId('commit-metric-chart')).toHaveTextContent(
         '"label":"Porcentaje de Cobertura de Código"',
       );
 
-      fireEvent.click(openMetricMenu().getByRole('option', { name: 'Dashboard' }));
+      selectMetric('Dashboard');
       expectDashboardShell();
       expect(screen.getByRole('status')).toBeInTheDocument();
     },
   );
 
+  it('muestra TDDCycleChart al elegir la métrica de ciclo', () => {
+    renderCharts(dashboardTDDLogs);
+
+    selectMetric('Ciclo de ejecución de pruebas');
+
+    expect(screen.getByTestId('tdd-cycle-chart')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Ciclo de ejecución de pruebas TDD' })).not.toBeInTheDocument();
+    expect(localStorage.getItem('selectedMetric')).toBe('Ciclo de ejecución de pruebas');
+  });
+
   it.each(logsWithoutExecutions)(
-    'normaliza la métrica legacy guardada al Dashboard con $name',
+    'conserva la métrica de ciclo guardada con $name',
     ({ logs }) => {
       localStorage.setItem('selectedMetric', 'Ciclo de ejecución de pruebas');
       renderCharts(logs);
 
-      expect(screen.getByRole('combobox')).toHaveTextContent('Dashboard');
-      expectDashboardShell();
-      expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
-      const menu = openMetricMenu();
-      expect(menu.getByRole('option', { name: 'Dashboard', selected: true })).toBeInTheDocument();
-      expect(menu.queryByRole('option', { name: 'Ciclo de ejecución de pruebas' })).not.toBeInTheDocument();
+      expect(screen.getByTestId('tdd-cycle-chart')).toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toHaveTextContent('Ciclo de ejecución de pruebas');
+      expect(
+        openMetricMenu().getByRole('option', { name: 'Ciclo de ejecución de pruebas', selected: true }),
+      ).toBeInTheDocument();
     },
   );
 
-  it('muestra ejecuciones agrupadas por commit y cambia de rama desde lista y grafo', () => {
+  it('muestra ejecuciones agrupadas por commit y cambia de rama desde la lista', () => {
     renderCharts(dashboardTDDLogs);
+    selectMetric('Dashboard');
 
     expectDashboardShell();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -145,13 +187,14 @@ describe('Integración de la visualización TDD', () => {
     expect(screen.getAllByRole('img', { name: /^Ejecución (exitosa|con fallos):/ })).toHaveLength(1);
     expect(screen.getByTestId('tdd-summary-executions')).toHaveTextContent('1');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Seleccionar rama main' }));
+    fireEvent.click(screen.getAllByRole('button', { name: /main/ })[0]);
     expect(screen.getByTestId('tdd-selected-branch')).toHaveTextContent('main');
     expect(screen.getByTestId('tdd-summary-executions')).toHaveTextContent('4');
   });
 
   it('actualiza el dashboard al recibir logs de otro repositorio', () => {
     const { rerender, props } = renderCharts(dashboardTDDLogs);
+    selectMetric('Dashboard');
     expect(screen.getAllByRole('img', { name: /^Ejecución (exitosa|con fallos):/ })).toHaveLength(4);
 
     rerender(<TDDCharts {...props} tddLogs={ventasISCommitOnlyLogs} />);
@@ -183,6 +226,7 @@ describe('Integración de la visualización TDD', () => {
     );
 
     expect(largeCommit.stats.total).toBe(250);
+    selectMetric('Dashboard');
     expectDashboardShell();
   });
 });

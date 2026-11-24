@@ -23,6 +23,11 @@ import {
 import TDDList from "./TDDList";
 import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import { TDDDashboard } from "./dashboard/TDDDashboard";
+import TDDBoard from "./TDDBoard";
+import TDDCycleChart from "./TDDCycleChart";
+import type { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import type { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import type { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import type { TDDDashboardViewState } from "../types/tddVisualization.types";
 
 ChartJS.register(
@@ -41,7 +46,11 @@ ChartJS.register(
 interface LineChartProps {
   filteredCommitsObject: CommitDataObject[] | null;
   optionSelected: string;
-  dashboardState: TDDDashboardViewState;
+  dashboardState?: TDDDashboardViewState;
+  tddLogs: TDDLogEntry[] | null;
+  port: CommitHistoryRepository;
+  role: string;
+  commitsCycles?: CommitCycle[] | null;
 }
 
 interface CommitLineDataset extends ChartDataset<"line", number[]> {
@@ -56,6 +65,9 @@ function TDDLineCharts({
   filteredCommitsObject,
   optionSelected,
   dashboardState,
+  tddLogs,
+  port,
+  role,
 }: LineChartProps) {
   
   let dataChart: CommitLineChartData | null = null;
@@ -329,8 +341,19 @@ function TDDLineCharts({
         break;
       case "Lista":
         return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
+      case "DashboardClasico":
+        return (
+          <TDDBoard
+            commits={filteredCommitsObject ?? []}
+            tddLogs={tddLogs ?? []}
+            port={port}
+            role={role}
+          />
+        );
+      case "Ciclo de ejecución de pruebas":
+        return <TDDCycleChart data={tddLogs ?? []} />;
       case "Dashboard":
-        return <TDDDashboard state={dashboardState} />;
+        return dashboardState ? <TDDDashboard state={dashboardState} /> : null;
     }
     return (
       <Line

@@ -1,6 +1,5 @@
 import type { TDDDashboardViewState } from "../../types/tddVisualization.types";
 import "../../styles/TDDDashboard.css";
-import { GitBranchGraph } from "./GitBranchGraph";
 import { RepositoryBranchList } from "./RepositoryBranchList";
 import { TDDChartSummary } from "./TDDChartSummary";
 import { TDDExecutionChart } from "./TDDExecutionChart";
@@ -37,15 +36,6 @@ export function TDDDashboard({ state }: TDDDashboardProps) {
           selectedBranchName={selectedBranchName}
           onSelect={selectBranch}
         />
-
-        <div className="tdd-dashboard__graph-container">
-          <h3>Historial de commits</h3>
-          <GitBranchGraph
-            branches={branches}
-            selectedBranchName={selectedBranchName}
-            onSelect={selectBranch}
-          />
-        </div>
       </section>
 
       <section

@@ -2,8 +2,10 @@
   display: flex;
   align-items: stretch;
   gap: 20px;
-  max-width: 1600px;
-  margin: auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   padding: 24px;
   font-family: Arial, sans-serif;
   color: #263445;
@@ -24,6 +26,10 @@
 
 .tdd-dashboard__panel--git {
   flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 600px;
 }
 
 .tdd-dashboard__panel--tdd {
@@ -55,6 +61,14 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 600px;
+  overflow-y: auto;
+  /* Encadena el scroll con la página al llegar al tope (y cuando no hay scroll). */
+  overscroll-behavior: auto;
+  padding-right: 6px;
+  scrollbar-gutter: stable;
 }
 
 .tdd-dashboard__branch-item {
@@ -76,8 +90,7 @@
   background: #f5f7fa;
 }
 
-.tdd-dashboard__branch-item:focus-visible,
-.tdd-dashboard__graph-node:focus-visible {
+.tdd-dashboard__branch-item:focus-visible {
   outline: 2px solid #2878d0;
   outline-offset: 2px;
 }
@@ -123,63 +136,6 @@
   border-radius: 12px;
   padding: 4px 8px;
   white-space: nowrap;
-}
-
-.tdd-dashboard__graph-container {
-  margin-top: 25px;
-  border-top: 1px solid #edf0f4;
-  padding-top: 18px;
-}
-
-.tdd-dashboard__graph-container h3 {
-  font-size: 13px;
-  color: #687587;
-  margin: 0 0 12px;
-}
-
-.tdd-dashboard__git-graph {
-  width: 100%;
-  display: block;
-  overflow: visible;
-  min-height: 260px;
-}
-
-.tdd-dashboard__graph-edge {
-  fill: none;
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.tdd-dashboard__graph-node {
-  cursor: pointer;
-}
-
-.tdd-dashboard__graph-node circle {
-  stroke: white;
-  stroke-width: 2;
-  transition: r 0.15s;
-}
-
-.tdd-dashboard__graph-node:hover circle {
-  r: 8;
-}
-
-.tdd-dashboard__graph-node--selected circle {
-  stroke: #27364b;
-  stroke-width: 3;
-}
-
-.tdd-dashboard__graph-node text {
-  font-size: 10px;
-  fill: #697587;
-}
-
-.tdd-dashboard__graph-empty {
-  color: #8a94a4;
-  font-size: 12px;
-  text-align: center;
-  padding: 20px 0;
 }
 
 .tdd-dashboard__chart-header {
@@ -367,11 +323,13 @@
 
   .tdd-dashboard__panel--git {
     flex: auto;
+    max-height: none;
   }
 
   .tdd-dashboard__branch-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    max-height: 320px;
   }
 }
 

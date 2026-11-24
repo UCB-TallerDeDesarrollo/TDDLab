@@ -65,8 +65,8 @@ function makeState(
 }
 
 describe("TDDDashboard", () => {
-  it("muestra lista de ramas, grafo, chart y resumen", () => {
-    render(<TDDDashboard state={makeState()} />);
+  it("muestra lista de ramas, chart y resumen, sin el grafo", () => {
+    const { container } = render(<TDDDashboard state={makeState()} />);
 
     expect(
       screen.getByRole("heading", { name: "Ramas del repositorio" }),
@@ -79,14 +79,18 @@ describe("TDDDashboard", () => {
       screen.getAllByRole("button", { name: /feature\/login/ })[0],
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Seleccionar rama feature/login" }),
+      container.querySelector(".tdd-dashboard__branch-list"),
     ).toBeInTheDocument();
+    expect(
+      container.querySelector(".tdd-dashboard__git-graph"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Historial de commits" })).not.toBeInTheDocument();
     expect(screen.getByTestId("tdd-summary-executions")).toHaveTextContent("4");
     expect(screen.getByTestId("tdd-summary-passed")).toHaveTextContent("2");
     expect(screen.getByTestId("tdd-summary-failed")).toHaveTextContent("2");
   });
 
-  it("notifica la rama seleccionada desde la lista y desde el grafo", () => {
+  it("notifica la rama seleccionada desde la lista", () => {
     const selectBranch = jest.fn();
     render(<TDDDashboard state={makeState(dashboardTDDLogs, selectBranch)} />);
 
@@ -94,15 +98,7 @@ describe("TDDDashboard", () => {
       screen.getAllByRole("button", { name: /feature\/login/ })[0],
     );
     expect(selectBranch).toHaveBeenCalledWith("feature/login");
-
-    const graphNode = screen.getByRole("button", {
-      name: "Seleccionar rama main",
-    });
-    fireEvent.keyDown(graphNode, { key: "Enter" });
-    expect(selectBranch).toHaveBeenCalledWith("main");
-
-    fireEvent.keyDown(graphNode, { key: " " });
-    expect(selectBranch).toHaveBeenCalledTimes(3);
+    expect(selectBranch).toHaveBeenCalledTimes(1);
   });
 
   it("muestra el empty state cuando la rama no tiene ejecuciones", () => {

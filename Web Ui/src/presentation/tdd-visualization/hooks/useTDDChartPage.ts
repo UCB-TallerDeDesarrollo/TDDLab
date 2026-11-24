@@ -23,7 +23,7 @@ function isStudent(role: string) {
 }
 
 function getDefaultMetric(graphs: string) {
-  return graphs === "graph" ? "Dashboard" : "Complejidad";
+  return graphs === "graph" ? "DashboardClasico" : "Complejidad";
 }
 
 function getRepoQuery(submission: Submission, assignmentId?: number) {

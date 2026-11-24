@@ -262,10 +262,7 @@ const COMMIT_CYCLES: CommitCycleDTO[] = [
 ];
 
 export class MockCommitHistoryRepository implements CommitHistoryRepository {
-  async obtainCommitsOfRepo(
-    owner: string,
-    repoName: string,
-  ): Promise<CommitHistoryDTO[]> {
+  async obtainCommitsOfRepo(): Promise<CommitHistoryDTO[]> {
     return [...COMMIT_HISTORY]
       .sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime())
       .map((commit) => ({
@@ -282,14 +279,11 @@ export class MockCommitHistoryRepository implements CommitHistoryRepository {
     return MOCK_OWNER;
   }
 
-  async obtainCommitTddCycle(
-    owner: string,
-    repoName: string,
-  ): Promise<CommitCycleDTO[]> {
+  async obtainCommitTddCycle(): Promise<CommitCycleDTO[]> {
     return COMMIT_CYCLES.map((cycle) => ({ ...cycle }));
   }
 
-  async obtainTDDLogs(owner: string, repoName: string): Promise<TDDLogEntry[]> {
+  async obtainTDDLogs(): Promise<TDDLogEntry[]> {
     return TDD_LOGS.map((entry) => ({ ...entry }));
   }
 }

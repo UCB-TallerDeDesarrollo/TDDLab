@@ -1,10 +1,4 @@
 export const TDD_DASHBOARD_LAYOUT = {
-  graphWidth: 360,
-  branchRise: 78,
-  nodeOffsetY: 48,
-  mainBaseY: 110,
-  graphBottomPadding: 85,
-  graphSideX: { left: 82, right: 278 } as const,
   chartHeight: 390,
   chartLeft: 65,
   chartRight: 35,

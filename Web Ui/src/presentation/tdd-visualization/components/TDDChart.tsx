@@ -12,12 +12,6 @@ import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/Tdd
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { useTDDDashboard } from "../hooks/useTDDDashboard";
 
-const LEGACY_METRICS = new Set(["Ciclo de ejecución de pruebas"]);
-
-function normalizeMetric(metric: string): string {
-  return LEGACY_METRICS.has(metric) ? "Dashboard" : metric;
-}
-
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
   tddLogs: TDDLogEntry[] | null;
@@ -29,18 +23,16 @@ interface CycleReportViewProps {
   typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const dashboardState = useTDDDashboard(commits, commitsTddCycles, tddLogs);
   const [metricSelected, setMetricSelected] = useState(() => {
-    const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-    return normalizeMetric(initialMetric);
+    return localStorage.getItem("selectedMetric") ?? "DashboardClasico";
   });
 
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-      const metric = normalizeMetric(storedMetric);
+      const metric = localStorage.getItem("selectedMetric") ?? "DashboardClasico";
       setMetricSelected(metric);
       setMetric(metric);
     };
@@ -80,6 +72,8 @@ function TDDCharts({ commits, tddLogs, setMetric, commitsTddCycles, typegraphs }
   };
 
   const options = [
+    { value: 'DashboardClasico', label: 'Dashboard clásico' },
+    { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
     { value: 'Complejidad', label: 'Lista de Complejidad' },
     { value: 'Pie', label: 'Distribución de Commits' },
     { value: 'Dashboard', label: 'Dashboard' },
@@ -130,6 +124,9 @@ function TDDCharts({ commits, tddLogs, setMetric, commitsTddCycles, typegraphs }
         filteredCommitsObject={filteredCommitsObject}
         optionSelected={metricSelected}
         dashboardState={dashboardState}
+        tddLogs={tddLogs}
+        port={port}
+        role={role}
       />
     </div>
   );
