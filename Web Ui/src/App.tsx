@@ -44,6 +44,7 @@ const MyPracticesPage = lazy(
   () => import("./presentation/my-practices/pages/MyPracticesPage"),
 );
 const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/PracticeDetail"));
+const BranchHistoryDemoPage = lazy(() => import("./presentation/tdd-visualization/pages/BranchHistoryDemoPage"));
 const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
@@ -182,6 +183,7 @@ function App() {
           />
 
           <Route path="/landing" element={<LandingPage />} />
+          <Route path="/branch-history-demo" element={<BranchHistoryDemoPage />} />
 
           <Route
             path="/groups"

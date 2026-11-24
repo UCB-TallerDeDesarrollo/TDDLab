@@ -17,6 +17,11 @@ export interface BranchHistory {
   executions: BranchHistoryExecution[];
 }
 
+export interface BranchHistories {
+  repository: { provider: "github"; owner: string; name: string };
+  branches: BranchHistory[];
+}
+
 export interface BranchHistoryCommit {
   sha: string;
   parentShas: string[] | null;
