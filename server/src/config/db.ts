@@ -1,11 +1,10 @@
 import dotenv from "dotenv"; // Import 'dotenv' as a module
 dotenv.config();
 
-const { DATABASE_URL, PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
+const { PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 // DB CONFIG
 const config = {
-  connectionString: DATABASE_URL,
   host: PGHOST,
   database: PGDATABASE,
   user: PGUSER,

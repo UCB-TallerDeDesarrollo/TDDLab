@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import config from "../../../config/db";
+import tddConfig from "../../../config/tddDb";
 import { TestResultDataObject } from "../Domain/TestResultDataObject";
 import { IDBJobsRepository } from "../Domain/IDBJobsRepository";
 import { JobDataObject } from "../Domain/JobDataObject";
@@ -8,7 +8,7 @@ import { ITestResultRegistrationRepository, RegistrationOutcome, TestResultRegis
 
 export class DBJobsRepository implements IDBJobsRepository, ITestResultRegistrationRepository {
   pool: Pool;
-  constructor(pool: Pool = new Pool(config)) {
+  constructor(pool: Pool = new Pool(tddConfig)) {
     this.pool = pool;
   }
 

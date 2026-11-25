@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import config from "../../../config/db";
+import tddConfig from "../../../config/tddDb";
 import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 import { IDBCommitsRepository } from "../Domain/IDBCommitsRepository";
 import { CommitDataObject } from "../Domain/CommitDataObject";
@@ -7,7 +7,7 @@ import { CommitDataObject } from "../Domain/CommitDataObject";
 export class DBCommitsRepository implements IDBCommitsRepository {
   pool: Pool;
   constructor() {
-    this.pool = new Pool(config);
+    this.pool = new Pool(tddConfig);
   }
 
   async updateTestCount(
