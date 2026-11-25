@@ -5,6 +5,7 @@ import { IDBJobsRepository } from '../../src/modules/TDDCycles/Domain/IDBJobsRep
 import TDDCyclesController from '../../src/controllers/TDDCycles/TDDCyclesController';
 import express from 'express';
 import request from 'supertest';
+import type { Pool } from 'pg';
 import { InMemoryTDDHistoryRepository } from '../../src/modules/TDDCycles/Repositories/InMemoryTDDHistoryRepository';
 import type { BranchSyncData } from '../../src/modules/TDDCycles/Application/BranchSyncData';
 import {
@@ -102,11 +103,13 @@ describe('BL-04 router initialization and environment gate', () => {
     const originalEnv = { ...process.env };
     afterEach(() => { process.env = { ...originalEnv }; });
 
-    function loadRouter() {
+    function loadRouter(getPool: () => Pool = () => { throw new Error('Storage not configured'); }) {
         const app = express();
         // Clear the legacy auto-mock before loading the real router dependencies.
         jest.resetModules();
         jest.isolateModules(() => {
+            // Never use developer database credentials in automated tests.
+            jest.doMock('../../src/config/tddDb', () => ({ getTddPool: getPool }));
             jest.doMock('../../src/modules/TDDCycles/Application/getCommitHistoryUseCase', () =>
                 jest.requireActual('../../src/modules/TDDCycles/Application/getCommitHistoryUseCase'));
             const router = require('../../src/routes/TDDCyclesRoutes').default;
@@ -148,6 +151,65 @@ describe('BL-04 router initialization and environment gate', () => {
         process.env.TDD_HISTORY_MOCK = 'true';
         process.env.TDD_HISTORY_MOCK_SCENARIO = 'invalid';
         await request(loadRouter()).get('/api/TDDCycles/branch-view').expect(500);
+    });
+
+    it.each(['development', 'production'])('reads through the real PostgreSQL repository in %s', async environment => {
+        process.env.NODE_ENV = environment;
+        process.env.TDD_HISTORY_MOCK = environment === 'production' ? 'true' : 'false';
+        const fixture = branchASyncMock;
+        const query = jest.fn(async (sql: string) => {
+            if (sql.includes('SELECT provider')) return { rows: [fixture.repository] };
+            if (sql.includes('SELECT name')) return { rows: [{ name: 'rama-a' }] };
+            if (sql.includes('SELECT c.*')) return { rows: fixture.commits.map(c => ({
+                sha: c.sha, parent_shas: c.parentShas, message: c.message,
+                committed_at: new Date(c.committedAt!), additions: String(c.stats!.additions),
+                deletions: String(c.stats!.deletions), total_changes: String(c.stats!.total), metrics: c.metrics,
+            })) };
+            if (sql.includes('SELECT e.*')) return { rows: fixture.executions.map(e => ({
+                event_id: e.eventId, branch_at_capture: e.branchAtCapture,
+                head_sha_at_execution: e.headShaAtExecution, associated_commit_sha: e.associatedCommitSha,
+                timestamp_ms: String(e.timestamp), num_passed_tests: String(e.numPassedTests),
+                failed_tests: String(e.failedTests), num_total_tests: String(e.numTotalTests),
+                coverage_percentage: e.coveragePercentage, success: e.success, test_id: String(e.testId),
+            })) };
+            throw new Error('Unexpected SQL');
+        });
+        const pool = { query } as unknown as Pool;
+        const response = await request(loadRouter(() => pool)).get('/api/TDDCycles/branch-view')
+            .query({ owner: repositoryMock.owner, repoName: repositoryMock.name, branch: 'rama-a' }).expect(200);
+        expect(response.body).toEqual({ repository: fixture.repository, branch: 'rama-a', commits: fixture.commits, executions: fixture.executions });
+        expect(query).toHaveBeenCalledTimes(4);
+        expect(query.mock.calls.every(([sql]) => sql.trimStart().startsWith('SELECT'))).toBe(true);
+    });
+
+    it('does not touch PostgreSQL when the development mock is explicitly enabled', async () => {
+        process.env.NODE_ENV = 'development';
+        process.env.TDD_HISTORY_MOCK = 'true';
+        process.env.TDD_HISTORY_MOCK_SCENARIO = 'initial';
+        const getPool = jest.fn((): Pool => { throw new Error('Must not access PostgreSQL'); });
+        await request(loadRouter(getPool)).get('/api/TDDCycles/branch-view')
+            .query({ owner: repositoryMock.owner, repoName: repositoryMock.name, branch: 'main' }).expect(200);
+        expect(getPool).not.toHaveBeenCalled();
+    });
+
+    it('returns 404 for an absent PostgreSQL repository without mock fallback', async () => {
+        process.env.TDD_HISTORY_MOCK = 'false';
+        const query = jest.fn().mockResolvedValue({ rows: [] });
+        await request(loadRouter(() => ({ query } as unknown as Pool))).get('/api/TDDCycles/branch-view')
+            .query({ owner: repositoryMock.owner, repoName: repositoryMock.name, branch: 'main' }).expect(404);
+        expect(query).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns a controlled error without leaking database error details', async () => {
+        process.env.TDD_HISTORY_MOCK = 'false';
+        const query = jest.fn().mockRejectedValue(new Error('private database detail'));
+        const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+        try {
+            const response = await request(loadRouter(() => ({ query } as unknown as Pool))).get('/api/TDDCycles/branch-view')
+                .query({ owner: repositoryMock.owner, repoName: repositoryMock.name, branch: 'main' }).expect(500);
+            expect(response.body).toEqual({ error: 'Server error' });
+            expect(JSON.stringify(log.mock.calls)).not.toContain('private database detail');
+        } finally { log.mockRestore(); }
     });
 });
 
