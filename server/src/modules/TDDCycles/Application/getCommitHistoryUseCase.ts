@@ -1,6 +1,7 @@
 import { IGithubRepository } from "../Domain/IGithubRepository";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 import type { ITDDHistoryRepository } from "../Domain/ITDDHistoryRepository";
+import type { BranchTestMetricHistory } from "../Domain/BranchTestMetrics";
 
 export class GetCommitHistoryUseCase {
   private readonly githubRepository: IGithubRepository;
@@ -25,6 +26,10 @@ export class GetCommitHistoryUseCase {
       }),
     ]);
     return { repository, branch, commits, executions };
+  }
+
+  async executeBranchTestMetrics(owner: string, repoName: string): Promise<BranchTestMetricHistory[]> {
+    return await this.githubRepository.getBranchTestMetrics(owner, repoName);
   }
 
   async execute(owner: string, repoName: string): Promise<CommitHistoryData[]> {

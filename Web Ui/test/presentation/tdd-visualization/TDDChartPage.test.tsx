@@ -1,4 +1,4 @@
-import { render, waitFor, act } from "@testing-library/react";
+import { render, waitFor, act, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TDDChartPage from "../../../src/presentation/tdd-visualization/pages/TDDChartPage";
 import {
@@ -49,6 +49,17 @@ describe("TDDChartPage", () => {
       expect(queryByText(/no hayas ejecutado ninguna prueba/i)).not.toBeInTheDocument();
     }
   );
+
+  it("shows the second total-tests chart when its button is pressed", async () => {
+    const { findByRole } = render(
+      <TDDChartPage port={new MockGithubAPI()} role="student" teacher_id={294} graphs="graph" />,
+    );
+
+    const button = await findByRole("button", { name: "Ver gráfica: Total Número de Tests" });
+    fireEvent.click(button);
+
+    expect(await findByRole("region", { name: "Historial de commits por ramas" })).toBeInTheDocument();
+  });
 
   test.each([["admin"], ["student"]])(
     "renders loading spinner when loading is true for role %s",

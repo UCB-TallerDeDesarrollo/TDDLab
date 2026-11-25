@@ -7,8 +7,8 @@ interface BranchHistoryChartProps {
   history: BranchHistories;
 }
 
-const width = 1320;
-const height = 620;
+const width = 1700;
+const height = 720;
 const left = 150;
 const right = 70;
 const top = 35;
@@ -93,8 +93,8 @@ export default function BranchHistoryChart({ history }: Readonly<BranchHistoryCh
     <section
       aria-label="Historial de commits por ramas"
       style={{
-        width: "calc(100% - 70px)",
-        maxWidth: width,
+        width: "100%",
+        maxWidth: "none",
         margin: "8px auto",
         padding: "12px",
         boxSizing: "border-box",

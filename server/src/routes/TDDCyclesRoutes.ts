@@ -64,6 +64,11 @@ TDDCyclesRouter.get("/branch-view", async (req, res) => {
   }
 });
 
+TDDCyclesRouter.get(
+  "/branch-test-metrics",
+  async (req, res) => await tddCyclesController.getBranchTestMetrics(req, res),
+);
+
 // Get all commits from a repository in Github (TDD Cycles)
 TDDCyclesRouter.get(
   "/commits",

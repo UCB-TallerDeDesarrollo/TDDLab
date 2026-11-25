@@ -4,6 +4,7 @@ import { JobDataObject } from "./JobDataObject";
 
 import { CommitCycleData } from "./ICommitCycleData";
 import { CommitHistoryData } from "./ICommitHistoryData";
+import { BranchTestMetricHistory } from "./BranchTestMetrics";
 
 export interface IGithubRepository {
     getCommits(owner: string, repoName: string): Promise<CommitDataObject[]>;
@@ -17,5 +18,6 @@ export interface IGithubRepository {
     fetchCoverageDataForCommit(owner: string, repoName: string, sha: string): Promise<any>;
     fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]>;
     getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]>;
+    getBranchTestMetrics(owner: string, repoName: string): Promise<BranchTestMetricHistory[]>;
     getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]>;
 }

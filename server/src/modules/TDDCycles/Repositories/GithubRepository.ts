@@ -10,6 +10,7 @@ import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 import axios from "axios";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
+import { BranchTestMetricHistory } from "../Domain/BranchTestMetrics";
 
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
@@ -346,6 +347,51 @@ export class GithubRepository implements IGithubRepository {
     }));
     commits.sort((a, b) => b.commit.date.getTime() - a.commit.date.getTime());
     return commits;
+  }
+
+  async getBranchTestMetrics(owner: string, repoName: string): Promise<BranchTestMetricHistory[]> {
+    const [githubBranches, commitHistory] = await Promise.all([
+      this.octokit.paginate("GET /repos/{owner}/{repo}/branches", {
+        owner,
+        repo: repoName,
+        per_page: 100,
+      }),
+      this.getCommitHistoryData(owner, repoName),
+    ]);
+    const metricsBySha = new Map(commitHistory.map(commit => [commit.sha, commit]));
+
+    return Promise.all(githubBranches.map(async branch => {
+      const branchCommits = await this.octokit.paginate(
+        "GET /repos/{owner}/{repo}/commits",
+        {
+          owner,
+          repo: repoName,
+          sha: branch.name,
+          per_page: 100,
+        },
+      );
+
+      return {
+        branch: branch.name,
+        commits: branchCommits.map(commit => {
+          const metrics = metricsBySha.get(commit.sha);
+          const numTotalTests = metrics?.test_count;
+          const coveragePercentage = metrics?.coverage;
+          return {
+            sha: commit.sha,
+            message: commit.commit.message,
+            committedAt: commit.commit.author?.date ?? commit.commit.committer?.date ?? null,
+            numTotalTests: typeof numTotalTests === "number" && Number.isFinite(numTotalTests)
+              ? numTotalTests
+              : null,
+            coveragePercentage: typeof coveragePercentage === "number" && Number.isFinite(coveragePercentage)
+              ? coveragePercentage
+              : null,
+            conclusion: metrics?.conclusion ?? null,
+          };
+        }),
+      };
+    }));
   }
 
   async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {

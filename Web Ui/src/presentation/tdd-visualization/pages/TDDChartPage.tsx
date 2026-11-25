@@ -1,6 +1,9 @@
 import React from "react";
+import { useEffect, useRef, useState } from "react";
 import { PropagateLoader } from "react-spinners";
 import TDDCharts from "../components/TDDChart";
+import BranchHistoryChart from "../components/BranchHistoryChart";
+
 import "../styles/TDDChartPageStyles.css";
 import { useTDDChartPage } from "../hooks/useTDDChartPage";
 import { CycleReportViewProps } from "../types/tddVisualization.types";
@@ -8,6 +11,14 @@ import { CycleReportViewProps } from "../types/tddVisualization.types";
 function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const tddPage = useTDDChartPage(props);
   const { chartsState } = tddPage;
+  const [showTestCountChart, setShowTestCountChart] = useState(false);
+  const testCountChartRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showTestCountChart && testCountChartRef.current) {
+      testCountChartRef.current.scrollIntoView?.({ behavior: "smooth", block: "start" });
+    }
+  }, [showTestCountChart]);
 
   return (
     <div className="container">
@@ -77,6 +88,68 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
               setMetric={chartsState.setMetric}
               typegraphs={props.graphs}
             />
+          </div>
+        </React.Fragment>
+      )}
+
+      {!tddPage.loading && !!chartsState.commitsInfo?.length && props.graphs === "graph" && (
+        <React.Fragment>
+          <button
+            type="button"
+            aria-expanded={showTestCountChart}
+            aria-controls="total-test-count-chart"
+            onClick={() => setShowTestCountChart(true)}
+            style={{
+              margin: "16px auto",
+              border: 0,
+              borderRadius: 8,
+              padding: "12px 20px",
+              background: "#2563EB",
+              color: "#fff",
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Ver gráfica: Total Número de Tests
+          </button>
+          <div id="total-test-count-chart" ref={testCountChartRef} style={{ width: "100%" }}>
+            {showTestCountChart && (
+              <BranchHistoryChart
+                  history={{
+                    repository: { provider: "github", owner: "mock", name: "mock" },
+                    branches: [
+                      {
+                        repository: { provider: "github", owner: "mock", name: "mock" },
+                        branch: "main",
+                        commits: [
+                          { sha: "1111111", parentShas: [], message: "Crear implementación inicial", committedAt: new Date("2024-01-01"), stats: { additions: 10, deletions: 5, total: 15 }, metrics: { executionEventId: null, numPassedTests: 2, failedTests: 0, numTotalTests: 2, coveragePercentage: 80, conclusion: "success" } },
+                          { sha: "3333333", parentShas: [], message: "Agregar escenario de rama-b", committedAt: new Date("2024-01-03"), stats: { additions: 5, deletions: 2, total: 7 }, metrics: { executionEventId: null, numPassedTests: 4, failedTests: 0, numTotalTests: 4, coveragePercentage: 90, conclusion: "success" } },
+                        ],
+                        executions: [],
+                      },
+                      {
+                        repository: { provider: "github", owner: "mock", name: "mock" },
+                        branch: "rama-a",
+                        commits: [
+                          { sha: "1111111", parentShas: [], message: "Crear implementación inicial", committedAt: new Date("2024-01-01"), stats: { additions: 10, deletions: 5, total: 15 }, metrics: { executionEventId: null, numPassedTests: 2, failedTests: 0, numTotalTests: 2, coveragePercentage: 80, conclusion: "success" } },
+                          { sha: "2222222", parentShas: [], message: "Agregar escenario de rama-a", committedAt: new Date("2024-01-02"), stats: { additions: 8, deletions: 3, total: 11 }, metrics: { executionEventId: null, numPassedTests: 3, failedTests: 0, numTotalTests: 3, coveragePercentage: 85, conclusion: "success" } },
+                        ],
+                        executions: [],
+                      },
+                      {
+                        repository: { provider: "github", owner: "mock", name: "mock" },
+                        branch: "rama-b",
+                        commits: [
+                          { sha: "1111111", parentShas: [], message: "Crear implementación inicial", committedAt: new Date("2024-01-01"), stats: { additions: 10, deletions: 5, total: 15 }, metrics: { executionEventId: null, numPassedTests: 2, failedTests: 0, numTotalTests: 2, coveragePercentage: 80, conclusion: "success" } },
+                          { sha: "3333333", parentShas: [], message: "Agregar escenario de rama-b", committedAt: new Date("2024-01-03"), stats: { additions: 5, deletions: 2, total: 7 }, metrics: { executionEventId: null, numPassedTests: 4, failedTests: 0, numTotalTests: 4, coveragePercentage: 90, conclusion: "success" } },
+                        ],
+                        executions: [],
+                      },
+                    ],
+                  }}
+                />
+            )}
           </div>
         </React.Fragment>
       )}

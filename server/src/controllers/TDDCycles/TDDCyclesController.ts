@@ -104,6 +104,20 @@ class TDDCyclesController {
     }
   }
 
+  async getBranchTestMetrics(req: Request, res: Response) {
+    const { owner, repoName } = req.query;
+    if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+      return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+    }
+    try {
+      const metrics = await this.getCommitHistoryUseCase.executeBranchTestMetrics(owner, repoName);
+      return res.status(200).json(metrics);
+    } catch (error) {
+      console.error("Error fetching branch test metrics:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
   isValidGithubSegment(value: unknown): value is string {
     return (
       typeof value === "string" &&
