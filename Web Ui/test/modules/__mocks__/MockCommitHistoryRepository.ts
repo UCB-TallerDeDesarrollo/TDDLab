@@ -1,11 +1,11 @@
-import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface";
-import { CommitHistoryDTO } from "../domain/githubCommitInterfaces";
-import { CommitCycleDTO } from "../domain/TddCycleInterface";
+import { CommitHistoryRepository } from "../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import { CommitHistoryDTO } from "../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitCycleDTO } from "../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import {
   CommitLog,
   TDDLogEntry,
   TestExecutionLog,
-} from "../domain/TDDLogInterfaces";
+} from "../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 const MOCK_OWNER = "mock-user";
 const MOCK_REPOSITORY = "tdd-demo";

@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { MockCommitHistoryRepository } from "./modules/TDDCycles-Visualization/repository/MockCommitHistoryRepository";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import MainMenu from "./app/navigation/MainMenu";
 
@@ -48,10 +47,7 @@ const PracticeDetail = lazy(() => import("./presentation/my-practices/pages/Prac
 const AIAssistantPage = lazy(() => import("./presentation/ai-assistant/pages/AIAssistantPage"));
 const AUTH_SESSION_HINT_KEY = "tddlabAuthSession";
 
-const USE_API_REPOSITORY = import.meta.env.VITE_USE_API_REPOSITORY === "true";
-const commitHistoryRepository = USE_API_REPOSITORY
-  ? new CommitHistoryAdapter()
-  : new MockCommitHistoryRepository();
+const commitHistoryRepository = new CommitHistoryAdapter();
 
 const navArrayLinks = [
   {

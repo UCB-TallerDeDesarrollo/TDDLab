@@ -21,7 +21,6 @@ import {
   type TooltipItem,
 } from "chart.js";
 import TDDList from "./TDDList";
-import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import { TDDDashboard } from "./dashboard/TDDDashboard";
 import TDDBoard from "./TDDBoard";
 import TDDCycleChart from "./TDDCycleChart";
@@ -340,7 +339,7 @@ function TDDLineCharts({
         dataTestid = "graph-testCount";
         break;
       case "Lista":
-        return <TDDList port={new CommitHistoryAdapter()}></TDDList>;
+        return <TDDList port={port}></TDDList>;
       case "DashboardClasico":
         return (
           <TDDBoard
