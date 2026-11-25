@@ -4,7 +4,6 @@ import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domai
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import TDDLineCharts from "./TDDLineChart";
 
-import { VITE_API } from "../../../../config";
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
 import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import TDDCycleChart from "./TDDCycleChart";
@@ -226,43 +225,16 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
   };
   const chartRef = useRef<any>();  
 
-  const onClick = async (event: any) => {
-    const elements = getElementAtEvent(chartRef.current, event);
-    if (elements.length > 0) {
-      const dataSetIndexNum = elements[0].datasetIndex;
-      const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit?.html_url) {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
-        const match = regex.exec(commit.html_url);
-  
-        if (match) {
-          const repoOwner = match[1];
-          const repoName = match[2];
-          const sha = match[3];
-  
-          try {
-            const response = await fetch(
-              `${VITE_API}/TDDCycles/commit-timeline?sha=${sha}&repoName=${repoName}&owner=${repoOwner}`
-            );
-  
-            if (response.ok) {
-              await response.json();
-              // Filtrar los tests del commit específico usando el tdd_log.json local
-              const commitIndexInOriginal = dataSetIndexNum - 1;
-              const testsForCommit = getTestsForCommit(commitIndexInOriginal);
+  const onClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const [element] = getElementAtEvent(chartRef.current, event);
+    if (!element) return;
 
-              setCommitTimelineData(testsForCommit); 
-              setSelectedCommit(commit); 
-              setOpenModal(true); 
-            } else {
-              console.error("Error al obtener los datos:", response.statusText);
-            }
-          } catch (error) {
-            console.error("Error al llamar a la API:", error);
-          }
-          }
-      }
-    }
+    const commit = commits.slice().reverse()[element.datasetIndex];
+    if (!commit) return;
+
+    setCommitTimelineData(getTestsForCommit(element.datasetIndex - 1));
+    setSelectedCommit(commit);
+    setOpenModal(true);
   };
   
   const handleCloseModal = () => {

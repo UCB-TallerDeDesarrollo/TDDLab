@@ -1,26 +1,43 @@
 import { Octokit } from "octokit";
 import { CommitDataObject } from "../domain/githubCommitInterfaces.ts";
-//import { GithubAPIRepository } from "../domain/GithubAPIRepositoryInterface.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
 import { CommitCycle } from "../domain/TddCycleInterface.ts";
-import axios from "axios";
 import { VITE_API } from "../../../../config.ts";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces.ts";
 
 export class CommitHistoryAdapter implements CommitHistoryRepository {
-  octokit: Octokit;
-  backAPI: string;
+  private readonly octokit = new Octokit();
 
-  constructor() {
-    this.octokit = new Octokit();
-    //auth: 'coloca tu token github para mas requests'
-    this.backAPI = VITE_API + "/TDDCycles"; // https://localhost:3000/api/ -> https://tdd-lab-api-gold.vercel.app/api/
-  }
-  
+  constructor(private readonly apiUrl = VITE_API) {}
 
-  // function for obtain TDD_log.json
-  private getTDDLogUrl(owner: string, repoName: string): string {
-    return `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+  private async query<T>(endpoint: string, owner: string, repoName: string): Promise<T[]> {
+    if (!this.apiUrl) {
+      throw new Error("Falta configurar VITE_API_URL.");
+    }
+
+    const params = new URLSearchParams({ owner, repoName });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const response = await fetch(
+        `${this.apiUrl.replace(/\/$/, "")}/TDDCycles/${endpoint}?${params}`,
+        { signal: controller.signal },
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data: unknown = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error("Se esperaba una lista");
+      }
+      return data;
+    } catch {
+      throw new Error("No se pudieron cargar los datos TDD desde el servidor.");
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   async obtainUserName(owner: string): Promise<string> {
@@ -39,82 +56,25 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
     }
   }
 
-  async obtainCommitsOfRepo(
-    owner: string,
-    repoName: string,
-  ): Promise<CommitDataObject[]> {
-    try {
-      // Now request our backend endpoint which centralizes this logic
-      const url = `${this.backAPI}/commits-history`;
-      const response = await axios.get(url, { params: { owner, repoName } });
-
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      // Backend already returns the mapped array, just ensure dates are Date objects on client
-      const commits: CommitDataObject[] = (response.data || []).map((c: any) => ({
-        ...c,
-        commit: {
-          ...c.commit,
-          date: new Date(c.commit.date),
-        },
-      }));
-      return commits;
-    } catch (error) {
-      console.error("Error obteniendo commits desde GitHub:", error);
-      throw error;
-    }
+  async obtainCommitsOfRepo(owner: string, repoName: string): Promise<CommitDataObject[]> {
+    type CommitResponse = Omit<CommitDataObject, "commit"> & {
+      commit: Omit<CommitDataObject["commit"], "date"> & { date: string };
+    };
+    const commits = await this.query<CommitResponse>("commits-history", owner, repoName);
+    return commits.map((item) => ({
+      ...item,
+      commit: { ...item.commit, date: new Date(item.commit.date) },
+    }));
   }
 
-
-  async obtainCommitTddCycle(
-    owner: string,
-    repoName: string,
-  ): Promise<CommitCycle[]> {
-    try {
-      const url = `${this.backAPI}/commit-cycles`;
-      const response = await axios.get(url, { params: { owner, repoName } });
-
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      // Map server shape to current UI Contract (note: UI uses property tddCycle)
-      const commits: CommitCycle[] = (response.data || []).map((item: any) => ({
-        url: item.url,
-        sha: item.sha,
-        tddCycle: item.tddCycle ?? "null",
-        coverage: item.coverage,
-      }));
-      return commits;
-    } catch (error) {
-      console.error("Error al obtener los ciclos TDD:", error);
-      throw error;
-    }
+  async obtainCommitTddCycle(owner: string, repoName: string): Promise<CommitCycle[]> {
+    const cycles = await this.query<CommitCycle & { coverage?: number }>("commit-cycles", owner, repoName);
+    return cycles.map(({ url, sha, tddCycle, coverage }) => ({
+      url, sha, tddCycle: tddCycle ?? "null", coverage,
+    }));
   }
 
-  async obtainTDDLogs(
-    owner: string,
-    repoName: string,
-  ): Promise<TDDLogEntry[]> {
-    try {
-      const tddLogUrl = this.getTDDLogUrl(owner, repoName);
-      const response = await axios.get<TDDLogEntry[]>(tddLogUrl);
-
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      return response.data;
-
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        console.warn("Archivo de tdd_log.json no encontrado. Continuando sin datos de registro.");
-        return [];
-      }
-      console.error("Error al obtener tdd_log.json:", error);
-      throw error;
-    }
+  obtainTDDLogs(owner: string, repoName: string): Promise<TDDLogEntry[]> {
+    return this.query<TDDLogEntry>("test-log", owner, repoName);
   }
 }

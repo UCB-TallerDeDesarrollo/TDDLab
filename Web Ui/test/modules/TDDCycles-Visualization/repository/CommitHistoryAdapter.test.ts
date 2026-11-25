@@ -1,109 +1,59 @@
-import axios from 'axios';
-import { CommitHistoryAdapter } from '../../../../src/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter';
-import { TDDLogEntry } from '../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces';
+import { CommitHistoryAdapter } from "../../../../src/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
+import { TDDLogEntry } from "../../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
-// Mocking the axios library
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-describe('CommitHistoryAdapter', () => {
-  let adapter: CommitHistoryAdapter;
+describe("CommitHistoryAdapter.obtainTDDLogs", () => {
+  const adapter = new CommitHistoryAdapter("https://backend.example/api/");
+  const originalFetch = globalThis.fetch;
+  const fetchMock = jest.fn();
+  const errorMessage = "No se pudieron cargar los datos TDD desde el servidor.";
 
   beforeEach(() => {
-    adapter = new CommitHistoryAdapter();
-    mockedAxios.get.mockClear();
+    fetchMock.mockReset();
+    globalThis.fetch = fetchMock;
   });
 
-  describe('obtainTDDLogs', () => {
-    it('should fetch and return TDD log data successfully', async () => {
-      // Arrange
-      const owner = 'test-owner';
-      const repoName = 'test-repo';
-      const expectedUrl = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
 
-      const mockTDDLogData: TDDLogEntry[] = [
-        {
-          "numPassedTests": 1,
-          "failedTests": 0,
-          "numTotalTests": 1,
-          "timestamp": 1758766676204,
-          "success": true,
-          "testId": 3
-        },
-        {
-          "numPassedTests": 1,
-          "failedTests": 0,
-          "numTotalTests": 1,
-          "timestamp": 1758766687146,
-          "success": true,
-          "testId": 3
-        },
-        {
-          "commitId": "469f032eaca7dd35477537de97bea886c8d74327",
-          "commitName": "asociates tests to commit",
-          "commitTimestamp": 1758766975723,
-          "testId": 3
-        },
-        {
-          "numPassedTests": 1,
-          "failedTests": 0,
-          "numTotalTests": 1,
-          "timestamp": 1758767003612,
-          "success": true,
-          "testId": 4
-        },
-        {
-          "commitId": "f00370bc4a0ecfe8e42cb79957f837c1604f9fa9",
-          "commitName": "deleting unused lines",
-          "commitTimestamp": 1758768425840,
-          "testId": 4
-        },
-        {
-          "numPassedTests": 1,
-          "failedTests": 0,
-          "numTotalTests": 1,
-          "timestamp": 1758768446457,
-          "success": true,
-          "testId": 5
-        },
-      ];
+  it("devuelve las ejecuciones y marcadores que devuelve el backend", async () => {
+    const logs: TDDLogEntry[] = [
+      { testId: 1, timestamp: 1000, numPassedTests: 1, failedTests: 0, numTotalTests: 1, success: true },
+      { testId: 1, commitId: "abc", commitName: "feat: test", commitTimestamp: 2000 },
+    ];
+    fetchMock.mockResolvedValue({ ok: true, json: async () => logs });
 
-      mockedAxios.get.mockResolvedValue({
-        status: 200,
-        data: mockTDDLogData,
-      });
+    await expect(adapter.obtainTDDLogs("test-owner", "test-repo")).resolves.toEqual(logs);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://backend.example/api/TDDCycles/test-log?owner=test-owner&repoName=test-repo",
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+  });
 
-      // Act
-      const result = await adapter.obtainTDDLogs(owner, repoName);
+  it("devuelve un error controlado si el backend responde con error", async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 502 });
+    await expect(adapter.obtainTDDLogs("owner", "repo")).rejects.toThrow(errorMessage);
+  });
 
-      // Assert
-      expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl);
-      expect(result).toEqual(mockTDDLogData);
-    });
+  it("devuelve un error controlado si falla la red", async () => {
+    fetchMock.mockRejectedValue(new TypeError("Failed to fetch"));
+    await expect(adapter.obtainTDDLogs("owner", "repo")).rejects.toThrow(errorMessage);
+  });
 
-    it('should throw an error if the network request fails', async () => {
-      // Arrange
-      const owner = 'test-owner';
-      const repoName = 'test-repo';
+  it("interrumpe la consulta si el backend no responde", async () => {
+    jest.useFakeTimers();
+    try {
+      fetchMock.mockImplementation((_url, { signal }: { signal: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener("abort", () => reject(new Error("Aborted")));
+        }),
+      );
 
-      mockedAxios.get.mockRejectedValue(new Error('Network error'));
-
-      // Act & Assert
-      await expect(adapter.obtainTDDLogs(owner, repoName)).rejects.toThrow('Network error');
-    });
-
-    it('should throw an error for non-200 status codes', async () => {
-      // Arrange
-      const owner = 'test-owner';
-      const repoName = 'test-repo';
-
-      mockedAxios.get.mockResolvedValue({
-        status: 404,
-        data: 'Not Found',
-      });
-
-      // Act & Assert
-      await expect(adapter.obtainTDDLogs(owner, repoName)).rejects.toThrow('HTTP error! Status: 404');
-    });
+      const result = expect(adapter.obtainTDDLogs("owner", "repo")).rejects.toThrow(errorMessage);
+      jest.advanceTimersByTime(10000);
+      await result;
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

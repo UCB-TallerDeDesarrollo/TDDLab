@@ -1,24 +1,28 @@
 import { CommitHistoryAdapter } from "../../../src/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
-import axios from "axios";
 
-// Simulamos `axios` y `Octokit`
-jest.mock("axios");
 jest.mock("octokit");
 
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const originalFetch = globalThis.fetch;
+const fetchMock = jest.fn();
 describe("CommitHistoryAdapter", () => {
   let adapter: CommitHistoryAdapter;
 
   beforeEach(() => {
-    adapter = new CommitHistoryAdapter();
+    fetchMock.mockReset();
+    globalThis.fetch = fetchMock;
+    adapter = new CommitHistoryAdapter("https://backend.example/api");
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
   });
 
   //el frontend ya no se encarga de ordenarlos de forma descendente por la fecha, ya lo recibe de esa manera desde el backend
   describe("obtainCommitsOfRepo", () => {
     it("debe retornar commits ordenados por fecha descendente", async () => {
-      mockedAxios.get.mockResolvedValue({
-        status: 200,
-        data: [
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => [
           {
             sha: "456",
             stats: { total: 15, additions: 10, deletions: 5, date: "2024-01-02" },
@@ -49,6 +53,11 @@ describe("CommitHistoryAdapter", () => {
       });
 
       const commits = await adapter.obtainCommitsOfRepo("owner", "repo");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://backend.example/api/TDDCycles/commits-history?owner=owner&repoName=repo",
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      );
+      expect(commits[0].commit.date).toEqual(new Date("2024-01-02"));
       expect(commits.length).toBe(2);
       expect(commits[0].sha).toBe("456"); // el más reciente
     });
@@ -58,9 +67,9 @@ describe("CommitHistoryAdapter", () => {
 
   describe("obtainCommitTddCycle", () => {
     it("debe retornar los ciclos TDD con cobertura", async () => {
-      mockedAxios.get.mockResolvedValue({
-        status: 200,
-        data: [
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => [
           {
             sha: "789",
             url: "url3",

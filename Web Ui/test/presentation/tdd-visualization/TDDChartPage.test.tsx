@@ -1,4 +1,4 @@
-import { render, waitFor, act } from "@testing-library/react";
+import { render, waitFor, act, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TDDChartPage from "../../../src/presentation/tdd-visualization/pages/TDDChartPage";
 import {
@@ -65,16 +65,16 @@ describe("TDDChartPage", () => {
   );
 
   test.each([["admin"], ["student"]])(
-    "displays an error message when no data is available for role %s",
+    "displays an empty state when no commits are available for role %s",
     async (role) => {
-      const { getByTestId } = render(
+      const { findByTestId, queryByTestId } = render(
         <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
       );
 
-      await waitFor(() => {
-        const error = getByTestId("errorMessage");
-        expect(error).toBeInTheDocument();
-      });
+      expect(await findByTestId("emptyMessage")).toHaveTextContent(
+        "No hay commits disponibles",
+      );
+      expect(queryByTestId("errorMessage")).not.toBeInTheDocument();
     }
   );
 
@@ -108,6 +108,9 @@ describe("TDDChartPage", () => {
     expect(spyConsoleError).toHaveBeenCalledWith(
       "Error obtaining data:",
       expect.any(Error)
+    );
+    expect(await screen.findByTestId("errorMessage")).toHaveTextContent(
+      "No se pudieron cargar los datos del repositorio",
     );
     spyConsoleError.mockRestore();
   });

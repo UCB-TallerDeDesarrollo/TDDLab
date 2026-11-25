@@ -17,15 +17,20 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
       )}
 
       {tddPage.loading && (
-        <div className="mainInfoContainer">
+        <div className="mainInfoContainer" role="status" aria-label="Cargando datos del repositorio">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && (
-        <div className="error-message" data-testid="errorMessage">
-          Error: Verifica que el repositorio utilice la rama "main". Actualmente,
-          TDDLab no puede cargar los datos si la rama principal es "master"
+      {!tddPage.loading && tddPage.dataError && (
+        <div className="error-message" role="alert" data-testid="errorMessage">
+          No se pudieron cargar los datos del repositorio. Inténtalo de nuevo más tarde.
+        </div>
+      )}
+
+      {!tddPage.loading && !tddPage.dataError && !chartsState.commitsInfo?.length && (
+        <div className="empty-message" role="status" data-testid="emptyMessage">
+          No hay commits disponibles para este repositorio.
         </div>
       )}
 
