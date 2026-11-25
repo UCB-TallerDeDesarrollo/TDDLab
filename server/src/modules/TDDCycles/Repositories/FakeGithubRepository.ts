@@ -4,6 +4,7 @@ import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 import { JobDataObject } from "../Domain/JobDataObject";
 import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
+import { BranchSnapshot, BranchSummary } from "../Domain/RepositoryRef";
 
 /** Dependencia de GitHub sin red para que el caso de uso existente siga intacto. */
 export class FakeGithubRepository implements IGithubRepository {
@@ -19,4 +20,16 @@ export class FakeGithubRepository implements IGithubRepository {
   async fetchCommitHistoryJson(): Promise<any[]> { return []; }
   async getCommitHistoryData(): Promise<CommitHistoryData[]> { return []; }
   async getCommitCyclesData(): Promise<CommitCycleData[]> { return []; }
+  async getBranches(): Promise<BranchSummary[]> { return []; }
+  async getBranchSnapshot(_owner: string, _repoName: string, branch: string): Promise<BranchSnapshot> {
+    return {
+      branch,
+      ref: `refs/heads/${branch}`,
+      resolvedSha: "fake-sha",
+      files: {
+        tddLog: { status: "ok", records: [] },
+        commitHistory: { status: "ok", records: [] },
+      },
+    };
+  }
 }

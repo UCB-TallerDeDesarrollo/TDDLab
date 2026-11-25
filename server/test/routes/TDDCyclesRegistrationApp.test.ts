@@ -5,10 +5,13 @@ jest.mock("../../src/config/server", () => ({ __esModule: true, default: jest.fn
 
 describe("Integración de registro en la aplicación", () => {
   const previousMode = process.env.TDD_JOBS_REPOSITORY;
+  const previousDatabaseUrl = process.env.DATABASE_URL;
 
   afterEach(() => {
     if (previousMode === undefined) delete process.env.TDD_JOBS_REPOSITORY;
     else process.env.TDD_JOBS_REPOSITORY = previousMode;
+    if (previousDatabaseUrl === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = previousDatabaseUrl;
     jest.resetModules();
   });
 
@@ -26,6 +29,7 @@ describe("Integración de registro en la aplicación", () => {
 
   it("la aplicación en modo real devuelve un error controlado si PostgreSQL no está disponible", async () => {
     delete process.env.TDD_JOBS_REPOSITORY;
+    process.env.DATABASE_URL = "postgresql://invalid.invalid/tddlab";
     const app = (require("../../src/app") as typeof import("../../src/app")).default;
     const response = await request(app).post("/api/TDDCycles/jobs").send({ sha: "abc123", owner: "demo", reponame: "tests", conclusion: "success" });
     expect(response.status).toBe(500);

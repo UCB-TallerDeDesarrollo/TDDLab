@@ -8,9 +8,9 @@ export class GetCommitHistoryUseCase {
     this.githubRepository = githubRepository;
   }
 
-  async execute(owner: string, repoName: string): Promise<CommitHistoryData[]> {
+  async execute(owner: string, repoName: string, branch = "main"): Promise<CommitHistoryData[]> {
     try {
-      return await this.githubRepository.getCommitHistoryData(owner, repoName);
+      return await this.githubRepository.getCommitHistoryData(owner, repoName, branch);
     } catch (error) {
       console.error(`Error executing GetCommitHistoryUseCase: ${error}`);
       throw error;

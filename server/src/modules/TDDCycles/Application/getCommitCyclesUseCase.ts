@@ -8,9 +8,9 @@ export class GetCommitCyclesUseCase {
     this.githubRepository = githubRepository;
   }
 
-  async execute(owner: string, repoName: string): Promise<CommitCycleData[]> {
+  async execute(owner: string, repoName: string, branch = "main"): Promise<CommitCycleData[]> {
     try {
-      return await this.githubRepository.getCommitCyclesData(owner, repoName);
+      return await this.githubRepository.getCommitCyclesData(owner, repoName, branch);
     } catch (error) {
       console.error(`Error executing GetCommitCyclesUseCase: ${error}`);
       throw error;

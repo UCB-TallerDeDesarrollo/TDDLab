@@ -4,6 +4,7 @@ import { JobDataObject } from "./JobDataObject";
 
 import { CommitCycleData } from "./ICommitCycleData";
 import { CommitHistoryData } from "./ICommitHistoryData";
+import { BranchSummary, BranchSnapshot } from "./RepositoryRef";
 
 export interface IGithubRepository {
     getCommits(owner: string, repoName: string): Promise<CommitDataObject[]>;
@@ -16,6 +17,8 @@ export interface IGithubRepository {
     getCommitsInforForTDDCycle(owner: string, repoName: string, commits: CommitDataObject[]): Promise<TDDCycleDataObject[]>;
     fetchCoverageDataForCommit(owner: string, repoName: string, sha: string): Promise<any>;
     fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]>;
-    getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]>;
-    getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]>;
+    getCommitHistoryData(owner: string, repoName: string, branch?: string): Promise<CommitHistoryData[]>;
+    getCommitCyclesData(owner: string, repoName: string, branch?: string): Promise<CommitCycleData[]>;
+    getBranches(owner: string, repoName: string): Promise<BranchSummary[]>;
+    getBranchSnapshot(owner: string, repoName: string, branch: string): Promise<BranchSnapshot>;
 }

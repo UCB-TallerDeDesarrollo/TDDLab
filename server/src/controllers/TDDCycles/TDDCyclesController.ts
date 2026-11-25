@@ -13,6 +13,7 @@ import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getC
 import { ITestResultRegistrationRepository } from "../../modules/TDDCycles/Domain/ITestResultRegistrationRepository";
 import { RegisterTestResultUseCase } from "../../modules/TDDCycles/Application/registerTestResultUseCase";
 import { TestResultValidationError } from "../../modules/TDDCycles/Application/TestResultValidationError";
+import { isValidBranch } from "../../modules/TDDCycles/Domain/RepositoryRef";
 
 
 
@@ -27,6 +28,7 @@ class TDDCyclesController {
   getCommitExecutions: GetCommitTimeLineUseCase;
   getCommitHistoryUseCase: GetCommitHistoryUseCase;
   getCommitCyclesUseCase: GetCommitCyclesUseCase;
+  private readonly githubRepository: IGithubRepository;
 
   constructor(
     dbCommitsRepository: IDBCommitsRepository,
@@ -34,6 +36,7 @@ class TDDCyclesController {
     githubRepository: IGithubRepository,
     registrationRepository: ITestResultRegistrationRepository | null = null
   ) {
+    this.githubRepository = githubRepository;
     this.registerTestResultUseCase = registrationRepository ? new RegisterTestResultUseCase(registrationRepository) : null;
     this.tddCyclesUseCase = new GetTDDCyclesUseCase(
       dbCommitsRepository,
@@ -134,10 +137,14 @@ class TDDCyclesController {
         });
       }
 
-      const owner = ownerRaw; 
+      const branchRaw = req.query.branch;
+      if (branchRaw !== undefined && !isValidBranch(branchRaw)) {
+        return res.status(400).json({ error: "Bad request, invalid branch" });
+      }
+      const owner = ownerRaw;
       const repoName = repoNameRaw;
 
-      const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName));
+      const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName), branchRaw ? String(branchRaw) : "main");
       return res.status(200).json(commits);
     } catch (error) {
       console.error("Error fetching commit history:", error);
@@ -158,12 +165,46 @@ class TDDCyclesController {
         return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
       }
 
+      const branchRaw = req.query.branch;
+      if (branchRaw !== undefined && !isValidBranch(branchRaw)) {
+        return res.status(400).json({ error: "Bad request, invalid branch" });
+      }
 
-      const commits = await this.getCommitCyclesUseCase.execute(String(owner), String(repoName));
+
+      const commits = await this.getCommitCyclesUseCase.execute(String(owner), String(repoName), branchRaw ? String(branchRaw) : "main");
       return res.status(200).json(commits);
     } catch (error) {
       console.error("Error fetching commit cycles:", error);
       return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getBranches(req: Request, res: Response) {
+    const { owner, repoName } = req.query;
+    if (!owner || !repoName || !this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+      return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+    }
+    try {
+      return res.status(200).json({ branches: await this.githubRepository.getBranches(String(owner), String(repoName)) });
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  async getBranchSnapshot(req: Request, res: Response) {
+    const { owner, repoName, branch } = req.query;
+    if (!owner || !repoName || !branch || !this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName) || !isValidBranch(branch)) {
+      return res.status(400).json({ error: "Bad request, invalid repository or branch" });
+    }
+    try {
+      const snapshot = await this.githubRepository.getBranchSnapshot(String(owner), String(repoName), String(branch));
+      return res.status(200).json(snapshot);
+    } catch (error: any) {
+      if (error?.status === 404) return res.status(404).json({ error: "BRANCH_NOT_FOUND" });
+      if (error?.message === "INVALID_BRANCH") return res.status(400).json({ error: "INVALID_ARGUMENT" });
+      console.error("Error fetching branch snapshot:", error);
+      return res.status(503).json({ error: "SNAPSHOT_UNAVAILABLE" });
     }
   }
 

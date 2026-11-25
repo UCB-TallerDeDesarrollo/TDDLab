@@ -10,6 +10,7 @@ import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 import axios from "axios";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
+import { BranchSnapshot, BranchSummary, isValidBranch } from "../Domain/RepositoryRef";
 
 dotenv.config();
 export class GithubRepository implements IGithubRepository {
@@ -304,11 +305,12 @@ export class GithubRepository implements IGithubRepository {
     return jobs;
   }
 
-  async fetchCommitHistoryJson(owner: string, repoName: string): Promise<any[]> {
+  async fetchCommitHistoryJson(owner: string, repoName: string, branch = "main"): Promise<any[]> {
     try {
       const encodedOwner = encodeURIComponent(owner);
       const encodedRepoName = encodeURIComponent(repoName);
-      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/main/script/commit-history.json`;
+      const encodedBranch = branch.split("/").map(encodeURIComponent).join("/");
+      const url = `https://raw.githubusercontent.com/${encodedOwner}/${encodedRepoName}/${encodedBranch}/script/commit-history.json`;
 
       const response = await axios.get(url);
       
@@ -323,8 +325,8 @@ export class GithubRepository implements IGithubRepository {
     }
   }
 
-  async getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+  async getCommitHistoryData(owner: string, repoName: string, branch = "main"): Promise<CommitHistoryData[]> {
+    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName, branch);
     const commits: CommitHistoryData[] = commitHistory.map((commitData: any) => ({
       html_url: commitData.commit.url,
       sha: commitData.sha,
@@ -348,13 +350,65 @@ export class GithubRepository implements IGithubRepository {
     return commits;
   }
 
-  async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+  async getCommitCyclesData(owner: string, repoName: string, branch = "main"): Promise<CommitCycleData[]> {
+    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName, branch);
     return commitHistory.map((commitData: any) => ({
       url: commitData.commit.url,
       sha: commitData.sha,
       tddCycle: commitData.tdd_cycle ?? "null",
       coverage: commitData.coverage,
     }));
+  }
+
+  async getBranches(owner: string, repoName: string): Promise<BranchSummary[]> {
+    const repository = await this.octokit.request("GET /repos/{owner}/{repo}", { owner, repo: repoName });
+    const branches = await this.octokit.paginate("GET /repos/{owner}/{repo}/branches", {
+      owner,
+      repo: repoName,
+      per_page: 100,
+    });
+    return branches.map((branch: any) => ({
+      name: branch.name,
+      ref: `refs/heads/${branch.name}`,
+      headSha: branch.commit.sha,
+      isDefault: branch.name === repository.data.default_branch,
+    }));
+  }
+
+  async getBranchSnapshot(owner: string, repoName: string, branch: string): Promise<BranchSnapshot> {
+    if (!isValidBranch(branch)) throw new Error("INVALID_BRANCH");
+    const reference = await this.octokit.request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
+      owner,
+      repo: repoName,
+      ref: `heads/${branch}`,
+    });
+    const resolvedSha = reference.data.object.sha;
+    const readJson = async (path: string) => {
+      try {
+        const response: any = await this.octokit.request("GET /repos/{owner}/{repo}/contents/{path}", {
+          owner,
+          repo: repoName,
+          path,
+          ref: resolvedSha,
+        });
+        if (Array.isArray(response.data) || response.data.type !== "file") throw new Error("INVALID_LOG");
+        const content = Buffer.from(response.data.content, "base64").toString("utf8");
+        const parsed = JSON.parse(content);
+        return { status: "ok" as const, records: Array.isArray(parsed) ? parsed : [parsed] };
+      } catch (error: any) {
+        if (error?.status === 404) return { status: "missing" as const, records: [] };
+        throw error;
+      }
+    };
+    const [tddLog, commitHistory] = await Promise.all([
+      readJson("script/tdd_log.json"),
+      readJson("script/commit-history.json"),
+    ]);
+    return {
+      branch,
+      ref: `refs/heads/${branch}`,
+      resolvedSha,
+      files: { tddLog, commitHistory },
+    };
   }
 }

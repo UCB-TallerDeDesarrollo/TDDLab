@@ -62,4 +62,14 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getCommitCycles(req, res)
 );
 
+TDDCyclesRouter.get(
+  "/branches",
+  async (req, res) => await tddCyclesController.getBranches(req, res)
+);
+
+TDDCyclesRouter.get(
+  "/branch-snapshot",
+  async (req, res) => await tddCyclesController.getBranchSnapshot(req, res)
+);
+
 export default TDDCyclesRouter;
