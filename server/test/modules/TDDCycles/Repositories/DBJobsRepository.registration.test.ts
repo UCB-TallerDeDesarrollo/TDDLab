@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { DBJobsRepository } from "../../../../src/modules/TDDCycles/Repositories/DBJobsRepository";
 
-const result = { sha: "abc123", owner: "demo", reponame: "tests", conclusion: "success" } as const;
+const result = { sha: "abc123", owner: "demo", reponame: "tests", conclusion: "success", branch: "feature/demo" } as const;
 
 describe("DBJobsRepository registration persistence", () => {
   let query: jest.Mock;
@@ -19,19 +19,19 @@ describe("DBJobsRepository registration persistence", () => {
     query.mockResolvedValueOnce({ rows: [{ id: 1 }] });
 
     await expect(repository.register(result)).resolves.toBe("created");
-    expect(query).toHaveBeenCalledWith(expect.stringContaining("INSERT INTO jobstable"), ["abc123", "demo", "tests", "success"]);
+    expect(query).toHaveBeenCalledWith(expect.stringContaining("INSERT INTO jobstable"), ["abc123", "demo", "tests", "success", "feature/demo"]);
     expect(release).toHaveBeenCalledTimes(1);
   });
 
   it("reads the persisted conclusion after a unique-key collision", async () => {
-    query.mockResolvedValueOnce({ rows: [] }).mockResolvedValueOnce({ rows: [{ conclusion: "success" }] });
+    query.mockResolvedValueOnce({ rows: [] }).mockResolvedValueOnce({ rows: [{ conclusion: "success", branch: "feature/demo" }] });
 
     await expect(repository.register(result)).resolves.toBe("duplicate");
-    expect(query).toHaveBeenLastCalledWith(expect.stringContaining("SELECT conclusion FROM jobstable"), ["abc123", "demo", "tests"]);
+    expect(query).toHaveBeenLastCalledWith(expect.stringContaining("SELECT conclusion, branch FROM jobstable"), ["abc123", "demo", "tests"]);
   });
 
   it("reports conflict when an existing result has another conclusion", async () => {
-    query.mockResolvedValueOnce({ rows: [] }).mockResolvedValueOnce({ rows: [{ conclusion: "failure" }] });
+    query.mockResolvedValueOnce({ rows: [] }).mockResolvedValueOnce({ rows: [{ conclusion: "failure", branch: "feature/demo" }] });
 
     await expect(repository.register(result)).resolves.toBe("conflict");
   });

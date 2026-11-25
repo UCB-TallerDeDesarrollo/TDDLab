@@ -6,5 +6,9 @@ export interface ITimelineEntry {
     passed_tests: number;
     color: string;
     repoName: string,
-    repoOwner: string;
+    repoOwner: string,
+    branch?: string,
+    test_id?: number | null,
+    failed_tests?: number,
+    success?: boolean;
 }

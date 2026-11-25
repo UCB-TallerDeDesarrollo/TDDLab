@@ -3,5 +3,6 @@ export interface TestResultDataObject{
     sha:string,
     owner:string,
     reponame:string,
-    conclusion:string;
+    conclusion:string,
+    branch?: string;
 }

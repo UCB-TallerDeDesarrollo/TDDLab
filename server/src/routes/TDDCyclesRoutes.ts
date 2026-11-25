@@ -38,6 +38,11 @@ TDDCyclesRouter.post(
 );
 
 TDDCyclesRouter.post(
+  "/ingest-logs",
+  async (req, res) => await tddCyclesController.ingestTDDLogs(req, res)
+);
+
+TDDCyclesRouter.post(
   "/upload-log",
   async (req, res) => await tddCyclesController.uploadTDDLog(req, res)
 );

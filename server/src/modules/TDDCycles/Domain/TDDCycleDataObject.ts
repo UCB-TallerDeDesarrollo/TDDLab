@@ -5,6 +5,12 @@ export interface TDDCycleDataObject {
   sha: string;
   coverage: string;
   test_count: string;
+  branch?: string;
+  author?: string;
+  stats_date?: string;
+  failed_tests?: number;
+  conclusion?: string;
+  hook_timestamp?: number;
 }
 export interface Stats {
   total: number;

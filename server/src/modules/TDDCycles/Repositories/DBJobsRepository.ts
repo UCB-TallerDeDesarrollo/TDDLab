@@ -21,20 +21,29 @@ export class DBJobsRepository implements IDBJobsRepository, ITestResultRegistrat
     const client = await this.pool.connect();
     try {
       const inserted = await client.query(
-        `INSERT INTO jobstable (sha, owner, reponame, conclusion)
-         VALUES ($1, $2, $3, $4)
+        `INSERT INTO jobstable (sha, owner, reponame, conclusion, branch)
+         VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT (owner, reponame, sha) DO NOTHING
          RETURNING id`,
-        [result.sha, result.owner, result.reponame, result.conclusion]
+        [result.sha, result.owner, result.reponame, result.conclusion, result.branch ?? null]
       );
       if (inserted.rows.length > 0) return "created";
 
       const existing = await client.query(
-        `SELECT conclusion FROM jobstable
+        `SELECT conclusion, branch FROM jobstable
          WHERE sha = $1 AND owner = $2 AND reponame = $3`,
         [result.sha, result.owner, result.reponame]
       );
-      if (existing.rows[0]?.conclusion === result.conclusion) return "duplicate";
+      if (existing.rows[0]?.conclusion === result.conclusion) {
+        if (result.branch && existing.rows[0]?.branch !== result.branch) {
+          await client.query(
+            `UPDATE jobstable SET branch = $4
+             WHERE sha = $1 AND owner = $2 AND reponame = $3`,
+            [result.sha, result.owner, result.reponame, result.branch]
+          );
+        }
+        return "duplicate";
+      }
       return "conflict";
     } finally {
       client.release();
@@ -82,10 +91,10 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
     const client = await this.pool.connect();
     try {
       const query = `
-        INSERT INTO jobstable (sha, owner, reponame, conclusion)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO jobstable (sha, owner, reponame, conclusion, branch)
+        VALUES ($1, $2, $3, $4, $5)
       `;
-      const values = [job.sha, job.owner, job.reponame, job.conclusion];
+      const values = [job.sha, job.owner, job.reponame, job.conclusion, job.branch ?? null];
       await client.query(query, values);
     } catch (error) {
       console.error("Error al insertar en jobsTable:", error);
@@ -130,8 +139,8 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
         const exists = await this.executionExists(entry.commit_sha, entry.execution_timestamp);
         if (!exists) {
           const query = `
-            INSERT INTO commit_timeline (commit_sha, execution_timestamp, number_of_tests, passed_tests, color, repoOwner, repoName)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO commit_timeline (commit_sha, execution_timestamp, number_of_tests, passed_tests, color, repoOwner, repoName, branch, test_id, failed_tests, success)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
           `;
           const values = [
             entry.commit_sha,
@@ -140,7 +149,11 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
             entry.passed_tests,
             entry.color,
             entry.repoOwner,
-            entry.repoName
+            entry.repoName,
+            entry.branch ?? null,
+            entry.test_id ?? null,
+            entry.failed_tests ?? null,
+            entry.success ?? null
           ];
           await client.query(query, values);
         }
@@ -174,7 +187,7 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
     let client;
     try {
       client = await this.pool.connect();
-      const query = `SELECT id, sha, owner, reponame, conclusion
+      const query = `SELECT id, sha, owner, reponame, conclusion, branch
         FROM jobstable
         WHERE owner = $1 AND reponame = $2
         ORDER BY id ASC`;
