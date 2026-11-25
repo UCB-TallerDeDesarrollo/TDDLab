@@ -99,7 +99,7 @@ class TDDCyclesController {
       if (history === null) return res.status(404).json({ error: "Repository or branch not found" });
       return res.status(200).json(history);
     } catch (error) {
-      console.error("Error fetching branch history:", error);
+      console.error("Error fetching branch history");
       return res.status(500).json({ error: "Server error" });
     }
   }

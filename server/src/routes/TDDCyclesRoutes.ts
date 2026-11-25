@@ -5,15 +5,30 @@ import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubReposi
 import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
 import { InMemoryTDDHistoryRepository } from "../modules/TDDCycles/Repositories/InMemoryTDDHistoryRepository";
 import type { BranchSyncData } from "../modules/TDDCycles/Application/BranchSyncData";
+import { getTddPool } from "../config/tddDb";
+import { PostgresTDDHistoryRepository } from "../modules/TDDCycles/Repositories/PostgresTDDHistoryRepository";
+import type { ITDDHistoryRepository } from "../modules/TDDCycles/Domain/ITDDHistoryRepository";
 
 // Opt-in local mode. Production never loads development fixtures.
 const mockEnabled = process.env.TDD_HISTORY_MOCK === "true" &&
   (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test");
-const historyRepository = mockEnabled ? new InMemoryTDDHistoryRepository() : undefined;
+let historyRepository: ITDDHistoryRepository | undefined;
+if (mockEnabled) {
+  historyRepository = new InMemoryTDDHistoryRepository();
+} else {
+  try {
+    // Reuse BL-01 configuration; creating the pool does not query or seed the DB.
+    historyRepository = new PostgresTDDHistoryRepository(getTddPool());
+  } catch {
+    // Keep legacy routes available when history storage is not configured.
+    // Do not log connection strings or fall back to fictitious data.
+    historyRepository = undefined;
+  }
+}
 let historyReady: Promise<void> | undefined;
 
 async function seedHistory(): Promise<void> {
-  if (!historyRepository) return;
+  if (!mockEnabled || !historyRepository) return;
   const scenario = process.env.TDD_HISTORY_MOCK_SCENARIO ?? "initial";
   if (scenario !== "initial" && scenario !== "after-merge") {
     throw new Error("TDD_HISTORY_MOCK_SCENARIO must be initial or after-merge");
@@ -52,11 +67,13 @@ const tddCyclesController = new TDDCyclesController(
 const TDDCyclesRouter = express.Router();
 
 TDDCyclesRouter.get("/branch-view", async (req, res) => {
-  if (!mockEnabled) return res.status(503).json({ error: "Branch history is not enabled" });
+  if (!historyRepository) return res.status(503).json({ error: "Branch history storage is not configured" });
   try {
     // Concurrent requests share one initialization per process.
-    historyReady ??= seedHistory();
-    await historyReady;
+    if (mockEnabled) {
+      historyReady ??= seedHistory();
+      await historyReady;
+    }
     return await tddCyclesController.getBranchHistory(req, res);
   } catch (error) {
     console.error("Error initializing branch history:", error);
