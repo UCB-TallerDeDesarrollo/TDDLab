@@ -17,6 +17,7 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { BranchSummary } from "../../../modules/TDDCycles-Visualization/domain/RepositoryRef";
 
 function isStudent(role: string) {
   return role === "student";
@@ -26,7 +27,7 @@ function getDefaultMetric(graphs: string) {
   return graphs === "graph" ? "Dashboard" : "Complejidad";
 }
 
-function getRepoQuery(submission: Submission, assignmentId?: number) {
+function getRepoQuery(submission: Submission, assignmentId?: number, branch?: string) {
   const [, , , repoOwner, repoName] = submission.repository_link.split("/");
   const params = new URLSearchParams({
     repoOwner,
@@ -37,6 +38,7 @@ function getRepoQuery(submission: Submission, assignmentId?: number) {
   if (assignmentId && assignmentId > 0) {
     params.set("assignmentId", assignmentId.toString());
   }
+  if (branch) params.set("branch", branch);
 
   return params.toString();
 }
@@ -47,12 +49,13 @@ export function useTDDChartPage({
   role,
   teacher_id,
 }: Readonly<CycleReportViewProps>) {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const studentRole = isStudent(role);
   const isTeacherView = role !== "student";
-  const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
-  const repoName = String(searchParams.get("repoName")) || "defaultRepo";
+  const repoOwner = searchParams.get("repoOwner") || "defaultOwner";
+  const repoName = searchParams.get("repoName") || "defaultRepo";
+  const branch = searchParams.get("branch") || "main";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
   const assignmentId = Number.parseInt(searchParams.get("assignmentId") || "0");
   const fetchedSubmissions: Submission[] = isTeacherView
@@ -76,6 +79,7 @@ export function useTDDChartPage({
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [branches, setBranches] = useState<BranchSummary[]>([]);
 
   const defaultMetric = getDefaultMetric(graphs);
 
@@ -108,11 +112,43 @@ export function useTDDChartPage({
 
   useEffect(() => {
     let isActive = true;
+    const loadBranches = async () => {
+      if (!port.obtainBranches) {
+        setBranches([]);
+        return;
+      }
+      try {
+        const availableBranches = await port.obtainBranches(repoOwner, repoName);
+        if (isActive) {
+          setBranches(availableBranches);
+          if (!searchParams.get("branch")) {
+            const defaultBranch = availableBranches.find((item) => item.isDefault)?.name || "main";
+            if (defaultBranch !== "main") {
+              const nextParams = new URLSearchParams(searchParams);
+              nextParams.set("branch", defaultBranch);
+              setSearchParams(nextParams, { replace: true });
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error obtaining branches:", error);
+        if (isActive) setBranches([]);
+      }
+    };
+
+    loadBranches().catch((error: unknown) => console.error("Error loading branches:", error));
+    return () => {
+      isActive = false;
+    };
+  }, [port, repoOwner, repoName]);
+
+  useEffect(() => {
+    let isActive = true;
     const loadVisualizationData = async () => {
       setLoading(true);
       setDataError(false);
       try {
-        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName, branch);
         if (isActive) {
           setCommitsInfo(visualizationData.commits);
           setCommitsTddCycles(visualizationData.commitsTddCycles);
@@ -135,14 +171,20 @@ export function useTDDChartPage({
     return () => {
       isActive = false;
     };
-  }, [port, repoOwner, repoName]);
+  }, [port, repoOwner, repoName, branch]);
+
+  const selectBranch = (nextBranch: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("branch", nextBranch);
+    setSearchParams(nextParams);
+  };
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
       const previousIndex = currentIndex - 1;
       const previousSubmission = fetchedSubmissions[previousIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(`?${getRepoQuery(previousSubmission, assignmentId)}`);
+      navigate(`?${getRepoQuery(previousSubmission, assignmentId, branch)}`);
       setCurrentIndex(previousIndex);
     }
   };
@@ -152,7 +194,7 @@ export function useTDDChartPage({
       const nextIndex = currentIndex + 1;
       const nextSubmission = fetchedSubmissions[nextIndex];
       localStorage.setItem("selectedMetric", defaultMetric);
-      navigate(`?${getRepoQuery(nextSubmission, assignmentId)}`);
+      navigate(`?${getRepoQuery(nextSubmission, assignmentId, branch)}`);
       setCurrentIndex(nextIndex);
     }
   };
@@ -201,6 +243,9 @@ export function useTDDChartPage({
     loading,
     ownerName,
     repoName,
+    branch,
+    branches,
+    selectBranch,
     role,
     setFeedback,
   };

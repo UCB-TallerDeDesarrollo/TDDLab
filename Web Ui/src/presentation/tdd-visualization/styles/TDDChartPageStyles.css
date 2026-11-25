@@ -66,3 +66,15 @@
   color: #333;
   text-align: center;
 }
+.branch-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+
+.branch-selector select {
+  min-width: 180px;
+  padding: 6px 8px;
+}

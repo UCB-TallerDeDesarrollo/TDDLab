@@ -1,6 +1,7 @@
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../domain/githubCommitInterfaces";
 import { TDDLogEntry } from "../domain/TDDLogInterfaces";
+import { BranchSummary } from "../domain/RepositoryRef";
 
 const date = "2026-11-24T12:00:00Z";
 const timestamp = Date.parse(date);
@@ -35,5 +36,9 @@ export class FakeCommitHistoryRepository implements CommitHistoryRepository {
       { testId: 1, timestamp: timestamp - 500, numPassedTests: 1, failedTests: 0, numTotalTests: 1, success: true },
       { testId: 1, commitId: sha, commitName: message, commitTimestamp: timestamp },
     ];
+  }
+
+  async obtainBranches(): Promise<BranchSummary[]> {
+    return [{ name: "main", ref: "refs/heads/main", headSha: sha, isDefault: true }];
   }
 }

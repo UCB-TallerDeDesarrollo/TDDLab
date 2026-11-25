@@ -16,6 +16,24 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         <h1 data-testid="repoOwnerTitle">Autor: {tddPage.ownerName}</h1>
       )}
 
+      {tddPage.branches.length > 0 && (
+        <label className="branch-selector" htmlFor="tdd-branch-select">
+          Rama:{" "}
+          <select
+            id="tdd-branch-select"
+            data-testid="branch-select"
+            value={tddPage.branch}
+            onChange={(event) => tddPage.selectBranch(event.target.value)}
+          >
+            {tddPage.branches.map((branch) => (
+              <option key={branch.name} value={branch.name}>
+                {branch.name}{branch.isDefault ? " (predeterminada)" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
       {tddPage.loading && (
         <div className="mainInfoContainer" role="status" aria-label="Cargando datos del repositorio">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
