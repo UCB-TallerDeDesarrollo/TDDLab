@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import config from "../../../config/db";
+import { branchDbConfig } from "../../../config/branch-db";
 import { IBranchRepository } from "../Domain/IBranchRepository";
 import { BranchData } from "../Domain/BranchData";
 import { BranchHistoryData } from "../Domain/BranchData";
@@ -17,7 +17,12 @@ import {
 export class DBBranchRepository implements IBranchRepository {
   pool: Pool;
   constructor() {
-    this.pool = new Pool(config);
+    this.pool = new Pool(branchDbConfig);
+    // Warmup: establecer la conexión SSL/TCP antes de la primera petición real
+    // para evitar que el primer request tarde varios segundos.
+    this.pool.query("SELECT 1").catch(() => {
+      // Ignorar errores de warmup; la primera query real intentará reconectar
+    });
   }
 
   private splitSlug(slug: string): { owner: string; repoName: string } {
@@ -40,14 +45,19 @@ export class DBBranchRepository implements IBranchRepository {
       const result = await client.query(query, values);
       return Number(result.rows[0].count) > 0;
     } catch (error) {
-      console.error("Error checking repository existence in tdd_repository:", error);
+      console.error(
+        "Error checking repository existence in tdd_repository:",
+        error,
+      );
       throw error;
     } finally {
       client.release();
     }
   }
 
-  async saveRepository(repo: TddRepositoryRequest): Promise<TddRepositoryResponse> {
+  async saveRepository(
+    repo: TddRepositoryRequest,
+  ): Promise<TddRepositoryResponse> {
     const { owner, repoName } = this.splitSlug(repo.slug);
     const client = await this.pool.connect();
     try {
@@ -72,7 +82,9 @@ export class DBBranchRepository implements IBranchRepository {
         id: Number(row.id),
         slug: repo.slug,
         remoteUrl: repo.remoteUrl,
-        createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+        createdAt: row.created_at
+          ? new Date(row.created_at).toISOString()
+          : new Date().toISOString(),
       };
     } catch (error) {
       console.error("Error saving repository to tdd_repository:", error);
@@ -114,7 +126,10 @@ export class DBBranchRepository implements IBranchRepository {
     const { owner: _owner } = this.splitSlug(branch.repositorySlug);
     const client = await this.pool.connect();
     try {
-      const existing = await this.getBranchByName(branch.repositorySlug, branch.name);
+      const existing = await this.getBranchByName(
+        branch.repositorySlug,
+        branch.name,
+      );
       if (existing) {
         return existing.name;
       }
@@ -127,7 +142,12 @@ export class DBBranchRepository implements IBranchRepository {
         VALUES ($1, $2, $3, $4)
         RETURNING id
       `;
-      const values = [branch.name, branch.forkCommitSha ?? null, branch.createdAt, repo.slug];
+      const values = [
+        branch.name,
+        branch.forkCommitSha ?? null,
+        branch.createdAt,
+        repo.slug,
+      ];
       const result = await client.query(query, values);
       return result.rows[0].id;
     } catch (error) {
@@ -169,7 +189,10 @@ export class DBBranchRepository implements IBranchRepository {
     }
   }
 
-  async getBranchByName(repositorySlug: string, branchName: string): Promise<BranchData | null> {
+  async getBranchByName(
+    repositorySlug: string,
+    branchName: string,
+  ): Promise<BranchData | null> {
     const repo = await this.getRepository(repositorySlug);
     if (!repo) {
       return null;
@@ -209,10 +232,12 @@ export class DBBranchRepository implements IBranchRepository {
     try {
       const branchRow = await this.getBranchRowByName(
         commit.repositorySlug,
-        commit.branch
+        commit.branch,
       );
       if (!branchRow) {
-        throw new Error(`Branch ${commit.branch} not found in ${commit.repositorySlug}`);
+        throw new Error(
+          `Branch ${commit.branch} not found in ${commit.repositorySlug}`,
+        );
       }
 
       await client.query("BEGIN");
@@ -263,15 +288,17 @@ export class DBBranchRepository implements IBranchRepository {
     try {
       const sourceBranchRow = await this.getBranchRowByName(
         merge.repositorySlug,
-        merge.sourceBranch
+        merge.sourceBranch,
       );
       const targetBranchRow = await this.getBranchRowByName(
         merge.repositorySlug,
-        merge.targetBranch
+        merge.targetBranch,
       );
 
       if (!sourceBranchRow || !targetBranchRow) {
-        throw new Error(`Source or target branch not found in ${merge.repositorySlug}`);
+        throw new Error(
+          `Source or target branch not found in ${merge.repositorySlug}`,
+        );
       }
 
       const query = `
@@ -316,7 +343,8 @@ export class DBBranchRepository implements IBranchRepository {
       return result.rows.map((row: any) => ({
         source_branch: row.source_branch_id,
         target_branch: row.target_branch_id,
-        is_fast_forward: row.is_fast_forward === 1 || row.is_fast_forward === true,
+        is_fast_forward:
+          row.is_fast_forward === 1 || row.is_fast_forward === true,
       }));
     } catch (error) {
       console.error("Error getting merges from tdd_merge:", error);
@@ -326,7 +354,11 @@ export class DBBranchRepository implements IBranchRepository {
     }
   }
 
-  async getBranchHistory(owner: string, repoName: string, branch: string): Promise<BranchHistoryData | null> {
+  async getBranchHistory(
+    owner: string,
+    repoName: string,
+    branch: string,
+  ): Promise<BranchHistoryData | null> {
     const slug = `${owner}/${repoName}`;
     const client = await this.pool.connect();
     try {
@@ -354,29 +386,31 @@ export class DBBranchRepository implements IBranchRepository {
         ORDER BY committed_at DESC
       `;
       const commitResult = await client.query(commitQuery, [branchRow.id]);
-      const commits: CommitHistoryData[] = commitResult.rows.map((row: any) => ({
-        repository_slug: slug,
-        branch,
-        html_url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
-        sha: row.sha,
-        parent_sha: row.parent_sha,
-        author: row.author,
-        stats: {
-          total: 0,
-          additions: 0,
-          deletions: 0,
-          date: "",
-        },
-        commit: {
-          date: row.committed_at ? new Date(row.committed_at) : new Date(),
-          message: row.message,
-          url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
-          comment_count: 0,
-        },
-        coverage: 0,
-        test_count: 0,
-        conclusion: "",
-      }));
+      const commits: CommitHistoryData[] = commitResult.rows.map(
+        (row: any) => ({
+          repository_slug: slug,
+          branch,
+          html_url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
+          sha: row.sha,
+          parent_sha: row.parent_sha,
+          author: row.author,
+          stats: {
+            total: 0,
+            additions: 0,
+            deletions: 0,
+            date: "",
+          },
+          commit: {
+            date: row.committed_at ? new Date(row.committed_at) : new Date(),
+            message: row.message,
+            url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
+            comment_count: 0,
+          },
+          coverage: 0,
+          test_count: 0,
+          conclusion: "",
+        }),
+      );
       return {
         branch: branchData,
         commits,
@@ -389,7 +423,10 @@ export class DBBranchRepository implements IBranchRepository {
     }
   }
 
-  private async getBranchRowByName(repositorySlug: string, branchName: string): Promise<any | null> {
+  private async getBranchRowByName(
+    repositorySlug: string,
+    branchName: string,
+  ): Promise<any | null> {
     const repo = await this.getRepository(repositorySlug);
     if (!repo) {
       return null;
