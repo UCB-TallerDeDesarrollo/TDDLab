@@ -45,10 +45,16 @@ describe("Save Commits", () => {
             tddCycleDataObjectMock.commit.comment_count,
             tddCycleDataObjectMock.commit.date,
             tddCycleDataObjectMock.coverage,
-            tddCycleDataObjectMock.test_count
+            tddCycleDataObjectMock.test_count,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         ];
         expect(poolCommitConnectMock).toBeCalledTimes(1);
-        expect(clientCommitQueryMock).toBeCalledWith('INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13)', values);
+        expect(clientCommitQueryMock).toBeCalledWith('INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count, branch, author, stats_date, failed_tests, conclusion, hook_timestamp) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)', values);
     });
     testErrorHandling(() => commitRepository.saveCommit('owner', 'repo', tddCycleDataObjectMock));
 });
@@ -125,10 +131,16 @@ describe("Commit Saving Commits List", () => {
             tddCycleDataObjectMock.commit.comment_count,
             tddCycleDataObjectMock.commit.date,
             tddCycleDataObjectMock.coverage,
-            tddCycleDataObjectMock.test_count
+            tddCycleDataObjectMock.test_count,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         ];
         expect(poolCommitConnectMock).toBeCalledTimes(1);
-        expect(clientCommitQueryMock).toHaveBeenNthCalledWith(1, 'INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13)', values);
+        expect(clientCommitQueryMock).toHaveBeenNthCalledWith(1, 'INSERT INTO commitsTable (owner, repoName, html_url, sha, total, additions, deletions, message,url, comment_count, commit_date, coverage, test_count, branch, author, stats_date, failed_tests, conclusion, hook_timestamp) VALUES ($1, $2, $3, $4, $5,$6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)', values);
     });
 
     it("should handle errors while saving commits", async () => {
