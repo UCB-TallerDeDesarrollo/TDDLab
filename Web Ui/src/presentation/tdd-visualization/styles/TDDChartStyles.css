@@ -446,6 +446,8 @@
 }
 
 .tdd-branch-rail {
+  min-width: 0;
+  box-shadow: 0 4px 18px rgba(9, 45, 74, 0.07);
   margin-top: 16px;
   padding: 10px 14px 8px;
   background-color: #ffffff;
@@ -509,6 +511,8 @@
 }
 
 .tdd-branch-rail-scroll {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
   overflow-x: auto;
   padding-bottom: 2px;
 }

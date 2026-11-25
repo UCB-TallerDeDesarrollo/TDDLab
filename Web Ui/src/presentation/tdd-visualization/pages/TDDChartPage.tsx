@@ -13,8 +13,9 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const hasVisualizationData = Boolean(chartsState.commitsInfo?.length || hasContextGraph);
 
   return (
-    <div className="container">
-      <h1 data-testid="repoNameTitle">Tarea: {tddPage.repoName}</h1>
+    <div className="container tdd-chart-page">
+      <h1>Dashboard TDD</h1>
+      <p data-testid="repoNameTitle">Repositorio: {tddPage.repoName}</p>
       {!tddPage.isStudent && (
         <h1 data-testid="repoOwnerTitle">Autor: {tddPage.ownerName}</h1>
       )}

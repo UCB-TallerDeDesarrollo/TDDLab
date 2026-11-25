@@ -116,7 +116,7 @@ describe('Integración de la visualización TDD', () => {
 
       expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
       expect(screen.getByRole('status')).not.toHaveTextContent(/\blog\b|tdd_log\.json|script\//i);
-      expect(screen.getByRole('heading', { name: 'Métricas de Commits con Cobertura de Código' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Historial Git — ramas y commits' })).toBeInTheDocument();
       const metricCharts = screen.getAllByTestId('commit-metric-chart');
       expect(metricCharts).toHaveLength(4);
       expect(metricCharts.some(chart => chart.textContent?.includes('"data":[91]'))).toBe(true);
@@ -179,7 +179,7 @@ describe('Integración de la visualización TDD', () => {
       ],
     }]);
 
-    const [dashboard] = screen.getAllByTestId('commit-metric-chart');
+    const dashboard = screen.getAllByTestId('commit-metric-chart')[3];
     const { datasets } = JSON.parse(dashboard.textContent ?? '{}');
     expect(datasets).toHaveLength(1);
     expect(datasets[0]).toMatchObject({ label: 'Commit 2', data: [{ x: 2, y: 3 }] });
@@ -291,7 +291,7 @@ describe('Integración de la visualización TDD', () => {
     expect(trigger).toHaveTextContent('main');
 
     const getBubbleDatasets = () =>
-      JSON.parse(screen.getAllByTestId('commit-metric-chart')[0].textContent ?? '{}').datasets;
+      JSON.parse(screen.getAllByTestId('commit-metric-chart')[3].textContent ?? '{}').datasets;
 
     // Arranca con 1 rama por defecto (main) activa y las demás atenuadas.
     let datasets = getBubbleDatasets();
@@ -345,7 +345,7 @@ describe('Integración de la visualización TDD', () => {
     const failedDataset = datasets.find((d: any) => d.data[0].y === 1);
     expect(failedDataset.backgroundColor).toBe('red');
 
-    const coverageMiniChart = JSON.parse(screen.getAllByTestId('commit-metric-chart')[2].textContent ?? '{}');
+    const coverageMiniChart = JSON.parse(screen.getAllByTestId('commit-metric-chart')[1].textContent ?? '{}');
     expect(coverageMiniChart.datasets[0].data).toContain(null);
 
     // Desde Todas, clic en feature/redondeo aísla esa rama y se preserva al abrir la gráfica de cobertura sin reload.

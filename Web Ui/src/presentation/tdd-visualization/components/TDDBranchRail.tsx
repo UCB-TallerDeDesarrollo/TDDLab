@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Tooltip from "@mui/material/Tooltip";
+import { indexTestsByCommit, testResult } from "../../../modules/TDDCycles-Visualization/application/commitExecutions";
+import type { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import type { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import type { GitGraphCommit } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 import { layoutCommits } from "./TDDCommitLanes";
@@ -12,6 +14,7 @@ import {
 } from "./branchVisualization";
 
 interface TDDBranchRailProps {
+  tddLogs?: TDDLogEntry[];
   gitGraph?: GitGraphCommit[];
   commits: CommitDataObject[];
   commitNumbers: ReadonlyMap<string, number>;
@@ -25,12 +28,13 @@ interface TDDBranchRailProps {
 const LEFT_GUTTER = 152;
 const RIGHT_GUTTER = 34;
 const MIN_STEP_X = 76;
-const LANE_SPACING = 30;
-const TOP_PADDING = 22;
+const LANE_SPACING = 64;
+const TOP_PADDING = 36;
 const BOTTOM_PADDING = 34;
 
 const TDDBranchRail: React.FC<TDDBranchRailProps> = ({
   gitGraph,
+  tddLogs = [],
   commits,
   commitNumbers,
   branchMeta,
@@ -40,13 +44,10 @@ const TDDBranchRail: React.FC<TDDBranchRailProps> = ({
   onPreviewBranch,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const testsByCommit = useMemo(() => indexTestsByCommit(tddLogs), [tddLogs]);
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const hasTopology =
-    Boolean(gitGraph && gitGraph.length > 1) &&
-    (branchMeta.branches.length > 1 ||
-      branchMeta.forks.size > 0 ||
-      branchMeta.merges.size > 0);
+  const hasTopology = Boolean(gitGraph?.length);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -121,7 +122,10 @@ const TDDBranchRail: React.FC<TDDBranchRailProps> = ({
   }, [gitGraph, hasTopology, branchMeta, containerWidth]);
 
   if (!railData) {
-    return null;
+    return <section className="tdd-branch-rail" aria-label="Historial Git no disponible">
+      <h3>Historial Git no disponible</h3>
+      <p>Los registros de este repositorio no incluyen SHA y padres para reconstruir las ramas. Las métricas disponibles se muestran debajo.</p>
+    </section>;
   }
 
   return (
@@ -299,12 +303,16 @@ const TDDBranchRail: React.FC<TDDBranchRailProps> = ({
             const strokeColor = isActive ? branchColor : "#94a3b8";
 
             const tooltipLines = [
+              `Resultado: ${(testsByCommit.get(sha) ?? []).map(testResult).map(result => result === "success" ? "Exitoso" : result === "failure" ? "Fallido" : "Desconocido").join(", ") || "Sin ejecución vinculada"}`,
+              `SHA: ${sha.slice(0, 7)}`,
+              `Fecha: ${row.commit.timestamp == null ? "Sin datos" : new Date(row.commit.timestamp).toLocaleString()}`,
               `Commit ${number}: ${subject}`,
               `Rama: ${commitBranches.length > 0 ? commitBranches.join(", ") : "Rama no registrada"}`,
             ];
             if (isFork) tooltipLines.push("Bifurcación");
             if (isMerge) tooltipLines.push("Merge");
             if (measuredCommit) {
+              tooltipLines.push(`Líneas modificadas: ${measuredCommit.stats.total ?? "Sin datos"}`);
               tooltipLines.push(
                 `Tests: ${measuredCommit.test_count} · Cobertura: ${measuredCommit.coverage == null ? "Sin datos" : `${measuredCommit.coverage}%`}`,
               );

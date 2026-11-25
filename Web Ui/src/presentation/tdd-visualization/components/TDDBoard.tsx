@@ -404,7 +404,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
       {!graph ? (
         <section className="tdd-dashboard">
           <div className="tdd-dashboard-header">
-            <h2>Métricas de Commits con Cobertura de Código</h2>
+            <h2>Historial Git — ramas y commits</h2>
           </div>
           <BranchFocusBar
             meta={branchMeta}
@@ -415,6 +415,75 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             onPreviewBranch={handlePreviewBranch}
             onViewHistory={onSelectMetric ? () => changeGraph("Lista") : undefined}
           />
+          <TDDBranchRail
+            tddLogs={tddLogs}
+            gitGraph={gitGraph}
+            commits={commits}
+            commitNumbers={commitNumbers}
+            branchMeta={branchMeta}
+            activeBranches={activeBranches}
+            onSelectCommit={openCommitModal}
+            onToggleBranch={handleToggleBranch}
+            onPreviewBranch={handlePreviewBranch}
+          />
+          <h3>Resumen de métricas</h3>
+          <div className="tdd-dashboard-metrics">
+            <div
+              className="tdd-dashboard-metric-card"
+              onClick={() => changeGraph("Total Número de Tests")}
+              tabIndex={0}
+              onKeyDown={handleMetricKeyDown("Total Número de Tests")}
+              role="button"
+              aria-label="Abrir gráfica de Total Número de Tests"
+            >
+              <h3>Total Número de Tests</h3>
+              <Line
+                data={getLineChartData(
+                  "Total Número de Tests",
+                  chronologicalCommits.map((commit) => commit.test_count),
+                )}
+                options={getChartOptions("Número de Tests")}
+                ref={chartRefTestCount}
+              />
+            </div>
+            <div
+              className="tdd-dashboard-metric-card"
+              onClick={() => changeGraph("Cobertura de Código")}
+              tabIndex={0}
+              onKeyDown={handleMetricKeyDown("Cobertura de Código")}
+              role="button"
+              aria-label="Abrir gráfica de Cobertura de Código"
+            >
+              <h3>Cobertura de Código</h3>
+              <Line
+                data={getLineChartData(
+                  "Porcentaje de Cobertura de Código",
+                  chronologicalCommits.map((commit) => commit.coverage ?? null),
+                )}
+                options={getChartOptions("Cobertura de Código", true)}
+                ref={chartRefCoverage}
+              />
+            </div>
+            <div
+              className="tdd-dashboard-metric-card"
+              onClick={() => changeGraph("Líneas de Código Modificadas")}
+              tabIndex={0}
+              onKeyDown={handleMetricKeyDown("Líneas de Código Modificadas")}
+              role="button"
+              aria-label="Abrir gráfica de Líneas de Código Modificadas"
+            >
+              <h3>Líneas de Código Modificadas</h3>
+              <Line
+                data={getLineChartData(
+                  "Total de Líneas de Código Modificadas",
+                  chronologicalCommits.map((commit) => commit.stats.total),
+                )}
+                options={getChartOptions("Líneas de Código Modificadas")}
+                ref={chartRefModifiedLines}
+              />
+            </div>
+          </div>
+          <h3>Métricas de commits — gráfica de burbujas</h3>
           <div className="tdd-dashboard-overview">
             <div className="tdd-dashboard-chart">
               <Bubble
@@ -573,16 +642,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
               </span>
             )}
           </div>
-          <TDDBranchRail
-            gitGraph={gitGraph}
-            commits={commits}
-            commitNumbers={commitNumbers}
-            branchMeta={branchMeta}
-            activeBranches={activeBranches}
-            onSelectCommit={openCommitModal}
-            onToggleBranch={handleToggleBranch}
-            onPreviewBranch={handlePreviewBranch}
-          />
+
       <section aria-label="Línea de tiempo de commits">
           <h3>Línea de tiempo de commits</h3>
           {!chronologicalCommits.length && <p>No hay commits con métricas registradas.</p>}
@@ -630,62 +690,7 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
             branches={selectedCommitBranches}
             branchColorMap={branchMeta.branchColorMap}
           />
-          <div className="tdd-dashboard-metrics">
-            <div
-              className="tdd-dashboard-metric-card"
-              onClick={() => changeGraph("Total Número de Tests")}
-              tabIndex={0}
-              onKeyDown={handleMetricKeyDown("Total Número de Tests")}
-              role="button"
-              aria-label="Abrir gráfica de Total Número de Tests"
-            >
-              <h3>Total Número de Tests</h3>
-              <Line
-                data={getLineChartData(
-                  "Total Número de Tests",
-                  chronologicalCommits.map((commit) => commit.test_count),
-                )}
-                options={getChartOptions("Número de Tests")}
-                ref={chartRefTestCount}
-              />
-            </div>
-            <div
-              className="tdd-dashboard-metric-card"
-              onClick={() => changeGraph("Cobertura de Código")}
-              tabIndex={0}
-              onKeyDown={handleMetricKeyDown("Cobertura de Código")}
-              role="button"
-              aria-label="Abrir gráfica de Cobertura de Código"
-            >
-              <h3>Cobertura de Código</h3>
-              <Line
-                data={getLineChartData(
-                  "Porcentaje de Cobertura de Código",
-                  chronologicalCommits.map((commit) => commit.coverage ?? null),
-                )}
-                options={getChartOptions("Cobertura de Código", true)}
-                ref={chartRefCoverage}
-              />
-            </div>
-            <div
-              className="tdd-dashboard-metric-card"
-              onClick={() => changeGraph("Líneas de Código Modificadas")}
-              tabIndex={0}
-              onKeyDown={handleMetricKeyDown("Líneas de Código Modificadas")}
-              role="button"
-              aria-label="Abrir gráfica de Líneas de Código Modificadas"
-            >
-              <h3>Líneas de Código Modificadas</h3>
-              <Line
-                data={getLineChartData(
-                  "Total de Líneas de Código Modificadas",
-                  chronologicalCommits.map((commit) => commit.stats.total),
-                )}
-                options={getChartOptions("Líneas de Código Modificadas")}
-                ref={chartRefModifiedLines}
-              />
-            </div>
-          </div>
+
         </section>
       ) : null}
 

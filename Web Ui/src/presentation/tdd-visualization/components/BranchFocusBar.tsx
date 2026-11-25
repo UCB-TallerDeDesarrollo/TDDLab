@@ -101,6 +101,7 @@ const BranchFocusBar: React.FC<BranchFocusBarProps> = ({
   return (
     <div className="tdd-branch-bar" role="region" aria-label="Control de ramas">
       <div className="tdd-branch-bar-main">
+        <button type="button" className="tdd-branch-trigger" onClick={onSelectAll} aria-pressed={allSelected}>Todas las ramas</button>
         <div className="tdd-branch-bar-group">
           <span className="tdd-branch-bar-label">Ramas</span>
           <div className="tdd-branch-dropdown" ref={dropdownRef}>
