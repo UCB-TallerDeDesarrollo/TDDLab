@@ -54,5 +54,6 @@ export interface BranchHistoryExecution {
 
 // Separate port keeps existing consumers and their test doubles compatible.
 export interface BranchHistoryRepository {
+  obtainBranches(owner: string, repoName: string): Promise<string[]>;
   obtainBranchHistory(owner: string, repoName: string, branch: string): Promise<BranchHistory>;
 }

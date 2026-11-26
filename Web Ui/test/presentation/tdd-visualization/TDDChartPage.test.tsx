@@ -39,6 +39,7 @@ const demoHistoryByBranch = new Map(
   branchHistoryMock.branches.map(branch => [branch.branch, branch]),
 );
 const branchHistoryPort: BranchHistoryRepository = {
+  obtainBranches: jest.fn(async () => [...demoHistoryByBranch.keys()]),
   obtainBranchHistory: jest.fn(async (_owner: string, _repoName: string, branch: string) => {
     const history = demoHistoryByBranch.get(branch);
     if (!history) throw new Error(`No fixture for branch ${branch}`);

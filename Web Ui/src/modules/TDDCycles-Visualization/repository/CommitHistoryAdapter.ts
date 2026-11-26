@@ -25,6 +25,21 @@ export class CommitHistoryAdapter implements CommitHistoryRepository, BranchHist
   }
   
 
+  async obtainBranches(owner: string, repoName: string): Promise<string[]> {
+    const response = await axios.get<{
+      repository: BranchHistory["repository"];
+      branches: string[];
+    }>(`${this.backAPI}/branches`, { params: { owner, repoName } });
+    if (response.status !== 200) throw new Error(`HTTP error! Status: ${response.status}`);
+    const data = response.data;
+    if (data?.repository?.provider !== "github" || data.repository.owner !== owner ||
+        data.repository.name !== repoName || !Array.isArray(data.branches) ||
+        !data.branches.every(branch => typeof branch === "string" && branch.trim().length > 0 && branch === branch.trim())) {
+      throw new Error("Invalid branches response");
+    }
+    return [...data.branches];
+  }
+
   async obtainBranchHistory(owner: string, repoName: string, branch: string): Promise<BranchHistory> {
     if (!branch.trim() || branch !== branch.trim()) throw new Error("Invalid branch");
     const response = await axios.get<BranchHistoryResponse>(`${this.backAPI}/branch-view`, {

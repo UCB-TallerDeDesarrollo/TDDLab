@@ -22,6 +22,29 @@ describe("CommitHistoryAdapter", () => {
     adapter = new CommitHistoryAdapter();
   });
 
+  describe('obtainBranches', () => {
+    const repository = { provider: 'github', owner: 'owner', name: 'repo' };
+    it.each([['main', 'feature/dynamic'], []])('returns registered branch names: %j', async (...branches) => {
+      mockedAxios.get.mockResolvedValue({ status: 200, data: { repository, branches } });
+      expect(await adapter.obtainBranches('owner', 'repo')).toEqual(branches);
+      expect(mockedAxios.get).toHaveBeenCalledWith(`${VITE_API}/TDDCycles/branches`, { params: { owner: 'owner', repoName: 'repo' } });
+    });
+    it.each([404, 500, 503])('preserves HTTP failure %s', async status => {
+      mockedAxios.get.mockRejectedValue({ response: { status } });
+      await expect(adapter.obtainBranches('owner', 'repo')).rejects.toMatchObject({ response: { status } });
+    });
+    it('rejects a non-200 response', async () => {
+      mockedAxios.get.mockResolvedValue({ status: 204, data: {} });
+      await expect(adapter.obtainBranches('owner', 'repo')).rejects.toThrow('HTTP error');
+    });
+    it.each([null, { repository, branches: null }, { repository, branches: [null] },
+      { repository, branches: [' '] }, { repository: { ...repository, owner: 'other' }, branches: ['main'] },
+      { repository: { ...repository, name: 'other' }, branches: ['main'] }])('rejects invalid or foreign data', async data => {
+      mockedAxios.get.mockResolvedValue({ status: 200, data });
+      await expect(adapter.obtainBranches('owner', 'repo')).rejects.toThrow('Invalid branches response');
+    });
+  });
+
   //el frontend ya no se encarga de ordenarlos de forma descendente por la fecha, ya lo recibe de esa manera desde el backend
   describe("obtainCommitsOfRepo", () => {
     it("debe retornar commits ordenados por fecha descendente", async () => {
@@ -249,6 +272,14 @@ describe.each(['initial', 'after-merge'])('real branch-view endpoint (%s)', scen
     expect(result.commits).toEqual(fixture.commits.map(commit => ({ ...commit, committedAt: new Date(commit.committedAt) })));
     expect(result.executions).toEqual(fixture.executions);
     expect(new Set(result.executions.map(execution => execution.eventId)).size).toBe(result.executions.length);
+  });
+
+  it('discovers branches over HTTP and loads each history without a hardcoded branch list', async () => {
+    const branches = await adapter.obtainBranches(main.repository.owner, main.repository.name);
+    expect(branches).toEqual(['main', 'rama-a', 'rama-b']);
+    const histories = await Promise.all(branches.map(branch => adapter.obtainBranchHistory(main.repository.owner, main.repository.name, branch)));
+    expect(histories.map(history => history.branch)).toEqual(branches);
+    expect(histories.every(history => history.commits.length > 0)).toBe(true);
   });
 
   it('returns the real backend 404 for an absent branch', async () => {

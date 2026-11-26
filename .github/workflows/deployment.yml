@@ -343,9 +343,14 @@ jobs:
           vercel link --yes --project tdd-lab-api-staging --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Staging
+        working-directory: server
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          TDD_DATABASE_URL: ${{ secrets.TDD_DATABASE_URL }}
+          TDD_SYNC_CREDENTIALS: ${{ secrets.TDD_SYNC_CREDENTIALS }}
+          TDD_SYNC_URL: ${{ vars.TDD_SYNC_URL }}
         run: |
-          cd ./server
-          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+          bash ./scripts/deploy-vercel.sh
   deploy_vercel_production:
     runs-on: ubuntu-latest
     environment:
@@ -393,6 +398,11 @@ jobs:
           vercel link --yes --project tdd-lab-api --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Production
+        working-directory: server
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          TDD_DATABASE_URL: ${{ secrets.TDD_DATABASE_URL }}
+          TDD_SYNC_CREDENTIALS: ${{ secrets.TDD_SYNC_CREDENTIALS }}
+          TDD_SYNC_URL: ${{ vars.TDD_SYNC_URL }}
         run: |
-          cd ./server
-          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} -y
+          bash ./scripts/deploy-vercel.sh

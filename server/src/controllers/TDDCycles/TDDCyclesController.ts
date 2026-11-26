@@ -87,6 +87,22 @@ class TDDCyclesController {
     }
   }
 
+  async getBranches(req: Request, res: Response) {
+    const { owner, repoName } = req.query;
+    if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+      return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+    }
+    try {
+      const result = await this.getCommitHistoryUseCase.executeBranches(owner, repoName);
+      if (result === undefined) return res.status(503).json({ error: "Branch history is not enabled" });
+      if (result === null) return res.status(404).json({ error: "Repository not found" });
+      return res.status(200).json(result);
+    } catch {
+      // Never expose raw database errors or connection details.
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+
   async getBranchHistory(req: Request, res: Response) {
     const { owner, repoName, branch } = req.query;
     if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName) ||
@@ -99,7 +115,15 @@ class TDDCyclesController {
       if (history === null) return res.status(404).json({ error: "Repository or branch not found" });
       return res.status(200).json(history);
     } catch (error) {
-      console.error("Error fetching branch history:", error);
+      const code = typeof error === "object" && error !== null && "code" in error
+        ? String(error.code) : "";
+      const diagnostic = /^[0-9A-Z]{5}$/.test(code) ||
+        ["ECONNREFUSED", "ECONNRESET", "ETIMEDOUT", "ENOTFOUND", "EAI_AGAIN", "SELF_SIGNED_CERT_IN_CHAIN", "UNABLE_TO_VERIFY_LEAF_SIGNATURE"].includes(code)
+        ? code
+        : error instanceof Error && /connection timeout|timeout exceeded/i.test(error.message)
+          ? "CONNECTION_TIMEOUT" : "UNCLASSIFIED";
+      // Log only a diagnostic code, never the raw error, SQL or connection URL.
+      console.error("Error fetching branch history:", diagnostic);
       return res.status(500).json({ error: "Server error" });
     }
   }

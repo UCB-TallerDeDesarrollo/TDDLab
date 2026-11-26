@@ -13,6 +13,14 @@ export class GetCommitHistoryUseCase {
     this.githubRepository = githubRepository;
   }
 
+  async executeBranches(owner: string, repoName: string) {
+    if (!this.historyRepository) return undefined;
+    const repository = { provider: "github", owner, name: repoName };
+    if (!await this.historyRepository.findRepository(repository)) return null;
+    const branches = await this.historyRepository.listBranches(repository);
+    return { repository, branches: branches.map(branch => branch.name) };
+  }
+
   async executeBranchHistory(owner: string, repoName: string, branch: string) {
     if (!this.historyRepository) return undefined;
     const repository = { provider: "github", owner, name: repoName };
