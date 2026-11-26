@@ -17,6 +17,7 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { BranchDTO, MergeDTO } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 
 function isStudent(role: string) {
   return role === "student";
@@ -75,6 +76,8 @@ export function useTDDChartPage({
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [branchesInfo, setBranchesInfo] = useState<BranchDTO[] | null>(null);
+  const [mergesInfo, setMergesInfo] = useState<MergeDTO[] | null>([]);
 
   const defaultMetric = getDefaultMetric(graphs);
 
@@ -113,6 +116,8 @@ export function useTDDChartPage({
         setCommitsInfo(visualizationData.commits);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
+        setBranchesInfo(visualizationData.branches);
+        setMergesInfo(visualizationData.merges);
       } catch (error) {
         console.error("Error obtaining data:", error);
       } finally {
@@ -172,6 +177,8 @@ export function useTDDChartPage({
       metric,
       setMetric,
       tddLogsInfo,
+      branchesInfo,
+      mergesInfo,
     },
     comments,
     currentIndex,

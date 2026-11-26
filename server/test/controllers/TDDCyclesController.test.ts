@@ -106,7 +106,7 @@ describe('TDDCyclesController', () => {
 
             expect(mockResponse.status).toHaveBeenCalledWith(200);
             expect(mockResponse.json).toHaveBeenCalledWith(expectedCommits);
-            expect(controller.getCommitHistoryUseCase.execute).toHaveBeenCalledWith('owner', 'repoName');
+            expect(controller.getCommitHistoryUseCase.execute).toHaveBeenCalledWith('owner', 'repoName', undefined);
         });
 
         it('should return 500 and an error message if an error is thrown', async () => {

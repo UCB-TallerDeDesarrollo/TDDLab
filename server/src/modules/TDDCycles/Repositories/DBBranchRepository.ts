@@ -15,22 +15,46 @@ import {
   TddExecutionRequest,
 } from "../Domain/InputModels";
 
+// Pool compartido a nivel de módulo para reutilizar conexiones SSL entre peticiones
+// y evitar el handshake de ~60s en cada request a Neon.
+const sharedPool = new Pool({
+  ...branchDbConfig,
+  idleTimeoutMillis: 30 * 60 * 1000, // 30 min
+  max: 10,
+  // No esperar más de 10s para obtener una conexión del pool
+  connectionTimeoutMillis: 10 * 1000,
+});
+
+// Manejar errores del pool sin lanzar excepciones no capturadas
+sharedPool.on("error", (err) => {
+  console.error("Unexpected pg pool error:", err.message);
+});
+
+// Warmup único al cargar el módulo
+let poolWarmed = false;
+function ensurePoolWarmed(): Promise<void> {
+  if (poolWarmed) {
+    return Promise.resolve();
+  }
+  poolWarmed = true;
+  return sharedPool
+    .query("SELECT 1")
+    .then(() => sharedPool.query("SELECT count(*) FROM tdd_repository"))
+    .then(() => sharedPool.query("SELECT count(*) FROM tdd_branch"))
+    .then(() => {
+      // Warmup completado
+    })
+    .catch(() => {
+      // Ignorar errores de warmup; la primera query real intentará reconectar
+    });
+}
+
 export class DBBranchRepository implements IBranchRepository {
   pool: Pool;
   constructor() {
-    this.pool = new Pool({
-      ...branchDbConfig,
-      idleTimeoutMillis: 30 * 60 * 1000, // 30 min
-      max: 10,
-    });
-    // Warmup: establecer la conexión SSL/TCP antes de la primera petición real
-    // para evitar que el primer request tarde varios segundos.
-    this.pool
-      .query("SELECT 1")
-      .then(() => this.pool.query("SELECT count(*) FROM tdd_repository"))
-      .catch(() => {
-        // Ignorar errores de warmup; la primera query real intentará reconectar
-      });
+    this.pool = sharedPool;
+    // Disparar warmup (no bloquear el constructor)
+    void ensurePoolWarmed();
   }
 
   private splitSlug(slug: string): { owner: string; repoName: string } {

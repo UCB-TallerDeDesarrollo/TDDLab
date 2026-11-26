@@ -1,5 +1,7 @@
 import { GetCommitTddCycle } from "../../../modules/TDDCycles-Visualization/application/GetCommitTddCycle";
 import { GetCommitsOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetCommitsOfRepo";
+import { GetBranchesOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetBranchesOfRepo";
+import { GetMergesOfRepo } from "../../../modules/TDDCycles-Visualization/application/GetMergesOfRepo";
 import { GetTDDLogs } from "../../../modules/TDDCycles-Visualization/application/GetTDDLogs";
 import { GetUserName } from "../../../modules/TDDCycles-Visualization/application/GetUserName";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
@@ -12,21 +14,29 @@ export async function fetchTDDVisualizationData(
   port: CommitHistoryRepository,
   repoOwner: string,
   repoName: string,
+  branch?: string,
 ): Promise<TDDVisualizationData> {
   const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
+  const getBranchesOfRepoUseCase = new GetBranchesOfRepo(port);
+  const getMergesOfRepoUseCase = new GetMergesOfRepo(port);
 
-  const [tddLogs, commits, commitsTddCycles] = await Promise.all([
-    getTDDLogsUseCase.execute(repoOwner, repoName),
-    getCommitsOfRepoUseCase.execute(repoOwner, repoName),
-    getCommitTddCycleUseCase.execute(repoOwner, repoName),
-  ]);
+  const [tddLogs, commits, commitsTddCycles, branches, merges] =
+    await Promise.all([
+      getTDDLogsUseCase.execute(repoOwner, repoName),
+      getCommitsOfRepoUseCase.execute(repoOwner, repoName, branch),
+      getCommitTddCycleUseCase.execute(repoOwner, repoName),
+      getBranchesOfRepoUseCase.execute(repoOwner, repoName),
+      getMergesOfRepoUseCase.execute(repoOwner, repoName),
+    ]);
 
   return {
     commits,
     commitsTddCycles,
     tddLogs,
+    branches,
+    merges,
   };
 }
 

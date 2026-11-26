@@ -1,5 +1,5 @@
 import { Octokit } from "octokit";
-import { CommitHistoryDTO } from "../domain/githubCommitInterfaces.ts";
+import { CommitHistoryDTO, BranchDTO, BranchHistoryDTO, MergeDTO } from "../domain/githubCommitInterfaces.ts";
 import { CommitHistoryRepository } from "../domain/CommitHistoryRepositoryInterface.ts";
 import { CommitCycleDTO } from "../domain/TddCycleInterface.ts";
 import axios from "axios";
@@ -86,11 +86,14 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
   async obtainCommitsOfRepo(
     owner: string,
     repoName: string,
+    branch?: string,
   ): Promise<CommitHistoryDTO[]> {
     try {
       // Now request our backend endpoint which centralizes this logic
       const url = `${this.backAPI}/commits-history`;
-      const response = await axios.get(url, { params: { owner, repoName } });
+      const response = await axios.get(url, {
+        params: { owner, repoName, ...(branch ? { branch } : {}) },
+      });
 
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -178,6 +181,66 @@ export class CommitHistoryAdapter implements CommitHistoryRepository {
         return [];
       }
       console.error("Error al obtener los logs TDD:", error);
+      throw error;
+    }
+  }
+
+  async obtainBranches(
+    owner: string,
+    repoName: string,
+  ): Promise<BranchDTO[]> {
+    try {
+      const url = `${this.backAPI}/branches/branches`;
+      const response = await axios.get(url, { params: { owner, repoName } });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return (response.data || []) as BranchDTO[];
+    } catch (error) {
+      console.error("Error obteniendo ramas:", error);
+      throw error;
+    }
+  }
+
+  async obtainBranchHistory(
+    owner: string,
+    repoName: string,
+    branch: string,
+  ): Promise<BranchHistoryDTO | null> {
+    try {
+      const url = `${this.backAPI}/branches/history`;
+      const response = await axios.get(url, {
+        params: { owner, repoName, branch },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return response.data as BranchHistoryDTO;
+    } catch (error) {
+      console.error("Error obteniendo historial de rama:", error);
+      throw error;
+    }
+  }
+
+  async obtainMerges(
+    owner: string,
+    repoName: string,
+  ): Promise<MergeDTO[]> {
+    try {
+      const url = `${this.backAPI}/branches/merges`;
+      const response = await axios.get(url, { params: { owner, repoName } });
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return (response.data || []) as MergeDTO[];
+    } catch (error) {
+      console.error("Error obteniendo merges:", error);
       throw error;
     }
   }

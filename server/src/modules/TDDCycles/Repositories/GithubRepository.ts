@@ -329,7 +329,13 @@ export class GithubRepository implements IGithubRepository {
   }
 
   async getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    let commitHistory: any[] = [];
+    try {
+      commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    } catch (error) {
+      console.error(`getCommitHistoryData: archivo commit-history.json no disponible, devolviendo vacío: ${error}`);
+      commitHistory = [];
+    }
     const repositorySlug = `${owner}/${repoName}`;
     const commits: CommitHistoryData[] = commitHistory.map((commitData: any) => {
       const parents = commitData.parents || [];
@@ -366,7 +372,13 @@ export class GithubRepository implements IGithubRepository {
   }
 
   async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {
-    const commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    let commitHistory: any[] = [];
+    try {
+      commitHistory = await this.fetchCommitHistoryJson(owner, repoName);
+    } catch (error) {
+      console.error(`getCommitCyclesData: archivo commit-history.json no disponible, devolviendo vacío: ${error}`);
+      commitHistory = [];
+    }
     const repositorySlug = `${owner}/${repoName}`;
     return commitHistory.map((commitData: any) => ({
       repository_slug: repositorySlug,
@@ -385,10 +397,9 @@ export class GithubRepository implements IGithubRepository {
       );
       return response.status === 200;
     } catch (error: any) {
-      if (error.status === 404) {
-        return false;
-      }
-      throw error;
+      // Cualquier error (404, 403 rate limit, 500, red de GitHub) se trata como "no es new gen"
+      // y se usa el camino legacy (JSON) para no romper el flujo.
+      return false;
     }
   }
 }

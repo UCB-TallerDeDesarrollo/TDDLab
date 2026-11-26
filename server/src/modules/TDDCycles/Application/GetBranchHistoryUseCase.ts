@@ -17,9 +17,17 @@ export class GetBranchHistoryUseCase {
       const useNewGen = await this.githubRepository.checkNewGenFile(owner, repoName);
 
       if (useNewGen) {
-        return await this.branchRepository.getBranchHistory(owner, repoName, branch);
+        try {
+          return await this.branchRepository.getBranchHistory(owner, repoName, branch);
+        } catch (newGenError) {
+          console.error(
+            `New gen branch history failed: ${newGenError}`
+          );
+          return null;
+        }
       }
 
+      // Legacy: archivo commit-history.json de GitHub (ya maneja 404 devolviendo [])
       const commitHistory = await this.githubRepository.getCommitHistoryData(owner, repoName);
       const branchCommits = commitHistory.filter((c) => c.branch === branch);
       const defaultBranch: BranchData = {
@@ -38,7 +46,7 @@ export class GetBranchHistoryUseCase {
       };
     } catch (error) {
       console.error(`Error executing GetBranchHistoryUseCase: ${error}`);
-      throw error;
+      return null;
     }
   }
 }

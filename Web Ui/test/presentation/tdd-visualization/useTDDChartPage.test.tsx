@@ -17,6 +17,8 @@ jest.mock("../../../src/presentation/tdd-visualization/services/tddVisualization
     commits: [],
     commitsTddCycles: [],
     tddLogs: [],
+    branches: [],
+    merges: [],
   }),
 }));
 
@@ -31,6 +33,9 @@ const port: CommitHistoryRepository = {
   obtainUserName: jest.fn().mockResolvedValue("Teacher"),
   obtainCommitTddCycle: jest.fn().mockResolvedValue([]),
   obtainTDDLogs: jest.fn().mockResolvedValue([]),
+  obtainBranches: jest.fn().mockResolvedValue([]),
+  obtainBranchHistory: jest.fn().mockResolvedValue(null),
+  obtainMerges: jest.fn().mockResolvedValue([]),
 };
 
 function ChartNavigationHarness() {

@@ -2,6 +2,9 @@ import { CommitHistoryRepository } from "../../../../src/modules/TDDCycles-Visua
 import {
   CommitDataObject,
   CommitHistoryDTO,
+  BranchDTO,
+  BranchHistoryDTO,
+  MergeDTO,
 } from "../../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import {
   CommitCycleDTO,
@@ -65,6 +68,18 @@ export class MockGithubAPI implements CommitHistoryRepository {
     const tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
+
+  async obtainBranches(): Promise<BranchDTO[]> {
+    return [];
+  }
+
+  async obtainBranchHistory(): Promise<BranchHistoryDTO | null> {
+    return null;
+  }
+
+  async obtainMerges(): Promise<MergeDTO[]> {
+    return [];
+  }
 }
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
@@ -86,6 +101,18 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
     const tddLogs: TDDLogEntry[] = [];
     return tddLogs;
   }
+
+  async obtainBranches(): Promise<BranchDTO[]> {
+    return [];
+  }
+
+  async obtainBranchHistory(): Promise<BranchHistoryDTO | null> {
+    return null;
+  }
+
+  async obtainMerges(): Promise<MergeDTO[]> {
+    return [];
+  }
 }
 
 export class MockGithubAPIError implements CommitHistoryRepository {
@@ -103,6 +130,18 @@ export class MockGithubAPIError implements CommitHistoryRepository {
 
   async obtainTDDLogs(): Promise<TDDLogEntry[]> {
     throw new Error("no TDD logs");
+  }
+
+  async obtainBranches(): Promise<BranchDTO[]> {
+    throw new Error("no branches");
+  }
+
+  async obtainBranchHistory(): Promise<BranchHistoryDTO | null> {
+    throw new Error("no branch history");
+  }
+
+  async obtainMerges(): Promise<MergeDTO[]> {
+    throw new Error("no merges");
   }
 }
 

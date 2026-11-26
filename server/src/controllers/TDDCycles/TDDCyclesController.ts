@@ -7,6 +7,7 @@ import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTe
 import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLogUseCase";
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
 import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
+import { DBBranchRepository } from "../../modules/TDDCycles/Repositories/DBBranchRepository";
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
@@ -43,8 +44,15 @@ class TDDCyclesController {
     this.getCommitExecutions = new GetCommitTimeLineUseCase(
       dbJobsRepository,
     );
-    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository);
-    this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
+    const dbBranchRepository = new DBBranchRepository();
+    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(
+      githubRepository,
+      dbBranchRepository,
+    );
+    this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(
+      githubRepository,
+      dbBranchRepository,
+    );
     this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
   }
@@ -94,6 +102,15 @@ class TDDCyclesController {
     );
   }
 
+  isValidBranchName(value: unknown): value is string {
+    return (
+      typeof value === "string" &&
+      value.length > 0 &&
+      value.length <= 100 &&
+      /^[A-Za-z0-9._/-]+$/.test(value)
+    );
+  }
+
   //SÍ SE USA
   // New: proxy and map commit-history.json from GitHub (frontend logic moved server-side)
   async getCommitHistory(req: Request, res: Response) {
@@ -113,10 +130,21 @@ class TDDCyclesController {
         });
       }
 
-      const owner = ownerRaw; 
+      const owner = ownerRaw;
       const repoName = repoNameRaw;
+      const branchRaw = req.query.branch;
 
-      const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName));
+      if (branchRaw && !this.isValidBranchName(branchRaw)) {
+        return res.status(400).json({
+          error: "Bad request, invalid branch",
+        });
+      }
+
+      const commits = await this.getCommitHistoryUseCase.execute(
+        String(owner),
+        String(repoName),
+        branchRaw ? String(branchRaw) : undefined
+      );
       return res.status(200).json(commits);
     } catch (error) {
       console.error("Error fetching commit history:", error);

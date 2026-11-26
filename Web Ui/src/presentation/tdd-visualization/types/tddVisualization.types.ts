@@ -3,6 +3,7 @@ import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualizatio
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { BranchDTO, MergeDTO } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommentDataObject } from "../../../modules/teacherCommentsOnSubmissions/domain/CommentsInterface";
 import type { TeacherSubmission } from "../../../shared/types/teacherSubmission";
 
@@ -19,6 +20,8 @@ export interface TDDVisualizationData {
   commits: CommitDataObject[];
   commitsTddCycles: CommitCycle[];
   tddLogs: TDDLogEntry[];
+  branches: BranchDTO[];
+  merges: MergeDTO[];
 }
 
 export interface TDDCommentsData {
@@ -32,6 +35,8 @@ export interface TDDChartsState {
   metric: string | null;
   setMetric: Dispatch<SetStateAction<string | null>>;
   tddLogsInfo: TDDLogEntry[] | null;
+  branchesInfo: BranchDTO[] | null;
+  mergesInfo: MergeDTO[] | null;
 }
 
 export interface TDDExecutionView {

@@ -1,5 +1,5 @@
 import { CommitHistoryRepository } from "../../../src/modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import { CommitHistoryDTO } from "../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { CommitHistoryDTO, BranchDTO, BranchHistoryDTO, MergeDTO } from "../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycleDTO } from "../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import {
   CommitLog,
@@ -261,6 +261,66 @@ const COMMIT_CYCLES: CommitCycleDTO[] = [
   },
 ];
 
+const MOCK_BRANCHES: BranchDTO[] = [
+  {
+    repository_slug: `${MOCK_OWNER}/${MOCK_REPOSITORY}`,
+    name: "main",
+    fork_commit_sha: MAIN_HEAD_SHA,
+    created_at: "2026-11-25T04:00:00.000Z",
+    commit_count: 2,
+    last_commit_sha: MAIN_HEAD_SHA,
+    last_commit_at: "2026-11-25T04:00:00.000Z",
+    merge_into: "",
+  },
+  {
+    repository_slug: `${MOCK_OWNER}/${MOCK_REPOSITORY}`,
+    name: "feature/login",
+    fork_commit_sha: "e4f5g6h",
+    created_at: "2026-11-25T05:00:00.000Z",
+    commit_count: 1,
+    last_commit_sha: "e4f5g6h",
+    last_commit_at: "2026-11-25T05:00:00.000Z",
+    merge_into: "main",
+  },
+  {
+    repository_slug: `${MOCK_OWNER}/${MOCK_REPOSITORY}`,
+    name: "feature/profile",
+    fork_commit_sha: "i7j8k9l",
+    created_at: "2026-11-25T06:00:00.000Z",
+    commit_count: 1,
+    last_commit_sha: "i7j8k9l",
+    last_commit_at: "2026-11-25T06:00:00.000Z",
+    merge_into: "",
+  },
+  {
+    repository_slug: `${MOCK_OWNER}/${MOCK_REPOSITORY}`,
+    name: "fix/validation",
+    fork_commit_sha: "m1n2o3p",
+    created_at: "2026-11-25T07:00:00.000Z",
+    commit_count: 1,
+    last_commit_sha: "m1n2o3p",
+    last_commit_at: "2026-11-25T07:00:00.000Z",
+    merge_into: "",
+  },
+];
+
+const MOCK_BRANCH_HISTORY: BranchHistoryDTO = {
+  branch: MOCK_BRANCHES[0],
+  commits: COMMIT_HISTORY.filter((c) => c.branch === "main"),
+};
+
+const MOCK_MERGES: MergeDTO[] = [
+  {
+    repository_slug: `${MOCK_OWNER}/${MOCK_REPOSITORY}`,
+    source_branch: "feature/login",
+    target_branch: "main",
+    source_commit_sha: "e4f5g6h",
+    merge_commit_sha: MAIN_HEAD_SHA,
+    is_fast_forward: true,
+    merged_at: "2026-11-25T05:30:00.000Z",
+  },
+];
+
 export class MockCommitHistoryRepository implements CommitHistoryRepository {
   async obtainCommitsOfRepo(): Promise<CommitHistoryDTO[]> {
     return [...COMMIT_HISTORY]
@@ -285,5 +345,17 @@ export class MockCommitHistoryRepository implements CommitHistoryRepository {
 
   async obtainTDDLogs(): Promise<TDDLogEntry[]> {
     return TDD_LOGS.map((entry) => ({ ...entry }));
+  }
+
+  async obtainBranches(): Promise<BranchDTO[]> {
+    return [...MOCK_BRANCHES];
+  }
+
+  async obtainBranchHistory(): Promise<BranchHistoryDTO | null> {
+    return MOCK_BRANCH_HISTORY;
+  }
+
+  async obtainMerges(): Promise<MergeDTO[]> {
+    return [...MOCK_MERGES];
   }
 }

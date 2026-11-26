@@ -1,6 +1,7 @@
 import type {
   CommitDataObject,
 } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import type { TddExecution } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import type {
   CommitCycle,
 } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
@@ -21,6 +22,7 @@ type DashboardCommitSource = CommitDataObject & {
   branch?: string;
   parent_sha?: string | null;
   author?: string;
+  tddExecutions?: TddExecution[];
 };
 
 type DashboardCycleSource = CommitCycle & {
@@ -102,6 +104,28 @@ function toExecutionView(
   };
 }
 
+function toExecutionViewFromBackendExecution(
+  execution: TddExecution,
+  commitSha: string,
+  index: number,
+): TDDExecutionView {
+  const passed = execution.testsFailed === 0 && execution.testsTotal > 0;
+
+  return {
+    testId: index,
+    timestamp: toTimestamp(execution.executedAt),
+    passed,
+    passedTests: execution.testsPassed,
+    failedTests: execution.testsFailed,
+    totalTests: execution.testsTotal,
+    detail:
+      `Ejecución ${passed ? "exitosa" : "con fallos"}: ` +
+      `${execution.testsPassed} pruebas exitosas, ` +
+      `${execution.testsFailed} fallidas de ${execution.testsTotal}. ` +
+      `Commit: ${commitSha}.`,
+  };
+}
+
 export function buildTDDDashboardViewModel(
   commits: CommitDataObject[],
   cycles: CommitCycle[],
@@ -127,9 +151,18 @@ export function buildTDDDashboardViewModel(
       | DashboardCycleSource
       | undefined;
     const rawExecutions = executionsBySha.get(source.sha) ?? [];
-    const executions = rawExecutions.map((execution) =>
-      toExecutionView(execution, source.sha),
+
+    // Ejecuciones desde tddExecutions del backend (nuevo modelo de ramas)
+    const backendExecutions = (source.tddExecutions ?? []).map((exec, idx) =>
+      toExecutionViewFromBackendExecution(exec, source.sha, idx),
     );
+
+    const executions = [
+      ...rawExecutions.map((execution) =>
+        toExecutionView(execution, source.sha),
+      ),
+      ...backendExecutions,
+    ];
 
     const commitView: TDDCommitView = {
       sha: source.sha,
