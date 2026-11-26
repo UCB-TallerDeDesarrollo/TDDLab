@@ -9,7 +9,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { NoteAdd } from "@mui/icons-material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useMemo } from "react";
 import {
   setGlobalState,
   useGlobalState,
@@ -93,8 +93,24 @@ function App() {
   const isAuthenticated = Boolean(authData.userEmail);
   const isRootPath = globalThis.location.pathname === "/";
   const isPublicLandingPath = globalThis.location.pathname === "/landing";
+  const graphParams = new URLSearchParams(globalThis.location.search);
+  const isBL02DemoGraph =
+    import.meta.env.DEV &&
+    globalThis.location.pathname === "/graph" &&
+    graphParams.get("repoOwner")?.toLowerCase() === "equipo-tddlab" &&
+    graphParams.get("repoName")?.toLowerCase() === "ejemplo-sprint4";
   const hasSessionHint =
     localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
+  const branchHistoryAdapter = useMemo(() => new CommitHistoryAdapter(), []);
+  const graphPage = (
+    <TDDChartPage
+      port={branchHistoryAdapter}
+      branchHistoryPort={branchHistoryAdapter}
+      role={isBL02DemoGraph ? "student" : authData.userRole ?? ""}
+      teacher_id={isBL02DemoGraph ? -1 : authData.userid ?? -1}
+      graphs="graph"
+    />
+  );
 
   useEffect(() => {
     getSessionCookie().then((storedSession) => {
@@ -131,7 +147,7 @@ function App() {
     });
   }, []);
 
-  if (!isAuthResolved && !isPublicLandingPath && (!isRootPath || hasSessionHint)) {
+  if (!isAuthResolved && !isPublicLandingPath && !isBL02DemoGraph && (!isRootPath || hasSessionHint)) {
     return (
       <div
         style={{
@@ -261,16 +277,9 @@ function App() {
 
           <Route
             path="/graph"
-            element={
-              <ProtectedRouteComponent>
-                <TDDChartPage
-                  port={new CommitHistoryAdapter()}
-                  role={authData.userRole ?? ""}
-                  teacher_id={authData.userid ?? -1}
-                  graphs="graph"
-                />
-              </ProtectedRouteComponent>
-            }
+            element={isBL02DemoGraph ? graphPage : (
+              <ProtectedRouteComponent>{graphPage}</ProtectedRouteComponent>
+            )}
           />
 
           <Route

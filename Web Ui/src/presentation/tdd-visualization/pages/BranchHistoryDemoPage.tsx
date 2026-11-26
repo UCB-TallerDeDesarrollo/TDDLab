@@ -6,6 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import BranchHistoryChart from "../components/BranchHistoryChart";
 import CommitHistoryMetricsChart from "../components/CommitHistoryMetricsChart";
+import { branchHistoryMock } from "../mocks/branchHistoryMock";
 import { CommitHistoryAdapter } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import type { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import type {
@@ -45,7 +46,11 @@ export default function BranchHistoryDemoPage() {
       })
       .catch((loadError: unknown) => {
         if (!active) return;
-        setError(loadError instanceof Error ? loadError.message : "No se pudo cargar el historial de ramas.");
+        const message = loadError instanceof Error ? loadError.message : "No se pudo cargar el historial de ramas.";
+        // Si el backend no responde, se usa el fixture de ejemplo para que la
+        // gráfica siga siendo visible.
+        setError(`${message} Se muestran datos de ejemplo.`);
+        setHistory(branchHistoryMock);
       });
 
     return () => {

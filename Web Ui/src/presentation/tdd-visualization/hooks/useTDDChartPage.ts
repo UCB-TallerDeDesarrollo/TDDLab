@@ -51,8 +51,8 @@ export function useTDDChartPage({
   const navigate = useNavigate();
   const studentRole = isStudent(role);
   const isTeacherView = role !== "student";
-  const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
-  const repoName = String(searchParams.get("repoName")) || "defaultRepo";
+  const repoOwner = searchParams.get("repoOwner") || "defaultOwner";
+  const repoName = searchParams.get("repoName") || "defaultRepo";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
   const assignmentId = Number.parseInt(searchParams.get("assignmentId") || "0");
   const fetchedSubmissions: Submission[] = isTeacherView
@@ -185,6 +185,7 @@ export function useTDDChartPage({
     isStudent: studentRole,
     loading,
     ownerName,
+    repoOwner,
     repoName,
     role,
     setFeedback,

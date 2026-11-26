@@ -3,22 +3,127 @@ import { useEffect, useRef, useState } from "react";
 import { PropagateLoader } from "react-spinners";
 import TDDCharts from "../components/TDDChart";
 import BranchHistoryChart from "../components/BranchHistoryChart";
+import type { BranchHistories, BranchHistory } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 
 import "../styles/TDDChartPageStyles.css";
 import { useTDDChartPage } from "../hooks/useTDDChartPage";
 import { CycleReportViewProps } from "../types/tddVisualization.types";
 
+const BL02_DEMO_REPOSITORY = {
+  owner: "equipo-tddlab",
+  repoName: "ejemplo-sprint4",
+};
+const BL02_DEMO_BRANCHES = ["main", "rama-a", "rama-b"];
+
+function isBL02DemoRepository(owner: string, repoName: string) {
+  return owner.toLowerCase() === BL02_DEMO_REPOSITORY.owner &&
+    repoName.toLowerCase() === BL02_DEMO_REPOSITORY.repoName;
+}
+
+type BranchHistoryLoadState =
+  | { status: "idle" | "loading" }
+  | { status: "empty"; message: string }
+  | { status: "error"; message: string }
+  | { status: "ready"; history: BranchHistories };
+
+function hasTestResults(branches: BranchHistory[]) {
+  const executions = branches.flatMap(branch => branch.executions);
+  return branches.some(branch => branch.commits.some(commit =>
+    commit.metrics?.numTotalTests != null || executions.some(execution =>
+      execution.associatedCommitSha === commit.sha && execution.numTotalTests != null,
+    ),
+  ));
+}
+
+function isNotFoundError(error: unknown) {
+  return typeof error === "object" && error !== null && "response" in error &&
+    typeof error.response === "object" && error.response !== null &&
+    "status" in error.response && error.response.status === 404;
+}
+
 function TDDChartPage(props: Readonly<CycleReportViewProps>) {
   const tddPage = useTDDChartPage(props);
   const { chartsState } = tddPage;
-  const [showTestCountChart, setShowTestCountChart] = useState(false);
+  const usesBL02DemoRepository = isBL02DemoRepository(tddPage.repoOwner, tddPage.repoName);
+  const [showTestCountChart, setShowTestCountChart] = useState(usesBL02DemoRepository);
+  const [branchHistoryState, setBranchHistoryState] = useState<BranchHistoryLoadState>({ status: "idle" });
   const testCountChartRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setShowTestCountChart(usesBL02DemoRepository);
+  }, [usesBL02DemoRepository]);
 
   useEffect(() => {
     if (showTestCountChart && testCountChartRef.current) {
       testCountChartRef.current.scrollIntoView?.({ behavior: "smooth", block: "start" });
     }
   }, [showTestCountChart]);
+
+  useEffect(() => {
+    if (!showTestCountChart) return;
+
+    let active = true;
+    setBranchHistoryState({ status: "loading" });
+
+    if (!usesBL02DemoRepository) {
+      setBranchHistoryState({
+        status: "empty",
+        message: "No hay historial TDD disponible para este repositorio.",
+      });
+      return () => { active = false; };
+    }
+
+    const branchHistoryPort = props.branchHistoryPort;
+    if (!branchHistoryPort) {
+      setBranchHistoryState({
+        status: "error",
+        message: "No está configurado el adaptador del historial de ramas.",
+      });
+      return () => { active = false; };
+    }
+
+    Promise.all(BL02_DEMO_BRANCHES.map(branch =>
+      branchHistoryPort.obtainBranchHistory(tddPage.repoOwner, tddPage.repoName, branch),
+    )).then((branches: BranchHistory[]) => {
+      if (!active) return;
+      if (!branches.some(branch => branch.commits.length > 0)) {
+        setBranchHistoryState({
+          status: "empty",
+          message: "No hay historial TDD disponible para este repositorio.",
+        });
+        return;
+      }
+      if (!hasTestResults(branches)) {
+        setBranchHistoryState({
+          status: "empty",
+          message: "No hay resultados de pruebas asociados a los commits de este repositorio.",
+        });
+        return;
+      }
+
+      setBranchHistoryState({
+        status: "ready",
+        history: { repository: branches[0].repository, branches },
+      });
+    }).catch((error: unknown) => {
+      if (!active) return;
+      if (isNotFoundError(error)) {
+        setBranchHistoryState({
+          status: "empty",
+          message: "No hay historial TDD disponible para este repositorio.",
+        });
+        return;
+      }
+      setBranchHistoryState({
+        status: "error",
+        message: error instanceof Error
+          ? `No se pudo cargar el historial TDD: ${error.message}`
+          : "No se pudo cargar el historial TDD.",
+      });
+    });
+
+    return () => { active = false; };
+  }, [props.branchHistoryPort, showTestCountChart, tddPage.repoName, tddPage.repoOwner, usesBL02DemoRepository]);
 
   return (
     <div className="container">
@@ -33,7 +138,7 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && (
+      {!tddPage.loading && !chartsState.commitsInfo?.length && !usesBL02DemoRepository && (
         <div className="error-message" data-testid="errorMessage">
           Error: Verifica que el repositorio utilice la rama "main". Actualmente,
           TDDLab no puede cargar los datos si la rama principal es "master"
@@ -92,63 +197,47 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </React.Fragment>
       )}
 
-      {!tddPage.loading && !!chartsState.commitsInfo?.length && props.graphs === "graph" && (
+      {props.graphs === "graph" && (
         <React.Fragment>
-          <button
-            type="button"
-            aria-expanded={showTestCountChart}
-            aria-controls="total-test-count-chart"
-            onClick={() => setShowTestCountChart(true)}
-            style={{
-              margin: "16px auto",
-              border: 0,
-              borderRadius: 8,
-              padding: "12px 20px",
-              background: "#2563EB",
-              color: "#fff",
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            Ver gráfica: Total Número de Tests
-          </button>
-          <div id="total-test-count-chart" ref={testCountChartRef} style={{ width: "100%" }}>
-            {showTestCountChart && (
-              <BranchHistoryChart
-                  history={{
-                    repository: { provider: "github", owner: "mock", name: "mock" },
-                    branches: [
-                      {
-                        repository: { provider: "github", owner: "mock", name: "mock" },
-                        branch: "main",
-                        commits: [
-                          { sha: "1111111", parentShas: [], message: "Crear implementación inicial", committedAt: new Date("2024-01-01"), stats: { additions: 10, deletions: 5, total: 15 }, metrics: { executionEventId: null, numPassedTests: 2, failedTests: 0, numTotalTests: 2, coveragePercentage: 80, conclusion: "success" } },
-                          { sha: "3333333", parentShas: [], message: "Agregar escenario de rama-b", committedAt: new Date("2024-01-03"), stats: { additions: 5, deletions: 2, total: 7 }, metrics: { executionEventId: null, numPassedTests: 4, failedTests: 0, numTotalTests: 4, coveragePercentage: 90, conclusion: "success" } },
-                        ],
-                        executions: [],
-                      },
-                      {
-                        repository: { provider: "github", owner: "mock", name: "mock" },
-                        branch: "rama-a",
-                        commits: [
-                          { sha: "1111111", parentShas: [], message: "Crear implementación inicial", committedAt: new Date("2024-01-01"), stats: { additions: 10, deletions: 5, total: 15 }, metrics: { executionEventId: null, numPassedTests: 2, failedTests: 0, numTotalTests: 2, coveragePercentage: 80, conclusion: "success" } },
-                          { sha: "2222222", parentShas: [], message: "Agregar escenario de rama-a", committedAt: new Date("2024-01-02"), stats: { additions: 8, deletions: 3, total: 11 }, metrics: { executionEventId: null, numPassedTests: 3, failedTests: 0, numTotalTests: 3, coveragePercentage: 85, conclusion: "success" } },
-                        ],
-                        executions: [],
-                      },
-                      {
-                        repository: { provider: "github", owner: "mock", name: "mock" },
-                        branch: "rama-b",
-                        commits: [
-                          { sha: "1111111", parentShas: [], message: "Crear implementación inicial", committedAt: new Date("2024-01-01"), stats: { additions: 10, deletions: 5, total: 15 }, metrics: { executionEventId: null, numPassedTests: 2, failedTests: 0, numTotalTests: 2, coveragePercentage: 80, conclusion: "success" } },
-                          { sha: "3333333", parentShas: [], message: "Agregar escenario de rama-b", committedAt: new Date("2024-01-03"), stats: { additions: 5, deletions: 2, total: 7 }, metrics: { executionEventId: null, numPassedTests: 4, failedTests: 0, numTotalTests: 4, coveragePercentage: 90, conclusion: "success" } },
-                        ],
-                        executions: [],
-                      },
-                    ],
-                  }}
-                />
+          {!usesBL02DemoRepository && (
+            <button
+              type="button"
+              aria-expanded={showTestCountChart}
+              aria-controls="total-test-count-chart"
+              onClick={() => setShowTestCountChart(true)}
+              style={{
+                margin: "16px auto",
+                border: 0,
+                borderRadius: 8,
+                padding: "12px 20px",
+                background: "#2563EB",
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Ver gráfica: Total Número de Tests
+            </button>
+          )}
+          <div id="total-test-count-chart" ref={testCountChartRef} style={{ width: "80%" }}>
+            {branchHistoryState.status === "loading" && (
+              <div role="status" style={{ display: "flex", justifyContent: "center", padding: 24 }}>
+                <PropagateLoader color="#36d7b7" />
+              </div>
+            )}
+            {branchHistoryState.status === "empty" && (
+              <p role="status" style={{ textAlign: "center", padding: 16 }}>
+                {branchHistoryState.message}
+              </p>
+            )}
+            {branchHistoryState.status === "error" && (
+              <p role="alert" style={{ textAlign: "center", padding: 16 }}>
+                {branchHistoryState.message}
+              </p>
+            )}
+            {branchHistoryState.status === "ready" && (
+              <BranchHistoryChart history={branchHistoryState.history} />
             )}
           </div>
         </React.Fragment>

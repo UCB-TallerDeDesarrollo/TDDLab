@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import { BranchHistoryRepository, CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
@@ -8,6 +8,7 @@ import type { TeacherSubmission } from "../../../shared/types/teacherSubmission"
 
 export interface CycleReportViewProps {
   port: CommitHistoryRepository;
+  branchHistoryPort?: BranchHistoryRepository;
   role: string;
   teacher_id: number;
   graphs: string;
