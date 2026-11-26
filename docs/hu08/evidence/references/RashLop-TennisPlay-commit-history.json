@@ -1,0 +1,173 @@
+[
+  {
+    "sha": "c71329970c4bbe4d0a5378c46449d30ae519ae05",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-08-28T13:36:08.000Z",
+      "message": "feat: marcador de tennis inicializado en love -love",
+      "url": "https://github.com/RashLop/TennisPlay/commit/c71329970c4bbe4d0a5378c46449d30ae519ae05"
+    },
+    "stats": {
+      "total": 29187,
+      "additions": 13,
+      "deletions": 29174,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 2,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "aa2080b7802d386570388584d58b1ddab9b18a0e",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-08-28T13:39:16.000Z",
+      "message": "docs: se devolvieron los documentos eliminados",
+      "url": "https://github.com/RashLop/TennisPlay/commit/aa2080b7802d386570388584d58b1ddab9b18a0e"
+    },
+    "stats": {
+      "total": 29175,
+      "additions": 29175,
+      "deletions": 0,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 2,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "352b13316af8f222b21a713f6854d6e0061232d4",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-08-28T14:16:58.000Z",
+      "message": "refactoring: Ahora se encapsula los puntajes para solo mostrar el contador",
+      "url": "https://github.com/RashLop/TennisPlay/commit/352b13316af8f222b21a713f6854d6e0061232d4"
+    },
+    "stats": {
+      "total": 47,
+      "additions": 39,
+      "deletions": 8,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 4,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "56c8be2655dff7745f631ae903d2d4a4e1dafb87",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-08-28T14:18:01.000Z",
+      "message": "refactoring: Se han cambiado las descripciones de los test para mas claridad del codigo",
+      "url": "https://github.com/RashLop/TennisPlay/commit/56c8be2655dff7745f631ae903d2d4a4e1dafb87"
+    },
+    "stats": {
+      "total": 4,
+      "additions": 2,
+      "deletions": 2,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 4,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "4350be17c3a8b76da1752c03d20419127eabd49b",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-08-28T14:21:16.000Z",
+      "message": "feat: El jugador 1 marca 3 puntos y el jugador 2 en 0",
+      "url": "https://github.com/RashLop/TennisPlay/commit/4350be17c3a8b76da1752c03d20419127eabd49b"
+    },
+    "stats": {
+      "total": 18,
+      "additions": 16,
+      "deletions": 2,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 5,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "b330a3867a8808b72d0f3cee12f5e45e4e5390e0",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-09-01T19:28:15.000Z",
+      "message": "refactor: Se ha cambiado la estructura del codigo para evitar el uso de varios condicionales, tambien ahora el jugador 2 puede hacer sus puntos junto a los del jugador 1",
+      "url": "https://github.com/RashLop/TennisPlay/commit/b330a3867a8808b72d0f3cee12f5e45e4e5390e0"
+    },
+    "stats": {
+      "total": 36,
+      "additions": 19,
+      "deletions": 17,
+      "date": "2025-09-01"
+    },
+    "coverage": 100,
+    "test_count": 6,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "87e05e9bfc05914bde8cee2415d31984164b4eab",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-09-01T19:41:55.000Z",
+      "message": "feat: Funcion de deuce agregada, ahora cuando los dos jugadores empaten se declara Deuce",
+      "url": "https://github.com/RashLop/TennisPlay/commit/87e05e9bfc05914bde8cee2415d31984164b4eab"
+    },
+    "stats": {
+      "total": 29,
+      "additions": 28,
+      "deletions": 1,
+      "date": "2025-09-01"
+    },
+    "coverage": 100,
+    "test_count": 8,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "736849457efb97a9046cd1caa23d0e341231e82d",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-09-02T09:37:41.000Z",
+      "message": "feat: ahora se contemplan los casos de advantage y game to para los jugadores, ademas del codigo html y en el presenter",
+      "url": "https://github.com/RashLop/TennisPlay/commit/736849457efb97a9046cd1caa23d0e341231e82d"
+    },
+    "stats": {
+      "total": 96,
+      "additions": 69,
+      "deletions": 27,
+      "date": "2025-09-02"
+    },
+    "coverage": 5.26,
+    "test_count": 10,
+    "failed_tests": 9,
+    "conclusion": "failure"
+  },
+  {
+    "sha": "HEAD",
+    "author": "RashLop",
+    "commit": {
+      "date": "2025-09-08T14:20:20.000Z",
+      "message": "refact: Se ha cambiado el codigo del metodo Showscore, como tal a metodos cuaternarios para evitar redundancia de codigo con las estructuras condicionales",
+      "url": "https://github.com/RashLop/TennisPlay/commit/HEAD"
+    },
+    "stats": {
+      "total": 81,
+      "additions": 44,
+      "deletions": 37,
+      "date": "2025-09-08"
+    },
+    "coverage": 100,
+    "test_count": 12,
+    "failed_tests": 0,
+    "conclusion": "success"
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "author": "Andrés QA HU08",
+    "stats": {
+      "total": 4,
+      "additions": 3,
+      "deletions": 1,
+      "date": "2026-11-25T14:00:00.000Z"
+    },
+    "commit": {
+      "date": "2026-11-25T14:00:00.000Z",
+      "message": "HU08 tests aprobados",
+      "url": "https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "comment_count": 0
+    },
+    "coverage": 100,
+    "test_count": 2,
+    "failed_tests": 0,
+    "conclusion": "success",
+    "tdd_cycle": "Verde",
+    "qaMetadata": {
+      "unicode": "migración íntegra",
+      "zero": 0,
+      "active": false
+    }
+  },
+  {
+    "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "author": "Andrés QA HU08",
+    "stats": {
+      "total": 5,
+      "additions": 4,
+      "deletions": 1,
+      "date": "2026-11-25T14:01:00.000Z"
+    },
+    "commit": {
+      "date": "2026-11-25T14:01:00.000Z",
+      "message": "HU08 tests fallidos",
+      "url": "https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "comment_count": 0
+    },
+    "coverage": 0,
+    "test_count": 2,
+    "failed_tests": 1,
+    "conclusion": "failure",
+    "tdd_cycle": "Rojo",
+    "qaMetadata": {
+      "unicode": "migración íntegra",
+      "zero": 0,
+      "active": false
+    }
+  },
+  {
+    "sha": "cccccccccccccccccccccccccccccccccccccccc",
+    "author": "Andrés QA HU08",
+    "stats": {
+      "total": 6,
+      "additions": 5,
+      "deletions": 1,
+      "date": "2026-11-25T14:02:00.000Z"
+    },
+    "commit": {
+      "date": "2026-11-25T14:02:00.000Z",
+      "message": "HU08 sin tests",
+      "url": "https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/cccccccccccccccccccccccccccccccccccccccc",
+      "comment_count": 0
+    },
+    "coverage": 0,
+    "test_count": 0,
+    "failed_tests": 0,
+    "conclusion": "skipped",
+    "tdd_cycle": "null",
+    "qaMetadata": {
+      "unicode": "migración íntegra",
+      "zero": 0,
+      "active": false
+    }
+  }
+]

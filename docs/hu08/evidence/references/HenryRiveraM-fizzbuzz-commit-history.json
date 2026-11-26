@@ -1,0 +1,97 @@
+[
+  {
+    "sha": "e95213c00bd46d89723b5c47edd241b55cbd46fc",
+    "author": "Henry Alejandro Rivera Mendez",
+    "commit": {
+      "date": "2025-08-28T02:51:24.000Z",
+      "message": "feat: agregando lo avanzado en clase",
+      "url": "https://github.com/HenryRiveraM/fizzbuzz/commit/e95213c00bd46d89723b5c47edd241b55cbd46fc"
+    },
+    "stats": {
+      "total": 36,
+      "additions": 36,
+      "deletions": 0,
+      "date": "2025-08-28"
+    },
+    "coverage": 25,
+    "test_count": 4,
+    "failed_tests": 3,
+    "conclusion": "failure"
+  },
+  {
+    "sha": "93de8925e4b8dba629d7bb26fb1caa90fe867f9d",
+    "author": "Henry Alejandro Rivera Mendez",
+    "commit": {
+      "date": "2025-08-28T03:06:12.000Z",
+      "message": "feat: agregando la prueba de multiplo 5 buzz",
+      "url": "https://github.com/HenryRiveraM/fizzbuzz/commit/93de8925e4b8dba629d7bb26fb1caa90fe867f9d"
+    },
+    "stats": {
+      "total": 25,
+      "additions": 22,
+      "deletions": 3,
+      "date": "2025-08-28"
+    },
+    "coverage": 62.5,
+    "test_count": 5,
+    "failed_tests": 3,
+    "conclusion": "failure"
+  },
+  {
+    "sha": "864b23838c9ecb1e91ca083dd7b3b3ed8b7eeedf",
+    "author": "Henry Alejandro Rivera Mendez",
+    "commit": {
+      "date": "2025-08-28T03:10:08.000Z",
+      "message": "feat: agregando la ultima prueba de los multiplos 3 y 5 fizzbuzz",
+      "url": "https://github.com/HenryRiveraM/fizzbuzz/commit/864b23838c9ecb1e91ca083dd7b3b3ed8b7eeedf"
+    },
+    "stats": {
+      "total": 18,
+      "additions": 11,
+      "deletions": 7,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 6,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "86ebbfba4573a8bb92e2897e63509d38340986fb",
+    "author": "Henry Alejandro Rivera Mendez",
+    "commit": {
+      "date": "2025-08-28T03:15:23.000Z",
+      "message": "feat: agregando la parte de index",
+      "url": "https://github.com/HenryRiveraM/fizzbuzz/commit/86ebbfba4573a8bb92e2897e63509d38340986fb"
+    },
+    "stats": {
+      "total": 33,
+      "additions": 16,
+      "deletions": 17,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 6,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "HEAD",
+    "author": "Henry Alejandro Rivera Mendez",
+    "commit": {
+      "date": "2025-08-28T03:19:20.000Z",
+      "message": "feat: agregando el codigo para pedir numero al usuario",
+      "url": "https://github.com/HenryRiveraM/fizzbuzz/commit/HEAD"
+    },
+    "stats": {
+      "total": 15,
+      "additions": 14,
+      "deletions": 1,
+      "date": "2025-08-28"
+    },
+    "coverage": 100,
+    "test_count": 6,
+    "failed_tests": 0,
+    "conclusion": "success"
+  }
+]

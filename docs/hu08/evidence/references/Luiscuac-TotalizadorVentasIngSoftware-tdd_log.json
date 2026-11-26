@@ -1,0 +1,208 @@
+[
+  {
+    "numPassedTests": 0,
+    "failedTests": 1,
+    "numTotalTests": 1,
+    "timestamp": 1788832687179,
+    "success": false,
+    "testId": 0
+  },
+  {
+    "commitId": "d5c5ed1f3ec1be539b64761679e82004dabcb9e2",
+    "commitName": "feat:crear totalizador y su test inicial",
+    "commitTimestamp": 1788832772197,
+    "testId": 0
+  },
+  {
+    "numPassedTests": 0,
+    "failedTests": 1,
+    "numTotalTests": 1,
+    "timestamp": 1788832791785,
+    "success": false,
+    "testId": 1
+  },
+  {
+    "numPassedTests": 1,
+    "failedTests": 0,
+    "numTotalTests": 1,
+    "timestamp": 1788832876425,
+    "success": true,
+    "testId": 1
+  },
+  {
+    "commitId": "ab13283995196bb10597a9c35262e642e71f7410",
+    "commitName": "calcular precio multiplicando cantidad y precio",
+    "commitTimestamp": 1788832921534,
+    "testId": 1
+  },
+  {
+    "numPassedTests": 0,
+    "failedTests": 1,
+    "numTotalTests": 1,
+    "timestamp": 1788833138506,
+    "success": false,
+    "testId": 2
+  },
+  {
+    "numPassedTests": 1,
+    "failedTests": 0,
+    "numTotalTests": 1,
+    "timestamp": 1788833154437,
+    "success": true,
+    "testId": 2
+  },
+  {
+    "commitId": "50fff4cc9a650bd5d4f377933061e11c4b89ec78",
+    "commitName": "feat:refactor de codigo totalizador",
+    "commitTimestamp": 1788833180496,
+    "testId": 2
+  },
+  {
+    "numPassedTests": 2,
+    "failedTests": 0,
+    "numTotalTests": 2,
+    "timestamp": 1788833491317,
+    "success": true,
+    "testId": 3
+  },
+  {
+    "commitId": "311e25261a9447b86ca3d6d306063627cd7e0594",
+    "commitName": "feat: implementar descuento del 3% para montos iguales o mayores a 1000",
+    "commitTimestamp": 1788833519186,
+    "testId": 3
+  },
+  {
+    "numPassedTests": 3,
+    "failedTests": 0,
+    "numTotalTests": 3,
+    "timestamp": 1788833578485,
+    "success": true,
+    "testId": 4
+  },
+  {
+    "commitId": "a41f9ecde37747ebca7d1d35f66d10f432aae948",
+    "commitName": "feat: implementar descuento del 5% para montos iguales o mayores a 3000",
+    "commitTimestamp": 1788833593395,
+    "testId": 4
+  },
+  {
+    "numPassedTests": 3,
+    "failedTests": 1,
+    "numTotalTests": 4,
+    "timestamp": 1788833672445,
+    "success": false,
+    "testId": 5
+  },
+  {
+    "numPassedTests": 4,
+    "failedTests": 0,
+    "numTotalTests": 4,
+    "timestamp": 1788833807985,
+    "success": true,
+    "testId": 5
+  },
+  {
+    "commitId": "07678d355e30ade174fd8f90c072468e51e85387",
+    "commitName": "refactor: redondear calculos de dinero a dos decimales para evitar problemas de precision y calcular 7% de descuento",
+    "commitTimestamp": 1788833851858,
+    "testId": 5
+  },
+  {
+    "numPassedTests": 5,
+    "failedTests": 0,
+    "numTotalTests": 5,
+    "timestamp": 1788833929579,
+    "success": true,
+    "testId": 6
+  },
+  {
+    "commitId": "40b4c17a5a2295af2d6149211a57101ef0587768",
+    "commitName": "test: añadir prueba para 10% de descuento en montos de 10000",
+    "commitTimestamp": 1788833951484,
+    "testId": 6
+  },
+  {
+    "numPassedTests": 6,
+    "failedTests": 0,
+    "numTotalTests": 6,
+    "timestamp": 1788834001129,
+    "success": true,
+    "testId": 7
+  },
+  {
+    "commitId": "b5a929c5077f77489fe9fb5a45c77e063dbb1957",
+    "commitName": "test: añadir prueba para 15% de descuento en montos de 30000",
+    "commitTimestamp": 1788834012247,
+    "testId": 7
+  },
+  {
+    "numPassedTests": 7,
+    "failedTests": 0,
+    "numTotalTests": 7,
+    "timestamp": 1788834395249,
+    "success": true,
+    "testId": 8
+  },
+  {
+    "commitId": "670158a815b39e5f36469c68b778c3b65cd527c7",
+    "commitName": "feat:calcular monto de impuesto",
+    "commitTimestamp": 1788834517489,
+    "testId": 8
+  },
+  {
+    "numPassedTests": 7,
+    "failedTests": 1,
+    "numTotalTests": 8,
+    "timestamp": 1788834744857,
+    "success": false,
+    "testId": 9
+  },
+  {
+    "numPassedTests": 8,
+    "failedTests": 0,
+    "numTotalTests": 8,
+    "timestamp": 1788834901059,
+    "success": true,
+    "testId": 9
+  },
+  {
+    "commitId": "d14aa99434d8c167314eea112177d1b2fcc2f081",
+    "commitName": "feat: implementar calcularTotalFinal aplicando descuento e impuesto",
+    "commitTimestamp": 1788834965804,
+    "testId": 9
+  },
+  {
+    "numPassedTests": 8,
+    "failedTests": 1,
+    "numTotalTests": 9,
+    "timestamp": 1788835088711,
+    "success": false,
+    "testId": 10
+  },
+  {
+    "numPassedTests": 9,
+    "failedTests": 0,
+    "numTotalTests": 9,
+    "timestamp": 1788835126959,
+    "success": true,
+    "testId": 10
+  },
+  {
+    "commitId": "f09796b79dcaf7972088a8ecebdc169597ec4cf6",
+    "commitName": "feat:prueba con descuento",
+    "commitTimestamp": 1788835159120,
+    "testId": 10
+  },
+  {
+    "commitId": "c69faf2f4fcb54961e47430240bf795f8623c6cb",
+    "commitName": "feat:presenter para mostrar los resultados",
+    "commitTimestamp": 1788835629927,
+    "testId": 11
+  },
+  {
+    "commitId": "HEAD",
+    "commitName": "feat:interfaz de usuario",
+    "commitTimestamp": 1788835703177,
+    "testId": 12
+  }
+]

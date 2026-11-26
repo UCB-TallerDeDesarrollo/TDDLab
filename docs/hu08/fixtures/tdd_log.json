@@ -1,0 +1,36 @@
+[
+  {
+    "testId": 1,
+    "timestamp": 1795615199000,
+    "numPassedTests": 2,
+    "failedTests": 0,
+    "numTotalTests": 2,
+    "success": true
+  },
+  {
+    "testId": 1,
+    "commitId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "commitName": "HU08 tests aprobados",
+    "commitTimestamp": 1795615200000
+  },
+  {
+    "testId": 2,
+    "timestamp": 1795615259000,
+    "numPassedTests": 1,
+    "failedTests": 1,
+    "numTotalTests": 2,
+    "success": false
+  },
+  {
+    "testId": 2,
+    "commitId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "commitName": "HU08 tests fallidos",
+    "commitTimestamp": 1795615260000
+  },
+  {
+    "testId": 3,
+    "commitId": "cccccccccccccccccccccccccccccccccccccccc",
+    "commitName": "HU08 sin tests",
+    "commitTimestamp": 1795615320000
+  }
+]

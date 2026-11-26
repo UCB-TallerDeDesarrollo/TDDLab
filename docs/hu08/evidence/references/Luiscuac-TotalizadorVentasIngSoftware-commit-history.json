@@ -1,0 +1,249 @@
+[
+  {
+    "sha": "d5c5ed1f3ec1be539b64761679e82004dabcb9e2",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T01:59:30.000Z",
+      "message": "feat:crear totalizador y su test inicial",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/d5c5ed1f3ec1be539b64761679e82004dabcb9e2"
+    },
+    "stats": {
+      "total": 6384,
+      "additions": 2976,
+      "deletions": 3408,
+      "date": "2026-09-08"
+    },
+    "coverage": 0,
+    "test_count": 1,
+    "failed_tests": 1,
+    "conclusion": "failure"
+  },
+  {
+    "sha": "ab13283995196bb10597a9c35262e642e71f7410",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:02:00.000Z",
+      "message": "calcular precio multiplicando cantidad y precio",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/ab13283995196bb10597a9c35262e642e71f7410"
+    },
+    "stats": {
+      "total": 5,
+      "additions": 2,
+      "deletions": 3,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 1,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "50fff4cc9a650bd5d4f377933061e11c4b89ec78",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:06:19.000Z",
+      "message": "feat:refactor de codigo totalizador",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/50fff4cc9a650bd5d4f377933061e11c4b89ec78"
+    },
+    "stats": {
+      "total": 17,
+      "additions": 12,
+      "deletions": 5,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 1,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "311e25261a9447b86ca3d6d306063627cd7e0594",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:11:58.000Z",
+      "message": "feat: implementar descuento del 3% para montos iguales o mayores a 1000",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/311e25261a9447b86ca3d6d306063627cd7e0594"
+    },
+    "stats": {
+      "total": 10,
+      "additions": 9,
+      "deletions": 1,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 2,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "a41f9ecde37747ebca7d1d35f66d10f432aae948",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:13:12.000Z",
+      "message": "feat: implementar descuento del 5% para montos iguales o mayores a 3000",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/a41f9ecde37747ebca7d1d35f66d10f432aae948"
+    },
+    "stats": {
+      "total": 13,
+      "additions": 10,
+      "deletions": 3,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 3,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "07678d355e30ade174fd8f90c072468e51e85387",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:17:30.000Z",
+      "message": "refactor: redondear calculos de dinero a dos decimales para evitar problemas de precision y calcular 7% de descuento",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/07678d355e30ade174fd8f90c072468e51e85387"
+    },
+    "stats": {
+      "total": 11,
+      "additions": 9,
+      "deletions": 2,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 4,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "40b4c17a5a2295af2d6149211a57101ef0587768",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:19:10.000Z",
+      "message": "test: añadir prueba para 10% de descuento en montos de 10000",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/40b4c17a5a2295af2d6149211a57101ef0587768"
+    },
+    "stats": {
+      "total": 7,
+      "additions": 7,
+      "deletions": 0,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 5,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "b5a929c5077f77489fe9fb5a45c77e063dbb1957",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:20:10.000Z",
+      "message": "test: añadir prueba para 15% de descuento en montos de 30000",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/b5a929c5077f77489fe9fb5a45c77e063dbb1957"
+    },
+    "stats": {
+      "total": 7,
+      "additions": 7,
+      "deletions": 0,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 6,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "670158a815b39e5f36469c68b778c3b65cd527c7",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:28:36.000Z",
+      "message": "feat:calcular monto de impuesto",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/670158a815b39e5f36469c68b778c3b65cd527c7"
+    },
+    "stats": {
+      "total": 20,
+      "additions": 20,
+      "deletions": 0,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 7,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "d14aa99434d8c167314eea112177d1b2fcc2f081",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:36:04.000Z",
+      "message": "feat: implementar calcularTotalFinal aplicando descuento e impuesto",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/d14aa99434d8c167314eea112177d1b2fcc2f081"
+    },
+    "stats": {
+      "total": 19,
+      "additions": 19,
+      "deletions": 0,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 8,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "f09796b79dcaf7972088a8ecebdc169597ec4cf6",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:39:18.000Z",
+      "message": "feat:prueba con descuento",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/f09796b79dcaf7972088a8ecebdc169597ec4cf6"
+    },
+    "stats": {
+      "total": 5,
+      "additions": 5,
+      "deletions": 0,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 9,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "c69faf2f4fcb54961e47430240bf795f8623c6cb",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:47:08.000Z",
+      "message": "feat:presenter para mostrar los resultados",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/c69faf2f4fcb54961e47430240bf795f8623c6cb"
+    },
+    "stats": {
+      "total": 33,
+      "additions": 33,
+      "deletions": 0,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 9,
+    "failed_tests": 0,
+    "conclusion": "success"
+  },
+  {
+    "sha": "HEAD",
+    "author": "Luiscuac",
+    "commit": {
+      "date": "2026-09-08T02:48:22.000Z",
+      "message": "feat:interfaz de usuario",
+      "url": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware/commit/HEAD"
+    },
+    "stats": {
+      "total": 36,
+      "additions": 26,
+      "deletions": 10,
+      "date": "2026-09-08"
+    },
+    "coverage": 100,
+    "test_count": 9,
+    "failed_tests": 0,
+    "conclusion": "success"
+  }
+]

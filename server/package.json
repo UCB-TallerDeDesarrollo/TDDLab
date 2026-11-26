@@ -9,7 +9,10 @@
     "test:coverage": "jest --coverage",
     "tsc": "tsc",
     "start": "node build/app.js",
-    "vercel-build": "echo hello"
+    "vercel-build": "echo hello",
+    "test:hu08": "jest --runInBand test/hu08",
+    "test:hu08:integration": "node scripts/require-hu08-database.cjs",
+    "qa:hu08": "node -r ts-node/register/transpile-only scripts/hu08-server.ts"
   },
   "keywords": [],
   "author": "",

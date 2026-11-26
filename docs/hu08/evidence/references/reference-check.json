@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-11-26T03:19:38.764Z",
+  "results": [
+    {
+      "repository": "https://github.com/Luiscuac/TotalizadorVentasIngSoftware",
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/Luiscuac/TotalizadorVentasIngSoftware/8efea395c7f30badce292209d3ffe576fdbe55b4/script/commit-history.json",
+          "status": 200,
+          "records": 13,
+          "sha256": "c804e690f147f7a4df103bc7603164fa775f16bdad68da20631ad5e970120109",
+          "localFile": "Luiscuac-TotalizadorVentasIngSoftware-commit-history.json"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/Luiscuac/TotalizadorVentasIngSoftware/8efea395c7f30badce292209d3ffe576fdbe55b4/script/tdd_log.json",
+          "status": 200,
+          "records": 29,
+          "sha256": "f6bc8b424c75c92ef5fca13e9627f9bc3ce09582aa184a55420200761a8baedd",
+          "localFile": "Luiscuac-TotalizadorVentasIngSoftware-tdd_log.json"
+        }
+      ],
+      "repositoryStatus": 200,
+      "branch": "main",
+      "ref": "8efea395c7f30badce292209d3ffe576fdbe55b4"
+    },
+    {
+      "repository": "https://github.com/HenryRiveraM/fizzbuzz",
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/HenryRiveraM/fizzbuzz/3cf441fac0f17b86396e4de4248cf123b5099d07/script/commit-history.json",
+          "status": 200,
+          "records": 5,
+          "sha256": "2e4d2643244339cc5fcd9129414e953159482b1982ed1746df771cddf7f9c71b",
+          "localFile": "HenryRiveraM-fizzbuzz-commit-history.json"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/HenryRiveraM/fizzbuzz/3cf441fac0f17b86396e4de4248cf123b5099d07/script/tdd_log.json",
+          "status": 404
+        }
+      ],
+      "repositoryStatus": 200,
+      "branch": "main",
+      "ref": "3cf441fac0f17b86396e4de4248cf123b5099d07"
+    },
+    {
+      "repository": "https://github.com/RashLop/TennisPlay",
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/RashLop/TennisPlay/a3fe279d5684da2e38ab6318587886b88393c37b/script/commit-history.json",
+          "status": 200,
+          "records": 9,
+          "sha256": "b188b9e2dce056eb883413c3d965926ceaf3ace149c4476dd4ed00cac0cd681d",
+          "localFile": "RashLop-TennisPlay-commit-history.json"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/RashLop/TennisPlay/a3fe279d5684da2e38ab6318587886b88393c37b/script/tdd_log.json",
+          "status": 404
+        }
+      ],
+      "repositoryStatus": 200,
+      "branch": "main",
+      "ref": "a3fe279d5684da2e38ab6318587886b88393c37b"
+    }
+  ]
+}
