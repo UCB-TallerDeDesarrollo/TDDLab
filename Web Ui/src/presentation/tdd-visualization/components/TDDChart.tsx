@@ -22,16 +22,43 @@ interface CycleReportViewProps {
   typegraphs: string;
 }
 
+const options = [
+  { value: "Complejidad", label: "Lista de Complejidad" },
+  { value: "Pie", label: "Distribución de Commits" },
+  { value: "Dashboard", label: "Dashboard" },
+  { value: "Total Número de Tests", label: "Total Número de Tests" },
+  { value: "Cobertura de Código", label: "Porcentaje de Cobertura de Código" },
+  { value: "Líneas de Código Modificadas", label: "Líneas de Código Modificadas" },
+  { value: "Lista", label: "Lista de Commits" },
+  { value: "Ciclo de ejecución de pruebas", label: "Ciclo de ejecución de pruebas" },
+];
+const additionalGraphMetrics = ["Complejidad", "Pie"];
+
+function getMetricForGraphType(metric: string | null, typegraphs: string) {
+  const defaultMetric = typegraphs === "aditionalgraph" ? "Complejidad" : "Dashboard";
+  const selectedOption = options.find((option) => option.value === metric);
+
+  if (!selectedOption) {
+    return defaultMetric;
+  }
+
+  const isAdditionalGraph = typegraphs === "aditionalgraph";
+  const isAdditionalMetric = additionalGraphMetrics.includes(selectedOption.value);
+  return isAdditionalGraph === isAdditionalMetric
+    ? selectedOption.value
+    : defaultMetric;
+}
+
 function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
   const [metricSelected, setMetricSelected] = useState(() => {
-    const initialMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
-    return initialMetric;
+    return getMetricForGraphType(localStorage.getItem("selectedMetric"), typegraphs);
   });
+  const activeMetric = getMetricForGraphType(metricSelected, typegraphs);
 
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedMetric = localStorage.getItem("selectedMetric") ?? "Dashboard";
+      const storedMetric = getMetricForGraphType(localStorage.getItem("selectedMetric"), typegraphs);
       setMetricSelected(storedMetric);
       setMetric(storedMetric);
     };
@@ -41,7 +68,16 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [setMetric]);
+  }, [setMetric, typegraphs]);
+
+  useEffect(() => {
+    if (metricSelected !== activeMetric) {
+      setMetricSelected(activeMetric);
+    }
+    if (localStorage.getItem("selectedMetric") !== activeMetric) {
+      localStorage.setItem("selectedMetric", activeMetric);
+    }
+  }, [activeMetric, metricSelected]);
 
   const filteredCommitsObject = (() => {
     if (commits != null) {
@@ -74,17 +110,6 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
     window.dispatchEvent(storageEvent);
   };
 
-  const options = [
-    { value: 'Complejidad', label: 'Lista de Complejidad' },
-    { value: 'Pie', label: 'Distribución de Commits' },
-    { value: 'Dashboard', label: 'Dashboard' },
-    { value: 'Total Número de Tests', label: 'Total Número de Tests' },
-    { value: 'Cobertura de Código', label: 'Porcentaje de Cobertura de Código' },
-    { value: 'Líneas de Código Modificadas', label: 'Líneas de Código Modificadas' },
-    { value: 'Lista', label: 'Lista de Commits' },
-    { value: 'Ciclo de ejecución de pruebas', label: 'Ciclo de ejecución de pruebas' },
-  ];
-
   return (
     <div className="lineChartContainer">
       <Box>
@@ -94,7 +119,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
             labelId="select-label"
             id="simple-select"
             onChange={handleSelectChange}
-            value={metricSelected}
+            value={activeMetric}
             data-testid="select-graph-type"
             label="Métricas"
             MenuProps={{
@@ -125,7 +150,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
       <TDDLineCharts
         filteredCommitsObject={filteredCommitsObject}
         tddLogs = {tddLogs}
-        optionSelected={metricSelected}
+        optionSelected={activeMetric}
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}

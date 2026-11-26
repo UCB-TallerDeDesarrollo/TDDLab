@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TDDCharts from '../../../src/presentation/tdd-visualization/components/TDDChart';
 import type { CommitDataObject } from '../../../src/modules/TDDCycles-Visualization/domain/githubCommitInterfaces';
+import type { CommitCycle } from '../../../src/modules/TDDCycles-Visualization/domain/TddCycleInterface';
 import type { TDDLogEntry } from '../../../src/modules/TDDCycles-Visualization/domain/TDDLogInterfaces';
 import { MockGithubAPI } from './__mocks__/MocksCommitHistory';
 import { mixedTDDLogs, ventasISCommitOnlyLogs } from './fixtures/tddLogFixtures';
@@ -14,7 +15,13 @@ jest.mock('react-chartjs-2', () => {
     <div ref={ref} data-testid="commit-metric-chart">{JSON.stringify(data)}</div>
   ));
   ChartStub.displayName = 'ChartStub';
-  return { Bubble: ChartStub, Line: ChartStub, getElementAtEvent: jest.fn(() => []) };
+  return {
+    Bar: ChartStub,
+    Bubble: ChartStub,
+    Line: ChartStub,
+    Pie: ChartStub,
+    getElementAtEvent: jest.fn(() => []),
+  };
 });
 
 // No se navega a la lista en estos casos. Se evita cargar sus iconos y detalles.
@@ -38,11 +45,15 @@ const commits: CommitDataObject[] = [{
   conclusion: 'success',
 }];
 
-function renderCharts(tddLogs: TDDLogEntry[] | null) {
+function renderCharts(
+  tddLogs: TDDLogEntry[] | null,
+  typegraphs = 'graph',
+  commitsTddCycles: CommitCycle[] | null = null,
+) {
   const setMetric = jest.fn();
   const props = {
     commits, tddLogs, metric: null, setMetric, port: new MockGithubAPI(),
-    role: 'student', commitsTddCycles: null, typegraphs: 'graph',
+    role: 'student', commitsTddCycles, typegraphs,
   };
   return { ...render(<TDDCharts {...props} />), props, setMetric };
 }
@@ -120,6 +131,25 @@ describe('Integración de la visualización TDD', () => {
     fireEvent.click(openMetricMenu().getByRole('option', { name: 'Porcentaje de Cobertura de Código' }));
     expect(screen.getByTestId('commit-metric-chart')).toHaveTextContent('"data":[91]');
     expect(screen.queryByRole('heading', { name: 'Ciclo de Ejecución de Pruebas TDD' })).not.toBeInTheDocument();
+  });
+
+  it('muestra las gráficas adicionales y corrige una métrica guardada de otra ruta', () => {
+    localStorage.setItem('selectedMetric', 'Dashboard');
+    const cycles: CommitCycle[] = [
+      { url: 'https://example.com/1', sha: '1', tddCycle: 'RojoVerde' },
+      { url: 'https://example.com/2', sha: '2', tddCycle: 'Rojo' },
+    ];
+    renderCharts([], 'aditionalgraph', cycles);
+
+    expect(screen.getByRole('combobox')).toHaveTextContent('Lista de Complejidad');
+    expect(localStorage.getItem('selectedMetric')).toBe('Complejidad');
+    expect(screen.getByTestId('commit-metric-chart')).toHaveTextContent(
+      '"data":[50,50,0,0]',
+    );
+
+    fireEvent.click(openMetricMenu().getByRole('option', { name: 'Distribución de Commits' }));
+    expect(screen.getByRole('heading', { name: 'Distribución de Commits' })).toBeInTheDocument();
+    expect(screen.getByTestId('commit-metric-chart')).toHaveTextContent('"data":[100]');
   });
 
   it('actualiza la vista del ciclo al recibir logs de otro repositorio', () => {
