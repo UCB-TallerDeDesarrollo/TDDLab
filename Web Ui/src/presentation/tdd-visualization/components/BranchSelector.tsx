@@ -15,10 +15,6 @@ import type {
 
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
-// =====================================================
-// PROPIEDADES
-// =====================================================
-
 export interface BranchSelectorProps {
   branches: string[];
   selectedBranch: string;
@@ -27,10 +23,6 @@ export interface BranchSelectorProps {
   disabled?: boolean;
 }
 
-// =====================================================
-// COMPONENTE
-// =====================================================
-
 function BranchSelector({
   branches,
   selectedBranch,
@@ -38,22 +30,12 @@ function BranchSelector({
   loading = false,
   disabled = false,
 }: Readonly<BranchSelectorProps>) {
-
-  // ===================================================
-  // CAMBIO DE RAMA
-  // ===================================================
-
   const handleChange = (
     event: SelectChangeEvent<string>
   ) => {
     const branch = event.target.value;
-
     onBranchChange(branch);
   };
-
-  // ===================================================
-  // NORMALIZACIÓN DE RAMAS
-  // ===================================================
 
   const uniqueBranches = [
     ...new Set(
@@ -65,10 +47,6 @@ function BranchSelector({
     ),
   ];
 
-  // ===================================================
-  // RENDER
-  // ===================================================
-
   return (
     <Box
       sx={{
@@ -78,7 +56,6 @@ function BranchSelector({
         gap: 2,
       }}
     >
-
       <AccountTreeIcon
         sx={{
           color: "#052845",
@@ -91,10 +68,7 @@ function BranchSelector({
         size="medium"
         disabled={disabled || loading}
       >
-
-        <InputLabel
-          id="branch-selector-label"
-        >
+        <InputLabel id="branch-selector-label">
           Rama del repositorio
         </InputLabel>
 
@@ -133,9 +107,6 @@ function BranchSelector({
             },
           }}
         >
-
-          {/* Rama predeterminada del backend */}
-
           <MenuItem
             value=""
             data-testid="branch-option-default"
@@ -143,7 +114,12 @@ function BranchSelector({
             Predeterminada del repositorio
           </MenuItem>
 
-          {/* Ramas recibidas desde BranchSupport */}
+          <MenuItem
+            value="all"
+            data-testid="branch-option-all"
+          >
+            Todas las ramas
+          </MenuItem>
 
           {uniqueBranches.map((branch) => (
             <MenuItem
@@ -154,7 +130,6 @@ function BranchSelector({
               {branch}
             </MenuItem>
           ))}
-
         </Select>
 
         <FormHelperText>
@@ -162,7 +137,6 @@ function BranchSelector({
             ? "Cargando ramas disponibles..."
             : "Selecciona la rama que deseas analizar."}
         </FormHelperText>
-
       </FormControl>
 
       {loading && (
@@ -173,7 +147,6 @@ function BranchSelector({
           }}
         />
       )}
-
     </Box>
   );
 }

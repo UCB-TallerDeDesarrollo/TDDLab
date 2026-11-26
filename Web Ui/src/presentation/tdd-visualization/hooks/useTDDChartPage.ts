@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -44,15 +45,11 @@ import { GetCommitTddCycleBranchSupport } from "../../../modules/TDDCycles-Visua
 
 import { GetProjectBranchesBranchSupport } from "../../../modules/TDDCycles-Visualization/application/GetProjectBranchesBranchSupport";
 
-import { GetTDDLogs } from "../../../modules/TDDCycles-Visualization/application/GetTDDLogs";
+import { GetTestExecutionsBranchSupport } from "../../../modules/TDDCycles-Visualization/application/GetTestExecutionsBranchSupport";
 
 // =====================================================
 // REPOSITORIO BRANCH SUPPORT
 // =====================================================
-
-// Referencia estable para evitar consultas repetitivas.
-// Si App.tsx proporciona branchPort, se utiliza ese puerto.
-// En caso contrario, se utiliza este adaptador.
 
 const defaultBranchRepository =
   new CommitHistoryAdapterBranchSupport();
@@ -117,7 +114,6 @@ export function useTDDChartPage({
   role,
   teacher_id,
 }: Readonly<BranchAwarePageProps>) {
-
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -237,7 +233,6 @@ export function useTDDChartPage({
 
       setEmails(commentsData.emails);
       setComments(commentsData.comments);
-
     } catch (error) {
       console.error(
         "Error obtaining comments:",
@@ -335,7 +330,6 @@ export function useTDDChartPage({
 
         if (!active) return;
 
-        // Eliminar duplicados y nombres vacíos.
         const uniqueBranches = [
           ...new Set(
             branches.filter(
@@ -347,7 +341,6 @@ export function useTDDChartPage({
         ];
 
         setAvailableBranches(uniqueBranches);
-
       } catch (error) {
         if (!active) return;
 
@@ -360,7 +353,6 @@ export function useTDDChartPage({
           "No fue posible obtener las ramas: " +
           getErrorMessage(error)
         );
-
       } finally {
         if (active) {
           setLoadingBranches(false);
@@ -382,6 +374,7 @@ export function useTDDChartPage({
   const handleBranchChange = (branch: string) => {
     if (
       branch !== "" &&
+      branch !== "all" &&
       !availableBranches.includes(branch)
     ) {
       return;
@@ -401,9 +394,6 @@ export function useTDDChartPage({
     const loadVisualizationData = async () => {
       setLoading(true);
       setVisualizationError(null);
-
-      // Evita mostrar datos de una rama anterior
-      // mientras se consulta la nueva rama.
 
       setCommitsInfo(null);
       setCommitsTddCycles([]);
@@ -428,11 +418,10 @@ export function useTDDChartPage({
             branchRepository
           );
 
-        const logsUseCase =
-          new GetTDDLogs(port);
-
-        // Si no existe una selección, el backend
-        // utiliza la rama predeterminada.
+        const executionsUseCase =
+          new GetTestExecutionsBranchSupport(
+            branchRepository
+          );
 
         const branch =
           selectedBranch || undefined;
@@ -440,7 +429,7 @@ export function useTDDChartPage({
         const [
           branchCommits,
           branchCycles,
-          tddLogs,
+          executions,
         ] = await Promise.all([
           commitsUseCase.execute(
             repoOwner,
@@ -454,30 +443,22 @@ export function useTDDChartPage({
             branch
           ),
 
-          // tdd_log.json is optional; GitHub history should still render
-          // for repositories that never used the old TDDLab logger.
-          logsUseCase.execute(
+          executionsUseCase.execute(
             repoOwner,
-            repoName
-          ).catch((error: unknown): TDDLogEntry[] => {
-            console.warn("No legacy TDD log available:", error);
-            return [];
-          }),
+            repoName,
+            branch
+          ),
         ]);
 
         if (!active) return;
-
-        // Normalizar para las gráficas existentes.
-        // Se conservan los campos adicionales
-        // branches, primary_branch y parents.
 
         const legacyCommits: CommitDataObject[] =
           branchCommits.map((commit) => ({
             ...commit,
 
-            // Legacy charts require a number. Keep 'unknown' in
-            // conclusion so the UI never reports this 0 as actual coverage.
-            coverage: commit.coverage ?? 0,
+            // Las gráficas antiguas esperan number.
+            // "unknown" distingue datos no disponibles.
+            coverage: commit.coverage as number,
 
             stats: {
               ...commit.stats,
@@ -504,8 +485,20 @@ export function useTDDChartPage({
 
         setCommitsInfo(legacyCommits);
         setCommitsTddCycles(legacyCycles);
-        setTDDLogsInfo(tddLogs);
 
+        const legacyLogs: TDDLogEntry[] =
+          executions.map((run, index) => ({
+            numPassedTests: run.passed_tests,
+            failedTests: run.failed_tests,
+            numTotalTests: run.total_tests,
+            timestamp:
+              run.timestamp ||
+              new Date(run.executed_at).getTime(),
+            success: run.success,
+            testId: run.testId ?? index + 1,
+          }));
+
+        setTDDLogsInfo(legacyLogs);
       } catch (error) {
         if (!active) return;
 
@@ -518,7 +511,6 @@ export function useTDDChartPage({
           "No se pudieron cargar las gráficas: " +
           getErrorMessage(error)
         );
-
       } finally {
         if (active) {
           setLoading(false);
@@ -531,7 +523,6 @@ export function useTDDChartPage({
     return () => {
       active = false;
     };
-
   }, [
     port,
     branchRepository,
@@ -547,14 +538,20 @@ export function useTDDChartPage({
   useEffect(() => {
     if (!isTeacherView) return;
 
-    const submissions = readTeacherSubmissions(assignmentId);
+    const submissions =
+      readTeacherSubmissions(assignmentId);
+
     const index = submissions.findIndex(
-      (submission) => submission.id === submissionId
+      (submission) =>
+        submission.id === submissionId
     );
 
     setCurrentIndex(index);
-
-  }, [assignmentId, submissionId, isTeacherView]);
+  }, [
+    assignmentId,
+    submissionId,
+    isTeacherView,
+  ]);
 
   // ===================================================
   // NAVEGAR AL ESTUDIANTE ANTERIOR
@@ -571,9 +568,6 @@ export function useTDDChartPage({
         "selectedMetric",
         defaultMetric
       );
-
-      // La nueva entrega comienza en la rama
-      // predeterminada del nuevo repositorio.
 
       setSelectedBranch("");
 
@@ -640,13 +634,11 @@ export function useTDDChartPage({
 
       setFeedback("");
       await loadComments();
-
     } catch (error) {
       console.error(
         "Error al enviar la retroalimentación:",
         error
       );
-
     } finally {
       setIsSubmitting(false);
     }
@@ -665,7 +657,6 @@ export function useTDDChartPage({
       tddLogsInfo,
     },
 
-    // BranchSupport
     availableBranches,
     selectedBranch,
     handleBranchChange,
@@ -673,7 +664,6 @@ export function useTDDChartPage({
     branchError,
     visualizationError,
 
-    // Funcionalidad original
     comments,
     currentIndex,
     emails,

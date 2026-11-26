@@ -1,10 +1,24 @@
+
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
+import {
+  Alert,
+  Box,
+  Chip,
+  CircularProgress,
+  Paper,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+
 import type { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+
 import type { TestExecutionDataBranchSupport } from "../../../modules/TDDCycles-Visualization/domain/ITestExecutionDataBranchSupport";
+
 import { CommitHistoryAdapterBranchSupport } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapterBranchSupport";
+
 import { GetTestExecutionsBranchSupport } from "../../../modules/TDDCycles-Visualization/application/GetTestExecutionsBranchSupport";
 
 interface BranchTestCycleChartProps {
@@ -13,118 +27,338 @@ interface BranchTestCycleChartProps {
 }
 
 const repository = new CommitHistoryAdapterBranchSupport();
-const LEFT = 75;
-const TOP = 45;
-const COLUMN_WIDTH = 90;
-const ROW_HEIGHT = 43;
 
-export default function BranchTestCycleChart({
+function conclusionColor(conclusion: string): string {
+  switch (conclusion) {
+    case "success":
+      return "#16a34a";
+    case "failure":
+      return "#dc2626";
+    case "cancelled":
+      return "#f59e0b";
+    case "error":
+      return "#7c3aed";
+    default:
+      return "#94a3b8";
+  }
+}
+
+function conclusionLabel(conclusion: string): string {
+  switch (conclusion) {
+    case "success":
+      return "Exitosa";
+    case "failure":
+      return "Fallida";
+    case "cancelled":
+      return "Cancelada";
+    case "error":
+      return "Con error";
+    default:
+      return "Desconocida";
+  }
+}
+
+function BranchTestCycleChart({
   commits,
   selectedBranch = "",
 }: Readonly<BranchTestCycleChartProps>) {
-  const [searchParams] = useSearchParams();
-  const owner = searchParams.get("repoOwner") ?? "";
-  const repoName = searchParams.get("repoName") ?? "";
+  const [params] = useSearchParams();
 
-  const [executions, setExecutions] = useState<TestExecutionDataBranchSupport[]>([]);
-  const [loading, setLoading] = useState(true);
+  const owner = params.get("repoOwner") ?? "";
+  const repoName = params.get("repoName") ?? "";
+
+  const [executions, setExecutions] =
+    useState<TestExecutionDataBranchSupport[]>([]);
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const orderedCommits = useMemo(
+    () =>
+      [...commits].sort(
+        (a, b) =>
+          new Date(a.commit.date).getTime() -
+          new Date(b.commit.date).getTime()
+      ),
+    [commits]
+  );
 
   useEffect(() => {
     let active = true;
-    setExecutions([]);
-    setLoading(true);
-    setError(null);
 
-    if (!owner || !repoName) {
-      setError("No se ha identificado el repositorio.");
-      setLoading(false);
-      return;
-    }
+    async function load() {
+      if (!owner || !repoName) {
+        setExecutions([]);
+        setError("No se identificó el repositorio.");
+        return;
+      }
 
-    const load = async () => {
+      setLoading(true);
+      setError(null);
+      setExecutions([]);
+
       try {
         const useCase = new GetTestExecutionsBranchSupport(repository);
-        const result = await useCase.execute(owner, repoName, selectedBranch || undefined);
-        if (active) setExecutions(result);
+
+        const result = await useCase.execute(
+          owner,
+          repoName,
+          selectedBranch || undefined
+        );
+
+        if (!active) return;
+
+        setExecutions(result);
       } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : "No se pudieron cargar las ejecuciones.");
-        }
+        if (!active) return;
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "No fue posible cargar las ejecuciones."
+        );
       } finally {
         if (active) setLoading(false);
       }
-    };
+    }
+
     void load();
-    return () => { active = false; };
+
+    return () => {
+      active = false;
+    };
   }, [owner, repoName, selectedBranch]);
 
-  const orderedCommits = useMemo(() =>
-    [...commits].sort((a, b) =>
-      new Date(a.commit.date).getTime() - new Date(b.commit.date).getTime()
-    ), [commits]);
-
-  const groupedExecutions = useMemo(() => {
+  const executionsBySha = useMemo(() => {
     const map = new Map<string, TestExecutionDataBranchSupport[]>();
-    orderedCommits.forEach((commit) => map.set(commit.sha, []));
+
     for (const execution of executions) {
-      const sha = execution.commit_sha;
-      if (sha && map.has(sha)) map.get(sha)!.push(execution);
+      if (!execution.commit_sha) continue;
+
+      const list = map.get(execution.commit_sha) ?? [];
+      list.push(execution);
+      map.set(execution.commit_sha, list);
     }
-    for (const items of map.values()) {
-      items.sort((a, b) => new Date(a.executed_at).getTime() - new Date(b.executed_at).getTime());
+
+    for (const list of map.values()) {
+      list.sort(
+        (a, b) =>
+          new Date(a.executed_at).getTime() -
+          new Date(b.executed_at).getTime()
+      );
     }
+
     return map;
-  }, [orderedCommits, executions]);
+  }, [executions]);
 
-  const maxRuns = Math.max(1, ...Array.from(groupedExecutions.values(), (items) => items.length));
-  const width = Math.max(700, LEFT * 2 + orderedCommits.length * COLUMN_WIDTH);
-  const height = Math.max(250, TOP + (maxRuns + 1) * ROW_HEIGHT + 60);
+  const totalLinkedExecutions = orderedCommits.reduce(
+    (total, commit) =>
+      total + (executionsBySha.get(commit.sha)?.length ?? 0),
+    0
+  );
 
-  if (loading) return <Box sx={{ display: "flex", gap: 2, padding: 3 }}><CircularProgress size={25} /><Typography>Cargando ejecuciones de pruebas...</Typography></Box>;
-  if (error) return <Alert severity="error">{error}</Alert>;
-  if (!orderedCommits.length) return <Alert severity="info">No existen commits para la rama seleccionada.</Alert>;
+  const branchLabel =
+    selectedBranch === "all"
+      ? "Todas las ramas"
+      : selectedBranch || "Predeterminada";
 
   return (
-    <Box sx={{ width: "100%", mt: 3 }} data-testid="branch-test-cycle-chart">
-      <Typography variant="h6" gutterBottom>Ciclo de ejecución de pruebas TDD</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Rama: {selectedBranch || "Predeterminada"}. Cada punto corresponde a una ejecución asociada al SHA.
+    <Box sx={{ width: "100%" }}>
+      <Typography variant="h5" sx={{ mb: 1 }}>
+        Ciclo de ejecución de pruebas TDD
       </Typography>
-      {!executions.length && <Alert severity="info" sx={{ mb: 2 }}>No existen ejecuciones registradas para esta rama.</Alert>}
-      <Box sx={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: 2, p: 1, backgroundColor: "#fff" }}>
-        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Ejecuciones de pruebas por commit">
-          <line x1={LEFT} y1={TOP} x2={LEFT} y2={height - 55} stroke="#475569" strokeWidth={2} />
-          <line x1={LEFT} y1={height - 55} x2={width - 40} y2={height - 55} stroke="#475569" strokeWidth={2} />
-          {orderedCommits.map((commit, index) => {
-            const x = LEFT + (index + 1) * COLUMN_WIDTH;
-            const items = groupedExecutions.get(commit.sha) ?? [];
-            return (
-              <g key={commit.sha}>
-                <text x={x} y={height - 28} fontSize="11" textAnchor="middle" fill="#334155">{commit.sha.substring(0, 7)}</text>
-                {items.map((execution, runIndex) => {
-                  const y = height - 75 - runIndex * ROW_HEIGHT;
-                  const success = execution.conclusion === "success";
-                  return (
-                    <g key={execution.id}>
-                      <circle cx={x} cy={y} r={13} fill={success ? "#16a34a" : "#dc2626"} />
-                      {success ? (
-                        <path d={`M ${x - 6} ${y} l 4 4 l 8 -9`} stroke="#fff" strokeWidth={2.5} fill="none" strokeLinecap="round" />
-                      ) : (
-                        <path d={`M ${x - 5} ${y - 5} l 10 10 M ${x + 5} ${y - 5} l -10 10`} stroke="#fff" strokeWidth={2.5} fill="none" strokeLinecap="round" />
-                      )}
-                      <title>{`SHA: ${commit.sha}\nResultado: ${execution.conclusion}\nAprobadas: ${execution.passed_tests}\nFallidas: ${execution.failed_tests}\nTotal: ${execution.total_tests}`}</title>
-                    </g>
-                  );
-                })}
-              </g>
-            );
-          })}
-        </svg>
-      </Box>
-      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
-        Verde: ejecución exitosa. Rojo: fallida, cancelada o con error.
+
+      <Typography color="text.secondary" sx={{ mb: 2 }}>
+        Rama: {branchLabel}. Las ejecuciones se relacionan mediante
+        el SHA del commit.
       </Typography>
+
+      {loading && (
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+          <CircularProgress size={22} />
+          <Typography>Cargando ejecuciones de pruebas...</Typography>
+        </Stack>
+      )}
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {!loading && !error && totalLinkedExecutions === 0 && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          No existen ejecuciones de pruebas asociadas a los commits
+          de la rama seleccionada.
+        </Alert>
+      )}
+
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 3,
+          overflowX: "auto",
+          backgroundColor: "#ffffff",
+        }}
+      >
+        <Stack direction="row" spacing={1} sx={{ mb: 3 }} useFlexGap flexWrap="wrap">
+          <Chip
+            label={`${orderedCommits.length} commits`}
+            variant="outlined"
+          />
+          <Chip
+            label={`${totalLinkedExecutions} ejecuciones vinculadas`}
+            color={totalLinkedExecutions > 0 ? "primary" : "default"}
+          />
+        </Stack>
+
+        {orderedCommits.length === 0 ? (
+          <Typography color="text.secondary">
+            No hay commits para representar.
+          </Typography>
+        ) : (
+          <Box sx={{ minWidth: 560 }}>
+            {orderedCommits.map((commit, index) => {
+              const runs = executionsBySha.get(commit.sha) ?? [];
+
+              return (
+                <Box
+                  key={commit.sha}
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "115px 1fr",
+                    alignItems: "center",
+                    gap: 2,
+                    mb: 2,
+                  }}
+                >
+                  <Box>
+                    <Typography fontWeight={600} fontSize={13}>
+                      Commit {index + 1}
+                    </Typography>
+
+                    <Typography
+                      color="text.secondary"
+                      fontSize={12}
+                    >
+                      {commit.sha.substring(0, 7)}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      minHeight: 52,
+                      borderLeft: "3px solid #94a3b8",
+                      borderBottom: "1px solid #e2e8f0",
+                      pl: 2,
+                      py: 1,
+                    }}
+                  >
+                    {runs.length === 0 ? (
+                      <Typography
+                        fontSize={13}
+                        color="text.secondary"
+                      >
+                        Sin ejecuciones registradas
+                      </Typography>
+                    ) : (
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        useFlexGap
+                        flexWrap="wrap"
+                        alignItems="center"
+                      >
+                        {runs.map((run, runIndex) => (
+                          <Tooltip
+                            key={run.id}
+                            title={
+                              <Box>
+                                <Typography fontSize={12}>
+                                  Ejecución {runIndex + 1}
+                                </Typography>
+                                <Typography fontSize={12}>
+                                  Resultado: {conclusionLabel(run.conclusion)}
+                                </Typography>
+                                <Typography fontSize={12}>
+                                  Pasadas: {run.passed_tests}
+                                </Typography>
+                                <Typography fontSize={12}>
+                                  Fallidas: {run.failed_tests}
+                                </Typography>
+                                <Typography fontSize={12}>
+                                  Cobertura: {run.coverage == null
+                                    ? "No disponible"
+                                    : `${run.coverage}%`}
+                                </Typography>
+                                <Typography fontSize={12}>
+                                  Fecha: {new Date(run.executed_at).toLocaleString()}
+                                </Typography>
+                              </Box>
+                            }
+                            arrow
+                          >
+                            <Box
+                              role="img"
+                              aria-label={`Ejecución ${runIndex + 1}: ${conclusionLabel(run.conclusion)}`}
+                              sx={{
+                                width: 21,
+                                height: 21,
+                                borderRadius: "50%",
+                                backgroundColor: conclusionColor(run.conclusion),
+                                border: "2px solid white",
+                                boxShadow: "0 0 0 1px #94a3b8",
+                                cursor: "help",
+                              }}
+                            />
+                          </Tooltip>
+                        ))}
+                      </Stack>
+                    )}
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+      </Paper>
+
+      <Stack
+        direction="row"
+        spacing={2}
+        useFlexGap
+        flexWrap="wrap"
+        sx={{ mt: 2 }}
+      >
+        {[
+          { label: "Exitosa", color: "#16a34a" },
+          { label: "Fallida", color: "#dc2626" },
+          { label: "Cancelada", color: "#f59e0b" },
+          { label: "Con error", color: "#7c3aed" },
+        ].map((item) => (
+          <Stack
+            key={item.label}
+            direction="row"
+            spacing={1}
+            alignItems="center"
+          >
+            <Box
+              sx={{
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
+                backgroundColor: item.color,
+              }}
+            />
+
+            <Typography variant="caption">
+              {item.label}
+            </Typography>
+          </Stack>
+        ))}
+      </Stack>
     </Box>
   );
 }
+
+export default BranchTestCycleChart;

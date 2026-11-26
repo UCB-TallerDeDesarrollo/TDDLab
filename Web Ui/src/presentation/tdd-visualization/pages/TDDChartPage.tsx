@@ -1,3 +1,4 @@
+
 import { PropagateLoader } from "react-spinners";
 
 import TDDCharts from "../components/TDDChart";
@@ -41,6 +42,7 @@ function TDDChartPage(
       )}
 
       {/* Selector de ramas */}
+
       <div
         style={{
           maxWidth: 800,
@@ -52,18 +54,33 @@ function TDDChartPage(
           boxSizing: "border-box",
         }}
       >
-        <h2>Análisis por ramas de Git</h2>
+        <h2>
+          Análisis por ramas de Git
+        </h2>
 
         <BranchSelector
           branches={page.availableBranches}
-          selectedBranch={page.selectedBranch}
-          onBranchChange={page.handleBranchChange}
-          loading={page.loadingBranches}
-          disabled={page.loadingBranches}
+          selectedBranch={
+            page.selectedBranch
+          }
+          onBranchChange={
+            page.handleBranchChange
+          }
+          loading={
+            page.loadingBranches
+          }
+          disabled={
+            page.loadingBranches
+          }
         />
 
         {page.branchError && (
-          <p role="alert" style={{ color: "#b91c1c" }}>
+          <p
+            role="alert"
+            style={{
+              color: "#b91c1c",
+            }}
+          >
             {page.branchError}
           </p>
         )}
@@ -71,20 +88,26 @@ function TDDChartPage(
         <p>
           Rama:{" "}
           <strong>
-            {page.selectedBranch ||
-              "Predeterminada del repositorio"}
+            {page.selectedBranch === "all"
+              ? "Todas las ramas"
+              : page.selectedBranch ||
+                "Predeterminada del repositorio"}
           </strong>
         </p>
       </div>
 
       {/* Carga */}
+
       {page.loading && (
         <div className="mainInfoContainer">
-          <PropagateLoader color="#36d7b7" />
+          <PropagateLoader
+            color="#36d7b7"
+          />
         </div>
       )}
 
       {/* Error de consulta */}
+
       {!page.loading &&
         page.visualizationError && (
           <div
@@ -97,18 +120,21 @@ function TDDChartPage(
         )}
 
       {/* Contenido */}
+
       {!page.loading &&
         !page.visualizationError && (
           <>
             {!hasCommits && (
-              <output
+              <div
                 className="error-message"
+                role="status"
               >
-                No se encontraron commits en la consulta
-                seleccionada. Puedes utilizar la opción
-                Topología Git para consultar el grafo
-                completo del repositorio.
-              </output>
+                No se encontraron commits en
+                la consulta seleccionada.
+                Puedes utilizar la opción
+                Topología Git para consultar
+                el grafo completo del repositorio.
+              </div>
             )}
 
             {!page.isStudent && (
@@ -116,8 +142,12 @@ function TDDChartPage(
                 <button
                   type="button"
                   className="nav-button"
-                  onClick={page.goToPreviousStudent}
-                  disabled={page.currentIndex <= 0}
+                  onClick={
+                    page.goToPreviousStudent
+                  }
+                  disabled={
+                    page.currentIndex <= 0
+                  }
                 >
                   Anterior
                 </button>
@@ -125,7 +155,9 @@ function TDDChartPage(
                 <button
                   type="button"
                   className="nav-button"
-                  onClick={page.goToNextStudent}
+                  onClick={
+                    page.goToNextStudent
+                  }
                   disabled={
                     page.currentIndex >=
                     page.fetchedSubmissions.length - 1
@@ -138,24 +170,40 @@ function TDDChartPage(
 
             <div className="mainInfoContainer">
               <TDDCharts
-                key={`${page.repoName}-${page.selectedBranch}`}
-                commits={chartsState.commitsInfo ?? []}
-                tddLogs={chartsState.tddLogsInfo}
+                key={
+                  `${page.repoName}-` +
+                  page.selectedBranch
+                }
+                commits={
+                  chartsState.commitsInfo ?? []
+                }
+                tddLogs={
+                  chartsState.tddLogsInfo
+                }
                 commitsTddCycles={
                   chartsState.commitsTddCycles
                 }
                 port={props.port}
                 role={props.role}
-                metric={chartsState.metric}
-                setMetric={chartsState.setMetric}
-                typegraphs={props.graphs}
-                selectedBranch={page.selectedBranch}
+                metric={
+                  chartsState.metric
+                }
+                setMetric={
+                  chartsState.setMetric
+                }
+                typegraphs={
+                  props.graphs
+                }
+                selectedBranch={
+                  page.selectedBranch
+                }
               />
             </div>
           </>
         )}
 
       {/* Retroalimentación docente */}
+
       {props.role !== "student" && (
         <div className="feedback-container">
           <h2 className="comments-title">
@@ -166,15 +214,21 @@ function TDDChartPage(
             id="feedback"
             value={page.feedback}
             onChange={(event) =>
-              page.setFeedback(event.target.value)
+              page.setFeedback(
+                event.target.value
+              )
             }
             placeholder="Ingrese su retroalimentación aquí"
           />
 
           <button
             type="button"
-            onClick={page.handleSubmitFeedback}
-            disabled={page.isSubmitting}
+            onClick={
+              page.handleSubmitFeedback
+            }
+            disabled={
+              page.isSubmitting
+            }
           >
             {page.isSubmitting
               ? "Enviando..."
@@ -192,29 +246,38 @@ function TDDChartPage(
             </h2>
 
             <div className="comments-list">
-              {page.comments.map((comment) => (
-                <div
-                  key={`${comment.teacher_id}-${comment.created_at}`}
-                  className="comment-card"
-                >
-                  <div className="comment-header">
-                    <strong className="comment-author">
-                      {page.emails[comment.teacher_id] ||
-                        "Correo no disponible"}
-                    </strong>
+              {page.comments.map(
+                (comment) => (
+                  <div
+                    key={
+                      `${comment.teacher_id}-` +
+                      comment.created_at
+                    }
+                    className="comment-card"
+                  >
+                    <div className="comment-header">
+                      <strong className="comment-author">
+                        {page.emails[
+                          comment.teacher_id
+                        ] ||
+                          "Correo no disponible"}
+                      </strong>
 
-                    <span className="comment-date">
-                      {new Date(
-                        comment.created_at
-                      ).toLocaleDateString()}
-                    </span>
-                  </div>
+                      <span className="comment-date">
+                        {new Date(
+                          comment.created_at
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
 
-                  <div className="comment-body">
-                    <p>{comment.content}</p>
+                    <div className="comment-body">
+                      <p>
+                        {comment.content}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         )}

@@ -1,44 +1,23 @@
+
+import { useEffect, useState } from "react";
 import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material/Select";
 
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-
-import type {
-  SelectChangeEvent,
-} from "@mui/material/Select";
-
-import type {
-  CommitDataObject,
-} from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-
-import type {
-  CommitHistoryRepository,
-} from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-
-import type {
-  CommitCycle,
-} from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
-
-import type {
-  TDDLogEntry,
-} from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import type { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import type { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import type { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
+import type { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
 
 import TDDLineCharts from "./TDDLineChart";
-
 import "../styles/TDDChartStyles.css";
 
-// =====================================================
-// PROPIEDADES
-// =====================================================
-
-interface CycleReportViewProps {
+interface TDDChartProps {
   commits: CommitDataObject[] | null;
   tddLogs: TDDLogEntry[] | null;
   metric: string | null;
@@ -50,52 +29,38 @@ interface CycleReportViewProps {
   selectedBranch?: string;
 }
 
-// =====================================================
-// MÉTRICAS DISPONIBLES
-// =====================================================
-
-const chartOptions = [
-  {
-    value: "Complejidad",
-    label: "Lista de Complejidad",
-  },
-  {
-    value: "Pie",
-    label: "Distribución de Commits",
-  },
-  {
-    value: "Dashboard",
-    label: "Dashboard",
-  },
-  {
-    value: "Total Número de Tests",
-    label: "Total Número de Tests",
-  },
-  {
-    value: "Cobertura de Código",
-    label: "Porcentaje de Cobertura de Código",
-  },
+const options = [
+  { value: "Complejidad", label: "Lista de Complejidad" },
+  { value: "Pie", label: "Distribución de Commits" },
+  { value: "Dashboard", label: "Dashboard" },
+  { value: "Total Número de Tests", label: "Total Número de Tests" },
+  { value: "Cobertura de Código", label: "Cobertura de Código" },
   {
     value: "Líneas de Código Modificadas",
     label: "Líneas de Código Modificadas",
   },
-  {
-    value: "Lista",
-    label: "Lista de Commits",
-  },
+  { value: "Lista", label: "Lista de Commits" },
   {
     value: "Ciclo de ejecución de pruebas",
-    label: "Ciclo de ejecución de pruebas",
+    label: "Ciclo de ejecución de pruebas TDD",
   },
   {
     value: "Topología Git",
-    label: "Topología de ramas Git",
+    label: "Topología de ramas Git (DAG)",
   },
 ];
 
-// =====================================================
-// FUNCIONES AUXILIARES
-// =====================================================
+function getOptions(typegraphs: string) {
+  if (typegraphs === "aditionalgraph") {
+    return options.filter((option) =>
+      ["Complejidad", "Pie"].includes(option.value)
+    );
+  }
+
+  return options.filter(
+    (option) => !["Complejidad", "Pie"].includes(option.value)
+  );
+}
 
 function getDefaultMetric(typegraphs: string) {
   return typegraphs === "aditionalgraph"
@@ -103,256 +68,112 @@ function getDefaultMetric(typegraphs: string) {
     : "Dashboard";
 }
 
-function getOptionsByGraphType(
-  typegraphs: string
-) {
-  if (typegraphs === "aditionalgraph") {
-    return chartOptions.filter((option) =>
-      ["Complejidad", "Pie"].includes(
-        option.value
-      )
-    );
-  }
-
-  return chartOptions.filter(
-    (option) =>
-      !["Complejidad", "Pie"].includes(
-        option.value
-      )
-  );
-}
-
-// =====================================================
-// COMPONENTE PRINCIPAL
-// =====================================================
-
 function TDDCharts({
   commits,
   tddLogs,
+  metric,
   setMetric,
   port,
   role,
   commitsTddCycles,
   typegraphs,
   selectedBranch = "",
-}: Readonly<CycleReportViewProps>) {
+}: Readonly<TDDChartProps>) {
+  const availableOptions = getOptions(typegraphs);
 
-  const availableOptions =
-    getOptionsByGraphType(typegraphs);
+  const [metricSelected, setMetricSelected] = useState<string>(() => {
+    const stored = localStorage.getItem("selectedMetric");
 
-  const [metricSelected, setMetricSelected] =
-    useState<string>(() => {
-      const storedMetric =
-        localStorage.getItem("selectedMetric");
-
-      const valid =
-        availableOptions.some(
-          (option) =>
-            option.value === storedMetric
-        );
-
-      return valid && storedMetric
-        ? storedMetric
-        : getDefaultMetric(typegraphs);
-    });
-
-  // ===================================================
-  // SINCRONIZAR SELECCIÓN
-  // ===================================================
+    return availableOptions.some((option) => option.value === stored)
+      ? stored!
+      : getDefaultMetric(typegraphs);
+  });
 
   useEffect(() => {
-    const valid =
-      availableOptions.some(
-        (option) =>
-          option.value === metricSelected
-      );
-
-    if (!valid) {
-      const defaultMetric =
-        getDefaultMetric(typegraphs);
-
-      setMetricSelected(defaultMetric);
-      setMetric(defaultMetric);
+    if (
+      metric &&
+      availableOptions.some((option) => option.value === metric)
+    ) {
+      setMetricSelected(metric);
     }
+  }, [metric, typegraphs]);
 
+  useEffect(() => {
+    if (
+      !availableOptions.some(
+        (option) => option.value === metricSelected
+      )
+    ) {
+      const fallback = getDefaultMetric(typegraphs);
+      setMetricSelected(fallback);
+      setMetric(fallback);
+    }
   }, [typegraphs, metricSelected, setMetric]);
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const storedMetric =
-        localStorage.getItem("selectedMetric");
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    const nextMetric = event.target.value;
 
-      const nextMetric =
-        availableOptions.some(
-          (option) =>
-            option.value === storedMetric
-        ) && storedMetric
-          ? storedMetric
-          : getDefaultMetric(typegraphs);
-
-      setMetricSelected(nextMetric);
-      setMetric(nextMetric);
-    };
-
-    window.addEventListener(
-      "storage",
-      handleStorageChange
-    );
-
-    return () => {
-      window.removeEventListener(
-        "storage",
-        handleStorageChange
-      );
-    };
-
-  }, [typegraphs, setMetric]);
-
-  // ===================================================
-  // PREPARAR DATOS PARA LAS GRÁFICAS
-  // ===================================================
-
-  const filteredCommitsObject =
-    useMemo(() => {
-      if (!commits) return null;
-
-      return commits.map((commit) => ({
-        ...commit,
-        stats: {
-          ...commit.stats,
-
-          // Conserva la escala visual original
-          // sin modificar el objeto recibido.
-
-          total:
-            commit.stats.total > 100
-              ? 50
-              : commit.stats.total,
-        },
-      }));
-
-    }, [commits]);
-
-  // ===================================================
-  // CAMBIAR MÉTRICA
-  // ===================================================
-
-  const handleSelectChange = (
-    event: SelectChangeEvent<string>
-  ) => {
-    const newMetric = event.target.value;
-
-    setMetricSelected(newMetric);
-    setMetric(newMetric);
-
-    localStorage.setItem(
-      "selectedMetric",
-      newMetric
-    );
-
-    window.dispatchEvent(
-      new Event("storage")
-    );
+    setMetricSelected(nextMetric);
+    setMetric(nextMetric);
+    localStorage.setItem("selectedMetric", nextMetric);
   };
 
-  // ===================================================
-  // SIN DATOS
-  // ===================================================
-
-  if (!commits) {
-    return (
-      <div>
-        No hay información disponible.
-      </div>
-    );
-  }
-
-  // ===================================================
-  // RENDER
-  // ===================================================
+  const branchLabel =
+    selectedBranch === "all"
+      ? "Todas las ramas"
+      : selectedBranch || "Predeterminada del repositorio";
 
   return (
     <div className="lineChartContainer">
-
-      {/* Rama seleccionada */}
-
       <Box
         sx={{
-          marginBottom: 2,
-          padding: 1.5,
+          p: 2,
+          mb: 2,
+          border: "1px solid #e2e8f0",
+          backgroundColor: "#f1f5f9",
           borderRadius: 2,
-          backgroundColor: "#F1F5F9",
-          border: "1px solid #E2E8F0",
         }}
       >
-        <span
-          style={{
-            color: "#475569",
-            fontSize: "14px",
-          }}
+        <strong>Rama analizada: </strong>
+        {branchLabel}
+
+        <Box sx={{ mt: 1, color: "#64748b", fontSize: 13 }}>
+          {commits?.length ?? 0} commits recibidos del backend
+        </Box>
+      </Box>
+
+      <FormControl fullWidth sx={{ mb: 3 }}>
+        <InputLabel id="metrics-label">Métricas</InputLabel>
+
+        <Select
+          labelId="metrics-label"
+          value={metricSelected}
+          label="Métricas"
+          onChange={handleChange}
+          data-testid="select-graph-type"
         >
-          Rama analizada:{" "}
-          <strong
-            style={{
-              color: "#052845",
-            }}
-          >
-            {selectedBranch ||
-              "Predeterminada del repositorio"}
-          </strong>
-        </span>
-      </Box>
-
-      {/* Selector de visualización */}
-
-      <Box sx={{ marginBottom: 3 }}>
-        <FormControl fullWidth>
-
-          <InputLabel
-            id="simple-select-label"
-          >
-            Métricas
-          </InputLabel>
-
-          <Select
-            labelId="simple-select-label"
-            id="simple-select"
-            value={metricSelected}
-            onChange={handleSelectChange}
-            data-testid="select-graph-type"
-            label="Métricas"
-          >
-
-            {availableOptions.map(
-              (option) => (
-                <MenuItem
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
-                </MenuItem>
-              )
-            )}
-
-          </Select>
-
-        </FormControl>
-      </Box>
-
-      {/* Gráficas y topología */}
+          {availableOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       <TDDLineCharts
-        filteredCommitsObject={
-          filteredCommitsObject
-        }
+        filteredCommitsObject={commits ?? []}
         tddLogs={tddLogs}
         optionSelected={metricSelected}
         port={port}
         role={role}
         commitsCycles={commitsTddCycles}
         selectedBranch={selectedBranch}
+        onMetricChange={(nextMetric) => {
+          setMetricSelected(nextMetric);
+          setMetric(nextMetric);
+          localStorage.setItem("selectedMetric", nextMetric);
+        }}
       />
-
     </div>
   );
 }
