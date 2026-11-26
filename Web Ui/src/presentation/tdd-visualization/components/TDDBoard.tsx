@@ -76,7 +76,15 @@ function hasTestData(commit: CommitDataObject): boolean {
   );
 }
 
-function getCommitColor(commit: CommitDataObject): string {
+function getCommitColor(commit: CommitDataObject, classic = false): string {
+  if (classic) {
+    if (commit.coverage == null) return "#111111";
+    if (commit.conclusion === "failure" || commit.test_count === 0) return "#ff0000";
+    const opacity = commit.coverage >= 90 ? 1 : commit.coverage >= 80 ? 0.8 : commit.coverage >= 70 ? 0.6 : commit.coverage >= 60 ? 0.4 : 0.2;
+    return /\brefactor\w*\b/i.test(commit.commit.message)
+      ? `rgba(0, 100, 255, ${opacity})`
+      : `rgba(0, 110, 0, ${opacity})`;
+  }
   if (!hasTestData(commit)) return "#94a3b8";
 
   if (
@@ -99,6 +107,7 @@ function TDDBoard({
   selectedBranch = "",
   onMetricChange,
 }: Readonly<TDDBoardProps>) {
+  const isMultiBranch = selectedBranch === "all";
   const [searchParams] = useSearchParams();
 
   const owner = searchParams.get("repoOwner") ?? "";
@@ -150,13 +159,12 @@ function TDDBoard({
         {
           x: index + 1,
           y: commit.test_count,
-          r: Math.min(
-            22,
-            Math.max(7, Math.sqrt(Math.max(0, commit.stats.total)) + 6)
-          ),
+          r: isMultiBranch
+            ? Math.min(22, Math.max(7, Math.sqrt(Math.max(0, commit.stats.total)) + 6))
+            : Math.max(10, commit.stats.total / 1.5),
         },
       ],
-      backgroundColor: getCommitColor(commit),
+      backgroundColor: getCommitColor(commit, !isMultiBranch),
       borderColor: "#ffffff",
       borderWidth: 2,
     })),
@@ -171,17 +179,20 @@ function TDDBoard({
         max: Math.max(2, orderedCommits.length + 1),
         title: {
           display: true,
-          text: "Commits en orden cronológico",
+          text: isMultiBranch ? "Commits en orden cronológico" : "Commits",
         },
         ticks: {
           stepSize: 1,
+          callback: isMultiBranch
+            ? undefined
+            : (value) => Number.isInteger(Number(value)) ? `Commit ${value}` : "",
         },
       },
       y: {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Pruebas registradas",
+          text: isMultiBranch ? "Pruebas registradas" : "Total número de tests",
         },
       },
     },
@@ -275,8 +286,12 @@ function TDDBoard({
       {
         label,
         data: values,
-        borderColor: "#2563eb",
-        pointBackgroundColor: orderedCommits.map(getCommitColor),
+        borderColor: "#c7c7c7",
+        pointBackgroundColor: orderedCommits.map((commit) => getCommitColor(commit, !isMultiBranch)),
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 1.5,
+        pointRadius: 4,
+        pointHoverRadius: 6,
         tension: 0.2,
         spanGaps: false,
       },
@@ -286,6 +301,7 @@ function TDDBoard({
   const miniChartOptions: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: true,
+    aspectRatio: 1.8,
     plugins: {
       legend: {
         display: false,
@@ -294,6 +310,11 @@ function TDDBoard({
     scales: {
       y: {
         beginAtZero: true,
+        grid: { color: "rgba(0, 0, 0, 0.08)" },
+      },
+      x: {
+        grid: { color: "rgba(0, 0, 0, 0.06)" },
+        ticks: { maxRotation: 40, minRotation: 40, font: { size: 9 } },
       },
     },
   };
@@ -319,12 +340,12 @@ function TDDBoard({
   ];
 
   return (
-    <Box sx={{ width: "100%", p: 2 }}>
+    <Box className="tdd-dashboard" sx={{ width: "100%", p: isMultiBranch ? 2 : 0 }}>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        Dashboard TDD — BranchSupport
+        {isMultiBranch ? "Dashboard TDD — BranchSupport" : "Métricas de Commits con Cobertura de Código"}
       </Typography>
 
-      <Stack
+      {isMultiBranch && <Stack
         direction="row"
         spacing={2}
         useFlexGap
@@ -341,7 +362,7 @@ function TDDBoard({
             label={`Última cobertura disponible: ${latestMeasuredCommit.coverage}%`}
           />
         )}
-      </Stack>
+      </Stack>}
 
       {commitsWithoutTests > 0 && (
         <Alert severity="info" sx={{ mb: 3 }}>
@@ -350,9 +371,9 @@ function TDDBoard({
         </Alert>
       )}
 
-      <Typography variant="subtitle1" sx={{ mb: 2 }}>
+      {isMultiBranch && <Typography variant="subtitle1" sx={{ mb: 2 }}>
         Ejecuciones de pruebas por commit
-      </Typography>
+      </Typography>}
 
       {measuredCommits.length === 0 ? (
         <Paper
@@ -383,29 +404,31 @@ function TDDBoard({
           </Button>
         </Paper>
       ) : (
-        <Box sx={{ height: 360, width: "100%", mb: 3 }}>
+        <Box className={!isMultiBranch ? "tdd-dashboard-overview" : undefined} sx={{ height: isMultiBranch ? 360 : 420, width: "100%", mb: 3 }}>
+          <Box className={!isMultiBranch ? "tdd-dashboard-chart" : undefined} sx={{ height: "100%", minWidth: 0 }}>
           <Bubble
             ref={chartRef}
             data={bubbleData}
             options={bubbleOptions}
             onClick={handleBubbleClick}
           />
+          </Box>
+          {!isMultiBranch && <Box className="tdd-dashboard-coverage">
+            <strong>Cobertura</strong>
+            <Box className="tdd-dashboard-scale">
+              <Box className="tdd-dashboard-gradient" aria-hidden="true" />
+              <Box className="tdd-dashboard-ticks"><span>100</span><span>75</span><span>50</span><span>25</span></Box>
+            </Box>
+          </Box>}
         </Box>
       )}
 
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))",
-          gap: 3,
-          mt: 3,
-        }}
-      >
+      <Box className="tdd-dashboard-metrics">
         {metrics.map((item) => (
           <Paper
             key={item.metric}
             variant="outlined"
-            sx={{ p: 2, minWidth: 0 }}
+            sx={{ p: 1.5, minWidth: 0, borderColor: "#dddddd", borderRadius: 1 }}
           >
             <Typography variant="h6" sx={{ mb: 2 }}>
               {item.title}

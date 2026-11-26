@@ -13,7 +13,6 @@ import type {
   SelectChangeEvent,
 } from "@mui/material/Select";
 
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
 export interface BranchSelectorProps {
   branches: string[];
@@ -52,17 +51,9 @@ function BranchSelector({
       sx={{
         width: "100%",
         display: "flex",
-        alignItems: "center",
-        gap: 2,
+        alignItems: "stretch",
       }}
     >
-      <AccountTreeIcon
-        sx={{
-          color: "#052845",
-          fontSize: 28,
-        }}
-      />
-
       <FormControl
         fullWidth
         size="medium"
@@ -81,18 +72,18 @@ function BranchSelector({
           label="Rama del repositorio"
           sx={{
             backgroundColor: "#FFFFFF",
-            borderRadius: "8px",
+            borderRadius: "6px",
 
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#CBD5E1",
+              borderColor: "#cbd5e1",
             },
 
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#052845",
+              borderColor: "#2b5b7f",
             },
 
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#052845",
+              borderColor: "#2b5b7f",
             },
           }}
           MenuProps={{
@@ -144,6 +135,7 @@ function BranchSelector({
           size={22}
           sx={{
             color: "#052845",
+            alignSelf: "center",
           }}
         />
       )}

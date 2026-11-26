@@ -50,14 +50,18 @@ const options = [
   },
 ];
 
-function getOptions(typegraphs: string) {
+function getOptions(typegraphs: string, multipleBranches: boolean) {
+  const branchOptions = multipleBranches
+    ? options
+    : options.filter((option) => !option.label.startsWith("Topolog"));
+
   if (typegraphs === "aditionalgraph") {
-    return options.filter((option) =>
+    return branchOptions.filter((option) =>
       ["Complejidad", "Pie"].includes(option.value)
     );
   }
 
-  return options.filter(
+  return branchOptions.filter(
     (option) => !["Complejidad", "Pie"].includes(option.value)
   );
 }
@@ -79,7 +83,7 @@ function TDDCharts({
   typegraphs,
   selectedBranch = "",
 }: Readonly<TDDChartProps>) {
-  const availableOptions = getOptions(typegraphs);
+  const availableOptions = getOptions(typegraphs, selectedBranch === "all");
 
   const [metricSelected, setMetricSelected] = useState<string>(() => {
     const stored = localStorage.getItem("selectedMetric");
@@ -96,7 +100,7 @@ function TDDCharts({
     ) {
       setMetricSelected(metric);
     }
-  }, [metric, typegraphs]);
+  }, [metric, typegraphs, selectedBranch]);
 
   useEffect(() => {
     if (
@@ -107,8 +111,9 @@ function TDDCharts({
       const fallback = getDefaultMetric(typegraphs);
       setMetricSelected(fallback);
       setMetric(fallback);
+      localStorage.setItem("selectedMetric", fallback);
     }
-  }, [typegraphs, metricSelected, setMetric]);
+  }, [typegraphs, metricSelected, selectedBranch, setMetric]);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const nextMetric = event.target.value;
@@ -125,7 +130,7 @@ function TDDCharts({
 
   return (
     <div className="lineChartContainer">
-      <Box
+      {selectedBranch === "all" && <Box
         sx={{
           p: 2,
           mb: 2,
@@ -140,7 +145,7 @@ function TDDCharts({
         <Box sx={{ mt: 1, color: "#64748b", fontSize: 13 }}>
           {commits?.length ?? 0} commits recibidos del backend
         </Box>
-      </Box>
+      </Box>}
 
       <FormControl fullWidth sx={{ mb: 3 }}>
         <InputLabel id="metrics-label">Métricas</InputLabel>

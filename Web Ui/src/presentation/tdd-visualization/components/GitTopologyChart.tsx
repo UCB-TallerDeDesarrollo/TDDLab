@@ -211,10 +211,13 @@ function GitTopologyChart({
   const isNodeHighlighted = (
     node: GitGraphNode
   ) => {
-    if (!selectedBranch) return true;
+    if (!selectedBranch || selectedBranch === "all") return true;
 
     return node.branches.includes(selectedBranch);
   };
+
+  const isBranchSelected = (branch: string) =>
+    selectedBranch === "all" || selectedBranch === branch;
 
   const getNodeColor = (
     node: GitGraphNode
@@ -345,19 +348,15 @@ function GitTopologyChart({
             <Chip
               key={branch}
               label={branch}
-              variant={
-                selectedBranch === branch
-                  ? "filled"
-                  : "outlined"
-              }
+              variant={isBranchSelected(branch) ? "filled" : "outlined"}
               sx={{
                 borderColor: getBranchColor(index),
                 color:
-                  selectedBranch === branch
+                  isBranchSelected(branch)
                     ? "#FFFFFF"
                     : getBranchColor(index),
                 backgroundColor:
-                  selectedBranch === branch
+                  isBranchSelected(branch)
                     ? getBranchColor(index)
                     : "transparent",
               }}
@@ -389,9 +388,10 @@ function GitTopologyChart({
           overflowX: "auto",
           overflowY: "auto",
           border: "1px solid #E2E8F0",
-          borderRadius: 2,
+          borderRadius: 1,
           backgroundColor: "#FFFFFF",
-          padding: 1,
+          padding: { xs: 0.5, sm: 1.5 },
+          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.04)",
         }}
       >
         <svg
@@ -467,13 +467,13 @@ function GitTopologyChart({
                 d={edge.path}
                 fill="none"
                 stroke={
-                  getBranchColor(child.lane)
+                  "#2563EB"
                 }
                 strokeWidth={
-                  highlighted ? 2.5 : 1.5
+                  highlighted ? 2 : 1.5
                 }
                 strokeOpacity={
-                  highlighted ? 0.9 : 0.15
+                  highlighted ? 0.8 : 0.12
                 }
               />
             );
@@ -506,22 +506,20 @@ function GitTopologyChart({
                 <circle
                   cx={node.x}
                   cy={node.y}
-                  r={isSelected ? 12 : 9}
+                  r={isSelected ? 10 : 7}
                   fill={getNodeColor(node)}
                   stroke={
                     isSelected
                       ? "#111827"
                       : "#FFFFFF"
                   }
-                  strokeWidth={
-                    isSelected ? 3 : 2
-                  }
+                  strokeWidth={isSelected ? 2.5 : 1.5}
                 />
 
                 <text
                   x={node.x}
                   y={node.y + 25}
-                  fontSize="10"
+                  fontSize="9"
                   textAnchor="middle"
                   fill="#334155"
                 >

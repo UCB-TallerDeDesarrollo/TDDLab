@@ -69,21 +69,26 @@ function hasTestData(commit: CommitDataObject): boolean {
 }
 
 function getCommitColor(commit: CommitDataObject): string {
-  if (!hasTestData(commit)) return "#94a3b8";
+  if (!hasTestData(commit) || commit.coverage == null) return "#111111";
 
   if (
     commit.conclusion === "failure" ||
     commit.conclusion === "error" ||
-    commit.conclusion === "cancelled"
+    commit.conclusion === "cancelled" ||
+    commit.test_count === 0
   ) {
     return "#dc2626";
   }
 
-  if (/\brefactor\w*\b/i.test(commit.commit.message)) {
-    return "#2563eb";
-  }
+  const opacity =
+    commit.coverage >= 90 ? 1 :
+      commit.coverage >= 80 ? 0.8 :
+        commit.coverage >= 70 ? 0.6 :
+          commit.coverage >= 60 ? 0.4 : 0.2;
 
-  return "#16a34a";
+  return /\brefactor\w*\b/i.test(commit.commit.message)
+    ? `rgba(0, 100, 255, ${opacity})`
+    : `rgba(0, 110, 0, ${opacity})`;
 }
 
 function TDDLineCharts({
@@ -302,18 +307,17 @@ function TDDLineCharts({
     Array<number | null>,
     string
   > = {
-    labels: commits.map(
-      (commit) => commit.sha.substring(0, 7)
-    ),
+    labels: commits.map((_, index) => `Commit ${index + 1}`),
 
     datasets: [
       {
         label,
         data: values,
-        borderColor: "#2563eb",
+        borderColor: "rgba(0, 0, 0, 0.16)",
         pointBackgroundColor: commits.map(getCommitColor),
-        pointBorderColor: "#ffffff",
-        pointRadius: 6,
+        backgroundColor: commits.map(getCommitColor),
+        pointRadius: 9,
+        pointHoverRadius: 12,
         tension: 0.2,
         spanGaps: false,
       },
@@ -323,16 +327,18 @@ function TDDLineCharts({
   const chartOptions: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: true,
+    aspectRatio: 2.2,
 
     scales: {
       x: {
+        grid: { color: "rgba(0, 0, 0, 0.07)" },
         title: {
           display: true,
-          text: "Commits",
+          text: "Commits Realizados",
         },
       },
       y: {
-        beginAtZero: true,
+        grid: { color: "rgba(0, 0, 0, 0.08)" },
         title: {
           display: true,
           text: axisLabel,
@@ -341,6 +347,7 @@ function TDDLineCharts({
     },
 
     plugins: {
+      legend: { display: true },
       tooltip: {
         callbacks: {
           title: (items) => {

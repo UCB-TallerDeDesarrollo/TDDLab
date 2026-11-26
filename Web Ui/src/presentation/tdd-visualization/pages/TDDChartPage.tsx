@@ -1,5 +1,6 @@
 
 import { PropagateLoader } from "react-spinners";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
 import TDDCharts from "../components/TDDChart";
 import BranchSelector from "../components/BranchSelector";
@@ -43,20 +44,13 @@ function TDDChartPage(
 
       {/* Selector de ramas */}
 
-      <div
-        style={{
-          maxWidth: 800,
-          width: "100%",
-          margin: "20px auto",
-          padding: 16,
-          border: "1px solid #e2e8f0",
-          borderRadius: 10,
-          boxSizing: "border-box",
-        }}
-      >
-        <h2>
+      <section className="branch-analysis-panel">
+        <header className="branch-analysis-heading">
+          <AccountTreeIcon aria-hidden="true" />
+          <h2>
           Análisis por ramas de Git
-        </h2>
+          </h2>
+        </header>
 
         <BranchSelector
           branches={page.availableBranches}
@@ -85,7 +79,7 @@ function TDDChartPage(
           </p>
         )}
 
-        <p>
+        <p className="branch-analysis-current">
           Rama:{" "}
           <strong>
             {page.selectedBranch === "all"
@@ -94,7 +88,7 @@ function TDDChartPage(
                 "Predeterminada del repositorio"}
           </strong>
         </p>
-      </div>
+      </section>
 
       {/* Carga */}
 
