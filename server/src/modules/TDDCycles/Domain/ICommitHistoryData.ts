@@ -1,4 +1,5 @@
 import { MergeInfo } from "./IMergeInfo";
+import { TddExecutionRequest } from "./InputModels";
 
 export interface CommitHistoryData {
   repository_slug:string;
@@ -22,5 +23,6 @@ export interface CommitHistoryData {
   coverage: number;
   test_count: number;
   conclusion: string;
-  merge?: MergeInfo
+  merge?: MergeInfo;
+  tddExecutions?: TddExecutionRequest[];
 }

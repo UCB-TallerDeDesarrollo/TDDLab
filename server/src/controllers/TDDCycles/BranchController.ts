@@ -17,13 +17,13 @@ class BranchController {
 
   constructor(
     githubRepository: IGithubRepository,
-    branchRepository: IBranchRepository
+    branchRepository: IBranchRepository,
   ) {
     this.githubRepository = githubRepository;
     this.branchRepository = branchRepository;
     this.getBranchHistoryUseCase = new GetBranchHistoryUseCase(
       githubRepository,
-      branchRepository
+      branchRepository,
     );
     this.saveBranchUseCase = new SaveBranchUseCase(branchRepository);
   }
@@ -34,6 +34,15 @@ class BranchController {
       value.length > 0 &&
       value.length <= 100 &&
       /^[A-Za-z0-9._-]+$/.test(value)
+    );
+  }
+
+  isValidBranchName(value: unknown): value is string {
+    return (
+      typeof value === "string" &&
+      value.length > 0 &&
+      value.length <= 100 &&
+      /^[A-Za-z0-9._/-]+$/.test(value)
     );
   }
 
@@ -52,7 +61,7 @@ class BranchController {
       if (
         !this.isValidGithubSegment(ownerRaw) ||
         !this.isValidGithubSegment(repoNameRaw) ||
-        !this.isValidGithubSegment(branchRaw)
+        !this.isValidBranchName(branchRaw)
       ) {
         return res.status(400).json({
           error: "Bad request, invalid owner, repoName or branch",
@@ -62,7 +71,7 @@ class BranchController {
       const history = await this.getBranchHistoryUseCase.execute(
         String(ownerRaw),
         String(repoNameRaw),
-        String(branchRaw)
+        String(branchRaw),
       );
 
       return res.status(200).json(history);
@@ -75,7 +84,7 @@ class BranchController {
   async saveBranch(req: Request, res: Response) {
     try {
       const body = req.body as TddBranchPushRequest;
-
+      console.log("Received request body:", JSON.stringify(body, null, 2));
       if (!body || !body.repository || !body.repository.slug) {
         return res.status(400).json({
           error: "Bad request, missing repository.slug",
@@ -92,13 +101,17 @@ class BranchController {
       const sep = slug.indexOf("/");
       if (sep === -1) {
         return res.status(400).json({
-          error: "Bad request, repository.slug must be in format owner/repoName",
+          error:
+            "Bad request, repository.slug must be in format owner/repoName",
         });
       }
       const owner = slug.slice(0, sep);
       const repoName = slug.slice(sep + 1);
 
-      if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
+      if (
+        !this.isValidGithubSegment(owner) ||
+        !this.isValidGithubSegment(repoName)
+      ) {
         return res.status(400).json({
           error: "Bad request, invalid owner or repoName",
         });
@@ -108,7 +121,8 @@ class BranchController {
       for (const b of body.branches) {
         if (!b.repositorySlug || !b.name || !b.createdAt) {
           return res.status(400).json({
-            error: "Bad request, branch missing repositorySlug, name or createdAt",
+            error:
+              "Bad request, branch missing repositorySlug, name or createdAt",
           });
         }
       }
@@ -225,30 +239,41 @@ class BranchController {
       const { owner, repoName } = req.query;
 
       if (!owner || !repoName) {
-        return res.status(400).json({ error: "Bad request, missing owner or repoName" });
+        return res
+          .status(400)
+          .json({ error: "Bad request, missing owner or repoName" });
       }
 
-      if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
-        return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+      if (
+        !this.isValidGithubSegment(owner) ||
+        !this.isValidGithubSegment(repoName)
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Bad request, invalid owner or repoName" });
       }
 
       const useNewGen = await this.githubRepository.checkNewGenFile(
         String(owner),
-        String(repoName)
+        String(repoName),
       );
 
       if (!useNewGen) {
-        return res.status(200).json([
-          { name: "main", repository_slug: `${owner}/${repoName}` },
-        ]);
+        return res
+          .status(200)
+          .json([{ name: "main", repository_slug: `${owner}/${repoName}` }]);
       }
 
-      const repo = await this.branchRepository.getRepository(`${owner}/${repoName}`);
+      const repo = await this.branchRepository.getRepository(
+        `${owner}/${repoName}`,
+      );
       if (!repo) {
         return res.status(200).json([]);
       }
 
-      const branches = await this.branchRepository.getBranches(`${owner}/${repoName}`);
+      const branches = await this.branchRepository.getBranches(
+        `${owner}/${repoName}`,
+      );
       return res.status(200).json(branches);
     } catch (error) {
       console.error("Error getting branches:", error);
@@ -261,28 +286,39 @@ class BranchController {
       const { owner, repoName } = req.query;
 
       if (!owner || !repoName) {
-        return res.status(400).json({ error: "Bad request, missing owner or repoName" });
+        return res
+          .status(400)
+          .json({ error: "Bad request, missing owner or repoName" });
       }
 
-      if (!this.isValidGithubSegment(owner) || !this.isValidGithubSegment(repoName)) {
-        return res.status(400).json({ error: "Bad request, invalid owner or repoName" });
+      if (
+        !this.isValidGithubSegment(owner) ||
+        !this.isValidGithubSegment(repoName)
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Bad request, invalid owner or repoName" });
       }
 
       const useNewGen = await this.githubRepository.checkNewGenFile(
         String(owner),
-        String(repoName)
+        String(repoName),
       );
 
       if (!useNewGen) {
         return res.status(200).json([]);
       }
 
-      const repo = await this.branchRepository.getRepository(`${owner}/${repoName}`);
+      const repo = await this.branchRepository.getRepository(
+        `${owner}/${repoName}`,
+      );
       if (!repo) {
         return res.status(200).json([]);
       }
 
-      const merges = await this.branchRepository.getMerges(`${owner}/${repoName}`);
+      const merges = await this.branchRepository.getMerges(
+        `${owner}/${repoName}`,
+      );
       return res.status(200).json(merges);
     } catch (error) {
       console.error("Error getting merges:", error);

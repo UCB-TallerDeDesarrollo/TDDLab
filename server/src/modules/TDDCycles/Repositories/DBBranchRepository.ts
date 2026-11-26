@@ -12,17 +12,25 @@ import {
   TddBranchRequest,
   TddCommitRequest,
   TddMergeRequest,
+  TddExecutionRequest,
 } from "../Domain/InputModels";
 
 export class DBBranchRepository implements IBranchRepository {
   pool: Pool;
   constructor() {
-    this.pool = new Pool(branchDbConfig);
+    this.pool = new Pool({
+      ...branchDbConfig,
+      idleTimeoutMillis: 30 * 60 * 1000, // 30 min
+      max: 10,
+    });
     // Warmup: establecer la conexión SSL/TCP antes de la primera petición real
     // para evitar que el primer request tarde varios segundos.
-    this.pool.query("SELECT 1").catch(() => {
-      // Ignorar errores de warmup; la primera query real intentará reconectar
-    });
+    this.pool
+      .query("SELECT 1")
+      .then(() => this.pool.query("SELECT count(*) FROM tdd_repository"))
+      .catch(() => {
+        // Ignorar errores de warmup; la primera query real intentará reconectar
+      });
   }
 
   private splitSlug(slug: string): { owner: string; repoName: string } {
@@ -73,7 +81,7 @@ export class DBBranchRepository implements IBranchRepository {
       const query = `
         INSERT INTO tdd_repository (repos_name, repo_url, owner)
         VALUES ($1, $2, $3)
-        RETURNING id, created_at
+        RETURNING id
       `;
       const values = [repoName, repo.remoteUrl ?? null, owner];
       const result = await client.query(query, values);
@@ -82,9 +90,7 @@ export class DBBranchRepository implements IBranchRepository {
         id: Number(row.id),
         slug: repo.slug,
         remoteUrl: repo.remoteUrl,
-        createdAt: row.created_at
-          ? new Date(row.created_at).toISOString()
-          : new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       };
     } catch (error) {
       console.error("Error saving repository to tdd_repository:", error);
@@ -243,7 +249,7 @@ export class DBBranchRepository implements IBranchRepository {
       await client.query("BEGIN");
       try {
         const commitQuery = `
-          INSERT INTO tdd_commit (sha, parent_sha, branchi_id, author, message, committed_at)
+          INSERT INTO tdd_commit (sha, parent_sha, branch_id, author, message, committed_at)
           VALUES ($1, $2, $3, $4, $5, $6)
           ON CONFLICT (sha) DO NOTHING
         `;
@@ -370,46 +376,105 @@ export class DBBranchRepository implements IBranchRepository {
       if (!branchRow) {
         return null;
       }
+      const commitQuery = `
+        SELECT sha, parent_sha, author, message, committed_at FROM tdd_commit
+        WHERE branch_id = $1
+        ORDER BY committed_at DESC
+      `;
+      const commitResult = await client.query(commitQuery, [branchRow.id]);
+
       const branchData: BranchData = {
         repository_slug: slug,
         name: branchRow.name,
         fork_commit_sha: branchRow.fork_commit_sha,
         created_at: branchRow.created_at,
-        commit_count: 0,
-        last_commit_sha: "",
-        last_commit_at: new Date(),
+        commit_count: commitResult.rows.length,
+        last_commit_sha:
+          commitResult.rows.length > 0
+            ? commitResult.rows[0].sha
+            : "",
+        last_commit_at:
+          commitResult.rows.length > 0 && commitResult.rows[0].committed_at
+            ? new Date(commitResult.rows[0].committed_at)
+            : new Date(),
         merge_into: "",
       };
-      const commitQuery = `
-        SELECT sha, parent_sha, author, message, committed_at FROM tdd_commit
-        WHERE branchi_id = $1
-        ORDER BY committed_at DESC
+
+      // Obtener merge_into: en qué rama se fusionó esta rama (donde es source_branch)
+      const mergeIntoQuery = `
+        SELECT tb.name AS target_branch_name
+        FROM tdd_merge m
+        JOIN tdd_branch tb ON tb.id = m.target_branch_id
+        WHERE m.source_branch_id = $1
+        ORDER BY m.merged_at DESC
+        LIMIT 1
       `;
-      const commitResult = await client.query(commitQuery, [branchRow.id]);
+      const mergeIntoResult = await client.query(mergeIntoQuery, [branchRow.id]);
+      if (mergeIntoResult.rows.length > 0) {
+        branchData.merge_into = mergeIntoResult.rows[0].target_branch_name;
+      }
+
+      // Obtener ejecuciones de tests para todos los commits de este branch en una sola consulta
+      const shas = commitResult.rows.map((row) => row.sha);
+      const executionsBySha: Record<string, TddExecutionRequest[]> = {};
+      if (shas.length > 0) {
+        const execQuery = `
+          SELECT commit_sha, tests_total, tests_passed, tests_failed, executed_at
+          FROM tdd_execution
+          WHERE commit_sha = ANY($1)
+          ORDER BY executed_at ASC
+        `;
+        const execResult = await client.query(execQuery, [shas]);
+        for (const row of execResult.rows) {
+          if (!executionsBySha[row.commit_sha]) {
+            executionsBySha[row.commit_sha] = [];
+          }
+          executionsBySha[row.commit_sha].push({
+            testsTotal: row.tests_total,
+            testsPassed: row.tests_passed,
+            testsFailed: row.tests_failed,
+            executedAt: row.executed_at,
+          });
+        }
+      }
+
       const commits: CommitHistoryData[] = commitResult.rows.map(
-        (row: any) => ({
-          repository_slug: slug,
-          branch,
-          html_url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
-          sha: row.sha,
-          parent_sha: row.parent_sha,
-          author: row.author,
-          stats: {
-            total: 0,
-            additions: 0,
-            deletions: 0,
-            date: "",
-          },
-          commit: {
-            date: row.committed_at ? new Date(row.committed_at) : new Date(),
-            message: row.message,
-            url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
-            comment_count: 0,
-          },
-          coverage: 0,
-          test_count: 0,
-          conclusion: "",
-        }),
+        (row: any) => {
+          const execs = executionsBySha[row.sha] ?? [];
+          const lastExec = execs.length > 0 ? execs[execs.length - 1] : null;
+          return {
+            repository_slug: slug,
+            branch,
+            html_url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
+            sha: row.sha,
+            parent_sha: row.parent_sha,
+            author: row.author,
+            stats: {
+              total: lastExec ? lastExec.testsTotal : 0,
+              additions: 0,
+              deletions: 0,
+              date: lastExec ? lastExec.executedAt : "",
+            },
+            commit: {
+              date: row.committed_at ? new Date(row.committed_at) : new Date(),
+              message: row.message,
+              url: `https://github.com/${owner}/${repoName}/commit/${row.sha}`,
+              comment_count: 0,
+            },
+            coverage: lastExec
+              ? Math.round(
+                  (lastExec.testsPassed / lastExec.testsTotal) * 100
+                )
+              : 0,
+            test_count: lastExec ? lastExec.testsTotal : 0,
+            conclusion: lastExec
+              ? lastExec.testsFailed === 0
+                ? "success"
+                : "failure"
+              : "",
+            tddExecutions: execs,
+          };
+        },
       );
       return {
         branch: branchData,
