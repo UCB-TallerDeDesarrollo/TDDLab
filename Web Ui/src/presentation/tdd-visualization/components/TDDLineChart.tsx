@@ -50,6 +50,7 @@ interface LineChartProps {
   port: CommitHistoryRepository;
   role: string;
   commitsCycles?: CommitCycle[] | null;
+  onBranchChange?: (name: string) => void;
 }
 
 interface CommitLineDataset extends ChartDataset<"line", number[]> {
@@ -67,6 +68,7 @@ function TDDLineCharts({
   tddLogs,
   port,
   role,
+  onBranchChange,
 }: LineChartProps) {
   
   let dataChart: CommitLineChartData | null = null;
@@ -352,7 +354,7 @@ function TDDLineCharts({
       case "Ciclo de ejecución de pruebas":
         return <TDDCycleChart data={tddLogs ?? []} />;
       case "Dashboard":
-        return dashboardState ? <TDDDashboard state={dashboardState} /> : null;
+        return dashboardState ? <TDDDashboard state={dashboardState} onBranchChange={onBranchChange} /> : null;
     }
     return (
       <Line

@@ -17,17 +17,19 @@ interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
   tddLogs: TDDLogEntry[] | null;
   branchesInfo?: BranchDTO[] | null;
+  selectedBranch?: string | null;
   metric: string | null;
   setMetric: (metric: string) => void;
   port: CommitHistoryRepository;
   role: string;
   commitsTddCycles: CommitCycle[] | null;
   typegraphs: string;
+  onBranchChange?: (name: string) => void;
 }
 
-function TDDCharts({ commits, tddLogs, branchesInfo, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, branchesInfo, selectedBranch, setMetric, port, role, commitsTddCycles, typegraphs, onBranchChange }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const dashboardState = useTDDDashboard(commits, commitsTddCycles, tddLogs, branchesInfo);
+  const dashboardState = useTDDDashboard(commits, commitsTddCycles, tddLogs, branchesInfo, selectedBranch);
   const [metricSelected, setMetricSelected] = useState(() => {
     return localStorage.getItem("selectedMetric") ?? "DashboardClasico";
   });
@@ -129,6 +131,7 @@ function TDDCharts({ commits, tddLogs, branchesInfo, setMetric, port, role, comm
         tddLogs={tddLogs}
         port={port}
         role={role}
+        onBranchChange={onBranchChange}
       />
     </div>
   );

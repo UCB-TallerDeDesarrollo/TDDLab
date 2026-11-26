@@ -28,6 +28,7 @@ export function useTDDDashboard(
   cycles: CommitCycle[] | null,
   logs: TDDLogEntry[] | null,
   branchesFromRepo?: BranchDTO[] | null,
+  selectedBranchName?: string | null,
 ): TDDDashboardViewState {
   const branches = useMemo(
     () =>
@@ -40,30 +41,39 @@ export function useTDDDashboard(
     [commits, cycles, logs, branchesFromRepo],
   );
 
-  const [selectedBranchName, setSelectedBranchName] = useState<string | null>(
-    () => branches[0]?.name ?? null,
-  );
+  const [internalSelectedBranchName, setInternalSelectedBranchName] =
+    useState<string | null>(() => branches[0]?.name ?? null);
 
   useEffect(() => {
-    setSelectedBranchName((current) => {
+    setInternalSelectedBranchName((current) => {
+      if (
+        selectedBranchName != null &&
+        branches.some((branch) => branch.name === selectedBranchName)
+      ) {
+        return selectedBranchName;
+      }
+
       if (current && branches.some((branch) => branch.name === current)) {
         return current;
       }
 
       return branches[0]?.name ?? null;
     });
-  }, [branches]);
+  }, [branches, selectedBranchName]);
 
   const selectBranch = useCallback((branchName: string) => {
-    setSelectedBranchName(branchName);
+    setInternalSelectedBranchName(branchName);
   }, []);
+
+  const effectiveSelectedBranchName =
+    selectedBranchName ?? internalSelectedBranchName;
 
   const selectedBranch = useMemo(
     () =>
-      branches.find((branch) => branch.name === selectedBranchName) ??
+      branches.find((branch) => branch.name === effectiveSelectedBranchName) ??
       branches[0] ??
       null,
-    [branches, selectedBranchName],
+    [branches, effectiveSelectedBranchName],
   );
 
   const chartData = useMemo(

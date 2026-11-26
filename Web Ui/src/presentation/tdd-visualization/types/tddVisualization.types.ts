@@ -12,6 +12,7 @@ export interface CycleReportViewProps {
   role: string;
   teacher_id: number;
   graphs: string;
+  branch?: string | null;
 }
 
 export type Submission = TeacherSubmission;

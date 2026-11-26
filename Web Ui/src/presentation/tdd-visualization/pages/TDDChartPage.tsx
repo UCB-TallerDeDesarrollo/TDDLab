@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { PropagateLoader } from "react-spinners";
 import TDDCharts from "../components/TDDChart";
 import "../styles/TDDChartPageStyles.css";
@@ -6,7 +6,8 @@ import { useTDDChartPage } from "../hooks/useTDDChartPage";
 import { CycleReportViewProps } from "../types/tddVisualization.types";
 
 function TDDChartPage(props: Readonly<CycleReportViewProps>) {
-  const tddPage = useTDDChartPage(props);
+  const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
+  const tddPage = useTDDChartPage({ ...props, branch: selectedBranch });
   const { chartsState } = tddPage;
 
   return (
@@ -71,12 +72,14 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
             commits={chartsState.commitsInfo}
             tddLogs={chartsState.tddLogsInfo}
             branchesInfo={chartsState.branchesInfo}
+            selectedBranch={selectedBranch}
             commitsTddCycles={chartsState.commitsTddCycles}
             port={props.port}
             role={props.role}
             metric={chartsState.metric}
             setMetric={chartsState.setMetric}
             typegraphs={props.graphs}
+            onBranchChange={setSelectedBranch}
           />
           </div>
         </React.Fragment>

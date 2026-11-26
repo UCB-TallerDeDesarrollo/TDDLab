@@ -1,4 +1,5 @@
 import type { TDDDashboardViewState } from "../../types/tddVisualization.types";
+import { useCallback } from "react";
 import "../../styles/TDDDashboard.css";
 import { RepositoryBranchList } from "./RepositoryBranchList";
 import { TDDChartSummary } from "./TDDChartSummary";
@@ -7,9 +8,10 @@ import { TDDEmptyState } from "./TDDEmptyState";
 
 interface TDDDashboardProps {
   state: TDDDashboardViewState;
+  onBranchChange?: (name: string) => void;
 }
 
-export function TDDDashboard({ state }: TDDDashboardProps) {
+export function TDDDashboard({ state, onBranchChange }: TDDDashboardProps) {
   const {
     branches,
     selectedBranch,
@@ -19,6 +21,11 @@ export function TDDDashboard({ state }: TDDDashboardProps) {
     summary,
     hasExecutions,
   } = state;
+
+  const handleSelectBranch = useCallback((branchName: string) => {
+    selectBranch(branchName);
+    onBranchChange?.(branchName);
+  }, [selectBranch, onBranchChange]);
 
   return (
     <div className="tdd-dashboard">
@@ -34,7 +41,7 @@ export function TDDDashboard({ state }: TDDDashboardProps) {
         <RepositoryBranchList
           branches={branches}
           selectedBranchName={selectedBranchName}
-          onSelect={selectBranch}
+          onSelect={handleSelectBranch}
         />
       </section>
 

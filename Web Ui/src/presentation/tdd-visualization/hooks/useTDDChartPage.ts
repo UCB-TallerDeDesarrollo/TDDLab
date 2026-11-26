@@ -47,6 +47,7 @@ export function useTDDChartPage({
   port,
   role,
   teacher_id,
+  branch,
 }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -112,7 +113,7 @@ export function useTDDChartPage({
     const loadVisualizationData = async () => {
       setLoading(true);
       try {
-        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName, branch ?? undefined);
         setCommitsInfo(visualizationData.commits);
         setCommitsTddCycles(visualizationData.commitsTddCycles);
         setTDDLogsInfo(visualizationData.tddLogs);
@@ -126,7 +127,7 @@ export function useTDDChartPage({
     };
 
     loadVisualizationData().catch((error: unknown) => console.error("Error loading visualization data:", error));
-  }, [port, repoOwner, repoName]);
+  }, [port, repoOwner, repoName, branch]);
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
