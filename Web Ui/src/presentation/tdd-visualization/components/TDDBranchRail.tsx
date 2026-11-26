@@ -122,10 +122,7 @@ const TDDBranchRail: React.FC<TDDBranchRailProps> = ({
   }, [gitGraph, hasTopology, branchMeta, containerWidth]);
 
   if (!railData) {
-    return <section className="tdd-branch-rail" aria-label="Historial Git no disponible">
-      <h3>Historial Git no disponible</h3>
-      <p>Los registros de este repositorio no incluyen SHA y padres para reconstruir las ramas. Las métricas disponibles se muestran debajo.</p>
-    </section>;
+    return null;
   }
 
   return (

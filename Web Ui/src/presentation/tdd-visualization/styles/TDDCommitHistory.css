@@ -175,6 +175,41 @@
   border-color: #378de5;
 }
 
+.tdd-timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 24px;
+}
+
+.tdd-timeline-header h3 {
+  margin: 0;
+}
+
+.tdd-timeline-note {
+  font-size: 0.82rem;
+  color: #51667a;
+}
+
+.tdd-timeline-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+}
+
+.tdd-timeline-card-number {
+  font-weight: 700;
+  color: #052845;
+}
+
+.tdd-timeline-card-meta code {
+  color: #51667a;
+}
+
 .tdd-dashboard-timeline {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));

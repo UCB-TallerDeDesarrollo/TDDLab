@@ -1,11 +1,14 @@
 import { VisualizeTDDRepository } from "../../../../src/modules/TDDCycles/Repositories/VisualizeTDDRepository";
 
-const hasDbConfig = Boolean(process.env.PGHOST);
+const databaseTests = process.env.TDD_TEST_DATABASE === "true" ? describe : describe.skip;
+const [owner, repoName] = (process.env.TDD_TEST_REPOSITORY ?? "").split("/");
 
-(hasDbConfig ? describe : describe.skip)("VisualizeTDDRepository with Neon DB (Real Repository: ChristopherQuiroz/Totalizador-de-Venta)", () => {
+databaseTests("VisualizeTDDRepository with a configured development database", () => {
   const repository = new VisualizeTDDRepository();
-  const owner = "ChristopherQuiroz";
-  const repoName = "Totalizador-de-Venta";
+
+  beforeAll(() => {
+    if (!owner || !repoName) throw new Error("Set TDD_TEST_REPOSITORY to owner/repo");
+  });
 
   it("fetches commit history data from Neon DB", async () => {
     const history = await repository.getCommitHistoryData(owner, repoName);

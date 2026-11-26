@@ -5,19 +5,23 @@ import { parseTDDLogs } from "../../src/modules/TDDCycles/Domain/parseTDDLogs";
 const mockHistory = jest.fn();
 const mockCycles = jest.fn();
 const mockLogs = jest.fn();
+const mockDatabaseHistory = jest.fn();
+const mockDatabaseCycles = jest.fn();
+const mockDatabaseLogs = jest.fn();
+
+jest.mock("../../src/modules/TDDCycles/Repositories/VisualizeTDDRepository", () => ({
+  VisualizeTDDRepository: jest.fn().mockImplementation(() => ({
+    getCommitHistoryData: mockDatabaseHistory,
+    getCommitCyclesData: mockDatabaseCycles,
+    getTDDLogs: mockDatabaseLogs,
+  })),
+}));
 
 jest.mock("../../src/modules/TDDCycles/Repositories/DBCommitsRepository", () => ({
   DBCommitsRepository: jest.fn().mockImplementation(() => ({})),
 }));
 jest.mock("../../src/modules/TDDCycles/Repositories/DBJobsRepository", () => ({
   DBJobsRepository: jest.fn().mockImplementation(() => ({})),
-}));
-jest.mock("../../src/modules/TDDCycles/Repositories/VisualizeTDDRepository", () => ({
-  VisualizeTDDRepository: jest.fn().mockImplementation(() => ({
-    getCommitHistoryData: jest.fn(),
-    getCommitCyclesData: jest.fn(),
-    getTDDLogs: jest.fn(),
-  })),
 }));
 jest.mock("../../src/modules/TDDCycles/Repositories/GithubRepository", () => ({
   GithubRepository: jest.fn().mockImplementation(() => ({
@@ -27,18 +31,15 @@ jest.mock("../../src/modules/TDDCycles/Repositories/GithubRepository", () => ({
   })),
 }));
 
-function createApp(mode?: string) {
-  const previousFake = process.env.TDD_USE_FAKE_REPOSITORY;
+function createApp(mode?: string, source?: string) {
+  const previous = process.env.TDD_USE_FAKE_REPOSITORY;
   const previousSource = process.env.TDD_DATA_SOURCE;
+  if (source === undefined) delete process.env.TDD_DATA_SOURCE;
+  else process.env.TDD_DATA_SOURCE = source;
   if (mode === undefined) {
     delete process.env.TDD_USE_FAKE_REPOSITORY;
-    delete process.env.TDD_DATA_SOURCE;
-  } else if (mode === "true") {
-    process.env.TDD_USE_FAKE_REPOSITORY = "true";
-    process.env.TDD_DATA_SOURCE = "fake";
   } else {
-    process.env.TDD_USE_FAKE_REPOSITORY = "false";
-    process.env.TDD_DATA_SOURCE = "github";
+    process.env.TDD_USE_FAKE_REPOSITORY = mode;
   }
   const app = express();
   try {
@@ -47,10 +48,13 @@ function createApp(mode?: string) {
       app.use("/api/TDDCycles", routes.default);
     });
   } finally {
-    if (previousFake === undefined) delete process.env.TDD_USE_FAKE_REPOSITORY;
-    else process.env.TDD_USE_FAKE_REPOSITORY = previousFake;
     if (previousSource === undefined) delete process.env.TDD_DATA_SOURCE;
     else process.env.TDD_DATA_SOURCE = previousSource;
+    if (previous === undefined) {
+      delete process.env.TDD_USE_FAKE_REPOSITORY;
+    } else {
+      process.env.TDD_USE_FAKE_REPOSITORY = previous;
+    }
   }
   return app;
 }
@@ -108,5 +112,24 @@ describe("TDD visualization API repository selection", () => {
     const response = await request(createApp("false")).get("/api/TDDCycles/tdd-logs").query(query).expect(500);
     expect(response.headers["x-tdd-data-source"]).toBe("github");
     expect(response.body).toEqual({ error: "Server error" });
+  });
+
+  it.each([
+    ["commits-history", mockDatabaseHistory],
+    ["commit-cycles", mockDatabaseCycles],
+    ["tdd-logs", mockDatabaseLogs],
+  ])("selects the database explicitly for %s", async (path, read) => {
+    read.mockResolvedValueOnce([]);
+    const response = await request(createApp("true", "db")).get(`/api/TDDCycles/${path}`)
+      .query(query).expect(200);
+    expect(response.headers["x-tdd-data-source"]).toBe("db");
+    expect(read).toHaveBeenCalledWith(query.owner, query.repoName);
+    expect(mockHistory).not.toHaveBeenCalled();
+    expect(mockCycles).not.toHaveBeenCalled();
+    expect(mockLogs).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid provider instead of selecting an unintended source", () => {
+    expect(() => createApp("false", "invalid")).toThrow("TDD_DATA_SOURCE must be");
   });
 });

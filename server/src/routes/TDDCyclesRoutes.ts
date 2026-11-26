@@ -5,20 +5,18 @@ import { DBJobsRepository } from "../modules/TDDCycles/Repositories/DBJobsReposi
 import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubRepository";
 import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
 import { FakeRepository } from "../modules/TDDCycles/Repositories/FakeRepository";
-import { VisualizeTDDRepository } from "../modules/TDDCycles/Repositories/VisualizeTDDRepository";
 import { tddDataSource } from "../config/tdd";
+import { VisualizeTDDRepository } from "../modules/TDDCycles/Repositories/VisualizeTDDRepository";
 
-// Create instances of repositories on demand
+// Create instances of your repositories
 const dbCommitsRepository = new DBCommitsRepository();
 const dbJobsRepository = new DBJobsRepository();
 const githubRepository = new GithubRepository();
-
-const visualizationRepository =
-  tddDataSource === "fake"
-    ? new FakeRepository()
-    : tddDataSource === "github"
-    ? githubRepository
-    : new VisualizeTDDRepository();
+const visualizationRepository = tddDataSource === "fake"
+  ? new FakeRepository()
+  : tddDataSource === "db"
+    ? new VisualizeTDDRepository()
+    : githubRepository;
 
 // Create an instance of your controller
 const tddCyclesController = new TDDCyclesController(

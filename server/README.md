@@ -71,6 +71,33 @@ la versión aceptada. Las respuestas `400`, `401`, `403` y `503` indican datos
 inválidos, token inválido, repositorio fuera del alcance y configuración de
 ingesta incompleta, respectivamente.
 
+### Proveedor de visualización
+
+`TDD_DATA_SOURCE` selecciona el lector de las tres consultas de visualización:
+`GET /api/TDDCycles/commits-history`, `/commit-cycles` y `/tdd-logs`.
+
+| Valor | Proveedor |
+| --- | --- |
+| `github` | Archivos JSON del repositorio; valor predeterminado. |
+| `fake` | Datos de demostración del backend. |
+| `db` | PostgreSQL, con las migraciones 001–003 aplicadas. |
+
+La selección explícita tiene prioridad sobre `TDD_USE_FAKE_REPOSITORY`. Si no se
+define `TDD_DATA_SOURCE`, se conserva el modo fake cuando esa bandera es `true`;
+en los demás casos se usa GitHub. La cabecera `X-TDD-Data-Source` identifica el
+proveedor utilizado. La escritura conserva su propia configuración de ingesta.
+
+Para probar la variante BD, configura `TDD_DATA_SOURCE=db` en `server/.env`,
+además de la conexión PostgreSQL y las variables de ingesta indicadas arriba.
+En `TDDLabBDBaseProject`, `TDD_API_URL` debe apuntar al endpoint `/api/TDDCycles/events`,
+`TDD_API_TOKEN` debe coincidir con `TDD_INGESTION_TOKEN` y `TDD_REPOSITORY` con
+`TDD_INGESTION_REPOSITORY`. El frontend consume la misma API con `VITE_API_URL`;
+no necesita credenciales de PostgreSQL ni el token de ingesta.
+
+Esta versión configura un repositorio autorizado por token de ingesta. La lectura
+puede consultar diferentes repositorios; probar varias configuraciones de escritura
+no equivale a disponer todavía de administración de tokens por estudiante.
+
 ### Asociaciones y contrato para la API de lectura
 
 `tdd_logs.commit_sha` representa la asociación vigente. `tdd_execution_commits`
@@ -87,15 +114,15 @@ El equipo que implementa las consultas dispone de estas vistas PostgreSQL:
 | `tdd_commit_metrics` | Commits con ejecuciones medidas para historial y ciclos. |
 | `tdd_current_logs` | Logs históricos y ejecuciones UUID asociadas a la versión vigente. |
 
-Las API de consulta deben consumir estas vistas y preservar cobertura `null`.
-Los commits sin pruebas no reciben métricas ficticias. Esta rama añade la ingesta;
-la elección del repositorio lector y su conexión al frontend pertenecen a la
-entrega de consultas.
+`VisualizeTDDRepository` consume estas vistas y preserva cobertura `null`.
+Los commits sin pruebas se muestran como contexto del grafo y no reciben métricas
+ficticias. El lector adapta los UUID y sus asociaciones por SHA al contrato de
+logs que ya consume el frontend, conservando los identificadores de los históricos.
 
 Un commit vigente puede referenciar un padre de una versión anterior, por
 ejemplo si otra rama continúa después de un squash. Su metadata permanece en
-`commitstable`: el lector puede resolver ese contexto para el grafo sin volver
-a incluir las métricas de la versión reemplazada.
+`commitstable`: el lector resuelve esos ancestros para el grafo sin volver
+a incluir las ejecuciones o métricas de la versión reemplazada.
 
 ### Validación
 

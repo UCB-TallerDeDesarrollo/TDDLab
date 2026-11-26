@@ -116,7 +116,9 @@ describe('Integración de la visualización TDD', () => {
 
       expect(screen.getByRole('status')).toHaveTextContent(/^No se tiene ejecución de pruebas$/);
       expect(screen.getByRole('status')).not.toHaveTextContent(/\blog\b|tdd_log\.json|script\//i);
-      expect(screen.getByRole('heading', { name: 'Historial Git — ramas y commits' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Resumen de métricas' })).toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Historial Git no disponible' })).not.toBeInTheDocument();
+      expect(screen.getByText('Formato clásico · Sin registro de ramas')).toBeInTheDocument();
       const metricCharts = screen.getAllByTestId('commit-metric-chart');
       expect(metricCharts).toHaveLength(4);
       expect(metricCharts.some(chart => chart.textContent?.includes('"data":[91]'))).toBe(true);
@@ -433,5 +435,42 @@ describe('Integración de la visualización TDD', () => {
     expect(screen.getByRole('menuitemcheckbox', { name: 'Rama main' })).toHaveAttribute('aria-checked', 'false');
     expect(screen.getByRole('menuitemcheckbox', { name: 'Rama descuentos' })).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByRole('menuitemcheckbox', { name: 'Rama redondeo' })).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('degrada limpiamente en repositorios antiguos sin grafo ni ejecuciones vinculadas', () => {
+    const legacyCommits: CommitDataObject[] = [
+      { ...commits[0], sha: '90836e6111111111111111111111111111111111', conclusion: 'success' },
+      {
+        ...commits[0],
+        sha: 'HEAD',
+        commit: { ...commits[0].commit, date: new Date('2026-01-02T00:00:00Z'), message: 'integración final' },
+        conclusion: 'failure',
+      },
+    ];
+
+    render(
+      <TDDCharts
+        commits={legacyCommits}
+        tddLogs={[]}
+        metric={null}
+        setMetric={jest.fn()}
+        port={new MockGithubAPI()}
+        role="student"
+        commitsTddCycles={null}
+        typegraphs="graph"
+      />,
+    );
+
+    expect(screen.queryByRole('heading', { name: 'Historial Git no disponible' })).not.toBeInTheDocument();
+    expect(screen.getByText('Formato clásico · Sin registro de ramas')).toBeInTheDocument();
+
+    const timeline = within(screen.getByRole('region', { name: 'Línea de tiempo de commits' }));
+    expect(timeline.getByText('Sin ejecuciones individuales vinculadas')).toBeInTheDocument();
+    const [first, second] = timeline.getAllByRole('button');
+    expect(first).toHaveAttribute('data-result', 'success');
+    expect(first).not.toHaveTextContent('Sin ejecución vinculada');
+    expect(second).toHaveAttribute('data-result', 'failure');
+    expect(second).toHaveTextContent('Último commit');
+    expect(second).not.toHaveTextContent(/\bHEAD\b/);
   });
 });

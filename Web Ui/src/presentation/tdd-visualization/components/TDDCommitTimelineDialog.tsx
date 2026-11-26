@@ -108,7 +108,9 @@ const CommitTimelineDialog: React.FC<CommitTimelineDialogProps> = ({
                 marginBottom: branchList.length > 0 ? "8px" : "10px",
               }}
             >
-              <code title={selectedCommit.sha}>{selectedCommit.sha.slice(0, 7)}</code>
+              <code title={selectedCommit.sha}>
+                {selectedCommit.sha === "HEAD" ? "Último commit" : selectedCommit.sha.slice(0, 7)}
+              </code>
             </div>
             {branchList.length > 0 && (
               <div

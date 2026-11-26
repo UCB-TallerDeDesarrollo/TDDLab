@@ -1,166 +1,53 @@
 import { VisualizeTDDRepository } from "../../../../src/modules/TDDCycles/Repositories/VisualizeTDDRepository";
-import { Pool } from "pg";
 
 describe("VisualizeTDDRepository", () => {
-  let mockClient: any;
-  let mockPool: any;
-  let repository: VisualizeTDDRepository;
+  const client = { query: jest.fn(), release: jest.fn() };
+  const pool = { connect: jest.fn().mockResolvedValue(client) };
+  const repository = new VisualizeTDDRepository(pool);
 
-  beforeEach(() => {
-    mockClient = {
-      query: jest.fn(),
-      release: jest.fn(),
-    };
-    mockPool = {
-      connect: jest.fn().mockResolvedValue(mockClient),
-    };
-    repository = new VisualizeTDDRepository(mockPool as unknown as Pool);
+  beforeEach(() => jest.clearAllMocks());
+
+  it("returns the stored date, test result and complete modification count", async () => {
+    const date = new Date("2026-11-25T12:00:00Z");
+    client.query.mockResolvedValueOnce({ rows: [{
+      html_url: "https://github.com/example/exercise/commit/abc", sha: "abc", total: 117,
+      additions: 116, deletions: 1, message: "test: registrar fallo", url: "", comment_count: 0,
+      commit_date: date, coverage: "0", test_count: 1, conclusion: "failure",
+    }] });
+    const [commit] = await repository.getCommitHistoryData("Example", "Exercise");
+    expect(commit).toMatchObject({
+      sha: "abc", stats: { total: 117, additions: 116, deletions: 1, date: date.toISOString() },
+      commit: { date, message: "test: registrar fallo" }, coverage: 0, test_count: 1, conclusion: "failure",
+    });
+    expect(client.query).toHaveBeenCalledWith(expect.any(String), ["Example", "Exercise"]);
+    expect(client.release).toHaveBeenCalledTimes(1);
   });
 
-  describe("getCommitHistoryData", () => {
-    it("should return formatted commit history from database", async () => {
-      const mockRows = [
-        {
-          owner: "testowner",
-          reponame: "testrepo",
-          html_url: "https://github.com/ChristopherQuiroz/Totalizador-de-Venta",
-          sha: "sha1",
-          total: 10,
-          additions: 7,
-          deletions: 3,
-          message: "feat: add feature",
-          url: "https://github.com/ChristopherQuiroz/Totalizador-de-Venta",
-          comment_count: 2,
-          commit_date: new Date("2026-01-01T12:00:00Z"),
-          coverage: "85.5",
-          test_count: 15,
-          conclusion: "success",
-        },
-      ];
-      mockClient.query.mockResolvedValueOnce({ rows: mockRows });
-
-      const result = await repository.getCommitHistoryData("testowner", "testrepo");
-
-      expect(mockClient.query).toHaveBeenCalledTimes(1);
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({
-        html_url: "https://github.com/ChristopherQuiroz/Totalizador-de-Venta",
-        sha: "sha1",
-        stats: {
-          total: 10,
-          additions: 7,
-          deletions: 3,
-          date: new Date("2026-01-01T12:00:00Z").toISOString(),
-        },
-        commit: {
-          date: new Date("2026-01-01T12:00:00Z"),
-          message: "feat: add feature",
-          url: "https://github.com/ChristopherQuiroz/Totalizador-de-Venta",
-          comment_count: 2,
-        },
-        coverage: 85.5,
-        test_count: 15,
-        conclusion: "success",
-      });
-      expect(mockClient.release).toHaveBeenCalledTimes(1);
-    });
+  it.each([null, ""])("keeps unknown coverage %p distinct from zero", async (coverage) => {
+    client.query.mockResolvedValueOnce({ rows: [{ sha: "abc", commit_date: new Date(), coverage, test_count: 1 }] });
+    expect((await repository.getCommitHistoryData("example", "exercise"))[0].coverage).toBeNull();
   });
 
-  describe("getCommitCyclesData", () => {
-    it("should return mapped commit cycles data from database", async () => {
-      const mockRows = [
-        {
-          url: "https://github.com/ChristopherQuiroz/Totalizador-de-Venta",
-          sha: "sha1",
-          tdd_cycle: "RojoVerde",
-          coverage: "90",
-        },
-      ];
-      mockClient.query.mockResolvedValueOnce({ rows: mockRows });
-
-      const result = await repository.getCommitCyclesData("testowner", "testrepo");
-
-      expect(result).toEqual([
-        {
-          url: "https://github.com/ChristopherQuiroz/Totalizador-de-Venta",
-          sha: "sha1",
-          tddCycle: "RojoVerde",
-          coverage: 90,
-        },
-      ]);
-    });
+  it("returns cycle classifications without substituting missing coverage", async () => {
+    client.query.mockResolvedValueOnce({ rows: [
+      { url: "", sha: "abc", tdd_cycle: "RojoVerde", coverage: "0" },
+      { url: "", sha: "def", tdd_cycle: null, coverage: null },
+    ] });
+    expect(await repository.getCommitCyclesData("example", "exercise")).toEqual([
+      { url: "", sha: "abc", tddCycle: "RojoVerde", coverage: 0 },
+      { url: "", sha: "def", tddCycle: "null", coverage: null },
+    ]);
   });
 
-  describe("getTDDLogs", () => {
-    it("should return test execution and commit log entries from database", async () => {
-      const mockRows = [
-        {
-          type: "test_execution",
-          test_id: 1,
-          num_passed_tests: 5,
-          failed_tests: 0,
-          num_total_tests: 5,
-          timestamp: 1600000000000,
-          success: true,
-        },
-        {
-          type: "commit_event",
-          test_id: 1,
-          commit_sha: "sha123",
-          commit_name: "Initial commit",
-          timestamp: 1600000005000,
-          git_graph: JSON.stringify([{ sha: "sha123", parents: [] }]),
-        },
-      ];
-      mockClient.query.mockResolvedValueOnce({ rows: mockRows });
-
-      const result = await repository.getTDDLogs("testowner", "testrepo");
-
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({
-        testId: 1,
-        numPassedTests: 5,
-        failedTests: 0,
-        numTotalTests: 5,
-        timestamp: 1600000000000,
-        success: true,
-      });
-      expect(result[1]).toEqual({
-        testId: 1,
-        commitId: "sha123",
-        commitName: "Initial commit",
-        commitTimestamp: 1600000005000,
-        gitGraph: [{ sha: "sha123", parents: [] }],
-      });
-    });
+  it("does not invent a current date for an undated commit", async () => {
+    client.query.mockResolvedValueOnce({ rows: [{ commit_date: null }] });
+    await expect(repository.getCommitHistoryData("example", "exercise")).rejects.toThrow("missing its date");
+    expect(client.release).toHaveBeenCalledTimes(1);
   });
 
-  describe("saveTDDLogs", () => {
-    it("should insert log entries in a transaction", async () => {
-      mockClient.query.mockResolvedValue({ rows: [] });
-
-      const logs = [
-        {
-          numPassedTests: 3,
-          failedTests: 1,
-          numTotalTests: 4,
-          timestamp: 1600000000000,
-          success: false,
-          testId: 1,
-        },
-        {
-          commitId: "sha999",
-          commitName: "fix tests",
-          commitTimestamp: 1600000010000,
-          testId: 1,
-        },
-      ];
-
-      await repository.saveTDDLogs("testowner", "testrepo", logs);
-
-      expect(mockClient.query).toHaveBeenCalledWith("BEGIN");
-      expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
-      expect(mockClient.release).toHaveBeenCalled();
-    });
+  it("releases the connection when reading logs fails", async () => {
+    client.query.mockRejectedValueOnce(new Error("database unavailable"));
+    await expect(repository.getTDDLogs("example", "exercise")).rejects.toThrow("database unavailable");
+    expect(client.release).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,54 +1,66 @@
 import { Pool } from "pg";
 import config from "../../../config/db";
-import { IVisualizeTDDRepository } from "../Domain/IVisualizeTDDRepository";
+import { ITDDVisualizationRepository } from "../Domain/ITDDVisualizationRepository";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
-import { TDDLogEntry, TestExecutionLog, CommitLog } from "../Domain/TDDLogEntry";
+import { TDDDatabasePool } from "./TDDDatabase";
+import { serializeTDDLogs, StoredTDDLog } from "./serializeTDDLogs";
 
-export class VisualizeTDDRepository implements IVisualizeTDDRepository {
-  private pool: Pool;
+interface CommitMetricsRow {
+  html_url: string | null;
+  sha: string;
+  total: number | null;
+  additions: number | null;
+  deletions: number | null;
+  message: string | null;
+  url: string | null;
+  comment_count: number | null;
+  commit_date: Date | null;
+  coverage: string | null;
+  test_count: number;
+  conclusion: string | null;
+  tdd_cycle: string | null;
+}
 
-  constructor(pool?: Pool) {
-    this.pool = pool || new Pool(config);
+function coverage(value: string | null): number | null {
+  return value === null || value === "" ? null : Number(value);
+}
+
+export class VisualizeTDDRepository implements ITDDVisualizationRepository {
+  private readonly pool: TDDDatabasePool;
+
+  constructor(pool?: TDDDatabasePool) {
+    this.pool = pool ?? new Pool(config);
   }
 
   async getCommitHistoryData(owner: string, repoName: string): Promise<CommitHistoryData[]> {
     const client = await this.pool.connect();
     try {
-      const query = `
-        SELECT owner, reponame, html_url, sha, total, additions, deletions,
-               message, url, comment_count, commit_date, coverage, test_count,
-               conclusion, parents, tdd_cycle
-        FROM commitstable
-        WHERE LOWER(owner) = LOWER($1) AND LOWER(reponame) = LOWER($2)
-        ORDER BY commit_date DESC
-      `;
-      const result = await client.query(query, [owner, repoName]);
-
-      const commits: CommitHistoryData[] = result.rows.map((row) => ({
-        html_url: row.html_url || "",
-        sha: row.sha,
-        stats: {
-          total: Number(row.total) || 0,
-          additions: Number(row.additions) || 0,
-          deletions: Number(row.deletions) || 0,
-          date: row.commit_date ? new Date(row.commit_date).toISOString() : new Date().toISOString(),
-        },
-        commit: {
-          date: row.commit_date ? new Date(row.commit_date) : new Date(),
-          message: row.message || "",
-          url: row.url || "",
-          comment_count: Number(row.comment_count) || 0,
-        },
-        coverage: Number(row.coverage) || 0,
-        test_count: Number(row.test_count) || 0,
-        conclusion: row.conclusion || "unknown",
-      }));
-
-      return commits;
-    } catch (error) {
-      console.error(`Error retrieving commit history from DB for ${owner}/${repoName}:`, error);
-      throw error;
+      const result = await client.query<CommitMetricsRow>(`
+        SELECT html_url, sha, total, additions, deletions, message, url,
+               comment_count, commit_date, coverage, test_count, conclusion
+        FROM tdd_commit_metrics
+        WHERE lower(owner) = lower($1) AND lower(reponame) = lower($2)
+        ORDER BY commit_date DESC, sha
+      `, [owner, repoName]);
+      return result.rows.map((row) => {
+        if (!row.commit_date) throw new Error("A recorded commit is missing its date");
+        const date = new Date(row.commit_date);
+        return {
+          html_url: row.html_url ?? "",
+          sha: row.sha,
+          stats: {
+            total: row.total ?? 0,
+            additions: row.additions ?? 0,
+            deletions: row.deletions ?? 0,
+            date: date.toISOString(),
+          },
+          commit: { date, message: row.message ?? "", url: row.url ?? "", comment_count: row.comment_count ?? 0 },
+          coverage: coverage(row.coverage),
+          test_count: row.test_count,
+          conclusion: row.conclusion ?? "unknown",
+        };
+      });
     } finally {
       client.release();
     }
@@ -57,121 +69,44 @@ export class VisualizeTDDRepository implements IVisualizeTDDRepository {
   async getCommitCyclesData(owner: string, repoName: string): Promise<CommitCycleData[]> {
     const client = await this.pool.connect();
     try {
-      const query = `
-        SELECT url, sha, tdd_cycle, coverage
-        FROM commitstable
-        WHERE LOWER(owner) = LOWER($1) AND LOWER(reponame) = LOWER($2)
-        ORDER BY commit_date ASC
-      `;
-      const result = await client.query(query, [owner, repoName]);
-
+      const result = await client.query<CommitMetricsRow>(`
+        SELECT url, sha, tdd_cycle, coverage FROM tdd_commit_metrics
+        WHERE lower(owner) = lower($1) AND lower(reponame) = lower($2)
+        ORDER BY commit_date, sha
+      `, [owner, repoName]);
       return result.rows.map((row) => ({
-        url: row.url || "",
+        url: row.url ?? "",
         sha: row.sha,
         tddCycle: row.tdd_cycle ?? "null",
-        coverage: Number(row.coverage) || 0,
+        coverage: coverage(row.coverage),
       }));
-    } catch (error) {
-      console.error(`Error retrieving commit cycles from DB for ${owner}/${repoName}:`, error);
-      throw error;
     } finally {
       client.release();
     }
   }
 
-  async getTDDLogs(owner: string, repoName: string): Promise<TDDLogEntry[]> {
+  async getTDDLogs(owner: string, repoName: string) {
     const client = await this.pool.connect();
     try {
-      const query = `
-        SELECT id, owner, reponame, type, test_id, commit_sha, commit_name,
-               num_passed_tests, failed_tests, num_total_tests, timestamp, success, git_graph
-        FROM tdd_logs
-        WHERE LOWER(owner) = LOWER($1) AND LOWER(reponame) = LOWER($2)
-        ORDER BY timestamp ASC, id ASC
-      `;
-      const result = await client.query(query, [owner, repoName]);
-
-      const logs: TDDLogEntry[] = result.rows.map((row) => {
-        if (row.type === "commit_event" || row.commit_sha) {
-          const commitLog: CommitLog = {
-            commitId: row.commit_sha,
-            commitName: row.commit_name || "",
-            commitTimestamp: Number(row.timestamp),
-            testId: Number(row.test_id),
-            gitGraph: row.git_graph
-              ? typeof row.git_graph === "string"
-                ? JSON.parse(row.git_graph)
-                : row.git_graph
-              : undefined,
-          };
-          return commitLog;
-        } else {
-          const testLog: TestExecutionLog = {
-            numPassedTests: Number(row.num_passed_tests) || 0,
-            failedTests: Number(row.failed_tests) || 0,
-            numTotalTests: Number(row.num_total_tests) || 0,
-            timestamp: Number(row.timestamp) || 0,
-            success: Boolean(row.success),
-            testId: Number(row.test_id) || 0,
-          };
-          return testLog;
-        }
-      });
-
-      return logs;
-    } catch (error) {
-      console.error(`Error retrieving TDD logs from DB for ${owner}/${repoName}:`, error);
-      throw error;
-    } finally {
-      client.release();
-    }
-  }
-
-  async saveTDDLogs(owner: string, repoName: string, logs: TDDLogEntry[]): Promise<void> {
-    const client = await this.pool.connect();
-    try {
-      await client.query("BEGIN");
-      for (const log of logs) {
-        if ("commitId" in log) {
-          const query = `
-            INSERT INTO tdd_logs (owner, reponame, type, test_id, commit_sha, commit_name, timestamp, git_graph)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-          `;
-          const values = [
-            owner,
-            repoName,
-            "commit_event",
-            log.testId,
-            log.commitId,
-            log.commitName,
-            log.commitTimestamp,
-            log.gitGraph ? JSON.stringify(log.gitGraph) : null,
-          ];
-          await client.query(query, values);
-        } else {
-          const query = `
-            INSERT INTO tdd_logs (owner, reponame, type, test_id, num_passed_tests, failed_tests, num_total_tests, timestamp, success)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-          `;
-          const values = [
-            owner,
-            repoName,
-            "test_execution",
-            log.testId,
-            log.numPassedTests,
-            log.failedTests,
-            log.numTotalTests,
-            log.timestamp,
-            log.success,
-          ];
-          await client.query(query, values);
-        }
-      }
-      await client.query("COMMIT");
-    } catch (error) {
-      await client.query("ROLLBACK");
-      console.error(`Error saving TDD logs to DB for ${owner}/${repoName}:`, error);
-      throw error;
+      const result = await client.query<StoredTDDLog>(`
+        WITH RECURSIVE graph AS (
+          SELECT sha, parents FROM tdd_current_commits
+          WHERE lower(owner) = lower($1) AND lower(reponame) = lower($2)
+          UNION
+          SELECT parent.sha, parent.parents FROM commitstable parent
+          JOIN graph child ON child.parents ? parent.sha
+          WHERE lower(parent.owner) = lower($1) AND lower(parent.reponame) = lower($2)
+        )
+        SELECT * FROM tdd_logs WHERE id IN (
+          SELECT id FROM tdd_current_logs
+          WHERE lower(owner) = lower($1) AND lower(reponame) = lower($2)
+          UNION
+          SELECT log.id FROM tdd_logs log JOIN graph ON graph.sha = log.commit_sha
+          WHERE lower(log.owner) = lower($1) AND lower(log.reponame) = lower($2)
+            AND log.type = 'commit_event'
+        ) ORDER BY timestamp, id
+      `, [owner, repoName]);
+      return serializeTDDLogs(result.rows);
     } finally {
       client.release();
     }

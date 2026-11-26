@@ -398,35 +398,51 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
     () => commits.some((commit) => commit.coverage === null || commit.coverage === undefined),
     [commits],
   );
+  const hasGitGraph = Boolean(gitGraph?.length);
+  const hasLinkedExecutions = testsByCommit.size > 0;
 
   return (
     <>
       {!graph ? (
         <section className="tdd-dashboard">
-          <div className="tdd-dashboard-header">
-            <h2>Historial Git — ramas y commits</h2>
-          </div>
-          <BranchFocusBar
-            meta={branchMeta}
-            selectedBranches={selectedBranches}
-            previewBranch={previewBranch}
-            onToggleBranch={handleToggleBranch}
-            onSelectAll={handleSelectAllBranches}
-            onPreviewBranch={handlePreviewBranch}
-            onViewHistory={onSelectMetric ? () => changeGraph("Lista") : undefined}
-          />
-          <TDDBranchRail
-            tddLogs={tddLogs}
-            gitGraph={gitGraph}
-            commits={commits}
-            commitNumbers={commitNumbers}
-            branchMeta={branchMeta}
-            activeBranches={activeBranches}
-            onSelectCommit={openCommitModal}
-            onToggleBranch={handleToggleBranch}
-            onPreviewBranch={handlePreviewBranch}
-          />
-          <h3>Resumen de métricas</h3>
+          {hasGitGraph ? (
+            <>
+              <div className="tdd-dashboard-header">
+                <h2>Historial Git — ramas y commits</h2>
+              </div>
+              <BranchFocusBar
+                meta={branchMeta}
+                selectedBranches={selectedBranches}
+                previewBranch={previewBranch}
+                onToggleBranch={handleToggleBranch}
+                onSelectAll={handleSelectAllBranches}
+                onPreviewBranch={handlePreviewBranch}
+                onViewHistory={onSelectMetric ? () => changeGraph("Lista") : undefined}
+              />
+              <TDDBranchRail
+                tddLogs={tddLogs}
+                gitGraph={gitGraph}
+                commits={commits}
+                commitNumbers={commitNumbers}
+                branchMeta={branchMeta}
+                activeBranches={activeBranches}
+                onSelectCommit={openCommitModal}
+                onToggleBranch={handleToggleBranch}
+                onPreviewBranch={handlePreviewBranch}
+              />
+              <h3>Resumen de métricas</h3>
+            </>
+          ) : (
+            <div className="tdd-dashboard-header tdd-dashboard-header--legacy">
+              <h2>Resumen de métricas</h2>
+              <span
+                className="tdd-legacy-notice"
+                title="Los registros de este repositorio no incluyen SHA y padres para reconstruir las ramas."
+              >
+                Formato clásico · Sin registro de ramas
+              </span>
+            </div>
+          )}
           <div className="tdd-dashboard-metrics">
             <div
               className="tdd-dashboard-metric-card"
@@ -644,10 +660,20 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
           </div>
 
       <section aria-label="Línea de tiempo de commits">
-          <h3>Línea de tiempo de commits</h3>
+          <div className="tdd-timeline-header">
+            <h3>Línea de tiempo de commits</h3>
+            {!hasLinkedExecutions && chronologicalCommits.length > 0 && (
+              <span className="tdd-timeline-note">
+                {logsError
+                  ? "Ejecuciones individuales no disponibles"
+                  : "Sin ejecuciones individuales vinculadas"}
+              </span>
+            )}
+          </div>
           {!chronologicalCommits.length && <p>No hay commits con métricas registradas.</p>}
           <ol className="tdd-dashboard-timeline">
-            {chronologicalCommits.map(commit => {
+            {chronologicalCommits.map((commit, index) => {
+              const number = commitNumbers.get(commit.sha) ?? index + 1;
               const results = (testsByCommit.get(commit.sha) ?? []).map(testResult);
               const successes = results.filter(result => result === "success").length;
               const failures = results.filter(result => result === "failure").length;
@@ -657,27 +683,44 @@ const TDDBoard: React.FC<CycleReportViewProps> = ({
                 failures && failures + " fallida(s)",
                 unknown && unknown + " sin resultado",
               ].filter(Boolean).join(" · ");
+              const cardResult = failures
+                ? "failure"
+                : successes
+                  ? "success"
+                  : !hasLinkedExecutions && commit.conclusion === "failure"
+                    ? "failure"
+                    : !hasLinkedExecutions && commit.conclusion === "success"
+                      ? "success"
+                      : "unknown";
+              const isHeadPlaceholder = commit.sha === "HEAD";
               return (
                 <li key={commit.sha}>
                   <button
                     type="button"
                     aria-pressed={selectedCommit?.sha === commit.sha}
                     onClick={() => openCommitModal(commit)}
-                    data-result={failures ? "failure" : successes ? "success" : "unknown"}
+                    data-result={cardResult}
                     title={commit.commit.message}
                   >
-                    <code title={commit.sha}>{commit.sha.slice(0, 7)}</code>
+                    <div className="tdd-timeline-card-meta">
+                      <span className="tdd-timeline-card-number">Commit {number}</span>
+                      <code title={commit.sha}>
+                        {isHeadPlaceholder ? "Último commit" : commit.sha.slice(0, 7)}
+                      </code>
+                    </div>
                     <span>{commit.commit.message.split(/\r?\n/)[0]}</span>
                     <small>{formatDate(new Date(commit.commit.date))}</small>
                     <small>Tests: {commit.test_count ?? "Sin datos"} · Cobertura: {commit.coverage == null ? "Sin datos" : commit.coverage + "%"} · Líneas: {commit.stats.total ?? "Sin datos"}</small>
-                    <small>{counts || (logsError ? "Ejecuciones no disponibles" : "Sin ejecución vinculada")}</small>
+                    {hasLinkedExecutions && (
+                      <small>{counts || (logsError ? "Ejecuciones no disponibles" : "Sin ejecución vinculada")}</small>
+                    )}
                   </button>
                 </li>
               );
             })}
           </ol>
-          {!!gitGraph?.length && (
-            <button type="button" onClick={() => changeGraph("Lista")}>Ver historial de ramas</button>
+          {hasGitGraph && (
+            <button type="button" className="tdd-branch-history-link" onClick={() => changeGraph("Lista")}>Ver historial de ramas</button>
           )}
         </section>
             <CommitTimelineDialog

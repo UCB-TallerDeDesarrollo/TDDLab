@@ -13,7 +13,7 @@ export interface CommitHistoryData {
     url: string;
     comment_count: number;
   };
-  coverage: number;
+  coverage: number | null;
   test_count: number;
   conclusion: string;
 }
