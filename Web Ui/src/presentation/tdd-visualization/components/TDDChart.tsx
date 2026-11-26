@@ -1,10 +1,7 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { Box, InputLabel, MenuItem, FormControl, Select } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
 import "../styles/TDDChartStyles.css";
 import TDDLineCharts from "./TDDLineChart";
 import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
@@ -48,7 +45,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
       const filteredCommitsObject = commits.map((commit) => {
         // Si commit.stats.total es mayor que maxLinesInGraph, ajustamos a 50
         if (commit.stats.total > maxLinesInGraph) {
-          commit.stats.total = 50;
+          return { ...commit, stats: { ...commit.stats, total: 50 } };
         }
         // Devolvemos el commit (modificado o no) para que esté en el array
         return commit;
@@ -123,7 +120,7 @@ function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, 
         </FormControl>
       </Box>
       <TDDLineCharts
-        filteredCommitsObject={filteredCommitsObject}
+        filteredCommitsObject={metricSelected === "Lista" ? commits : filteredCommitsObject}
         tddLogs = {tddLogs}
         optionSelected={metricSelected}
         port={port}

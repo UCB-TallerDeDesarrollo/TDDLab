@@ -30,7 +30,7 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
   }
 
   function getCommitStats() {
-    const coverageText = commit.coverage
+    const coverageText = commit.coverage != null
       ? `${commit.coverage}%`
       : "Sin cobertura";
     const testCountText = commit.test_count
@@ -67,11 +67,12 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
     let testCount = commit.test_count || 0;
     let conclusion = commit.conclusion || "failure";
     let isSuccessful = testCount > 0 && conclusion === "success";
+    const withoutTests = testCount === 0 || conclusion === "skipped";
 
     return (
       <div
         style={{
-          backgroundColor: isSuccessful ? '#28a745' : '#dc3545',
+          backgroundColor: withoutTests ? '#666666' : isSuccessful ? '#28a745' : '#dc3545',
           color: 'white',
           padding: '16px 28px',
           borderRadius: '8px',
@@ -82,8 +83,8 @@ function TDDCycleCard({ commit }: Readonly<CycleReportViewProps>) {
           fontSize: '16px'
         }}
       >
-        <span style={{ marginRight: '8px' }}>{isSuccessful ? '✔️' : '❌'}</span>
-        {isSuccessful ? 'Resultado: Exitoso' : 'Resultado: Fallido'}
+        <span style={{ marginRight: '8px' }}>{withoutTests ? '—' : isSuccessful ? '✔️' : '❌'}</span>
+        {withoutTests ? 'Resultado: Sin tests' : isSuccessful ? 'Resultado: Exitoso' : 'Resultado: Fallido'}
       </div>
     );
   }

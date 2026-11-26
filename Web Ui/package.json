@@ -12,7 +12,9 @@
     "test": "jest --coverage",
     "test:coverage": "jest --coverage",
     "cy:open": "cypress open",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run",
+    "test:hu08:e2e": "cypress run --config-file cypress.hu08.config.cjs --browser electron --headless",
+    "qa:hu08": "vite --force --host 127.0.0.1 --port 5173 --strictPort"
   },
   "dependencies": {
     "@emotion/react": "11.11.1",

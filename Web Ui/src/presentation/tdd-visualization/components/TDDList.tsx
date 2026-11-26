@@ -20,6 +20,7 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner = searchParams.get("repoOwner") ?? "";
   const repoName = searchParams.get("repoName") ?? "";
+  const branch = searchParams.get("branch") ?? "main";
   const [commitsState, setCommitsState] = useState<CommitsState>({
     status: "loading",
   });
@@ -29,7 +30,7 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
     setCommitsState({ status: "loading" });
 
     new GetCommitsOfRepo(port)
-      .execute(repoOwner, repoName)
+      .execute(repoOwner, repoName, branch)
       .then((commits) => {
         if (isActive) {
           setCommitsState(
@@ -49,7 +50,7 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
     return () => {
       isActive = false;
     };
-  }, [port, repoOwner, repoName]);
+  }, [port, repoOwner, repoName, branch]);
 
   return (
     <div style={{ marginTop: "30px" }}>
