@@ -6,6 +6,65 @@
   flex-direction: column;
 }
 
+.branch-analysis-panel {
+  width: min(820px, calc(100% - 32px));
+  margin: 12px auto 24px;
+  padding: 18px 20px 14px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #d9e2ec;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(5, 40, 69, 0.06);
+}
+
+.branch-analysis-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  color: #052845;
+}
+
+.branch-analysis-heading svg {
+  flex: 0 0 auto;
+  font-size: 24px;
+}
+
+.branch-analysis-heading h2 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.branch-analysis-current {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.branch-analysis-current strong {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #052845;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .branch-analysis-panel {
+    padding: 15px 14px 12px;
+  }
+
+  .branch-analysis-heading h2 {
+    font-size: 17px;
+  }
+}
+
 .center-content {
   display: flex;
   align-items: center;

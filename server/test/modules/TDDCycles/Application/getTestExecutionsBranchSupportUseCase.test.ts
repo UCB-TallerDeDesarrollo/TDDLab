@@ -12,6 +12,7 @@ describe("GetTestExecutionsBranchSupportUseCase", () => {
       getCommitCyclesData: jest.fn(),
       getProjectBranches: jest.fn(),
       getTestExecutions: jest.fn(),
+      getTopologyGraph: jest.fn(),
     };
     useCase = new GetTestExecutionsBranchSupportUseCase(mockRepo);
   });

@@ -8,9 +8,11 @@ describe("GetCommitHistoryBranchSupportUseCase", () => {
 
   beforeEach(() => {
     mockRepo = {
-      getCommitHistoryData: jest.fn(),
-      getCommitCyclesData: jest.fn(),
-      getProjectBranches: jest.fn(),
+        getCommitHistoryData: jest.fn(),
+        getCommitCyclesData: jest.fn(),
+        getProjectBranches: jest.fn(),
+        getTestExecutions: jest.fn(),
+        getTopologyGraph: jest.fn(),
     };
     useCase = new GetCommitHistoryBranchSupportUseCase(mockRepo);
   });
