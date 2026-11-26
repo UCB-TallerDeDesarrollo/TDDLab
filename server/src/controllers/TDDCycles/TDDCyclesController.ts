@@ -115,7 +115,15 @@ class TDDCyclesController {
       if (history === null) return res.status(404).json({ error: "Repository or branch not found" });
       return res.status(200).json(history);
     } catch (error) {
-      console.error("Error fetching branch history");
+      const code = typeof error === "object" && error !== null && "code" in error
+        ? String(error.code) : "";
+      const diagnostic = /^[0-9A-Z]{5}$/.test(code) ||
+        ["ECONNREFUSED", "ECONNRESET", "ETIMEDOUT", "ENOTFOUND", "EAI_AGAIN", "SELF_SIGNED_CERT_IN_CHAIN", "UNABLE_TO_VERIFY_LEAF_SIGNATURE"].includes(code)
+        ? code
+        : error instanceof Error && /connection timeout|timeout exceeded/i.test(error.message)
+          ? "CONNECTION_TIMEOUT" : "UNCLASSIFIED";
+      // Log only a diagnostic code, never the raw error, SQL or connection URL.
+      console.error("Error fetching branch history:", diagnostic);
       return res.status(500).json({ error: "Server error" });
     }
   }
