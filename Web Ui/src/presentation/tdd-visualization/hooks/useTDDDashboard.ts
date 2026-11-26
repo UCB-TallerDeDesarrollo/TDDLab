@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type {
   CommitDataObject,
 } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import type { BranchDTO } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import type {
   CommitCycle,
 } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
@@ -26,6 +27,7 @@ export function useTDDDashboard(
   commits: CommitDataObject[] | null,
   cycles: CommitCycle[] | null,
   logs: TDDLogEntry[] | null,
+  branchesFromRepo?: BranchDTO[] | null,
 ): TDDDashboardViewState {
   const branches = useMemo(
     () =>
@@ -33,8 +35,9 @@ export function useTDDDashboard(
         commits ?? EMPTY_COMMITS,
         cycles ?? EMPTY_CYCLES,
         logs ?? EMPTY_LOGS,
+        branchesFromRepo ?? undefined,
       ),
-    [commits, cycles, logs],
+    [commits, cycles, logs, branchesFromRepo],
   );
 
   const [selectedBranchName, setSelectedBranchName] = useState<string | null>(

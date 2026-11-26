@@ -1,4 +1,5 @@
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import { BranchDTO } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
@@ -15,6 +16,7 @@ import { useTDDDashboard } from "../hooks/useTDDDashboard";
 interface CycleReportViewProps {
   commits: CommitDataObject[] | null;
   tddLogs: TDDLogEntry[] | null;
+  branchesInfo?: BranchDTO[] | null;
   metric: string | null;
   setMetric: (metric: string) => void;
   port: CommitHistoryRepository;
@@ -23,9 +25,9 @@ interface CycleReportViewProps {
   typegraphs: string;
 }
 
-function TDDCharts({ commits, tddLogs, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
+function TDDCharts({ commits, tddLogs, branchesInfo, setMetric, port, role, commitsTddCycles, typegraphs }: Readonly<CycleReportViewProps>) {
   const maxLinesInGraph = 100;
-  const dashboardState = useTDDDashboard(commits, commitsTddCycles, tddLogs);
+  const dashboardState = useTDDDashboard(commits, commitsTddCycles, tddLogs, branchesInfo);
   const [metricSelected, setMetricSelected] = useState(() => {
     return localStorage.getItem("selectedMetric") ?? "DashboardClasico";
   });

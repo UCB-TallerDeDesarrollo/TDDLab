@@ -1,5 +1,6 @@
 import type {
   CommitDataObject,
+  BranchDTO,
 } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import type { TddExecution } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import type {
@@ -130,6 +131,7 @@ export function buildTDDDashboardViewModel(
   commits: CommitDataObject[],
   cycles: CommitCycle[],
   logs: TDDLogEntry[],
+  branchesFromRepo?: BranchDTO[],
 ): TDDBranchView[] {
   const executionsBySha = groupExecutionsByCommit(logs);
   const branchesByName = new Map<string, TDDBranchView>();
@@ -177,6 +179,20 @@ export function buildTDDDashboardViewModel(
     };
 
     branchesByName.get(branchName)?.commits.push(commitView);
+  }
+
+  // Agrega ramas del repositorio que no tienen commits aún, debajo de main.
+  if (branchesFromRepo) {
+    for (const branch of branchesFromRepo) {
+      if (!branchesByName.has(branch.name)) {
+        branchesByName.set(branch.name, {
+          name: branch.name,
+          color: getBranchColor(branch.name),
+          commits: [],
+          executionCount: 0,
+        });
+      }
+    }
   }
 
   const branches = [...branchesByName.values()];
