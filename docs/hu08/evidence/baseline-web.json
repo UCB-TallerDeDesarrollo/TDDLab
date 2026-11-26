@@ -1,0 +1,2607 @@
+{
+  "success": true,
+  "numTotalTestSuites": 68,
+  "numPassedTestSuites": 68,
+  "numFailedTestSuites": 0,
+  "numTotalTests": 325,
+  "numPassedTests": 325,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "startTime": 1795661716538,
+  "testResults": [
+    {
+      "name": "Web Ui/test/presentation/assignments/assignmentDetail.test.tsx",
+      "status": "passed",
+      "startTime": 1795661717977,
+      "endTime": 1795661779434,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AssignmentDetail Component displays the group name",
+          "status": "passed",
+          "duration": 1215,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentDetail Component displays the Estado and Enlace sections for student role",
+          "status": "passed",
+          "duration": 53,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentDetail Component does not display the Estado and Enlace sections for teacher roles",
+          "status": "passed",
+          "duration": 299,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentDetail Component shows only the start lifecycle action when the task is pending",
+          "status": "passed",
+          "duration": 21,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentDetail Component does not display 'Iniciar tarea', 'Ver gráfica', or 'Finalizar tarea' buttons for non-student roles",
+          "status": "passed",
+          "duration": 32,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentDetail Component displays the list of submissions for teacher role",
+          "status": "passed",
+          "duration": 40,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentDetail Component shows loading indicator while fetching assignment details",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentDetail Component opens and closes the GitLinkDialog",
+          "status": "passed",
+          "duration": 217,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action shows only Iniciar tarea for a task without a saved submission",
+          "status": "passed",
+          "duration": 79,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action replaces the same button only after saving, then finishes and restores the saved state on re-entry",
+          "status": "passed",
+          "duration": 660,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action does not offer an action or a pending status before the saved state loads",
+          "status": "passed",
+          "duration": 63,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action shows a retry on read failure instead of offering to start again",
+          "status": "passed",
+          "duration": 101,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action keeps the task pending on failed start and allows retrying the same dialog",
+          "status": "passed",
+          "duration": 299,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action keeps the task in progress and the comment on failed completion",
+          "status": "passed",
+          "duration": 384,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action canceling start leaves the saved state unchanged",
+          "status": "passed",
+          "duration": 158,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action canceling completion leaves the task in progress",
+          "status": "passed",
+          "duration": 266,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action shows repository-link editing only when a submission exists",
+          "status": "passed",
+          "duration": 54,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action opens the repository-link editor with the current link",
+          "status": "passed",
+          "duration": 106,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action saves a valid replacement once, displays it immediately, and preserves task status",
+          "status": "passed",
+          "duration": 257,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action keeps the previous link and task state when updating the repository link fails",
+          "status": "passed",
+          "duration": 179,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action does not send a request when repository-link editing is canceled",
+          "status": "passed",
+          "duration": 173,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action does not allow an invalid GitHub link to be saved",
+          "status": "passed",
+          "duration": 159,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action does not query or start a task for an invalid user",
+          "status": "passed",
+          "duration": 38,
+          "failureMessages": []
+        },
+        {
+          "fullName": "single task lifecycle action ignores a late response from a different task",
+          "status": "passed",
+          "duration": 95,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/assignments/EditAssignmentForm.test.tsx",
+      "status": "passed",
+      "startTime": 1795661779468,
+      "endTime": 1795661786094,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "EditAssignmentDialog Component debería renderizar el diálogo de edición correctamente",
+          "status": "passed",
+          "duration": 128,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería mostrar los valores actuales en los campos",
+          "status": "passed",
+          "duration": 59,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería cargar la lista de grupos",
+          "status": "passed",
+          "duration": 63,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería permitir editar el título",
+          "status": "passed",
+          "duration": 94,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería permitir editar la descripción",
+          "status": "passed",
+          "duration": 105,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería mostrar el grupo actual en el selector",
+          "status": "passed",
+          "duration": 47,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería cerrar el diálogo cuando se hace clic en Cancelar",
+          "status": "passed",
+          "duration": 57,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería guardar los cambios cuando se hace clic en Guardar Cambios",
+          "status": "passed",
+          "duration": 64,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería mantener valores originales cuando los campos están vacíos",
+          "status": "passed",
+          "duration": 68,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería usar valores editados cuando se proporcionan",
+          "status": "passed",
+          "duration": 98,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería manejar errores al guardar cambios",
+          "status": "passed",
+          "duration": 73,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería mostrar diálogo de error cuando hay un error",
+          "status": "passed",
+          "duration": 57,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería cerrar el diálogo de error",
+          "status": "passed",
+          "duration": 290,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería manejar el caso cuando la tarea no existe",
+          "status": "passed",
+          "duration": 67,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería obtener la tarea actual al guardar cambios",
+          "status": "passed",
+          "duration": 75,
+          "failureMessages": []
+        },
+        {
+          "fullName": "EditAssignmentDialog Component debería mantener todos los campos originales en la actualización",
+          "status": "passed",
+          "duration": 79,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/my-practices/practiceDetailPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795661786110,
+      "endTime": 1795661794651,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "PracticeDetailPage - single lifecycle action (HU-03) shows only Iniciar práctica with a Pendiente badge for a practice not started",
+          "status": "passed",
+          "duration": 178,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticeDetailPage - single lifecycle action (HU-03) replaces Iniciar práctica with Finalizar práctica in the same place only after saving",
+          "status": "passed",
+          "duration": 634,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticeDetailPage - single lifecycle action (HU-03) highlights an in-progress practice with the En progreso color",
+          "status": "passed",
+          "duration": 138,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticeDetailPage - single lifecycle action (HU-03) finishing changes the status to Finalizado and removes the lifecycle action",
+          "status": "passed",
+          "duration": 595,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticeDetailPage - single lifecycle action (HU-03) restores each saved state when the page is loaded again",
+          "status": "passed",
+          "duration": 149,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticeDetailPage - single lifecycle action (HU-03) does not offer a lifecycle action while the saved state is loading",
+          "status": "passed",
+          "duration": 110,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticeDetailPage - single lifecycle action (HU-03) does not offer to start again when the saved state cannot be loaded",
+          "status": "passed",
+          "duration": 38,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Submissions/repository/SubmissionsRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661794689,
+      "endTime": 1795661795559,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "persisted task state returns the saved submission, including its ID, after starting",
+          "status": "passed",
+          "duration": 4,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted task state returns the confirmed delivered state after finishing",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted task state treats only a 404 as a task that has not started",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted task state preserves HTTP 401 errors instead of returning a pending task",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted task state preserves HTTP 403 errors instead of returning a pending task",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted task state preserves HTTP 500 errors instead of returning a pending task",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create submission should create an submission successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId should return a list of submissions if the request is successful",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId should throw an error if getting submissions fails",
+          "status": "passed",
+          "duration": 17,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId checkSubmissionExists should return a response object with hasStarted property when the request is successful",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId checkSubmissionExists should throw an error if checking submission exists fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId checkSubmissionExists should throw an error if the response status is not 200",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId finishSubmission should update the submission successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId finishSubmission should throw an error if updating the submission fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId getSubmissionbyUserandSubmissionId should return a submission object when the request is successful",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId getSubmissionbyUserandSubmissionId should throw an error if getting the submission fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId getSubmissionbyUserandSubmissionId should throw an error if the response status is not 200",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSubmissionsByAssignmentId getSubmissionbyUserandSubmissionId should throw an error if the response status is not 200",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/TDDCharts.integration.test.tsx",
+      "status": "passed",
+      "startTime": 1795661795573,
+      "endTime": 1795661821874,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Integración de la visualización TDD conserva métricas y permite abrir el ciclo con log no disponible",
+          "status": "passed",
+          "duration": 1257,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de la visualización TDD conserva métricas y permite abrir el ciclo con log vacío",
+          "status": "passed",
+          "duration": 237,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de la visualización TDD conserva métricas y permite abrir el ciclo con solo commits de ventasIS",
+          "status": "passed",
+          "duration": 627,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de la visualización TDD restaura la vista del ciclo guardada con log no disponible",
+          "status": "passed",
+          "duration": 142,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de la visualización TDD restaura la vista del ciclo guardada con log vacío",
+          "status": "passed",
+          "duration": 1103,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de la visualización TDD restaura la vista del ciclo guardada con solo commits de ventasIS",
+          "status": "passed",
+          "duration": 324,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de la visualización TDD conserva las ejecuciones reales al cambiar entre dashboard, ciclo y cobertura",
+          "status": "passed",
+          "duration": 213,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de la visualización TDD actualiza la vista del ciclo al recibir logs de otro repositorio",
+          "status": "passed",
+          "duration": 48,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Users/repository/UsersRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661821957,
+      "endTime": 1795661822833,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "UsersRepository getUserById should fetch user by ID successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUserById should handle fetch error",
+          "status": "passed",
+          "duration": 9,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUsers should fetch all users successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUsers should handle fetch error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUsersByGroupid should fetch users by group ID successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUsersByGroupid should handle fetch error",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUserByEmail should fetch user by email successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUserByEmail should handle fetch error",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository updateUser should update user group ID successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository updateUser should handle update error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUserEmailById should fetch user email by ID successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository getUserEmailById should handle fetch error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository removeUserFromGroup should remove user from group successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UsersRepository removeUserFromGroup should handle error when removing user from group",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Practices/repository/PracticesRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661822845,
+      "endTime": 1795661823031,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "PracticesRepository getPractices should fetch all practices successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository should handle fetch error",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository getPracticeById should fetch practice by ID successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository getPracticeById should handle fetch by ID error",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository getPracticeByUserId should fetch practices by user ID successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository getPracticeByUserId should handle fetch by user ID error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository createPractice should create a practice successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository createPractice should handle creation error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository deletePractice should delete a practice successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository deletePractice should handle deletion error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository deletePractice should throw error if getPracticeById returns non-200 status",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository updatePractice should update a practice successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "PracticesRepository updatePractice should handle update error",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/repository/AssignmentsRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661823046,
+      "endTime": 1795661823916,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignments should fetch assignments successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments should handle assignment fetch failure",
+          "status": "passed",
+          "duration": 4,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments should handle assignment fetch error",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments by group ID should fetch assignments by group ID successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments by group ID should handle fetch failure for group ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments by group ID should handle fetch error for group ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by ID should fetch an assignment by ID successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by ID should return null when fetching a non-existent assignment",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by ID should handle resource gone when deleting",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by ID should handle assignment fetch error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create assignment should create an assignment successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update assignment should update an assignment successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete assignment should delete an assignment successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete assignment should handle assignment delete failure",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete assignment should handle network error during assignment deletion",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Deliver assignment should deliver an assignment successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/groups/useGroupsData.test.tsx",
+      "status": "passed",
+      "startTime": 1795661823933,
+      "endTime": 1795661842205,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "useGroupsData keeps description in local state after creating a group",
+          "status": "passed",
+          "duration": 958,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useGroupsData keeps description in local state after editing a group",
+          "status": "passed",
+          "duration": 73,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/TDDCycleChart.test.tsx",
+      "status": "passed",
+      "startTime": 1795661842233,
+      "endTime": 1795661844600,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "TDDCycleChart muestra un aviso sencillo sin detalles internos cuando ventasIS solo contiene commits",
+          "status": "passed",
+          "duration": 20,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleChart muestra el mismo aviso sencillo cuando no hay registros",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleChart actualiza el estado vacío cuando cambian los registros recibidos",
+          "status": "passed",
+          "duration": 23,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleChart representa una ejecución con todas las pruebas fallidas como una ejecución existente",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleChart muestra el símbolo accesible según el resultado de cada ejecución",
+          "status": "passed",
+          "duration": 23,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleChart muestra una leyenda con el significado de cada símbolo",
+          "status": "passed",
+          "duration": 11,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleChart conserva el detalle de ejecución en el tooltip del símbolo",
+          "status": "passed",
+          "duration": 18,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/auth/AuthPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795661844624,
+      "endTime": 1795661855939,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AuthPage renders the TDD Lab logo",
+          "status": "passed",
+          "duration": 29,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage does not render the GitHub login button",
+          "status": "passed",
+          "duration": 8,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage renders the Google login button",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage renders welcome message",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage waits for Firebase before allowing login and calls login directly on click",
+          "status": "passed",
+          "duration": 255,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage keeps the button disabled while login is in progress",
+          "status": "passed",
+          "duration": 22,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage reports initialization failure and keeps login disabled",
+          "status": "passed",
+          "duration": 70,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage reports synchronous Firebase initialization errors",
+          "status": "passed",
+          "duration": 51,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage ignores initialization errors after leaving the page",
+          "status": "passed",
+          "duration": 9,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthPage enables login when initialization resolves under StrictMode",
+          "status": "passed",
+          "duration": 23,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/User-Authentication/cookies/GithubCookies.test.tsx",
+      "status": "passed",
+      "startTime": 1795661855953,
+      "endTime": 1795661857424,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "setSessionCookie sets the session cookie successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "setSessionCookie logs an error if setting the session cookie fails",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSessionCookie retrieves the session cookie successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSessionCookie returns null if the session response has an invalid shape",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSessionCookie returns null if the session cookie is not present",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getSessionCookie logs an error if retrieving the session cookie fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "removeSessionCookie removes the session cookie successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "removeSessionCookie logs an error if removing the session cookie fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/useTDDChartPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795661857440,
+      "endTime": 1795661860415,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "useTDDChartPage teacher navigation loads the selected assignment's submissions and navigates without putting them in the URL",
+          "status": "passed",
+          "duration": 74,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/users/UserPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795661860429,
+      "endTime": 1795661879643,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "UserPage renders the search field and filters users by email",
+          "status": "passed",
+          "duration": 2675,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserPage shows the empty state when the search has no matches",
+          "status": "passed",
+          "duration": 287,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Groups/repository/GroupsRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661880258,
+      "endTime": 1795661882491,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GroupsRepository getGroups should fetch all groups successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsRepository getGroups should handle fetch error",
+          "status": "passed",
+          "duration": 8,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsRepository getGroups getGroupById should fetch group by ID successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsRepository getGroups getGroupById should handle fetch error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsRepository createGroup should create a group successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsRepository createGroup should handle creation error",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsRepository deleteGroup should delete a group successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsRepository deleteGroup should handle deletion error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/User-Authentication/application/signInWithGoogle.test.ts",
+      "status": "passed",
+      "startTime": 1795661882501,
+      "endTime": 1795661884036,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "handleSignInWithGoogle function should sign in with Google successfully and return user data",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "handleSignInWithGoogle function starts the popup immediately without awaiting other work first",
+          "status": "passed",
+          "duration": 134,
+          "failureMessages": []
+        },
+        {
+          "fullName": "handleSignInWithGoogle function should fall back to redirect when the Google popup is blocked",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "handleSignInWithGoogle function should throw Google authentication errors that are not popup blocked",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        },
+        {
+          "fullName": "handleGoogleRedirectResult function should return the redirected Google user when Firebase has a result",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "handleGoogleRedirectResult function should return null when Firebase has no redirect result",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/assignments/AssignmentsList.test.tsx",
+      "status": "passed",
+      "startTime": 1795661884051,
+      "endTime": 1795661896434,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AssignmentsList renderiza las tareas recibidas",
+          "status": "passed",
+          "duration": 47,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentsList muestra acciones de gestion para teacher",
+          "status": "passed",
+          "duration": 33,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentsList oculta acciones de gestion para student",
+          "status": "passed",
+          "duration": 18,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentsList llama callbacks de ver y eliminar con el id de la tarea",
+          "status": "passed",
+          "duration": 24,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentsList renderiza dialogo de confirmacion cuando confirmationOpen esta activo",
+          "status": "passed",
+          "duration": 51,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentsList renderiza mensaje de feedback cuando existe",
+          "status": "passed",
+          "duration": 30,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/groups/GroupItem.test.tsx",
+      "status": "passed",
+      "startTime": 1795661896976,
+      "endTime": 1795661915649,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GroupItem renders all visible actions with shared tooltips",
+          "status": "passed",
+          "duration": 1035,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupItem triggers the expected callbacks for each action",
+          "status": "passed",
+          "duration": 1440,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/UpdateAssignment.test.ts",
+      "status": "passed",
+      "startTime": 1795661915662,
+      "endTime": 1795661918320,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Update an assignment Should successfully update an assignment title",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should successfully update an assignment description",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should successfully update an assignment start date",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should successfully update an assignment end date",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should successfully update an assignment state",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should successfully update an assignment link",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should successfully update an assignment comment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should handle error during assignment update",
+          "status": "passed",
+          "duration": 10,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update an assignment Should successfully update an assignment's group",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/auth/useAuth.test.ts",
+      "status": "passed",
+      "startTime": 1795661918339,
+      "endTime": 1795661922678,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "useAuth starts Google login immediately and completes the existing login flow",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth does not complete login when the popup falls back to redirect",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection [Error: Popup cerrado] without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection {\"message\": \"Popup bloqueado\"} without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection [Error] without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection null without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection \"unexpected\" without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection {\"message\": 42} without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection [Error: Usuario no encontrado] without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "useAuth handles login rejection {\"message\": \"HTTP 404\"} without leaving the button loading",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Groups/application/DeleteGroup.test.ts",
+      "status": "passed",
+      "startTime": 1795661922687,
+      "endTime": 1795661923081,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "DeleteGroup should delete a group successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DeleteGroup should handle errors during group deletion",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DeleteGroup should throw a standardized error message when repository fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/TDDCycles-Visualization/CommitHistoryAdapter.spec.ts",
+      "status": "passed",
+      "startTime": 1795661923090,
+      "endTime": 1795661927532,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "CommitHistoryAdapter obtainCommitsOfRepo debe retornar commits ordenados por fecha descendente",
+          "status": "passed",
+          "duration": 193,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CommitHistoryAdapter obtainCommitTddCycle debe retornar los ciclos TDD con cobertura",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/shared/helpers/navigationHandlers.test.ts",
+      "status": "passed",
+      "startTime": 1795661927544,
+      "endTime": 1795661928370,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "teacher submissions navigation storage saves and reads submissions scoped to an assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "teacher submissions navigation storage returns an empty list when there is no saved submission list",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "teacher submissions navigation storage returns an empty list and logs an error for invalid stored JSON",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "teacher submissions navigation storage rejects non-array and malformed stored submission data",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "teacher submissions navigation storage does not read or write submissions for invalid assignment ID 0",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "teacher submissions navigation storage does not read or write submissions for invalid assignment ID -1",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "teacher submissions navigation storage preserves the existing student graph redirect URL",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/my-practices/services/practiceDetail.service.test.ts",
+      "status": "passed",
+      "startTime": 1795661928386,
+      "endTime": 1795661928556,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "practiceDetail.service getDisplayStatus maps known states to display labels",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service getDisplayStatus returns pending label when state is undefined",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service getDisplayStatus returns original state for unknown values",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service toDisplayDate returns N/A for empty values",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service toDisplayDate formats string date values",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service toDisplayDate formats Date values using ISO representation",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service redirectStudentToGraph navigates to graph route when link is valid",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service redirectStudentToGraph reports error when link is empty",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "practiceDetail.service redirectStudentToGraph reports error when link does not match github repo pattern",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/User-Authentication/repository/LoginRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661928818,
+      "endTime": 1795661929142,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AuthRepository should get account info for a valid email",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthRepository should throw an error because user doesnt exist",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthRepository should throw an error when getting account info fails",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthRepository should register an account",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthRepository should throw an error when registration fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/teacherCommentsOnSubmissions/repository/commentRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661929418,
+      "endTime": 1795661929622,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get comments by submission ID should fetch comments successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get comments by submission ID should handle comments fetch failure",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get comments by submission ID should handle network error",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create comment should create a comment successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create comment should handle comment creation failure",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create comment should handle network error during creation",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/group-invitation/InvitationPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795661929637,
+      "endTime": 1795661936324,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "InvitationPage component Renders the Sign Up button and press it",
+          "status": "passed",
+          "duration": 88,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/FeatureToggles/repository/FeatureFlagRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795661936343,
+      "endTime": 1795661936517,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "FeatureFlagRepository getAllFlags debería retornar todos los feature flags",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeatureFlagRepository getFlagByName debería retornar el feature flag con el nombre especificado",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeatureFlagRepository updateFlag debería actualizar y retornar el feature flag",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeatureFlagRepository debería retornar null si ocurre un error al buscar por nombre",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Groups/application/GetGroups.test.ts",
+      "status": "passed",
+      "startTime": 1795661936525,
+      "endTime": 1795661936741,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetGroups should get groups successfully",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetGroups should handle errors during group retrieval",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetGroups should return default group object when repository returns null in getGroupById",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetGroups should return [-1] when repository returns null in getGroupsByUserId",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Users/getuserByid.test.ts",
+      "status": "passed",
+      "startTime": 1795661936750,
+      "endTime": 1795661937088,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetUserById should return a user when a valid userId is provided",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetUserById should return null when an invalid userId is provided",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/assignments/AssignmentForm.test.tsx",
+      "status": "passed",
+      "startTime": 1795661937100,
+      "endTime": 1795662143904,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AssignmentForm group loading allows creation after groups load",
+          "status": "passed",
+          "duration": 258,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AssignmentForm group loading keeps creation disabled when loading groups fails",
+          "status": "passed",
+          "duration": 136,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/groups/GroupsPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795662143921,
+      "endTime": 1795662166983,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GroupsPage renders shared header controls",
+          "status": "passed",
+          "duration": 166,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GroupsPage opens the edit popup with the current description preloaded",
+          "status": "passed",
+          "duration": 281,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/home/HomePage.test.tsx",
+      "status": "passed",
+      "startTime": 1795662167016,
+      "endTime": 1795662172267,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HomePage renders the approved welcome and TDD Lab identity",
+          "status": "passed",
+          "duration": 42,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HomePage renders the loading state while session data is not ready",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HomePage renders the empty state when there is no active user data",
+          "status": "passed",
+          "duration": 4,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HomePage renders the error state when the authenticated session is invalid",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Users/getUsers.test.ts",
+      "status": "passed",
+      "startTime": 1795662172278,
+      "endTime": 1795662173343,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetUsers should return an array of users",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetUsers should return an empty array if no users are found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetUsers should handle errors when fetching users",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/TDDCycleCard.test.tsx",
+      "status": "passed",
+      "startTime": 1795662173352,
+      "endTime": 1795662179622,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "CycleCard component renders the commit message",
+          "status": "passed",
+          "duration": 1979,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CycleCard component renders the commit stats",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CycleCard component redirects to the GitHub commit page when the \"Ver commit\" button is clicked",
+          "status": "passed",
+          "duration": 111,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/GetAssignmentsByGroup.test.ts",
+      "status": "passed",
+      "startTime": 1795662179651,
+      "endTime": 1795662180270,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignments by group id Should successfully obtain assignments list for group id 67",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments by group id Should return an empty array if no assignments found for group id 67",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments by group id Should handle error when fetching assignments by group id",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/TDDList.test.tsx",
+      "status": "passed",
+      "startTime": 1795662180285,
+      "endTime": 1795662292973,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "TDDList uses the injected repository to render commit blocks",
+          "status": "passed",
+          "duration": 837,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDList announces loading while commits are requested",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDList shows a clear empty state when the repository has no commits",
+          "status": "passed",
+          "duration": 16,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDList shows an accessible error instead of breaking when the repository fails",
+          "status": "passed",
+          "duration": 33,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Submissions/application/getCommentsBySubmissionId.test.ts",
+      "status": "passed",
+      "startTime": 1795662292990,
+      "endTime": 1795662293864,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetCommentsBySubmissionId should return a list of comments for a given submission ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetCommentsBySubmissionId should throw an error if the repository call fails",
+          "status": "passed",
+          "duration": 8,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/SubmitAssignment.test.ts",
+      "status": "passed",
+      "startTime": 1795662293873,
+      "endTime": 1795662296170,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Submit assignment Should successfully submit an assignment pending",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Submit assignment Should successfully submit an assignment in progress",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Submit assignment Should handle an exception if the assignment is not found",
+          "status": "passed",
+          "duration": 4,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Submissions/application/getSubmissionsByAssignmentId.test.ts",
+      "status": "passed",
+      "startTime": 1795662296179,
+      "endTime": 1795662298091,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetSubmissionsByAssignmentId should return a list of submissions for a given assignment ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetSubmissionsByAssignmentId should throw an error if the repository call fails",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/my-practices/services/myPracticesScreenService.test.ts",
+      "status": "passed",
+      "startTime": 1795662298100,
+      "endTime": 1795662299741,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "myPracticesScreenService ordena practicas alfabeticamente de forma ascendente",
+          "status": "passed",
+          "duration": 160,
+          "failureMessages": []
+        },
+        {
+          "fullName": "myPracticesScreenService convierte practicas a view models para la lista",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "myPracticesScreenService resuelve permisos de manejo para un estudiante",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/GetAssignmentDetail.test.ts",
+      "status": "passed",
+      "startTime": 1795662299760,
+      "endTime": 1795662300525,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignment detail Should successfully obtain assignment detail",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment detail Should handle an exception if the assignment is not found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment detail Should handle an exception if an error occurs",
+          "status": "passed",
+          "duration": 9,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Submissions/application/finishSubmission.test.ts",
+      "status": "passed",
+      "startTime": 1795662300533,
+      "endTime": 1795662301511,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "FinishSubmission should call finishSubmission with the correct arguments",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FinishSubmission should throw an error if finishSubmission fails",
+          "status": "passed",
+          "duration": 20,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Users/removeUserFromGroup.test.ts",
+      "status": "passed",
+      "startTime": 1795662301528,
+      "endTime": 1795662301777,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "RemoveUserFromGroup debería llamar a removeUserFromGroup con el ID correcto",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RemoveUserFromGroup debería lanzar un error si removeUserFromGroup falla",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Submissions/application/checkSubmissionExists.test.ts",
+      "status": "passed",
+      "startTime": 1795662301961,
+      "endTime": 1795662302640,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "CheckSubmissionExists Should return hasStarted as true if submission exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CheckSubmissionExists Should return hasStarted as false if submission does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CheckSubmissionExists Should handle error when checking submission existence",
+          "status": "passed",
+          "duration": 9,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/teacherCommentsOnSubmissions/application/GetCommentsBySubmissionId.test.ts",
+      "status": "passed",
+      "startTime": 1795662302652,
+      "endTime": 1795662303247,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetCommentsBySubmissionId should successfully get comments by submission ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetCommentsBySubmissionId should handle fetch error",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/DeleteAssignment.test.ts",
+      "status": "passed",
+      "startTime": 1795662303255,
+      "endTime": 1795662303420,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Delete Assignment Should successfully delete an assignment",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Assignment Should handle an exception if an error occurs",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/FeatureToggles/application/GetFeatureFlagByName.test.ts",
+      "status": "passed",
+      "startTime": 1795662303429,
+      "endTime": 1795662303595,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetFeatureFlagByName debería retornar el feature flag por nombre",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetFeatureFlagByName debería retornar null si no encuentra el feature flag",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/shared/FeedbackSnackbar.test.tsx",
+      "status": "passed",
+      "startTime": 1795662303604,
+      "endTime": 1795662308264,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "FeedbackSnackbar renders the message when open is true",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeedbackSnackbar applies the default severity of error",
+          "status": "passed",
+          "duration": 618,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeedbackSnackbar applies a custom severity when provided",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeedbackSnackbar calls onClose when the alert close button is clicked",
+          "status": "passed",
+          "duration": 21,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/teacherCommentsOnSubmissions/application/CreateComments.test.ts",
+      "status": "passed",
+      "startTime": 1795662308277,
+      "endTime": 1795662308433,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "CreateComments should successfully create a new comment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CreateComments should handle creation error",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/landing/LandingPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795662308441,
+      "endTime": 1795662313607,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "LandingPage renders the public landing message and authentication CTA",
+          "status": "passed",
+          "duration": 322,
+          "failureMessages": []
+        },
+        {
+          "fullName": "LandingPage uses every required svg and png asset from landing",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/group-invitation/SuccesfulEnrollmentCourse.test.tsx",
+      "status": "passed",
+      "startTime": 1795662313618,
+      "endTime": 1795662319852,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Succesful Sign Up Pop up component Renders basic components",
+          "status": "passed",
+          "duration": 299,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/landing/InfoCardsSection.test.tsx",
+      "status": "passed",
+      "startTime": 1795662320748,
+      "endTime": 1795662325885,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "InfoCardsSection renders the three info card titles",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "InfoCardsSection renders the description for the first card",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "InfoCardsSection renders bold keywords in the second card description",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "InfoCardsSection renders bold keyword in the third card description",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "InfoCardsSection renders three cards",
+          "status": "passed",
+          "duration": 1247,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/TDDCycleList.test.tsx",
+      "status": "passed",
+      "startTime": 1795662325893,
+      "endTime": 1795662359193,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "TDDCycleList Component renders a list of cycle cards when provided with commits and jobs data",
+          "status": "passed",
+          "duration": 11,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleList Component renders a list of cycle cards when commits and jobs don't match",
+          "status": "passed",
+          "duration": 4,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCycleList Component renders nothing when provided with no commits and jobs data",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/User-Authentication/application/signOut.test.ts",
+      "status": "passed",
+      "startTime": 1795662359207,
+      "endTime": 1795662359506,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "handleSignOut signs out the current Firebase session",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "handleSignOut reports sign-out errors",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/createAssignment.test.ts",
+      "status": "passed",
+      "startTime": 1795662359525,
+      "endTime": 1795662359763,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Create Assignment Should successfully create a new assignment",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/User-Authentication/application/registerUserOnDb.test.ts",
+      "status": "passed",
+      "startTime": 1795662359774,
+      "endTime": 1795662360341,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "RegisterUserOnDb class should register a user successfully",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/GetAssignments.test.ts",
+      "status": "passed",
+      "startTime": 1795662360353,
+      "endTime": 1795662361911,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignments Should successfully obtain assignments list",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/Submissions/application/createSubmission.test.ts",
+      "status": "passed",
+      "startTime": 1795662361919,
+      "endTime": 1795662362599,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Create Submission Should successfully create a new Submission",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/shared/FeatureScreenLayout.test.tsx",
+      "status": "passed",
+      "startTime": 1795662362962,
+      "endTime": 1795662365415,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "FeatureScreenLayout renders children inside a main element",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeatureScreenLayout applies className when provided",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FeatureScreenLayout renders without className when not provided",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/FeatureToggles/application/UpdateFeatureFlag.test.ts",
+      "status": "passed",
+      "startTime": 1795662365424,
+      "endTime": 1795662367536,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "UpdateFeatureFlag debería actualizar y retornar el feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/home/home.service.test.ts",
+      "status": "passed",
+      "startTime": 1795662367545,
+      "endTime": 1795662368537,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "buildHomeViewModel builds a personalized greeting from the authenticated email",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "buildHomeViewModel returns loading while auth data is unresolved",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "buildHomeViewModel returns empty when there is no active email",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "buildHomeViewModel returns error when the session has no email field",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/TDDCharts.test.tsx",
+      "status": "passed",
+      "startTime": 1795662368547,
+      "endTime": 1795662374566,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "TDDCharts renders with default props (null data)",
+          "status": "passed",
+          "duration": 10,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/FeatureToggles/application/GetFeatureFlags.test.ts",
+      "status": "passed",
+      "startTime": 1795662374580,
+      "endTime": 1795662378464,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetFeatureFlags debería retornar todos los feature flags",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/landing/useLanding.test.ts",
+      "status": "passed",
+      "startTime": 1795662378473,
+      "endTime": 1795662379496,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "useLanding goToAuth navigates to /login",
+          "status": "passed",
+          "duration": 4,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/assignments/application/DeliverAssignment.test.ts",
+      "status": "passed",
+      "startTime": 1795662379508,
+      "endTime": 1795662380220,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Test Should return true.",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/presentation/tdd-visualization/TDDChartPage.test.tsx",
+      "status": "passed",
+      "startTime": 1795662380233,
+      "endTime": 1795662383976,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "TDDChartPage mantiene las gráficas sin atribuir la ausencia del log a falta de pruebas para admin",
+          "status": "passed",
+          "duration": 178,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage mantiene las gráficas sin atribuir la ausencia del log a falta de pruebas para student",
+          "status": "passed",
+          "duration": 30,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage renders loading spinner when loading is true for role admin",
+          "status": "passed",
+          "duration": 15,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage renders loading spinner when loading is true for role student",
+          "status": "passed",
+          "duration": 9,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage displays an empty state when no commits are available for role admin",
+          "status": "passed",
+          "duration": 37,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage displays an empty state when no commits are available for role student",
+          "status": "passed",
+          "duration": 31,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage displays the repository name for role admin",
+          "status": "passed",
+          "duration": 15,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage displays the repository name for role student",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDChartPage tests the catch event for both, obtainJobsData and obtainCommitsData",
+          "status": "passed",
+          "duration": 25,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "Web Ui/test/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter.test.ts",
+      "status": "passed",
+      "startTime": 1795662384228,
+      "endTime": 1795662386047,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "CommitHistoryAdapter.obtainTDDLogs devuelve las ejecuciones y marcadores que devuelve el backend",
+          "status": "passed",
+          "duration": 718,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CommitHistoryAdapter.obtainTDDLogs devuelve un error controlado si el backend responde con error",
+          "status": "passed",
+          "duration": 20,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CommitHistoryAdapter.obtainTDDLogs devuelve un error controlado si falla la red",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "CommitHistoryAdapter.obtainTDDLogs interrumpe la consulta si el backend no responde",
+          "status": "passed",
+          "duration": 232,
+          "failureMessages": []
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "lines": {
+      "total": 4210,
+      "covered": 2336,
+      "skipped": 0,
+      "pct": 55.48
+    },
+    "statements": {
+      "total": 4394,
+      "covered": 2419,
+      "skipped": 0,
+      "pct": 55.05
+    },
+    "functions": {
+      "total": 972,
+      "covered": 469,
+      "skipped": 0,
+      "pct": 48.25
+    },
+    "branches": {
+      "total": 1420,
+      "covered": 672,
+      "skipped": 0,
+      "pct": 47.32
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": "Unknown"
+    }
+  }
+}

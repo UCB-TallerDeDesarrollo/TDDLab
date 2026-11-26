@@ -1,0 +1,75 @@
+PASS test/presentation/assignments/AssignmentForm.test.tsx (82.985 s)
+PASS test/presentation/tdd-visualization/TDDList.test.tsx (10.725 s)
+PASS test/presentation/tdd-visualization/MigrationBlocks.integration.test.tsx (11.789 s)
+PASS test/presentation/tdd-visualization/TDDCycleList.test.tsx (9.849 s)
+PASS test/presentation/tdd-visualization/TDDCharts.test.tsx (16.886 s)
+PASS test/presentation/groups/GroupItem.test.tsx
+PASS test/presentation/assignments/assignmentDetail.test.tsx (5.541 s)
+PASS test/presentation/assignments/EditAssignmentForm.test.tsx
+PASS test/presentation/tdd-visualization/TDDCharts.integration.test.tsx
+PASS test/presentation/assignments/AssignmentsList.test.tsx
+PASS test/presentation/my-practices/practiceDetailPage.test.tsx
+PASS test/presentation/landing/useLanding.test.ts
+PASS test/presentation/users/UserPage.test.tsx
+PASS test/presentation/groups/GroupsPage.test.tsx
+PASS test/presentation/group-invitation/InvitationPage.test.tsx
+PASS test/presentation/auth/AuthPage.test.tsx
+PASS test/presentation/tdd-visualization/TDDChartPage.test.tsx
+PASS test/presentation/tdd-visualization/TDDCycleChart.test.tsx
+PASS test/presentation/groups/useGroupsData.test.tsx
+PASS test/presentation/auth/useAuth.test.ts
+PASS test/presentation/tdd-visualization/TDDCycleCard.test.tsx
+PASS test/presentation/landing/InfoCardsSection.test.tsx
+PASS test/presentation/home/HomePage.test.tsx
+PASS test/presentation/group-invitation/SuccesfulEnrollmentCourse.test.tsx
+PASS test/shared/FeedbackSnackbar.test.tsx
+PASS test/shared/FeatureScreenLayout.test.tsx
+PASS test/modules/Groups/application/GetGroups.test.ts
+PASS test/modules/teacherCommentsOnSubmissions/application/GetCommentsBySubmissionId.test.ts
+PASS test/presentation/landing/LandingPage.test.tsx
+PASS test/modules/Users/getUsers.test.ts
+PASS test/modules/TDDCycles-Visualization/repository/CommitHistoryAdapter.test.ts
+PASS test/presentation/tdd-visualization/useTDDChartPage.test.tsx
+PASS test/modules/User-Authentication/cookies/GithubCookies.test.tsx
+PASS test/modules/assignments/application/GetAssignments.test.ts
+PASS test/modules/User-Authentication/application/signInWithGoogle.test.ts
+PASS test/presentation/home/home.service.test.ts
+PASS test/modules/assignments/repository/AssignmentsRepository.test.ts
+PASS test/modules/TDDCycles-Visualization/CommitHistoryAdapter.spec.ts
+PASS test/presentation/my-practices/services/practiceDetail.service.test.ts
+PASS test/modules/Practices/repository/PracticesRepository.test.ts
+PASS test/modules/Submissions/repository/SubmissionsRepository.test.ts
+PASS test/modules/assignments/application/SubmitAssignment.test.ts
+PASS test/modules/teacherCommentsOnSubmissions/repository/commentRepository.test.ts
+PASS test/modules/FeatureToggles/application/GetFeatureFlagByName.test.ts
+PASS test/modules/Submissions/application/getSubmissionsByAssignmentId.test.ts
+PASS test/modules/Submissions/application/finishSubmission.test.ts
+PASS test/shared/helpers/navigationHandlers.test.ts
+PASS test/modules/assignments/application/UpdateAssignment.test.ts
+PASS test/modules/User-Authentication/repository/LoginRepository.test.ts
+PASS test/modules/assignments/application/DeleteAssignment.test.ts
+PASS test/modules/Users/repository/UsersRepository.test.ts
+PASS test/modules/assignments/application/createAssignment.test.ts
+PASS test/modules/assignments/application/GetAssignmentDetail.test.ts
+PASS test/modules/Submissions/application/checkSubmissionExists.test.ts
+PASS test/modules/assignments/application/GetAssignmentsByGroup.test.ts
+PASS test/modules/Groups/repository/GroupsRepository.test.ts
+PASS test/modules/Groups/application/DeleteGroup.test.ts
+PASS test/modules/teacherCommentsOnSubmissions/application/CreateComments.test.ts
+PASS test/modules/User-Authentication/application/registerUserOnDb.test.ts
+PASS test/modules/Submissions/application/getCommentsBySubmissionId.test.ts
+PASS test/modules/FeatureToggles/repository/FeatureFlagRepository.test.ts
+PASS test/modules/Users/removeUserFromGroup.test.ts
+PASS test/presentation/my-practices/services/myPracticesScreenService.test.ts
+PASS test/modules/FeatureToggles/application/GetFeatureFlags.test.ts
+PASS test/modules/FeatureToggles/application/UpdateFeatureFlag.test.ts
+PASS test/modules/Users/getuserByid.test.ts
+PASS test/modules/User-Authentication/application/signOut.test.ts
+PASS test/modules/assignments/application/DeliverAssignment.test.ts
+PASS test/modules/Submissions/application/createSubmission.test.ts
+
+Test Suites: 69 passed, 69 total
+Tests:       328 passed, 328 total
+Snapshots:   0 total
+Time:        349.616 s
+Test results written to: ..\docs\hu08\evidence\web-jest.json

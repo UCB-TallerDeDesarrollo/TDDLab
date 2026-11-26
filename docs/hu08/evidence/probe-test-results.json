@@ -1,0 +1,23 @@
+[
+  {
+    "name": "passed",
+    "exitCode": 0,
+    "passed": 2,
+    "failed": 0,
+    "total": 2
+  },
+  {
+    "name": "failed",
+    "exitCode": 1,
+    "passed": 1,
+    "failed": 1,
+    "total": 2
+  },
+  {
+    "name": "without-tests",
+    "exitCode": 0,
+    "passed": 0,
+    "failed": 0,
+    "total": 0
+  }
+]

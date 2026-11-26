@@ -1,0 +1,14 @@
+[
+  {
+    "hash": "60a9ff20434b484a8c11de8ce2fc36a183d96e94",
+    "title": "Implementación de repositorios para pruebas de migración"
+  },
+  {
+    "hash": "eba7aae89617327248ada45840e1e76e5265ff61",
+    "title": "Pruebas de contrato e integración de HU08"
+  },
+  {
+    "hash": "f8b8cb2902a75cc3543c8724808efd29a17066b0",
+    "title": "Pruebas de visualización de resultados por commit"
+  }
+]

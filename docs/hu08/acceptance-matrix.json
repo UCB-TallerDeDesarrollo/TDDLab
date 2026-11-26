@@ -1,0 +1,338 @@
+[
+  {
+    "id": "HU02-1",
+    "story": "HU02",
+    "criterion": "Falso en el mismo proyecto y carpeta de adaptadores",
+    "status": "Cumplido",
+    "evidence": "E1 FakeDBJobsRepository y TDDResultsRepository"
+  },
+  {
+    "id": "HU02-2",
+    "story": "HU02",
+    "criterion": "Mismos métodos parámetros y forma de respuesta",
+    "status": "Cumplido",
+    "evidence": "E3 contrato común y comparación de valores y tipos"
+  },
+  {
+    "id": "HU02-3",
+    "story": "HU02",
+    "criterion": "Constantes de aprobados fallidos y sin tests",
+    "status": "Cumplido",
+    "evidence": "E1 falso demo/tests y tres fixtures"
+  },
+  {
+    "id": "HU02-4",
+    "story": "HU02",
+    "criterion": "Caso de uso de consulta conserva su lógica",
+    "status": "Cumplido",
+    "evidence": "GetTestResultsUseCase sin cambios de lógica"
+  },
+  {
+    "id": "HU02-5",
+    "story": "HU02",
+    "criterion": "Cambio de adaptador en un punto de inyección",
+    "status": "Cumplido",
+    "evidence": "createTDDCyclesDependencies"
+  },
+  {
+    "id": "HU02-6",
+    "story": "HU02",
+    "criterion": "Consulta con estructura del contrato y HTTP 200",
+    "status": "Cumplido",
+    "evidence": "E1 rutas y E3 PostgreSQL"
+  },
+  {
+    "id": "HU02-7",
+    "story": "HU02",
+    "criterion": "Pruebas unitarias de consulta con falso",
+    "status": "Cumplido",
+    "evidence": "E1 getTestResultsWithFakeRepository"
+  },
+  {
+    "id": "HU03-1",
+    "story": "HU03",
+    "criterion": "Registro independiente del almacenamiento",
+    "status": "Cumplido",
+    "evidence": "E1 RegisterTestResultUseCase"
+  },
+  {
+    "id": "HU03-2",
+    "story": "HU03",
+    "criterion": "JSON del contrato y respuesta HTTP 201",
+    "status": "Cumplido",
+    "evidence": "E1 rutas y E3 registro real"
+  },
+  {
+    "id": "HU03-3",
+    "story": "HU03",
+    "criterion": "Campos ausentes o inválidos generan 400 identificable",
+    "status": "Cumplido",
+    "evidence": "E1 validación y rutas"
+  },
+  {
+    "id": "HU03-4",
+    "story": "HU03",
+    "criterion": "Registro de punta a punta con falso",
+    "status": "Cumplido",
+    "evidence": "E1 TDDCyclesRegistrationApp y Routes"
+  },
+  {
+    "id": "HU03-5",
+    "story": "HU03",
+    "criterion": "Commit repetido no crea duplicados",
+    "status": "Cumplido",
+    "evidence": "E3 concurrencia y E4 reenvío"
+  },
+  {
+    "id": "HU03-6",
+    "story": "HU03",
+    "criterion": "Unitarias de registro correcto inválido y repetido",
+    "status": "Cumplido",
+    "evidence": "E1 registerTestResultUseCase y registrationBranch"
+  },
+  {
+    "id": "HU04-1",
+    "story": "HU04",
+    "criterion": "Tablas mediante migración versionada",
+    "status": "Cumplido",
+    "evidence": "008_tdd_migration_validation.sql y E3 doble aplicación"
+  },
+  {
+    "id": "HU04-2",
+    "story": "HU04",
+    "criterion": "Adaptador de BD con el contrato SELECT e INSERT",
+    "status": "Cumplido",
+    "evidence": "E3 tres adaptadores y registro jobs"
+  },
+  {
+    "id": "HU04-3",
+    "story": "HU04",
+    "criterion": "Sustitución en la inyección conserva casos de uso y rutas",
+    "status": "Cumplido",
+    "evidence": "Lógica de consulta igual y fábrica central"
+  },
+  {
+    "id": "HU04-4",
+    "story": "HU04",
+    "criterion": "Registro recuperado con los mismos campos de negocio",
+    "status": "Cumplido",
+    "evidence": "E3 POST GET y SELECT; ID interno generado"
+  },
+  {
+    "id": "HU04-5",
+    "story": "HU04",
+    "criterion": "BD caída devuelve 500 controlado y servidor sigue vivo",
+    "status": "Cumplido",
+    "evidence": "E3 databaseUnavailable y E1 aplicación"
+  },
+  {
+    "id": "HU04-6",
+    "story": "HU04",
+    "criterion": "Integración de lectura y escritura de BD",
+    "status": "Cumplido",
+    "evidence": "E3 PostgreSQL real"
+  },
+  {
+    "id": "HU04-7",
+    "story": "HU04",
+    "criterion": "Entorno compartido del equipo activo con BD al cierre",
+    "status": "No cumplido",
+    "evidence": "Solo se verificó el entorno local; falta confirmación del equipo"
+  },
+  {
+    "id": "HU05-1",
+    "story": "HU05",
+    "criterion": "Adaptador fetch cumple el contrato del frontend",
+    "status": "Cumplido",
+    "evidence": "E2 CommitHistoryAdapter y E4 HTTP real"
+  },
+  {
+    "id": "HU05-2",
+    "story": "HU05",
+    "criterion": "Repositorio falso frontend con constantes",
+    "status": "Cumplido",
+    "evidence": "FakeCommitHistoryRepository y E2"
+  },
+  {
+    "id": "HU05-3",
+    "story": "HU05",
+    "criterion": "Caso de uso frontend conserva su lógica",
+    "status": "Cumplido",
+    "evidence": "GetCommitsOfRepo y demás casos sin cambios"
+  },
+  {
+    "id": "HU05-4",
+    "story": "HU05",
+    "criterion": "Un punto para elegir falso o fetch",
+    "status": "Cumplido",
+    "evidence": "VITE_TDD_USE_FAKE en la composición existente"
+  },
+  {
+    "id": "HU05-5",
+    "story": "HU05",
+    "criterion": "URL backend desde configuración",
+    "status": "Cumplido",
+    "evidence": "config.ts VITE_API_URL y constructor del adaptador"
+  },
+  {
+    "id": "HU05-6",
+    "story": "HU05",
+    "criterion": "Error controlado ante respuesta fallida o sin conexión",
+    "status": "Cumplido",
+    "evidence": "E2 fetch HTTP red y timeout; E4 mensaje en vista"
+  },
+  {
+    "id": "HU05-7",
+    "story": "HU05",
+    "criterion": "Unitarias de fetch correcto y con error",
+    "status": "Cumplido",
+    "evidence": "E2 CommitHistoryAdapter"
+  },
+  {
+    "id": "HU06-1",
+    "story": "HU06",
+    "criterion": "Vista de bloques usa el nuevo repositorio sin rediseño",
+    "status": "Cumplido",
+    "evidence": "E4 página y componentes reales más capturas"
+  },
+  {
+    "id": "HU06-2",
+    "story": "HU06",
+    "criterion": "Bloques conservan la información de los archivos",
+    "status": "Cumplido",
+    "evidence": "E4 métricas mensajes enlaces y muestras reales"
+  },
+  {
+    "id": "HU06-3",
+    "story": "HU06",
+    "criterion": "Indicador durante la carga",
+    "status": "Cumplido",
+    "evidence": "E4 demora de respuesta real y captura 03"
+  },
+  {
+    "id": "HU06-4",
+    "story": "HU06",
+    "criterion": "Mensaje cuando no hay commits",
+    "status": "Cumplido",
+    "evidence": "E4 consulta vacía real y captura 04"
+  },
+  {
+    "id": "HU06-5",
+    "story": "HU06",
+    "criterion": "Error entendible sin romper la aplicación",
+    "status": "Cumplido",
+    "evidence": "E4 HTTP 500 simulado y captura 05"
+  },
+  {
+    "id": "HU06-6",
+    "story": "HU06",
+    "criterion": "Constancia de falso en semana uno y reales en semana dos",
+    "status": "No cumplido",
+    "evidence": "Compatibilidad técnica verificada; falta evidencia histórica de las dos semanas"
+  },
+  {
+    "id": "HU06-7",
+    "story": "HU06",
+    "criterion": "Gráfica de línea de tiempo multirrama fuera del alcance",
+    "status": "Cumplido",
+    "evidence": "No se implementó una nueva gráfica multirrama"
+  },
+  {
+    "id": "HU07-1",
+    "story": "HU07",
+    "criterion": "Scripts forman el JSON del contrato",
+    "status": "No cumplido",
+    "evidence": "Pendiente en el otro repositorio por alcance acordado"
+  },
+  {
+    "id": "HU07-2",
+    "story": "HU07",
+    "criterion": "Envío automático después de ejecutar tests",
+    "status": "No cumplido",
+    "evidence": "Solo se verificó un emisor controlado de QA"
+  },
+  {
+    "id": "HU07-3",
+    "story": "HU07",
+    "criterion": "URL del script desde configuración",
+    "status": "No cumplido",
+    "evidence": "Pendiente revisar scripts oficiales de HU07"
+  },
+  {
+    "id": "HU07-4",
+    "story": "HU07",
+    "criterion": "Fallo de envío no interrumpe trabajo y deja error",
+    "status": "No cumplido",
+    "evidence": "Pendiente probar hooks y fallos en el otro repositorio"
+  },
+  {
+    "id": "HU07-5",
+    "story": "HU07",
+    "criterion": "Archivo actual continúa como respaldo durante el sprint",
+    "status": "No cumplido",
+    "evidence": "Pendiente verificar escritura del script oficial"
+  },
+  {
+    "id": "HU07-6",
+    "story": "HU07",
+    "criterion": "Envíos contra falso y BD en las semanas previstas",
+    "status": "No cumplido",
+    "evidence": "Sin evidencia de los scripts oficiales ni de ambas semanas"
+  },
+  {
+    "id": "HU07-7",
+    "story": "HU07",
+    "criterion": "Cambios de scripts documentados como continuación del análisis",
+    "status": "No cumplido",
+    "evidence": "Pendiente documentación HU07 en el otro repositorio"
+  },
+  {
+    "id": "HU08-1",
+    "story": "HU08",
+    "criterion": "Plan corto con aprobados fallidos sin tests y repetido",
+    "status": "Cumplido",
+    "evidence": "Plan de cuatro casos y fixtures versionados"
+  },
+  {
+    "id": "HU08-2",
+    "story": "HU08",
+    "criterion": "Comparación JSON BD y vista coincidente por caso",
+    "status": "Cumplido",
+    "evidence": "E3 E4 E5 y capturas de los cuatro casos"
+  },
+  {
+    "id": "HU08-3",
+    "story": "HU08",
+    "criterion": "Flujo completo con script oficial ejecutar enviar consultar y visualizar",
+    "status": "No cumplido",
+    "evidence": "Flujo local con emisor QA aprobado; script oficial HU07 pendiente"
+  },
+  {
+    "id": "HU08-4",
+    "story": "HU08",
+    "criterion": "Archivo falso y BD devuelven la misma forma",
+    "status": "Cumplido",
+    "evidence": "E3 comparación de objetos valores tipos fechas y ramas"
+  },
+  {
+    "id": "HU08-5",
+    "story": "HU08",
+    "criterion": "Defectos en Trello y bloqueantes corregidos",
+    "status": "No cumplido",
+    "evidence": "D01 a D10 corregidos localmente; publicación diferida por el usuario"
+  },
+  {
+    "id": "HU08-6",
+    "story": "HU08",
+    "criterion": "Todos los criterios HU02 a HU07 marcados con evidencia",
+    "status": "Cumplido",
+    "evidence": "Esta matriz y acceptance-matrix.json"
+  },
+  {
+    "id": "HU08-7",
+    "story": "HU08",
+    "criterion": "Reporte en repositorio y Notion de cada integrante",
+    "status": "No cumplido",
+    "evidence": "Archivos locales listos; publicación en Notion diferida por el usuario"
+  }
+]

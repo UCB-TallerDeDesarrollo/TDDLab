@@ -1,0 +1,91 @@
+{
+  "browser": "electron",
+  "browserVersion": "118.0.5993.159",
+  "totalTests": 8,
+  "totalPassed": 8,
+  "totalFailed": 0,
+  "startedAt": "2026-11-26T04:02:32.509Z",
+  "endedAt": "2026-11-26T04:03:02.247Z",
+  "runs": [
+    {
+      "spec": "test\\cypress\\hu08\\migration.cy.js",
+      "stats": {
+        "duration": 29738,
+        "endedAt": "2026-11-26T04:03:02.247Z",
+        "failures": 0,
+        "passes": 8,
+        "pending": 0,
+        "skipped": 0,
+        "startedAt": "2026-11-26T04:02:32.509Z",
+        "suites": 1,
+        "tests": 8
+      },
+      "tests": [
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "ejecuta pruebas registra consulta y compara cada bloque con JSON y SELECT"
+          ],
+          "state": "passed",
+          "error": null
+        },
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "reenvía el commit y el par de logs sin agregar registros"
+          ],
+          "state": "passed",
+          "error": null
+        },
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "muestra carga mientras la respuesta está pendiente"
+          ],
+          "state": "passed",
+          "error": null
+        },
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "muestra lista vacía consultada en PostgreSQL"
+          ],
+          "state": "passed",
+          "error": null
+        },
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "presenta un error controlado ante HTTP 500 sin romper la página"
+          ],
+          "state": "passed",
+          "error": null
+        },
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "compara el historial real de Luiscuac-TotalizadorVentasIngSoftware con PostgreSQL y cada bloque"
+          ],
+          "state": "passed",
+          "error": null
+        },
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "compara el historial real de HenryRiveraM-fizzbuzz con PostgreSQL y cada bloque"
+          ],
+          "state": "passed",
+          "error": null
+        },
+        {
+          "title": [
+            "HU08 JSON PostgreSQL HTTP fetch y vista real",
+            "compara el historial real de RashLop-TennisPlay con PostgreSQL y cada bloque"
+          ],
+          "state": "passed",
+          "error": null
+        }
+      ]
+    }
+  ]
+}

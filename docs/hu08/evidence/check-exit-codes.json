@@ -1,0 +1,24 @@
+[
+  {
+    "name": "server-build",
+    "exitCode": 0,
+    "nodeVersion": "v24.22.1"
+  },
+  {
+    "name": "web-build",
+    "exitCode": 0
+  },
+  {
+    "name": "server-tests",
+    "exitCode": 0,
+    "nodeVersion": "v24.22.1"
+  },
+  {
+    "name": "web-tests",
+    "exitCode": 0
+  },
+  {
+    "name": "vite-build",
+    "exitCode": 0
+  }
+]

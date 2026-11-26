@@ -1,0 +1,14 @@
+PASS test/presentation/tdd-visualization/TDDCharts.test.tsx (17.223 s)
+PASS test/presentation/tdd-visualization/MigrationBlocks.integration.test.tsx (30.884 s)
+PASS test/presentation/tdd-visualization/TDDList.test.tsx (14.569 s)
+PASS test/presentation/tdd-visualization/TDDCycleList.test.tsx (14.345 s)
+PASS test/presentation/tdd-visualization/TDDCharts.integration.test.tsx
+PASS test/presentation/tdd-visualization/TDDCycleCard.test.tsx
+PASS test/presentation/tdd-visualization/useTDDChartPage.test.tsx
+PASS test/presentation/tdd-visualization/TDDChartPage.test.tsx
+PASS test/presentation/tdd-visualization/TDDCycleChart.test.tsx
+
+Test Suites: 9 passed, 9 total
+Tests:       39 passed, 39 total
+Snapshots:   0 total
+Time:        92.505 s

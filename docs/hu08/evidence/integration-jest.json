@@ -1,0 +1,277 @@
+{
+  "success": true,
+  "numTotalTestSuites": 4,
+  "numPassedTestSuites": 4,
+  "numFailedTestSuites": 0,
+  "numTotalTests": 38,
+  "numPassedTests": 38,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "startTime": 1795664722333,
+  "testResults": [
+    {
+      "name": "server/test/hu08/migration.integration.test.ts",
+      "status": "passed",
+      "startTime": 1795664722800,
+      "endTime": 1795664734196,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos aplica la migración dos veces sin borrar datos",
+          "status": "passed",
+          "duration": 116,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos caso 0 conserva todos los campos entre JSON SELECT y HTTP",
+          "status": "passed",
+          "duration": 74,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos caso 1 conserva todos los campos entre JSON SELECT y HTTP",
+          "status": "passed",
+          "duration": 19,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos caso 2 conserva todos los campos entre JSON SELECT y HTTP",
+          "status": "passed",
+          "duration": 19,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos los tres adaptadores devuelven valores y tipos idénticos para los tres casos",
+          "status": "passed",
+          "duration": 29,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos registra 201 consulta idéntico y reenvía sin duplicar con PostgreSQL real",
+          "status": "passed",
+          "duration": 164,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos reenvía el par de JSON de forma concurrente y mantiene una sola copia",
+          "status": "passed",
+          "duration": 184,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos dos registros concurrentes idénticos crean una sola fila",
+          "status": "passed",
+          "duration": 47,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos rechaza conflicto sin alterar el dato original",
+          "status": "passed",
+          "duration": 83,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos aísla repositorio propietario y ramas con barras en los tres adaptadores",
+          "status": "passed",
+          "duration": 16,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos rechaza JSON inválido y conserva el par previo completo",
+          "status": "passed",
+          "duration": 77,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos migra y compara la muestra real Luiscuac-TotalizadorVentasIngSoftware sin perder campos",
+          "status": "passed",
+          "duration": 142,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos migra y compara la muestra real HenryRiveraM-fizzbuzz sin perder campos",
+          "status": "passed",
+          "duration": 18,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos migra y compara la muestra real RashLop-TennisPlay sin perder campos",
+          "status": "passed",
+          "duration": 16,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/hu08/registrationBranch.test.ts",
+      "status": "passed",
+      "startTime": 1795664734204,
+      "endTime": 1795664734341,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 rama e identidad en el registro conserva la rama y la actualiza ante un duplicado sin crear filas",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida null",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida 123",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida \"\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida \"../main\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida \"feature//wrong\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro no devuelve jobs de otro propietario o repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/hu08/ingestTDDResultsUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795664734346,
+      "endTime": 1795664734530,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 validación de snapshots guarda los dos archivos completos sin mutar el original",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente repoOwner sin persistir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente repoName sin persistir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente branch sin persistir",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente commitHistory sin persistir",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente tddLog sin persistir",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido null",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido []",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido \"invalid\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido 1",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots resuelve HEAD con el SHA real sin modificar el cuerpo",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza duplicate-sha antes de escribir",
+          "status": "passed",
+          "duration": 18,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza invalid-date antes de escribir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza invalid-count antes de escribir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza invalid-log antes de escribir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza missing-head antes de escribir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/hu08/databaseUnavailable.test.ts",
+      "status": "passed",
+      "startTime": 1795664734535,
+      "endTime": 1795664734871,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 base de datos no disponible responde 500 controlado en lectura y escritura y el servidor sigue vivo",
+          "status": "passed",
+          "duration": 26,
+          "failureMessages": []
+        }
+      ]
+    }
+  ]
+}

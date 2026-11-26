@@ -1,0 +1,3726 @@
+{
+  "success": true,
+  "numTotalTestSuites": 67,
+  "numPassedTestSuites": 67,
+  "numFailedTestSuites": 0,
+  "numTotalTests": 513,
+  "numPassedTests": 513,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "startTime": 1795665159886,
+  "testResults": [
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/DBJobsRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665161941,
+      "endTime": 1795665184016,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Save a job should save a job",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Save a job should handle errors",
+          "status": "passed",
+          "duration": 34,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get jobs should get jobs",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get jobs should handle errors",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "JobExists should check if job exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "JobExists should handle errors",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryExists should check if job exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryExists should handle errors",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetJobsNotSaved should return jobs that are not saved in the database",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetJobsNotSaved should stop checking for jobs if a job already exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "SaveJobsList should save a list of jobs",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/routes/TDDCyclesRegistrationApp.test.ts",
+      "status": "passed",
+      "startTime": 1795665184024,
+      "endTime": 1795665194946,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Integración de registro en la aplicación la fábrica comparte la misma instancia falsa entre lectura y registro",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de registro en la aplicación la fábrica real comparte el adaptador PostgreSQL entre lectura y registro",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de registro en la aplicación la aplicación en modo real devuelve un error controlado si PostgreSQL no está disponible",
+          "status": "passed",
+          "duration": 7161,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Integración de registro en la aplicación la aplicación real monta el POST, comparte el falso y maneja JSON malformado",
+          "status": "passed",
+          "duration": 275,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/hu08/migration.integration.test.ts",
+      "status": "passed",
+      "startTime": 1795665195006,
+      "endTime": 1795665199461,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos aplica la migración dos veces sin borrar datos",
+          "status": "passed",
+          "duration": 679,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos caso 0 conserva todos los campos entre JSON SELECT y HTTP",
+          "status": "passed",
+          "duration": 33,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos caso 1 conserva todos los campos entre JSON SELECT y HTTP",
+          "status": "passed",
+          "duration": 16,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos caso 2 conserva todos los campos entre JSON SELECT y HTTP",
+          "status": "passed",
+          "duration": 13,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos los tres adaptadores devuelven valores y tipos idénticos para los tres casos",
+          "status": "passed",
+          "duration": 26,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos registra 201 consulta idéntico y reenvía sin duplicar con PostgreSQL real",
+          "status": "passed",
+          "duration": 458,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos reenvía el par de JSON de forma concurrente y mantiene una sola copia",
+          "status": "passed",
+          "duration": 727,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos dos registros concurrentes idénticos crean una sola fila",
+          "status": "passed",
+          "duration": 241,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos rechaza conflicto sin alterar el dato original",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos aísla repositorio propietario y ramas con barras en los tres adaptadores",
+          "status": "passed",
+          "duration": 8,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos rechaza JSON inválido y conserva el par previo completo",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos migra y compara la muestra real Luiscuac-TotalizadorVentasIngSoftware sin perder campos",
+          "status": "passed",
+          "duration": 32,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos migra y compara la muestra real HenryRiveraM-fizzbuzz sin perder campos",
+          "status": "passed",
+          "duration": 21,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 PostgreSQL real y contrato archivo falso base de datos migra y compara la muestra real RashLop-TennisPlay sin perder campos",
+          "status": "passed",
+          "duration": 23,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/AiAssistant/repositories/aiAssistantRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665199487,
+      "endTime": 1795665206887,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AIAssistantRepository debería construir el prompt correcto para \"analiza\"",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AIAssistantRepository debería retornar mensaje de error si el fetch falla",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/routes/TDDCyclesRegistrationRoutes.test.ts",
+      "status": "passed",
+      "startTime": 1795665206903,
+      "endTime": 1795665209012,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "POST /api/TDDCycles/jobs responde 201 y created para un registro nuevo",
+          "status": "passed",
+          "duration": 83,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs acepta la conclusión success",
+          "status": "passed",
+          "duration": 60,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs acepta la conclusión failure",
+          "status": "passed",
+          "duration": 62,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs acepta la conclusión skipped",
+          "status": "passed",
+          "duration": 62,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs identifica el campo ausente sha",
+          "status": "passed",
+          "duration": 66,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs identifica el campo ausente owner",
+          "status": "passed",
+          "duration": 94,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs identifica el campo ausente reponame",
+          "status": "passed",
+          "duration": 124,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs identifica el campo ausente conclusion",
+          "status": "passed",
+          "duration": 142,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs rechaza un campo vacío",
+          "status": "passed",
+          "duration": 71,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs rechaza un tipo de campo incorrecto",
+          "status": "passed",
+          "duration": 69,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs rechaza una conclusión inválida",
+          "status": "passed",
+          "duration": 69,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs rechaza un cuerpo JSON de tipo array",
+          "status": "passed",
+          "duration": 77,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs responde JSON controlado para sintaxis JSON incorrecta",
+          "status": "passed",
+          "duration": 57,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs responde duplicate sin guardar otro registro",
+          "status": "passed",
+          "duration": 72,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs responde conflict ante una conclusión diferente",
+          "status": "passed",
+          "duration": 62,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs conserva el resultado original ante un conflicto",
+          "status": "passed",
+          "duration": 61,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs permite el mismo SHA con diferente reponame",
+          "status": "passed",
+          "duration": 61,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs permite el mismo SHA con diferente owner",
+          "status": "passed",
+          "duration": 62,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs permite consultar mediante GET el registro creado con la misma instancia",
+          "status": "passed",
+          "duration": 64,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs resuelve POST idénticos concurrentes sin duplicar",
+          "status": "passed",
+          "duration": 63,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs oculta los detalles de errores inesperados",
+          "status": "passed",
+          "duration": 140,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs responde 503 si no hay adaptador de registro",
+          "status": "passed",
+          "duration": 129,
+          "failureMessages": []
+        },
+        {
+          "fullName": "POST /api/TDDCycles/jobs mantiene GET de HU-02 con los tres resultados de demostración",
+          "status": "passed",
+          "duration": 66,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/GithubRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665209033,
+      "endTime": 1795665210514,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GithubRepository getCommits should return an array of commits",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getCommits should return an array of commits without author and committer",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getCommits should throw an error if there is an error obtaining commits",
+          "status": "passed",
+          "duration": 20,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getCommitInfoForTDDCycle should return commit information for a given TDD cycle",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getCommitInfoForTDDCycle should throw an error if there is an error obtaining commit information",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getCommitsInforForTDDCycle should return an array of TDD cycle data for the given commits",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository GithubRepository timeout should reject with an error after the specified timeout",
+          "status": "passed",
+          "duration": 1294,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository GithubRepository obtainRunsOfGithubActions should return the response from the GitHub API",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository GithubRepository obtainRunsOfGithubActions should throw an error if there is an error obtaining runs",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository obtainJobsOfACommit should return the job data for a given commit",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository obtainJobsOfACommit should throw an error if there is an error obtaining job data",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getRunsOfGithubActionsIds should return an array of commit IDs with their corresponding workflow run IDs",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getRunsOfGithubActionsIds should throw an error if there is an error obtaining runs",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getJobsDataFromGithub should return a record of job data for each commit",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository getJobsDataFromGithub should throw an error if there is an error obtaining job data for any commit",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/routes/userRoutes.test.ts",
+      "status": "passed",
+      "startTime": 1795665210525,
+      "endTime": 1795665210710,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "user routes does not expose the removed GitHub login endpoint",
+          "status": "passed",
+          "duration": 7,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/groupController.test.ts",
+      "status": "passed",
+      "startTime": 1795665210723,
+      "endTime": 1795665210857,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get groups should respond with a status 200 and a list of groups",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get groups should respond with a status 500 and error message when obtainGroups fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check if the group exists Should respond with status 200 and a true",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check if the group exists Should respond with status 400 if the group does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check if the group exists Should respond with status 500 if there is a server error",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get group by id should respond with a status 200 and the group",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get group by id should respond with a status 404 and an error message for non-existent group",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get group by id should respond with a status 500 and error message when obtainGroupById fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create Group should respond with a status 201 and return the created group",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create Group should respond with a status 500 and error message when createGroup fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Group should respond with a status 204 when group deletion is successful",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Group should respond with a status 500 and error message when group deletion fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Group should respond with a 200 status and the updated group when update is successful",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Group should respond with a 500 status and error message when update fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Group should respond with a 404 status and error message when group is not found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/GithubRepository.commitCyclesData.test.ts",
+      "status": "passed",
+      "startTime": 1795665210877,
+      "endTime": 1795665210990,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GithubRepository.getCommitCyclesData should map cycles and coverage correctly",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/featureFlags/application/GetFeatureFlagByIdUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665210996,
+      "endTime": 1795665211105,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get feature flag by ID should obtain a feature flag by ID successfully",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by ID should return null for non-existent feature flag ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by ID should handle errors when obtaining a feature flag by ID",
+          "status": "passed",
+          "duration": 15,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/application/authenticateUser.test.ts",
+      "status": "passed",
+      "startTime": 1795665211108,
+      "endTime": 1795665211209,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AuthenticateUser Devolver el payload si el token es válido",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthenticateUser Devolver error si el token es inválido",
+          "status": "passed",
+          "duration": 21,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AuthenticateUser Debe devolver null si jwt.verify no retorna nada",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/GithubRepository.fetchCommitHistoryJson.test.ts",
+      "status": "passed",
+      "startTime": 1795665211212,
+      "endTime": 1795665211345,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GithubRepository.fetchCommitHistoryJson should fetch and return commit-history.json data",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository.fetchCommitHistoryJson should throw an error if status is not 200",
+          "status": "passed",
+          "duration": 18,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GithubRepository.fetchCommitHistoryJson should throw and log error if axios throws",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/repositories/usersRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665211366,
+      "endTime": 1795665211493,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "getUsersByGroupId should retrieve users by group ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getUsersByGroupId should return an empty array if no users are found for the group ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getUsersByGroupId should handle errors when obtaining users by group ID",
+          "status": "passed",
+          "duration": 20,
+          "failureMessages": []
+        },
+        {
+          "fullName": "executeQuery should execute the query and return the rows",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "executeQuery should execute the query with values and return the rows",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "executeQuery should handle errors when executing the query",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "executeQuery should execute the query and return the rows",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "executeQuery should execute the query with values and return the rows",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "executeQuery should handle errors when executing the query",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "mapRowToUser should map a row to a User object correctly",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "mapRowToUser should handle an empty row object",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "registerUser should insert a new user into the database",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "registerUser should handle errors when inserting a new user",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "obtainUsers should return all users when found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "obtainUsers should return null when no users are found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "obtainUserById should return a user when found by id",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "obtainUserById should return null when no user is found by id",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "obtainUserByEmail should return a user when found by email",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "obtainUserByEmail should return null when no user is found by email",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "obtainUserByEmail should handle multiple users with the same email (edge case)",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "removeUserFromGroup should delete the user from the group successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "removeUserFromGroup should throw an error if the deletion fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "updateUserGroup should update the user's group and return the updated user",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "updateUserGroup should return null if no user is found with the given id",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "updateUserGroup should handle errors when updating the user's group",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/featureFlags/application/GetFeatureFlagByNameUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665211498,
+      "endTime": 1795665211590,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get feature flag by name should obtain a feature flag by name successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by name should return null for non-existent feature flag name",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by name should throw an error when feature name is empty",
+          "status": "passed",
+          "duration": 25,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by name should handle errors when obtaining a feature flag by name",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/featureFlags/application/GetFeatureFlagsUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665211594,
+      "endTime": 1795665211664,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get feature flags should obtain feature flags successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flags should handle errors when obtaining feature flags",
+          "status": "passed",
+          "duration": 13,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/application/decodeUserTokenFromCookie.test.ts",
+      "status": "passed",
+      "startTime": 1795665211668,
+      "endTime": 1795665211743,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "decodeUserTokenFromCookie Verificar que devuelve el payload si el token es valido",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/groups/application/updateGroupUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665211746,
+      "endTime": 1795665211834,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "UpdateGroupUseCase should update an existing group successfully",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UpdateGroupUseCase should return null for non-existing group",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UpdateGroupUseCase should handle errors during group update",
+          "status": "passed",
+          "duration": 24,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UpdateGroupUseCase should handle unsuccessful group update",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/hu08/databaseUnavailable.test.ts",
+      "status": "passed",
+      "startTime": 1795665211853,
+      "endTime": 1795665212648,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 base de datos no disponible responde 500 controlado en lectura y escritura y el servidor sigue vivo",
+          "status": "passed",
+          "duration": 32,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/middleware/authMiddleware.test.ts",
+      "status": "passed",
+      "startTime": 1795665212671,
+      "endTime": 1795665212807,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "authenticateJWT middleware Verificar el token con token_valido",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "authenticateJWT middleware Verificar que el token es decifrado correctamente",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "authenticateJWT middleware Verificar que devuelve 200 cuando la autenticacion es exitosa",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "authenticateJWT middleware Verificar que devuelve 401 cuando no se manda el token",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "authenticateJWT middleware Verificar que devuelve 403 cuando se envia token invalido",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "authorizeRoles middleware Verificar que pasa si el rol está permitido",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "authorizeRoles middleware Verificar que devuelve 403 si el rol no está permitido",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/application/ getUsersByGroupIdUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665212816,
+      "endTime": 1795665213222,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "UserController - getUserController Debe devolver 400 si no se pasa email",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserController - getUserController Debe devolver 404 si el usuario no existe",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserController - getUserController Debe devolver 200 si el usuario existe",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Application/getTestResultsUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665213233,
+      "endTime": 1795665213314,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetTestResultsUseCase should correctly initialize GetTestResultsUseCase with provided repositories",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetTestResultsUseCase should fetch runs from Github, get their data, save only the unsaved runs in the database, and return them when the repository exists in the database",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetTestResultsUseCase should throw an error when there is an issue with fetching or saving commits",
+          "status": "passed",
+          "duration": 17,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/userController.test.ts",
+      "status": "passed",
+      "startTime": 1795665213317,
+      "endTime": 1795665213446,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "UserController removeUserFromGroup debería devolver 400 si el userId no es válido",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserController removeUserFromGroup debería devolver 200 si el usuario se elimina exitosamente",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserController getMeController Verificar que se devuelve 200 y el usuario si el token es valido",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserController getMeController Verificar que devuelve 401 si no hay cookie",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserController getMeController Verificar que devuelve 404 si el usuario no se encuentra",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "UserController getMeController Verificar que devuelve 401 si ocurre un error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/TDDCyclesController.test.ts",
+      "status": "passed",
+      "startTime": 1795665213458,
+      "endTime": 1795665213579,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "TDDCyclesController getTDDCycles should return 400 if owner or repoName is missing",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getTDDCycles should return 200 and the expected commits if owner and repoName are provided",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getTDDCycles should return 500 and an error message if an error is thrown",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getTestResults should return 400 if owner or repoName is missing",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getTestResults should return 200 and the expected test results if owner and repoName are provided",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getTestResults should return 500 and an error message if an error is thrown",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getCommitHistory should return 400 if owner or repoName is missing",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getCommitHistory should return 200 and the expected commit history if owner and repoName are provided",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getCommitHistory should return 500 and an error message if an error is thrown",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getCommitCycles should return 400 if owner or repoName is missing",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getCommitCycles should return 200 and the expected commit cycles if owner and repoName are provided",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TDDCyclesController getCommitCycles should return 500 and an error message if an error is thrown",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/application/deleteAssignmentUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665213599,
+      "endTime": 1795665213716,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Delete assignment should delete an assignment successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete assignment should handle errors when deleting an assignment",
+          "status": "passed",
+          "duration": 22,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/FakeDBJobsRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665213721,
+      "endTime": 1795665213799,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados conserva los tres resultados de demostración",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados devuelve created al registrar un resultado nuevo",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados permite consultar el resultado registrado mediante getJobs y findJobByCommit",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados devuelve duplicate al registrar dos veces el mismo resultado",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados no aumenta la cantidad de registros ante un duplicado",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados devuelve conflict para la misma identidad con otra conclusión",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados un conflicto conserva la conclusión y la cantidad de registros",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados distingue el mismo SHA en repositorios diferentes",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados distingue el mismo SHA para propietarios diferentes",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados registra solicitudes idénticas concurrentes una sola vez",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados resuelve conclusiones concurrentes como creación y conflicto, conservando la ganadora",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados asigna identificadores sin colisiones",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados mantiene almacenamiento independiente por instancia",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados devuelve copias desde getJobs",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados devuelve una copia desde findJobByCommit",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados no comparte el objeto enviado a register con el almacenamiento",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados funciona con RegisterTestResultUseCase sin simular register",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados actualiza la conclusión de una identidad existente",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados actualiza solo el repositorio indicado cuando comparten SHA",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados actualiza solo el propietario indicado cuando comparten SHA y repositorio",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados no modifica ningún registro si la identidad solicitada no existe",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados conserva el ID y la cantidad de registros al actualizar",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "FakeDBJobsRepository: registro de resultados evalúa duplicados y conflictos frente a la conclusión actualizada",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/GithubRepository.commitHistoryData.test.ts",
+      "status": "passed",
+      "startTime": 1795665213804,
+      "endTime": 1795665213887,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GithubRepository.getCommitHistoryData should map and sort commits by date descending",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/submissions/repository/submissionsRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665213892,
+      "endTime": 1795665214006,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Obtain submissions should retrieve all submissions",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain submissions should handle errors when obtaining submissions",
+          "status": "passed",
+          "duration": 18,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain submission by assignmentid and userid should retrieve an assignment by existing ids",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain submission by assignmentid and userid should handle errors when obtaining a submission by ids",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain submission by assignmentid and userid should return null if no submission is found for the given assignmentid and userid",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create submission should create a submission",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create submission should handle errors when creating a submission",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update submission should update a submission",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update submission should return null if no submission was found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update submission should handle errors when updating a submission",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete submission should delete a submission",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete submission should handle errors when deleting a submission",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId should retrieve submissions for a specific assignmentId",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId should handle errors when retrieving submissions by assignmentId",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId should return an empty array if no submissions are found for the given assignmentId",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId Assignment ID exists for submission should return true if assignment ID exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId Assignment ID exists for submission should return false if assignment ID does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId Assignment ID exists for submission should handle errors when checking if assignment ID exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId User ID exists for submission should return true if user ID exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId should return false if user ID does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get submissions by assignmentId should handle errors when checking if user ID exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/featureFlags/repositories/featureFlagRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665214021,
+      "endTime": 1795665214230,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Obtain feature flags should retrieve all feature flags",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain feature flags should handle errors when obtaining feature flags",
+          "status": "passed",
+          "duration": 17,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain feature flag by id should retrieve a feature flag by existing ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain feature flag by id should return null for a non-existing feature flag ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain feature flag by id should handle errors when obtaining a feature flag by ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain feature flag by name should retrieve a feature flag by existing name",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain feature flag by name should return null for a non-existing feature flag name",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain feature flag by name should handle errors when obtaining a feature flag by name",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check duplicate feature name should return true if feature name already exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check duplicate feature name should return false if feature name does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check duplicate feature name should handle errors when checking for duplicate feature names",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should create a feature flag successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should throw an error if feature name already exists",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should handle database errors when creating a feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should update a feature flag successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should return null if feature flag does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should throw an error if updated feature name already exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should update only the is_enabled field if only that field is provided",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should handle database errors when updating a feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should delete a feature flag successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should return false if feature flag does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should handle database errors when deleting a feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/featureFlagsController.test.ts",
+      "status": "passed",
+      "startTime": 1795665214235,
+      "endTime": 1795665214462,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get feature flags should respond with status 200 and list of feature flags",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flags should respond with status 500 and error message when obtaining feature flags fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by ID should respond with status 200 and the feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by ID should respond with status 404 and error message for non-existent feature flag",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by ID should respond with status 400 for invalid ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by ID should respond with status 500 and error message when getFeatureFlagById fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by name should respond with status 200 and the feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by name should respond with status 404 and error message for non-existent feature flag",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get feature flag by name should respond with status 500 and error message when getFeatureFlagByName fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should respond with status 201 and return the created feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should respond with status 400 when feature name is missing",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should respond with status 500 and error message when feature flag creation fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should respond with status 204 when feature flag deletion is successful",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should respond with status 400 for invalid ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should respond with status 500 and error message when feature flag deletion fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should respond with status 200 and updated feature flag when update is successful",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should respond with status 404 and error message when feature flag is not found",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should respond with status 400 for invalid ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should respond with status 400 when no update data is provided",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should respond with status 500 and error message when feature flag update fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/submissions/aplication/getSubmissions.test.ts",
+      "status": "passed",
+      "startTime": 1795665214468,
+      "endTime": 1795665214554,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get Submissions should obtain submissions successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submissions should handle errors when obtaining submission",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/DBJobsRepository.registration.test.ts",
+      "status": "passed",
+      "startTime": 1795665214557,
+      "endTime": 1795665214656,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "DBJobsRepository registration persistence writes a new result with INSERT and reports created",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DBJobsRepository registration persistence reads the persisted conclusion after a unique-key collision",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DBJobsRepository registration persistence reports conflict when an existing result has another conclusion",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DBJobsRepository registration persistence reads results with SELECT scoped to owner and repository",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DBJobsRepository registration persistence releases the client when PostgreSQL rejects the INSERT",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/repositories/assignmentRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665214662,
+      "endTime": 1795665214814,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Obtain assignments should retrieve all assignments",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain assignments should handle errors when obtaining assignments",
+          "status": "passed",
+          "duration": 34,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain assignments by group ID should retrieve assignments for a valid group ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain assignments by group ID should return an empty array for a group ID with no assignments",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain assignments by group ID should handle errors when obtaining assignments by group ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain assignment by id should retrieve an assignment by existing ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain assignment by id should retrieve null for a non-existing assignment ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain assignment by id should handle errors when obtaining an assignment by ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create assignment should create an assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create assignment should handle errors when creating an assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete assignment should delete an assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete assignment should handle errors when deleting an assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update assignment should update an assignment",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update assignment should return null if no assignment was found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update assignment should handle errors when updating an assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check if group ID exists for assignment should return true if group ID exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check if group ID exists for assignment should return false if group ID does not exist",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check if group ID exists for assignment should handle errors when checking if group ID exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/hu08/ingestTDDResultsUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665214834,
+      "endTime": 1795665214944,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 validación de snapshots guarda los dos archivos completos sin mutar el original",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente repoOwner sin persistir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente repoName sin persistir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente branch sin persistir",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente commitHistory sin persistir",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza el campo ausente tddLog sin persistir",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido null",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido []",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido \"invalid\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza cuerpo inválido 1",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots resuelve HEAD con el SHA real sin modificar el cuerpo",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza duplicate-sha antes de escribir",
+          "status": "passed",
+          "duration": 26,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza invalid-date antes de escribir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza invalid-count antes de escribir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza invalid-log antes de escribir",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 validación de snapshots rechaza missing-head antes de escribir",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/submissionController.test.ts",
+      "status": "passed",
+      "startTime": 1795665214950,
+      "endTime": 1795665215063,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get Submissions should respond with a status 200 and a list of submissions",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submissions should respond with a 500 status 500 and error message when getSubmissions fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create Submission should respond with a status 201 and return the created assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create Submission should respond with a status 500 and error message when assignment creation fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Submission should respond with a status 204 when assignment deletion is successful",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Submission should respond with a status 500 and error message when assignment deletion fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submission By Assignment and User should respond with status code 400",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submission By Assignment and User should respond with a 404 status and error message when assignment and user are not found",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submission By Assignment and User should respond with a 500 status and error message when fetching by assignment and user ",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Assignment should respond with a status 200 and updated assignment when update is successful",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Assignment should respond with a 404 status and error message when assignment is not found",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Assignment should respond with a 500 status and error message when update fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submissions By Assignment Id should respond with a status 200 and a list of submissions",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submissions By Assignment Id should respond with a status 500 and error message when fetching submissions fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Submissions By Assignment Id should respond with a status 200 and an empty list if no submissions are found",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted assignment lifecycle returns 404 before starting, and saved states after starting and finishing",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted assignment lifecycle does not confirm completion when saving fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted assignment lifecycle updates only the repository link for the authenticated owner",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted assignment lifecycle returns 400 when the GitHub repository does not exist",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted assignment lifecycle does not update a submission when it does not belong to the authenticated student",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted assignment lifecycle returns 404 when the submission to edit does not exist",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "persisted assignment lifecycle distinguishes a read failure from a task that has not started",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/assignmentController.test.ts",
+      "status": "passed",
+      "startTime": 1795665215070,
+      "endTime": 1795665215180,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignments by group ID should respond with status 200 and list of assignments for a valid group ID",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments by group ID should respond with status 500 and error message when obtaining assignments fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments should respond with a status 200 and a list of assignments",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments should respond with a 500 status 500 and error message when getAssignments fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by id should respond with a status 200 and the assignments",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by id should respond with a status 404 and an error message for non-existent assignment",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by id should respond with a status 500 and error message when getAssignmentsById fails",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create Assignment should respond with a status 201 and return the created assignment",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create Assignment should respond with a status 500 and error message when assignment creation fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Assignment should respond with 200 when assignment is deleted successfully",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Assignment should respond with 400 when ID is invalid",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete Assignment should respond with 404 when assignment is not found",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Deliver Assignment should respond with a status 200 and delivered assignment when delivery is successful",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Deliver Assignment should respond with a status 404 and error message when assignment is not found during delivery",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Deliver Assignment should respond with a status 500 and error message when an error occurs during delivery",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Assignment should respond with a status 200 and updated assignment when update is successful",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Assignment should respond with a 404 status and error message when assignment is not found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update Assignment should respond with a 500 status and error message when update fails",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/groups/repositories/groupRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665215188,
+      "endTime": 1795665215360,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Obtain groups should retrieve all groups",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain groups should handle errors when obtaining groups",
+          "status": "passed",
+          "duration": 23,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain group by id should retrieve a group by existing ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain group by id should retrieve null for a non-existing group ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Obtain group by id should handle errors when obtaining a group by ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create group should handle errors when creating a group",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create group should create a group",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check group exists should return true if group exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check group exists should return false if group does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Check group exists should handle errors when checking if a group exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete group should delete a group",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete group should handle errors when deleting a group",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete group should handle errors when deleting assignments for a group",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update group should return null if no group was found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update group should update a group",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/featureFlags/application/UpdateFeatureFlagUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665215376,
+      "endTime": 1795665215934,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Update feature flag should update a feature flag successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should return null if feature flag does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should throw an error when feature flag ID is invalid",
+          "status": "passed",
+          "duration": 25,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should throw an error when no fields are provided for update",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should throw an error when feature name is empty",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update feature flag should handle errors when updating a feature flag",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TeacherComments/Repositories/TeacherCommentRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665215937,
+      "endTime": 1795665216125,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Create Teacher Comment should create a teacher comment",
+          "status": "passed",
+          "duration": 5,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create Teacher Comment should handle errors when creating a teacher comment",
+          "status": "passed",
+          "duration": 43,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Teacher Comments by Submission should retrieve teacher comments for a submission",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Teacher Comments by Submission should return an empty array when no comments are found",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Teacher Comments by Submission should handle errors when retrieving teacher comments",
+          "status": "passed",
+          "duration": 4,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Is Teacher should return true if the teacher exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Is Teacher should return false if the teacher does not exist",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Is Teacher should handle errors when checking if the teacher exists",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Submission Exists should return true if the submission exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Submission Exists should return false if the submission does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Submission Exists should handle errors when checking if the submission exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/application/deliverAssignmentUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665216131,
+      "endTime": 1795665216427,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Deliver assignment should deliver an assignment successfully",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Deliver assignment should return null when the assignment does not exist",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Deliver assignment should handle errors during assignment delivery",
+          "status": "passed",
+          "duration": 24,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/groups/application/deleteGroupUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665216432,
+      "endTime": 1795665216833,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "DeleteGroupUseCase should delete an existing group successfully",
+          "status": "passed",
+          "duration": 6,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DeleteGroupUseCase should throw an error for non-existing group ID",
+          "status": "passed",
+          "duration": 48,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DeleteGroupUseCase should handle errors during group deletion",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "DeleteGroupUseCase should delete all related assignments when a group is deleted",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/application/getUserToken.test.ts",
+      "status": "passed",
+      "startTime": 1795665216839,
+      "endTime": 1795665216995,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "getUserToken Verificar que se obtiene el token correctamente",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/teacherCommentsOnSubmissions.test.ts",
+      "status": "passed",
+      "startTime": 1795665217002,
+      "endTime": 1795665217816,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "TeacherCommentController addComment debería devolver 403 si el usuario no es un profesor",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TeacherCommentController addComment debería devolver 201 si el comentario se creó con éxito",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TeacherCommentController addComment debería devolver 500 en caso de un error interno",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TeacherCommentController getComments debería devolver 200 con los comentarios de una entrega",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TeacherCommentController getComments debería devolver 404 si la entrega no existe",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "TeacherCommentController getComments debería devolver 500 en caso de un error interno",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Repositories/DBCommitsRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665217838,
+      "endTime": 1795665217981,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Save Commits should save a commit",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Save Commits should handle errors",
+          "status": "passed",
+          "duration": 18,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Commits should get commits",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get Commits should handle errors",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Commit Exists should check if commit exists",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Commit Exists should handle errors",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Repository Existence should check if repository exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Repository Existence should handle errors",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getCommitsNotSaved should return commits that are not saved in the database",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "getCommitsNotSaved should stop checking for commits if a commit already exists",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Commit Saving Commits List should save commits list",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Commit Saving Commits List should handle errors while saving commits",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Application/getTDDCyclesUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665217986,
+      "endTime": 1795665218285,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetTDDCyclesUseCase should fetch commits from Github, get their info for TDD cycles, save them in the database, and return them when the repository does not exist in the database",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetTDDCyclesUseCase should fetch commits from Github, get their info for TDD cycles, save only the unsaved commits in the database, and return them when the repository exists in the database",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetTDDCyclesUseCase should throw an error when there is an issue with fetching or saving commits",
+          "status": "passed",
+          "duration": 20,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/controllers/aiAssistantController.test.ts",
+      "status": "passed",
+      "startTime": 1795665218289,
+      "endTime": 1795665218469,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AIAssitantController debería retornar resultado del LLM",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AIAssitantController debería retornar error 400 si faltan datos",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "AIAssitantController debería retornar error 500 si ocurre una excepción",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/application/removeUserFromGroup.test.ts",
+      "status": "passed",
+      "startTime": 1795665218474,
+      "endTime": 1795665218564,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "removeUser should successfully remove user from group",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "removeUser should throw an error if removeUserFromGroup fails",
+          "status": "passed",
+          "duration": 13,
+          "failureMessages": []
+        },
+        {
+          "fullName": "removeUser should throw if repository returns a string error",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Application/registerTestResultUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665218569,
+      "endTime": 1795665218835,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "RegisterTestResultUseCase registra una conclusión válida: success",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase registra una conclusión válida: failure",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase registra una conclusión válida: skipped",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase identifica el campo ausente sha",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase identifica el campo ausente owner",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase identifica el campo ausente reponame",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase identifica el campo ausente conclusion",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco sha",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco sha",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco owner",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco owner",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco reponame",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco reponame",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco conclusion",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza el campo vacío o en blanco conclusion",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en sha: null",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en sha: 42",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en sha: false",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en sha: {}",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en sha: []",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en owner: null",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en owner: 42",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en owner: false",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en owner: {}",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en owner: []",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en reponame: null",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en reponame: 42",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en reponame: false",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en reponame: {}",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en reponame: []",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en conclusion: null",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en conclusion: 42",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en conclusion: false",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en conclusion: {}",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza tipo incorrecto en conclusion: []",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza una conclusión no admitida",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase devuelve duplicate al reenviar el mismo resultado",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase registra el mismo SHA en repositorios diferentes",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase informa conflicto si cambia la conclusión del mismo commit",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase propaga el error del repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza cuerpo null sin llamar al repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza cuerpo undefined sin llamar al repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza cuerpo array sin llamar al repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza cuerpo string sin llamar al repositorio",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza cuerpo número sin llamar al repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase rechaza cuerpo booleano sin llamar al repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase no llama al repositorio si falta un campo",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase no llama al repositorio si la conclusión es inválida",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase excluye propiedades adicionales al registrar",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase excluye el id proporcionado por el cliente",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase llama al repositorio exactamente una vez para una entrada válida",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase identifica los errores de validación con un tipo específico",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase conserva el tipo y la identidad del error inesperado del repositorio",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase usa TestResultValidationError para validar cuerpo",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase usa TestResultValidationError para validar campo",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RegisterTestResultUseCase usa TestResultValidationError para validar conclusión",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/submissions/aplication/getSubmissionsByAssignmentIdUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665218839,
+      "endTime": 1795665218919,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetSubmissionsByAssignmentIdUseCase should return submissions for a specific assignmentId",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetSubmissionsByAssignmentIdUseCase should return null if no submissions are found",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetSubmissionsByAssignmentIdUseCase should throw an error if the repository method throws an error",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/application/getAssignmentByIdUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665218924,
+      "endTime": 1795665219006,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignment by id should retrieve an assignment by ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignment by id should handle errors when obtaining an assignment by ID",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Application/getTestResultsWithFakeRepository.test.ts",
+      "status": "passed",
+      "startTime": 1795665219010,
+      "endTime": 1795665219247,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetTestResultsUseCase con repositorio falso devuelve los commits exitoso, fallido y sin pruebas sin modificar el caso de uso",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/featureFlags/application/DeleteFeatureFlagUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665219254,
+      "endTime": 1795665219360,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Delete feature flag should delete a feature flag successfully",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should throw an error when feature flag ID is invalid",
+          "status": "passed",
+          "duration": 28,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should throw an error when feature flag is not found",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete feature flag should handle errors when deleting a feature flag",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/application/getUsersByGroupIdUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665219364,
+      "endTime": 1795665219809,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetUsersByGroupIdUseCase should retrieve users by group ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetUsersByGroupIdUseCase should throw an error when repository throws an error",
+          "status": "passed",
+          "duration": 28,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/TDDCycles/Domain/RepositoryRef.test.ts",
+      "status": "passed",
+      "startTime": 1795665219813,
+      "endTime": 1795665219910,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "RepositoryRef branch validation accepts branch names with slash",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch ",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch /feature",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch feature/",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch feature//x",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch feature..x",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch feature x",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch feature~x",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch feature.lock",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "RepositoryRef branch validation rejects invalid branch feature@{x",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/submissions/aplication/updateSubmission.test.ts",
+      "status": "passed",
+      "startTime": 1795665219931,
+      "endTime": 1795665220030,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Update submission should update a submission successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update submission should handle errors when updating a submission",
+          "status": "passed",
+          "duration": 13,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/submissions/aplication/createSubmission.test.ts",
+      "status": "passed",
+      "startTime": 1795665220034,
+      "endTime": 1795665220457,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Create submission should create a submission",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create submission should handle errors when creating a submission",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create submission should throw an error if the assignment ID does not exist",
+          "status": "passed",
+          "duration": 12,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create submission should throw an error if the user ID does not exist",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/featureFlags/application/CreateFeatureFlagUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665220461,
+      "endTime": 1795665220592,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Create feature flag should create a feature flag successfully",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should throw an error when feature name is empty",
+          "status": "passed",
+          "duration": 24,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create feature flag should handle errors when creating a feature flag",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/submissions/aplication/deleteSubmission.test.ts",
+      "status": "passed",
+      "startTime": 1795665220595,
+      "endTime": 1795665220674,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Delete assignment should delete a submission successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Delete assignment should handle errors when deleting an assignment",
+          "status": "passed",
+          "duration": 13,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/application/getAssignmentUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665220677,
+      "endTime": 1795665220754,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignments should obtain assignments successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments should handle errors when obtaining assignments",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/AiAssistant/application/AIUseCases/analyzeOrRefactorCodeUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665220758,
+      "endTime": 1795665220822,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "AnalyzeOrRefactorCodeUseCase debe enviar el prompt y retornar la respuesta",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/users/application/saveUserCookie.test.ts",
+      "status": "passed",
+      "startTime": 1795665220825,
+      "endTime": 1795665220966,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "saveUserCookie Verificar que guarda la cookie userSession con las opciones correctas",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/hu08/registrationBranch.test.ts",
+      "status": "passed",
+      "startTime": 1795665220986,
+      "endTime": 1795665221057,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "HU08 rama e identidad en el registro conserva la rama y la actualiza ante un duplicado sin crear filas",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida null",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida 123",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida \"\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida \"../main\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro rechaza rama inválida \"feature//wrong\"",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        },
+        {
+          "fullName": "HU08 rama e identidad en el registro no devuelve jobs de otro propietario o repositorio",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/application/updateAssignmentUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665221062,
+      "endTime": 1795665221139,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Update assignment should update an assignment successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Update assignment should handle errors when updating an assignment",
+          "status": "passed",
+          "duration": 14,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/submissions/aplication/getASubmission.test.ts",
+      "status": "passed",
+      "startTime": 1795665221142,
+      "endTime": 1795665221414,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get a Submission by an assigmentid and userid should obtain submissions successfully",
+          "status": "passed",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/application/createAssignmentUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665221418,
+      "endTime": 1795665221749,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Create assignment should create an assignment",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create assignment should handle errors when creating an assignment",
+          "status": "passed",
+          "duration": 23,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Create assignment should throw an error if group ID does not exist",
+          "status": "passed",
+          "duration": 15,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/groups/application/getGroupsUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665221754,
+      "endTime": 1795665221830,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetGroupsUseCase should fetch groups successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetGroupsUseCase should handle errors during group fetch",
+          "status": "passed",
+          "duration": 13,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/assignments/application/getAssigmentByGroupIdUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665221833,
+      "endTime": 1795665221895,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "Get assignments by group ID should obtain assignments successfully for a given group ID",
+          "status": "passed",
+          "duration": 2,
+          "failureMessages": []
+        },
+        {
+          "fullName": "Get assignments by group ID should handle errors when obtaining assignments by group ID",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "name": "server/test/modules/groups/application/getGroupByIdUseCase.test.ts",
+      "status": "passed",
+      "startTime": 1795665221899,
+      "endTime": 1795665221988,
+      "message": "",
+      "assertionResults": [
+        {
+          "fullName": "GetGroupByIdUseCase should fetch a group by ID successfully",
+          "status": "passed",
+          "duration": 1,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetGroupByIdUseCase should handle errors during group fetch by ID",
+          "status": "passed",
+          "duration": 22,
+          "failureMessages": []
+        },
+        {
+          "fullName": "GetGroupByIdUseCase should return null for non-existing group ID",
+          "status": "passed",
+          "duration": 0,
+          "failureMessages": []
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "lines": {
+      "total": 2659,
+      "covered": 1757,
+      "skipped": 0,
+      "pct": 66.07
+    },
+    "statements": {
+      "total": 2756,
+      "covered": 1821,
+      "skipped": 0,
+      "pct": 66.07
+    },
+    "functions": {
+      "total": 503,
+      "covered": 309,
+      "skipped": 0,
+      "pct": 61.43
+    },
+    "branches": {
+      "total": 675,
+      "covered": 381,
+      "skipped": 0,
+      "pct": 56.44
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": "Unknown"
+    }
+  }
+}

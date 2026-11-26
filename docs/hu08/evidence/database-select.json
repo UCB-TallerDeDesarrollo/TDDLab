@@ -1,0 +1,145 @@
+{
+  "snapshots": [
+    {
+      "commit_history": [
+        {
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "stats": {
+            "date": "2026-11-25T14:00:00.000Z",
+            "total": 4,
+            "additions": 3,
+            "deletions": 1
+          },
+          "author": "Andrés QA HU08",
+          "commit": {
+            "url": "https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "date": "2026-11-25T14:00:00.000Z",
+            "message": "HU08 tests aprobados",
+            "comment_count": 0
+          },
+          "coverage": 100,
+          "tdd_cycle": "Verde",
+          "conclusion": "success",
+          "qaMetadata": {
+            "zero": 0,
+            "active": false,
+            "unicode": "migración íntegra"
+          },
+          "test_count": 2,
+          "failed_tests": 0
+        },
+        {
+          "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "stats": {
+            "date": "2026-11-25T14:01:00.000Z",
+            "total": 5,
+            "additions": 4,
+            "deletions": 1
+          },
+          "author": "Andrés QA HU08",
+          "commit": {
+            "url": "https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "date": "2026-11-25T14:01:00.000Z",
+            "message": "HU08 tests fallidos",
+            "comment_count": 0
+          },
+          "coverage": 0,
+          "tdd_cycle": "Rojo",
+          "conclusion": "failure",
+          "qaMetadata": {
+            "zero": 0,
+            "active": false,
+            "unicode": "migración íntegra"
+          },
+          "test_count": 2,
+          "failed_tests": 1
+        },
+        {
+          "sha": "cccccccccccccccccccccccccccccccccccccccc",
+          "stats": {
+            "date": "2026-11-25T14:02:00.000Z",
+            "total": 6,
+            "additions": 5,
+            "deletions": 1
+          },
+          "author": "Andrés QA HU08",
+          "commit": {
+            "url": "https://github.com/UCB-TallerDeDesarrollo/TDDLab/commit/cccccccccccccccccccccccccccccccccccccccc",
+            "date": "2026-11-25T14:02:00.000Z",
+            "message": "HU08 sin tests",
+            "comment_count": 0
+          },
+          "coverage": 0,
+          "tdd_cycle": "null",
+          "conclusion": "skipped",
+          "qaMetadata": {
+            "zero": 0,
+            "active": false,
+            "unicode": "migración íntegra"
+          },
+          "test_count": 0,
+          "failed_tests": 0
+        }
+      ],
+      "tdd_log": [
+        {
+          "testId": 1,
+          "success": true,
+          "timestamp": 1795615199000,
+          "failedTests": 0,
+          "numTotalTests": 2,
+          "numPassedTests": 2
+        },
+        {
+          "testId": 1,
+          "commitId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "commitName": "HU08 tests aprobados",
+          "commitTimestamp": 1795615200000
+        },
+        {
+          "testId": 2,
+          "success": false,
+          "timestamp": 1795615259000,
+          "failedTests": 1,
+          "numTotalTests": 2,
+          "numPassedTests": 1
+        },
+        {
+          "testId": 2,
+          "commitId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "commitName": "HU08 tests fallidos",
+          "commitTimestamp": 1795615260000
+        },
+        {
+          "testId": 3,
+          "commitId": "cccccccccccccccccccccccccccccccccccccccc",
+          "commitName": "HU08 sin tests",
+          "commitTimestamp": 1795615320000
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "owner": "hu08",
+      "reponame": "migration-validation",
+      "conclusion": "success",
+      "branch": "main"
+    },
+    {
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "owner": "hu08",
+      "reponame": "migration-validation",
+      "conclusion": "failure",
+      "branch": "main"
+    },
+    {
+      "sha": "cccccccccccccccccccccccccccccccccccccccc",
+      "owner": "hu08",
+      "reponame": "migration-validation",
+      "conclusion": "skipped",
+      "branch": "main"
+    }
+  ]
+}

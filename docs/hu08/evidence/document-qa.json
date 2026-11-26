@@ -1,0 +1,41 @@
+{
+  "reviewedAtUTC": "2026-11-26T04:12:14.962577+00:00",
+  "document": "REPORTE_HU08.docx",
+  "sha256": "2ea6c2d42b577a333024738e6030ee3ea5829c77686b5292c8cb7847636be77b",
+  "referenceSha256": "890abeefe329b586ebf60fb69f765e5c347bd4912bf1afbbf4dc4d8f26d3a346",
+  "pageCount": 14,
+  "embeddedScreenshots": 10,
+  "acceptanceCriteria": 48,
+  "pageGeometryEMU": {
+    "page_width": 7562215,
+    "page_height": 10689590,
+    "top_margin": 914400,
+    "bottom_margin": 914400,
+    "left_margin": 914400,
+    "right_margin": 914400
+  },
+  "renderer": "Microsoft Word COM ExportAsFixedFormat and bundled Poppler",
+  "fallbackReason": "The packaged renderer was diagnosed; LibreOffice is not installed.",
+  "visualReview": {
+    "pagesReviewed": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "result": "All final page PNGs inspected. Report text and tables remain inside margins, headers repeat, captions stay with screenshots and evidence links are active.",
+    "note": "Screenshots retain the viewport and existing application layout."
+  },
+  "relativeEvidenceLinksExist": true,
+  "referenceUnchanged": true
+}

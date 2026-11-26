@@ -1,0 +1,73 @@
+PASS test/modules/TDDCycles/Repositories/DBJobsRepository.test.ts (22.075 s)
+PASS test/routes/TDDCyclesRegistrationApp.test.ts (10.922 s)
+PASS test/hu08/migration.integration.test.ts
+PASS test/modules/AiAssistant/repositories/aiAssistantRepository.test.ts (7.4 s)
+PASS test/routes/TDDCyclesRegistrationRoutes.test.ts
+PASS test/modules/TDDCycles/Repositories/GithubRepository.test.ts
+PASS test/routes/userRoutes.test.ts
+PASS test/controllers/groupController.test.ts
+PASS test/modules/TDDCycles/Repositories/GithubRepository.commitCyclesData.test.ts
+PASS test/modules/featureFlags/application/GetFeatureFlagByIdUseCase.test.ts
+PASS test/modules/users/application/authenticateUser.test.ts
+PASS test/modules/TDDCycles/Repositories/GithubRepository.fetchCommitHistoryJson.test.ts
+PASS test/modules/users/repositories/usersRepository.test.ts
+PASS test/modules/featureFlags/application/GetFeatureFlagByNameUseCase.test.ts
+PASS test/modules/featureFlags/application/GetFeatureFlagsUseCase.test.ts
+PASS test/modules/users/application/decodeUserTokenFromCookie.test.ts
+PASS test/modules/groups/application/updateGroupUseCase.test.ts
+PASS test/hu08/databaseUnavailable.test.ts
+PASS test/middleware/authMiddleware.test.ts
+PASS test/modules/users/application/ getUsersByGroupIdUseCase.test.ts
+PASS test/modules/TDDCycles/Application/getTestResultsUseCase.test.ts
+PASS test/controllers/userController.test.ts
+PASS test/controllers/TDDCyclesController.test.ts
+PASS test/modules/assignments/application/deleteAssignmentUseCase.test.ts
+PASS test/modules/TDDCycles/Repositories/FakeDBJobsRepository.test.ts
+PASS test/modules/TDDCycles/Repositories/GithubRepository.commitHistoryData.test.ts
+PASS test/modules/submissions/repository/submissionsRepository.test.ts
+PASS test/modules/featureFlags/repositories/featureFlagRepository.test.ts
+PASS test/controllers/featureFlagsController.test.ts
+PASS test/modules/submissions/aplication/getSubmissions.test.ts
+PASS test/modules/TDDCycles/Repositories/DBJobsRepository.registration.test.ts
+PASS test/modules/assignments/repositories/assignmentRepository.test.ts
+PASS test/hu08/ingestTDDResultsUseCase.test.ts
+PASS test/controllers/submissionController.test.ts
+PASS test/controllers/assignmentController.test.ts
+PASS test/modules/groups/repositories/groupRepository.test.ts
+PASS test/modules/featureFlags/application/UpdateFeatureFlagUseCase.test.ts
+PASS test/modules/TeacherComments/Repositories/TeacherCommentRepository.test.ts
+PASS test/modules/assignments/application/deliverAssignmentUseCase.test.ts
+PASS test/modules/groups/application/deleteGroupUseCase.test.ts
+PASS test/modules/users/application/getUserToken.test.ts
+PASS test/controllers/teacherCommentsOnSubmissions.test.ts
+PASS test/modules/TDDCycles/Repositories/DBCommitsRepository.test.ts
+PASS test/modules/TDDCycles/Application/getTDDCyclesUseCase.test.ts
+PASS test/controllers/aiAssistantController.test.ts
+PASS test/modules/users/application/removeUserFromGroup.test.ts
+PASS test/modules/TDDCycles/Application/registerTestResultUseCase.test.ts
+PASS test/modules/submissions/aplication/getSubmissionsByAssignmentIdUseCase.test.ts
+PASS test/modules/assignments/application/getAssignmentByIdUseCase.test.ts
+PASS test/modules/TDDCycles/Application/getTestResultsWithFakeRepository.test.ts
+PASS test/modules/featureFlags/application/DeleteFeatureFlagUseCase.test.ts
+PASS test/modules/users/application/getUsersByGroupIdUseCase.test.ts
+PASS test/modules/TDDCycles/Domain/RepositoryRef.test.ts
+PASS test/modules/submissions/aplication/updateSubmission.test.ts
+PASS test/modules/submissions/aplication/createSubmission.test.ts
+PASS test/modules/featureFlags/application/CreateFeatureFlagUseCase.test.ts
+PASS test/modules/submissions/aplication/deleteSubmission.test.ts
+PASS test/modules/assignments/application/getAssignmentUseCase.test.ts
+PASS test/modules/AiAssistant/application/AIUseCases/analyzeOrRefactorCodeUseCase.test.ts
+PASS test/modules/users/application/saveUserCookie.test.ts
+PASS test/hu08/registrationBranch.test.ts
+PASS test/modules/assignments/application/updateAssignmentUseCase.test.ts
+PASS test/modules/submissions/aplication/getASubmission.test.ts
+PASS test/modules/assignments/application/createAssignmentUseCase.test.ts
+PASS test/modules/groups/application/getGroupsUseCase.test.ts
+PASS test/modules/assignments/application/getAssigmentByGroupIdUseCase.test.ts
+PASS test/modules/groups/application/getGroupByIdUseCase.test.ts
+
+Test Suites: 67 passed, 67 total
+Tests:       513 passed, 513 total
+Snapshots:   0 total
+Time:        64.325 s, estimated 194 s
+Test results written to: ..\docs\hu08\evidence\server-jest.json
