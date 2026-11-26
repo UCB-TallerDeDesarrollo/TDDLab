@@ -8,7 +8,7 @@ describe("FakeDBJobsRepository: registro de resultados", () => {
   beforeEach(() => { repository = new FakeDBJobsRepository(); });
 
   it("conserva los tres resultados de demostración", async () => {
-    await expect(repository.getJobs("any-owner", "any-repository")).resolves.toEqual([
+    await expect(repository.getJobs("demo", "tests")).resolves.toEqual([
       { id: 1001, sha: "commit-all-tests-passed", owner: "demo", reponame: "tests", conclusion: "success" },
       { id: 1002, sha: "commit-tests-failed", owner: "demo", reponame: "tests", conclusion: "failure" },
       { id: 1003, sha: "commit-without-tests", owner: "demo", reponame: "tests", conclusion: "skipped" },

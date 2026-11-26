@@ -7,7 +7,7 @@ describe("GetTestResultsUseCase con repositorio falso", () => {
     const repository = new FakeDBJobsRepository();
     const useCase = new GetTestResultsUseCase(repository, new FakeGithubRepository());
 
-    await expect(useCase.execute("any-owner", "any-repository")).resolves.toEqual([
+    await expect(useCase.execute("demo", "tests")).resolves.toEqual([
       expect.objectContaining({ sha: "commit-all-tests-passed", conclusion: "success" }),
       expect.objectContaining({ sha: "commit-tests-failed", conclusion: "failure" }),
       expect.objectContaining({ sha: "commit-without-tests", conclusion: "skipped" }),

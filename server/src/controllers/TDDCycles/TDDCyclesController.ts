@@ -6,7 +6,6 @@ import { GetTDDCyclesUseCase } from "../../modules/TDDCycles/Application/getTDDC
 import { GetTestResultsUseCase } from "../../modules/TDDCycles/Application/getTestResultsUseCase";
 import { PostTDDLogUseCase } from "../../modules/TDDCycles/Application/postTDDLogUseCase";
 import { ITimelineEntry } from "../../modules/TDDCycles/Domain/ITimelineCommit";
-import { DBCommitsRepository } from "../../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { GetCommitTimeLineUseCase } from "../../modules/TDDCycles/Application/getCommitTimeLineUseCase";
 import { GetCommitHistoryUseCase } from "../../modules/TDDCycles/Application/getCommitHistoryUseCase";
 import { GetCommitCyclesUseCase } from "../../modules/TDDCycles/Application/getCommitCyclesUseCase";
@@ -14,7 +13,8 @@ import { ITestResultRegistrationRepository } from "../../modules/TDDCycles/Domai
 import { RegisterTestResultUseCase } from "../../modules/TDDCycles/Application/registerTestResultUseCase";
 import { TestResultValidationError } from "../../modules/TDDCycles/Application/TestResultValidationError";
 import { isValidBranch } from "../../modules/TDDCycles/Domain/RepositoryRef";
-import { TDDCycleDataObject } from "../../modules/TDDCycles/Domain/TDDCycleDataObject";
+import { ITDDResultsRepository } from "../../modules/TDDCycles/Domain/ITDDResultsRepository";
+import { IngestTDDResultsUseCase } from "../../modules/TDDCycles/Application/ingestTDDResultsUseCase";
 
 
 
@@ -35,7 +35,9 @@ class TDDCyclesController {
     dbCommitsRepository: IDBCommitsRepository,
     dbJobsRepository: IDBJobsRepository,
     githubRepository: IGithubRepository,
-    registrationRepository: ITestResultRegistrationRepository | null = null
+    registrationRepository: ITestResultRegistrationRepository | null = null,
+    private readonly resultsRepository?: ITDDResultsRepository,
+    jobsGithubRepository?: IGithubRepository,
   ) {
     this.githubRepository = githubRepository;
     this.registerTestResultUseCase = registrationRepository ? new RegisterTestResultUseCase(registrationRepository) : null;
@@ -45,7 +47,7 @@ class TDDCyclesController {
     );
     this.testResultsUseCase = new GetTestResultsUseCase(
       dbJobsRepository,
-      githubRepository
+      jobsGithubRepository ?? githubRepository
     );
     this.submitTDDLogToDB = new PostTDDLogUseCase(
       dbJobsRepository,
@@ -53,9 +55,9 @@ class TDDCyclesController {
     this.getCommitExecutions = new GetCommitTimeLineUseCase(
       dbJobsRepository,
     );
-    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(githubRepository);
-    this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(githubRepository);
-    this.dbCommitsRepository = new DBCommitsRepository();
+    this.getCommitHistoryUseCase = new GetCommitHistoryUseCase(resultsRepository ?? githubRepository);
+    this.getCommitCyclesUseCase = new GetCommitCyclesUseCase(resultsRepository ?? githubRepository);
+    this.dbCommitsRepository = dbCommitsRepository;
     this.dbJobsRepository = dbJobsRepository;
   }
   async registerTestResult(req: Request, res: Response) {
@@ -74,66 +76,14 @@ class TDDCyclesController {
     }
   }
 
-  /**
-   * Persists the two versioned TDD logs in the relational tables used by the
-   * legacy visualization flow. The job registration remains handled by
-   * POST /jobs so it keeps its idempotency contract.
-   */
+  /** Stores the complete JSON pair in the selected migration repository. */
   async ingestTDDLogs(req: Request, res: Response) {
-    const { repoOwner, repoName, commitHistory, tddLog, sha, branch } = req.body ?? {};
-    if (!this.isValidGithubSegment(repoOwner) || !this.isValidGithubSegment(repoName) ||
-        !Array.isArray(commitHistory) || !Array.isArray(tddLog) ||
-        typeof branch !== "string" || !isValidBranch(branch)) {
-      return res.status(400).json({ error: "Faltan repoOwner, repoName, commitHistory o tddLog válidos" });
-    }
-
+    if (!this.resultsRepository) return res.status(503).json({ error: "Results repository unavailable" });
     try {
-      const normalizedLog = tddLog.map((entry: any) =>
-        entry?.commitId === "HEAD" && typeof sha === "string"
-          ? { ...entry, commitId: sha }
-          : entry
-      );
-      const hookTimestamps = new Map(
-        normalizedLog
-          .filter((entry: any) => entry?.commitId && entry?.commitTimestamp)
-          .map((entry: any) => [entry.commitId, Number(entry.commitTimestamp)])
-      );
-
-      for (const entry of commitHistory) {
-        const entrySha = entry?.sha === "HEAD" ? sha : entry?.sha;
-        if (typeof entrySha !== "string" || !entrySha || entrySha === "HEAD") continue;
-        if (await this.dbCommitsRepository.commitExists(repoOwner, repoName, entrySha)) continue;
-
-        const commit: TDDCycleDataObject = {
-          html_url: entry.html_url ?? entry.commit?.url ?? "",
-          sha: entrySha,
-          stats: {
-            total: Number(entry.stats?.total ?? 0),
-            additions: Number(entry.stats?.additions ?? 0),
-            deletions: Number(entry.stats?.deletions ?? 0),
-          },
-          commit: {
-            date: entry.commit?.date ?? new Date().toISOString(),
-            message: entry.commit?.message ?? "",
-            url: entry.commit?.url ?? "",
-            comment_count: Number(entry.commit?.comment_count ?? 0),
-          },
-          coverage: String(entry.coverage ?? "0"),
-          test_count: String(entry.test_count ?? "0"),
-          branch,
-          author: String(entry.author ?? ""),
-          stats_date: entry.stats?.date,
-          failed_tests: Number(entry.failed_tests ?? 0),
-          conclusion: String(entry.conclusion ?? ""),
-          hook_timestamp: hookTimestamps.get(entrySha),
-        };
-        await this.dbCommitsRepository.saveCommit(repoOwner, repoName, commit);
-      }
-
-      req.body = { repoOwner, repoName, branch, log: normalizedLog };
-      return this.uploadTDDLog(req, res);
+      const data = await new IngestTDDResultsUseCase(this.resultsRepository).execute(req.body);
+      return res.status(200).json({ message: "Resultados TDD guardados", data });
     } catch (error) {
-      console.error("Error al ingerir los logs TDD:", error);
+      if (error instanceof TestResultValidationError) return res.status(400).json({ error: error.message, field: error.field });
       return res.status(500).json({ error: "Error al guardar los logs TDD" });
     }
   }

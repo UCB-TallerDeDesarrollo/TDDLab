@@ -2,9 +2,9 @@ import { IGithubRepository } from "../Domain/IGithubRepository";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 
 export class GetCommitHistoryUseCase {
-  private readonly githubRepository: IGithubRepository;
+  private readonly githubRepository: Pick<IGithubRepository, "getCommitHistoryData">;
 
-  constructor(githubRepository: IGithubRepository) {
+  constructor(githubRepository: Pick<IGithubRepository, "getCommitHistoryData">) {
     this.githubRepository = githubRepository;
   }
 

@@ -25,18 +25,23 @@ export class FakeDBJobsRepository implements IDBJobsRepository, ITestResultRegis
 
   async register(result: TestResultRegistration): Promise<RegistrationOutcome> {
     const existing = this.findByIdentity(result.sha, result.owner, result.reponame);
-    if (existing) return existing.conclusion === result.conclusion ? "duplicate" : "conflict";
+    if (existing) {
+      if (existing.conclusion !== result.conclusion) return "conflict";
+      if (result.branch) existing.branch = result.branch;
+      return "duplicate";
+    }
 
     const id = this.jobs.reduce((max, job) => Math.max(max, job.id ?? 0), 0) + 1;
     this.jobs.push({ ...result, id });
     return "created";
   }
 
-  // HU-02 returns all demo jobs regardless of owner and repo; this fake does not filter yet.
-  async getJobs(_owner: string, _repo: string): Promise<TestResultDataObject[]> { return this.jobs.map((job) => ({ ...job })); }
-  async jobExists(_owner: string, _repo: string, jobId: number): Promise<boolean> { return this.jobs.some((job) => job.id === jobId); }
+  async getJobs(owner: string, repo: string): Promise<TestResultDataObject[]> {
+    return this.jobs.filter(job => job.owner === owner && job.reponame === repo).map(job => ({ ...job }));
+  }
+  async jobExists(owner: string, repo: string, jobId: number): Promise<boolean> { return this.jobs.some(job => job.id === jobId && job.owner === owner && job.reponame === repo); }
   async saveJob(_job: TestResultDataObject): Promise<void> {}
-  async repositoryExists(_owner: string, _repoName: string): Promise<boolean> { return true; }
+  async repositoryExists(owner: string, repoName: string): Promise<boolean> { return this.jobs.some(job => job.owner === owner && job.reponame === repoName); }
   async getJobsNotSaved(_owner: string, _repoName: string, _commitsWithActions: [string, number][]): Promise<[string, number][]> { return []; }
   async saveJobsList(_owner: string, _repoName: string, _jobs: Record<string, JobDataObject>): Promise<void> {}
   async saveLogs(_timeline: ITimelineEntry[]): Promise<void> {}

@@ -7,14 +7,16 @@ import { isValidBranch } from "../modules/TDDCycles/Domain/RepositoryRef";
 
 // Create instances of your repositories
 const dbCommitsRepository = new DBCommitsRepository();
-const { dbJobsRepository, githubRepository, registrationRepository } = createTDDCyclesDependencies();
+const { dbJobsRepository, githubRepository, registrationRepository, resultsRepository, jobsGithubRepository } = createTDDCyclesDependencies();
 
 // Create an instance of your controller
 const tddCyclesController = new TDDCyclesController(
   dbCommitsRepository,
   dbJobsRepository,
   githubRepository,
-  registrationRepository
+  registrationRepository,
+  resultsRepository,
+  jobsGithubRepository,
 );
 
 // Create a new router to handle the TDDCycles routes
@@ -87,6 +89,10 @@ TDDCyclesRouter.get("/test-log", async (req, res) => {
     return res.status(400).json({ error: "Invalid owner or repoName" });
   }
 
+  if (resultsRepository) {
+    try { return res.json(await resultsRepository.getTestLog(owner, repoName, branch)); }
+    catch { return res.status(500).json({ error: "Server error" }); }
+  }
   try {
     const encodedOwner = encodeURIComponent(owner);
     const encodedRepoName = encodeURIComponent(repoName);

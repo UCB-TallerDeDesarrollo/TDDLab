@@ -113,7 +113,7 @@ describe("POST /api/TDDCycles/jobs", () => {
     const other = { ...valid, [field]: "other" };
     expect((await request(app).post(path).send(valid)).status).toBe(201);
     expect((await request(app).post(path).send(other)).status).toBe(201);
-    const records = (await jobs.getJobs(valid.owner, valid.reponame)).filter((job) => job.sha === valid.sha);
+    const records = [...await jobs.getJobs(valid.owner, valid.reponame), ...await jobs.getJobs(other.owner, other.reponame)].filter((job) => job.sha === valid.sha);
     expect(records).toHaveLength(2);
     expect(records).toEqual(expect.arrayContaining([expect.objectContaining(valid), expect.objectContaining(other)]));
   });
@@ -147,7 +147,7 @@ describe("POST /api/TDDCycles/jobs", () => {
   });
 
   it("mantiene GET de HU-02 con los tres resultados de demostración", async () => {
-    const response = await request(app).get(path).query({ owner: "any-owner", repoName: "any-repository" });
+    const response = await request(app).get(path).query({ owner: "demo", repoName: "tests" });
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
       expect.objectContaining({ sha: "commit-all-tests-passed", conclusion: "success" }),

@@ -2,16 +2,21 @@ import request from "supertest";
 import { createTDDCyclesDependencies } from "../../src/modules/TDDCycles/Repositories/createTDDCyclesDependencies";
 
 jest.mock("../../src/config/server", () => ({ __esModule: true, default: jest.fn() }));
+// Registration integration does not load the unrelated AI SDK or call its providers.
+jest.mock("../../src/routes/AIAssistant", () => ({ __esModule: true, default: require("express").Router() }));
 
 describe("Integración de registro en la aplicación", () => {
   const previousMode = process.env.TDD_JOBS_REPOSITORY;
   const previousDatabaseUrl = process.env.DATABASE_URL;
+  const previousTddDatabaseUrl = process.env.TDDLAB_DATABASE_URL;
 
   afterEach(() => {
     if (previousMode === undefined) delete process.env.TDD_JOBS_REPOSITORY;
     else process.env.TDD_JOBS_REPOSITORY = previousMode;
     if (previousDatabaseUrl === undefined) delete process.env.DATABASE_URL;
     else process.env.DATABASE_URL = previousDatabaseUrl;
+    if (previousTddDatabaseUrl === undefined) delete process.env.TDDLAB_DATABASE_URL;
+    else process.env.TDDLAB_DATABASE_URL = previousTddDatabaseUrl;
     jest.resetModules();
   });
 
@@ -29,7 +34,9 @@ describe("Integración de registro en la aplicación", () => {
 
   it("la aplicación en modo real devuelve un error controlado si PostgreSQL no está disponible", async () => {
     delete process.env.TDD_JOBS_REPOSITORY;
-    process.env.DATABASE_URL = "postgresql://invalid.invalid/tddlab";
+    // Override the higher-priority variable too; never contact a developer's .env database.
+    process.env.TDDLAB_DATABASE_URL = "postgresql://hu08@127.0.0.1:1/unavailable_hu08";
+    process.env.DATABASE_URL = process.env.TDDLAB_DATABASE_URL;
     const app = (require("../../src/app") as typeof import("../../src/app")).default;
     const response = await request(app).post("/api/TDDCycles/jobs").send({ sha: "abc123", owner: "demo", reponame: "tests", conclusion: "success" });
     expect(response.status).toBe(500);

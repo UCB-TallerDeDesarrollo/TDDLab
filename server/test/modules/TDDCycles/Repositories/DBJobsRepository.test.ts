@@ -72,8 +72,8 @@ describe("RepositoryExists", () => {
         const exists = await jobRepository.repositoryExists('owner', 'repo');
         expect(poolJobConnectMock).toBeCalledTimes(1);
         expect(clientJobQueryMock).toBeCalledWith(
-            'SELECT COUNT(*) FROM repository WHERE locator = $1',
-            ['owner/repo']
+            'SELECT COUNT(*) FROM jobstable WHERE owner = $1 AND reponame = $2',
+            ['owner', 'repo']
         );
         expect(exists).toEqual(true);
     });

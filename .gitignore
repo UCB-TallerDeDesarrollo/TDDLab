@@ -82,6 +82,12 @@ output.zip
 
 # Documentacion local no versionada
 docs/
+!docs/
+docs/*
+!docs/hu08/
+.hu08-work/
+hu08-baseline*
+hu08-*.txt
 
 # Archivos comprimidos generados localmente
 output.zip

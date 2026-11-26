@@ -1,5 +1,6 @@
 import { ITestResultRegistrationRepository, RegistrationOutcome } from "../Domain/ITestResultRegistrationRepository";
 import { TestResultValidationError } from "./TestResultValidationError";
+import { isValidBranch } from "../Domain/RepositoryRef";
 
 export class RegisterTestResultUseCase {
   constructor(private readonly repository: ITestResultRegistrationRepository) {}
@@ -26,6 +27,9 @@ export class RegisterTestResultUseCase {
       throw new TestResultValidationError("conclusion", "Invalid field: conclusion");
     }
 
-    return this.repository.register({ sha, owner, reponame, conclusion });
+    if (data.branch !== undefined && !isValidBranch(data.branch)) {
+      throw new TestResultValidationError("branch", "Invalid field: branch");
+    }
+    return this.repository.register({ sha, owner, reponame, conclusion, ...(data.branch === undefined ? {} : { branch: data.branch as string }) });
   }
 }

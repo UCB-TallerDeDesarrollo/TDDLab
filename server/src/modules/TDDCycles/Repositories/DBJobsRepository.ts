@@ -193,7 +193,9 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
         ORDER BY id ASC`;
       const values = [owner, repo];
       const result = await client.query(query, values);
-      return result.rows;
+      return result.rows.map(({ branch, ...job }) => ({
+        ...job, id: Number(job.id), ...(branch == null ? {} : { branch }),
+      }));
     } catch (error) {
       throw new Error("Error en la consulta a la base de datos");
     } finally {
@@ -223,8 +225,8 @@ async updateJobConclusion(sha: string, repoOwner: string, repoName: string, conc
   async repositoryExists(owner: string, repoName: string): Promise<boolean> {
     const client = await this.pool.connect();
     try {
-      const query = "SELECT COUNT(*) FROM repository WHERE locator = $1";
-      const values = [`${owner}/${repoName}`];
+      const query = "SELECT COUNT(*) FROM jobstable WHERE owner = $1 AND reponame = $2";
+      const values = [owner, repoName];
       const result = await client.query(query, values);
       return result.rows[0].count > 0;
     } catch (error) {

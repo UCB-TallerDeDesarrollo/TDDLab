@@ -2,9 +2,9 @@ import { IGithubRepository } from "../Domain/IGithubRepository";
 import { CommitCycleData } from "../Domain/ICommitCycleData";
 
 export class GetCommitCyclesUseCase {
-  private readonly githubRepository: IGithubRepository;
+  private readonly githubRepository: Pick<IGithubRepository, "getCommitCyclesData">;
 
-  constructor(githubRepository: IGithubRepository) {
+  constructor(githubRepository: Pick<IGithubRepository, "getCommitCyclesData">) {
     this.githubRepository = githubRepository;
   }
 
