@@ -81,6 +81,20 @@ TDDCyclesRouter.get("/branch-view", async (req, res) => {
   }
 });
 
+TDDCyclesRouter.get("/branches", async (req, res) => {
+  if (!historyRepository) return res.status(503).json({ error: "Branch history storage is not configured" });
+  try {
+    // Reuse the same optional BL-02 initialization as branch-view.
+    if (mockEnabled) {
+      historyReady ??= seedHistory();
+      await historyReady;
+    }
+    return await tddCyclesController.getBranches(req, res);
+  } catch {
+    return res.status(500).json({ error: "Branch history initialization failed" });
+  }
+});
+
 // Get all commits from a repository in Github (TDD Cycles)
 TDDCyclesRouter.get(
   "/commits",
