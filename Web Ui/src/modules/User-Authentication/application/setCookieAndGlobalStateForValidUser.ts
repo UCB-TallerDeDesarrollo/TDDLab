@@ -9,11 +9,11 @@ export function setCookieAndGlobalStateForValidUser(
   usergroupid: UserOnDb | null,
   positiveCallback = () => {},
 ) {
-  if (usergroupid && userData.photoURL && userData.email) {
+  if (usergroupid && userData.email) {
     localStorage.setItem(AUTH_SESSION_HINT_KEY, "active");
     setGlobalState("authData", {
       userid: usergroupid.id,
-      userProfilePic: userData.photoURL,
+      userProfilePic: userData.photoURL || "",
       userEmail: userData.email,
       usergroupid: usergroupid.groupid,
       userRole: usergroupid.role,

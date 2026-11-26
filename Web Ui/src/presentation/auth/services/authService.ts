@@ -1,5 +1,8 @@
 import { User } from "firebase/auth";
-import { handleSignInWithGoogle as signInWithGoogle } from "../../../modules/User-Authentication/application/signInWithGoogle";
+import {
+  handleGoogleRedirectResult as getGoogleRedirectResult,
+  handleSignInWithGoogle as signInWithGoogle,
+} from "../../../modules/User-Authentication/application/signInWithGoogle";
 import { setCookieAndGlobalStateForValidUser } from "../../../modules/User-Authentication/application/setCookieAndGlobalStateForValidUser";
 import { CheckIfUserHasAccount } from "../../../modules/User-Authentication/application/checkIfUserHasAccount";
 
@@ -7,6 +10,8 @@ const USER_NOT_REGISTERED_MESSAGE =
   "Disculpa, tu usuario no está registrado. Por favor, regístrate primero.";
 
 export const handleSignInWithGoogle = async () => signInWithGoogle();
+
+export const handleGoogleRedirectResult = async () => getGoogleRedirectResult();
 
 
 export const handleAuthResult = async ({

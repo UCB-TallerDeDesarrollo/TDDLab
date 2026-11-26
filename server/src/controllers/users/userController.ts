@@ -127,10 +127,12 @@ class UserController {
 
 
 logoutController(res: Response): void {
+    const secure = process.env.NODE_ENV === "production";
     res.clearCookie("userSession", {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure,
+        sameSite: secure ? "none" : "lax",
+        path: "/",
     });
 
     res.status(200).json({

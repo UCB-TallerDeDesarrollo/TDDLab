@@ -17,7 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const terminalPort = new VSCodeTerminalRepository();
     terminalProvider = new TerminalViewProvider(context, timelineView, terminalPort);
     testMenuProvider = new TestMenuProvider();
-    const executeCloneCommand = new ExecuteCloneCommand();
+    const executeCloneCommand = new ExecuteCloneCommand(context.extensionUri.fsPath);
 
     const runTestCmd = vscode.commands.registerCommand('TDD.runTest', async () => {
       try {

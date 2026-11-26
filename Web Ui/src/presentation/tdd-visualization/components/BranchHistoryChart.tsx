@@ -14,6 +14,10 @@ const left = 150;
 const right = 70;
 const top = 35;
 const bottom = 86;
+// Margen interno del área de trazado: evita que los puntos de los extremos
+// (y los que se desplazan por solaparse) se monten sobre los ejes o se corten.
+const plotPaddingX = 64;
+const targetYTicks = 8;
 const tooltipWidth = 440;
 const tooltipTitleLineHeight = 22;
 const tooltipDetailLineHeight = 20;
@@ -82,6 +86,16 @@ function displayValue(value: number | null | undefined) {
   return value == null ? "No disponible" : String(value);
 }
 
+// Paso "redondo" (1, 2, 5, 10, 20, ...) para que el eje Y tenga pocas marcas
+// legibles sin importar cuántos tests tenga el repositorio.
+function niceStep(range: number) {
+  const raw = Math.max(range, 1) / targetYTicks;
+  const magnitude = 10 ** Math.floor(Math.log10(raw));
+  const normalized = raw / magnitude;
+  const factor = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  return Math.max(1, factor * magnitude);
+}
+
 function shortSha(commit: BranchHistoryCommit) {
   return commit.sha.slice(0, 7);
 }
@@ -117,10 +131,11 @@ export default function BranchHistoryChart({ history }: Readonly<BranchHistoryCh
   const plotWidth = width - left - right;
   const plotHeight = height - top - bottom;
   const commitIndex = new Map(orderedCommits.map((commit, index) => [commit.sha, index]));
+  const innerPlotWidth = plotWidth - plotPaddingX * 2;
   const xForIndex = (index: number) =>
     orderedCommits.length === 1
       ? left + plotWidth / 2
-      : left + (index * plotWidth) / (orderedCommits.length - 1);
+      : left + plotPaddingX + (index * innerPlotWidth) / (orderedCommits.length - 1);
   const pointOffsets = new Map<string, number>();
   const overlappingPoints = new Map<string, { sha: string; branchNames: string[] }>();
   branches.forEach(branch => {
@@ -143,10 +158,14 @@ export default function BranchHistoryChart({ history }: Readonly<BranchHistoryCh
   const xForPoint = (branchName: string, sha: string) =>
     xForIndex(commitIndex.get(sha) ?? 0) +
     (pointOffsets.get(JSON.stringify([branchName, sha])) ?? 0);
-  const yMinimum = Math.min(1, ...knownTestCounts);
-  const yMaximum = Math.max(5, ...knownTestCounts);
+  const lowestCount = Math.min(...knownTestCounts);
+  const highestCount = Math.max(...knownTestCounts);
+  const yStep = niceStep(highestCount - lowestCount);
+  // Se deja un paso libre arriba y abajo para que ningún punto quede pegado al borde.
+  const yMinimum = Math.max(0, Math.floor(lowestCount / yStep) * yStep - yStep);
+  const yMaximum = Math.ceil(highestCount / yStep) * yStep + yStep;
   const yFor = (value: number) =>
-    top + ((yMaximum - value) * plotHeight) / Math.max(yMaximum - yMinimum, 1);
+    top + ((yMaximum - value) * plotHeight) / (yMaximum - yMinimum);
 
   const colorFor = (branchName: string, index: number) =>
     branchColors[branchName] ?? fallbackColors[index % fallbackColors.length];
@@ -225,8 +244,8 @@ export default function BranchHistoryChart({ history }: Readonly<BranchHistoryCh
   };
 
   const yTicks = Array.from(
-    { length: Math.floor((yMaximum - yMinimum) * 2) + 1 },
-    (_, index) => yMinimum + index * 0.5,
+    { length: Math.round((yMaximum - yMinimum) / yStep) + 1 },
+    (_, index) => yMinimum + index * yStep,
   );
 
   return (
@@ -260,7 +279,7 @@ export default function BranchHistoryChart({ history }: Readonly<BranchHistoryCh
             <g key={value}>
               <line x1={left} y1={y} x2={width - right} y2={y} stroke="#E5E7EB" strokeWidth="1" />
               <text x={left - 22} y={y + 5} textAnchor="end" fill="#64748B" fontSize="16" fontWeight="600">
-                {value.toFixed(1).replace(".", ",")}
+                {value}
               </text>
             </g>
           );

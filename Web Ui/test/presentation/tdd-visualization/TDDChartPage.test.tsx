@@ -55,11 +55,13 @@ function setRepositoryQuery(owner = "exampleOwner", repoName = "exampleRepo") {
 describe("TDDChartPage", () => {
   beforeEach(() => {
     setRepositoryQuery();
+    jest.mocked(branchHistoryPort.obtainBranches).mockResolvedValue([...demoHistoryByBranch.keys()]);
     jest.mocked(branchHistoryPort.obtainBranchHistory).mockImplementation(async (_owner, _repoName, branch) => {
       const history = demoHistoryByBranch.get(branch);
       if (!history) throw new Error(`No fixture for branch ${branch}`);
       return history;
     });
+    jest.mocked(branchHistoryPort.obtainBranches).mockClear();
     jest.mocked(branchHistoryPort.obtainBranchHistory).mockClear();
   });
   test.each([["admin"], ["student"]])(
@@ -76,29 +78,23 @@ describe("TDDChartPage", () => {
     }
   );
 
-  it("loads BL-02 history automatically for the fixture repository", async () => {
+  it("shows the built-in BL-02 Git and test mock without requesting branch history", async () => {
     setRepositoryQuery("equipo-tddlab", "ejemplo-sprint4");
-    const { findByRole } = render(
+    const { findByRole, findByTestId } = render(
       <TDDChartPage port={new MockGithubAPI()} branchHistoryPort={branchHistoryPort} role="student" teacher_id={294} graphs="graph" />,
     );
 
     const graph = await findByRole("region", { name: "Historial de commits por ramas" });
     expect(graph).toBeInTheDocument();
+    expect(await findByTestId("branch-history-mock-label")).toHaveTextContent(/datos simulados de Git y ejecuciones de pruebas/i);
     const firstCommitCenters = ["main", "rama-a", "rama-b"].map(branch => {
       const marker = graph.querySelector(`[aria-label^="Commit 1 en ${branch}:"] circle`);
       return Number(marker?.getAttribute("cx"));
     });
     expect(firstCommitCenters.every(Number.isFinite)).toBe(true);
     expect(new Set(firstCommitCenters).size).toBe(3);
-    expect(branchHistoryPort.obtainBranchHistory).toHaveBeenNthCalledWith(
-      1, "equipo-tddlab", "ejemplo-sprint4", "main",
-    );
-    expect(branchHistoryPort.obtainBranchHistory).toHaveBeenNthCalledWith(
-      2, "equipo-tddlab", "ejemplo-sprint4", "rama-a",
-    );
-    expect(branchHistoryPort.obtainBranchHistory).toHaveBeenNthCalledWith(
-      3, "equipo-tddlab", "ejemplo-sprint4", "rama-b",
-    );
+    expect(branchHistoryPort.obtainBranches).not.toHaveBeenCalled();
+    expect(branchHistoryPort.obtainBranchHistory).not.toHaveBeenCalled();
 
     fireEvent.mouseEnter(graph.querySelector('[aria-label*="Commit 2 en rama-a"]')!);
     expect(await findByRole("tooltip")).toHaveTextContent(/Total N.mero de Tests: 3/);
@@ -114,20 +110,35 @@ describe("TDDChartPage", () => {
     expect(await findByRole("region", { name: "Historial de commits por ramas" })).toBeInTheDocument();
   });
 
-  it("does not request BL-02 branches or attribute its history to another repository", async () => {
-    setRepositoryQuery("Luiscuac", "TotalizadorVentasIngSoftware");
-    const { findByRole, findByText } = render(
+  it("loads history for a non-demo repository using its stored branch list", async () => {
+    const owner = "Jpriveram";
+    const repoName = "TDDLabScriptTests";
+    const branch = "UCM-BL06-branch-scripts";
+    setRepositoryQuery(owner, repoName);
+    const repoHistory: BranchHistory = {
+      ...branchHistoryMock.branches[0],
+      repository: { provider: "github", owner, name: repoName },
+      branch,
+    };
+    jest.mocked(branchHistoryPort.obtainBranches).mockResolvedValue([branch]);
+    jest.mocked(branchHistoryPort.obtainBranchHistory).mockResolvedValue(repoHistory);
+
+    const { findByRole, findByTestId, queryByTestId } = render(
       <TDDChartPage port={new MockGithubAPI()} branchHistoryPort={branchHistoryPort} role="student" teacher_id={294} graphs="graph" />,
     );
 
     fireEvent.click(await findByRole("button", { name: /Ver gr.*fica: Total N.*mero de Tests/ }));
 
-    expect(await findByText("No hay historial TDD disponible para este repositorio.")).toBeInTheDocument();
-    expect(branchHistoryPort.obtainBranchHistory).not.toHaveBeenCalled();
+    expect(await findByRole("region", { name: "Historial de commits por ramas" })).toBeInTheDocument();
+    expect(queryByTestId("errorMessage")).not.toBeInTheDocument();
+    // Con una sola rama se muestra el ejemplo simulado de varias ramas.
+    expect(await findByTestId("branch-history-mock-fallback")).toHaveTextContent(/solo tiene historial en una rama/);
+    expect(branchHistoryPort.obtainBranches).toHaveBeenCalledWith(owner, repoName);
+    expect(branchHistoryPort.obtainBranchHistory).toHaveBeenCalledWith(owner, repoName, branch);
   });
 
-  it("shows empty data when commits have no test results instead of plotting zero", async () => {
-    setRepositoryQuery("equipo-tddlab", "ejemplo-sprint4");
+  it("falls back to the simulated chart when commits have no test results", async () => {
+    setRepositoryQuery("another-owner", "no-tests-repo");
     const noResultsHistory: BranchHistories = {
       ...branchHistoryMock,
       branches: branchHistoryMock.branches.map((branch: BranchHistory) => ({
@@ -141,12 +152,27 @@ describe("TDDChartPage", () => {
       if (!history) throw new Error(`No fixture for branch ${branch}`);
       return history;
     });
-    const { findByText, queryByRole } = render(
+    const { findByTestId, findByRole } = render(
       <TDDChartPage port={new MockGithubAPI()} branchHistoryPort={branchHistoryPort} role="student" teacher_id={294} graphs="graph" />,
     );
 
-    expect(await findByText("No hay resultados de pruebas asociados a los commits de este repositorio.")).toBeInTheDocument();
-    expect(queryByRole("region", { name: "Historial de commits por ramas" })).not.toBeInTheDocument();
+    fireEvent.click(await findByRole("button", { name: /Ver gr.*fica: Total N.*mero de Tests/ }));
+    expect(await findByTestId("branch-history-mock-fallback")).toHaveTextContent(
+      /No hay resultados de pruebas asociados a los commits de este repositorio\. Se muestran datos simulados/,
+    );
+    expect(await findByRole("region", { name: "Historial de commits por ramas" })).toBeInTheDocument();
+  });
+
+  it("falls back to the simulated chart when the branch history request fails", async () => {
+    setRepositoryQuery("another-owner", "broken-repo");
+    jest.mocked(branchHistoryPort.obtainBranches).mockRejectedValue(new Error("Network Error"));
+    const { findByTestId, findByRole } = render(
+      <TDDChartPage port={new MockGithubAPI()} branchHistoryPort={branchHistoryPort} role="student" teacher_id={294} graphs="graph" />,
+    );
+
+    fireEvent.click(await findByRole("button", { name: /Ver gr.*fica: Total N.*mero de Tests/ }));
+    expect(await findByTestId("branch-history-mock-fallback")).toHaveTextContent(/Network Error/);
+    expect(await findByRole("region", { name: "Historial de commits por ramas" })).toBeInTheDocument();
   });
 
   test.each([["admin"], ["student"]])(
@@ -164,17 +190,14 @@ describe("TDDChartPage", () => {
   );
 
   test.each([["admin"], ["student"]])(
-    "displays an error message when no data is available for role %s",
+    "does not require a main branch for the test-count graph for role %s",
     async (role) => {
       setRepositoryQuery("anotherOwner", "anotherRepo");
-      const { getByTestId } = render(
+      const { queryByTestId } = render(
         <TDDChartPage port={new MockGithubAPIEmpty()} role={role} teacher_id={294} graphs="graph"/>
       );
 
-      await waitFor(() => {
-        const error = getByTestId("errorMessage");
-        expect(error).toBeInTheDocument();
-      });
+      await waitFor(() => expect(queryByTestId("errorMessage")).not.toBeInTheDocument());
     }
   );
 

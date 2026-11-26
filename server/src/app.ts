@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors"; // Import the cors middleware
 import bodyParser from "body-parser";
@@ -16,7 +19,7 @@ import featureFlagsRouter from "./routes/featureFlagsRoutes";
 import cookieParser from "cookie-parser";
 
 const app = express();
-const port = 3000;
+const port = Number(process.env.PORT ?? 3000);
 
 const allowedOrigins = new Set(
     [

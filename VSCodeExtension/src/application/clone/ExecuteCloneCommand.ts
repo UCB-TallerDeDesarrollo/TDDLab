@@ -7,8 +7,7 @@ import { promisify } from 'node:util';
 const execAsync = promisify(exec);
 
 export class ExecuteCloneCommand {
-  // URL del repositorio base TDDLab
-  private readonly REPO_URL = 'https://github.com/UCB-TallerDeDesarrollo/TDDLabBaseProject.git';
+  constructor(private readonly extensionPath: string) {}
 
   async execute(): Promise<void> {
     try {
@@ -53,38 +52,40 @@ export class ExecuteCloneCommand {
         }
       }
 
-      // Clonar el repositorio con barra de progreso
+      // Copiar la plantilla incluida con la extensión para conservar su versión de sincronización.
       await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: "Creando proyecto TDDLab...",
         cancellable: false
       }, async (progress) => {
-        progress.report({ increment: 0, message: "Creando repositorio..." });
+        progress.report({ increment: 0, message: "Preparando la plantilla..." });
 
         try {
-          // Crear carpeta temporal para el clone
-          const tempFolder = path.join(selectedPath, '.temp-tddlab-clone');
-          
-          // Clonar en carpeta temporal
-          await execAsync(`git clone ${this.REPO_URL} "${tempFolder}"`);
+          const templateFolder = path.join(this.extensionPath, 'resources', 'TDDLabBaseProject');
+          if (!(await fs.stat(path.join(templateFolder, 'package.json')).catch(() => null))) {
+            throw new Error('No se encontró la plantilla TDDLab incluida con la extensión.');
+          }
 
           progress.report({ increment: 40, message: "Copiando archivos..." });
 
-          // Mover todos los archivos de la carpeta temporal a la carpeta seleccionada
-          const clonedFiles = await fs.readdir(tempFolder);
+          const templateFiles = await fs.readdir(templateFolder);
+          const shouldCopy = (sourcePath: string) => {
+            const relativePath = path.relative(templateFolder, sourcePath).split(path.sep).join('/');
+            return relativePath !== '.git' &&
+              relativePath !== '.env' &&
+              !/^\.env\..+\.local$/.test(relativePath) &&
+              relativePath !== 'script/pending-sync.json';
+          };
           
-          for (const file of clonedFiles) {
-            if (file !== '.git') {
-              const srcPath = path.join(tempFolder, file);
+          for (const file of templateFiles) {
+            if (file !== '.git' && file !== '.env' && file !== 'node_modules') {
+              const srcPath = path.join(templateFolder, file);
               const destPath = path.join(selectedPath, file);
-              await fs.cp(srcPath, destPath, { recursive: true });
+              await fs.cp(srcPath, destPath, { recursive: true, filter: shouldCopy });
             }
           }
 
-          progress.report({ increment: 80, message: "Limpiando archivos temporales..." });
-
-          // Eliminar carpeta temporal
-          await fs.rm(tempFolder, { recursive: true, force: true });
+          progress.report({ increment: 80, message: "Finalizando la configuración..." });
 
           // Crear archivo marcador para instalación automática
           const markerFile = path.join(selectedPath, '.tddlab-setup-pending');

@@ -8,13 +8,12 @@ import type { BranchHistories, BranchHistory } from "../../../modules/TDDCycles-
 import "../styles/TDDChartPageStyles.css";
 import { useTDDChartPage } from "../hooks/useTDDChartPage";
 import { CycleReportViewProps } from "../types/tddVisualization.types";
+import { branchHistoryMock } from "../mocks/branchHistoryMock";
 
 const BL02_DEMO_REPOSITORY = {
   owner: "equipo-tddlab",
   repoName: "ejemplo-sprint4",
 };
-const BL02_DEMO_BRANCHES = ["main", "rama-a", "rama-b"];
-
 function isBL02DemoRepository(owner: string, repoName: string) {
   return owner.toLowerCase() === BL02_DEMO_REPOSITORY.owner &&
     repoName.toLowerCase() === BL02_DEMO_REPOSITORY.repoName;
@@ -22,9 +21,11 @@ function isBL02DemoRepository(owner: string, repoName: string) {
 
 type BranchHistoryLoadState =
   | { status: "idle" | "loading" }
-  | { status: "empty"; message: string }
-  | { status: "error"; message: string }
-  | { status: "ready"; history: BranchHistories };
+  | { status: "ready"; history: BranchHistories; mockReason?: string };
+
+const NO_HISTORY_MESSAGE = "No hay historial TDD disponible para este repositorio.";
+const NO_TEST_RESULTS_MESSAGE = "No hay resultados de pruebas asociados a los commits de este repositorio.";
+const SINGLE_BRANCH_MESSAGE = "Este repositorio solo tiene historial en una rama.";
 
 function hasTestResults(branches: BranchHistory[]) {
   const executions = branches.flatMap(branch => branch.executions);
@@ -65,62 +66,67 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
     let active = true;
     setBranchHistoryState({ status: "loading" });
 
-    if (!usesBL02DemoRepository) {
-      setBranchHistoryState({
-        status: "empty",
-        message: "No hay historial TDD disponible para este repositorio.",
-      });
+    if (usesBL02DemoRepository) {
+      setBranchHistoryState({ status: "ready", history: branchHistoryMock });
       return () => { active = false; };
     }
+
+    // Si el repositorio no tiene historial real (o el backend falla), se muestra
+    // la gráfica con datos simulados para que el botón siempre tenga resultado.
+    const showMock = (mockReason: string) =>
+      setBranchHistoryState({ status: "ready", history: branchHistoryMock, mockReason });
 
     const branchHistoryPort = props.branchHistoryPort;
     if (!branchHistoryPort) {
-      setBranchHistoryState({
-        status: "error",
-        message: "No está configurado el adaptador del historial de ramas.",
-      });
+      showMock("No está configurado el adaptador del historial de ramas.");
       return () => { active = false; };
     }
 
-    Promise.all(BL02_DEMO_BRANCHES.map(branch =>
-      branchHistoryPort.obtainBranchHistory(tddPage.repoOwner, tddPage.repoName, branch),
-    )).then((branches: BranchHistory[]) => {
-      if (!active) return;
-      if (!branches.some(branch => branch.commits.length > 0)) {
-        setBranchHistoryState({
-          status: "empty",
-          message: "No hay historial TDD disponible para este repositorio.",
-        });
-        return;
-      }
-      if (!hasTestResults(branches)) {
-        setBranchHistoryState({
-          status: "empty",
-          message: "No hay resultados de pruebas asociados a los commits de este repositorio.",
-        });
-        return;
-      }
+    const loadBranchHistory = async () => {
+      try {
+        const branchNames = await branchHistoryPort.obtainBranches(tddPage.repoOwner, tddPage.repoName);
+        if (!active) return;
+        if (branchNames.length === 0) {
+          showMock(NO_HISTORY_MESSAGE);
+          return;
+        }
 
-      setBranchHistoryState({
-        status: "ready",
-        history: { repository: branches[0].repository, branches },
-      });
-    }).catch((error: unknown) => {
-      if (!active) return;
-      if (isNotFoundError(error)) {
+        const branches = await Promise.all(branchNames.map(branch =>
+          branchHistoryPort.obtainBranchHistory(tddPage.repoOwner, tddPage.repoName, branch),
+        ));
+        if (!active) return;
+        if (!branches.some(branch => branch.commits.length > 0)) {
+          showMock(NO_HISTORY_MESSAGE);
+          return;
+        }
+        if (!hasTestResults(branches)) {
+          showMock(NO_TEST_RESULTS_MESSAGE);
+          return;
+        }
+        // La gráfica compara ramas: con una sola rama no aporta información,
+        // así que se muestra el ejemplo simulado con varias ramas.
+        if (branches.filter(branch => branch.commits.length > 0).length < 2) {
+          showMock(SINGLE_BRANCH_MESSAGE);
+          return;
+        }
+
         setBranchHistoryState({
-          status: "empty",
-          message: "No hay historial TDD disponible para este repositorio.",
+          status: "ready",
+          history: { repository: branches[0].repository, branches },
         });
-        return;
-      }
-      setBranchHistoryState({
-        status: "error",
-        message: error instanceof Error
+      } catch (error: unknown) {
+        if (!active) return;
+        if (isNotFoundError(error)) {
+          showMock(NO_HISTORY_MESSAGE);
+          return;
+        }
+        showMock(error instanceof Error
           ? `No se pudo cargar el historial TDD: ${error.message}`
-          : "No se pudo cargar el historial TDD.",
-      });
-    });
+          : "No se pudo cargar el historial TDD.");
+      }
+    };
+
+    void loadBranchHistory();
 
     return () => { active = false; };
   }, [props.branchHistoryPort, showTestCountChart, tddPage.repoName, tddPage.repoOwner, usesBL02DemoRepository]);
@@ -138,7 +144,7 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && !usesBL02DemoRepository && (
+      {!tddPage.loading && props.graphs !== "graph" && !chartsState.commitsInfo?.length && !usesBL02DemoRepository && (
         <div className="error-message" data-testid="errorMessage">
           Error: Verifica que el repositorio utilice la rama "main". Actualmente,
           TDDLab no puede cargar los datos si la rama principal es "master"
@@ -221,19 +227,26 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
             </button>
           )}
           <div id="total-test-count-chart" ref={testCountChartRef} style={{ width: "80%" }}>
+            {usesBL02DemoRepository && branchHistoryState.status === "ready" && (
+              <p
+                data-testid="branch-history-mock-label"
+                style={{ textAlign: "center", margin: "0 0 10px", color: "#64748b", fontSize: 14 }}
+              >
+                Demo BL-02: datos simulados de Git y ejecuciones de pruebas
+              </p>
+            )}
             {branchHistoryState.status === "loading" && (
               <div role="status" style={{ display: "flex", justifyContent: "center", padding: 24 }}>
                 <PropagateLoader color="#36d7b7" />
               </div>
             )}
-            {branchHistoryState.status === "empty" && (
-              <p role="status" style={{ textAlign: "center", padding: 16 }}>
-                {branchHistoryState.message}
-              </p>
-            )}
-            {branchHistoryState.status === "error" && (
-              <p role="alert" style={{ textAlign: "center", padding: 16 }}>
-                {branchHistoryState.message}
+            {branchHistoryState.status === "ready" && branchHistoryState.mockReason && (
+              <p
+                role="status"
+                data-testid="branch-history-mock-fallback"
+                style={{ textAlign: "center", margin: "0 0 10px", color: "#64748b", fontSize: 14 }}
+              >
+                {branchHistoryState.mockReason} Se muestran datos simulados de ejemplo.
               </p>
             )}
             {branchHistoryState.status === "ready" && (

@@ -36,6 +36,9 @@ const AssignmentDetail = lazy(
 const TDDChartPage = lazy(
   () => import("./presentation/tdd-visualization/pages/TDDChartPage"),
 );
+const BranchSyncEnvConfigurator = lazy(
+  () => import("./presentation/tdd-visualization/components/BranchSyncEnvConfigurator"),
+);
 const Login = lazy(() => import("./presentation/auth/pages/AuthPage"));
 const InvitationPage = lazy(
   () => import("./presentation/group-invitation/pages/InvitationPage"),
@@ -102,14 +105,21 @@ function App() {
   const hasSessionHint =
     localStorage.getItem(AUTH_SESSION_HINT_KEY) === "active";
   const branchHistoryAdapter = useMemo(() => new CommitHistoryAdapter(), []);
+  const repoOwner = graphParams.get("repoOwner") ?? "";
+  const repoName = graphParams.get("repoName") ?? "";
   const graphPage = (
-    <TDDChartPage
-      port={branchHistoryAdapter}
-      branchHistoryPort={branchHistoryAdapter}
-      role={isBL02DemoGraph ? "student" : authData.userRole ?? ""}
-      teacher_id={isBL02DemoGraph ? -1 : authData.userid ?? -1}
-      graphs="graph"
-    />
+    <>
+      {isAuthenticated && repoOwner && repoName && (
+        <BranchSyncEnvConfigurator owner={repoOwner} repoName={repoName} />
+      )}
+      <TDDChartPage
+        port={branchHistoryAdapter}
+        branchHistoryPort={branchHistoryAdapter}
+        role={isBL02DemoGraph ? "student" : authData.userRole ?? ""}
+        teacher_id={isBL02DemoGraph ? -1 : authData.userid ?? -1}
+        graphs="graph"
+      />
+    </>
   );
 
   useEffect(() => {

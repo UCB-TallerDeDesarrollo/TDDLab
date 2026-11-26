@@ -21,3 +21,7 @@ node_modules/**
 !node_modules/adm-zip/**
 !node_modules/crypto-js/**
 !node_modules/dotenv/**
+
+resources/TDDLabBaseProject/.env
+resources/TDDLabBaseProject/.env.*.local
+resources/TDDLabBaseProject/script/pending-sync.json

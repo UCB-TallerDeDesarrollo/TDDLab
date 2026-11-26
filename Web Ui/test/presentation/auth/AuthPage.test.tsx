@@ -28,6 +28,7 @@ describe("AuthPage", () => {
     mockedGetAuth.mockReturnValue({ ...mockAuth, authStateReady });
     mockedUseAuth.mockReturnValue({
       loginWithGoogle: jest.fn(),
+      completeGoogleRedirect: jest.fn().mockResolvedValue(undefined),
       loading: false,
       error: null,
       setError: jest.fn(),
@@ -82,7 +83,11 @@ describe("AuthPage", () => {
   it("keeps the button disabled while login is in progress", async () => {
     authStateReady.mockResolvedValue(undefined);
     mockedUseAuth.mockReturnValue({
-      loginWithGoogle: jest.fn(), loading: true, error: null, setError: jest.fn(),
+      loginWithGoogle: jest.fn(),
+      completeGoogleRedirect: jest.fn().mockResolvedValue(undefined),
+      loading: true,
+      error: null,
+      setError: jest.fn(),
     });
 
     await act(async () => { render(<AuthPage />); });

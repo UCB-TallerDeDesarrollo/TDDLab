@@ -7,13 +7,17 @@ export const saveUserCookie = (
 
 ): void => {
 
+    const secure = process.env.NODE_ENV === "production";
+
     res.cookie("userSession", token, {
 
         httpOnly: true,
 
-        secure: true,
+        secure,
 
-        sameSite: "none",
+        sameSite: secure ? "none" : "lax",
+
+        path: "/",
 
         maxAge: 1000 * 60 * 60 * 24 * 30,
 

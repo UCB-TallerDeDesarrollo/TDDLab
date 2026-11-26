@@ -10,7 +10,7 @@ import ContentState from "../../../shared/components/ContentState";
 import firebase from "../../../firebaseConfig";
 
 export default function AuthPage() {
-  const { loginWithGoogle, loading, error, setError } = useAuth();
+  const { loginWithGoogle, completeGoogleRedirect, loading, error, setError } = useAuth();
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ export default function AuthPage() {
       try {
         // Prepare Firebase before the click so Safari can open the popup promptly.
         await getAuth(firebase).authStateReady();
+        await completeGoogleRedirect();
         if (active) setAuthReady(true);
       } catch {
         if (active) setError("No se pudo inicializar la autenticación.");
@@ -28,7 +29,7 @@ export default function AuthPage() {
 
     void prepareAuth();
     return () => { active = false; };
-  }, [setError]);
+  }, [completeGoogleRedirect, setError]);
 
   let authStateContent = null;
 
