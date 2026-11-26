@@ -1,535 +1,483 @@
-import React, { useRef, useState, useEffect, useMemo  } from "react";
-import { Bubble, getElementAtEvent, Line } from "react-chartjs-2";
-import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
-import { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
-import TDDLineCharts from "./TDDLineChart";
 
-import { VITE_API } from "../../../../config";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { MouseEvent } from "react";
+import { Bubble, Line, getElementAtEvent } from "react-chartjs-2";
+
+import {
+  Chart as ChartJS,
+  BubbleController,
+  LineController,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+import type { ChartData, ChartOptions } from "chart.js";
+
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+
+import { useSearchParams } from "react-router-dom";
+
+import type { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
+import type { CommitHistoryRepository } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
+import type { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import type { TestExecutionDataBranchSupport } from "../../../modules/TDDCycles-Visualization/domain/ITestExecutionDataBranchSupport";
+
+import { CommitHistoryAdapterBranchSupport } from "../../../modules/TDDCycles-Visualization/repository/CommitHistoryAdapterBranchSupport";
+import { GetTestExecutionsBranchSupport } from "../../../modules/TDDCycles-Visualization/application/GetTestExecutionsBranchSupport";
+
 import CommitTimelineDialog from "./TDDCommitTimelineDialog";
-import { TDDLogEntry, TestExecutionLog, CommitLog } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
-import TDDCycleChart from "./TDDCycleChart";
+import BranchTestCycleChart from "./BranchTestCycleChart";
 
-interface CycleReportViewProps {
+ChartJS.register(
+  BubbleController,
+  LineController,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+);
+
+interface TDDBoardProps {
   commits: CommitDataObject[];
-  tddLogs: TDDLogEntry[];
-  port: CommitHistoryRepository;
-  role: string;
+  tddLogs?: TDDLogEntry[];
+  port?: CommitHistoryRepository;
+  role?: string;
+  selectedBranch?: string;
+  onMetricChange?: (metric: string) => void;
 }
 
-interface CommitTestsMapping {
-  commitIndex: number;
-  commitData: CommitLog | null;
-  tests: TestExecutionLog[];
-}
-
-const preprocessTDDLogs = (tddLogs: TDDLogEntry[]): CommitTestsMapping[] => {
-  if (!tddLogs || tddLogs.length === 0) {
-    return [];
-  }
-  
-  const commitMappings: CommitTestsMapping[] = [];
-  let currentCommitIndex = -1;
-  let currentTests: TestExecutionLog[] = [];
-  let currentCommitData: CommitLog | null = null;
-  
-  for (const log of tddLogs) {
-    // Si es un commit, guardamos los tests del commit anterior (si existen)
-    if ('commitId' in log) {
-      if (currentCommitIndex >= 0 && currentTests.length > 0) {
-        commitMappings.push({
-          commitIndex: currentCommitIndex,
-          commitData: currentCommitData,
-          tests: [...currentTests]
-        });
-      }
-      
-      // Iniciamos un nuevo commit
-      currentCommitIndex++;
-      currentCommitData = log;
-      currentTests = [];
-    }
-    // Si es una ejecución de tests, la agregamos al commit actual
-    else if ('numPassedTests' in log) {
-      currentTests.push(log);
-    }
-  };
-  
-  // No olvidar agregar el último commit si tiene tests
-  if (currentCommitIndex >= 0 && currentTests.length > 0) {
-    commitMappings.push({
-      commitIndex: currentCommitIndex,
-      commitData: currentCommitData,
-      tests: [...currentTests]
-    });
-  }
-  
-  return commitMappings;
+type BubblePoint = {
+  x: number;
+  y: number;
+  r: number;
 };
 
-const TDDBoard: React.FC<CycleReportViewProps> = ({
-  commits,
-  tddLogs,
-  role,
-  port,
-}) => {
-  const processedTDDLogs = useMemo(() => {
-    return preprocessTDDLogs(tddLogs);
-  }, [tddLogs]);
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedCommit, setSelectedCommit] = useState<CommitDataObject | null>(null);
-  const [commitTimelineData, setCommitTimelineData] = useState<any[]>([]);
-  const chartRefCoverage = useRef<any>();
-  const chartRefModifiedLines = useRef<any>();
-  const chartRefTestCount = useRef<any>();
-  const [graph, setGraph] = useState<string>("");
-  const testCounts = commits.map((commit) => commit.test_count);
-  const minTestCount = 0;
-  const maxTestCount = 100;
-  const maxTest = Math.max(...testCounts);
-  const numberOfLabels = 4;
-  const step = Math.ceil((maxTestCount - minTestCount) / numberOfLabels);
-  const labels = Array.from(
-    { length: numberOfLabels },
-    (_, i) => maxTestCount - i * step
-  );
+const repository = new CommitHistoryAdapterBranchSupport();
 
-  const getTestsForCommit = (commitIndex: number): TestExecutionLog[] => {
-    // Buscar el commit en los logs preprocesados por índice
-    const commitMapping = processedTDDLogs.find(
-      mapping => mapping.commitIndex === commitIndex
-    );
-    
-    return commitMapping ? commitMapping.tests : [];
-  };
-  
-  function containsRefactor(commitMessage: string): boolean {
-    const regex = /\brefactor(\w*)\b/i;
-    return regex.test(commitMessage);
+function hasTestData(commit: CommitDataObject): boolean {
+  return (
+    commit.conclusion !== "unknown" &&
+    commit.conclusion !== "" &&
+    commit.conclusion != null
+  );
+}
+
+function getCommitColor(commit: CommitDataObject, classic = false): string {
+  if (classic) {
+    if (commit.coverage == null) return "#111111";
+    if (commit.conclusion === "failure" || commit.test_count === 0) return "#ff0000";
+    const opacity = commit.coverage >= 90 ? 1 : commit.coverage >= 80 ? 0.8 : commit.coverage >= 70 ? 0.6 : commit.coverage >= 60 ? 0.4 : 0.2;
+    return /\brefactor\w*\b/i.test(commit.commit.message)
+      ? `rgba(0, 100, 255, ${opacity})`
+      : `rgba(0, 110, 0, ${opacity})`;
+  }
+  if (!hasTestData(commit)) return "#94a3b8";
+
+  if (
+    commit.conclusion === "failure" ||
+    commit.conclusion === "error" ||
+    commit.conclusion === "cancelled"
+  ) {
+    return "#dc2626";
   }
 
-  // Nueva función para obtener el color basado directamente en el commit
-  const getCommitColor = (commit: CommitDataObject): string => {
-    if (
-    !commit || typeof commit !== "object" ||
-    !commit.commit || typeof commit.commit.message !== "string"
-    ) {
-    return "red";
-    }
-    
-    const { coverage, test_count, conclusion, commit: { message } } = commit;
-    
-    // Si no hay información de cobertura o tests, asumimos que el commit no pasó
-     if (
-    coverage === undefined || coverage === null
-    ) {
-      return "black";
-    }
+  if (/\brefactor\w*\b/i.test(commit.commit.message)) {
+    return "#2563eb";
+  }
 
-     // Casos de error: sin cobertura, sin tests o tests fallidosAdd commentMore actions
-    if (
-    test_count === undefined || test_count === 0 ||
-    conclusion === "failure"
-    ) {
-      return "red";
-    }
-    const isRefactor = containsRefactor(message);
-    // Si tiene tests y no hay errores (asumimos que en commit-history.json solo se guardan commits válidos)
-    return getColorByCoverage(coverage, isRefactor);
-  };
-  
-  const getColorByCoverage = (coverage: number, isRefactor: boolean): string => {
-    let colorValue: number;
-    let opacity: number;
-    const baseColor = isRefactor ? 'blue' : 'green';
-  
-    if (coverage >= 90) {
-      colorValue = 110;
-      opacity = 1;
-    } else if (coverage >= 80) {
-      colorValue = 110;
-      opacity = 0.8;
-    } else if (coverage >= 70) {
-      colorValue = 110;
-      opacity = 0.6;
-    } else if (coverage >= 60) {
-      colorValue = 110;
-      opacity = 0.4;
-    } else {
-      colorValue = 110;
-      opacity = 0.2;
-    }
-  
-    return baseColor === 'green'
-      ? `rgba(0, ${colorValue}, 0, ${opacity})`
-      : `rgba(0, 100, 255, ${opacity})`;
-  };
-   
-  const changeGraph = (graphText: string) => {
-    setGraph(graphText);
-    localStorage.setItem("selectedMetric", graphText);
-    window.location.reload();
-  };
+  return "#16a34a";
+}
 
-  const getChartOptions = (yAxisText: string) => {
-    return {
-      responsive: true,
-      pointRadius: 8,
-      pointHoverRadius: 15,
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Commits Realizados",
-            font: {
-              size: 13,
-              lineHeight: 1.2,
-            },
-          },
-        },
-        y: {
-          title: {
-            display: true,
-            text: yAxisText,
-            font: {
-              size: 10,
-              lineHeight: 1.2,
-              padding: { top: 20 },
-            },
-          },
-        },
-      },
-      plugins: {
-        legend: {
-          display: true,
-        },
-      },
-    };
-  };
+function TDDBoard({
+  commits,
+  selectedBranch = "",
+  onMetricChange,
+}: Readonly<TDDBoardProps>) {
+  const isMultiBranch = selectedBranch === "all";
+  const [searchParams] = useSearchParams();
 
-  const getLineChartData = (label: string, data: number[]) => {
-    return {
-      labels: commits.map((_, index) => `Commit ${index + 1}`),
-      datasets: [
+  const owner = searchParams.get("repoOwner") ?? "";
+  const repoName = searchParams.get("repoName") ?? "";
+
+  const chartRef = useRef<ChartJS<"bubble"> | null>(null);
+
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedCommit, setSelectedCommit] =
+    useState<CommitDataObject | null>(null);
+
+  const [executions, setExecutions] =
+    useState<TestExecutionDataBranchSupport[]>([]);
+
+  const [loadingExecutions, setLoadingExecutions] = useState(false);
+  const [executionError, setExecutionError] =
+    useState<string | null>(null);
+
+  const orderedCommits = useMemo(
+    () =>
+      [...commits].sort(
+        (a, b) =>
+          new Date(a.commit.date).getTime() -
+          new Date(b.commit.date).getTime()
+      ),
+    [commits]
+  );
+
+  const measuredCommits = useMemo(
+    () =>
+      orderedCommits
+        .map((commit, index) => ({ commit, index }))
+        .filter(({ commit }) => hasTestData(commit)),
+    [orderedCommits]
+  );
+
+  const commitsWithoutTests =
+    orderedCommits.length - measuredCommits.length;
+
+  const latestMeasuredCommit =
+    measuredCommits.length > 0
+      ? measuredCommits[measuredCommits.length - 1].commit
+      : null;
+
+  const bubbleData: ChartData<"bubble", BubblePoint[], string> = {
+    datasets: measuredCommits.map(({ commit, index }) => ({
+      label: commit.sha.substring(0, 7),
+      data: [
         {
-          label,
-          data: [...data].reverse(),
-          backgroundColor: commits
-            .map((commit) => {
-              return getCommitColor(commit);
-            })
-            .reverse(),
-          borderColor: "rgba(0, 0, 0, 0.2)",
-          links: commits.map((commit) => commit.html_url).reverse(),
+          x: index + 1,
+          y: commit.test_count,
+          r: isMultiBranch
+            ? Math.min(22, Math.max(7, Math.sqrt(Math.max(0, commit.stats.total)) + 6))
+            : Math.max(10, commit.stats.total / 1.5),
         },
       ],
-    };
+      backgroundColor: getCommitColor(commit, !isMultiBranch),
+      borderColor: "#ffffff",
+      borderWidth: 2,
+    })),
   };
-  const chartRef = useRef<any>();  
 
-  const onClick = async (event: any) => {
-    const elements = getElementAtEvent(chartRef.current, event);
-    if (elements.length > 0) {
-      const dataSetIndexNum = elements[0].datasetIndex;
-      const commit = commits.slice().reverse()[dataSetIndexNum];
-      if (commit?.html_url) {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)\/commit\/([^/]+)/;
-        const match = regex.exec(commit.html_url);
-  
-        if (match) {
-          const repoOwner = match[1];
-          const repoName = match[2];
-          const sha = match[3];
-  
-          try {
-            const response = await fetch(
-              `${VITE_API}/TDDCycles/commit-timeline?sha=${sha}&repoName=${repoName}&owner=${repoOwner}`
-            );
-  
-            if (response.ok) {
-              await response.json();
-              // Filtrar los tests del commit específico usando el tdd_log.json local
-              const commitIndexInOriginal = dataSetIndexNum - 1;
-              const testsForCommit = getTestsForCommit(commitIndexInOriginal);
+  const bubbleOptions: ChartOptions<"bubble"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        min: 0,
+        max: Math.max(2, orderedCommits.length + 1),
+        title: {
+          display: true,
+          text: isMultiBranch ? "Commits en orden cronológico" : "Commits",
+        },
+        ticks: {
+          stepSize: 1,
+          callback: isMultiBranch
+            ? undefined
+            : (value) => Number.isInteger(Number(value)) ? `Commit ${value}` : "",
+        },
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: isMultiBranch ? "Pruebas registradas" : "Total número de tests",
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const item = measuredCommits[context.datasetIndex];
+            if (!item) return "";
 
-              setCommitTimelineData(testsForCommit); 
-              setSelectedCommit(commit); 
-              setOpenModal(true); 
-            } else {
-              console.error("Error al obtener los datos:", response.statusText);
-            }
-          } catch (error) {
-            console.error("Error al llamar a la API:", error);
-          }
-          }
-      }
-    }
+            const commit = item.commit;
+
+            return [
+              `SHA: ${commit.sha.substring(0, 7)}`,
+              `Mensaje: ${commit.commit.message}`,
+              `Pruebas: ${commit.test_count}`,
+              `Cobertura: ${
+                commit.coverage == null
+                  ? "No disponible"
+                  : `${commit.coverage}%`
+              }`,
+              `Resultado: ${commit.conclusion}`,
+            ];
+          },
+        },
+      },
+    },
   };
-  
-  const handleCloseModal = () => {
+
+  useEffect(() => {
     setOpenModal(false);
     setSelectedCommit(null);
+    setExecutions([]);
+    setExecutionError(null);
+  }, [owner, repoName, selectedBranch, commits]);
+
+  const handleBubbleClick = async (
+    event: MouseEvent<HTMLCanvasElement>
+  ) => {
+    if (!chartRef.current || loadingExecutions) return;
+
+    const elements = getElementAtEvent(chartRef.current, event);
+    if (elements.length === 0) return;
+
+    const item = measuredCommits[elements[0].datasetIndex];
+    if (!item) return;
+
+    const commit = item.commit;
+
+    setSelectedCommit(commit);
+    setExecutions([]);
+    setExecutionError(null);
+    setOpenModal(true);
+    setLoadingExecutions(true);
+
+    try {
+      const useCase = new GetTestExecutionsBranchSupport(repository);
+
+      const response = await useCase.execute(
+        owner,
+        repoName,
+        selectedBranch || undefined,
+        commit.sha
+      );
+
+      setExecutions(
+        response.filter((execution) => execution.commit_sha === commit.sha)
+      );
+    } catch (error) {
+      setExecutionError(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron consultar las ejecuciones."
+      );
+    } finally {
+      setLoadingExecutions(false);
+    }
   };
-  
-  useEffect(() => {
-  
-  }, [graph]);
 
-  const [barraHeight, setBarraHeight] = useState(window.innerWidth / 3);
+  const makeLineData = (
+    label: string,
+    values: Array<number | null>
+  ): ChartData<"line", Array<number | null>, string> => ({
+    labels: orderedCommits.map(
+      (commit) => commit.sha.substring(0, 7)
+    ),
+    datasets: [
+      {
+        label,
+        data: values,
+        borderColor: "#c7c7c7",
+        pointBackgroundColor: orderedCommits.map((commit) => getCommitColor(commit, !isMultiBranch)),
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 1.5,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.2,
+        spanGaps: false,
+      },
+    ],
+  });
 
-  useEffect(() => {
-    const actualizarAltura = () => {
-      setBarraHeight(window.innerWidth / 3);
-    };
+  const miniChartOptions: ChartOptions<"line"> = {
+    responsive: true,
+    maintainAspectRatio: true,
+    aspectRatio: 1.8,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: "rgba(0, 0, 0, 0.08)" },
+      },
+      x: {
+        grid: { color: "rgba(0, 0, 0, 0.06)" },
+        ticks: { maxRotation: 40, minRotation: 40, font: { size: 9 } },
+      },
+    },
+  };
 
-    // Agregamos el listener de redimensionamiento
-    window.addEventListener('resize', actualizarAltura);
-
-    // Llamamos una primera vez para configurar la altura inicial
-    actualizarAltura();
-
-    // Limpiamos el listener cuando el componente se desmonte
-    return () => window.removeEventListener('resize', actualizarAltura);
-  }, []);
-  
+  const metrics = [
+    {
+      title: "Total Número de Tests",
+      metric: "Total Número de Tests",
+      values: orderedCommits.map((commit) =>
+        hasTestData(commit) ? commit.test_count : null
+      ),
+    },
+    {
+      title: "Cobertura de Código (%)",
+      metric: "Cobertura de Código",
+      values: orderedCommits.map((commit) => commit.coverage ?? null),
+    },
+    {
+      title: "Líneas de Código Modificadas",
+      metric: "Líneas de Código Modificadas",
+      values: orderedCommits.map((commit) => commit.stats.total),
+    },
+  ];
 
   return (
-    <>
-      {!graph ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div style={{ width: "85%", marginBottom: "20px",marginRight:"20px", position: 'relative' }}>
-            <h2>Métricas de Commits con Cobertura de Código</h2>
-              <div
-                style={{
-                  position: "absolute",
-                  right: -230,
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-              <div
-                style={{
-                  width: "20px",
-                  height: `${barraHeight}px`, // Altura dinámica ajustada
-                  transform:  'translateX(-655%) translateY(6%)',
-                  background: "linear-gradient(to bottom, rgba(0,150,0,1), rgba(0,255,0,0))",
-                  textAlign: "center",
-                  display: "flex",
-                }}
-              >
-              <p
-                style={{
-                  transform: 'translateX(-33%) translateY(-18%)',
-                  color: "#000",
+    <Box className="tdd-dashboard" sx={{ width: "100%", p: isMultiBranch ? 2 : 0 }}>
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        {isMultiBranch ? "Dashboard TDD — BranchSupport" : "Métricas de Commits con Cobertura de Código"}
+      </Typography>
 
-                  fontWeight: "bold",
-                }}
-              >
-                Cobertura
-              </p>
-            </div>
+      {isMultiBranch && <Stack
+        direction="row"
+        spacing={2}
+        useFlexGap
+        flexWrap="wrap"
+        sx={{ mb: 3 }}
+      >
+        <Chip label={`Commits: ${orderedCommits.length}`} />
+        <Chip label={`Con resultado de pruebas: ${measuredCommits.length}`} />
+        <Chip label={`Sin datos de pruebas: ${commitsWithoutTests}`} />
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                transform:
-                  labels.includes(0) 
-                    ? "translateX(-1700%) translateY(3%)"
-                    : "translateX(-599%) translateY(3%)",
-                justifyContent: "space-between",
-                height: `${barraHeight * 0.93}px`,
-                fontSize: "12px",
-                color: "#000",
-              }}
-            >
-              {labels.map((label) => (
-                <p key={label} style={{ margin: 0 }}>
-                  {label}
-                </p>
-              ))}
-            </div>
-
-            </div>
-
-            <Bubble
-              ref={chartRef}
-              onClick={onClick}
-              data={{
-                datasets: commits
-                  .slice()
-                  .reverse()
-                  .map((commit, index) => {
-                    const backgroundColor = getCommitColor(commit);
-
-                    return {
-                      label: `Commit ${index + 1}`,
-                      data: [
-                        {
-                          x: index + 1,
-                          y: commit.test_count,
-                          r: Math.max(10, commit.stats.total / 1.5),
-                        },
-                      ],
-                      backgroundColor,
-                      borderColor: `rgba(0,0,0,0.2)`,
-                    };
-                  }),
-              }}
-              options={{
-                scales: {
-                  x: {
-                    title: { display: true, text: "Commits" },
-                    ticks: {
-                      callback: (_: any, index: number) => {
-                        const dataLength = commits.length;
-                        if (dataLength === 1) {
-                          return `Commit ${index}`;
-                        }
-                        return `Commit ${index + 1}`;
-                      },
-                      stepSize: 1, 
-                    },
-                  },
-                  y: {
-                    title: { display: true, text: "Total número de tests" },
-                    min: 0,
-                    max: maxTest + 6,
-                    suggestedMax: 80,
-                  },
-                },
-                plugins: {
-                  legend: { display: false },
-                  tooltip: {
-                    callbacks: {
-                      label: (tooltipItem: any) => {
-                        const reversedCommits = commits.slice().reverse();
-                        const index = tooltipItem.raw.x - 1;
-                        const commit = reversedCommits[index];
-                        const commitNumber = index + 1;
-                        return [
-                          `Commit ${commitNumber}: ${commit.commit.message}`,
-                          `Líneas Modificadas: ${commit.stats.additions}`,
-                          `Líneas Eliminadas: ${commit.stats.deletions}`,
-                          `Cobertura: ${commit.coverage}%`,
-                          `Total de Tests: ${commit.test_count}`,
-                        ];
-                      },
-                    },
-                  },
-                },
-              }}
-            />;
-            <CommitTimelineDialog
-              open={openModal}
-              handleCloseModal={handleCloseModal}
-              selectedCommit={selectedCommit}
-              commitTimelineData={commitTimelineData}
-              commits={commits}
-            />
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "35px",
-                justifyContent: "space-between",
-                marginBottom: "30px",
-              }}
-            >
-              <div
-                style={{ width: "30%" }}
-                onClick={() => changeGraph("Total Número de Tests")}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    changeGraph("Líneas de Código Modificadas");
-                  }
-                }}
-                role="button"
-              >
-                <h3>Total Número de Tests</h3>
-                <Line
-                  data={getLineChartData(
-                    "Total Número de Tests",
-                    commits.map((commit) => commit.test_count)
-                  )}
-                  options={getChartOptions("Número de Tests")}
-                  ref={chartRefTestCount}
-                />
-              </div>
-              <div
-                style={{ width: "30%" }}
-                onClick={() => changeGraph("Cobertura de Código")}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    changeGraph("Líneas de Código Modificadas");
-                  }
-                }}
-                role="button"
-              >
-                <h3>Cobertura de Código</h3>
-                <Line
-                  data={getLineChartData(
-                    "Porcentaje de Cobertura de Código",
-                    commits.map((commit) => commit.coverage ?? 0)
-                  )}
-                        
-                  options={getChartOptions("Cobertura de Código")}
-                  ref={chartRefCoverage}
-                />
-              </div>
-              <div
-                style={{ width: "30%" }}
-                onClick={() => changeGraph("Líneas de Código Modificadas")}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    changeGraph("Líneas de Código Modificadas");
-                  }
-                }}
-                role="button"
-              >
-                <h3>Líneas de Código Modificadas</h3>
-                <Line
-                  data={getLineChartData(
-                    "Total de Líneas de Código Modificadas",
-                    commits.map((commit) => commit.stats.total)
-                  )}
-                  options={getChartOptions("Líneas de Código Modificadas")}
-                  ref={chartRefModifiedLines}
-                />
-              </div>
-            </div>
-          </div>
-          <div>
-          </div>
-        </div>
-      ) : null}
-
-      {graph && (
-        <>
-          <TDDLineCharts
-            port={port}
-            role={role}
-            filteredCommitsObject={commits}
-            tddLogs={tddLogs}
-            optionSelected={graph}
-
-            commitsCycles= {null}
+        {latestMeasuredCommit?.coverage != null && (
+          <Chip
+            color="success"
+            label={`Última cobertura disponible: ${latestMeasuredCommit.coverage}%`}
           />
-        </>
+        )}
+      </Stack>}
 
+      {commitsWithoutTests > 0 && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Hay {commitsWithoutTests} commits sin resultados de pruebas
+          registrados. No se representan como cero pruebas.
+        </Alert>
       )}
-      <TDDCycleChart data={tddLogs} />
-    </>    
+
+      {isMultiBranch && <Typography variant="subtitle1" sx={{ mb: 2 }}>
+        Ejecuciones de pruebas por commit
+      </Typography>}
+
+      {measuredCommits.length === 0 ? (
+        <Paper
+          variant="outlined"
+          sx={{ p: 4, textAlign: "center", mb: 3 }}
+        >
+          <Typography variant="h6">
+            No hay resultados de pruebas disponibles
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            Se recuperaron {orderedCommits.length} commits, pero el
+            repositorio no tiene ejecuciones asociadas en BranchSupport.
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            Puedes consultar sus cambios y la topología Git sin
+            interpretar la ausencia de datos como una falla de pruebas.
+          </Typography>
+
+          <Button
+            variant="outlined"
+            sx={{ mt: 2 }}
+            onClick={() => onMetricChange?.("Topología Git")}
+            disabled={!onMetricChange}
+          >
+            Ver topología Git
+          </Button>
+        </Paper>
+      ) : (
+        <Box className={!isMultiBranch ? "tdd-dashboard-overview" : undefined} sx={{ height: isMultiBranch ? 360 : 420, width: "100%", mb: 3 }}>
+          <Box className={!isMultiBranch ? "tdd-dashboard-chart" : undefined} sx={{ height: "100%", minWidth: 0 }}>
+          <Bubble
+            ref={chartRef}
+            data={bubbleData}
+            options={bubbleOptions}
+            onClick={handleBubbleClick}
+          />
+          </Box>
+          {!isMultiBranch && <Box className="tdd-dashboard-coverage">
+            <strong>Cobertura</strong>
+            <Box className="tdd-dashboard-scale">
+              <Box className="tdd-dashboard-gradient" aria-hidden="true" />
+              <Box className="tdd-dashboard-ticks"><span>100</span><span>75</span><span>50</span><span>25</span></Box>
+            </Box>
+          </Box>}
+        </Box>
+      )}
+
+      <Box className="tdd-dashboard-metrics">
+        {metrics.map((item) => (
+          <Paper
+            key={item.metric}
+            variant="outlined"
+            sx={{ p: 1.5, minWidth: 0, borderColor: "#dddddd", borderRadius: 1 }}
+          >
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              {item.title}
+            </Typography>
+
+            {item.values.every((value) => value === null) ? (
+              <Alert severity="info">
+                No hay datos disponibles para esta métrica.
+              </Alert>
+            ) : (
+              <Line
+                data={makeLineData(item.title, item.values)}
+                options={miniChartOptions}
+              />
+            )}
+
+            {onMetricChange && (
+              <Button
+                size="small"
+                sx={{ mt: 2 }}
+                onClick={() => onMetricChange(item.metric)}
+              >
+                Ver detalle
+              </Button>
+            )}
+          </Paper>
+        ))}
+      </Box>
+
+      <Box sx={{ mt: 4 }}>
+        <BranchTestCycleChart
+          commits={orderedCommits}
+          selectedBranch={selectedBranch}
+        />
+      </Box>
+
+      <CommitTimelineDialog
+        open={openModal}
+        handleCloseModal={() => {
+          setOpenModal(false);
+          setSelectedCommit(null);
+        }}
+        selectedCommit={selectedCommit}
+        commitTimelineData={executions}
+        loading={loadingExecutions}
+        error={executionError}
+      />
+    </Box>
   );
-};
+}
 
 export default TDDBoard;

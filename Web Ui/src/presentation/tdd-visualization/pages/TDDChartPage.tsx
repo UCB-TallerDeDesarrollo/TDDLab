@@ -1,127 +1,280 @@
-import React from "react";
-import { PropagateLoader } from "react-spinners";
-import TDDCharts from "../components/TDDChart";
-import "../styles/TDDChartPageStyles.css";
-import { useTDDChartPage } from "../hooks/useTDDChartPage";
-import { CycleReportViewProps } from "../types/tddVisualization.types";
 
-function TDDChartPage(props: Readonly<CycleReportViewProps>) {
-  const tddPage = useTDDChartPage(props);
-  const { chartsState } = tddPage;
+import { PropagateLoader } from "react-spinners";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+
+import TDDCharts from "../components/TDDChart";
+import BranchSelector from "../components/BranchSelector";
+
+import "../styles/TDDChartPageStyles.css";
+
+import { useTDDChartPage } from "../hooks/useTDDChartPage";
+
+import type {
+  CycleReportViewProps,
+} from "../types/tddVisualization.types";
+
+import type {
+  CommitHistoryRepositoryBranchSupport,
+} from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterfaceBranchSupport";
+
+type BranchAwarePageProps = CycleReportViewProps & {
+  branchPort?: CommitHistoryRepositoryBranchSupport;
+};
+
+function TDDChartPage(
+  props: Readonly<BranchAwarePageProps>
+) {
+  const page = useTDDChartPage(props);
+  const { chartsState } = page;
+
+  const hasCommits =
+    (chartsState.commitsInfo?.length ?? 0) > 0;
 
   return (
     <div className="container">
-      <h1 data-testid="repoNameTitle">Tarea: {tddPage.repoName}</h1>
-      {!tddPage.isStudent && (
-        <h1 data-testid="repoOwnerTitle">Autor: {tddPage.ownerName}</h1>
+      <h1 data-testid="repoNameTitle">
+        Tarea: {page.repoName}
+      </h1>
+
+      {!page.isStudent && (
+        <h1 data-testid="repoOwnerTitle">
+          Autor: {page.ownerName}
+        </h1>
       )}
 
-      {tddPage.loading && (
+      {/* Selector de ramas */}
+
+      <section className="branch-analysis-panel">
+        <header className="branch-analysis-heading">
+          <AccountTreeIcon aria-hidden="true" />
+          <h2>
+          Análisis por ramas de Git
+          </h2>
+        </header>
+
+        <BranchSelector
+          branches={page.availableBranches}
+          selectedBranch={
+            page.selectedBranch
+          }
+          onBranchChange={
+            page.handleBranchChange
+          }
+          loading={
+            page.loadingBranches
+          }
+          disabled={
+            page.loadingBranches
+          }
+        />
+
+        {page.branchError && (
+          <p
+            role="alert"
+            style={{
+              color: "#b91c1c",
+            }}
+          >
+            {page.branchError}
+          </p>
+        )}
+
+        <p className="branch-analysis-current">
+          Rama:{" "}
+          <strong>
+            {page.selectedBranch === "all"
+              ? "Todas las ramas"
+              : page.selectedBranch ||
+                "Predeterminada del repositorio"}
+          </strong>
+        </p>
+      </section>
+
+      {/* Carga */}
+
+      {page.loading && (
         <div className="mainInfoContainer">
-          <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
+          <PropagateLoader
+            color="#36d7b7"
+          />
         </div>
       )}
 
-      {!tddPage.loading && !chartsState.commitsInfo?.length && (
-        <div className="error-message" data-testid="errorMessage">
-          Error: Verifica que el repositorio utilice la rama "main". Actualmente,
-          TDDLab no puede cargar los datos si la rama principal es "master"
-        </div>
-      )}
+      {/* Error de consulta */}
 
-      {!tddPage.loading && !!chartsState.commitsInfo?.length && (
-        <React.Fragment>
-          {!tddPage.isStudent && (
-            <div className="navigation-buttons">
-              <button
-                data-testid="previous-student"
-                className="nav-button"
-                onClick={tddPage.goToPreviousStudent}
-                disabled={tddPage.currentIndex === 0}
-                style={{
-                  backgroundColor:
-                    tddPage.currentIndex === 0 ? "#B0B0B0" : "#052845",
-                }}
-              >
-                Anterior
-              </button>
-
-              <button
-                data-testid="next-student"
-                className="nav-button"
-                onClick={tddPage.goToNextStudent}
-                disabled={
-                  tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
-                }
-                style={{
-                  backgroundColor:
-                    tddPage.currentIndex === tddPage.fetchedSubmissions.length - 1
-                      ? "#B0B0B0"
-                      : "#052845",
-                }}
-              >
-                Siguiente
-              </button>
-            </div>
-          )}
-
-          <div className="mainInfoContainer">
-            <TDDCharts
-              data-testId="cycle-chart"
-              commits={chartsState.commitsInfo}
-              tddLogs={chartsState.tddLogsInfo}
-              commitsTddCycles={chartsState.commitsTddCycles}
-              port={props.port}
-              role={props.role}
-              metric={chartsState.metric}
-              setMetric={chartsState.setMetric}
-              typegraphs={props.graphs}
-            />
+      {!page.loading &&
+        page.visualizationError && (
+          <div
+            className="error-message"
+            role="alert"
+            data-testid="errorMessage"
+          >
+            {page.visualizationError}
           </div>
-        </React.Fragment>
-      )}
+        )}
+
+      {/* Contenido */}
+
+      {!page.loading &&
+        !page.visualizationError && (
+          <>
+            {!hasCommits && (
+              <div
+                className="error-message"
+                role="status"
+              >
+                No se encontraron commits en
+                la consulta seleccionada.
+                Puedes utilizar la opción
+                Topología Git para consultar
+                el grafo completo del repositorio.
+              </div>
+            )}
+
+            {!page.isStudent && (
+              <div className="navigation-buttons">
+                <button
+                  type="button"
+                  className="nav-button"
+                  onClick={
+                    page.goToPreviousStudent
+                  }
+                  disabled={
+                    page.currentIndex <= 0
+                  }
+                >
+                  Anterior
+                </button>
+
+                <button
+                  type="button"
+                  className="nav-button"
+                  onClick={
+                    page.goToNextStudent
+                  }
+                  disabled={
+                    page.currentIndex >=
+                    page.fetchedSubmissions.length - 1
+                  }
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
+
+            <div className="mainInfoContainer">
+              <TDDCharts
+                key={
+                  `${page.repoName}-` +
+                  page.selectedBranch
+                }
+                commits={
+                  chartsState.commitsInfo ?? []
+                }
+                tddLogs={
+                  chartsState.tddLogsInfo
+                }
+                commitsTddCycles={
+                  chartsState.commitsTddCycles
+                }
+                port={props.port}
+                role={props.role}
+                metric={
+                  chartsState.metric
+                }
+                setMetric={
+                  chartsState.setMetric
+                }
+                typegraphs={
+                  props.graphs
+                }
+                selectedBranch={
+                  page.selectedBranch
+                }
+              />
+            </div>
+          </>
+        )}
+
+      {/* Retroalimentación docente */}
 
       {props.role !== "student" && (
         <div className="feedback-container">
-          <h2 className="comments-title">Escribe un comentario:</h2>
+          <h2 className="comments-title">
+            Escribe un comentario:
+          </h2>
+
           <textarea
             id="feedback"
-            value={tddPage.feedback}
-            onChange={(event) => tddPage.setFeedback(event.target.value)}
+            value={page.feedback}
+            onChange={(event) =>
+              page.setFeedback(
+                event.target.value
+              )
+            }
             placeholder="Ingrese su retroalimentación aquí"
           />
-          <button onClick={tddPage.handleSubmitFeedback} disabled={tddPage.isSubmitting}>
-            {tddPage.isSubmitting ? (
-              <PropagateLoader color="#fff" size={5} />
-            ) : (
-              "Enviar"
-            )}
+
+          <button
+            type="button"
+            onClick={
+              page.handleSubmitFeedback
+            }
+            disabled={
+              page.isSubmitting
+            }
+          >
+            {page.isSubmitting
+              ? "Enviando..."
+              : "Enviar"}
           </button>
         </div>
       )}
 
-      {!tddPage.loading && tddPage.comments && tddPage.comments.length > 0 && (
-        <div className="comments-section">
-          <h2 className="comments-title">Comentarios</h2>
-          <div className="comments-list">
-            {tddPage.comments.map((comment) => (
-              <div key={`${comment.teacher_id}-${comment.created_at}`} className="comment-card">
-                <div className="comment-header">
-                  <strong className="comment-author">
-                    {tddPage.emails[comment.teacher_id] || "Cargando..."}
-                  </strong>
-                  <span className="comment-date">
-                    {new Date(comment.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="comment-body">
-                  <p>{comment.content}</p>
-                </div>
-              </div>
-            ))}
+      {!page.loading &&
+        page.comments &&
+        page.comments.length > 0 && (
+          <div className="comments-section">
+            <h2 className="comments-title">
+              Comentarios
+            </h2>
+
+            <div className="comments-list">
+              {page.comments.map(
+                (comment) => (
+                  <div
+                    key={
+                      `${comment.teacher_id}-` +
+                      comment.created_at
+                    }
+                    className="comment-card"
+                  >
+                    <div className="comment-header">
+                      <strong className="comment-author">
+                        {page.emails[
+                          comment.teacher_id
+                        ] ||
+                          "Correo no disponible"}
+                      </strong>
+
+                      <span className="comment-date">
+                        {new Date(
+                          comment.created_at
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <div className="comment-body">
+                      <p>
+                        {comment.content}
+                      </p>
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

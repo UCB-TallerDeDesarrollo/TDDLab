@@ -5,6 +5,7 @@ import server from "./config/server";
 import router from "./routes/userRoutes";
 import assignmentsRouter from "./routes/assignmentRoutes";
 import TDDCyclesRouter from "./routes/TDDCyclesRoutes";
+import TDDCyclesRoutesBranchSupport from "./routes/TDDCyclesRoutesBranchSupport";
 import groupsRouter from "./routes/groupsRouter";
 import submissionsRouter from "./routes/submissionRoutes";
 import teacherCommentsOnSubmissionRouter from "./routes/teacherCommentsOnSubmissionsRoutes";
@@ -12,6 +13,7 @@ import practicesRouter from "./routes/practicesRoutes";
 import practiceSubmissionsRouter from "./routes/practiceSubmissionsRoutes";
 import aiAssistantRouter from "./routes/AIAssistant";
 import featureFlagsRouter from "./routes/featureFlagsRoutes";
+import branchSupportRouter from "./routes/branchSupportRoutes";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -59,6 +61,7 @@ app.use(cookieParser());
 app.use("/api/user", router,);
 app.use("/api/assignments", assignmentsRouter);
 app.use("/api/TDDCycles", TDDCyclesRouter);
+app.use("/api/TDDCyclesBranchSupport", TDDCyclesRoutesBranchSupport);
 app.use("/api/groups", groupsRouter);
 app.use("/api/submissions", submissionsRouter);
 app.use("/api/commentsSubmission", teacherCommentsOnSubmissionRouter);
@@ -68,6 +71,7 @@ app.use("/api/AIAssistant", aiAssistantRouter);
 
 
 app.use("/api/featureFlags", featureFlagsRouter);
+app.use("/api/branchSupport", branchSupportRouter);
 
 // Start the server
 server(app, port);

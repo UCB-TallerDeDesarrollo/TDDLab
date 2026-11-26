@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 
 import TDDCharts from "../../../src/presentation/tdd-visualization/components/TDDChart";
 import "@testing-library/jest-dom";
@@ -27,6 +27,31 @@ describe("TDDCharts", () => {
     />);
 
     expect(screen.queryByTestId("graph-coverage")).not.toBeInTheDocument();
+  });
+
+  it("shows the classic metrics for one branch and topology for all branches", () => {
+    const props = {
+      commits: [],
+      tddLogs: null,
+      metric: "Dashboard",
+      setMetric: () => {},
+      port: new CommitHistoryAdapter(),
+      role: "student",
+      commitsTddCycles: null,
+      typegraphs: "graph",
+    };
+    const { unmount } = render(<TDDCharts {...props} selectedBranch="main" />);
+
+    const openMenu = () => {
+      fireEvent.mouseDown(screen.getByRole("combobox"));
+      return within(screen.getByRole("listbox"));
+    };
+
+    expect(openMenu().queryByRole("option", { name: /Topolog/ })).not.toBeInTheDocument();
+
+    unmount();
+    render(<TDDCharts {...props} selectedBranch="all" />);
+    expect(openMenu().getByRole("option", { name: /Topolog/ })).toBeInTheDocument();
   });
 
 });

@@ -22,16 +22,17 @@ interface CommitData {
   tests: Array<{ passed: boolean; size: number; detail: string }>;
 }
 
-type ChartSymbolConfig = typeof chartSymbols.success | typeof chartSymbols.failure;
+export type ChartSymbolConfig = typeof chartSymbols.success | typeof chartSymbols.failure;
 
-interface ChartSymbolMarkProps {
+export interface ChartSymbolMarkProps {
   config: ChartSymbolConfig;
   x: number;
   y: number;
+  color?: string;
 }
 
-const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
-  const symbolColor = CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : config.color;
+export const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y, color = config.color }) => {
+  const symbolColor = CHART_SYMBOL_VARIANT === 'circle' ? '#ffffff' : color;
   const halfSymbolSize = config.symbolSize / 2;
   const symbolPath = config.symbol === 'check'
     ? `M ${x - halfSymbolSize * 0.65} ${y - halfSymbolSize * 0.05} L ${x - halfSymbolSize * 0.15} ${y + halfSymbolSize * 0.5} L ${x + halfSymbolSize * 0.7} ${y - halfSymbolSize * 0.6}`
@@ -44,7 +45,7 @@ const ChartSymbolMark: React.FC<ChartSymbolMarkProps> = ({ config, x, y }) => {
           cx={x}
           cy={y}
           r={config.size / 2}
-          fill={config.color}
+          fill={color}
           opacity="0.9"
         />
       )}
