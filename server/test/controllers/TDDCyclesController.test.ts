@@ -44,6 +44,7 @@ describe('BL-04 branch history HTTP with the real BL-02 repository', () => {
         controller.getCommitHistoryUseCase = new GetCommitHistoryUseCase({} as IGithubRepository, repository);
         app = express();
         app.get('/branch-view', (req, res) => controller.getBranchHistory(req, res));
+        app.get('/branches', (req, res) => controller.getBranches(req, res));
     });
 
     it.each([
@@ -91,6 +92,43 @@ describe('BL-04 branch history HTTP with the real BL-02 repository', () => {
         await request(app).get('/branch-view').query({ ...query, branch: 'main' }).expect(500);
     });
 
+    it('lists registered branches and isolates owners and repository names', async () => {
+        const other = { ...repositoryMock, name: 'other' };
+        await repository.saveBatch({ repository: other, branches: [{ name: 'only-other' }], commits: [], executions: [], branchCommits: [] });
+        const response = await request(app).get('/branches').query(query).expect(200);
+        expect(response.body).toEqual({ repository: repositoryMock, branches: ['main', 'rama-a', 'rama-b'] });
+        await request(app).get('/branches').query({ ...query, repoName: 'other' }).expect(200)
+            .expect(res => expect(res.body.branches).toEqual(['only-other']));
+        await request(app).get('/branches').query({ ...query, owner: 'missing' }).expect(404);
+        await request(app).get('/branches').query({ ...query, repoName: 'missing' }).expect(404);
+    });
+
+    it('returns no branches for an existing repository without branches', async () => {
+        await repository.saveBatch({ repository: { ...repositoryMock, name: 'empty' }, branches: [], commits: [], executions: [], branchCommits: [] });
+        await request(app).get('/branches').query({ ...query, repoName: 'empty' }).expect(200)
+            .expect(res => expect(res.body.branches).toEqual([]));
+    });
+
+    it('does not invent commits for unassociated executions', async () => {
+        const pending = { ...branchAExecution, eventId: 'pending-event', associatedCommitSha: null, branchAtCapture: 'pending' };
+        await repository.saveBatch({ repository: repositoryMock, branches: [{ name: 'pending' }], commits: [], executions: [pending], branchCommits: [] });
+        await request(app).get('/branches').query(query).expect(200)
+            .expect(res => expect(res.body.branches).toContain('pending'));
+        await request(app).get('/branch-view').query({ ...query, branch: 'pending' }).expect(200)
+            .expect(res => { expect(res.body.commits).toEqual([]); expect(res.body.executions).toEqual([]); });
+        expect(await repository.listExecutions(repositoryMock, { kind: 'captured-in-branch', branchName: 'pending' })).toEqual([pending]);
+    });
+
+    it.each(['findRepository', 'listBranches'] as const)('returns a controlled storage error from %s', async method => {
+        jest.spyOn(repository, method).mockRejectedValueOnce(new Error('private connection detail'));
+        await request(app).get('/branches').query(query).expect(500)
+            .expect({ error: 'Server error' });
+    });
+
+    it.each([{}, { ...query, owner: ['one', 'two'] }, { ...query, repoName: 'bad/name' }])('rejects invalid branch list query %j', async invalid => {
+        await request(app).get('/branches').query(invalid).expect(400);
+    });
+
     it('keeps the legacy GitHub query unchanged', async () => {
         const getCommitHistoryData = jest.fn().mockResolvedValue([]);
         const useCase = new GetCommitHistoryUseCase({ getCommitHistoryData } as unknown as IGithubRepository, repository);
@@ -126,6 +164,38 @@ describe('BL-04 router initialization and environment gate', () => {
         const responses = await Promise.all(['main', 'rama-a', 'rama-b'].map(branch =>
             request(app).get('/api/TDDCycles/branch-view').query({ owner: repositoryMock.owner, repoName: repositoryMock.name, branch }).expect(200)));
         expect(responses.map(response => response.body.commits.length)).toEqual([1, 2, 2]);
+    });
+
+    it('serves the independent branches route before branch-view using shared BL-02 state', async () => {
+        process.env.NODE_ENV = 'test';
+        process.env.TDD_HISTORY_MOCK = 'true';
+        process.env.TDD_HISTORY_MOCK_SCENARIO = 'initial';
+        const app = loadRouter();
+        await request(app).get('/api/TDDCycles/branches')
+            .query({ owner: repositoryMock.owner, repoName: repositoryMock.name }).expect(200)
+            .expect(res => expect(res.body.branches).toEqual(['main', 'rama-a', 'rama-b']));
+        await request(app).get('/api/TDDCycles/branch-view')
+            .query({ owner: repositoryMock.owner, repoName: repositoryMock.name, branch: 'main' }).expect(200);
+    });
+
+    it('returns 503 for branches when storage is not configured', async () => {
+        process.env.TDD_HISTORY_MOCK = 'false';
+        await request(loadRouter()).get('/api/TDDCycles/branches').expect(503);
+    });
+
+    it('lists PostgreSQL branches with repository-scoped SELECTs only', async () => {
+        process.env.TDD_HISTORY_MOCK = 'false';
+        const query = jest.fn(async (sql: string, values: unknown[]) => {
+            expect(/^\s*SELECT\b/i.test(sql)).toBe(true);
+            expect(values).toEqual(['github', repositoryMock.owner, repositoryMock.name]);
+            if (sql.includes('SELECT provider')) return { rows: [repositoryMock] };
+            if (sql.includes('SELECT name')) return { rows: [{ name: 'feature/dynamic' }] };
+            throw new Error('Unexpected SQL');
+        });
+        await request(loadRouter(() => ({ query } as unknown as Pool))).get('/api/TDDCycles/branches')
+            .query({ owner: repositoryMock.owner, repoName: repositoryMock.name }).expect(200)
+            .expect(res => expect(res.body.branches).toEqual(['feature/dynamic']));
+        expect(query).toHaveBeenCalledTimes(2);
     });
 
     it('loads the after-merge scenario through saveBatch', async () => {
