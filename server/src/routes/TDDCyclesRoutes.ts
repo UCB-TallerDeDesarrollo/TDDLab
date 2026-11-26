@@ -1,4 +1,5 @@
 import express from "express";
+import TDDIngestionRouter from "./TDDIngestionRoutes";
 import { DBCommitsRepository } from "../modules/TDDCycles/Repositories/DBCommitsRepository";
 import { DBJobsRepository } from "../modules/TDDCycles/Repositories/DBJobsRepository";
 import { GithubRepository } from "../modules/TDDCycles/Repositories/GithubRepository";
@@ -22,6 +23,7 @@ const tddCyclesController = new TDDCyclesController(
 
 // Create a new router to handle the TDDCycles routes
 const TDDCyclesRouter = express.Router();
+TDDCyclesRouter.use("/events", TDDIngestionRouter);
 
 TDDCyclesRouter.use(["/commits-history", "/commit-cycles", "/tdd-logs"], (_req, res, next) => {
   res.setHeader("X-TDD-Data-Source", useFakeTDDRepository ? "fake" : "github");
