@@ -236,9 +236,12 @@ export class GithubRepository implements IGithubRepository {
 
   timeout(ms: number): Promise<void> {
     return new Promise<void>((_, reject) => {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         reject(new Error("Request timed out"));
       }, ms);
+      // A completed GitHub request must not keep the Node/Jest process alive
+      // while the losing timeout from Promise.race is still pending.
+      timer.unref();
     });
   }
   async obtainRunsOfGithubActions(owner: string, repoName: string) {

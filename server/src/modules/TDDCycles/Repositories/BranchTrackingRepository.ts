@@ -52,10 +52,24 @@ function tddCycle(history: Json[], index: number): string | null {
 }
 
 export class BranchTrackingRepository {
-  constructor(private readonly pool: Pool = new Pool(trackingConfig())) {}
+  private pool: Pool | null;
+
+  constructor(pool?: Pool) {
+    this.pool = pool ?? null;
+  }
+
+  /**
+   * Creating the router must not require a database connection. Some routes
+   * (for example test-result registration) do not use branch tracking at all.
+   * Resolve its configuration only when a branch-tracking operation is made.
+   */
+  private get database(): Pool {
+    if (!this.pool) this.pool = new Pool(trackingConfig());
+    return this.pool;
+  }
 
   async ingest(input: BranchTrackingIngest): Promise<void> {
-    const client = await this.pool.connect();
+    const client = await this.database.connect();
     try {
       await client.query("BEGIN");
       await client.query(
@@ -136,21 +150,21 @@ export class BranchTrackingRepository {
   }
 
   async getBranches(owner: string, repo: string): Promise<unknown[]> {
-    return (await this.pool.query(`SELECT branch AS name, head_sha AS "headSha", branch_owner AS owner, updated_at AS "updatedAt" FROM tdd_branches WHERE owner=$1 AND reponame=$2 ORDER BY branch`, [owner, repo])).rows;
+    return (await this.database.query(`SELECT branch AS name, head_sha AS "headSha", branch_owner AS owner, updated_at AS "updatedAt" FROM tdd_branches WHERE owner=$1 AND reponame=$2 ORDER BY branch`, [owner, repo])).rows;
   }
 
   async getCommitHistory(owner: string, repo: string, branch: string): Promise<unknown[]> {
-    return (await this.pool.query(`SELECT sha, html_url, total, additions, deletions, commit_date, message, url, comment_count, coverage, test_count, failed_tests, conclusion, tdd_cycle, author FROM tdd_branch_commits WHERE owner=$1 AND reponame=$2 AND branch=$3 ORDER BY commit_date DESC`, [owner,repo,branch])).rows.map(row => ({
+    return (await this.database.query(`SELECT sha, html_url, total, additions, deletions, commit_date, message, url, comment_count, coverage, test_count, failed_tests, conclusion, tdd_cycle, author FROM tdd_branch_commits WHERE owner=$1 AND reponame=$2 AND branch=$3 ORDER BY commit_date DESC`, [owner,repo,branch])).rows.map(row => ({
       html_url: row.html_url, sha: row.sha, stats: { total: row.total, additions: row.additions, deletions: row.deletions, date: row.commit_date }, commit: { date: row.commit_date, message: row.message, url: row.url, comment_count: row.comment_count }, coverage: Number(row.coverage), test_count: row.test_count, failed_tests: row.failed_tests, conclusion: row.conclusion, tdd_cycle: row.tdd_cycle, author: row.author
     }));
   }
 
   async getCommitCycles(owner: string, repo: string, branch: string): Promise<unknown[]> {
-    return (await this.pool.query(`SELECT sha,url,tdd_cycle,coverage,author FROM tdd_branch_commits WHERE owner=$1 AND reponame=$2 AND branch=$3 ORDER BY commit_date DESC`, [owner,repo,branch])).rows.map(row => ({ url: row.url, sha: row.sha, tddCycle: row.tdd_cycle ?? "null", coverage: Number(row.coverage), author: row.author }));
+    return (await this.database.query(`SELECT sha,url,tdd_cycle,coverage,author FROM tdd_branch_commits WHERE owner=$1 AND reponame=$2 AND branch=$3 ORDER BY commit_date DESC`, [owner,repo,branch])).rows.map(row => ({ url: row.url, sha: row.sha, tddCycle: row.tdd_cycle ?? "null", coverage: Number(row.coverage), author: row.author }));
   }
 
   async getTestLog(owner: string, repo: string, branch: string): Promise<unknown[]> {
-    const rows = (await this.pool.query(
+    const rows = (await this.database.query(
       `SELECT timeline.commit_sha, timeline.execution_timestamp, timeline.number_of_tests, timeline.passed_tests,
               timeline.failed_tests, timeline.payload, commits.message, commits.commit_date
        FROM tdd_branch_executions timeline

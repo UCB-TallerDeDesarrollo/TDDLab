@@ -145,7 +145,9 @@ class TDDCyclesController {
       const owner = ownerRaw;
       const repoName = repoNameRaw;
 
-      const commits = await this.getCommitHistoryUseCase.execute(String(owner), String(repoName), branchRaw ? String(branchRaw) : "main");
+      const commits = branchRaw === undefined
+        ? await this.getCommitHistoryUseCase.execute(String(owner), String(repoName))
+        : await this.getCommitHistoryUseCase.execute(String(owner), String(repoName), String(branchRaw));
       return res.status(200).json(commits);
     } catch (error) {
       console.error("Error fetching commit history:", error);
@@ -172,7 +174,9 @@ class TDDCyclesController {
       }
 
 
-      const commits = await this.getCommitCyclesUseCase.execute(String(owner), String(repoName), branchRaw ? String(branchRaw) : "main");
+      const commits = branchRaw === undefined
+        ? await this.getCommitCyclesUseCase.execute(String(owner), String(repoName))
+        : await this.getCommitCyclesUseCase.execute(String(owner), String(repoName), String(branchRaw));
       return res.status(200).json(commits);
     } catch (error) {
       console.error("Error fetching commit cycles:", error);
