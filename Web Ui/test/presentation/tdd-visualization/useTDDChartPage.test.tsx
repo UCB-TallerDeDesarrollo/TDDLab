@@ -8,6 +8,7 @@ import {
 } from "../../../src/shared/helpers/navigationHandlers";
 import { useTDDChartPage } from "../../../src/presentation/tdd-visualization/hooks/useTDDChartPage";
 import { Submission } from "../../../src/presentation/tdd-visualization/types/tddVisualization.types";
+import { fetchTDDVisualizationData } from "../../../src/presentation/tdd-visualization/services/tddVisualization.service";
 
 jest.mock("../../../src/presentation/tdd-visualization/services/tddVisualization.service", () => ({
   createTeacherComment: jest.fn(),
@@ -27,6 +28,7 @@ const submissions: Submission[] = [
 ];
 
 const port: CommitHistoryRepository = {
+  obtainBranches: jest.fn().mockResolvedValue([{ name: "main", isDefault: true }]),
   obtainCommitsOfRepo: jest.fn().mockResolvedValue([]),
   obtainUserName: jest.fn().mockResolvedValue("Teacher"),
   obtainCommitTddCycle: jest.fn().mockResolvedValue([]),
@@ -48,14 +50,30 @@ function ChartNavigationHarness() {
       <output data-testid="current-query">{location.search}</output>
       <button onClick={page.goToPreviousStudent}>Previous student</button>
       <button onClick={page.goToNextStudent}>Next student</button>
+      <button onClick={() => page.selectBranch("feature/divisor")}>Divisor</button>
+      <output data-testid="selected-branch">{page.chartsState.selectedBranch}</output>
     </div>
   );
 }
 
 describe("useTDDChartPage teacher navigation", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     sessionStorage.clear();
     saveTeacherSubmissions(7, submissions);
+  });
+
+  it("loads divisor once without fetching the branch list again", async () => {
+    (port.obtainBranches as jest.Mock).mockResolvedValueOnce([
+      { name: "main", isDefault: true }, { name: "feature/divisor" },
+    ]);
+    render(<MemoryRouter initialEntries={["/graph?repoOwner=student&repoName=first-repo"]}><ChartNavigationHarness /></MemoryRouter>);
+    await waitFor(() => expect(fetchTDDVisualizationData).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByText("Divisor"));
+    await waitFor(() => expect(screen.getByTestId("selected-branch")).toHaveTextContent("feature/divisor"));
+    await waitFor(() => expect(fetchTDDVisualizationData).toHaveBeenCalledTimes(2));
+    expect(fetchTDDVisualizationData).toHaveBeenLastCalledWith(port, "student", "first-repo", "feature/divisor");
+    expect(port.obtainBranches).toHaveBeenCalledTimes(1);
   });
 
   it("loads the selected assignment's submissions and navigates without putting them in the URL", async () => {

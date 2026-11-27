@@ -66,3 +66,26 @@
   color: #333;
   text-align: center;
 }
+
+.branch-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.branch-selector-container label {
+  font-weight: 600;
+}
+
+.branch-selector-container select {
+  min-width: 12rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #7f8c9a;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.selected-branch {
+  margin: 0 0 0.75rem;
+}

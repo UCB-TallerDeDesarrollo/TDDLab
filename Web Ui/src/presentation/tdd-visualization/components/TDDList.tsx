@@ -14,22 +14,25 @@ type CommitsState =
 
 interface CycleReportViewProps {
   port: CommitHistoryRepository;
+  commits?: CommitDataObject[];
 }
 
-function TDDList({ port }: Readonly<CycleReportViewProps>) {
+function TDDList({ port, commits }: Readonly<CycleReportViewProps>) {
   const [searchParams] = useSearchParams();
   const repoOwner = searchParams.get("repoOwner") ?? "";
   const repoName = searchParams.get("repoName") ?? "";
+  const branch = searchParams.get("branch") || undefined;
   const [commitsState, setCommitsState] = useState<CommitsState>({
     status: "loading",
   });
 
   useEffect(() => {
+    if (commits !== undefined) return;
     let isActive = true;
     setCommitsState({ status: "loading" });
 
     new GetCommitsOfRepo(port)
-      .execute(repoOwner, repoName)
+      .execute(repoOwner, repoName, branch)
       .then((commits) => {
         if (isActive) {
           setCommitsState(
@@ -49,28 +52,31 @@ function TDDList({ port }: Readonly<CycleReportViewProps>) {
     return () => {
       isActive = false;
     };
-  }, [port, repoOwner, repoName]);
+  }, [port, repoOwner, repoName, branch, commits]);
+
+  const displayState: CommitsState = commits === undefined ? commitsState
+    : commits.length > 0 ? { status: "loaded", commits } : { status: "empty" };
 
   return (
     <div style={{ marginTop: "30px" }}>
-      {commitsState.status === "loading" && (
+      {displayState.status === "loading" && (
         <div className="mainInfoContainer" role="status" aria-label="Cargando commits">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
         </div>
       )}
-      {commitsState.status === "empty" && (
+      {displayState.status === "empty" && (
         <div className="empty-message" role="status" data-testid="emptyMessage">
           No hay commits disponibles para este repositorio.
         </div>
       )}
-      {commitsState.status === "error" && (
+      {displayState.status === "error" && (
         <div className="error-message" role="alert" data-testid="errorMessage">
           No se pudieron cargar los commits. Inténtalo de nuevo más tarde.
         </div>
       )}
-      {commitsState.status === "loaded" && (
+      {displayState.status === "loaded" && (
         <div style={{ width: "100%" }}>
-          <TDDCycleList commitsInfo={commitsState.commits} />
+          <TDDCycleList commitsInfo={displayState.commits} />
         </div>
       )}
     </div>

@@ -12,15 +12,17 @@ export async function fetchTDDVisualizationData(
   port: CommitHistoryRepository,
   repoOwner: string,
   repoName: string,
+  branch?: string,
 ): Promise<TDDVisualizationData> {
+  if (port.obtainVisualization) return port.obtainVisualization(repoOwner, repoName, branch);
   const getCommitsOfRepoUseCase = new GetCommitsOfRepo(port);
   const getCommitTddCycleUseCase = new GetCommitTddCycle(port);
   const getTDDLogsUseCase = new GetTDDLogs(port);
 
   const [tddLogs, commits, commitsTddCycles] = await Promise.all([
-    getTDDLogsUseCase.execute(repoOwner, repoName),
-    getCommitsOfRepoUseCase.execute(repoOwner, repoName),
-    getCommitTddCycleUseCase.execute(repoOwner, repoName),
+    getTDDLogsUseCase.execute(repoOwner, repoName, branch),
+    getCommitsOfRepoUseCase.execute(repoOwner, repoName, branch),
+    getCommitTddCycleUseCase.execute(repoOwner, repoName, branch),
   ]);
 
   return {

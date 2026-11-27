@@ -16,6 +16,25 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
         <h1 data-testid="repoOwnerTitle">Autor: {tddPage.ownerName}</h1>
       )}
 
+      {chartsState.branches.length > 0 && (
+        <div className="branch-selector-container">
+          <label htmlFor="branch-selector">Rama</label>
+          <select
+            id="branch-selector"
+            data-testid="branch-selector"
+            value={tddPage.chartsState.selectedBranch}
+            onChange={(event) => tddPage.selectBranch(event.target.value)}
+            disabled={tddPage.chartsState.branches.length === 0}
+          >
+            {tddPage.chartsState.branches.map((branch) => (
+              <option key={branch.name} value={branch.name}>
+                {branch.name}{branch.isDefault ? " (predeterminada)" : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {tddPage.loading && (
         <div className="mainInfoContainer" role="status" aria-label="Cargando datos del repositorio">
           <PropagateLoader data-testid="loading-spinner" color="#36d7b7" />
@@ -36,6 +55,9 @@ function TDDChartPage(props: Readonly<CycleReportViewProps>) {
 
       {!tddPage.loading && !!chartsState.commitsInfo?.length && (
         <React.Fragment>
+          <p className="selected-branch" data-testid="selected-branch">
+            Mostrando datos de la rama: <strong>{chartsState.selectedBranch}</strong>
+          </p>
           {!tddPage.isStudent && (
             <div className="navigation-buttons">
               <button

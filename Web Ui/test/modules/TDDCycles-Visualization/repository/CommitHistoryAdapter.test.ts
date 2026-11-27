@@ -40,6 +40,17 @@ describe("CommitHistoryAdapter.obtainTDDLogs", () => {
     await expect(adapter.obtainTDDLogs("owner", "repo")).rejects.toThrow(errorMessage);
   });
 
+  it("carga divisor en una sola petición y convierte las fechas", async () => {
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({
+      commits: [{ sha: "abc", commit: { date: "2026-11-26T22:06:35.000Z" } }],
+      commitsTddCycles: [], tddLogs: [],
+    }) });
+    const data = await adapter.obtainVisualization("RashLop", "repo", "feature/divisor");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe("https://backend.example/api/TDDCycles/visualization?owner=RashLop&repoName=repo&branch=feature%2Fdivisor");
+    expect(data.commits[0].commit.date).toEqual(new Date("2026-11-26T22:06:35.000Z"));
+  });
+
   it("interrumpe la consulta si el backend no responde", async () => {
     jest.useFakeTimers();
     try {

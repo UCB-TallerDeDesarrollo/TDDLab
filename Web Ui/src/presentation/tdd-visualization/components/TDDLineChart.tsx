@@ -321,7 +321,7 @@ function TDDLineCharts({
         dataTestid = "graph-testCount";
         break;
       case "Lista":
-        return <TDDList port={port} />;
+        return <TDDList port={port} commits={filteredCommitsObject ?? []} />;
       case "Dashboard":
           return <TDDBoard commits={filteredCommitsObject || []} tddLogs = {tddLogs || []} port={port} role={role}/>;
 

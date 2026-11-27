@@ -27,6 +27,10 @@ export function convertToCommitDataObject(commitData: CommitData): CommitDataObj
 }
 
 export class MockGithubAPI implements CommitHistoryRepository {
+  async obtainBranches() {
+    return [{ name: "main", headSha: "mock-head", isDefault: true }];
+  }
+
   async obtainUserName(_owner: string): Promise<string> {
     return "mockUser";
   }
@@ -47,6 +51,10 @@ export class MockGithubAPI implements CommitHistoryRepository {
 }
 
 export class MockGithubAPIEmpty implements CommitHistoryRepository {
+  async obtainBranches() {
+    return [{ name: "main", headSha: "mock-head", isDefault: true }];
+  }
+
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     let commits: CommitDataObject[] = [];
     return commits;
@@ -68,6 +76,10 @@ export class MockGithubAPIEmpty implements CommitHistoryRepository {
 }
 
 export class MockGithubAPIError implements CommitHistoryRepository {
+  async obtainBranches() {
+    return [{ name: "main", headSha: "mock-head", isDefault: true }];
+  }
+
   async obtainCommitsOfRepo(_owner: string, _repoName: string): Promise<CommitDataObject[]> {
     throw new Error("no commits");
   }

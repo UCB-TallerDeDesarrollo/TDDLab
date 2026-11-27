@@ -1,7 +1,7 @@
 import express from "express";
-import axios from "axios";
 import { DBCommitsRepository } from "../modules/TDDCycles/Repositories/DBCommitsRepository";
 import TDDCyclesController from "../controllers/TDDCycles/TDDCyclesController";
+import { BranchTrackingController } from "../controllers/TDDCycles/BranchTrackingController";
 import { createTDDCyclesDependencies } from "../modules/TDDCycles/Repositories/createTDDCyclesDependencies";
 
 // Create instances of your repositories
@@ -35,6 +35,18 @@ TDDCyclesRouter.post(
   "/jobs",
   async (req, res) => await tddCyclesController.registerTestResult(req, res)
 );
+const branchTrackingController = new BranchTrackingController();
+
+TDDCyclesRouter.get("/visualization", async (req, res) => await branchTrackingController.visualization(req, res));
+
+TDDCyclesRouter.post(
+  "/ingest-logs",
+  async (req, res) => await branchTrackingController.ingest(req, res)
+);
+TDDCyclesRouter.post(
+  "/branch-tracking/ingest",
+  async (req, res) => await branchTrackingController.ingest(req, res)
+);
 
 TDDCyclesRouter.post(
   "/upload-log",
@@ -55,17 +67,17 @@ TDDCyclesRouter.get(
 // New endpoints moved from frontend logic
 TDDCyclesRouter.get(
   "/commits-history",
-  async (req, res) => await tddCyclesController.getCommitHistory(req, res)
+  async (req, res) => await branchTrackingController.commitHistory(req, res)
 );
 
 TDDCyclesRouter.get(
   "/commit-cycles",
-  async (req, res) => await tddCyclesController.getCommitCycles(req, res)
+  async (req, res) => await branchTrackingController.commitCycles(req, res)
 );
 
 TDDCyclesRouter.get(
   "/branches",
-  async (req, res) => await tddCyclesController.getBranches(req, res)
+  async (req, res) => await branchTrackingController.branches(req, res)
 );
 
 TDDCyclesRouter.get(
@@ -73,27 +85,6 @@ TDDCyclesRouter.get(
   async (req, res) => await tddCyclesController.getBranchSnapshot(req, res)
 );
 
-TDDCyclesRouter.get("/test-log", async (req, res) => {
-  const { owner, repoName } = req.query;
-  if (typeof owner !== "string" || !/^[\w-]+$/.test(owner) ||
-      typeof repoName !== "string" || !/^[\w.-]+$/.test(repoName) ||
-      repoName === "." || repoName === "..") {
-    return res.status(400).json({ error: "Invalid owner or repoName" });
-  }
-
-  try {
-    const url = `https://raw.githubusercontent.com/${owner}/${repoName}/main/script/tdd_log.json`;
-    const { data } = await axios.get<unknown>(url, { timeout: 5000 });
-    if (!Array.isArray(data)) {
-      return res.status(502).json({ error: "Invalid TDD test log" });
-    }
-    return res.json(data);
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      return res.json([]);
-    }
-    return res.status(502).json({ error: "Could not load the TDD test log" });
-  }
-});
+TDDCyclesRouter.get("/test-log", async (req, res) => await branchTrackingController.testLog(req, res));
 
 export default TDDCyclesRouter;

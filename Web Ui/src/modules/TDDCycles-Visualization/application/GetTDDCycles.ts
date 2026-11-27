@@ -12,15 +12,17 @@ export class PortGetTDDCycles {
   async obtainTDDLogs(
     owner: string,
     repoName: string,
+    branch?: string,
   ): Promise<TDDLogEntry[]>{
-    return await this.adapter.obtainTDDLogs(owner, repoName);
+    return await this.adapter.obtainTDDLogs(owner, repoName, branch);
   }
 
   async obtainCommitsOfRepo(
     owner: string,
     repoName: string,
+    branch?: string,
   ): Promise<CommitDataObject[]> {
-    return await this.adapter.obtainCommitsOfRepo(owner, repoName);
+    return await this.adapter.obtainCommitsOfRepo(owner, repoName, branch);
   }
 
 
@@ -28,8 +30,9 @@ export class PortGetTDDCycles {
   async obtainCommitTddCycle(
     owner: string,
     repoName: string,
+    branch?: string,
   ): Promise<CommitCycle[]> {
-    return await this.adapter.obtainCommitTddCycle(owner, repoName);
+    return await this.adapter.obtainCommitTddCycle(owner, repoName, branch);
   }
   
   // Método auxiliar para determinar el estado de un commit basado en su cobertura

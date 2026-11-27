@@ -17,6 +17,7 @@ import {
 import { CommitDataObject } from "../../../modules/TDDCycles-Visualization/domain/githubCommitInterfaces";
 import { CommitCycle } from "../../../modules/TDDCycles-Visualization/domain/TddCycleInterface";
 import { TDDLogEntry } from "../../../modules/TDDCycles-Visualization/domain/TDDLogInterfaces";
+import { RepositoryBranch } from "../../../modules/TDDCycles-Visualization/domain/CommitHistoryRepositoryInterface";
 
 function isStudent(role: string) {
   return role === "student";
@@ -53,6 +54,7 @@ export function useTDDChartPage({
   const isTeacherView = role !== "student";
   const repoOwner = String(searchParams.get("repoOwner")) || "defaultOwner";
   const repoName = String(searchParams.get("repoName")) || "defaultRepo";
+  const requestedBranch = searchParams.get("branch") || "";
   const submissionIdcomments = Number.parseInt(searchParams.get("submissionId") || "0");
   const assignmentId = Number.parseInt(searchParams.get("assignmentId") || "0");
   const fetchedSubmissions: Submission[] = isTeacherView
@@ -76,8 +78,12 @@ export function useTDDChartPage({
   const [commitsInfo, setCommitsInfo] = useState<CommitDataObject[] | null>(null);
   const [tddLogsInfo, setTDDLogsInfo] = useState<TDDLogEntry[] | null>(null);
   const [commitsTddCycles, setCommitsTddCycles] = useState<CommitCycle[]>([]);
+  const [branches, setBranches] = useState<RepositoryBranch[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [branchesLoadedFor, setBranchesLoadedFor] = useState("");
 
   const defaultMetric = getDefaultMetric(graphs);
+  const repositoryKey = `${repoOwner}\u0000${repoName}`;
 
   const loadComments = async () => {
     try {
@@ -108,11 +114,46 @@ export function useTDDChartPage({
 
   useEffect(() => {
     let isActive = true;
+    if (branchesLoadedFor === repositoryKey) {
+      const nextBranch = branches.find((branch) => branch.name === requestedBranch)?.name
+        ?? branches.find((branch) => branch.isDefault)?.name ?? branches[0]?.name ?? "main";
+      setSelectedBranch(nextBranch);
+      return;
+    }
+    const loadBranches = async () => {
+      setLoading(true);
+      setDataError(false);
+      try {
+        const availableBranches = await port.obtainBranches(repoOwner, repoName);
+        if (!isActive) return;
+        const requestedBranchExists = availableBranches.some((branch) => branch.name === requestedBranch);
+        const defaultBranch = availableBranches.find((branch) => branch.isDefault)?.name ?? availableBranches[0]?.name ?? "main";
+        setBranches(availableBranches);
+        setSelectedBranch(requestedBranchExists ? requestedBranch : defaultBranch);
+        setBranchesLoadedFor(repositoryKey);
+      } catch (error) {
+        console.error("Error obtaining branches:", error);
+        if (isActive) {
+          setDataError(true);
+          setLoading(false);
+        }
+      }
+    };
+
+    loadBranches().catch((error: unknown) => console.error("Error loading branches:", error));
+    return () => {
+      isActive = false;
+    };
+  }, [port, repoOwner, repoName, requestedBranch, repositoryKey, branchesLoadedFor, branches]);
+
+  useEffect(() => {
+    if (branchesLoadedFor !== repositoryKey || !selectedBranch) return;
+    let isActive = true;
     const loadVisualizationData = async () => {
       setLoading(true);
       setDataError(false);
       try {
-        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName);
+        const visualizationData = await fetchTDDVisualizationData(port, repoOwner, repoName, selectedBranch);
         if (isActive) {
           setCommitsInfo(visualizationData.commits);
           setCommitsTddCycles(visualizationData.commitsTddCycles);
@@ -135,7 +176,14 @@ export function useTDDChartPage({
     return () => {
       isActive = false;
     };
-  }, [port, repoOwner, repoName]);
+  }, [branchesLoadedFor, port, repoOwner, repoName, repositoryKey, selectedBranch]);
+
+  const selectBranch = (branch: string) => {
+    if (!branches.some((availableBranch) => availableBranch.name === branch)) return;
+    const params = new URLSearchParams(searchParams);
+    params.set("branch", branch);
+    navigate(`?${params.toString()}`);
+  };
 
   const goToPreviousStudent = () => {
     if (currentIndex > 0) {
@@ -181,10 +229,12 @@ export function useTDDChartPage({
 
   return {
     chartsState: {
+      branches,
       commitsInfo,
       commitsTddCycles,
       metric,
       setMetric,
+      selectedBranch,
       tddLogsInfo,
     },
     comments,
@@ -202,6 +252,7 @@ export function useTDDChartPage({
     ownerName,
     repoName,
     role,
+    selectBranch,
     setFeedback,
   };
 }

@@ -4,7 +4,6 @@ import {
   CommitDataObject,
   CommitInformationDataObject,
 } from "../Domain/CommitDataObject";
-import dotenv from "dotenv";
 import { JobDataObject } from "../Domain/JobDataObject";
 import { TDDCycleDataObject } from "../Domain/TDDCycleDataObject";
 import axios from "axios";
@@ -12,7 +11,6 @@ import { CommitCycleData } from "../Domain/ICommitCycleData";
 import { CommitHistoryData } from "../Domain/ICommitHistoryData";
 import { BranchSnapshot, BranchSummary, isValidBranch } from "../Domain/RepositoryRef";
 
-dotenv.config();
 export class GithubRepository implements IGithubRepository {
   octokit: Octokit;
   githubRepository: any;

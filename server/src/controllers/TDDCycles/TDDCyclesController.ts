@@ -57,6 +57,7 @@ class TDDCyclesController {
     this.dbCommitsRepository = new DBCommitsRepository();
     this.dbJobsRepository = dbJobsRepository;
   }
+
   async registerTestResult(req: Request, res: Response) {
     if (!this.registerTestResultUseCase) {
       return res.status(503).json({ error: "Registration repository unavailable" });

@@ -17,6 +17,25 @@ function renderList(port: MockGithubAPI | MockGithubAPIEmpty | MockGithubAPIErro
 }
 
 describe("TDDList", () => {
+  it("renders already loaded commits without another request and updates when they change", async () => {
+    const port = new MockGithubAPI();
+    const commits = await port.obtainCommitsOfRepo("example", "repository");
+    const obtain = jest.spyOn(port, "obtainCommitsOfRepo");
+    const { rerender } = render(<MemoryRouter><TDDList port={port} commits={commits} /></MemoryRouter>);
+    expect(screen.getByText(/Commit: Todos los tests del mundo/)).toBeInTheDocument();
+    expect(obtain).not.toHaveBeenCalled();
+    rerender(<MemoryRouter><TDDList port={port} commits={[]} /></MemoryRouter>);
+    expect(screen.getByTestId("emptyMessage")).toBeInTheDocument();
+    expect(obtain).not.toHaveBeenCalled();
+  });
+
+  it("passes the selected branch when used without preloaded commits", async () => {
+    const port = new MockGithubAPI();
+    const obtain = jest.spyOn(port, "obtainCommitsOfRepo");
+    render(<MemoryRouter initialEntries={["/?repoOwner=example&repoName=repository&branch=feature%2Fdivisor"]}><TDDList port={port} /></MemoryRouter>);
+    await screen.findByText(/Commit: Todos los tests del mundo/);
+    expect(obtain).toHaveBeenCalledWith("example", "repository", "feature/divisor");
+  });
   it("uses the injected repository to render commit blocks", async () => {
     renderList(new MockGithubAPI());
 

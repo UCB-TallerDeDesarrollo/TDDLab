@@ -1,5 +1,3 @@
-import { VITE_TDD_USE_FAKE } from "../config";
-import { FakeCommitHistoryRepository } from "./modules/TDDCycles-Visualization/repository/FakeCommitHistoryRepository";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { CommitHistoryAdapter } from "./modules/TDDCycles-Visualization/repository/CommitHistoryAdapter";
 import MainMenu from "./app/navigation/MainMenu";
@@ -88,9 +86,7 @@ const navArrayLinks = [
   },
 ];
 
-const commitHistoryRepository = VITE_TDD_USE_FAKE
-  ? new FakeCommitHistoryRepository()
-  : new CommitHistoryAdapter();
+const commitHistoryRepository = new CommitHistoryAdapter();
 
 function App() {
   const authData = useGlobalState("authData")[0];
